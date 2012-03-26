@@ -213,9 +213,6 @@ int main(int argc, char * argv[])
     --controllerDebug       Causes Mixxx to display/log all of the controller\n\
                             data it receives and script functions it loads\n\
 \n\
-    --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
-                            messages it receives and script functions it loads\n\
-\n\
     --locale LOCALE         Use a custom locale for loading translations\n\
                             (e.g 'fr')\n\
 \n\

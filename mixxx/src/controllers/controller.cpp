@@ -108,7 +108,7 @@ QDomElement Controller::loadPreset(QDomElement root, bool forceLoad) {
     while (!controller.isNull()) {
         // Get deviceid
         device = controller.attribute("id","");
-        if (device != m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-1) && !forceLoad) {
+        if (device != rootDeviceName(m_sDeviceName) && !forceLoad) {
             controller = controller.nextSiblingElement("controller");
         }
         else
@@ -199,7 +199,7 @@ QDomDocument Controller::buildDomElement() {
     QDomElement rootNode = doc.documentElement();
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
-    controller.setAttribute("id", m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-1));
+    controller.setAttribute("id", rootDeviceName(m_sDeviceName));
     rootNode.appendChild(controller);
 
     QDomElement scriptFiles = doc.createElement("scriptfiles");
