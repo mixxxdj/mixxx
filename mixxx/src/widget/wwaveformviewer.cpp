@@ -60,8 +60,9 @@ void WWaveformViewer::setup(QDomNode node) {
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
-    if (m_waveformWidget)
+    if (m_waveformWidget) {
         m_waveformWidget->resize(width(),height());
+    }
 }
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {

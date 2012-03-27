@@ -5,7 +5,8 @@ uniform int textureSize;
 uniform int textureStride;
 uniform float indexPosition;
 uniform int zoomFactor;
-uniform int viewportWidth;
+uniform int width;
+uniform int signalFrameBufferRatio;
 
 uniform sampler2D waveformDataTexture;
 
@@ -21,14 +22,19 @@ void main(void)
 {
     vec2 uv = gl_TexCoord[0].st;
 
-    float visualSampleRange = float(zoomFactor * viewportWidth);
+    int visualSamplePerPixel = signalFrameBufferRatio * zoomFactor;
+    float visualSampleRange = float(visualSamplePerPixel * width);
 
     float currentIndex = indexPosition + 2.0*(uv.x - 0.5) * visualSampleRange;
-    int nearestCurrentIndex = int(floor(currentIndex));
-    currentIndex -= float(nearestCurrentIndex%(2*zoomFactor));
 
-    float previousIndex = currentIndex - 2.0*float(zoomFactor);
-    float nextIndex = currentIndex + 2.0*float(zoomFactor);
+    if( currentIndex<0.0 || currentIndex > waveformLength)
+        discard;
+
+    int nearestCurrentIndex = int(floor(currentIndex));
+    currentIndex -= float(nearestCurrentIndex%(2*visualSamplePerPixel));
+
+    float previousIndex = currentIndex - 2.0*float(visualSamplePerPixel);
+    float nextIndex = currentIndex + 2.0*float(visualSamplePerPixel);
 
     vec4 outputColor = vec4(0.0,0.0,0.0,0.0);
 

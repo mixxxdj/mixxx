@@ -1,7 +1,6 @@
 #include "glslwaveformrenderersignal.h"
 #include "waveformwidgetrenderer.h"
 
-#include "waveform/shadervariable.h"
 #include "waveform/waveform.h"
 
 #include "mathstuff.h"
@@ -22,18 +21,7 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
     m_signalMaxbuffer = 0;
     m_framebuffer = 0;
 
-    m_waveformLength = new ShaderVariable<int>("waveformLength");
-    m_textureSize = new ShaderVariable<int>("textureSize");
-    m_textureStride = new ShaderVariable<int>("textureStride");
-    m_indexPosition = new ShaderVariable<float>("indexPosition");
-    m_zoomFactor = new ShaderVariable<int>("zoomFactor");
-
-    m_viewportWidth = new ShaderVariable<int>("viewportWidth");
-    m_viewportHeigth =  new ShaderVariable<int>("viewportHeight");
-
-    m_lowColor = new ShaderVariable<QColor>("lowColor");
-    m_midColor = new ShaderVariable<QColor>("midColor");
-    m_highColor = new ShaderVariable<QColor>("highColor");
+    m_signalFrameBufferRatio = 2;
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -46,6 +34,9 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
         delete m_signalMaxShaderProgram;
     }
 
+    if( m_signalMaxbuffer)
+        delete m_signalMaxbuffer;
+
     if( m_frameShaderProgram) {
         m_frameShaderProgram->removeAllShaders();
         delete m_frameShaderProgram;
@@ -53,18 +44,6 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
 
     if( m_framebuffer)
         delete m_framebuffer;
-
-    delete m_waveformLength;
-    delete m_textureSize;
-    delete m_textureStride;
-    delete m_indexPosition;
-    delete m_zoomFactor;
-    delete m_viewportWidth;
-    delete m_viewportHeigth;
-
-    delete m_lowColor;
-    delete m_midColor;
-    delete m_highColor;
 }
 
 bool GLSLWaveformRendererSignal::loadShaders()
@@ -91,18 +70,6 @@ bool GLSLWaveformRendererSignal::loadShaders()
         return false;
     }
 
-    //init locations
-    /*
-    m_textureSize->initUniformLocation(m_signalMaxShaderProgram);
-    m_textureStride->initUniformLocation(m_signalMaxShaderProgram);
-    m_indexPosition->initUniformLocation(m_signalMaxShaderProgram);
-    m_zoomFactor->initUniformLocation(m_signalMaxShaderProgram);
-
-    m_viewportWidth->initUniformLocation(m_signalMaxShaderProgram);
-    m_viewportHeigth->initUniformLocation(m_signalMaxShaderProgram);
-    */
-
-    //****************
 
     if( m_frameShaderProgram->isLinked())
         m_frameShaderProgram->release();
@@ -124,23 +91,6 @@ bool GLSLWaveformRendererSignal::loadShaders()
         return false;
     }
 
-    //init locations
-    m_waveformLength->initUniformLocation(m_frameShaderProgram);
-    m_textureSize->initUniformLocation(m_frameShaderProgram);
-    m_textureStride->initUniformLocation(m_frameShaderProgram);
-    m_indexPosition->initUniformLocation(m_frameShaderProgram);
-    m_zoomFactor->initUniformLocation(m_frameShaderProgram);
-
-    m_viewportWidth->initUniformLocation(m_frameShaderProgram);
-    m_viewportHeigth->initUniformLocation(m_frameShaderProgram);
-
-    m_lowColor->initUniformLocation(m_frameShaderProgram);
-    m_midColor->initUniformLocation(m_frameShaderProgram);
-    m_highColor->initUniformLocation(m_frameShaderProgram);
-
-
-    //NOTE: vRince here I do not check if all location are Ok since
-    //shader optimization could not provide Id for unused variable
     return true;
 }
 
@@ -228,20 +178,23 @@ void GLSLWaveformRendererSignal::createFrameBuffer()
     if( m_signalMaxbuffer)
         delete m_signalMaxbuffer;
 
-    int bufferWidth = nearestSuperiorPowerOfTwo(m_waveformRenderer->getWidth()*2);
+    int bufferWidth = nearestSuperiorPowerOfTwo(m_waveformRenderer->getWidth()*3);
+    int bufferHeight = nearestSuperiorPowerOfTwo(m_waveformRenderer->getHeight());
 
-    m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth/2,2);
+    m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth/(m_signalFrameBufferRatio*2),2);
 
     if( m_framebuffer)
         delete m_framebuffer;
 
     //should work with any version of OpenGl
-    m_framebuffer = new QGLFramebufferObject(bufferWidth,
-                                             nearestSuperiorPowerOfTwo(m_waveformRenderer->getHeight()));
+    m_framebuffer = new QGLFramebufferObject(bufferWidth,bufferHeight);
 
     if( !m_signalMaxbuffer || !m_framebuffer->isValid())
         qDebug() << "GLSLWaveformRendererSignal::createFrameBuffer - PBO not valid";
 
+    //qDebug() << m_waveformRenderer->getWidth();
+    //qDebug() << m_waveformRenderer->getWidth()*3;
+    //qDebug() << bufferWidth;
 }
 
 void GLSLWaveformRendererSignal::init(){
@@ -263,9 +216,6 @@ void GLSLWaveformRendererSignal::init(){
 
 void GLSLWaveformRendererSignal::setup(const QDomNode& node) {
     m_colors.setup(node);
-    m_lowColor->setValue( m_colors.getLowColor());
-    m_midColor->setValue( m_colors.getMidColor());
-    m_highColor->setValue( m_colors.getHighColor());
 }
 
 void GLSLWaveformRendererSignal::onSetTrack(){
@@ -281,18 +231,20 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
 
-    if( !trackInfo)
+    if( !trackInfo) {
         return;
+    }
 
-    if(!m_framebuffer || !m_framebuffer->isValid())
+    if(!m_framebuffer || !m_framebuffer->isValid()) {
         return;
+    }
 
     const Waveform* waveform = trackInfo->getWaveform();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
 
-    //NOTE(vRince) completion can change during loadTexture
+    //NOTE: (vRince) completion can change during loadTexture
     //do not remove currenCompletion temp variable !
     const int currentCompletion = waveform->getCompletion();
     if( m_loadedWaveform < currentCompletion)
@@ -313,20 +265,22 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_2D);
 
-    //compute max
+    const float indexPosition = m_waveformRenderer->getPlayPos()*(float)waveform->size();
+
+    //compute signal max
     {
         glLoadIdentity();
 
         m_signalMaxShaderProgram->bind();
         glViewport(0,0,m_signalMaxbuffer->width(),m_signalMaxbuffer->height());
-        const float indexPosition = m_waveformRenderer->getPlayPos()*(float)waveform->size();
 
         m_signalMaxShaderProgram->setUniformValue("waveformLength",waveform->size());
         m_signalMaxShaderProgram->setUniformValue("textureSize",waveform->getTextureSize());
         m_signalMaxShaderProgram->setUniformValue("textureStride",waveform->getTextureStride());
         m_signalMaxShaderProgram->setUniformValue("indexPosition",indexPosition);
         m_signalMaxShaderProgram->setUniformValue("zoomFactor",(int)m_waveformRenderer->getZoomFactor());
-        m_signalMaxShaderProgram->setUniformValue("viewportWidth",m_signalMaxbuffer->width());
+        m_signalMaxShaderProgram->setUniformValue("width",m_signalMaxbuffer->width());
+        m_signalMaxShaderProgram->setUniformValue("signalFrameBufferRatio",m_signalFrameBufferRatio);
 
         glBindTexture(GL_TEXTURE_2D, m_textureId);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -344,42 +298,22 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     glLoadIdentity();
 
-    //pbo/viewport scaling & pitch scaling
-    //float scale = (float)m_framebuffer->width()/(float)m_waveformRenderer->getWidth();
-    //scale /= (1.0+m_waveformRenderer->getRateAdjust());
-    //glScalef(scale, 1.0, 1.0);
-
     //paint into frame buffer
     {
         glLoadIdentity();
+        //glScalef( (float)m_signalMaxbuffer->width()/(float)m_framebuffer->width(), 1.0, 1.0);
 
         m_frameShaderProgram->bind();
 
         glViewport(0, 0, m_framebuffer->width(), m_framebuffer->height());
 
-        /*
-        const float currentPosition = m_waveformRenderer->getPlayPos()*(float)waveform->size();
-
-        m_waveformLength->setUniformValue(waveform->size());
-        m_textureSize->setUniformValue(waveform->getTextureSize());
-        m_textureStride->setUniformValue(waveform->getTextureStride());
-
-        m_zoomFactor->setUniformValue((int)m_waveformRenderer->getZoomFactor());
-
-        m_indexPosition->setUniformValue(currentPosition);
-
-        m_viewportWidth->setUniformValue(m_framebuffer->width());
-        m_viewportHeigth->setUniformValue(m_framebuffer->height());
-
-        //NOTE: (vrince) this should be only one on setup ?
-        m_lowColor->setUniformValue();
-        m_midColor->setUniformValue();
-        m_highColor->setUniformValue();
-        */
+        m_frameShaderProgram->setUniformValue("lowColor",m_colors.getLowColor());
+        m_frameShaderProgram->setUniformValue("midColor",m_colors.getMidColor());
+        m_frameShaderProgram->setUniformValue("highColor",m_colors.getHighColor());
 
         glBindTexture(GL_TEXTURE_2D, m_signalMaxbuffer->texture());
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
         m_framebuffer->bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -389,11 +323,21 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->release();
     }
 
-    //debug
-    //m_signalFramebuffer->toImage().save("signalPBO.png");
-
     glLoadIdentity();
-    glScalef(2.0/(1.0+m_waveformRenderer->getRateAdjust()), 1.0, 1.0);
+    float scale = (float)m_framebuffer->width()/(2.0*(float)m_waveformRenderer->getWidth());
+    scale /= (1.0+m_waveformRenderer->getRateAdjust());
+
+    //NOTE: (vrince) try to move the camera to limit the stepping effect of actula versus current position centering
+    //The following code must be paired with the shader hat compute signal value in texture/gemometry world
+    const int visualSamplePerPixel = m_signalFrameBufferRatio * m_waveformRenderer->getZoomFactor();
+    const int nearestCurrentIndex = int(floor(indexPosition));
+    const float actualIndexPosition = indexPosition - float(nearestCurrentIndex%(2*visualSamplePerPixel));
+    const float deltaPosition = (indexPosition - actualIndexPosition);
+    const float range = float(visualSamplePerPixel * m_waveformRenderer->getWidth());
+    const float deltaInGeometry = deltaPosition / range;
+
+    glTranslatef( deltaInGeometry, 0.0, 0.0);
+    glScalef(scale, 1.0, 1.0);
 
     //paint buffer into viewport
     {

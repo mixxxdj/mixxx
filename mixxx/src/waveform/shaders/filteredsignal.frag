@@ -12,8 +12,29 @@ void main(void)
 {
     vec2 uv = gl_TexCoord[0].st;
 
-    gl_FragColor = texture2D(signalTexture,uv);
+    vec4 rawFiltredSignal = texture2D(signalTexture,uv);
+
+    //(vrince) debug see pre-computed signal
+    //gl_FragColor = rawFiltredSignal;
+    //return;
+
+    vec4 output = vec4(0.0);
+
+    vec4 distanceToRigthSignal = 0.5 - uv.y - 0.5 *texture2D(signalTexture,vec2(uv.x,0.25));
+    vec4 distanceToLeftSignal = uv.y - 0.5 * texture2D(signalTexture,vec2(uv.x,0.75)) - 0.5;
+
+    if( distanceToRigthSignal.x < 0.0 && distanceToLeftSignal.x < 0.0)
+        output = lowColor;
+
+    if( distanceToRigthSignal.y < 0.0 && distanceToLeftSignal.y < 0.0)
+        output += midColor;
+
+    if( distanceToRigthSignal.z < 0.0 && distanceToLeftSignal.z < 0.0)
+        output += highColor;
+
+    gl_FragColor = output;
     return;
+
 
     /*
     uv.y = 0.25;
