@@ -36,6 +36,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     void selectAll();
     void filterByGenre();
     void filterByBpm();
+    void spinBoxBpmRangeChanged(int value);
     void filterByYear();
     void filterByRating();
     void filterByKey();

@@ -15,8 +15,6 @@ DlgSelector::DlgSelector(QWidget* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
     setupUi(this);
-    //m_songsButtonGroup.addButton(checkBoxGenre);
-    //m_songsButtonGroup.addButton(checkBoxBpm);
 
     m_pSelectorLibraryTableView = new WSelectorLibraryTableView(this, pConfig, pTrackCollection,
                                                               ConfigKey(), ConfigKey());
@@ -34,32 +32,6 @@ DlgSelector::DlgSelector(QWidget* parent,
     m_pSelectorLibraryTableModel =  new SelectorLibraryTableModel(this, pTrackCollection);
     m_pSelectorLibraryTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
-/*
-    m_pCrateView = new CrateView(this, pTrackCollection);
-
-    m_pSelectorCratesTableView = new WSelectorCratesTableView(this, pTrackCollection);
-    box = dynamic_cast<QBoxLayout*>(horizontalLayoutCrates);
-    Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
-    box->removeWidget(m_pCratesViewPlaceholder);
-    m_pCratesViewPlaceholder->hide();
-    //box->insertWidget(1, m_pSelectorCratesTableView);
-    box->insertWidget(1, m_pCrateView);
-    m_pCrateView->show();
-
-    m_pCratesTableModel = new QSqlTableModel(this);
-    m_pCratesTableModel->setTable("crates");
-    m_pCratesTableModel->removeColumn(m_pCratesTableModel->fieldIndex("id"));
-    m_pCratesTableModel->removeColumn(m_pCratesTableModel->fieldIndex("show"));
-    m_pCratesTableModel->removeColumn(m_pCratesTableModel->fieldIndex("count"));
-    m_pCratesTableModel->setSort(m_pCratesTableModel->fieldIndex("name"),
-                              Qt::AscendingOrder);
-    m_pCratesTableModel->setFilter("show = 1");
-    m_pCratesTableModel->select();
-    TransposeProxyModel* transposeProxy = new TransposeProxyModel(this);
-    transposeProxy->setSourceModel(m_pCratesTableModel);
-    m_pSelectorCratesTableView->setModel(m_pCratesTableModel);
-*/
-
     connect(checkBoxGenre, SIGNAL(clicked()),
             this,  SLOT(filterByGenre()));
     connect(checkBoxBpm, SIGNAL(clicked()),
@@ -72,6 +44,8 @@ DlgSelector::DlgSelector(QWidget* parent,
             this,  SLOT(filterByKey()));
     connect(checkBoxHarmonicKey, SIGNAL(clicked()),
             this,  SLOT(filterByHarmonicKey()));
+    connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
+            this,  SLOT(spinBoxBpmRangeChanged(int)));
 
     checkBoxGenre->click();
 
@@ -88,6 +62,8 @@ void DlgSelector::onShow()
 {
     //Refresh crates
     //m_pCratesTableModel->select();
+
+
 }
 
 
@@ -136,7 +112,16 @@ void DlgSelector::filterByGenre()
 
 void DlgSelector::filterByBpm()
 {
-    m_pSelectorLibraryTableModel->filterByBpm(checkBoxBpm->isChecked());
+    bool bpm = checkBoxBpm->isChecked();
+    int range = horizontalSliderBpmRange->value();
+    qDebug() << "Range " << range << " ";
+
+    m_pSelectorLibraryTableModel->filterByBpm(bpm, range);
+}
+
+void DlgSelector::spinBoxBpmRangeChanged(int value)
+{
+    filterByBpm();
 }
 
 void DlgSelector::filterByYear()

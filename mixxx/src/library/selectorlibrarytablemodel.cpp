@@ -26,6 +26,7 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
 
     m_bFilterGenre = true;
     m_bFilterBpm = false;
+    m_iFilterBpmRange = 0;
     m_bFilterYear = false;
     m_bFilterRating = false;
     m_bFilterKey = false;
@@ -68,6 +69,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_pHarmonics["A"]  = "'D',  'F#m', 'Gbm', 'E'";
     m_pHarmonics["E"]  = "'A',  'Dbm', 'C#m', 'B'";
 
+    m_pSemitoneList = QString("C,Cm,C#,C#m,D,Dm,Eb,Ebm,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,Bb,Bbm,B,Bm").split(",");
+
 
 }
 
@@ -81,16 +84,6 @@ bool SelectorLibraryTableModel::isColumnInternal(int column) {
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
 
     m_pChannel = QString("[Channel%1]").arg(deck);
-    m_pLoadedTrack = PlayerInfo::Instance(
-        ).getTrackInfo(m_pChannel);
-
-    // get pitch slider value (deck rate)
-    ControlObjectThreadMain* rateSlider = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "rate")));
-    ControlObjectThreadMain* rateRange = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "rateRange")));
-    ControlObjectThreadMain* rateDirection = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "rate_dir")));
 
     // disconnect the old pitch slider
     if (m_pChannelBpm) {
@@ -103,24 +96,13 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     connect(m_pChannelBpm, SIGNAL(valueChanged(double)), this, 
         SLOT(slotChannel1BpmChanged(double)));
 
-    //bpm = file_bpm * (1 + rateSlider * rateRange * rateDirection)
-    //"rate", "rateRange", and "rate_dir"
-    //see src/widget/wnumberrate.cpp for some stuff you could copy/paste
-
+    m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
     if (m_pLoadedTrack) {
 
         // Genre
         QString TrackGenre = m_pLoadedTrack->getGenre();
         m_pFilterGenre = (TrackGenre != "") ? QString(
             "Genre == '%1'").arg(TrackGenre) : QString();
-
-        // Bpm
-        float trackBpm = m_pLoadedTrack->getBpm();
-        float bpm = trackBpm * (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
-        //float trackBpm = pChannel1Bpm->get();
-        m_pFilterBpm = (bpm > 0) ? QString(
-            "Bpm > %1 AND Bpm < %2").arg(
-            bpm - 1).arg(bpm + 1) : QString();
 
         // Year
         QString TrackYear = m_pLoadedTrack->getYear();
@@ -132,26 +114,25 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
         m_pFilterRating = (TrackRating > 0) ? QString(
             "Rating >= %1").arg(TrackRating) : QString();
 
-        // Key
-        QString TrackKey = m_pLoadedTrack->getKey();
-        m_pFilterKey = (TrackKey!="") ? QString(
-            "Key == '%1'").arg(TrackKey) : QString();
-
-        // Harmonic Key
-        //QString TrackKey = m_pLoadedTrack->getKey();
-        QString keys = m_pHarmonics[TrackKey];
-        m_pFilterHarmonicKey = (keys!="") ? QString(
-            "Key in (%1)").arg(keys) : QString();
-
-        // Hack
+        // Bpm and Keys
+        float rate = getRate();
+        setBpmFilter(rate);
+        setKeyFilters(rate);
 
     }
-    //qDebug() << "slotPlayingDeckChanged(" << deck;
     emit(doSearch(""));
 }
 
-void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
 
+void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
+    // Bpm and Keys
+    float rate = getRate();
+    setBpmFilter(rate);
+    setKeyFilters(rate);
+    emit(doSearch(""));
+}
+
+float SelectorLibraryTableModel::getRate() {
     // get pitch slider value (deck rate)
     ControlObjectThreadMain* rateSlider = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pChannel, "rate")));
@@ -159,52 +140,55 @@ void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
         ControlObject::getControl(ConfigKey(m_pChannel, "rateRange")));
     ControlObjectThreadMain* rateDirection = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pChannel, "rate_dir")));
-    //ControlObjectThreadMain* pChannel1Bpm = new ControlObjectThreadMain(
-    //    ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+
+    float rate = (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
+    return rate;
+}
+
+void SelectorLibraryTableModel::setBpmFilter(float rate) {
+    qDebug() << "setBpmFilters " << rate;
 
     float trackBpm = m_pLoadedTrack->getBpm();
-    float currentBpm = trackBpm * (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
+    float currentBpm = trackBpm * rate;
     //float trackBpm = pChannel1Bpm->get();
     m_pFilterBpm = (currentBpm > 0) ? QString(
         "Bpm > %1 AND Bpm < %2").arg(
-        currentBpm - 1).arg(currentBpm + 1) : QString();
+        floor(currentBpm - m_iFilterBpmRange)).arg(
+        ceil(currentBpm + m_iFilterBpmRange)) : QString();
+}
+
+void SelectorLibraryTableModel::setKeyFilters(float rate) {
+
+    qDebug() << "setKeyFilters " << rate;
+
+    float trackBpm = m_pLoadedTrack->getBpm();
+    float currentBpm = trackBpm * rate;
 
     float semitoneOffset = frequencyRatioToOctaveDifference(currentBpm, trackBpm);
-    qDebug() << "slotChannelBpmChanged() semitones offset = " << semitoneOffset;
-
     QString TrackKey = adjustPitchBy(m_pLoadedTrack->getKey(), semitoneOffset);
-    qDebug() << "slotChannelBpmChanged() adjusted key = " << TrackKey;
     // Key
-    m_pFilterKey = (TrackKey!="") ? QString(
-        "Key == '%1'").arg(TrackKey) : QString();
-
+    m_pFilterKey = (TrackKey!="") ? QString("Key == '%1'").arg(TrackKey) : QString();
     // Harmonic Key
-    //QString TrackKey = m_pLoadedTrack->getKey();
-    QString keys = m_pHarmonics[TrackKey];
-    m_pFilterHarmonicKey = (keys!="") ? QString(
-        "Key in (%1)").arg(keys) : QString();
-
-    //qDebug() << "getActiveProperties(" << deck;
-    emit(doSearch(""));
+    QString hKeys = m_pHarmonics[TrackKey];
+    m_pFilterHarmonicKey = (hKeys!="") ? QString("Key in (%1)").arg(hKeys) : QString();
 }
+
 
 QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
     if (pitch == "") return pitch;
-    QStringList list = QString("C,Cm,C#,C#m,D,Dm,Eb,Ebm,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,Bb,Bbm,B,Bm").split(",");
 
     qDebug() << "adjustPitchBy pitch = " << pitch;
-    int position = list.indexOf(pitch);
+    int position = m_pSemitoneList.indexOf(pitch);
     if (position<0){
-        qDebug() << "Pitch " << pitch << " not found in config. Either change config or file meta data.";
+        qDebug() << "Pitch " << pitch << " not found in config.";
         return pitch;
     }
 
     int newpos = position + (change * 2);
-    qDebug() << "adjustPitchBy newpos = " << newpos;
     if (newpos >= 24) {
         newpos = newpos - 24;
     }
-    QString newpitch = list.at(newpos);
+    QString newpitch = m_pSemitoneList.at(newpos);
     return newpitch;
 }
 
@@ -216,7 +200,7 @@ QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
 // float 12TH_ROOT_OF_2 = 2^(1/12); //1.05946309435929
 float SelectorLibraryTableModel::frequencyRatioToOctaveDifference(
     float currentBpm, float originalBpm) {
-    const int semitonesPerOctave = 12;
+    // const int semitonesPerOctave = 12;
     float frequencyRatio = currentBpm / originalBpm;
     float semitones = 12 * log(frequencyRatio) / log(2);
     return semitones;
@@ -231,10 +215,10 @@ void SelectorLibraryTableModel::search(const QString& searchText) {
 void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
     QStringList filters;
     if (m_bFilterGenre && m_pFilterGenre != "") { filters << m_pFilterGenre; }
-    if (m_bFilterBpm && m_pFilterBpm != "") { filters << m_pFilterBpm; }
     if (m_bFilterYear && m_pFilterYear != "") { filters << m_pFilterYear; }
     if (m_bFilterRating && m_pFilterRating != "") { filters << m_pFilterRating; }
 
+    if (m_bFilterBpm && m_pFilterBpm != "") { filters << m_pFilterBpm; }
     // hack if both
     if ((m_bFilterKey && m_pFilterKey != "") 
         && (m_bFilterHarmonicKey && m_pFilterHarmonicKey != "")) {
@@ -243,7 +227,6 @@ void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
         if (m_bFilterKey && m_pFilterKey != "") { filters << m_pFilterKey; }
         if (m_bFilterHarmonicKey && m_pFilterHarmonicKey != "") { filters << m_pFilterHarmonicKey; }
     }
-
 
     //qDebug() << "slotSearch()m_pFilterGenre = [" << m_pFilterGenre << "] " << (m_pFilterGenre != "");   
     //qDebug() << "slotSearch()m_pFilterBpm = [" << m_pFilterBpm << "] " << (m_pFilterBpm != "");   
@@ -260,8 +243,16 @@ void SelectorLibraryTableModel::filterByGenre(bool value) {
     emit(doSearch(QString()));
 }
 
-void SelectorLibraryTableModel::filterByBpm(bool value) {
+void SelectorLibraryTableModel::filterByBpm(bool value, int range) {
+    qDebug() << "filterByBpm bpm = " << value << " range = " << range;
     m_bFilterBpm = value;
+    m_iFilterBpmRange = range;
+
+    // Bpm and Keys
+    float rate = getRate();
+    setBpmFilter(rate);
+    setKeyFilters(rate);
+
     emit(doSearch(QString()));
 }
 
