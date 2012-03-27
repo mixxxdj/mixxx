@@ -18,6 +18,8 @@ public:
     virtual bool useOpenGl() const { return true;}
     virtual bool useOpenGLShaders() const { return true;}
 
+    virtual void resize( int width, int height);
+
 protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);

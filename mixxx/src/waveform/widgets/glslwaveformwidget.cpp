@@ -47,8 +47,14 @@ void GLSLWaveformWidget::paintEvent( QPaintEvent* event) {
     QGLWidget::swapBuffers();
 }
 
-void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event)
-{
+void GLSLWaveformWidget::resize( int width, int height) {
+    //NOTE: (vrince) this is needed since we allocation buffer on resize
+    //ans the Gl Context should be properly setted
+    makeCurrent();
+    WaveformWidgetAbstract::resize(width,height);
+}
+
+void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     if( event->button() == Qt::RightButton) {
         makeCurrent();
         signalRenderer_->loadShaders();

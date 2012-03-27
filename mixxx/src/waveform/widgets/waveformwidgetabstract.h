@@ -36,7 +36,7 @@ public:
     //void prepare();
     virtual void render();
 
-    void resize( int width, int height);
+    virtual void resize( int width, int height);
 
     //Those information enable automatic combobox creation and waveform selection
     virtual QString getWaveformWidgetName() = 0;
