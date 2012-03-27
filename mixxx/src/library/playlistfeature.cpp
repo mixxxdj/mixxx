@@ -449,7 +449,7 @@ void PlaylistFeature::slotExportPlaylist(){
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
-    pPlaylistTableModel->setSort(0, Qt::AscendingOrder);
+    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistTableModel->select();
     int rows = pPlaylistTableModel->rowCount();
     for (int i = 0; i < rows; ++i) {
