@@ -79,6 +79,24 @@ TEST_F(SearchQueryParserTest, TextFilter) {
         qPrintable(m_parser.parseQuery("comment:asdf", searchColumns, "")));
 }
 
+TEST_F(SearchQueryParserTest, TextFilterQuote) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (comment LIKE '%asdf zxcv%')")),
+        qPrintable(m_parser.parseQuery("comment:\"asdf zxcv\"", searchColumns, "")));
+}
+
+TEST_F(SearchQueryParserTest, TextFilterQuote_NoEndQuoteTakesWholeQuery) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (comment LIKE '%asdf zxcv qwer%')")),
+        qPrintable(m_parser.parseQuery("comment:\"asdf zxcv qwer", searchColumns, "")));
+}
+
 TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
     QStringList searchColumns;
     searchColumns << "artist"
@@ -132,6 +150,19 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
         qPrintable(QString("WHERE (bpm >= 127.12 AND bpm <= 129)")),
         qPrintable(m_parser.parseQuery("bpm:127.12-129", searchColumns, "")));
 }
+
+TEST_F(SearchQueryParserTest, MultipleFilters) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "title";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm >= 127.12 AND bpm <= 129) AND "
+                           "(artist LIKE '%com truise%') AND "
+                           "((artist LIKE '%Colorvision%') OR (title LIKE '%Colorvision%'))")),
+        qPrintable(m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision",
+                                       searchColumns, "")));
+}
+
 
 TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     QStringList searchColumns;
