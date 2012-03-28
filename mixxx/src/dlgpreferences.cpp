@@ -27,6 +27,7 @@
 #endif
 
 #include "dlgprefbpm.h"
+#include "dlgprefkey.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "dlgprefmidibindings.h"
@@ -87,6 +88,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wcrossfader);
     m_wbpm = new DlgPrefBpm(this, config);
     addPageWidget(m_wbpm);
+    m_wkey = new DlgPrefKey(this, config);
+    addPageWidget(m_wkey);
     m_wreplaygain = new DlgPrefReplayGain(this, config);
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, config);
@@ -229,6 +232,12 @@ void DlgPreferences::createIcons()
     m_pBPMdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pBPMdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+    m_pKEYdetectButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pKEYdetectButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pKEYdetectButton->setText(0, tr("Key Detection"));
+    m_pKEYdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pKEYdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
     m_pReplayGainButton->setText(0, tr("Normalization"));
@@ -284,7 +293,9 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     } else if (current == m_pRecordingButton) {
     	pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
     } else if (current == m_pBPMdetectButton) {
-    	pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
+        pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
+    } else if (current == m_pKEYdetectButton) {
+    	pagesWidget->setCurrentWidget(m_wkey->parentWidget()->parentWidget());
     } else if (current == m_pReplayGainButton) {
     	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
 
