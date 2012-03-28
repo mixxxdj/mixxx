@@ -4,6 +4,7 @@
 #include "library/basetrackcache.h"
 
 #include "library/trackcollection.h"
+#include "library/searchqueryparser.h"
 
 namespace {
 
@@ -36,7 +37,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
           m_database(m_pTrackCollection->getDatabase()),
-          m_queryParser(m_pTrackCollection->getDatabase()) {
+          m_pQueryParser(new SearchQueryParser(m_pTrackCollection->getDatabase())) {
     m_searchColumns << "artist"
                     << "album"
                     << "location"
@@ -53,6 +54,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
 }
 
 BaseTrackCache::~BaseTrackCache() {
+    delete m_pQueryParser;
 }
 
 const QStringList BaseTrackCache::columns() const {
@@ -486,8 +488,8 @@ QString BaseTrackCache::filterClause(QString query, QString extraFilter,
                 .arg(m_idColumn, idStrings.join(","));
     }
 
-    return m_queryParser.parseQuery(query, m_searchColumns,
-                                    queryFragments.join(" AND "));
+    return m_pQueryParser->parseQuery(query, m_searchColumns,
+                                      queryFragments.join(" AND "));
 }
 
 QString BaseTrackCache::orderByClause(int sortColumn,

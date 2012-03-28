@@ -25,6 +25,9 @@ class SearchQueryParser {
                      QStringList searchColumns,
                      QStringList* output) const;
 
+    QString getTextArgument(QString argument,
+                            QStringList* tokens) const;
+
     bool parseFuzzyMatch(QString field, QStringList* output) const;
     bool parseTextFilter(QString field, QString argument,
                          QStringList* tokens, QStringList* output) const;
@@ -39,6 +42,7 @@ class SearchQueryParser {
     QStringList m_numericFilters;
     QStringList m_specialFilters;
     QStringList m_allFilters;
+    QHash<QString, QString> m_fieldToSqlColumn;
 
     QRegExp m_fuzzyMatcher;
     QRegExp m_textFilterMatcher;
