@@ -407,6 +407,7 @@ class MixxxCore(Feature):
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
+                   "library/searchqueryparser.cpp",
                    "library/preparelibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
                    "library/proxytrackmodel.cpp",
