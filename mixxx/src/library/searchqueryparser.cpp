@@ -44,6 +44,20 @@ bool SearchQueryParser::searchFieldsForPhrase(const QString& phrase,
 }
 
 bool SearchQueryParser::parseFuzzyMatch(QString field, QStringList* output) const {
+    if (field == "bpm") {
+        // Look up the current track's bpms and add something like
+        // "bpm > X AND bpm" < Y to 'output'
+
+        // Make sure to return true if you processed successfully
+        //return true;
+    } else if (field == "key") {
+        // Look up current track's key and add something like
+        // "key" in (.. list of compatible keys.. )
+
+        // Make sure to return true if you processed successfully
+        //return true;
+    }
+
     return false;
 }
 
