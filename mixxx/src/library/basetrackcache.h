@@ -14,6 +14,7 @@
 #include <QVector>
 
 #include "library/dao/trackdao.h"
+#include "library/searchqueryparser.h"
 #include "trackinfoobject.h"
 #include "util.h"
 
@@ -105,6 +106,7 @@ class BaseTrackCache : public QObject {
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
+    SearchQueryParser m_queryParser;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };
