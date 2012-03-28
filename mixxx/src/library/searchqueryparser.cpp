@@ -13,8 +13,24 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
-                     << "duration";
+                     << "duration"
+                     << "played"
+                     << "rating";
     m_specialFilters << "key";
+
+    m_fieldToSqlColumn.insert("artist", "artist");
+    m_fieldToSqlColumn.insert("album", "album");
+    m_fieldToSqlColumn.insert("title", "title");
+    m_fieldToSqlColumn.insert("genre", "genre");
+    m_fieldToSqlColumn.insert("composer", "composer");
+    m_fieldToSqlColumn.insert("comment", "comment");
+    m_fieldToSqlColumn.insert("year", "year");
+    m_fieldToSqlColumn.insert("track", "tracknumber");
+    m_fieldToSqlColumn.insert("bpm", "bpm");
+    m_fieldToSqlColumn.insert("duration", "duration");
+    m_fieldToSqlColumn.insert("key", "key");
+    m_fieldToSqlColumn.insert("played", "timesplayed");
+    m_fieldToSqlColumn.insert("rating", "rating");
 
     m_allFilters.append(m_textFilters);
     m_allFilters.append(m_numericFilters);
@@ -61,10 +77,38 @@ bool SearchQueryParser::parseFuzzyMatch(QString field, QStringList* output) cons
     return false;
 }
 
+QString SearchQueryParser::getTextArgument(QString argument,
+                                           QStringList* tokens) const {
+    // If the argument is empty, assume the user placed a space after an
+    // advanced search command. Consume another token and treat that as the
+    // argument. TODO(XXX) support quoted search phrases as arguments
+    argument = argument.trimmed();
+    if (argument.length() == 0) {
+        if (tokens->length() > 0) {
+            argument = tokens->takeFirst();
+        }
+    }
+    return argument;
+}
+
 bool SearchQueryParser::parseTextFilter(QString field, QString argument,
                                         QStringList* tokens,
                                         QStringList* output) const {
-    return false;
+    QString sqlField = m_fieldToSqlColumn.value(field, "");
+    if (sqlField.length() == 0) {
+        return false;
+    }
+
+    QString filter = getTextArgument(argument, tokens).trimmed();
+    if (filter.length() == 0) {
+        qDebug() << "Text filter for" << field << "was empty.";
+        return false;
+    }
+
+    FieldEscaper escaper(m_database);
+    QString escapedFilter = escaper.escapeString("%" + filter + "%");
+    *output << QString("(%1 LIKE %2)").arg(sqlField, escapedFilter);
+    return true;
 }
 
 bool SearchQueryParser::parseNumericFilter(QString field, QString argument,

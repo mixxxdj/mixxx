@@ -70,6 +70,24 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumns) {
         qPrintable(m_parser.parseQuery("asdf zxcv", searchColumns, "")));
 }
 
+TEST_F(SearchQueryParserTest, TextFilter) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (comment LIKE '%asdf%')")),
+        qPrintable(m_parser.parseQuery("comment:asdf", searchColumns, "")));
+}
+
+TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (comment LIKE '%asdf%')")),
+        qPrintable(m_parser.parseQuery("comment: asdf", searchColumns, "")));
+}
+
 TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     QStringList searchColumns;
     searchColumns << "artist";

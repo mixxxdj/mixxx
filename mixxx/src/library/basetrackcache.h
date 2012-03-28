@@ -14,10 +14,10 @@
 #include <QVector>
 
 #include "library/dao/trackdao.h"
-#include "library/searchqueryparser.h"
 #include "trackinfoobject.h"
 #include "util.h"
 
+class SearchQueryParser;
 class TrackCollection;
 
 // BaseTrackCache is a cache of all of the values in certain table. It supports
@@ -106,7 +106,7 @@ class BaseTrackCache : public QObject {
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
-    SearchQueryParser m_queryParser;
+    SearchQueryParser* m_pQueryParser;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };
