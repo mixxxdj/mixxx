@@ -36,6 +36,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_allFilters.append(m_numericFilters);
     m_allFilters.append(m_specialFilters);
 
+    m_operatorMatcher = QRegExp("^(>|>=|<|<=)(.*)$");
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_numericFilters.join("|")));
@@ -114,6 +115,53 @@ bool SearchQueryParser::parseTextFilter(QString field, QString argument,
 bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
                                            QStringList* tokens,
                                            QStringList* output) const {
+    QString sqlField = m_fieldToSqlColumn.value(field, "");
+    if (sqlField.length() == 0) {
+        return false;
+    }
+
+    QString filter = getTextArgument(argument, tokens).trimmed();
+    if (filter.length() == 0) {
+        qDebug() << "Text filter for" << field << "was empty.";
+        return false;
+    }
+
+
+    QString op = "=";
+    if (m_operatorMatcher.indexIn(filter) != -1) {
+        op = m_operatorMatcher.cap(1);
+        filter = m_operatorMatcher.cap(2);
+    }
+
+    bool parsed = false;
+    // Try to convert to see if it parses.
+    filter.toDouble(&parsed);
+    if (parsed) {
+        *output << QString("(%1 %2 %3)").arg(sqlField, op, filter);
+        return true;
+    }
+
+    QStringList rangeArgs = filter.split("-");
+    if (rangeArgs.length() == 2) {
+        bool ok = false;
+        double arg1 = rangeArgs[0].toDouble(&ok);
+        if (!ok) {
+            return false;
+        }
+        double arg2 = rangeArgs[1].toDouble(&ok);
+        if (!ok) {
+            return false;
+        }
+
+        // Nonsense
+        if (arg1 > arg2) {
+            return false;
+        }
+
+        *output << QString("(%1 >= %2 AND %1 <= %3)").arg(
+            sqlField, rangeArgs[0], rangeArgs[1]);
+        return true;
+    }
     return false;
 }
 

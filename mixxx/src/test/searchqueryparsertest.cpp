@@ -88,6 +88,51 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
         qPrintable(m_parser.parseQuery("comment: asdf", searchColumns, "")));
 }
 
+TEST_F(SearchQueryParserTest, NumericFilter) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm = 127.12)")),
+        qPrintable(m_parser.parseQuery("bpm:127.12", searchColumns, "")));
+}
+
+TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm = 127.12)")),
+        qPrintable(m_parser.parseQuery("bpm: 127.12", searchColumns, "")));
+}
+
+TEST_F(SearchQueryParserTest, NumericFilterOperators) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm > 127.12)")),
+        qPrintable(m_parser.parseQuery("bpm:>127.12", searchColumns, "")));
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm >= 127.12)")),
+        qPrintable(m_parser.parseQuery("bpm:>=127.12", searchColumns, "")));
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm < 127.12)")),
+        qPrintable(m_parser.parseQuery("bpm:<127.12", searchColumns, "")));
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm <= 127.12)")),
+        qPrintable(m_parser.parseQuery("bpm:<=127.12", searchColumns, "")));
+}
+
+TEST_F(SearchQueryParserTest, NumericRangeFilter) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+    EXPECT_STREQ(
+        qPrintable(QString("WHERE (bpm >= 127.12 AND bpm <= 129)")),
+        qPrintable(m_parser.parseQuery("bpm:127.12-129", searchColumns, "")));
+}
+
 TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     QStringList searchColumns;
     searchColumns << "artist";
