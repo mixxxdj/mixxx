@@ -36,7 +36,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_allFilters.append(m_numericFilters);
     m_allFilters.append(m_specialFilters);
 
-    m_operatorMatcher = QRegExp("^(>|>=|<|<=)(.*)$");
+    m_operatorMatcher = QRegExp("^(>|>=|=|<|<=)(.*)$");
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_numericFilters.join("|")));
