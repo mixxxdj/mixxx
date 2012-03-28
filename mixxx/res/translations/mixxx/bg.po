@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-03-27 02:52+0000\n"
+"PO-Revision-Date: 2012-03-27 17:42+0000\n"
 "Last-Translator: Boyan Alexandrov <boyan.alexandrov@gmail.com>\n"
 "Language-Team: Bulgarian <bg@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-27 04:42+0000\n"
-"X-Generator: Launchpad (build 15011)\n"
+"X-Launchpad-Export-Date: 2012-03-28 04:35+0000\n"
+"X-Generator: Launchpad (build 15027)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -353,6 +353,19 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Автори</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -492,7 +505,7 @@ msgstr "Готово!"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Липсващ плъгин за звука"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
@@ -522,7 +535,7 @@ msgstr "При засечено темпо извън определения д�
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr "Разрешаване на темпо извън обхвата"
+msgstr "Разрешаване на темпо извън диапазона"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
@@ -668,7 +681,7 @@ msgstr "При встъпване (Cue)"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Запомняне мястото на встъпване (Cue)"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
@@ -696,7 +709,7 @@ msgstr "промяна на скоростта при щракане с десе
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Бутони за краткотрайна промяна на тон/скорост"
+msgstr "Бутони за краткотрайна промяна на тон/скорост (pitchbend)"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
@@ -708,11 +721,11 @@ msgstr "краткотрайна промяна на скоростта при �
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
-msgstr ""
+msgstr "Постепенност при краткотрайна промяна на скоростта (pitchbend)"
 
 #: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
-msgstr ""
+msgstr "чувствителност"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -754,7 +767,7 @@ msgstr "Логаритмично"
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset"
-msgstr "Нулиране"
+msgstr "Връщане в изходно положение"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -805,7 +818,7 @@ msgstr "Без"
 
 #: DlgPrefMidiBindings#2
 msgid "Apply MIDI device settings?"
-msgstr ""
+msgstr "Да се приложат ли настройките за MIDI устройството?"
 
 #: DlgPrefMidiBindings#3
 msgid ""
@@ -846,7 +859,7 @@ msgstr "Изберете функция"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "Изчистване на входни насочвания"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
@@ -879,7 +892,7 @@ msgstr "Изнасяне"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr "Изход:"
+msgstr "Изходни сигнали:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
@@ -2012,7 +2025,7 @@ msgstr "Темпо на песента"
 
 #: DlgTrackInfo#23
 msgid "Cue Id"
-msgstr ""
+msgstr "Номер на точка на встъпване (Cue)"
 
 #: DlgTrackInfo#24
 msgctxt "DlgTrackInfo#24"
@@ -2140,15 +2153,15 @@ msgstr "Mixxx се натъкна на проблем"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr ""
+msgstr "Грешка при разпределяне на shout_t"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr ""
+msgstr "Грешка при разпределяне на shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr ""
+msgstr "Грешка при задаване на несинхроничен режим:"
 
 #: EngineShoutcast#5
 msgid "Lost connection to streaming server"
@@ -3130,11 +3143,11 @@ msgstr "Микрофон"
 
 #: QObject#7
 msgid "Passthrough"
-msgstr ""
+msgstr "Чисто преминаване на сигнала"
 
 #: QObject#8
 msgid "Unknown path type %1"
-msgstr ""
+msgstr "Неизвестен вид пътека %1"
 
 #: RecordingFeature#1
 msgid "Recordings"
@@ -3158,23 +3171,23 @@ msgstr "Банката с фрази не бе успешно записана �
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr ""
+msgstr "Зареждане на банка с фрази"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr ""
+msgstr "Грешка при зареждането на банка с фрази"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr ""
+msgstr "Банката с фрази '%1' не може да бъде отворена."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr ""
+msgstr "Банката с фрази '%1' не може да бъде прочетена."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
-msgstr ""
+msgstr "Mixxx скриптово студио"
 
 #: ScriptStudio#2
 msgid "File"
@@ -3225,10 +3238,15 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Не може да се направи връзка с базата данни.\n"
+"Mixxx се нуждае от QT с поддръжка за SQLite. Молже прочетете документацията "
+"на Qt SQL драйвера за повече информация.\n"
+"\n"
+"Щракнете ОК, за да затворите приложението."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
-msgstr ""
+msgstr "Не може да се обнови схемата на базата данни"
 
 #: TrackCollection#4
 msgid ""
@@ -3238,6 +3256,11 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Не може да се обнови схемата на базата данни към версия %1.\n"
+"Файлът mixxx.db може да е повреден.\n"
+"Опитайте да го преименувате и да рестартирате Mixxx.\n"
+"\n"
+"Щракнете ОК, за да затворите приложението."
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -3245,7 +3268,7 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "Traktor (зареждане)"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3256,6 +3279,8 @@ msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Грешка при зареждането на Traktor библиотеката. Някои от вашите Traktor "
+"песни или плейлисти може да не са заредени."
 
 #: Ui#1
 msgctxt "Ui#1"
@@ -3286,11 +3311,11 @@ msgstr "Зареждане на песни в свирещ дек"
 
 #: Ui#7
 msgid "CDJ Mode"
-msgstr ""
+msgstr "Режим CD плеър"
 
 #: Ui#8
 msgid "Simple"
-msgstr ""
+msgstr "Опростен"
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
@@ -3328,231 +3353,231 @@ msgstr "Баланс"
 
 #: Ui#16
 msgid "Headphones volume"
-msgstr "Сили на звука на слушалките"
+msgstr "Сила на звука на слушалките"
 
 #: Ui#17
 msgid "Headphones mix (pre/main)"
-msgstr ""
+msgstr "Смесване в слушалките"
 
 #: Ui#18
 msgid "Cue button for Player %1"
-msgstr ""
+msgstr "CUE бутон за плеър %1"
 
 #: Ui#19
 msgid "Play button for Player %1"
-msgstr ""
+msgstr "PLAY бутон за плеър %1"
 
 #: Ui#20
 msgid "Fast rewind button for Player %1"
-msgstr ""
+msgstr "Бутон за превъртане назад в плеър %1"
 
 #: Ui#21
 msgid "Fast forward button for Player %1"
-msgstr ""
+msgstr "Бутон за превъртане напред в плеър %1"
 
 #: Ui#22
 msgid "Play reverse button for Player %1"
-msgstr ""
+msgstr "Бутон за сменяне на посоката на плеър %1"
 
 #: Ui#23
 msgid "Headphone listen button for Player %1"
-msgstr ""
+msgstr "Бутон за преслушване на плеър %1"
 
 #: Ui#24
 msgid "Beat sync button for Player %1"
-msgstr ""
+msgstr "Бутон за тактово синхронизиране на плеър %1"
 
 #: Ui#25
 msgid "BPM tap button for Player %1"
-msgstr ""
+msgstr "Бутон за щракане в такт за плеър %1"
 
 #: Ui#26
 msgid "Keylock button for Player %1"
-msgstr ""
+msgstr "Бутон за заключване на тоналността на плеър %1"
 
 #: Ui#27
 msgid "Pitch control slider for Player %1"
-msgstr ""
+msgstr "Плъзгач за контрол на тон/скорост на плеър %1"
 
 #: Ui#28
 msgid "Flanger effect button for Player %1"
-msgstr ""
+msgstr "Бутон за включване на флейнджър в плеър %1"
 
 #: Ui#29
 msgid "Channel %1 volume fader"
-msgstr ""
+msgstr "Плъзгач за сила на звука в канал %1"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
-msgstr ""
+msgstr "Плъзгач за усилване в канал %1"
 
 #: Ui#31
 msgid "High EQ knob for Channel %1"
-msgstr ""
+msgstr "Копче за високи тонове на канал %1"
 
 #: Ui#32
 msgid "Mid EQ knob for Channel %1"
-msgstr ""
+msgstr "Копче за средни тонове на канал %1"
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
-msgstr ""
+msgstr "Копче за баси на канал %1"
 
 #: Ui#34
 msgid "Loop In button for Player %1"
-msgstr ""
+msgstr "Бутон за начална точка на лууп в плеър %1"
 
 #: Ui#35
 msgid "Loop Out button for Player %1"
-msgstr ""
+msgstr "Бутон за крайна точка на лууп в плеър %1"
 
 #: Ui#36
 msgid "Reloop / Exit button for Player %1"
-msgstr ""
+msgstr "Бутон за повторение/изход от лууп в плеър %1"
 
 #: Ui#37
 msgid "Setup a loop over 4 beats for Player %1"
-msgstr ""
+msgstr "Включване на 4-тактов лууп в плеър %1"
 
 #: Ui#38
 msgid "Halves the current loop's length for Player %1"
-msgstr ""
+msgstr "Намаляне с 1/2 дължината на лууп в плеър %1"
 
 #: Ui#39
 msgid "Doubles the current loop's length for Player %1"
-msgstr ""
+msgstr "Удвояване дължината на лууп в плеър %1"
 
 #: Ui#40
 msgid "Hotcue 1 button for Player %1"
-msgstr ""
+msgstr "Бутон за 1-ва позиция на плеър %1"
 
 #: Ui#41
 msgid "Hotcue 2 button for Player %1"
-msgstr ""
+msgstr "Бутон за 2-ра позиция на плеър %1"
 
 #: Ui#42
 msgid "Hotcue 3 button for Player %1"
-msgstr ""
+msgstr "Бутон за 3-та позиция на плеър %1"
 
 #: Ui#43
 msgid "Hotcue 4 button for Player %1"
-msgstr ""
+msgstr "Бутон за 4-та позиция на плеър %1"
 
 #: Ui#44
 msgid "Hotcue 1 delete button for Player %1"
-msgstr ""
+msgstr "Бутон за премахване на 1-ва позиция на плеър %1"
 
 #: Ui#45
 msgid "Hotcue 2 delete button for Player %1"
-msgstr ""
+msgstr "Бутон за премахване на 2-ра позиция на плеър %1"
 
 #: Ui#46
 msgid "Hotcue 3 delete button for Player %1"
-msgstr ""
+msgstr "Бутон за премахване на 3-та позиция на плеър %1"
 
 #: Ui#47
 msgid "Hotcue 4 delete button for Player %1"
-msgstr ""
+msgstr "Бутон за премахване на 4-та позиция на плеър %1"
 
 #: Ui#48
 msgid "Play button for Sampler %1"
-msgstr ""
+msgstr "PLAY бутон за семплер %1"
 
 #: Ui#49
 msgid "Gain knob for Sampler %1"
-msgstr ""
+msgstr "Копче за усилване на семплер %1"
 
 #: Ui#50
 msgid "Headphone listen button for Sampler %1"
-msgstr ""
+msgstr "Бутон за преслушване на семплер %1"
 
 #: Ui#51
 msgid "BPM tap button for Sampler %1"
-msgstr ""
+msgstr "Бутон за щракване в такт за семплер %1"
 
 #: Ui#52
 msgid "Keylock button for Sampler %1"
-msgstr ""
+msgstr "Бутон за заключване на тон в семплер %1"
 
 #: Ui#53
 msgid "Pitch control slider for Sampler %1"
-msgstr ""
+msgstr "Плъзгач за контрол на тон/скорост в семплер %1"
 
 #: Ui#54
 msgid "Hotcue 1 button for Sampler %1"
-msgstr ""
+msgstr "Бутон за 1-ва позиция в семплер %1"
 
 #: Ui#55
 msgid "Hotcue 2 button for Sampler %1"
-msgstr ""
+msgstr "Бутон за 2-ра позиция в семплер %1"
 
 #: Ui#56
 msgid "Hotcue 3 button for Sampler %1"
-msgstr ""
+msgstr "Бутон за 3-та позиция в семплер %1"
 
 #: Ui#57
 msgid "Hotcue 4 button for Sampler %1"
-msgstr ""
+msgstr "Бутон за 4-та позиция в семплер %1"
 
 #: Ui#58
 msgid "Hotcue 1 delete button for Sampler %1"
-msgstr ""
+msgstr "Бутон за премахване на 1-ва позиция в семплер %1"
 
 #: Ui#59
 msgid "Hotcue 2 delete button for Sampler %1"
-msgstr ""
+msgstr "Бутон за премахване на 2-ра позиция в семплер %1"
 
 #: Ui#60
 msgid "Hotcue 3 delete button for Sampler %1"
-msgstr ""
+msgstr "Бутон за премахване на 3-та позиция в семплер %1"
 
 #: Ui#61
 msgid "Hotcue 4 delete button for Sampler %1"
-msgstr ""
+msgstr "Бутон за премахване на 4-та позиция в семплер %1"
 
 #: Ui#62
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "Към следващия изглед (библиотека, списък...)"
 
 #: Ui#63
 msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgstr "Към предишния изглед (библиотека, списък...)"
 
 #: Ui#64
 msgid "Scroll to next track in library/playlist"
-msgstr ""
+msgstr "Маркиране на следващата песен в списъка"
 
 #: Ui#65
 msgid "Scroll to previous track in library/playlist"
-msgstr ""
+msgstr "Маркиране на предишната песен в списъка"
 
 #: Ui#66
 msgid "Load selected track into first stopped player"
-msgstr ""
+msgstr "Зареждане на избраната песен в първия спрян плеър"
 
 #: Ui#67
 msgid "Load selected track into Player %1"
-msgstr "Зареди избраната песен в плеър %1"
+msgstr "Зареждане на избраната песен в плеър %1"
 
 #: Ui#68
 msgid "Adjusts the wavelength of the flange effect"
-msgstr ""
+msgstr "Регулира дължината на вълната за флейнджър ефекта"
 
 #: Ui#69
 msgid "Adjusts the intensity of the flange effect"
-msgstr ""
+msgstr "Регулира интензивността на флейнджър ефекта"
 
 #: Ui#70
 msgid "Adjusts the phase delay of the flange effect"
-msgstr ""
+msgstr "Регулира фазовото забавяне на флейнджър ефекта"
 
 #: Ui#71
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Вкл./изкл. микрофон"
 
 #: Ui#72
 msgid "Microphone volume"
-msgstr ""
+msgstr "Сила на звука на микрофона"
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3560,46 +3585,48 @@ msgstr "Търсене..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr "Добави към плейлист"
+msgstr "Добавяне към списък с песни"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr ""
+msgstr "Добавяне към колекция"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr ""
+msgstr "Зареждане в семплер"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr "Премахни"
+msgstr "Премахване"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr "Свойства..."
+msgstr "Настройки..."
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
-msgstr ""
+msgstr "Добавяне към опашката на Авто DJ"
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Презареждане на метаданни към песен"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"
-msgstr ""
+msgstr "Зареждане в плеър %1"
 
 #: WTrackTableView#9
 msgid "Sampler %1"
-msgstr ""
+msgstr "Семплер %1"
 
 #: WTrackTableView#10
 msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
 msgstr ""
+"Презареждане на метаданни към песен, която свири в момента може да причини "
+"резки промени в нивото на звука. Сигурни ли сте, че искате да продължите?"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
