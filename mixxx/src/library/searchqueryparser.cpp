@@ -89,6 +89,35 @@ QString SearchQueryParser::getTextArgument(QString argument,
             argument = tokens->takeFirst();
         }
     }
+
+    // Deal with quoted arguments. If this token started with a quote, then
+    // search for the closing quote.
+    if (argument.startsWith("\"")) {
+        argument = argument.mid(1);
+
+        int quote_index = argument.indexOf("\"");
+        while (quote_index == -1 && tokens->length() > 0) {
+            argument += " " + tokens->takeFirst();
+            quote_index = argument.indexOf("\"");
+        }
+
+        if (quote_index == -1) {
+            // No ending quote found. Since we think they are going to close the
+            // quote eventually, treat the entire token list as the argument for
+            // now.
+            return argument;
+        }
+
+        // Stuff the rest of the argument after the quote back into tokens.
+        QString remaining = argument.mid(quote_index+1).trimmed();
+        if (remaining.size() != 0) {
+            tokens->push_front(remaining);
+        }
+
+        // Slice off the quote and everything after.
+        argument = argument.left(quote_index);
+    }
+
     return argument;
 }
 
@@ -168,9 +197,12 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
 bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
                                            QStringList* tokens,
                                            QStringList* output) const {
+    // Currently unimplemented. This is called when we want to filter by
+    // key. The handling here will depend on how we represent the keys in the
+    // database but it should ideally automatically deal with all the different
+    // representations there are for keys.
     return false;
 }
-
 
 void SearchQueryParser::parseTokens(QStringList tokens,
                                     QStringList searchColumns,
