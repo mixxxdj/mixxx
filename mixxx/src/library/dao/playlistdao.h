@@ -16,6 +16,7 @@ const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
 const QString PLAYLISTTRACKSTABLE_LOCATION = "location";
 const QString PLAYLISTTRACKSTABLE_ARTIST = "artist";
 const QString PLAYLISTTRACKSTABLE_TITLE = "title";
+const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = "pl_datetime_added";
 
 class PlaylistDAO : public QObject, public virtual DAO {
     Q_OBJECT
