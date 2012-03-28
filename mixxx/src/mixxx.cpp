@@ -328,18 +328,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Call inits to invoke all other construction parts
 
-    // Verify path for xml track file.
-    QFile trackfile(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Listfile")));
-    if (m_pConfig->getValueString(ConfigKey("[Playlist]", "Listfile"))
-            .length() < 1 || !trackfile.exists())
-    {
-        m_pConfig->set(ConfigKey("[Playlist]", "Listfile"),
-            QDir::homePath().append("/").append(SETTINGS_PATH)
-                .append(TRACK_FILE));
-        m_pConfig->Save();
-    }
-
     // Intialize default BPM system values
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeStart"))
             .length() < 1)
@@ -720,8 +708,6 @@ void MixxxApp::initActions()
     m_pPlaylistsImport->setShortcut(tr("Ctrl+I"));
     m_pPlaylistsImport->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pOptionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
-
     m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
 
 #ifdef __APPLE__
@@ -804,14 +790,6 @@ void MixxxApp::initActions()
     //connect(playlistsImport, SIGNAL(triggered()),
     //        m_pTrack, SLOT(slotImportPlaylist()));
     //FIXME: Disabled due to library rework
-
-    m_pOptionsBeatMark->setCheckable(false);
-    m_pOptionsBeatMark->setChecked(false);
-    m_pOptionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
-    m_pOptionsBeatMark->setWhatsThis(
-        tr("Audio Beat Marks\nMark beats by audio clicks"));
-    connect(m_pOptionsBeatMark, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsBeatMark(bool)));
 
 #ifdef __VINYLCONTROL__
     // Either check or uncheck the vinyl control menu item depending on what
@@ -918,7 +896,6 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry optionsMenu
     //optionsMenu->setCheckable(true);
-    //  optionsBeatMark->addTo(optionsMenu);
 #ifdef __VINYLCONTROL__
     m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
@@ -1048,11 +1025,6 @@ void MixxxApp::slotFileQuit()
     }
     hide();
     qApp->quit();
-}
-
-void MixxxApp::slotOptionsBeatMark(bool)
-{
-// BEAT MARK STUFF
 }
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
