@@ -265,8 +265,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_2D);
 
-    const float indexPosition = m_waveformRenderer->getPlayPos()*(float)waveform->size();
-
     //compute signal max
     {
         glLoadIdentity();
@@ -277,10 +275,11 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_signalMaxShaderProgram->setUniformValue("waveformLength",waveform->size());
         m_signalMaxShaderProgram->setUniformValue("textureSize",waveform->getTextureSize());
         m_signalMaxShaderProgram->setUniformValue("textureStride",waveform->getTextureStride());
-        m_signalMaxShaderProgram->setUniformValue("indexPosition",indexPosition);
+        m_signalMaxShaderProgram->setUniformValue("playPosition",(float)m_waveformRenderer->getPlayPos());
         m_signalMaxShaderProgram->setUniformValue("zoomFactor",(int)m_waveformRenderer->getZoomFactor());
         m_signalMaxShaderProgram->setUniformValue("width",m_signalMaxbuffer->width());
         m_signalMaxShaderProgram->setUniformValue("signalFrameBufferRatio",m_signalFrameBufferRatio);
+        m_signalMaxShaderProgram->setUniformValue("gain",(float)m_waveformRenderer->getGain());
 
         glBindTexture(GL_TEXTURE_2D, m_textureId);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -329,14 +328,15 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     //NOTE: (vrince) try to move the camera to limit the stepping effect of actula versus current position centering
     //The following code must be paired with the shader hat compute signal value in texture/gemometry world
-    const int visualSamplePerPixel = m_signalFrameBufferRatio * m_waveformRenderer->getZoomFactor();
+    /*const int visualSamplePerPixel = m_signalFrameBufferRatio * m_waveformRenderer->getZoomFactor();
     const int nearestCurrentIndex = int(floor(indexPosition));
     const float actualIndexPosition = indexPosition - float(nearestCurrentIndex%(2*visualSamplePerPixel));
     const float deltaPosition = (indexPosition - actualIndexPosition);
     const float range = float(visualSamplePerPixel * m_waveformRenderer->getWidth());
-    const float deltaInGeometry = deltaPosition / range;
+    const float deltaInGeometry = deltaPosition / range;*/
 
-    glTranslatef( deltaInGeometry, 0.0, 0.0);
+
+    glTranslatef( 0.0, 0.0, 0.0);
     glScalef(scale, 1.0, 1.0);
 
     //paint buffer into viewport
