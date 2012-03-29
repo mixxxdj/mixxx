@@ -3,10 +3,14 @@
 uniform int waveformLength;
 uniform int textureSize;
 uniform int textureStride;
-uniform float indexPosition;
+uniform float playPosition;
 uniform int zoomFactor;
 uniform int width;
 uniform int signalFrameBufferRatio;
+uniform float gain;
+uniform float lowGain;
+uniform float midGain;
+uniform float highGain;
 
 uniform sampler2D waveformDataTexture;
 
@@ -25,16 +29,17 @@ void main(void)
     int visualSamplePerPixel = signalFrameBufferRatio * zoomFactor;
     float visualSampleRange = float(visualSamplePerPixel * width);
 
-    float currentIndex = indexPosition + 2.0*(uv.x - 0.5) * visualSampleRange;
+    float bufferPositionRange = visualSampleRange / float(waveformLength);
+    float currentPosition = playPosition + 2.0*(uv.x - 0.5) * bufferPositionRange ;
 
-    if( currentIndex<0.0 || currentIndex > waveformLength)
+    if( currentPosition < 0.0 || currentPosition > 1.0)
         discard;
 
-    int nearestCurrentIndex = int(floor(currentIndex));
-    currentIndex -= float(nearestCurrentIndex%(2*visualSamplePerPixel));
+    int nearestCurrentIndex = int(floor(currentPosition*float(waveformLength)+0.5));
+    float currentIndex = float(nearestCurrentIndex)  - float(nearestCurrentIndex%(2*visualSamplePerPixel));
 
-    float previousIndex = currentIndex - 2.0*float(visualSamplePerPixel);
-    float nextIndex = currentIndex + 2.0*float(visualSamplePerPixel);
+    float previousIndex = currentIndex - 1.0*float(visualSamplePerPixel);
+    float nextIndex = currentIndex + 1.0*float(visualSamplePerPixel);
 
     vec4 outputColor = vec4(0.0,0.0,0.0,0.0);
 
@@ -50,10 +55,10 @@ void main(void)
 
     for( float i = firstPixelPosition; i < lastPixelPosition; i += 2.0) {
         vec4 currentData = getWaveformData(i);
-        maxSignalData.x = max( maxSignalData.x, currentData.x);
-        maxSignalData.y = max( maxSignalData.y, currentData.y);
-        maxSignalData.z = max( maxSignalData.z, currentData.z);
-        maxSignalData.a = max( maxSignalData.a, currentData.a);
+        maxSignalData.x = max( maxSignalData.x, (2.0*gain+1.0)*currentData.x);
+        maxSignalData.y = max( maxSignalData.y, (2.0*gain+1.0)*currentData.y);
+        maxSignalData.z = max( maxSignalData.z, (2.0*gain+1.0)*currentData.z);
+        maxSignalData.a = max( maxSignalData.a, (2.0*gain+1.0)*currentData.a);
     }
 
     gl_FragColor = maxSignalData;

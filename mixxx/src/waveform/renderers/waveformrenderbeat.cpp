@@ -64,6 +64,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
 
     painter->save();
+    painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
     beatPen.setWidth(1.5);
@@ -82,7 +83,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         else
             painter->setPen(beatPen);
 
-        painter->drawLine(xBeatPoint,0.0,xBeatPoint,m_waveformRenderer->getHeight());
+        painter->drawLine( QPointF(xBeatPoint,0.f),
+                           QPointF(xBeatPoint,(float)m_waveformRenderer->getHeight()));
     }
 
     painter->restore();
