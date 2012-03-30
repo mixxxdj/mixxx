@@ -378,10 +378,6 @@ public:
     QList<Cue*> m_cuePoints;
 
 
-    //TODO (vrince) remove
-    /** Wave summary info */
-    QByteArray m_waveSummary;
-
     /** Mutex protecting access to object */
     mutable QMutex m_qMutex;
 
@@ -393,7 +389,7 @@ public:
     // Storage for the track's beats
     BeatsPointer m_pBeats;
 
-    //Visual waveform
+    //Visual waveform data
     Waveform* m_waveform;
     Waveform* m_waveformSummary;
 

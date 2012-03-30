@@ -446,6 +446,7 @@ class MixxxCore(Feature):
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
                    "library/searchthread.cpp",
+
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",
@@ -454,6 +455,8 @@ class MixxxCore(Feature):
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
+                   "library/dao/waveformdao.cpp",
+
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
                    "library/promotracksfeature.cpp",
@@ -478,9 +481,9 @@ class MixxxCore(Feature):
                    "soundsourceproxy.cpp",
 
                    "widget/wwaveformviewer.cpp",
+
                    "waveform/waveform.cpp",
                    "waveform/waveformwidgetfactory.cpp",
-
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",
                    "waveform/renderers/waveformrenderbackground.cpp",
