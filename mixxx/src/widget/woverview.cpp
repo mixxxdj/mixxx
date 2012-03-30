@@ -242,9 +242,9 @@ bool WOverview::drawNextPixmapPart() {
     if( !m_waveform->getMutex()->tryLock())
         return false;
 
-    qDebug() << "WOverview::drawNextPixmapPart() - m_actualCompletion" << m_actualCompletion
-             << "m_waveform->getCompletion()" << waveformCompletion
-             << "nextCompletion" << completionIncrement;
+    //qDebug() << "WOverview::drawNextPixmapPart() - m_actualCompletion" << m_actualCompletion
+    //         << "m_waveform->getCompletion()" << waveformCompletion
+    //         << "nextCompletion" << completionIncrement;
 
     completionIncrement = std::min(completionIncrement,m_renderSampleLimit);
     const int nextCompletion = m_actualCompletion + completionIncrement;
