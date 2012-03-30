@@ -51,9 +51,11 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     //TODO (vrince) Do we want to expose this as settings or whatever ?
     const double mainWaveformSampleRate = 441;
     //two visual sample per pixel in full width overview in full hd
-    int summaryWaveformSample = 2*1920;
+    int summaryWaveformSamples = 2*1920;
 
-    const double summaryWaveformSampleRate = (double)sampleRate * (double)summaryWaveformSample / (double)totalSamples;
+    const double summaryWaveformSampleRate = (double)summaryWaveformSamples * (double)sampleRate / (double)totalSamples;
+
+    qDebug() << summaryWaveformSampleRate;
 
     m_waveform->computeBestVisualSampleRate(sampleRate,mainWaveformSampleRate);
     m_waveformSummary->computeBestVisualSampleRate(sampleRate,summaryWaveformSampleRate);
@@ -63,16 +65,16 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
     m_stride.init(m_waveform->getAudioSamplesPerVisualSample());
     const double mainSummaryRatio = m_waveform->getVisualSampleRate() / m_waveformSummary->getVisualSampleRate();
-    const int summaryStrideLength = mainSummaryRatio;
+    const int summaryStrideLength = ceil(mainSummaryRatio);
     m_strideSummary.init(summaryStrideLength);
-    m_strideSummary.m_convertionFactor /= mainSummaryRatio;
+    m_strideSummary.m_convertionFactor /= (double)mainSummaryRatio;
 
     m_currentStride = 0;
     m_currentSummaryStride = 0;
 
     //debug
-    //m_waveform->dump();
-    //m_waveformSummary->dump();
+    m_waveform->dump();
+    m_waveformSummary->dump();
 
 #ifdef TEST_HEAT_MAP
     test_heatMap = new QImage(256,256,QImage::Format_RGB32);
@@ -104,7 +106,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
         return;
 
     //this should only append once if bufferLength is constant
-    if( bufferLength > m_buffers[0].size()) {
+    if( bufferLength > (int)m_buffers[0].size()) {
         m_buffers[Low].resize(bufferLength);
         m_buffers[Mid].resize(bufferLength);
         m_buffers[High].resize(bufferLength);

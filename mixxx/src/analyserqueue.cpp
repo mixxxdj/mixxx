@@ -15,10 +15,10 @@
 #include <typeinfo>
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
-                                 m_tioq(),
-                                 m_qm(),
-                                 m_qwait(),
-                                 m_exit(false)
+    m_tioq(),
+    m_qm(),
+    m_qwait(),
+    m_exit(false)
 {
 
 }
@@ -185,8 +185,10 @@ void AnalyserQueue::run() {
 
 void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
     m_qm.lock();
-    m_tioq.enqueue(tio);
-    m_qwait.wakeAll();
+    if( !m_tioq.contains(tio)){
+        m_tioq.enqueue(tio);
+        m_qwait.wakeAll();
+    }
     m_qm.unlock();
 }
 

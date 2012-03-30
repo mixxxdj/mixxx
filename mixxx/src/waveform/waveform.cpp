@@ -1,5 +1,5 @@
 #include "waveform/waveform.h"
-
+#include <cmath>
 #include <QtDebug>
 
 Waveform::Waveform() :
@@ -17,7 +17,7 @@ Waveform::~Waveform() {
 }
 
 void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
-    m_audioSamplesPerVisualSample = (int)((double)audioSampleRate / desiredVisualSampleRate);
+    m_audioSamplesPerVisualSample = std::floor((double)audioSampleRate / desiredVisualSampleRate);
     const double actualVisualSamplingRate = (double)audioSampleRate / (double)(m_audioSamplesPerVisualSample);
 
     m_visualSampleRate = actualVisualSamplingRate;
