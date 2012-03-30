@@ -55,7 +55,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
     const double summaryWaveformSampleRate = (double)summaryWaveformSamples * (double)sampleRate / (double)totalSamples;
 
-    qDebug() << summaryWaveformSampleRate;
+    //qDebug() << summaryWaveformSampleRate;
 
     m_waveform->computeBestVisualSampleRate(sampleRate,mainWaveformSampleRate);
     m_waveformSummary->computeBestVisualSampleRate(sampleRate,summaryWaveformSampleRate);
@@ -73,8 +73,8 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     m_currentSummaryStride = 0;
 
     //debug
-    m_waveform->dump();
-    m_waveformSummary->dump();
+    //m_waveform->dump();
+    //m_waveformSummary->dump();
 
 #ifdef TEST_HEAT_MAP
     test_heatMap = new QImage(256,256,QImage::Format_RGB32);
