@@ -94,9 +94,9 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_waveformPixmap = 0;
     m_actualCompletion = 0;
     m_visualSamplesByPixel = 0.0;
-    m_maxPaintingTime = 16;
 
     m_timerPixmapRefresh = 0;
+    m_renderSampleLimit = 1000;
 }
 
 WOverview::~WOverview()
@@ -107,15 +107,6 @@ WOverview::~WOverview()
 
 void WOverview::setup(QDomNode node)
 {
-    // Set constants for line drawing
-    /*
-    m_qMarkerPos1.setX(x/2);
-    m_qMarkerPos1.setY(0);
-    m_qMarkerPos2.setX(x/2);
-    m_qMarkerPos2.setY(y);
-    m_qMousePos.setX(x/2);
-    m_qMousePos.setY(y/2);
- */
 
     // Background color and pixmap, default background color to transparent
     m_qColorBackground = QColor(0, 0, 0, 0);
@@ -170,7 +161,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         m_waveform = pTrack->getWaveformSummary();
 
         //qDebug() << "WOverview::slotLoadNewTrack - startTimer";
-        m_timerPixmapRefresh = startTimer(m_maxPaintingTime);
+        m_timerPixmapRefresh = startTimer(60);
     }
 
     m_actualCompletion = 0;
@@ -241,21 +232,25 @@ bool WOverview::drawNextPixmapPart() {
 
     //test id there is some new to draw (at least of pixel width)
     const int waveformCompletion = m_waveform->getCompletion();
-    const int nextCompletion = waveformCompletion - m_actualCompletion;
+    int completionIncrement = waveformCompletion - m_actualCompletion;
 
     //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion" << nextCompletion;
 
-    if( (double)nextCompletion < m_visualSamplesByPixel)
+    if( (double)completionIncrement < m_visualSamplesByPixel)
         return false;
 
     if( !m_waveform->getMutex()->tryLock())
         return false;
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - m_actualCompletion" << m_actualCompletion
-    //         << "m_waveform->getCompletion()" << waveformCompletion;
+    qDebug() << "WOverview::drawNextPixmapPart() - m_actualCompletion" << m_actualCompletion
+             << "m_waveform->getCompletion()" << waveformCompletion
+             << "nextCompletion" << completionIncrement;
+
+    completionIncrement = std::min(completionIncrement,m_renderSampleLimit);
+    const int nextCompletion = m_actualCompletion + completionIncrement;
 
     QPainter painter(m_waveformPixmap);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 
     painter.translate(0.0,height()/2.0);
@@ -263,46 +258,55 @@ bool WOverview::drawNextPixmapPart() {
 
     //draw only the new part
 
-    float pixelPosition = (float)m_actualCompletion / (float)m_waveform->size() * (float)width();
+    //NOTE: (vrince) using m_waveform->size is not accurate, waveform contain at least two more visual
+    //samples, and one summary waveform sample can represent up to 5000 audio samples ...
+    const float pixelStartPosition = (float)m_actualCompletion / (float)m_waveform->size() * (float)width();
     const float pixelByVisualSamples = 1.0 / m_visualSamplesByPixel;
 
-    const float alpha = math_min( 255.0, math_max( 1.0, pixelByVisualSamples*255.0));
+    const float alpha = math_min( 1.0, math_max( 1.0, pixelByVisualSamples));
 
     QColor lowColor = m_signalColors.getLowColor();
-    lowColor.setAlphaF(alpha/255.0);
+    lowColor.setAlphaF(alpha);
+    QPen lowColorPen( QBrush(lowColor), 0.9, Qt::SolidLine, Qt::RoundCap);
 
     QColor midColor = m_signalColors.getMidColor();
-    midColor.setAlphaF(alpha/255.0);
+    midColor.setAlphaF(alpha);
+    QPen midColorPen( QBrush(midColor), 0.9, Qt::SolidLine, Qt::RoundCap);
 
     QColor highColor = m_signalColors.getHighColor();
-    highColor.setAlphaF(alpha/255.0);
+    highColor.setAlphaF(alpha);
+    QPen highColorPen( QBrush(highColor), 0.9, Qt::SolidLine, Qt::RoundCap);
 
-    QTime timer;
-    timer.start();
+    int currentCompletion = m_actualCompletion;
+    float pixelPosition = pixelStartPosition;
+    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
+        painter.setPen( lowColorPen);
+        painter.drawLine( QPointF(pixelPosition, - m_waveform->getLow(currentCompletion+1) - 1.f),
+                          QPointF(pixelPosition, m_waveform->getLow(currentCompletion) + 1.f));
+        pixelPosition += 2.0*pixelByVisualSamples;
 
-    int currentCompletion;
-    for( currentCompletion = m_actualCompletion; currentCompletion < waveformCompletion;
-         currentCompletion += 2, pixelPosition += 2.0*pixelByVisualSamples) {
-        //accumulate in current pixel
-
-        painter.setPen( lowColor);
-        painter.drawLine( pixelPosition, - m_waveform->getAll(currentCompletion+1),
-                          pixelPosition, m_waveform->getLow(currentCompletion));
-
-        painter.setPen( midColor);
-        painter.drawLine( pixelPosition, - m_waveform->getMid(currentCompletion+1),
-                          pixelPosition, m_waveform->getMid(currentCompletion));
-
-        painter.setPen( highColor);
-        painter.drawLine( pixelPosition, - m_waveform->getHigh(currentCompletion+1),
-                          pixelPosition, m_waveform->getHigh(currentCompletion));
-
-        if( timer.elapsed() > m_maxPaintingTime)
-            break;
     }
 
-    m_actualCompletion = currentCompletion;
+    currentCompletion = m_actualCompletion;
+    pixelPosition = pixelStartPosition;
+    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
+        painter.setPen( midColorPen);
+        painter.drawLine( QPointF(pixelPosition, - m_waveform->getMid(currentCompletion+1) - 1.f),
+                          QPointF(pixelPosition, m_waveform->getMid(currentCompletion) + 1.f));
+        pixelPosition += 2.0*pixelByVisualSamples;
+    }
 
+    currentCompletion = m_actualCompletion;
+    pixelPosition = pixelStartPosition;
+    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
+        painter.setPen( highColorPen);
+        painter.drawLine( QPointF(pixelPosition, - m_waveform->getHigh(currentCompletion+1) - 1.f),
+                          QPointF(pixelPosition, m_waveform->getHigh(currentCompletion) + 1.f));
+        pixelPosition += 2.0*pixelByVisualSamples;
+    }
+
+
+    m_actualCompletion = nextCompletion;
     m_waveform->getMutex()->unlock();
 
     return true;
@@ -465,7 +469,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // Accept the enter event if the thing is a filepath and nothing's playing
     // in this deck.
     if (event->mimeData()->hasUrls() &&
-        event->mimeData()->urls().size() > 0) {
+            event->mimeData()->urls().size() > 0) {
         ControlObject *pPlayCO = ControlObject::getControl(
                     ConfigKey(m_pGroup, "play"));
         if (pPlayCO && pPlayCO->get()) {
@@ -478,7 +482,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 
 void WOverview::dropEvent(QDropEvent* event) {
     if (event->mimeData()->hasUrls() &&
-        event->mimeData()->urls().size() > 0) {
+            event->mimeData()->urls().size() > 0) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();

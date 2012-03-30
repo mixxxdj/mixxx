@@ -82,7 +82,7 @@ private:
     int m_sampleDuration;
     int m_actualCompletion;
     double m_visualSamplesByPixel;
-    int m_maxPaintingTime;
+    int m_renderSampleLimit;
 
     int m_timerPixmapRefresh;
 
@@ -114,6 +114,7 @@ private:
     QColor m_qColorMarker;
 
     WaveformSignalColors m_signalColors;
+
 };
 
 #endif
