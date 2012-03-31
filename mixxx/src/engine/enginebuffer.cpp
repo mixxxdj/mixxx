@@ -148,6 +148,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // BPM to display in the UI (updated more slowly than the actual bpm)
     visualBpm = new ControlObject(ConfigKey(group, "visual_bpm"));
+    
+    // how far past the last beat are we?
+    beatDistance = new ControlObject(ConfigKey(group, "beat_distance"));
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
@@ -313,6 +316,7 @@ double EngineBuffer::getFileBpm()
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
 {
     m_pRateControl->setEngineMaster(pEngineMaster);
+    m_pBpmControl->setEngineMaster(pEngineMaster);
 }
 
 void EngineBuffer::setNewPlaypos(double newpos)
@@ -504,6 +508,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
+        
+        beatDistance->set(m_pBpmControl->getBeatDistance());
+        
+        if (!paused) {
+            rate += m_pBpmControl->getSyncAdjustment();
+            //don't allow negative speed
+            rate = math_max(0.0f, rate);
+        }
+        
+        
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.

@@ -21,6 +21,8 @@ class BpmControl : public EngineControl {
     virtual ~BpmControl();
     double getBpm();
     double getFileBpm();
+    double getBeatDistance();
+    double getSyncAdjustment();
 
   public slots:
 
@@ -38,6 +40,7 @@ class BpmControl : public EngineControl {
     void slotRateChanged(double);
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
+    void slotMasterBeatDistanceChanged(double);
 
   private:
     EngineBuffer* pickSyncTarget();
@@ -49,6 +52,10 @@ class BpmControl : public EngineControl {
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
+    
+    ControlObject *m_pMasterBeatDistance;
+    int m_iSyncState;
+    double m_dSyncAdjustment;
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;

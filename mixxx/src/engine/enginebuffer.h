@@ -209,6 +209,7 @@ private:
 
     ControlObject *rateEngine;
     ControlObject *visualBpm;
+    ControlObject *beatDistance;
     
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;

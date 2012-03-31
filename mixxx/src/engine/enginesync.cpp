@@ -28,8 +28,10 @@ EngineSync::EngineSync(EngineMaster *master,
     qDebug() << "group should be master" << _group;
     m_pEngineMaster = master;
     m_pSourceRate = NULL;
+    m_pSourceBeatDistance = NULL;
     m_dOldMasterRate = 0.0f;
     m_pMasterBpm = new ControlObject(ConfigKey(_group, "sync_bpm"));
+    m_pMasterBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
     //m_pMasterRate = new ControlObject(ConfigKey(_group, "rate"));
     //m_pMasterRateEnabled = new ControlObject(ConfigKey(_group, "scratch_enable"));
 }
@@ -41,8 +43,13 @@ bool EngineSync::setMaster(QString deck)
         qDebug() << "----------------------------------------------------unsetting master (got null)";
         if (m_pSourceRate != NULL)
         {
-            m_pSourceRate->disconnect();
+            //m_pSourceRate->disconnect(); //QT experts -- is this necessary?
             delete m_pSourceRate;
+        }
+        if (m_pSourceBeatDistance != NULL)
+        {
+            //m_pSourceBeatDistance->disconnect();
+            delete m_pSourceBeatDistance;
         }
         m_pMasterBuffer = NULL;
         emit(setSyncMaster(""));
@@ -59,18 +66,34 @@ bool EngineSync::setMaster(QString deck)
         m_pMasterBuffer = pChannel->getEngineBuffer();
             
         if (m_pSourceRate != NULL) {
-            m_pSourceRate->disconnect();
+            //m_pSourceRate->disconnect();
             delete m_pSourceRate;
         }
         m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "true_rate"));
         if (m_pSourceRate == NULL)
         {
             qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
+            return false;
         }
         connect(m_pSourceRate, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotSourceRateChanged(double)),
                 Qt::DirectConnection);
 
+        if (m_pSourceBeatDistance != NULL)
+        {
+            //m_pSourceBeatDistance->disconnect();
+            delete m_pSourceBeatDistance;
+        }
+        m_pSourceBeatDistance = ControlObject::getControl(ConfigKey(deck, "beat_distance"));
+        if (m_pSourceBeatDistance == NULL)
+        {
+            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 source beat dist was null";
+            return false;
+        }
+        connect(m_pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotSourceBeatDistanceChanged(double)),
+                Qt::DirectConnection);
+        
         /*m_pSourceScratch->disconnect();
         delete m_pSourceScratch;
         m_pSourceScratch = ControlObject::getControl(ConfigKey(deck, "scratch2"));
@@ -138,16 +161,20 @@ EngineBuffer* EngineSync::chooseMasterBuffer(void)
 
 void EngineSync::slotSourceRateChanged(double true_rate)
 {
-    qDebug() << "we got a true rate update";
     if (true_rate != m_dOldMasterRate)
     {
         m_dOldMasterRate = true_rate;
         
         double filebpm = m_pMasterBuffer->getFileBpm();
         double bpm = true_rate * filebpm;
-        qDebug() << "got rate update from source" << true_rate << "which in bpm is" << bpm;
         m_pMasterBpm->set(bpm); //this will trigger all of the slaves to change rate
     }
+}
+
+void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
+{
+    //this is absolute samples, so just pass it on
+    m_pMasterBeatDistance->set(beat_dist);
 }
 
 /*void EngineSync::slotScratchChanged(double scratch)

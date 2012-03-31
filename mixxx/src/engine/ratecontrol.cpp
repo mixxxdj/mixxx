@@ -150,8 +150,6 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
      
-
-    qDebug() << "creating the true rate object" << _group;
     m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
             
     /*m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
@@ -191,6 +189,8 @@ RateControl::~RateControl() {
     delete m_pRateDir;
 
     delete m_pRateSearch;
+    
+    delete m_pMasterBpm;
 
     delete m_pReverseButton;
     delete m_pForwardButton;
@@ -218,6 +218,9 @@ void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     qDebug() << "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=v setting engine master";
     EngineControl::setEngineMaster(pEngineMaster);
     //m_pEngineMaster = pEngineMaster;
+    
+    //TODO: should we only hook these up if we are a slave?  beat distance
+    //is updated on every iteration so it's heavy
     m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
     connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotMasterBpmChanged(double)),
@@ -383,7 +386,6 @@ void RateControl::slotControlRateTempUpSmall(double)
 }
 
 void RateControl::slotFileBpmChanged(double bpm) {
-    qDebug() << "======================FILE BPM UPDATED" << bpm;
     m_dFileBpm = bpm;
 }
 
@@ -409,16 +411,16 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
             dDesiredRate = 0.0;
         }
         else {
-            qDebug() << "yay non-zero" << syncbpm << m_dFileBpm;
+            //qDebug() << "yay non-zero" << syncbpm << m_dFileBpm;
             dDesiredRate = syncbpm / m_dFileBpm;
-            qDebug() << "so how about" << dDesiredRate;
+            //qDebug() << "so how about" << dDesiredRate;
             //normalize around 1
             //dDesiredRate -= 1.0;
         }
-        if (m_dSyncedRate != dDesiredRate)
+/*        if (m_dSyncedRate != dDesiredRate)
         {
             qDebug() << "Updating slave rate to:" << dDesiredRate;
-        }
+        }*/
         m_dSyncedRate = dDesiredRate;
     }
 }

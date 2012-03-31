@@ -20,8 +20,8 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         //m_pMasterSync(NULL),
-        //m_iSyncState(0),
-        //m_dSyncFactor(0.0),
+        m_iSyncState(0),
+        m_dSyncAdjustment(0.0),
         m_tapFilter(this, filterLength, maxInterval) {
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
@@ -88,6 +88,21 @@ BpmControl::BpmControl(const char* _group,
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
             Qt::DirectConnection);
+            
+    m_pMasterBeatDistance = ControlObject::getControl(ConfigKey("[Master]","beat_distance"));
+    connect(m_pMasterBeatDistance, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotMasterBeatDistanceChanged(double)),
+                Qt::DirectConnection);
+                
+    //(XXX) TEMP DEBUG
+    if (QString("[Channel1]") != _group)
+    {
+        m_iSyncState = SYNC_SLAVE;
+    }
+    else
+    {
+        m_iSyncState = SYNC_MASTER;
+    }
 }
 
 BpmControl::~BpmControl() {
@@ -98,6 +113,7 @@ BpmControl::~BpmControl() {
     delete m_pButtonSyncPhase;
     delete m_pButtonTap;
     delete m_pTranslateBeats;
+    delete m_pMasterBeatDistance;
 }
 
 double BpmControl::getBpm() {
@@ -302,6 +318,68 @@ EngineBuffer* BpmControl::pickSyncTarget() {
     return NULL;
 }
 
+void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
+{
+    //although beats may be different lengths, I think it's ok to just work
+    //in absolute samples
+    
+    if (m_iSyncState != SYNC_SLAVE)
+        return;
+    
+    if (m_pBeats == NULL)
+    {
+        //qDebug() << "null here too";
+        return;
+    }
+    
+    const int MAGIC_FUZZ = 400; //400 samples is Good Enough
+    //const int TOO_FAR_OFF = 20000;
+    const double MAGIC_FACTOR = 80000; 
+    
+    double my_distance = getBeatDistance();
+    double offset = my_distance - master_distance;
+    
+/*    if (fabs(offset) > TOO_FAR_OFF)
+    {
+        //fuck it;
+        syncPhase();
+        return;
+    }*/
+    
+    if (fabs(offset) > MAGIC_FUZZ)
+    {
+        //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << offset;
+        m_dSyncAdjustment = (0.0 - offset) / MAGIC_FACTOR;
+        //qDebug() << "how about...." << m_dSyncAdjustment;
+        m_dSyncAdjustment = math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
+        //qDebug() << "clamped" << m_dSyncAdjustment;
+    }
+}
+
+double BpmControl::getSyncAdjustment()
+{
+    if (m_iSyncState != SYNC_SLAVE)
+        return 0.0;
+    qDebug() << "sync value" << m_dSyncAdjustment;
+    return m_dSyncAdjustment;
+}
+
+double BpmControl::getBeatDistance()
+{
+    // returns absolute number of samples distance from current pos back to
+    // previous beat
+    if (m_pBeats == NULL)
+    {
+        //qDebug() << "no beats, returning 0";
+        return 0;
+    }
+    double dThisPosition = getCurrentSample();
+    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition); 
+    //double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
+    //return (dThisPosition - dPrevBeat) / (dNextBeat - dPrevBeat);
+    return dThisPosition - dPrevBeat;
+}
+
 bool BpmControl::syncPhase() {
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
@@ -311,7 +389,7 @@ bool BpmControl::syncPhase() {
     if (!m_pBeats || !otherBeats) {
         return false;
     }
-
+    
     // Get the file BPM of each song.
     //double dThisBpm = m_pBeats->getBpm();
     //double dOtherBpm = ControlObject::getControl(

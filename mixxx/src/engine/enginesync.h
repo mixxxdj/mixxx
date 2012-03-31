@@ -44,6 +44,7 @@ class EngineSync : public EngineControl {
         
     private slots:
         void slotSourceRateChanged(double);
+        void slotSourceBeatDistanceChanged(double);
         //void slotScratchChanged(double);
         //void slotScratchEnabledChanged(double);
         
@@ -53,6 +54,7 @@ class EngineSync : public EngineControl {
         EngineMaster* m_pEngineMaster;    
         EngineBuffer* m_pMasterBuffer;
         ControlObject *m_pSourceRate, *m_pMasterBpm;
+        ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
         /*ControlObject* m_pSourceRate, m_pSourceScratch, m_pSourceScratchEnabled;
         ControlObject* m_pMasterRate, m_pMasterScratch, m_pMasterScratchEnabled;*/
         
