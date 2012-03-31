@@ -125,6 +125,12 @@ void WaveformWidgetFactory::destroyWidgets() {
     m_waveformWidgets.clear();
 }
 
+void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
+    // Do not hold the pointer to of timer listeners since they may be deleted
+    connect(this, SIGNAL(waveformUpdateTick()),
+            pWidget, SLOT(update()));
+}
+
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer) {
     int index = -1;
     if (viewer->getWaveformWidget()) {
@@ -210,6 +216,10 @@ void WaveformWidgetFactory::refresh() {
 
     for (int i = 0; i < m_waveformWidgets.size(); i++)
         m_waveformWidgets[i]->render();
+
+    // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
+    // update.
+    emit(waveformUpdateTick());
 
     m_lastFrameTime = m_time->elapsed();
     m_time->restart();
