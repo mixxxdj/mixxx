@@ -24,6 +24,8 @@ class Waveform {
     Waveform();
     virtual ~Waveform();
 
+    void reset();
+
     double getVisualSampleRate() const { return m_visualSampleRate;}
     double getAudioVisualRatio() const { return m_audioVisualRatio;}
     int getAudioSamplesPerVisualSample() const { return m_audioSamplesPerVisualSample;}
@@ -31,7 +33,8 @@ class Waveform {
     int getTextureStride() const { return m_textureStride;}
     int getTextureSize() const { return m_data.size();}
 
-    int size() const { return m_size; }
+    double getActualSize() const { return m_actualSize;}
+    int getDataSize() const { return m_dataSize; }
 
     const std::vector<WaveformData>& getConstData() const { return m_data;}
 
@@ -61,21 +64,28 @@ class Waveform {
     inline unsigned char& high(int i) { return m_data[i].filtered.high;}
     inline unsigned char& all(int i) { return m_data[i].filtered.all;}
 
-    int computeTextureSize(int size);
+    int computeTextureSize(int getDataSize);
     void setCompletion(int completion) { m_completion = completion;}
 
-    unsigned int m_size; //actual useful size
-    unsigned int m_textureStride;
+    double m_actualSize; //actual song size in visual world
+    int m_dataSize; //m_data allocated size
     std::vector<WaveformData> m_data;
-    int m_completion;
-
     int m_audioSamplesPerVisualSample;
     double m_visualSampleRate;
     double m_audioVisualRatio;
+
+    //No need to store the following members they can be recomputed
+    //on waveform laoding
+
+    int m_textureStride;
+    int m_completion;
+
     QMutex* m_mutex;
 
     friend class AnalyserWaveform;
     friend class WaveformStride;
+    friend class WaveformDao;
+
     DISALLOW_COPY_AND_ASSIGN(Waveform);
 };
 

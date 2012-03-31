@@ -13,6 +13,7 @@ class QImage;
 
 class EngineFilterButterworth8;
 class Waveform;
+class WaveformDao;
 
 class QTime;
 
@@ -78,6 +79,8 @@ private:
     void destroyFilters();
 
 private:
+    bool m_skipProcessing;
+
     Waveform* m_waveform;
     Waveform* m_waveformSummary;
 
@@ -91,6 +94,7 @@ private:
     std::vector<float> m_buffers[FilterCount];
 
     QTime* m_timer;
+    WaveformDao* m_waveformDao;
 
 #ifdef TEST_HEAT_MAP
     QImage* test_heatMap;

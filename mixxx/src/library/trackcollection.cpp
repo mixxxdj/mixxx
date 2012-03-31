@@ -14,7 +14,7 @@
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
-          m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
+          m_db(QSqlDatabase::addDatabase("QSQLITE","mixxx_sql_connection")),
           m_cueDao(m_db),
           m_playlistDao(m_db),
           m_crateDao(m_db),
@@ -67,7 +67,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 14;
+    int requiredSchemaVersion = 15;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, tr("Cannot upgrade database schema"),

@@ -227,7 +227,7 @@ bool WOverview::drawNextPixmapPart() {
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
-    if( !m_waveform || m_waveform->size() == 0)
+    if( !m_waveform || m_waveform->getDataSize() == 0)
         return false;
 
     //test id there is some new to draw (at least of pixel width)
@@ -260,7 +260,7 @@ bool WOverview::drawNextPixmapPart() {
 
     //NOTE: (vrince) using m_waveform->size is not accurate, waveform contain at least two more visual
     //samples, and one summary waveform sample can represent up to 5000 audio samples ...
-    const float pixelStartPosition = (float)m_actualCompletion / (float)m_waveform->size() * (float)width();
+    const float pixelStartPosition = (float)m_actualCompletion / (float)m_waveform->getDataSize() * (float)width();
     const float pixelByVisualSamples = 1.0 / m_visualSamplesByPixel;
 
     const float alpha = math_min( 1.0, math_max( 1.0, pixelByVisualSamples));
@@ -444,7 +444,7 @@ void WOverview::timerEvent(QTimerEvent* timer) {
 
         //qDebug() << "timerEvent - m_timerPixmapRefresh";
 
-        m_visualSamplesByPixel = (double)m_waveform->size() / (double)width();
+        m_visualSamplesByPixel = (double)m_waveform->getDataSize() / (double)width();
 
         if( drawNextPixmapPart())
             update();
@@ -453,7 +453,7 @@ void WOverview::timerEvent(QTimerEvent* timer) {
 
         //if m_waveform is empty ... actual computation do not start !
         //it must be in the analyser queue, we need to wait until it ready to display
-        if( m_waveform->size() > 0 && m_actualCompletion + m_visualSamplesByPixel >= m_waveform->size()) {
+        if( m_waveform->getDataSize() > 0 && m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
 
             //qDebug() << " WOverview::timerEvent - kill timer";
             killTimer(m_timerPixmapRefresh);
