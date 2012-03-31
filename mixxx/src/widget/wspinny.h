@@ -17,7 +17,7 @@ class WSpinny : public QGLWidget
     Q_OBJECT
     public:
         WSpinny(QWidget* parent, VinylControlManager* pVCMan);
-        ~WSpinny();
+        virtual ~WSpinny();
         void setup(QDomNode node, QString group);
         void dragEnterEvent(QDragEnterEvent *event);
         void dropEvent(QDropEvent *event);
@@ -37,7 +37,6 @@ class WSpinny : public QGLWidget
         void mousePressEvent(QMouseEvent * e);
         void mouseReleaseEvent(QMouseEvent * e);
         void wheelEvent(QWheelEvent *e);
-        void timerEvent(QTimerEvent* event);
 
         double calculateAngle(double playpos);
         int calculateFullRotations(double playpos);
