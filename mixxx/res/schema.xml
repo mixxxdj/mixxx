@@ -300,7 +300,7 @@ METADATA
     <sql>
     CREATE TABLE IF NOT EXISTS waveforms (
       track_id INTEGER UNIQUE NOT NULL REFERENCES track_locations(id),
-      actual_size INTEGER,
+      actual_size REAL,
       data_size INTEGER,
       visual_sample_rate REAL,
       audio_visual_ratio REAL,
@@ -308,7 +308,7 @@ METADATA
     );
     CREATE TABLE IF NOT EXISTS waveform_summaries (
       track_id INTEGER UNIQUE NOT NULL REFERENCES track_locations(id),
-      actual_size INTEGER,
+      actual_size REAL,
       data_size INTEGER,
       visual_sample_rate REAL,
       audio_visual_ratio REAL,
