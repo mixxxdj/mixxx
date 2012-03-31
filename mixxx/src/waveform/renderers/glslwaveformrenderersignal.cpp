@@ -272,7 +272,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_signalMaxShaderProgram->bind();
         glViewport(0,0,m_signalMaxbuffer->width(),m_signalMaxbuffer->height());
 
-        m_signalMaxShaderProgram->setUniformValue("waveformLength",waveform->size());
+        m_signalMaxShaderProgram->setUniformValue("waveformLength",waveform->getDataSize());
         m_signalMaxShaderProgram->setUniformValue("textureSize",waveform->getTextureSize());
         m_signalMaxShaderProgram->setUniformValue("textureStride",waveform->getTextureStride());
         m_signalMaxShaderProgram->setUniformValue("playPosition",(float)m_waveformRenderer->getPlayPos());

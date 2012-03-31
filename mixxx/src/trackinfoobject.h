@@ -210,13 +210,6 @@ public:
     /** Set URL for track */
     void setURL(QString url);
 
-    //TODO (vrince) remove when new summary ready
-    /** Set pointer to waveform summary -- updates UI by default */
-    //void setWaveSummary(const QByteArray* pWave, bool updateUI = true);
-    /** Returns a pointer to waveform summary */
-    //const QByteArray* getWaveSummary();
-    //----------------------------
-
     Waveform* getWaveform() { return m_waveform;}
     const Waveform* getWaveform() const { return m_waveform;}
 
@@ -258,11 +251,10 @@ public:
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
-  public slots:
+public slots:
     void slotCueUpdated();
 
-  signals:
-    void wavesummaryUpdated(TrackInfoObject*);
+signals:
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
@@ -272,10 +264,10 @@ public:
     void clean(TrackInfoObject* pTrack);
     void save(TrackInfoObject* pTrack);
 
-  private slots:
+private slots:
     void slotBeatsUpdated();
 
-  private:
+private:
 
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);

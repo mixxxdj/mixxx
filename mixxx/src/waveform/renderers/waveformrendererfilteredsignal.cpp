@@ -56,7 +56,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     //TODO (vRince) not really accurate since waveform size une visual reasampling and
     //have two mores samples to hold the complete visual data
-    currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
+    currentPosition = m_waveformRenderer->getPlayPos()*waveform->getDataSize();
     m_waveformRenderer->regulateVisualSample(currentPosition);
 
     painter->save();
@@ -73,7 +73,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     for (int i = 0; i < numberOfSamples; i += samplesPerPixel) {
         const int xPos = i/samplesPerPixel;
         const int visualIndex = currentPosition + 2*i - numberOfSamples;
-        if (visualIndex >= 0 && (visualIndex+1) < waveform->size()) {
+        if (visualIndex >= 0 && (visualIndex+1) < waveform->getDataSize()) {
             unsigned char maxLow[2] = {0, 0};
             unsigned char maxMid[2] = {0, 0};
             unsigned char maxHigh[2] = {0, 0};

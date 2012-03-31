@@ -115,8 +115,8 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
 
     int pointIndex = 0;
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()*waveform->size();
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition()*waveform->size();
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()*waveform->getDataSize();
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition()*waveform->getDataSize();
 
     m_polygon[0][pointIndex] = QPointF(0.0,0.0);
     m_polygon[1][pointIndex] = QPointF(0.0,0.0);
@@ -144,7 +144,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
         visualIndexStart -= visualIndexStart%2; //rigth channel
         int visualIndexStop = int( gain * (double)(x) + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop + visualSamplePerDemiPixel < waveform->size() -1) {
+        if( visualIndexStart > 0 && visualIndexStop + visualSamplePerDemiPixel < waveform->getDataSize() -1) {
             unsigned char maxLow = 0;
             unsigned char maxBand = 0;
             unsigned char maxHigh = 0;
@@ -181,7 +181,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
         visualIndexStart -= visualIndexStart%2 + 1; //left channel
         int visualIndexStop = int( gain * (double)(x) + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop + visualSamplePerDemiPixel < waveform->size() -1) {
+        if( visualIndexStart > 0 && visualIndexStop + visualSamplePerDemiPixel < waveform->getDataSize() -1) {
             unsigned char maxLow = 0;
             unsigned char maxBand = 0;
             unsigned char maxHigh = 0;

@@ -9,13 +9,21 @@
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilteriir.h"
 
+#include "library/dao/waveformdao.h"
+
 #include <QTime>
+#include <QDebug>
 
 //test (vrince)
 #include <QImage>
 
 AnalyserWaveform::AnalyserWaveform() {
+    qDebug() << "AnalyserWaveform::AnalyserWaveform()";
+    m_skipProcessing = false;
+
     m_waveform = 0;
+    m_waveformSummary = 0;
+
     m_filter[0] = 0;
     m_filter[1] = 0;
     m_filter[2] = 0;
@@ -24,21 +32,35 @@ AnalyserWaveform::AnalyserWaveform() {
     m_currentSummaryStride = 0;
 
     m_timer = new QTime();
+    m_waveformDao = new WaveformDao();
+
+    m_waveformDao->setDatabase( QSqlDatabase::database("mixxx_sql_connection"));
 }
 
-AnalyserWaveform::~AnalyserWaveform()
-{
+AnalyserWaveform::~AnalyserWaveform() {
+    qDebug() << "AnalyserWaveform::~AnalyserWaveform()";
     destroyFilters();
     delete m_timer;
+    delete m_waveformDao;
 }
 
 void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+
+    m_skipProcessing = false;
+
     m_timer->start();
     m_waveform = tio->getWaveform();
     m_waveformSummary = tio->getWaveformSummary();
 
     if( !m_waveform || !m_waveformSummary || totalSamples == 0) {
         qWarning() << "AnalyserWaveform::initialise - no waveform/waveform summary";
+        return;
+    }
+
+    //pre waveform existance test
+    if( m_waveformDao->getWaveform(*(tio.data()))) {
+        qDebug() << "AnalyserWaveform::initialise - Waveform loaded";
+        m_skipProcessing = true;
         return;
     }
 
@@ -86,7 +108,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 }
 
 void AnalyserWaveform::resetFilters(TrackPointer tio) {
-    //TODO vRince bind this with *actual* filter values ...
+    //TODO: (vRince) bind this with *actual* filter values ...
     m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, tio->getSampleRate(), 200);
     m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, tio->getSampleRate(), 200, 2000);
     m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, tio->getSampleRate(), 2000);
@@ -102,7 +124,7 @@ void AnalyserWaveform::destroyFilters() {
 }
 
 void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
-    if( !m_waveform || !m_waveformSummary)
+    if( m_skipProcessing || !m_waveform || !m_waveformSummary)
         return;
 
     //this should only append once if bufferLength is constant
@@ -128,7 +150,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
         m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];
 
         if( m_stride.m_position >= m_stride.m_length) {
-            if( m_currentStride >= m_waveform->size()) {
+            if( m_currentStride >= m_waveform->getDataSize()) {
                 qWarning() << "AnalyserWaveform::process - currentStride >= waveform size";
                 return;
             }
@@ -146,7 +168,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
             m_strideSummary.m_filteredData[ Left][High] += m_stride.m_filteredData[ Left][High];
 
             if( m_strideSummary.m_position >= m_strideSummary.m_length) {
-                if( m_currentSummaryStride >= m_waveformSummary->size()) {
+                if( m_currentSummaryStride >= m_waveformSummary->getDataSize()) {
                     qWarning() << "AnalyserWaveform::process - current summary stride >= waveform summary size";
                     return;
                 }
@@ -179,14 +201,20 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     //qDebug() << "AnalyserWaveform::process - m_waveform->getCompletion()" << m_waveform->getCompletion();
     //qDebug() << "AnalyserWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion();
 }
-void AnalyserWaveform::finalise(TrackPointer /*tio*/) {
+void AnalyserWaveform::finalise(TrackPointer tio) {
     //Force completion to waveform size
-    m_waveform->setCompletion(m_waveform->size());
-    m_waveformSummary->setCompletion(m_waveformSummary->size());
+    m_waveform->setCompletion(m_waveform->getDataSize());
+    m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
 
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");
 #endif
 
+    if( !m_skipProcessing) {
+        bool waveformSaved = m_waveformDao->saveWaveform(*(tio.data()));
+        qDebug() << "AnalyserWaveform::finalise - Waveform saved :" << waveformSaved;
+    }
+
     qDebug() << "Waveform gerenration done" << m_timer->elapsed()/1000.0 << "s";
+
 }

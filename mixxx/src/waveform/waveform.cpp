@@ -3,7 +3,8 @@
 #include <QtDebug>
 
 Waveform::Waveform() :
-    m_size(0),
+    m_actualSize(0.0),
+    m_dataSize(0),
     m_textureStride(1024),
     m_completion(-1),
     m_audioSamplesPerVisualSample(0),
@@ -16,6 +17,17 @@ Waveform::~Waveform() {
     delete m_mutex;
 }
 
+void Waveform::reset() {
+    m_actualSize = 0.0;
+    m_dataSize = 0;
+    m_textureStride = 1024;
+    m_completion = -1;
+    m_audioSamplesPerVisualSample = 0;
+    m_visualSampleRate = 0;
+    m_audioVisualRatio = 0;
+    m_data.clear();
+}
+
 void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
     m_audioSamplesPerVisualSample = std::floor((double)audioSampleRate / desiredVisualSampleRate);
     const double actualVisualSamplingRate = (double)audioSampleRate / (double)(m_audioSamplesPerVisualSample);
@@ -25,6 +37,7 @@ void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredV
 }
 
 void Waveform::allocateForAudioSamples( int audioSamples) {
+    m_actualSize = audioSamples / m_audioSamplesPerVisualSample;
     int numberOfVisualSamples = audioSamples / m_audioSamplesPerVisualSample + 1;
     numberOfVisualSamples += numberOfVisualSamples%2;
     assign(numberOfVisualSamples,0);
@@ -32,13 +45,13 @@ void Waveform::allocateForAudioSamples( int audioSamples) {
 }
 
 void Waveform::resize(int size) {
-    m_size = size;
+    m_dataSize = size;
     int textureSize = computeTextureSize(size);
     m_data.resize(textureSize);
 }
 
 void Waveform::assign(int size, int value) {
-    m_size = size;
+    m_dataSize = size;
     int textureSize = computeTextureSize(size);
     m_data.assign(textureSize,value);
 }
@@ -72,7 +85,7 @@ int Waveform::computeTextureSize(int size) {
 
 void Waveform::dump() const {
     qDebug() << "Waveform" << this
-             << "size("+QString::number(m_size)+")"
+             << "size("+QString::number(m_dataSize)+")"
              << "textureStride("+QString::number(m_textureStride)+")"
              << "completion("+QString::number(m_completion)+")"
              << "audioSamplesPerVisualSample("+QString::number(m_audioSamplesPerVisualSample)+")"

@@ -8,25 +8,27 @@
 #include <QObject>
 #include <QSqlDatabase>
 
-#define WAVEFORM_TABLE "waveforms"
-
-class WaveformDao : public QObject, public DAO
+class WaveformDao : public DAO
 {
-    Q_OBJECT
 public:
-    explicit WaveformDao(QObject *parent = 0);
+    static const QString s_waveformTableName;
+    static const QString s_waveformSummaryTableName;
+
+public:
+    WaveformDao();
     virtual ~WaveformDao();
     
     virtual void initialize();
     void setDatabase( const QSqlDatabase& database);
 
-    bool getWaveform( const TrackInfoObject& tio);
+    bool getWaveform( TrackInfoObject& tio);
     bool saveWaveform( const TrackInfoObject& tio);
+
     bool removeWaveform( const TrackInfoObject& tio);
 
-signals:
-    
-public slots:
+protected:
+    bool saveWaveform( const TrackInfoObject& tio, const Waveform* waveform, const QString& tableName);
+    bool loadWaveform( const TrackInfoObject& tio, Waveform* waveform, const QString& tableName);
 
 private:
     QSqlDatabase m_db;

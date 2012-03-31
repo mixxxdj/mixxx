@@ -58,8 +58,8 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event)
 
     int pointIndex = 0;
 
-    int firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()*waveform->size();
-    int lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition()*waveform->size();
+    int firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()*waveform->getDataSize();
+    int lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition()*waveform->getDataSize();
 
     m_waveformRenderer->regulateVisualSample(firstVisualIndex);
     m_waveformRenderer->regulateVisualSample(lastVisualIndex);
@@ -80,7 +80,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event)
         visualIndexStart -= visualIndexStart%2;
         int visualIndexStop = ceil( gain * x + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop < waveform->size() - 1) {
+        if( visualIndexStart > 0 && visualIndexStop < waveform->getDataSize() - 1) {
             unsigned char maxValue = 0;
 
             for( int i = visualIndexStart; i <= visualIndexStop; i+=2)
@@ -106,7 +106,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event)
         visualIndexStart -= visualIndexStart%2 + 1; //left channel
         int visualIndexStop = int( gain * x + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop < waveform->size() - 1) {
+        if( visualIndexStart > 0 && visualIndexStop < waveform->getDataSize() - 1) {
             unsigned char maxValue = 0;
 
             for( int i = visualIndexStart; i <= visualIndexStop; i+=2)
