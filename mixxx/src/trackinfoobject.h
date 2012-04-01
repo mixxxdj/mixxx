@@ -190,8 +190,10 @@ public:
     void incTimesPlayed();
     /** Returns true if track has been played this instance*/
     bool getPlayed() const;
-    /** Set Played status*/
-    void setPlayed(bool);
+    /** Set played status and increment or decrement playcount. */
+    void setPlayedAndUpdatePlaycount(bool);
+    /** Set played status without affecting the playcount */
+    void setPlayed(bool bPlayed);
 
     int getId() const;
 
