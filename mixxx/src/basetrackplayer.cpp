@@ -9,6 +9,7 @@
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
+#include "engine/enginePreviewDeck.h"
 #include "engine/enginemaster.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
@@ -23,7 +24,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  AnalyserQueue* pAnalyserQueue,
-                                 QString group)
+                                 QString group,bool isPreview)
         : BasePlayer(pParent, group),
           m_pAnalyserQueue(pAnalyserQueue),
           m_pConfig(pConfig),
@@ -33,11 +34,20 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
-
-    EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
+    
+    EngineBuffer* pEngineBuffer = NULL;
+    if (isPreview) {
+        EnginePreviewDeck* pChannel = new EnginePreviewDeck(pSafeGroupName,
+                                                              pConfig, defaultOrientation);
+        pEngineBuffer = pChannel->getEngineBuffer();
+        pMixingEngine->addChannel(pChannel);
+    } else {
+        EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
                                           pConfig, defaultOrientation);
-    EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
-    pMixingEngine->addChannel(pChannel);
+        pEngineBuffer = pChannel->getEngineBuffer();
+        pMixingEngine->addChannel(pChannel);
+    }
+
 
     ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);

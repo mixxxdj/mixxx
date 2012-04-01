@@ -1,12 +1,15 @@
 // playermanager.cpp
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 
+//
+
 #include "playermanager.h"
 
 #include "controlobject.h"
 #include "trackinfoobject.h"
 #include "deck.h"
 #include "sampler.h"
+#include "PreviewDeck.h"
 #include "analyserqueue.h"
 #include "controlobject.h"
 #include "samplerbank.h"
@@ -21,7 +24,8 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
           m_pEngine(pEngine),
           m_pLibrary(pLibrary),
           m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"))),
-          m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))) {
+          m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))),
+          m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_PreviewDeck"))) {
 
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig);
 
@@ -37,6 +41,7 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
     // Redundant
     m_pCONumDecks->set(0);
     m_pCONumSamplers->set(0);
+    m_pCONumPreviewDecks->set(0);
 }
 
 PlayerManager::~PlayerManager() {
@@ -48,6 +53,7 @@ PlayerManager::~PlayerManager() {
 
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
+    delete m_pCONumPreviewDecks;
     delete m_pAnalyserQueue;
 }
 
@@ -57,6 +63,10 @@ unsigned int PlayerManager::numDecks() const {
 
 unsigned int PlayerManager::numSamplers() const {
     return m_samplers.size();
+}
+
+unsigned int PlayerManager::numPreviewDeck() const {
+    return m_PreviewDecks.size();
 }
 
 Deck* PlayerManager::addDeck() {
@@ -105,6 +115,27 @@ Sampler* PlayerManager::addSampler() {
     return pSampler;
 }
 
+PreviewDeck* PlayerManager::addPreviewDeck() {
+    PreviewDeck* pPreviewDeck;
+    //not sure what this does
+    QString group = groupForLibPreviewPlaye(numPreviewDeck());
+
+    // All samplers are in the center
+    EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
+
+    pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine, orientation,  group);
+    // Connect the player to the analyser queue so that loaded tracks are
+    // analysed.
+    connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
+            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
+    Q_ASSERT(!m_players.contains(group));
+    m_players[group] = pPreviewDeck;
+    m_PreviewDecks.append(pPreviewDeck);
+    m_pCONumPreviewDecks->add(1);
+
+    return pPreviewDeck;
+}
+
 BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
     if (m_players.contains(group)) {
         return m_players[group];
@@ -120,6 +151,15 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
         return NULL;
     }
     return m_decks[deck - 1];
+}
+
+PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
+    if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDeck()) {
+        qWarning() << "Warning PlayerManager::getDeck() called with invalid index: "
+                   << libPreviewPlayer;
+        return NULL;
+    }
+    return m_PreviewDecks[libPreviewPlayer - 1];
 }
 
 Sampler* PlayerManager::getSampler(unsigned int sampler) const {
@@ -210,6 +250,19 @@ void PlayerManager::slotLoadToDeck(QString location, int deck) {
 
     //Load the track into the Deck.
     pDeck->slotLoadTrack(pTrack);
+}
+
+void PlayerManager::slotLoadToPreviewDeck(QString location, int libPreviewPlayer) {
+    PreviewDeck* pPreviewDeck = getPreviewDeck(libPreviewPlayer);
+    if (pPreviewDeck == NULL) {
+        qWarning() << "Invalid PreviewDeck argument " << libPreviewPlayer << " to slotLoadToPreviewDeck.";
+        return;
+    }
+
+    TrackPointer pTrack = lookupTrack(location);
+
+    //Load the track into the Deck.
+    pPreviewDeck->slotLoadTrack(pTrack);
 }
 
 void PlayerManager::slotLoadToSampler(QString location, int sampler) {

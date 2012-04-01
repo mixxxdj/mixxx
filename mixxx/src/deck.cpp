@@ -6,7 +6,7 @@ Deck::Deck(QObject* pParent,
            EngineChannel::ChannelOrientation defaultOrientation,
            AnalyserQueue* pAnalyserQueue,
            QString group)
-        : BaseTrackPlayer(pParent, pConfig, pMixingEngine, defaultOrientation, pAnalyserQueue, group) {
+        : BaseTrackPlayer(pParent, pConfig, pMixingEngine, defaultOrientation, pAnalyserQueue, group,false) {
 
 }
 
