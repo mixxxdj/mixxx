@@ -48,6 +48,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void addSelectionToPlaylist(int iPlaylistId);
+    void slotLoadToPreviewDeck();
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
     void doSortByColumn(int headerSection);
@@ -87,6 +88,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
+
+    // Load Track to PreviewDeck
+    QAction *m_pAddToPreviewDeck;
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;

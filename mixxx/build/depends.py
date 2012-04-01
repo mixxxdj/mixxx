@@ -324,6 +324,7 @@ class MixxxCore(Feature):
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
+                   "engine/enginePreviewDeck.cpp",
                    "engine/enginepassthrough.cpp",
 
                    "engine/enginecontrol.cpp",
@@ -514,6 +515,7 @@ class MixxxCore(Feature):
                    "basetrackplayer.cpp",
                    "deck.cpp",
                    "sampler.cpp",
+                   "PreviewDeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
                    "sounddevice.cpp",

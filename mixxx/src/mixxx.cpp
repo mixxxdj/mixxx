@@ -278,7 +278,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-
+    m_pPlayerManager->addPreviewDeck();
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
         m_pEngine);
@@ -411,7 +411,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             && i < args.qlMusicFiles.count(); ++i) {
         m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
     }
-
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =

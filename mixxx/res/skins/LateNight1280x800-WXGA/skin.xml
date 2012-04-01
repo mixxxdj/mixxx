@@ -226,7 +226,7 @@
 								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
 								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
-								<Group>[Sampler1]</Group>
+								<Group>[PreviewDeck1]</Group>
 								<Pos>5,3</Pos>
 								<Size>205,21</Size>
 							</Text>
@@ -238,7 +238,7 @@
 								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Property>title</Property>
-								<Group>[Sampler1]</Group>
+								<Group>[PreviewDeck1]</Group>
 								<Pos>4,4</Pos>
 								<Size>258,20</Size>
 							</TrackProperty>
@@ -255,13 +255,13 @@
 								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
 								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
-								<Group>[Sampler1]</Group>
+								<Group>[PreviewDeck1]</Group>
 								<Pos>211,3</Pos>
 								<Size>55,21</Size>
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler1],visual_bpm</ConfigKey>
+									<ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -288,7 +288,7 @@
 								</State>
 									<Pos>216,3</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],bpm_tap</ConfigKey>
+									<ConfigKey>[PreviewDeck1],bpm_tap</ConfigKey>
 										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
@@ -301,7 +301,7 @@
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-								<Group>[Sampler1]</Group>
+								<Group>[PreviewDeck1]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
@@ -309,7 +309,7 @@
 								<ProgressColor>#3087BF</ProgressColor>
 								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
-									<ConfigKey>[Sampler1],playposition</ConfigKey>
+									<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
 							</Overview>
@@ -326,7 +326,7 @@
 								<Path>knobs/knob_rotary_s%1.png</Path>
 								<Pos>222,64</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],pregain</ConfigKey>
+									<ConfigKey>[PreviewDeck1],pregain</ConfigKey>
 								</Connection>
 							</Knob>
 
@@ -342,7 +342,7 @@
 								<PathBack>btn_clipping_sampler.png</PathBack>
 								<Pos>267,3</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],PeakIndicator</ConfigKey>
+									<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 								</Connection>
 							</StatusLight>
 
@@ -363,7 +363,7 @@
 								<PeakFallTime>50</PeakFallTime>
 								<PeakFallStep>2</PeakFallStep>
 								<Connection>
-									<ConfigKey>[Sampler1],VuMeter</ConfigKey>
+									<ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
 								</Connection>
 							</VuMeter>
 
@@ -380,7 +380,7 @@
 								<Pos>279,6</Pos>
 								<Horizontal>false</Horizontal>
 								<Connection>
-									<ConfigKey>[Sampler1],rate</ConfigKey>
+									<ConfigKey>[PreviewDeck1],rate</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
 							</SliderComposed>
@@ -406,12 +406,12 @@
 								</State>
 								<Pos>10,71</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],play</ConfigKey>
+									<ConfigKey>[PreviewDeck1],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>LeftButton</ButtonState>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],start</ConfigKey>
+									<ConfigKey>[PreviewDeck1],start</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 								</Connection>
@@ -440,19 +440,19 @@
 								</State>
 								<Pos>80,71</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_1_activate</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_1_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_1_clear</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_1_clear</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_1_enabled</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_1_enabled</ConfigKey>
 									<ConnectValueFromWidget>false</ConnectValueFromWidget>
 								</Connection>
 							</PushButton>
@@ -474,19 +474,19 @@
 								</State>
 								<Pos>106,71</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_2_activate</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_2_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_2_clear</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_2_clear</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_2_enabled</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_2_enabled</ConfigKey>
 									<ConnectValueFromWidget>false</ConnectValueFromWidget>
 								</Connection>
 							</PushButton>
@@ -508,19 +508,19 @@
 								</State>
 								<Pos>132,71</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_3_activate</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_3_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_3_clear</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_3_clear</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_3_enabled</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_3_enabled</ConfigKey>
 									<ConnectValueFromWidget>false</ConnectValueFromWidget>
 								</Connection>
 							</PushButton>
@@ -542,19 +542,19 @@
 								</State>
 								<Pos>158,71</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_4_activate</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_4_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_4_clear</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_4_clear</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Sampler1],hotcue_4_enabled</ConfigKey>
+									<ConfigKey>[PreviewDeck1],hotcue_4_enabled</ConfigKey>
 									<ConnectValueFromWidget>false</ConnectValueFromWidget>
 								</Connection>
 							</PushButton>
@@ -580,7 +580,7 @@
 								</State>
 								<Pos>193,71</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],pfl</ConfigKey>
+									<ConfigKey>[PreviewDeck1],pfl</ConfigKey>
 								</Connection>
 							</PushButton>
 
@@ -600,7 +600,7 @@
 								</State>
 								<Pos>242,24</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],eject</ConfigKey>
+									<ConfigKey>[PreviewDeck1],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
@@ -628,7 +628,7 @@
 								</State>
 								<Pos>216,24</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],repeat</ConfigKey>
+									<ConfigKey>[PreviewDeck1],repeat</ConfigKey>
 								</Connection>
 							</PushButton>
 
@@ -658,7 +658,7 @@
 								</State>
 								<Pos>217,42</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],orientation</ConfigKey>
+									<ConfigKey>[PreviewDeck1],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>LeftButton</ButtonState>
 								</Connection>
@@ -685,7 +685,7 @@
 								</State>
 								<Pos>241,42</Pos>
 								<Connection>
-									<ConfigKey>[Sampler1],keylock</ConfigKey>
+									<ConfigKey>[PreviewDeck1],keylock</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>

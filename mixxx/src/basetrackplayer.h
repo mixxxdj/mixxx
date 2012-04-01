@@ -20,7 +20,7 @@ class BaseTrackPlayer : public BasePlayer {
                     EngineMaster* pMixingEngine,
                     EngineChannel::ChannelOrientation defaultOrientation,
                     AnalyserQueue* pAnalyserQueue,
-                    QString group);
+                    QString group, bool isPreview);
     virtual ~BaseTrackPlayer();
 
     AnalyserQueue* getAnalyserQueue() const;

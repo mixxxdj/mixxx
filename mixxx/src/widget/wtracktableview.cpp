@@ -81,6 +81,7 @@ WTrackTableView::~WTrackTableView()
     }
 
     delete m_pReloadMetadataAct;
+    delete m_pAddToPreviewDeck;
     delete m_pAutoDJAct;
     delete m_pAutoDJTopAct;
     delete m_pRemoveAct;
@@ -269,6 +270,14 @@ void WTrackTableView::createActions() {
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
+
+    m_pAddToPreviewDeck = new QAction(tr("Load into Preview Deck"), this);
+	QString deckGroup = QString("[PreviewDeck%1]").arg(1);
+	m_pMenu->addAction(m_pAddToPreviewDeck);
+	m_deckMapper.setMapping(m_pAddToPreviewDeck, deckGroup);
+    connect(m_pAddToPreviewDeck, SIGNAL(triggered()),
+        //    this,SLOT(slotLoadToPreviewDeck()));
+            &m_deckMapper,SLOT(map()));
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
@@ -304,6 +313,10 @@ void WTrackTableView::loadSelectionToGroup(QString group) {
             emit(loadTrackToPlayer(pTrack, group));
         }
     }
+}
+
+void WTrackTableView::slotLoadToPreviewDeck(){
+	std::cerr<<"loaded track into player Qt action" <<std::endl;
 }
 
 void WTrackTableView::slotRemove()
@@ -380,6 +393,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pMenu->addAction(pAction);
                 m_deckMapper.setMapping(pAction, deckGroup);
                 connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+                //connect(pAction, SIGNAL(triggered()), this, SLOT(slotLoadToPreviewDeck()));
             }
         }
     }
@@ -458,6 +472,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
     }
+    //if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER)) {
+    	m_pMenu->addAction(m_pAddToPreviewDeck);
+    //}
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
