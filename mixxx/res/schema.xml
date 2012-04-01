@@ -303,18 +303,25 @@ METADATA
   </revision>
   <revision version="16" min_compatible="3">
     <description>
-      Add track analysis table.
+      Add waveform and waveform summary tables
     </description>
     <sql>
-    CREATE TABLE IF NOT EXISTS track_analysis (
-      track_id INTEGER NOT NULL REFERENCES track_locations(id),
-      type varchar(512),
-      description varchar(1024),
-      version varchar(512),
-      created DEFAULT CURRENT_TIMESTAMP,
-      data BLOB,
+    CREATE TABLE IF NOT EXISTS waveforms (
+      track_id INTEGER UNIQUE NOT NULL REFERENCES track_locations(id),
+      actual_size INTEGER,
+      data_size INTEGER,
+      visual_sample_rate REAL,
+      audio_visual_ratio REAL,
+      data BLOB
     );
-    UPDATE library SET wavesummaryhex = '';
+    CREATE TABLE IF NOT EXISTS waveform_summaries (
+      track_id INTEGER UNIQUE NOT NULL REFERENCES track_locations(id),
+      actual_size INTEGER,
+      data_size INTEGER,
+      visual_sample_rate REAL,
+      audio_visual_ratio REAL,
+      data BLOB
+    );
     </sql>
   </revision>
 </schema>
