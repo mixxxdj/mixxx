@@ -29,6 +29,7 @@ static QMutex s_Mutex;
 BrowseThread::BrowseThread(QObject *parent): QThread(parent)
 {
     m_bStopThread = false;
+    m_model_observer = NULL;
     //start Thread
     start(QThread::LowestPriority);
 
@@ -67,54 +68,58 @@ void BrowseThread::destroyInstance()
 }
 
 void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
+    m_path_mutex.lock();
     m_path = path;
     m_model_observer = client;
+    m_path_mutex.unlock();
     m_locationUpdated.wakeAll();
 }
 
 void BrowseThread::run() {
+    m_mutex.lock();
     while(!m_bStopThread) {
-        m_mutex.lock();
         //Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
 
         //Terminate thread if Mixxx closes
-        if(m_bStopThread)
-            return;
+        if(m_bStopThread) {
+            break;
+        }
         // Populate the model
         populateModel();
-        m_mutex.unlock();
     }
+    m_mutex.unlock();
 }
 
 void BrowseThread::populateModel() {
-    //Refresh the name filters in case we loaded new
-    //SoundSource plugins.
-    QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
-    QDirIterator fileIt(m_path, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
-    QString thisPath(m_path);
+    m_path_mutex.lock();
+    QString thisPath = m_path;
+    BrowseTableModel* thisModelObserver = m_model_observer;
+    m_path_mutex.unlock();
 
-    /*
-     * remove all rows
-     * This is a blocking operation
-     * see signal/slot connection in BrowseTableModel
-     */
-    emit(clearModel(m_model_observer));
+    // Refresh the name filters in case we loaded new SoundSource plugins.
+    QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
+
+    QDirIterator fileIt(thisPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+
+    // remove all rows
+    // This is a blocking operation
+    // see signal/slot connection in BrowseTableModel
+    emit(clearModel(thisModelObserver));
 
     QList< QList<QStandardItem*> > rows;
 
     int row = 0;
-    //Iterate over the files
-    while (fileIt.hasNext())
-    {
-        /*
-         * If a user quickly jumps through the folders
-         * the current task becomes "dirty"
-         */
+    // Iterate over the files
+    while (fileIt.hasNext()) {
+        // If a user quickly jumps through the folders
+        // the current task becomes "dirty"
+        QMutexLocker locker(&m_path_mutex);
         if(thisPath != m_path){
-            qDebug() << "Exit populateModel()";
+            qDebug() << "Abort populateModel()";
             return populateModel();
         }
+        locker.unlock();
 
         QString filepath = fileIt.next();
         TrackInfoObject tio(filepath);
@@ -168,15 +173,17 @@ void BrowseThread::populateModel() {
 
         rows.append(row_data);
         ++row;
-        //If 10 tracks have been analyzed, send it to GUI
-        //Will limit GUI freezing
+        // If 10 tracks have been analyzed, send it to GUI
+        // Will limit GUI freezing
         if(row % 10 == 0){
-            //this is a blocking operation
-            emit(rowsAppended(rows, m_model_observer));
+            // this is a blocking operation
+            emit(rowsAppended(rows, thisModelObserver));
+            //qDebug() << "Append " << rows.count() << " from " << filepath;
             rows.clear();
         }
-        //Sleep additionally for 10ms which prevents us from GUI freezes
+        // Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
-    emit(rowsAppended(rows, m_model_observer));
+    emit(rowsAppended(rows, thisModelObserver));
+    //qDebug() << "Append last " << rows.count() << " from " << thisPath;
 }
