@@ -56,7 +56,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
-    dOldSteadyPitch = 1.0f;
+    m_pSteadySubtle = new SteadyPitch(0.08);
+    m_pSteadyGross = new SteadyPitch(0.5);
 
     iQualPos = 0;
     iQualFilled = 0;
@@ -114,6 +115,9 @@ VinylControlXwax::~VinylControlXwax()
     // Remove existing samples
     if (m_samples)
         free(m_samples);
+        
+    delete m_pSteadySubtle;
+    delete m_pSteadyGross;
 
     //Cleanup xwax nicely
     timecoder_clear(&timecoder);
@@ -502,7 +506,7 @@ void VinylControlXwax::run()
                     qDebug() << filePosition << dOldFilePos << dVinylPosition << dOldPos;
                     qDebug() << (dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch));
                     //try setting the rate to the steadypitch value
-                    enableConstantMode(dOldSteadyPitch);
+                    enableConstantMode(m_pSteadySubtle->steadyValue());
                     vinylStatus->slotSet(VINYL_STATUS_ERROR);
                 }
                 else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
@@ -766,50 +770,21 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     }
 }
 
+
 void VinylControlXwax::resetSteadyPitch(double pitch, double time)
 {
-    dSteadyPitch = pitch;
-    dSteadyPitchTime = time;
+    m_pSteadySubtle->reset(pitch, time);
+    m_pSteadyGross->reset(pitch, time);
 }
 
 double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 {
-    //return length of time pitch has been steady, 0 if not steady
-    const double PITCH_THRESHOLD = 0.07f;
-
-    if (time < dSteadyPitchTime) //bad values, often happens during resync
-    {
-        if (loopEnabled->get())
-        {
-            //if looping, fake it since we don't know where the loop
-            //actually is
-            if (fabs(pitch - dSteadyPitch) < PITCH_THRESHOLD)
-            {
-                dSteadyPitchTime = time - 2.0;
-                return 2.0;
-            }
-        }
-        else
-        {
-            resetSteadyPitch(pitch, time);
-            return 0.0;
-        }
+    if (m_pSteadyGross->check(pitch, time, loopEnabled->get()) < 0.5) {
+        scratching->slotSet(1.0);
+    } else {
+        scratching->slotSet(0.0);
     }
-
-    if (fabs(pitch - dSteadyPitch) < PITCH_THRESHOLD)
-    {
-        if (time - dSteadyPitchTime > 2.0)
-        {
-            dSteadyPitch = pitch;
-            dOldSteadyPitch = dSteadyPitch; //this was a known-good value
-            dSteadyPitchTime += 1.0;
-        }
-        return time - dSteadyPitchTime;
-    }
-
-    //else
-    resetSteadyPitch(pitch, time);
-    return 0.0;
+    return m_pSteadySubtle->check(pitch, time, loopEnabled->get());
 }
 
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
