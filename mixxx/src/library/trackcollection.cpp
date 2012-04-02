@@ -14,16 +14,17 @@
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
-          m_db(QSqlDatabase::addDatabase("QSQLITE")),
+          m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
           m_playlistDao(m_db),
-          m_cueDao(m_db),
-          m_trackDao(m_db, m_cueDao, pConfig),
           m_crateDao(m_db),
+          m_cueDao(m_db),
+          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
     bCancelLibraryScan = false;
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
+
     m_db.setHostName("localhost");
     m_db.setDatabaseName(MIXXX_DB_PATH);
     m_db.setUserName("mixxx");
@@ -66,7 +67,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 12;
+    int requiredSchemaVersion = 15;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, tr("Cannot upgrade database schema"),

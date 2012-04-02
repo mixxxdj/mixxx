@@ -27,7 +27,6 @@
 MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObject()
 {
     m_pConfig = pConfig;
-    m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
 
     m_pPMEnumerator = new PortMidiEnumerator();
 #ifdef __HSS1394__
@@ -39,7 +38,6 @@ MidiDeviceManager::~MidiDeviceManager()
 {
     //Delete enumerators and they'll delete their Devices
     delete m_pPMEnumerator;
-    MidiLedHandler::destroyHandlers();
 #ifdef __HSS1394__
     delete m_pHSSEnumerator;
 #endif
@@ -66,7 +64,7 @@ void MidiDeviceManager::saveMappings(bool onlyActive) {
         int i=1;
         while (filenames.contains(filename)) {
             i++;
-            filename = QString("%1--%2").arg(ofilename).arg(i);
+            filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
 
         filenames.append(filename);
@@ -141,7 +139,7 @@ int MidiDeviceManager::setupDevices()
         int i=1;
         while (filenames.contains(filename)) {
             i++;
-            filename = QString("%1--%2").arg(ofilename).arg(i);
+            filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
 
         filenames.append(filename);

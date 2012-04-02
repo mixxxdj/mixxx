@@ -4,14 +4,16 @@
 #include <QDateTime>
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
+#include "library/queryutil.h"
 
 #include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
-                                       TrackCollection* pTrackCollection)
+                                       TrackCollection* pTrackCollection,
+                                       QString settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollection,
                             pTrackCollection->getDatabase(),
-                            "mixxx.db.model.playlist"),
+                            settingsNamespace),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
@@ -24,7 +26,7 @@ PlaylistTableModel::~PlaylistTableModel() {
 }
 
 void PlaylistTableModel::setPlaylist(int playlistId) {
-    qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+    //qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
 
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
@@ -32,42 +34,37 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     }
 
     m_iPlaylistId = playlistId;
-
-    QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
+    QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
     QSqlQuery query(m_pTrackCollection->getDatabase());
-    //query.prepare("DROP VIEW " + playlistTableName);
-    //query.exec();
-
-    // Escape the playlist name
-    QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
-    QSqlField playlistNameField("name", QVariant::String);
-    playlistNameField.setValue(playlistTableName);
+    FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
     QStringList columns;
     columns << PLAYLISTTRACKSTABLE_TRACKID
-            << PLAYLISTTRACKSTABLE_POSITION;
+            << PLAYLISTTRACKSTABLE_POSITION
+            << PLAYLISTTRACKSTABLE_DATETIMEADDED;
 
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
-                  driver->formatValue(playlistNameField) + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM PlaylistTracks "
-                  "WHERE playlist_id = " + QString("%1").arg(playlistId) +
-                  " ORDER BY PlaylistTracks.position");
+    // We drop files that have been explicitly deleted from mixxx
+    // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
+    // removed files were not removed from playlists, so some users will have
+    // libraries where this is the case.
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM PlaylistTracks "
+        "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+        "WHERE PlaylistTracks.playlist_id = %3 AND library.mixxx_deleted = 0")
+            .arg(escaper.escapeString(playlistTableName),
+                 columns.join(","),
+                 QString::number(playlistId));
+    query.prepare(queryString);
     if (!query.exec()) {
-        // It's normal for this to fail.
-        qDebug() << query.executedQuery() << query.lastError();
-    }
-
-    // Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
     setTable(playlistTableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
-    setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
+    setSearch("");
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
 }
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
@@ -82,12 +79,9 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
-    location = fileInfo.absoluteFilePath();
 
-    int trackId = m_trackDao.getTrackId(location);
-    if (trackId < 0) {
-        trackId = m_trackDao.addTrack(fileInfo);
-    }
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_trackDao.addTrack(fileInfo, true);
 
     // Do nothing if the location still isn't in the database.
     if (trackId < 0) {
@@ -97,6 +91,17 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
 
     // TODO(rryan) signal an add to the base, don't select
+    select(); //Repopulate the data model.
+    return true;
+}
+
+bool PlaylistTableModel::appendTrack(int trackId) {
+    if (trackId < 0) {
+        return false;
+    }
+
+    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
+
     select(); //Repopulate the data model.
     return true;
 }
@@ -172,7 +177,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     int oldPosition = sourceIndex.sibling(sourceIndex.row(), playlistPositionColumn).data().toInt();
 
 
-    qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
+    //qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
 
     //Invalid for the position to be 0 or less.
     if (newPosition < 0)
@@ -207,41 +212,55 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         queryString =
             QString("UPDATE PlaylistTracks SET position=-1 "
                     "WHERE position=%1 AND "
-                    "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
+                    "playlist_id=%2").arg(QString::number(oldPosition),
+                                          QString::number(m_iPlaylistId));
         query.exec(queryString);
         //qDebug() << queryString;
 
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                             "WHERE position > %1 AND "
-                            "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
+                              "playlist_id=%2").arg(
+                                  QString::number(oldPosition),
+                                  QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
                             "WHERE position >= %1 AND " //position < %2 AND "
-                            "playlist_id=%3").arg(newPosition).arg(m_iPlaylistId);
+                            "playlist_id=%3").arg(
+                                QString::number(newPosition),
+                                QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=%1 "
                             "WHERE position=-1 AND "
-                            "playlist_id=%2").arg(newPosition).arg(m_iPlaylistId);
+                            "playlist_id=%2").arg(
+                                QString::number(newPosition),
+                                QString::number(m_iPlaylistId));
         query.exec(queryString);
     }
     else if (newPosition > oldPosition)
     {
         queryString = QString("UPDATE PlaylistTracks SET position=-1 "
                               "WHERE position = %1 AND "
-                              "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
+                              "playlist_id=%2").arg(
+                                  QString::number(oldPosition),
+                                  QString::number(m_iPlaylistId));
         //qDebug() << queryString;
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                               "WHERE position > %1 AND position <= %2 AND "
-                              "playlist_id=%3").arg(oldPosition).arg(newPosition).arg(m_iPlaylistId);
+                              "playlist_id=%3").arg(
+                                  QString::number(oldPosition),
+                                  QString::number(newPosition),
+                                  QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=%1 "
                               "WHERE position=-1 AND "
-                              "playlist_id=%2").arg(newPosition).arg(m_iPlaylistId);
+                              "playlist_id=%2").arg(
+                                  QString::number(newPosition),
+                                  QString::number(m_iPlaylistId));
         query.exec(queryString);
     }
 
@@ -249,7 +268,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+        qDebug() << query.lastError();
     }
 
     select();
@@ -272,16 +291,22 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
         int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks + 1 - shuffleStartIndex) + shuffleStartIndex);
         qDebug() << "Swapping tracks " << i << " and " << random;
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 WHERE position=%2 AND playlist_id=%3";
-        query.exec(swapQuery.arg(-1).arg(i).arg(m_iPlaylistId));
-        query.exec(swapQuery.arg(i).arg(random).arg(m_iPlaylistId));
-        query.exec(swapQuery.arg(random).arg(-1).arg(m_iPlaylistId));
+        query.exec(swapQuery.arg(QString::number(-1),
+                                 QString::number(i),
+                                 QString::number(m_iPlaylistId)));
+        query.exec(swapQuery.arg(QString::number(i),
+                                 QString::number(random),
+                                 QString::number(m_iPlaylistId)));
+        query.exec(swapQuery.arg(QString::number(random),
+                                 QString::number(-1),
+                                 QString::number(m_iPlaylistId)));
 
         if (query.lastError().isValid())
             qDebug() << query.lastError();
     }
 
     m_pTrackCollection->getDatabase().commit();
-
+    // TODO(XXX) set dirty because someday select() will only do work on dirty.
     select();
 }
 
@@ -309,17 +334,27 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
     }
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+       return true;
+    }
     return false;
 }
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
+    Q_UNUSED(i);
     return NULL;
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
-    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_RELOADMETADATA;
+    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_RECEIVEDROPS
+            | TRACKMODELCAPS_REORDER
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_RELOADMETADATA
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_REMOVE;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {

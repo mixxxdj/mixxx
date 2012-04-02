@@ -35,6 +35,7 @@ class RhythmboxTrackModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     RhythmboxTrackModel(QObject* parent, TrackCollection* pTrackCollection);
+    TrackModel::CapabilitiesFlags getCapabilities() const;
     virtual ~RhythmboxTrackModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;

@@ -15,13 +15,17 @@
 #include "engine/clockcontrol.h"
 #include "mathstuff.h"
 #include "waveform/waveformrenderer.h"
+#include "track/beatgrid.h"
+#include "track/beatfactory.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
+                                 AnalyserQueue* pAnalyserQueue,
                                  QString group)
         : BasePlayer(pParent, group),
+          m_pAnalyserQueue(pAnalyserQueue),
           m_pConfig(pConfig),
           m_pLoadedTrack() {
 
@@ -195,7 +199,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     if(!m_pLoadedTrack->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
 
-    m_pLoadedTrack->setPlayed(true);
+    // m_pLoadedTrack->setPlayedAndUpdatePlaycount(true); // Actually the song is loaded but not played
 
     // Generate waveform summary
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.
@@ -207,7 +211,18 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     //Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());
+
+    float track_bpm = m_pLoadedTrack->getBpm();
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
+
+    if (!m_pLoadedTrack->getBeats() && track_bpm > 0) {
+        // This track has no beats object but has a non-zero BPM. Create a
+        // fixed-size beatgrid for it.
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(m_pLoadedTrack,
+                                                        track_bpm, 0.0f);
+        m_pLoadedTrack->setBeats(pBeats);
+    }
+
     m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
@@ -234,6 +249,10 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     }
 
     emit(newTrackLoaded(m_pLoadedTrack));
+}
+
+AnalyserQueue* BaseTrackPlayer::getAnalyserQueue() const {
+    return m_pAnalyserQueue;
 }
 
 WaveformRenderer* BaseTrackPlayer::getWaveformRenderer() const {

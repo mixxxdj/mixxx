@@ -15,9 +15,13 @@ class TrackCollection;
 class PlaylistTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                       QString settingsNamespace);
     virtual ~PlaylistTableModel();
     void setPlaylist(int playlistId);
+    int getPlaylist() const {
+        return m_iPlaylistId;
+    }
     virtual TrackPointer getTrack(const QModelIndex& index) const;
 
     virtual void search(const QString& searchText);
@@ -26,6 +30,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
+    virtual bool appendTrack(int trackId);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
     virtual void shuffleTracks(const QModelIndex& currentIndex);
 
