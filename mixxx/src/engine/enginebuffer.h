@@ -30,7 +30,9 @@
 #include "engine/vinylcontrolcontrol.h"
 #endif
 //for the writer
-//#include <QtCore>
+#ifdef __SCALER_DEBUG__
+#include <QtCore>
+#endif
 
 class EngineControl;
 class BpmControl;
@@ -257,8 +259,10 @@ private:
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
-    /*QFile df;
-    QTextStream writer;*/
+#ifdef __SCALER_DEBUG__    
+    QFile df;
+    QTextStream writer;
+#endif
     CSAMPLE* m_pDitherBuffer;
     unsigned int m_iDitherBufferReadIndex;
 };
