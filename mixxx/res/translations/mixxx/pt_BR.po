@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-03-30 04:39+0000\n"
-"Last-Translator: Samuel William Cortes Rodrigues <Unknown>\n"
+"PO-Revision-Date: 2012-04-01 19:52+0000\n"
+"Last-Translator: Flavio Henrique Araque Gurgel <fhagur@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-03-31 04:48+0000\n"
+"X-Launchpad-Export-Date: 2012-04-02 04:34+0000\n"
 "X-Generator: Launchpad (build 15032)\n"
 
 #: AutoDJFeature#1
@@ -666,11 +666,11 @@ msgstr "Desligado"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Alcance do controle de Passo/Taxa"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Direção do controle de Passo/Taxa"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
@@ -1010,7 +1010,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Pré-amplificador de tocadiscos"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
@@ -1304,7 +1304,7 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr ""
+msgstr "Habilitar análise do Ganho de Reprodução"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1322,7 +1322,7 @@ msgstr "Amplificação Inicial"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr ""
+msgstr "Amplificação de Ganho Inicial"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
@@ -2084,6 +2084,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx não pode gravar ou transmitir em MP3 sem o codificador MP3 "
+"&quot;lame&quot;. Por motivos de licença, nós não podemos incluí-lo com o "
+"Mixxx. Para gravar ou transmitir em MP3, você deve baixar <b>libmp3lame</b> "
+"e instalar em seu sistema. <p>Veja <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> para mais informações. </html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2094,6 +2100,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx não pode gravar ou transmitir em MP3 sem o codificador MP3 "
+"&quot;lame&quot;. Por motivos de licença, nós não podemos incluí-lo com o "
+"Mixxx. Para gravar ou transmitir em MP3, você deve baixar <b>libmp3lame</b> "
+"e instalar em seu sistema. <p>Veja <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> para mais informações. </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2104,6 +2116,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx não pode gravar ou transmitir em MP3 sem o codificador MP3 "
+"&quot;lame&quot;. Por motivos de licença, nós não podemos incluí-lo com o "
+"Mixxx. Para gravar ou transmitir em MP3, você deve baixar <b>libmp3lame</b> "
+"e instalar em seu sistema. <p>Veja <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> para mais informações. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2111,6 +2129,9 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
+"<html>Mixxx detectou que você usa uma versão modificada de libmp3lame. Veja "
+"<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a> para mais informações.</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
@@ -2122,6 +2143,8 @@ msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
+"<html>Não foi possível criar o arquivo de áudio para gravação!<p><br>Talvez "
+"você não tenha espaço livre disponível ou permissões de arquivo.</html>"
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
@@ -2137,7 +2160,7 @@ msgstr "Não foi possível alocar shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr ""
+msgstr "Erro ao ajustar modo não-blocante:"
 
 #: EngineShoutcast#5
 msgid "Lost connection to streaming server"
@@ -2226,7 +2249,7 @@ msgstr "Arraste uma predefinição da lista e solte aqui"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
-msgstr ""
+msgstr "Explorador de Bibliotecas"
 
 #: LibraryScannerDlg#2
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
@@ -2281,6 +2304,8 @@ msgid ""
 "The MIDI message %1 %2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"A mensagem MIDI %1 %2 não será vinculada.\n"
+"(Clique em Mostrar Detalhes para dicas.)"
 
 #: MidiMapping#4
 msgid ""
@@ -2329,19 +2354,19 @@ msgstr "Descrição"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
-msgstr ""
+msgstr "Limiar Mínimo"
 
 #: MidiOutputMappingTableModel#8
 msgid "Threshold Max"
-msgstr ""
+msgstr "Limiar Máximo"
 
 #: MidiScriptEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Excessão não capturada à linha %1 no arquivo %2: %3"
 
 #: MidiScriptEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Excessão não capturada à linha %1 em código passado: %2"
 
 #: MidiScriptEngine#3
 msgid "MIDI script error"
@@ -2358,6 +2383,10 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(O código de script MIDI precisa ser corrigido.)<br>Por enquanto, você "
+"pode:<ul><li>Ignorar este erro para esta sessão mas pode experimentar "
+"comportamento errático</li><li>Tente recuperar reiniciando seu "
+"controlador</li></ul></html>"
 
 #: MidiStatusDelegate#1
 msgid "Unknown"
@@ -2378,6 +2407,10 @@ msgid ""
 "developers. Would you like to help us make Mixxx better by enabling this "
 "feature?"
 msgstr ""
+"O desenvolvimento do Mixxx é guiado pela reação da comunidade.  Sob seu "
+"consentimento, Mixxx pode enviar dados de sua experiência de usuário "
+"automaticamente para os desenvolvedores. Você gostaria de nos ajudar a fazer "
+"o Mixxx melhor habilitando esta funcionalidade?"
 
 #: MixxxApp#4
 msgid "Yes"
@@ -2419,6 +2452,28 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
+"O desenvolvimento do Mixxx é guiado pela reação da comunidade. Para poder "
+"ajudar a aprimorar futuras versões, o Mixxx vai, com sua permissão, coletar "
+"informações sobre seu hardware e uso do Mixxx.  Estas informações vão "
+"primariamente ser usadas para consertar erros, aprimorar funcionalidades e "
+"determinar os requisitos de sistema de versões futuras. Adicionalmente, "
+"estas informações podem ser usadas como agregado para motivos estatísticos.\n"
+"\n"
+"As informações de hardware incluirão:\n"
+"\t- Modelo da CPU e funcionalidades\n"
+"\t- Quantidade de RAM Total/Disponível\n"
+"\t- Espaço disponível em disco\n"
+"\t- Versão do SO\n"
+"\n"
+"Suas informações de uso irão incluir:\n"
+"\t- Preferências/Configurações\n"
+"\t- Erros internos\n"
+"\t- Mensagens internas de debugagem\n"
+"\t- Estatísticas de desempenho (latência média, consumo de CPU)\n"
+"\n"
+"Estas informações não serão usadas para indentificá-lo pessoalmente, "
+"contactá-lo, fazer propagandas ou, de outras formas, incomodá-lo de alguma "
+"forma.\n"
 
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
