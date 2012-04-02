@@ -446,7 +446,7 @@ void VinylControlXwax::run()
             //or 1 (plays back at that rate)
 
             if (reportedPlayButton)
-                controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
+                controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f + m_dKnobTweak);
             else
                 controlScratch->slotSet(0.0f);
 
@@ -824,7 +824,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		//This allows for single-deck control, dj handoffs, etc.
 
 		togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
-		controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
+		controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f + m_dKnobTweak);
 		resetSteadyPitch(0.0f, 0.0f);
 		bForceResync = true; 
 		if (!was)
