@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import util
@@ -33,10 +34,10 @@ class HSS1394(Feature):
             #if not have_ffado:
             #    raise Exception('Could not find libffado.')
         else:
-#            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of errors on MSVC
+#            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers, exiting!')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
-            if not conf.CheckLib(['libHSS1394', 'HSS1394']):
+            if not conf.CheckLib(['libhss1394', 'hss1394']):
                 raise Exception('Did not find HSS1394 development library, exiting!')
                 return
 
@@ -104,6 +105,38 @@ class CoreAudio(Feature):
         return ['soundsourcecoreaudio.cpp',
                 '#lib/apple/CAStreamBasicDescription.h']
 
+class MediaFoundation(Feature):
+    FLAG = 'mediafoundation'
+    def description(self):
+        return "Media Foundation AAC Decoder Plugin"
+    def enabled(self, build):
+        build.flags[self.FLAG] = util.get_flags(build.env, self.FLAG, 0)
+        if int(build.flags[self.FLAG]):
+            return True
+        return False
+    def add_options(self, build, vars):
+        vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not build.platform_is_windows:
+            raise Exception("Media Foundation is only supported on Windows!")
+        # need to look into this, SDK 6 might be ok?
+        mssdk_path = util.get_mssdk_path()
+        if mssdk_path is None:
+            raise Exception("MSSdk environment variable not set, have you run setenv?")
+        include_path = os.path.join(mssdk_path, "Include")
+        build.env.Append(CPPPATH=[include_path])
+        if not conf.CheckLib('Ole32'):
+            raise Exception('Did not find Ole32.lib - exiting!')
+        if not conf.CheckLib(['Mfuuid']):
+            raise Exception('Did not find Mfuuid.lib - exiting!')
+        if not conf.CheckLib(['Mfplat']):
+            raise Exception('Did not find Mfplat.lib - exiting!')
+        if not conf.CheckLib(['Mfreadwrite']): #Only available on Windows 7 and up, or properly updated Vista
+            raise Exception('Did not find Mfreadwrite.lib - exiting!')
+        build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
+        return
 
 class MIDIScript(Feature):
     def description(self):
@@ -382,43 +415,6 @@ class WavPack(Feature):
             raise Exception('Could not find libwavpack, libwv or its development headers.')
 
 
-class ScriptStudio(Feature):
-    def description(self):
-        return "NOT-WORKING MixxxScript Studio"
-
-    def enabled(self, build):
-        build.flags['script'] = util.get_flags(build.env, 'script', 0)
-        if int(build.flags['script']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES = '__SCRIPT__')
-
-    def sources(self, build):
-        build.env.Uic4('script/scriptstudio.ui')
-        return ['script/scriptengine.cpp',
-                'script/scriptcontrolqueue.cpp',
-                'script/scriptstudio.cpp',
-                'script/scriptrecorder.cpp',
-                'script/playinterface.cpp',
-                'script/macro.cpp',
-                'script/scriptcontrolevent.cpp',
-                'script/trackcontrolevent.cpp',
-                'script/numbercontrolevent.cpp',
-                'script/numberrecorder.cpp',
-                'script/macrolist.cpp',
-                'script/trackrecorder.cpp',
-                'script/sdatetime.cpp',
-                'script/signalrecorder.cpp',
-                'script/macrolistitem.cpp',
-                'script/qtscriptinterface.cpp']
-
 class PerfTools(Feature):
     def description(self):
         return "Google PerfTools"
@@ -495,39 +491,33 @@ class QDebug(Feature):
         if not self.enabled(build):
             build.env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
 
-class CMetrics(Feature):
+class Verbose(Feature):
     def description(self):
-        return "NOT-WORKING CMetrics Reporting"
+        return "Verbose compilation output"
 
     def enabled(self, build):
-        if build.platform_is_windows or build.platform_is_linux:
-            build.flags['cmetrics'] = util.get_flags(build.env, 'cmetrics', 1)
-        else:
-            # Off on OS X for now...
-            build.flags['cmetrics'] = util.get_flags(build.env, 'cmetrics', 0)
-        if int(build.flags['cmetrics']):
+        build.flags['verbose'] = util.get_flags(build.env, 'verbose', 1)
+        if int(build.flags['verbose']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('cmetrics', 'Set to 1 to enable crash reporting/usage statistics via Case Metrics (This should be disabled on development builds)', 0)
+        vars.Add('verbose', 'Compile files verbosely.', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
-            return
+            build.env['CCCOMSTR'] = '[CC] $SOURCE'
+            build.env['CXXCOMSTR'] = '[CXX] $SOURCE'
+            build.env['ASCOMSTR'] = '[AS] $SOURCE'
+            build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
+            build.env['LINKCOMSTR'] = '[LD] $TARGET'
 
-        build.env.Append(CPPDEFINES = '__C_METRICS__')
-
-        if build.platform_is_windows:
-            build.env.Append(LIBS = 'cmetrics')
-        else:
-            client = 'MIXXX'
-            server = 'metrics.mixxx.org' # mixxx metrics collector
-            SCons.Export('client server')
-            build.env.Append(CPPPATH='#lib/cmetrics')
-
-    def sources(self, build):
-        return ['#lib/cmetrics/SConscript']
+            build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
+            build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
+            build.env['QT4_RCCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
+            build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
+            build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
 
 class MSVSHacks(Feature):
     """Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable
@@ -744,7 +734,7 @@ class Optimize(Feature):
 
         if build.toolchain_is_msvs:
             if int(build.flags['msvcdebug']):
-                self.status = "Disabled (due to mscvdebug mode)"
+                self.status = "Disabled (due to msvcdebug mode)"
                 return
             # Valid values of /MACHINE are:
             # {AM33|ARM|EBC|IA64|M32R|MIPS|MIPS16|MIPSFPU|MIPSFPU16|MIPSR41XX|SH3|SH3DSP|SH4|SH5|THUMB|X86}
@@ -792,13 +782,17 @@ class Optimize(Feature):
             #    build.env.Append(CCFLAGS = '/Ox')
 
             # SSE and SSE2 are core instructions on x64
-            if not build.machine_is_64bit:
+            if build.machine_is_64bit:
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
+            else:
                 if optimize_level == 3:
                     self.status += ", SSE Instructions Enabled"
                     build.env.Append(CCFLAGS = '/arch:SSE')
+                    build.env.Append(CPPDEFINES = '__SSE__')
                 elif optimize_level == 4:
                     self.status += ", SSE2 Instructions Enabled"
                     build.env.Append(CCFLAGS = '/arch:SSE2')
+                    build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
         elif build.toolchain_is_gnu:
             if int(build.flags.get('tuned',0)):
                 self.status = "Disabled (Overriden by tuned=1)"
@@ -816,24 +810,31 @@ class Optimize(Feature):
             elif optimize_level == 2:
                 self.status = "Enabled (P4 MMX/SSE)"
                 build.env.Append(CCFLAGS = '-march=pentium4 -mmmx -msse2 -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
             elif optimize_level == 3:
                 self.status = "Enabled (Intel Core Solo/Duo)"
                 build.env.Append(CCFLAGS = '-march=prescott -mmmx -msse3 -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
                 build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"
                 build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
+                build.env.Append(CPPDEFINES = '__SSE__')
             elif optimize_level == 6:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64)"
                 build.env.Append(CCFLAGS = '-march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
             elif optimize_level == 7:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64 + SSE3)"
                 build.env.Append(CCFLAGS = '-march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 8:
                 self.status = "Enabled (Generic SSE/SSE2/SSE3)"
                 build.env.Append(CCFLAGS = '-mmmx -msse2 -msse3 -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 9:
                 self.status = "Enabled (Tuned Generic)"
                 # This option is for release builds packaged for 64-bit. We
@@ -850,10 +851,12 @@ class Optimize(Feature):
 
                 # TODO(XXX) check the soundtouch package in Ubuntu to see what they do about this.
                 build.env.Append(CCFLAGS = '-mtune=generic -mmmx -msse -mfpmath=sse')
+                build.env.Append(CPPDEFINES = '__SSE__')
 
                 # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on 64-bit
                 if build.machine_is_64bit:
                     build.env.Append(CCFLAGS = '-msse2')
+                    build.env.Append(CPPDEFINES = '__SSE2__')
 
 
 class Tuned(Feature):
@@ -880,13 +883,20 @@ class Tuned(Feature):
                 build.env.Append(CCFLAGS = '/favor:blend')
             return
 
+        # SSE and SSE2 are core instructions on x64
+        if build.machine_is_64bit:
+            build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
+
         if build.toolchain_is_gnu:
             ccv = build.env['CCVERSION'].split('.')
             if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
-                # Should we use -mtune as well?
+                # -march=native takes care of mtune
+                #   http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 build.env.Append(CCFLAGS = '-march=native')
                 # Doesn't make sense as a linkflag
                 build.env.Append(LINKFLAGS = '-march=native')
+                # TODO(pegasus): Ask GCC if the CPU supports SSE, SSE2, SSE3, etc.
+                #   so we can add the appropriate CPPDEFINES for Mixxx code paths
             else:
                 self.status = "Disabled (requires gcc >= 4.2.0)"
         elif build.toolchain_is_msvs:

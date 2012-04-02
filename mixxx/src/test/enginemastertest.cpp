@@ -31,12 +31,12 @@ class EngineMasterTest : public testing::Test {
   protected:
     virtual void SetUp() {
         m_pConfig = new ConfigObject<ConfigValue>("");
-        m_pMaster = new EngineMaster(m_pConfig, "[Master]");
+        m_pMaster = new EngineMaster(m_pConfig, "[Master]", false);
     }
 
     virtual void TearDown() {
-        delete m_pConfig;
         delete m_pMaster;
+        delete m_pConfig;
     }
 
     void ClearBuffer(CSAMPLE* pBuffer, int length) {

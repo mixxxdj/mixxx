@@ -32,8 +32,6 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
                   "WHERE " + MissingTableModel::MISSINGFILTER);
-    //query.bindValue(":playlist_name", playlistTableName);
-    //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -48,7 +46,8 @@ MissingTableModel::MissingTableModel(QObject* parent,
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource("default"));
 
-    initHeaderData();    //derived from BaseSqlModel
+    initHeaderData();
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 
     connect(this, SIGNAL(doSearch(const QString&)),
@@ -59,6 +58,8 @@ MissingTableModel::~MissingTableModel() {
 }
 
 bool MissingTableModel::addTrack(const QModelIndex& index, QString location) {
+    Q_UNUSED(index);
+    Q_UNUSED(location);
     return false;
 }
 
@@ -72,13 +73,34 @@ TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const {
 }
 
 void MissingTableModel::removeTrack(const QModelIndex& index) {
+    int trackId = getTrackId(index);
+
+    m_trackDao.removeTrack(trackId);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
 }
 
 void MissingTableModel::removeTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
+
+    foreach (QModelIndex index, indices) {
+        int trackId = getTrackId(index);
+        trackIds.append(trackId);
+    }
+
+    m_trackDao.removeTracks(trackIds);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
 }
 
 void MissingTableModel::moveTrack(const QModelIndex& sourceIndex,
                                   const QModelIndex& destIndex) {
+    Q_UNUSED(sourceIndex);
+    Q_UNUSED(destIndex);
 }
 
 void MissingTableModel::search(const QString& searchText) {
@@ -113,9 +135,11 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
 }
 
 QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
+    Q_UNUSED(i);
     return NULL;
 }
 
 TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
-    return 0;
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_REMOVE;
 }

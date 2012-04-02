@@ -70,7 +70,7 @@ QApplication *a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
 
-void qInitImages_mixxx();
+//void qInitImages_mixxx();
 
 QFile Logfile; // global logfile variable
 
@@ -81,10 +81,8 @@ void MessageHandler(QtMsgType type, const char *input)
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
-    QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName()).arg(input);
-    QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
-    const char* s = ba.constData();
-
+    QByteArray ba;
+    ba = "[" + QThread::currentThread()->objectName().toLocal8Bit() + "]: " + input + "\n";
 
     if(!Logfile.isOpen())
     {
@@ -96,8 +94,6 @@ void MessageHandler(QtMsgType type, const char *input)
         Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    QTextStream Log(&Logfile);
-
     ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
 
     switch (type) {
@@ -107,25 +103,29 @@ void MessageHandler(QtMsgType type, const char *input)
             break;
         }
 #endif
-        fprintf(stderr, "Debug: %s\n", s);
-        Log << "Debug: " << s << "\n";
+        fprintf(stderr, "Debug %s", ba.constData());
+        Logfile.write("Debug ");
+        Logfile.write(ba);
         break;
     case QtWarningMsg:
-        fprintf(stderr, "Warning: %s\n", s);
-        Log << "Warning: " << s << "\n";
+        fprintf(stderr, "Warning %s", ba.constData());
+        Logfile.write("Warning ");
+        Logfile.write(ba);
         // Don't use qWarning for reporting user-facing errors.
         //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s\n", s);
-        Log << "Critical: " << s << "\n";
+        fprintf(stderr, "Critical %s", ba.constData());
+        Logfile.write("Critical ");
+        Logfile.write(ba);
         Logfile.flush();    // Ensure the error is written to the log before exiting
         dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
 //         exit(-1);    // Done in ErrorDialogHandler
         break; //NOTREACHED
     case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s\n", s);
-        Log << "Fatal: " << s << "\n";
+        fprintf(stderr, "Fatal %s", ba.constData());
+        Logfile.write("Fatal ");
+        Logfile.write(ba);
         Logfile.flush();    // Ensure the error is written to the log before aborting
         dialogHandler->requestErrorDialog(DLG_FATAL,input);
 //         abort();    // Done in ErrorDialogHandler
@@ -134,11 +134,15 @@ void MessageHandler(QtMsgType type, const char *input)
     Logfile.flush();
 }
 
-
 int main(int argc, char * argv[])
 {
     // Check if an instance of Mixxx is already running
     // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
+
+    // These need to be set early on (not sure how early) in order to trigger
+    // logic in the OS X appstore support patch from QTBUG-16549.
+    QCoreApplication::setOrganizationDomain("mixxx.org");
+    QCoreApplication::setOrganizationName("Mixxx");
 
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 
@@ -175,22 +179,25 @@ int main(int argc, char * argv[])
     // Only match supported file types since command line options are also parsed elsewhere
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
-    for (int i=0; i<argc; ++i)
-    {
-        if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
-            printf("Mixxx digital DJ software v");
-            printf(VERSION);
-            printf(" - Command line options");
-            printf("\n(These are case-sensitive.)\n\n\
+   for (int i = 0; i < argc; ++i) {
+       if (   argv[i] == QString("-h")
+            || argv[i] == QString("--h")
+            || argv[i] == QString("--help")
+    ) {
+           fputs("Mixxx digital DJ software v",stdout);
+           fputs(VERSION,stdout);
+           fputs(" - Command line options",stdout);
+           fputs(
+                   "\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
-                            ");
+                            ",stdout);
 
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            printf(fileExtensionsBA);
-            printf("\n\n");
-            printf("\
+            fputs(fileExtensionsBA.constData(),stdout);
+            fputs("\n\n",stdout);
+            fputs("\
                             Each file you specify will be loaded into the\n\
                             next virtual deck.\n\
 \n\
@@ -205,13 +212,14 @@ int main(int argc, char * argv[])
     --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
                             messages it receives and script functions it loads\n\
 \n\
-    --locale LOCALE         Use a custom locale for loading translations (e.g 'fr')\n\
+    --locale LOCALE         Use a custom locale for loading translations\n\
+                            (e.g 'fr')\n\
 \n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
-    -h, --help              Display this help message and exit");
+    -h, --help              Display this help message and exit",stdout);
 
-            printf("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
+            fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
             return(0);
         }
 
@@ -264,16 +272,19 @@ int main(int argc, char * argv[])
 
 
 #ifdef __APPLE__
-     qDebug() << "setting Qt's plugin seach path (on OS X)";
      QDir dir(QApplication::applicationDirPath());
-     //Set the search path for Qt plugins to be in the bundle's PlugIns directory,
-     //but only if we think the mixxx binary is in a bundle.
-     if (dir.path().contains("Mixxx.app")) {
-        dir.cdUp();
-        dir.cd("PlugIns");
-        //For some reason we need to do setLibraryPaths() and not addLibraryPath().
-        //The latter causes weird problems once the binary is bundled (happened with 1.7.2 when Brian packaged it up).
-        QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+     // Set the search path for Qt plugins to be in the bundle's PlugIns
+     // directory, but only if we think the mixxx binary is in a bundle.
+     if (dir.path().contains(".app/")) {
+         // If in a bundle, applicationDirPath() returns something formatted
+         // like: .../Mixxx.app/Contents/MacOS
+         dir.cdUp();
+         dir.cd("PlugIns");
+         qDebug() << "Setting Qt plugin search path to:" << dir.absolutePath();
+         // asantoni: For some reason we need to do setLibraryPaths() and not
+         // addLibraryPath(). The latter causes weird problems once the binary
+         // is bundled (happened with 1.7.2 when Brian packaged it up).
+         QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
      }
 #endif
 

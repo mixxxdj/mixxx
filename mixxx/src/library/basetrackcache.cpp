@@ -4,6 +4,7 @@
 #include "library/basetrackcache.h"
 
 #include "library/trackcollection.h"
+#include "library/searchqueryparser.h"
 
 namespace {
 
@@ -35,7 +36,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_bIsCaching(isCaching),
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
-          m_database(m_pTrackCollection->getDatabase()) {
+          m_database(m_pTrackCollection->getDatabase()),
+          m_pQueryParser(new SearchQueryParser(m_pTrackCollection->getDatabase())) {
     m_searchColumns << "artist"
                     << "album"
                     << "location"
@@ -52,6 +54,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
 }
 
 BaseTrackCache::~BaseTrackCache() {
+    delete m_pQueryParser;
 }
 
 const QStringList BaseTrackCache::columns() const {
@@ -66,12 +69,20 @@ int BaseTrackCache::fieldIndex(const QString columnName) const {
     return m_columnIndex.value(columnName, -1);
 }
 
-void BaseTrackCache::slotTrackAdded(int trackId) {
-    updateTrackInIndex(trackId);
+void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksAdded" << trackIds.size();
+    }
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotTrackRemoved(int trackId) {
-    m_trackInfo.remove(trackId);
+void BaseTrackCache::slotTracksRemoved(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksRemoved" << trackIds.size();
+    }
+    foreach (int trackId, trackIds) {
+        m_trackInfo.remove(trackId);
+    }
 }
 
 void BaseTrackCache::slotTrackDirty(int trackId) {
@@ -81,11 +92,28 @@ void BaseTrackCache::slotTrackDirty(int trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
+void BaseTrackCache::slotTrackChanged(int trackId) {
+    if (sDebug) {
+        qDebug() << this << "slotTrackChanged" << trackId;
+    }
+    QSet<int> trackIds;
+    trackIds.insert(trackId);
+    emit(tracksChanged(trackIds));
+}
+
 void BaseTrackCache::slotTrackClean(int trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    updateTrackInIndex(trackId);
+}
+
+bool BaseTrackCache::isCached(int trackId) const {
+    return m_trackInfo.contains(trackId);
+}
+
+void BaseTrackCache::ensureCached(int trackId) {
     updateTrackInIndex(trackId);
 }
 
@@ -146,7 +174,7 @@ void BaseTrackCache::buildIndex() {
     }
 
     QString queryString = QString("SELECT %1 FROM %2")
-            .arg(m_columnsJoined).arg(m_tableName);
+            .arg(m_columnsJoined, m_tableName);
 
     if (sDebug) {
         qDebug() << this << "buildIndex query:" << queryString;
@@ -181,10 +209,7 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
     }
 
     QString queryString = QString("SELECT %1 FROM %2 WHERE %3 in (%4)")
-            .arg(m_columnsJoined)
-            .arg(m_tableName)
-            .arg(m_idColumn)
-            .arg(idStrings.join(","));
+            .arg(m_columnsJoined, m_tableName, m_idColumn, idStrings.join(","));
 
     if (sDebug) {
         qDebug() << this << "updateTracksInIndex update query:" << queryString;
@@ -216,6 +241,8 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
         return QVariant(pTrack->getDateAdded());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         return QVariant(pTrack->getGenre());
+    } else if (fieldIndex(LIBRARYTABLE_COMPOSER) == column) {
+        return QVariant(pTrack->getComposer());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         return QVariant(pTrack->getType());
     } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
@@ -328,7 +355,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     QString filter = filterClause(searchQuery, extraFilter, idStrings);
     QString orderBy = orderByClause(sortColumn, sortOrder);
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
-            .arg(m_idColumn).arg(m_tableName).arg(filter).arg(orderBy);
+            .arg(m_idColumn, m_tableName, filter, orderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -452,39 +479,17 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 QString BaseTrackCache::filterClause(QString query, QString extraFilter,
                                      QStringList idStrings) const {
     QStringList queryFragments;
-
     if (!extraFilter.isNull() && extraFilter != "") {
         queryFragments << QString("(%1)").arg(extraFilter);
     }
 
     if (idStrings.size() > 0) {
         queryFragments << QString("%1 in (%2)")
-                .arg(m_idColumn).arg(idStrings.join(","));
+                .arg(m_idColumn, idStrings.join(","));
     }
 
-    if (!query.isNull() && query != "") {
-        QStringList tokens = query.split(" ");
-        QSqlField search("search", QVariant::String);
-
-        QStringList tokenFragments;
-        foreach (QString token, tokens) {
-            token = token.trimmed();
-            search.setValue("%" + token + "%");
-            QString escapedToken = m_database.driver()->formatValue(search);
-
-            QStringList columnFragments;
-            foreach (QString column, m_searchColumns) {
-                columnFragments << QString("%1 LIKE %2").arg(column).arg(escapedToken);
-            }
-            tokenFragments << QString("(%1)").arg(columnFragments.join(" OR "));
-        }
-        queryFragments << QString("(%1)").arg(tokenFragments.join(" AND "));
-    }
-
-    if (queryFragments.size() > 0) {
-        return "WHERE " + queryFragments.join(" AND ");
-    }
-    return "";
+    return m_pQueryParser->parseQuery(query, m_searchColumns,
+                                      queryFragments.join(" AND "));
 }
 
 QString BaseTrackCache::orderByClause(int sortColumn,
@@ -497,7 +502,7 @@ QString BaseTrackCache::orderByClause(int sortColumn,
     // this.
     QSqlQuery query(m_database);
     QString queryString = QString("SELECT %1 FROM %2 LIMIT 1")
-            .arg(m_columnsJoined).arg(m_tableName);
+            .arg(m_columnsJoined, m_tableName);
     query.prepare(queryString);
     query.exec();
 
@@ -514,7 +519,7 @@ QString BaseTrackCache::orderByClause(int sortColumn,
         f.name(), QSqlDriver::FieldName);
 
     s.append(QLatin1String("ORDER BY "));
-    QString sort_field = QString("%1.%2").arg(m_tableName).arg(field);
+    QString sort_field = QString("%1.%2").arg(m_tableName, field);
 
     // If the field is a string, sort using its lowercase form so sort is
     // case-insensitive.

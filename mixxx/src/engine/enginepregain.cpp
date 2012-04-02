@@ -114,6 +114,10 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     fGain = fGain*m_fReplayGainCorrection;
     m_pTotalGain->set(fGain);
 
+    // Clamp gain to within [0, 2.0] to prevent insane gains. This can happen
+    // (some corrupt files get really high replaygain values).
+    fGain = math_max(0.0, math_min(2.0, fGain));
+
     //qDebug()<<"Clock"<<(float)clock()/CLOCKS_PER_SEC;
     // SampleUtil deals with aliased buffers and gains of 1 or 0.
     SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);

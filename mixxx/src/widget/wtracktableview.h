@@ -19,10 +19,9 @@ const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigVal
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 
-class WTrackTableView : public WLibraryTableView
-{
+class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
- 	public:
+  public:
     WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                     TrackCollection* pTrackCollection);
     virtual ~WTrackTableView();
@@ -34,6 +33,7 @@ class WTrackTableView : public WLibraryTableView
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
+    void disableSorting();
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -45,6 +45,7 @@ class WTrackTableView : public WLibraryTableView
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
     void slotSendToAutoDJ();
+    void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
@@ -52,11 +53,16 @@ class WTrackTableView : public WLibraryTableView
     void doSortByColumn(int headerSection);
 
   private:
+    void sendToAutoDJ(bool bTop);
     void showTrackInfo(QModelIndex index);
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
+
+    // Mouse move event, implemented to hide the text and show an icon instead
+    // when dragging
+    void mouseMoveEvent(QMouseEvent *pEvent);
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();
@@ -84,6 +90,7 @@ class WTrackTableView : public WLibraryTableView
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;
+    QAction *m_pAutoDJTopAct;
 
     // Remove from table
     QAction *m_pRemoveAct;

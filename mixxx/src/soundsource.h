@@ -27,10 +27,12 @@
 #include "defs.h"
 #include <QString>
 
-#define MIXXX_SOUNDSOURCE_API_VERSION 2
+#define MIXXX_SOUNDSOURCE_API_VERSION 4
 /** @note SoundSource API Version history:
            1 - Mixxx 1.8.0 Beta 2
            2 - Mixxx 1.9.0 Pre (added key code)
+           3 - Mixxx 1.10.0 Pre (added freeing function for extensions)
+           4 - Mixxx 1.11.0 Pre (added composer field to SoundSource)
   */
 
 /** Getter function to be declared by all SoundSource plugins */
@@ -40,6 +42,8 @@ namespace Mixxx {
 typedef Mixxx::SoundSource* (*getSoundSourceFunc)(QString filename);
 typedef char** (*getSupportedFileExtensionsFunc)();
 typedef int (*getSoundSourceAPIVersionFunc)();
+/* New in version 3 */
+typedef void (*freeFileExtensionsFunc)(char** exts);
 
 
 /*
@@ -72,6 +76,7 @@ public:
     virtual QString getComment();
     virtual QString getYear();
     virtual QString getGenre();
+    virtual QString getComposer();
     virtual QString getTrackNumber();
     virtual float getReplayGain();
     virtual QString getKey();
@@ -88,6 +93,7 @@ public:
     virtual void setComment(QString);
     virtual void setYear(QString);
     virtual void setGenre(QString);
+    virtual void setComposer(QString);
     virtual void setTrackNumber(QString);
     virtual void setReplayGain(float);
     virtual void setKey(QString);
@@ -119,6 +125,7 @@ protected:
     QString m_sComment;
     QString m_sYear;
     QString m_sGenre;
+    QString m_sComposer;
     QString m_sTrackNumber;
     float m_fReplayGain;
     QString m_sKey;

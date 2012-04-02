@@ -15,27 +15,32 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wknob.h"
-#include "wpixmapstore.h"
-
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPaintEvent>
 
+#include "widget/wknob.h"
+
+#include "defs.h"
+#include "widget/wpixmapstore.h"
+
 WKnob::WKnob(QWidget * parent, float defaultValue)
-    : WAbstractControl(parent, defaultValue)
-{
-    m_pPixmaps = 0;
-    m_pPixmapBack = 0;
-    m_bDisabledLoaded = false;
-    setPositions(0);
+        : WAbstractControl(parent, defaultValue),
+          m_iPos(0),
+          m_iNoPos(0),
+          m_pPixmaps(NULL),
+          m_pPixmapBack(NULL),
+          m_bDisabledLoaded(false) {
 }
 
 WKnob::~WKnob()
 {
     resetPositions();
+    if (m_pPixmapBack) {
+       WPixmapStore::deletePixmap(m_pPixmapBack);
+    }
 }
 
 void WKnob::setup(QDomNode node)
@@ -45,10 +50,8 @@ void WKnob::setup(QDomNode node)
         setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
 
     // Number of states. Depends if disabled pics are defined as well
-    if (!selectNode(node, "DisabledPath").isNull())
-        setPositions(selectNodeInt(node, "NumberStates"),true);
-    else
-        setPositions(selectNodeInt(node, "NumberStates"),false);
+    setPositions(selectNodeInt(node, "NumberStates"),
+                 !selectNode(node, "DisabledPath").isNull());
 
     // Load knob pixmaps
     QString path = selectNodeQString(node, "Path");
@@ -67,10 +70,10 @@ void WKnob::setup(QDomNode node)
 
 void WKnob::setPositions(int iNoPos, bool bIncludingDisabled)
 {
+    resetPositions();
+
     m_iNoPos = iNoPos;
     m_iPos = 0;
-
-    resetPositions();
 
     if (m_iNoPos>0)
     {
@@ -88,12 +91,17 @@ void WKnob::resetPositions()
 {
     if (m_pPixmaps)
     {
-        for (int i=0; i<m_iNoPos; i++)
-            if (m_pPixmaps[i])
+        int pics = m_iNoPos;
+        if( m_bDisabledLoaded ){
+            pics *= 2;
+        }
+        for (int i=0; i<pics; i++) {
+            if (m_pPixmaps[i]) {
                 WPixmapStore::deletePixmap(m_pPixmaps[i]);
-
-        //WPixmapStore::deletePixmap(m_pPixmaps);
-        m_pPixmaps = 0;
+            }
+        }
+        delete [] m_pPixmaps;
+        m_pPixmaps = NULL;
     }
 }
 
@@ -108,6 +116,9 @@ void WKnob::setPixmap(int iPos, const QString &filename)
 void WKnob::setPixmapBackground(const QString &filename)
 {
     // Load background pixmap
+   if (m_pPixmapBack) {
+       WPixmapStore::deletePixmap(m_pPixmapBack);
+   }
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
         qDebug() << "WKnob: Error loading background pixmap:" << filename;
@@ -142,26 +153,36 @@ void WKnob::mouseMoveEvent(QMouseEvent * e)
 
 void WKnob::mousePressEvent(QMouseEvent * e)
 {
-    m_startPos = e->globalPos();
-
-    if (e->button() == Qt::RightButton)
-    {
+    switch (e->button()) {
+    case Qt::RightButton:
         reset();
         m_bRightButtonPressed = true;
-    } else {
+        break;
+    case Qt::LeftButton:
+    case Qt::MidButton:
+        m_startPos = e->globalPos();
         QApplication::setOverrideCursor(Qt::BlankCursor);
+        break;
+    default:
+        break;
     }
 }
 
 void WKnob::mouseReleaseEvent(QMouseEvent * e)
 {
-    if (e->button() == Qt::LeftButton) {
+    switch (e->button()) {
+    case Qt::LeftButton:
+    case Qt::MidButton:
         QCursor::setPos(m_startPos);
         QApplication::restoreOverrideCursor();
         emit(valueChangedLeftUp(m_fValue));
-    } else if (e->button()==Qt::RightButton) {
+        break;
+    case Qt::RightButton:
         m_bRightButtonPressed = false;
         //emit(valueChangedRightUp(m_fValue));
+        break;
+    default:
+        break;
     }
 
     update();
@@ -170,8 +191,12 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
 void WKnob::wheelEvent(QWheelEvent *e)
 {
     double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
+    double newValue = getValue() + wheelDirection;
+
+    // Clamp to [0.0, 127.0]
+    newValue = math_max(0.0, math_min(127.0, newValue));
+
+    updateValue(newValue);
 
     e->accept();
 
@@ -180,7 +205,7 @@ void WKnob::wheelEvent(QWheelEvent *e)
 
 void WKnob::paintEvent(QPaintEvent *)
 {
-    if (m_pPixmaps>0)
+    if (m_pPixmaps)
     {
         int idx = (int)(((m_fValue-64.)*(((float)m_iNoPos-1.)/127.))+((float)m_iNoPos/2.));
         // Range check

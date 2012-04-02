@@ -16,6 +16,7 @@ class ITunesTrackModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     ITunesTrackModel(QObject* parent, TrackCollection* pTrackCollection);
+    TrackModel::CapabilitiesFlags getCapabilities() const;
     virtual ~ITunesTrackModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;

@@ -23,6 +23,7 @@
 #include "midimessage.h"
 #include "mixxxcontrol.h"
 #include "controlobject.h"
+#include "midiledhandler.h"
 
 #ifdef __MIDISCRIPT__
 #include "midiscriptengine.h"
@@ -47,6 +48,7 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
         m_pMidiMapping = new MidiMapping(this);
     }
 
+    // TODO: Should this be in MidiDeviceManager instead?
     // Get --midiDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_midiDebug = commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
@@ -95,6 +97,7 @@ void MidiDevice::shutdown()
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
 #endif
+    MidiLedHandler::destroyHandlers(this);
     setReceiveInhibit(false);
 }
 
@@ -173,6 +176,15 @@ void MidiDevice::disableMidiLearn() {
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
+    if (midiDebugging()) {
+        qDebug() << QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
+                .arg(QString::number(status, 16).toUpper(),
+                     QString::number(channel+1, 10),
+                     QString::number((status & 255)>>4, 16).toUpper(),
+                     QString::number(control, 16).toUpper().rightJustified(2,'0'),
+                     QString::number(value, 16).toUpper().rightJustified(2,'0'));
+    }
+
     // some status bytes can have the channel encoded in them. Take out the
     // channel when necessary. We do this because later bits of this
     // function (and perhaps its callchain) assume the channel nibble to be
@@ -188,11 +200,6 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         status = (MidiStatusByte) (status & 0xF0);
     }
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
-    if (midiDebugging()) qDebug() << QString("MIDI ch %1: opcode: %2, ctrl: %3, val: %4")
-        .arg(QString::number(channel+1, 16).toUpper())
-        .arg(QString::number(status & 255, 16).toUpper())
-        .arg(QString::number(control, 16).toUpper())
-        .arg(QString::number(value, 16).toUpper());
 
     MidiMessage inputCommand(status, control, channel);
 
@@ -229,7 +236,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     //qDebug() << "MidiDevice: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
 
     ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
-    
+
     MidiOption currMidiOption = mixxxControl.getMidiOption();
 
 #ifdef __MIDISCRIPT__
@@ -282,13 +289,13 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
                                                                        // computed differently.
             default: break;
         }
-        
+
         // Soft-takeover is processed in addition to any other options
         if (currMidiOption == MIDI_OPT_SOFT_TAKEOVER) {
             m_st.enable(mixxxControl);  // This is the only place to enable it if it isn't already.
             if (m_st.ignore(mixxxControl,newValue,true)) return;
         }
-        
+
         ControlObject::sync();
 
         //Super dangerous cast here... Should be fine once MidiCategory is replaced with MidiStatusByte permanently.
@@ -304,10 +311,10 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
 
     QString message = m_strDeviceName+": [";
-    for(uint i=0; i<length; i++) {
-        message += QString("%1%2")
-                    .arg(data[i], 2, 16, QChar('0')).toUpper()
-                    .arg((i<(length-1))?' ':']');
+    for (uint i = 0; i < length; ++i) {
+        message += QString("%1%2").arg(
+            QString("%1").arg(data[i], 2, 16, QChar('0')).toUpper(),
+            QString("%1").arg((i < (length-1)) ? ' ' : ']'));
     }
 
     if (midiDebugging()) qDebug()<< message;
@@ -353,11 +360,9 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
 }
 #endif
 
-bool MidiDevice::midiDebugging()
-{
-    //Assumes a lock is already held. :/
-    bool debug = m_midiDebug;
-    return debug;
+bool MidiDevice::midiDebugging() {
+    // Assumes a lock is already held. :/
+    return m_midiDebug;
 }
 
 void MidiDevice::setReceiveInhibit(bool inhibit)

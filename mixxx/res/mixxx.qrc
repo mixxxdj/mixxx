@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>html/crates.html</file>
         <file>html/playlists.html</file>
+        <file>html/setlogs.html</file>
         <file>images/mixxx-icon.png</file>
         <file>images/ic_mixxx_window.png</file>
         <file>images/templates/logo_mixxx.png</file>
@@ -22,6 +23,7 @@
         <file>images/library/ic_library_autodj.png</file>
         <file>images/library/ic_library_browse.png</file>
         <file>images/library/ic_library_crates.png</file>
+        <file>images/library/ic_library_drag_and_drop.png</file>
         <file>images/library/ic_library_itunes.png</file>
         <file>images/library/ic_library_library.png</file>
         <file>images/library/ic_library_locked.png</file>
@@ -31,5 +33,50 @@
         <file>images/library/ic_library_rhythmbox.png</file>
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_recordings.png</file>
+        <file>images/library/ic_library_setlog.png</file>
+        <file>images/library/ic_library_setlog_current.png</file>
+        <file>translations/mixxx_ar.qm</file>
+        <file>translations/mixxx_bg.qm</file>
+        <file>translations/mixxx_br.qm</file>
+        <file>translations/mixxx_ca.qm</file>
+        <file>translations/mixxx_cs.qm</file>
+        <file>translations/mixxx_da.qm</file>
+        <file>translations/mixxx_de.qm</file>
+        <file>translations/mixxx_el.qm</file>
+        <file>translations/mixxx_en_GB.qm</file>
+        <file>translations/mixxx_eo.qm</file>
+        <file>translations/mixxx_es.qm</file>
+        <file>translations/mixxx_et.qm</file>
+        <file>translations/mixxx_eu.qm</file>
+        <file>translations/mixxx_fi.qm</file>
+        <file>translations/mixxx_fr.qm</file>
+        <file>translations/mixxx_gl.qm</file>
+        <file>translations/mixxx_he.qm</file>
+        <file>translations/mixxx_hu.qm</file>
+        <file>translations/mixxx_hy.qm</file>
+        <file>translations/mixxx_ia.qm</file>
+        <file>translations/mixxx_id.qm</file>
+        <file>translations/mixxx_is.qm</file>
+        <file>translations/mixxx_it.qm</file>
+        <file>translations/mixxx_ja.qm</file>
+        <file>translations/mixxx_lb.qm</file>
+        <file>translations/mixxx_ml.qm</file>
+        <file>translations/mixxx_mn.qm</file>
+        <file>translations/mixxx_ms.qm</file>
+        <file>translations/mixxx_nl.qm</file>
+        <file>translations/mixxx_nn.qm</file>
+        <file>translations/mixxx_oc.qm</file>
+        <file>translations/mixxx_pl.qm</file>
+        <file>translations/mixxx_pt_BR.qm</file>
+        <file>translations/mixxx_pt.qm</file>
+        <file>translations/mixxx_ro.qm</file>
+        <file>translations/mixxx_ru.qm</file>
+        <file>translations/mixxx_sl.qm</file>
+        <file>translations/mixxx_sr.qm</file>
+        <file>translations/mixxx_sv.qm</file>
+        <file>translations/mixxx_tr.qm</file>
+        <file>translations/mixxx_uk.qm</file>
+        <file>translations/mixxx_uz.qm</file>
+        <file>translations/mixxx_zh_CN.qm</file>
     </qresource>
 </RCC>

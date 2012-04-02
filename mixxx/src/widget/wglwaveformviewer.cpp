@@ -30,12 +30,13 @@ WGLWaveformViewer::WGLWaveformViewer(
 
     m_pGroup = group;
 
+    m_bScratching = false;
+    m_bBending = false;
+
     m_pScratchEnable = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
     m_pScratch = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "scratch_position")));
-    m_pPlayPosition = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "visual_playposition")));
     m_pTrackSamples = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "track_samples")));
     m_pTrackSampleRate = new ControlObjectThreadMain(
@@ -64,6 +65,13 @@ bool WGLWaveformViewer::directRendering()
 
 
 WGLWaveformViewer::~WGLWaveformViewer() {
+    delete m_pScratchEnable;
+    delete m_pScratch;
+    delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
+    delete m_pRate;
+    delete m_pRateRange;
+    delete m_pRateDir;
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {
@@ -120,14 +128,21 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
     if(e->type() == QEvent::MouseButtonPress) {
         m_iMouseStart = m->x();
         if(m->button() == Qt::LeftButton) {
-            m_dInitialPlaypos = m_pPlayPosition->get() * m_pTrackSamples->get();
+            // If we are pitch-bending then disable and reset because the two
+            // shouldn't be used at once.
+            if (m_bBending) {
+                emit(valueChangedRightDown(64));
+                m_bBending = false;
+            }
             m_bScratching = true;
-            m_pScratch->slotSet(m_dInitialPlaypos);
+            m_pScratch->slotSet(0);
             m_pScratchEnable->slotSet(1.0f);
-            //qDebug() << "m_dInitialPlaypos" << m_dInitialPlaypos;
 
             // Set the cursor to a hand while the mouse is down.
             setCursor(Qt::ClosedHandCursor);
+        } else if (m->button() == Qt::RightButton) {
+            emit(valueChangedRightDown(64));
+            m_bBending = true;
         }
     } else if(e->type() == QEvent::MouseMove) {
         // Only send signals for mouse moving if the left button is pressed
@@ -140,11 +155,22 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2;
 
             // To take care of one one movement when zoom changes with pitch
-            double rateAdjust = m_pRateDir->get() * math_min(0.99, m_pRate->get() * m_pRateRange->get());
-
-            double targetPosition = m_dInitialPlaypos - (curX - m_iMouseStart) * samplesPerPixel * (1 + rateAdjust);
-            //qDebug() << "Start:" << m_dInitialPlaypos << "Target:" << targetPosition;
+            double rateAdjust = m_pRateDir->get() *
+                    math_min(0.99, m_pRate->get() * m_pRateRange->get());
+            double targetPosition = (m_iMouseStart - curX) *
+                    samplesPerPixel * (1 + rateAdjust);
+            //qDebug() << "Target:" << targetPosition;
             m_pScratch->slotSet(targetPosition);
+        } else if (m_iMouseStart != -1 && m_bBending) {
+            // start at the middle of 0-127, and emit values based on
+            // how far the mouse has travelled horizontally
+            double v = 64 + (double)(m->x()-m_iMouseStart)/10;
+            // clamp to 0-127
+            if(v<0)
+                v = 0;
+            else if(v > 127)
+                v = 127;
+            emit(valueChangedRightDown(v));
         }
     } else if(e->type() == QEvent::MouseButtonRelease) {
         if (m_bScratching) {
@@ -153,6 +179,10 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
             // Set the cursor back to an arrow.
             setCursor(Qt::ArrowCursor);
+        }
+        if (m_bBending) {
+            emit(valueChangedRightDown(64));
+            m_bBending = false;
         }
         m_iMouseStart = -1;
     } else {
@@ -168,7 +198,8 @@ void WGLWaveformViewer::dragEnterEvent(QDragEnterEvent * event)
 {
     // Accept the enter event if the thing is a filepath and nothing's playing
     // in this deck.
-    if (event->mimeData()->hasUrls()) {
+    if (event->mimeData()->hasUrls() &&
+        event->mimeData()->urls().size() > 0) {
         ControlObject *pPlayCO = ControlObject::getControl(
             ConfigKey(m_pGroup, "play"));
         if (pPlayCO && pPlayCO->get()) {
@@ -179,9 +210,9 @@ void WGLWaveformViewer::dragEnterEvent(QDragEnterEvent * event)
     }
 }
 
-void WGLWaveformViewer::dropEvent(QDropEvent * event)
-{
-    if (event->mimeData()->hasUrls()) {
+void WGLWaveformViewer::dropEvent(QDropEvent * event) {
+    if (event->mimeData()->hasUrls() &&
+        event->mimeData()->urls().size() > 0) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();
