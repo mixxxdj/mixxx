@@ -207,8 +207,8 @@ void PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId) {
     position++;
 
     //Insert the song into the PlaylistTracks table
-    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
-                  "VALUES (:playlist_id, :track_id, :position)");
+    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position, pl_datetime_added)"
+                  "VALUES (:playlist_id, :track_id, :position, CURRENT_TIMESTAMP)");
     query.bindValue(":playlist_id", playlistId);
 
 
@@ -398,8 +398,8 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     }
 
     //Insert the song into the PlaylistTracks table
-    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
-                  "VALUES (:playlist_id, :track_id, :position)");
+    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position, pl_datetime_added)"
+                  "VALUES (:playlist_id, :track_id, :position, CURRENT_TIMESTAMP)");
     query.bindValue(":playlist_id", playlistId);
     query.bindValue(":track_id", trackId);
     query.bindValue(":position", position);

@@ -21,6 +21,11 @@ WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
     m_place = true;
     showPlaceholder();
 
+    QShortcut *setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
+    connect(setFocusShortcut, SIGNAL(activated()), this, SLOT(setFocus()));
+    QShortcut *clearTextShortcut = new QShortcut(QKeySequence(tr("Esc", "Search|Clear")), this, 0, 0, Qt::WidgetShortcut);
+    connect(clearTextShortcut, SIGNAL(activated()), this, SLOT(clear()));
+
     //Set up a timer to search after a few hundred milliseconds timeout.
     //This stops us from thrashing the database if you type really fast.
     m_searchTimer.setSingleShot(true);

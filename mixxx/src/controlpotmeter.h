@@ -60,6 +60,16 @@ public slots:
     void incSmallValue(double);
     /** Decreases the value by smaller step. */
     void decSmallValue(double);
+    /** Sets the value to 1.0. */
+    void setToOne(double);
+    /** Sets the value to -1.0. */
+    void setToMinusOne(double);
+    /** Sets the value to 0.0. */
+    void setToZero(double);
+    /** Toggles the value between 0.0 and 1.0. */
+    void toggleValue(double);
+    /** Toggles the value between -1.0 and 0.0. */
+    void toggleMinusValue(double);
 
 protected:
     void setValueFromMidi(MidiCategory c, double v);

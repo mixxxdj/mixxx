@@ -73,7 +73,7 @@ QApplication *a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
 
-void qInitImages_mixxx();
+//void qInitImages_mixxx();
 
 QFile Logfile; // global logfile variable
 
@@ -84,11 +84,8 @@ void MessageHandler(QtMsgType type, const char *input)
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
-    QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName(), input);
-    QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
-    const char* s = ba.constData();
-
-
+    QByteArray ba;
+    ba = "[" + QThread::currentThread()->objectName().toLocal8Bit() + "]: " + input + "\n";
 
     if(!Logfile.isOpen())
     {
@@ -128,8 +125,6 @@ void MessageHandler(QtMsgType type, const char *input)
         Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    QTextStream Log(&Logfile);
-
     ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
 
     switch (type) {
@@ -139,25 +134,29 @@ void MessageHandler(QtMsgType type, const char *input)
             break;
         }
 #endif
-        fprintf(stderr, "Debug: %s\n", s);
-        Log << "Debug: " << s << "\n";
+        fprintf(stderr, "Debug %s", ba.constData());
+        Logfile.write("Debug ");
+        Logfile.write(ba);
         break;
     case QtWarningMsg:
-        fprintf(stderr, "Warning: %s\n", s);
-        Log << "Warning: " << s << "\n";
+        fprintf(stderr, "Warning %s", ba.constData());
+        Logfile.write("Warning ");
+        Logfile.write(ba);
         // Don't use qWarning for reporting user-facing errors.
         //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s\n", s);
-        Log << "Critical: " << s << "\n";
+        fprintf(stderr, "Critical %s", ba.constData());
+        Logfile.write("Critical ");
+        Logfile.write(ba);
         Logfile.flush();    // Ensure the error is written to the log before exiting
         dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
 //         exit(-1);    // Done in ErrorDialogHandler
         break; //NOTREACHED
     case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s\n", s);
-        Log << "Fatal: " << s << "\n";
+        fprintf(stderr, "Fatal %s", ba.constData());
+        Logfile.write("Fatal ");
+        Logfile.write(ba);
         Logfile.flush();    // Ensure the error is written to the log before aborting
         dialogHandler->requestErrorDialog(DLG_FATAL,input);
 //         abort();    // Done in ErrorDialogHandler
