@@ -325,7 +325,7 @@ void VinylControlXwax::run()
         //when the filepos is past safe (more accurate),
         //but it can also happen in relative mode if the vinylpos is nearing the end
         //If so, change to constant mode so DJ can move the needle safely
-
+        
         if (!atRecordEnd && reportedPlayButton)
         {
             if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
@@ -375,32 +375,38 @@ void VinylControlXwax::run()
         //check here for position > safe, and if no record end mode,
         //then trigger track selection mode.  just pass position to it
         //and ignore pitch
-
+        
         if (!atRecordEnd)
         {
             if (iPosition != -1 && iPosition > m_uiSafeZone)
             {
-                //until I can figure out how to detect "track 2" on serato CD,
-                //don't try track selection
-                if (!m_bCDControl)
+                //only enable if pitch is steady, though.  Heavy scratching can
+                //produce crazy results and trigger this mode
+                if (bTrackSelectMode || checkSteadyPitch(dVinylPitch, filePosition) > 0.1)
                 {
-                    if (!bTrackSelectMode)
+                    //until I can figure out how to detect "track 2" on serato CD,
+                    //don't try track selection
+                    if (!m_bCDControl)
                     {
-                        qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
-                        bTrackSelectMode = true;
-                        togglePlayButton(FALSE);
-                           resetSteadyPitch(0.0f, 0.0f);
-                        controlScratch->slotSet(0.0f);
+                        if (!bTrackSelectMode)
+                        {
+                            qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
+                            bTrackSelectMode = true;
+                            togglePlayButton(FALSE);
+                               resetSteadyPitch(0.0f, 0.0f);
+                            controlScratch->slotSet(0.0f);
+                        }
+                        doTrackSelection(true, dVinylPitch, iPosition);
                     }
-                    doTrackSelection(true, dVinylPitch, iPosition);
+
+                    //hm I wonder if track will keep playing while this happens?
+                    //not sure what we want to do here...  probably enforce
+                    //stopped deck.
+
+                    //but if constant mode...  nah, force stop.
+                    continue;
                 }
-
-                //hm I wonder if track will keep playing while this happens?
-                //not sure what we want to do here...  probably enforce
-                //stopped deck.
-
-                //but if constant mode...  nah, force stop.
-                continue;
+                //if it's not steady yet we process as normal
             }
             else
             {
@@ -546,7 +552,6 @@ void VinylControlXwax::run()
                     dDriftControl = 0.0;
                 }
 
-                //if we hit the end of the ring, loop around
                 dOldPos = dVinylPosition;
             }
             else
