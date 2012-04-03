@@ -947,7 +947,8 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
              (optional) beta value for the filter
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta) {
+void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
+                                     float alpha, float beta, bool ramp) {
 
     // If we're already scratching this deck, override that with this request
     if (m_dx[deck]) {
@@ -968,31 +969,34 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
 
     // Ramp
     float initVelocity = 0.0;   // Default to stopped
-
-    // See if the deck is already being scratched
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
-    if (cot != NULL && cot->get() == 1) {
-        // If so, set the filter's initial velocity to the scratch speed
-        cot = getControlObjectThread(group, "scratch2");
-        if (cot != NULL) initVelocity=cot->get();
-    }
-    else {
-        // See if deck is playing
-        cot = getControlObjectThread(group, "play");
-        if (cot != NULL && cot->get() == 1) {
-            // If so, set the filter's initial velocity to the playback speed
-            float rate=0;
-            cot = getControlObjectThread(group, "rate");
-            if (cot != NULL) rate = cot->get();
-            cot = getControlObjectThread(group, "rateRange");
-            if (cot != NULL) rate = rate * cot->get();
-            // Add 1 since the deck is playing
-            rate++;
-            // See if we're in reverse play
-            cot = getControlObjectThread(group, "reverse");
-            if (cot != NULL && cot->get() == 1) rate = -rate;
 
-            initVelocity = rate;
+    // If ramping is desired, figure out the deck's current speed
+    if (ramp) {
+        // See if the deck is already being scratched
+        if (cot != NULL && cot->get() == 1) {
+            // If so, set the filter's initial velocity to the scratch speed
+            cot = getControlObjectThread(group, "scratch2");
+            if (cot != NULL) initVelocity=cot->get();
+        }
+        else {
+            // See if deck is playing
+            cot = getControlObjectThread(group, "play");
+            if (cot != NULL && cot->get() == 1) {
+                // If so, set the filter's initial velocity to the playback speed
+                float rate=0;
+                cot = getControlObjectThread(group, "rate");
+                if (cot != NULL) rate = cot->get();
+                cot = getControlObjectThread(group, "rateRange");
+                if (cot != NULL) rate = rate * cot->get();
+                // Add 1 since the deck is playing
+                rate++;
+                // See if we're in reverse play
+                cot = getControlObjectThread(group, "reverse");
+                if (cot != NULL && cot->get() == 1) rate = -rate;
+
+                initVelocity = rate;
+            }
         }
     }
 

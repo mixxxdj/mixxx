@@ -65,7 +65,8 @@ Q_OBJECT
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QString scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
-    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
+    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm,
+                                   float alpha, float beta, bool ramp = true);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
