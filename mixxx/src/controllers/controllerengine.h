@@ -31,8 +31,6 @@ class ControlObjectThread;
 class ControllerEngine : public QObject {
 Q_OBJECT
 
-//   friend class Controller;    // so our timerEvent() can remain protected
-
   public:
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
@@ -72,11 +70,6 @@ Q_OBJECT
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
 
-    // Below is protected so MidiControllerEngine can access them
-    bool checkException();
-
-    QScriptEngine *m_pEngine;
-
   public slots:
     void slotValueChanged(double value);
     // Evaluate a script file
@@ -108,6 +101,9 @@ Q_OBJECT
     void scriptErrorDialog(QString detailedError);
     void generateScriptFunctions(QString code);
     void stopAllTimers();
+
+    bool checkException();
+    QScriptEngine *m_pEngine;
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
 
