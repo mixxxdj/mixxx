@@ -37,12 +37,13 @@ class WaveformStride {
         }
     }
 
-    inline void store( Waveform* waveform, int index) {
+    inline void store(WaveformData* data) {
         for( int i = 0; i < ChannelCount; i++) {
-            waveform->all(index+i)  = (unsigned char)( m_convertionFactor * m_overallData[i]);
-            waveform->low(index+i)  = (unsigned char)( m_convertionFactor * m_filteredData[i][ Low]);
-            waveform->mid(index+i)  = (unsigned char)( m_convertionFactor * m_filteredData[i][ Mid]);
-            waveform->high(index+i) = (unsigned char)( m_convertionFactor * m_filteredData[i][High]);
+            WaveformData& datum = *(data + i);
+            datum.filtered.all = (unsigned char)(m_convertionFactor * m_overallData[i]);
+            datum.filtered.low = (unsigned char)(m_convertionFactor * m_filteredData[i][Low]);
+            datum.filtered.mid = (unsigned char)(m_convertionFactor * m_filteredData[i][Mid]);
+            datum.filtered.high = (unsigned char)(m_convertionFactor * m_filteredData[i][High]);
         }
     }
 
@@ -81,6 +82,10 @@ class AnalyserWaveform : public Analyser {
 
     Waveform* m_waveform;
     Waveform* m_waveformSummary;
+    int m_waveformDataSize;
+    int m_waveformSummaryDataSize;
+    WaveformData* m_waveformData;
+    WaveformData* m_waveformSummaryData;
 
     WaveformStride m_stride;
     WaveformStride m_strideSummary;
