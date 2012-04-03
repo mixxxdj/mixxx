@@ -53,7 +53,6 @@ public slots:
 
     void slotLoadNewTrack(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
-    void slotTrackProgress(TrackPointer pTrack, int progress);
 
 signals:
     void trackDropped(QString filename, QString group);
@@ -67,6 +66,7 @@ private slots:
     void loopStartChanged(double v);
     void loopEndChanged(double v);
     void loopEnabledChanged(double v);
+    void slotWaveformSummaryUpdated();
 
 private:
     /** append the waveform overviw pixmap according to available data in waveform */
@@ -76,7 +76,7 @@ private:
     const char* m_pGroup;
 
     Waveform* m_waveform;
-    QPixmap* m_waveformPixmap;
+    QPixmap m_waveformPixmap;
 
     /** Hold the last visual sample processed to generate the pixmap*/
     int m_sampleDuration;
@@ -88,8 +88,6 @@ private:
 
     // Current active track
     TrackPointer m_pCurrentTrack;
-    bool m_analysing;
-    int m_iProgress;
 
     // Loop controls and values
     ControlObject* m_pLoopStart;

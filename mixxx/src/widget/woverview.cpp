@@ -36,10 +36,6 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_iPos = 0;
     m_bDrag = false;
 
-    // Analyse progress
-    m_iProgress = 0;
-    m_analysing = false;
-
     setAcceptDrops(true);
 
     m_pLoopStart = ControlObject::getControl(
@@ -90,24 +86,19 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     }
 
     //vrince
-    m_waveform = 0;
-    m_waveformPixmap = 0;
+    m_waveform = NULL;
+    m_waveformPixmap = QPixmap();
     m_actualCompletion = 0;
     m_visualSamplesByPixel = 0.0;
 
-    m_timerPixmapRefresh = 0;
+    m_timerPixmapRefresh = -1;
     m_renderSampleLimit = 1000;
 }
 
-WOverview::~WOverview()
-{
-    if(m_waveformPixmap)
-        delete m_waveformPixmap;
+WOverview::~WOverview() {
 }
 
-void WOverview::setup(QDomNode node)
-{
-
+void WOverview::setup(QDomNode node) {
     // Background color and pixmap, default background color to transparent
     m_qColorBackground = QColor(0, 0, 0, 0);
     if (!selectNode(node, "BgColor").isNull()) {
@@ -131,14 +122,12 @@ void WOverview::setup(QDomNode node)
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
 
-    if(!m_waveformPixmap)
-        m_waveformPixmap = new QPixmap(size());
+    m_waveformPixmap = QPixmap(size());
 
-    m_waveformPixmap->fill( QColor(0,0,0,0));
+    m_waveformPixmap.fill( QColor(0,0,0,0));
 }
 
-void WOverview::setValue(double fValue)
-{
+void WOverview::setValue(double fValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
@@ -150,47 +139,57 @@ void WOverview::setValue(double fValue)
     }
 }
 
+void WOverview::slotWaveformSummaryUpdated() {
+    if (!m_pCurrentTrack) {
+        return;
+    }
+    m_waveform = m_pCurrentTrack->getWaveformSummary();
+    if (m_timerPixmapRefresh == -1) {
+        m_timerPixmapRefresh = startTimer(60);
+    }
+    update();
+}
+
 void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
 
     //qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
 
+    if (m_pCurrentTrack) {
+        disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
+                   this, SLOT(slotWaveformSummaryUpdated()));
+    }
+
     if (pTrack) {
+        m_pCurrentTrack = pTrack;
+
         m_sampleDuration = pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels();
 
-        //m_waveform = pTrack->getWaveform();
-        m_waveform = pTrack->getWaveformSummary();
-
+        connect(pTrack.data(), SIGNAL(waveformSummaryUpdated()),
+                this, SLOT(slotWaveformSummaryUpdated()));
+        slotWaveformSummaryUpdated();
         //qDebug() << "WOverview::slotLoadNewTrack - startTimer";
-        m_timerPixmapRefresh = startTimer(60);
     }
 
     m_actualCompletion = 0;
     m_visualSamplesByPixel = 0.0;
 
-    m_waveformPixmap->fill( QColor(0,0,0,0));
+    m_waveformPixmap.fill(QColor(0, 0, 0, 0));
     update();
 }
 
 void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
-
-    m_waveform = 0;
+    m_pCurrentTrack.clear();
+    m_waveform = NULL;
     m_actualCompletion = 0;
     m_visualSamplesByPixel = 0.0;
 
-    update();
-
     //qDebug() << "WOverview::slotUnloadTrack - kill Timer";
-    killTimer(m_timerPixmapRefresh);
-}
-
-void WOverview::slotTrackProgress(TrackPointer pTrack, int progress)
-{
-    if (pTrack == m_pCurrentTrack) {
-        if (progress != m_iProgress) {
-            m_iProgress = progress;
-            update();
-        }
+    if (m_timerPixmapRefresh != -1) {
+        killTimer(m_timerPixmapRefresh);
+        m_timerPixmapRefresh = -1;
     }
+
+    update();
 }
 
 void WOverview::cueChanged(double v) {
@@ -227,18 +226,29 @@ bool WOverview::drawNextPixmapPart() {
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
-    if( !m_waveform || m_waveform->getDataSize() == 0)
+    if (!m_waveform) {
         return false;
+    }
+
+    if (!m_waveform->getMutex()->tryLock()) {
+        return false;
+    }
+
+    if (m_waveform->getDataSize() == 0) {
+        m_waveform->getMutex()->unlock();
+        return false;
+    }
 
     //test id there is some new to draw (at least of pixel width)
     const int waveformCompletion = m_waveform->getCompletion();
     int completionIncrement = waveformCompletion - m_actualCompletion;
 
-    if( (double)completionIncrement < m_visualSamplesByPixel)
-        return false;
+    //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion" << nextCompletion;
 
-    if( !m_waveform->getMutex()->tryLock())
+    if ((double)completionIncrement < m_visualSamplesByPixel) {
+        m_waveform->getMutex()->unlock();
         return false;
+    }
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_actualCompletion" << m_actualCompletion
     //         << "m_waveform->getCompletion()" << waveformCompletion
@@ -247,7 +257,7 @@ bool WOverview::drawNextPixmapPart() {
     completionIncrement = std::min(completionIncrement,m_renderSampleLimit);
     const int nextCompletion = m_actualCompletion + completionIncrement;
 
-    QPainter painter(m_waveformPixmap);
+    QPainter painter(&m_waveformPixmap);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 
@@ -300,10 +310,8 @@ bool WOverview::drawNextPixmapPart() {
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
-
     m_actualCompletion = nextCompletion;
     m_waveform->getMutex()->unlock();
-
     return true;
 }
 
@@ -347,11 +355,12 @@ void WOverview::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     // Fill with transparent pixels
-    painter.drawPixmap(rect(),m_backgroundPixmap);
+    painter.drawPixmap(rect(), m_backgroundPixmap);
 
     // Draw waveform, then playpos
-    if( m_waveform)
-        painter.drawPixmap(rect(),*m_waveformPixmap);
+    if (m_waveform) {
+        painter.drawPixmap(rect(), m_waveformPixmap);
+    }
 
     if (m_sampleDuration > 0) {
         // Draw play position
@@ -435,23 +444,26 @@ void WOverview::paintEvent(QPaintEvent *)
 
 void WOverview::timerEvent(QTimerEvent* timer) {
 
-    if( timer->timerId() == m_timerPixmapRefresh) {
+    if (timer->timerId() == m_timerPixmapRefresh) {
+        if (m_waveform == NULL) {
+            return;
+        }
 
         //qDebug() << "timerEvent - m_timerPixmapRefresh";
-
         m_visualSamplesByPixel = (double)m_waveform->getDataSize() / (double)width();
 
-        if( drawNextPixmapPart())
+        if (drawNextPixmapPart())
             update();
 
         //qDebug() << "timerEvent - m_actualCompletion" << m_actualCompletion << "m_waveform->size()" << m_waveform->size();
 
         //if m_waveform is empty ... actual computation do not start !
         //it must be in the analyser queue, we need to wait until it ready to display
-        if( m_waveform->getDataSize() > 0 && m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
-
+        if (m_waveform->getDataSize() > 0 &&
+            m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
             //qDebug() << " WOverview::timerEvent - kill timer";
             killTimer(m_timerPixmapRefresh);
+            m_timerPixmapRefresh = -1;
         }
     }
 }
