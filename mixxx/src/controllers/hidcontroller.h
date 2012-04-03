@@ -30,8 +30,7 @@ class HidReader : public QThread {
         void stop() { m_bStop=true; };
 
     signals:
-        /** WARNING: Receiving slot must delete the data array! */
-        void incomingData(unsigned char* data, unsigned int length);
+        void incomingData(QByteArray data);
 
     protected:
         void run();
@@ -49,8 +48,6 @@ class HidController : public Controller {
 
     protected:
         Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
-        /** ByteArray version */
-        Q_INVOKABLE void sendBa(QByteArray data, unsigned int length, unsigned int reportID = 0);
 
     private slots:
         int open();
@@ -58,7 +55,7 @@ class HidController : public Controller {
         
     private:
         //  For devices which only support a single report, reportID must be set to 0x0.
-        void send(unsigned char data[], unsigned int length, unsigned int reportID = 0);
+        void send(QByteArray data, unsigned int reportID = 0);
         
         // Local copies of things we need from hid_device_info
         int hid_interface_number;

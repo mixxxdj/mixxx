@@ -32,6 +32,9 @@ Q_OBJECT
     public:
         Controller();
         virtual ~Controller();  // Subclass should call close() at minimum.
+
+        inline QString defaultPreset();
+        
         bool isOpen() { return m_bIsOpen; };
         bool isOutputDevice() { return m_bIsOutputDevice; };
         bool isInputDevice() { return m_bIsInputDevice; };
@@ -58,8 +61,6 @@ Q_OBJECT
             when 'poll' is true and pass the event on to the engine when not. */
         virtual void timerEvent(QTimerEvent *event, bool poll);
         Q_INVOKABLE void send(QList<int> data, unsigned int length);
-        /** ByteArray version */
-        Q_INVOKABLE void sendBa(QByteArray data, unsigned int length);
         /** Updates the DOM with what script files are currently loaded.
             Sub-classes need to re-implement this (and call it first) if they
             need to add any other items. */
@@ -84,7 +85,11 @@ Q_OBJECT
     // Making these slots protected/private ensures that other parts of Mixxx
     //  can only signal them, preventing thread contention
     protected slots:
-        void receivePointer(unsigned char* data, unsigned int length);
+        /** Handles packets of raw bytes and passes them to an ".incomingData"
+            script function that is assumed to exist.
+            (Sub-classes may want to reimplement this if they have an alternate
+            way of handling such data.) */
+        virtual void receive(const QByteArray data);
         /** Initializes the controller engine */
         virtual void applyPreset();
 
@@ -96,14 +101,9 @@ Q_OBJECT
         void loadPreset(QString path, bool forceLoad=false);
         
     private:
-        /** Handles packets of raw bytes and passes them to an ".incomingData"
-            script function that is assumed to exist.
-            (Sub-classes may want to reimplement this if they have an alternate
-            way of handling such data.) */
-        virtual void receive(const unsigned char data[], unsigned int length);
         /** This must be reimplmented by sub-classes desiring to send raw bytes
             to a controller. */
-        virtual void send(unsigned char data[], unsigned int length);
+        virtual void send(QByteArray data);
         
         /** Adds a script file name and function prefix to the list to be loaded. */
         void addScriptFile(QString filename, QString functionprefix);

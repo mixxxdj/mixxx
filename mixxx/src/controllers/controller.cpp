@@ -39,6 +39,10 @@ Controller::~Controller() {
 //     close(); // I wish I could put this here to enforce it automatically
 }
 
+QString Controller::defaultPreset() {
+    return PRESETS_PATH.append(m_sDeviceName.replace(" ", "_") + CONTROLLER_PRESET_EXTENSION);
+}
+
 QString Controller::presetExtension() {
     return CONTROLLER_PRESET_EXTENSION;
 }
@@ -71,7 +75,7 @@ void Controller::stopEngine()
 *        specified within matches the name of this Controller.
 */
 void Controller::loadPreset(bool forceLoad) {
-    loadPreset(DEFAULT_DEVICE_PRESET, forceLoad);
+    loadPreset(defaultPreset(), forceLoad);
 }
 
 /** loadPreset(QString,bool)
@@ -167,7 +171,7 @@ void Controller::addScriptFile(QString filename, QString functionprefix) {
 }
 
 void Controller::savePreset() {
-    savePreset(DEFAULT_DEVICE_PRESET);
+    savePreset(defaultPreset());
 }
 
 void Controller::savePreset(QString path) {
@@ -224,43 +228,23 @@ QDomDocument Controller::buildDomElement() {
 }
 
 void Controller::send(QList<int> data, unsigned int length) {
-
     // If you change this implementation, also change it in HidController
     //  (That function is required due to HID devices having report IDs)
     
-    unsigned char * msg;
-    msg = new unsigned char [length];
+    QByteArray msg;
 
     for (unsigned int i=0; i<length; i++) {
         msg[i] = data.at(i);
     }
-
-    send(msg,length);
-    delete[] msg;
+    send(msg);
 }
 
-void Controller::sendBa(QByteArray data, unsigned int length) {
-    
-    // If you change this implementation, also change it in HidController
-    //  (That function is required due to HID devices having report IDs)
-    
-    unsigned char* msg = reinterpret_cast<unsigned char*>(data.data());
-    send(msg,length);
-}
-
-void Controller::send(unsigned char data[], unsigned int length) {
+void Controller::send(QByteArray data) {
     Q_UNUSED(data);
-    Q_UNUSED(length);
     qWarning() << "Error: data sending not yet implemented for this API or platform!";
 }
 
-void Controller::receivePointer(unsigned char* data, unsigned int length) {
-    receive(data,length);
-    // Deleted here even though created in controllers' read threads
-    delete[] data;
-}
-
-void Controller::receive(const unsigned char data[], unsigned int length) {
+void Controller::receive(const QByteArray data) {
 
     if (m_pEngine == NULL) {
 //         qWarning() << "Controller::receive called with no active engine!";
@@ -269,15 +253,16 @@ void Controller::receive(const unsigned char data[], unsigned int length) {
         return;
     }
 
+    int length = data.size();
     if (debugging()) {
         // Formatted packet display
         QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
-        for(uint i=0; i<length; i++) {
+        for(int i=0; i<length; i++) {
             QString spacer=" ";
             if ((i+1) % 4 == 0) spacer="  ";
             if ((i+1) % 16 == 0) spacer="\n";
             message += QString("%1%2")
-                        .arg(data[i], 2, 16, QChar('0')).toUpper()
+                        .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
                         .arg(spacer);
         }
         qDebug()<< message;
@@ -289,7 +274,7 @@ void Controller::receive(const unsigned char data[], unsigned int length) {
         if (function!="") {
             function.append(".incomingData");
 
-            if (!m_pEngine->execute(function, data, length)) {
+            if (!m_pEngine->execute(function, data)) {
                 qWarning() << "Controller: Invalid script function" << function;
             }
         }
