@@ -1,6 +1,10 @@
 #ifndef ANALYSER_WAVEFORM_H
 #define ANALYSER_WAVEFORM_H
 
+#include <QTime>
+#include <QImage>
+#include <QSqlDatabase>
+
 #include "analyser.h"
 #include "waveform/waveform.h"
 
@@ -9,19 +13,14 @@
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
 
-class QImage;
-
 class EngineFilterButterworth8;
 class Waveform;
-class WaveformDao;
-
-class QTime;
+class AnalysisDao;
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Right = 0, Left = 1, ChannelCount = 2};
 
 class WaveformStride {
-
     inline void init( int samples) {
         m_length = samples*2;
         m_convertionFactor = (float)std::numeric_limits<unsigned char>::max()/(float)samples;
@@ -47,7 +46,7 @@ class WaveformStride {
         }
     }
 
-private:
+  private:
     int m_length;
     int m_position;
 
@@ -56,13 +55,12 @@ private:
 
     float m_convertionFactor;
 
-private:
+  private:
     friend class AnalyserWaveform;
 };
 
 class AnalyserWaveform : public Analyser {
-
-public:
+  public:
     AnalyserWaveform();
     virtual ~AnalyserWaveform();
 
@@ -71,14 +69,14 @@ public:
     void process(const CSAMPLE *buffer, const int bufferLength);
     void finalise(TrackPointer tio);
 
-private:
+  private:
     void storeCurentStridePower();
     void resetCurrentStride();
 
     void resetFilters(TrackPointer tio);
     void destroyFilters();
 
-private:
+  private:
     bool m_skipProcessing;
 
     Waveform* m_waveform;
@@ -94,7 +92,8 @@ private:
     std::vector<float> m_buffers[FilterCount];
 
     QTime* m_timer;
-    WaveformDao* m_waveformDao;
+    QSqlDatabase m_database;
+    AnalysisDao* m_analysisDao;
 
 #ifdef TEST_HEAT_MAP
     QImage* test_heatMap;

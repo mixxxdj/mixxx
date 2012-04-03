@@ -459,7 +459,7 @@ class MixxxCore(Feature):
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
-                   "library/dao/waveformdao.cpp",
+                   "library/dao/analysisdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
@@ -488,6 +488,7 @@ class MixxxCore(Feature):
                    "widget/wwaveformviewer.cpp",
 
                    "waveform/waveform.cpp",
+                   "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",
                    "waveform/renderers/waveformwidgetrenderer.cpp",
                    "waveform/renderers/waveformrendererabstract.cpp",

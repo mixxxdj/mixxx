@@ -1,21 +1,17 @@
-#include "analyserwaveform.h"
-
+#include <QImage>
 #include <QtDebug>
-
+#include <QTime>
+#include <QMutexLocker>
+#include <QDebug>
 #include <time.h>
 
-#include "trackinfoobject.h"
-
+#include "analyserwaveform.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilteriir.h"
-
-#include "library/dao/waveformdao.h"
-
-#include <QTime>
-#include <QDebug>
-
-//test (vrince)
-#include <QImage>
+#include "library/trackcollection.h"
+#include "library/dao/analysisdao.h"
+#include "trackinfoobject.h"
+#include "waveform/waveformfactory.h"
 
 AnalyserWaveform::AnalyserWaveform() {
     qDebug() << "AnalyserWaveform::AnalyserWaveform()";
@@ -31,41 +27,82 @@ AnalyserWaveform::AnalyserWaveform() {
     m_currentStride = 0;
     m_currentSummaryStride = 0;
 
-    m_timer = new QTime();
-    m_waveformDao = new WaveformDao();
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS");
+    if (!m_database.isOpen()) {
+        m_database.setHostName("localhost");
+        m_database.setDatabaseName(MIXXX_DB_PATH);
+        m_database.setUserName("mixxx");
+        m_database.setPassword("mixxx");
 
-    m_waveformDao->setDatabase( QSqlDatabase::database("mixxx_sql_connection"));
+        //Open the database connection in this thread.
+        if (!m_database.open()) {
+            qDebug() << "Failed to open database from analyser thread."
+                     << m_database.lastError();
+        }
+    }
+
+    m_timer = new QTime();
+    m_analysisDao = new AnalysisDao(m_database);
 }
 
 AnalyserWaveform::~AnalyserWaveform() {
     qDebug() << "AnalyserWaveform::~AnalyserWaveform()";
     destroyFilters();
     delete m_timer;
-    delete m_waveformDao;
+    delete m_analysisDao;
 }
 
 void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
-
     m_skipProcessing = false;
 
     m_timer->start();
     m_waveform = tio->getWaveform();
     m_waveformSummary = tio->getWaveformSummary();
 
-    if( !m_waveform || !m_waveformSummary || totalSamples == 0) {
+    if (!m_waveform || !m_waveformSummary || totalSamples == 0) {
         qWarning() << "AnalyserWaveform::initialise - no waveform/waveform summary";
         return;
     }
 
-    //pre waveform existance test
-    if( m_waveformDao->getWaveform(*(tio.data()))) {
+    int trackId = tio->getId();
+    bool missingWaveform = m_waveform->getDataSize() == 0;
+    bool missingWavesummary = m_waveformSummary->getDataSize() == 0;
+    bool foundWaveform = false;
+    bool foundWavesummary = false;
+    if (trackId != -1 && (missingWaveform || missingWavesummary)) {
+        QList<AnalysisDao::AnalysisInfo> analyses =
+                m_analysisDao->getAnalysesForTrack(trackId);
+
+        QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
+        while (it.hasNext()) {
+            const AnalysisDao::AnalysisInfo& analysis = it.next();
+
+            if (analysis.type == AnalysisDao::TYPE_WAVEFORM &&
+                missingWaveform) {
+                foundWaveform = true;
+                m_waveform = WaveformFactory::loadWaveformFromAnalysis(
+                    tio, analysis);
+                tio->setWaveform(m_waveform);
+            } else if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY &&
+                       missingWavesummary) {
+                foundWavesummary = true;
+                m_waveformSummary = WaveformFactory::loadWaveformFromAnalysis(
+                    tio, analysis);
+                tio->setWaveformSummary(m_waveformSummary);
+            }
+        }
+    }
+
+    // If we don't need to calculate the waveform/wavesummary, skip.
+    if ((!missingWaveform || (missingWaveform && foundWaveform)) &&
+        (!missingWavesummary || (missingWavesummary && foundWavesummary))) {
         qDebug() << "AnalyserWaveform::initialise - Waveform loaded";
         m_skipProcessing = true;
         return;
     }
 
-    m_waveform->getMutex()->lock();
-    m_waveformSummary->getMutex()->lock();
+    QMutexLocker waveformLocker(m_waveform->getMutex());
+    QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
 
     destroyFilters();
     resetFilters(tio);
@@ -102,9 +139,6 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     test_heatMap = new QImage(256,256,QImage::Format_RGB32);
     test_heatMap->fill(0xFFFFFFFF);
 #endif
-
-    m_waveform->getMutex()->unlock();
-    m_waveformSummary->getMutex()->unlock();
 }
 
 void AnalyserWaveform::resetFilters(TrackPointer tio) {
@@ -124,8 +158,11 @@ void AnalyserWaveform::destroyFilters() {
 }
 
 void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
-    if( m_skipProcessing || !m_waveform || !m_waveformSummary)
+    if (m_skipProcessing || !m_waveform || !m_waveformSummary)
         return;
+
+    QMutexLocker waveformLocker(m_waveform->getMutex());
+    QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
 
     //this should only append once if bufferLength is constant
     if( bufferLength > (int)m_buffers[0].size()) {
@@ -202,7 +239,14 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     //qDebug() << "AnalyserWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion();
 }
 void AnalyserWaveform::finalise(TrackPointer tio) {
-    //Force completion to waveform size
+    if (m_waveform == NULL || m_waveformSummary == NULL) {
+        return;
+    }
+
+    QMutexLocker waveformLocker(m_waveform->getMutex());
+    QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
+
+    // Force completion to waveform size
     m_waveform->setCompletion(m_waveform->getDataSize());
     m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
 
@@ -210,11 +254,43 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
     test_heatMap->save("heatMap.png");
 #endif
 
-    if( !m_skipProcessing) {
-        bool waveformSaved = m_waveformDao->saveWaveform(*(tio.data()));
-        qDebug() << "AnalyserWaveform::finalise - Waveform saved :" << waveformSaved;
+    if (!m_skipProcessing) {
+        int trackId = tio->getId();
+        Waveform* pWaveform = tio->getWaveform();
+        Waveform* pWaveSummary = tio->getWaveformSummary();
+
+        qDebug() << "Done building waveform for track" << trackId;
+
+        if (trackId != -1 && pWaveform && pWaveSummary) {
+            AnalysisDao::AnalysisInfo analysis;
+            analysis.trackId = trackId;
+
+            if (pWaveform->getId() != -1) {
+                analysis.analysisId = pWaveform->getId();
+            }
+            analysis.type = AnalysisDao::TYPE_WAVEFORM;
+            analysis.description = "Waveform 1.0";
+            analysis.version = "Waveform-1.0";
+            analysis.data = pWaveform->toByteArray();
+
+            bool success = m_analysisDao->saveAnalysis(&analysis);
+            qDebug() << (success ? "Saved" : "Failed to save")
+                     << "waveform analysis for trackId" << trackId
+                     << "analysisId" << analysis.analysisId;
+
+            if (pWaveSummary->getId() != -1) {
+                analysis.analysisId = pWaveSummary->getId();
+            }
+            analysis.type = AnalysisDao::TYPE_WAVESUMMARY;
+            analysis.description = "Waveform Summary 1.0";
+            analysis.version = "WaveformSummary-1.0";
+            analysis.data = pWaveSummary->toByteArray();
+
+            success = m_analysisDao->saveAnalysis(&analysis);
+            qDebug() << (success ? "Saved" : "Failed to save")
+                     << "waveform summary analysis for trackId" << trackId
+                     << "analysisId" << analysis.analysisId;
+        }
+        qDebug() << "Waveform generation done" << m_timer->elapsed()/1000.0 << "s";
     }
-
-    qDebug() << "Waveform gerenration done" << m_timer->elapsed()/1000.0 << "s";
-
 }

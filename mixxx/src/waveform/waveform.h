@@ -2,10 +2,16 @@
 #define WAVEFORM_H
 
 #include <QMutex>
+#include <QByteArray>
+#include <QString>
 #include <vector>
 
 #include "util.h"
 
+
+// WARNING: Do not change this struct without double-checking you are not
+// changing its byte layout. This is important for serialization of the
+// waveform.
 union WaveformData {
     struct {
         unsigned char low;
@@ -21,8 +27,28 @@ union WaveformData {
 
 class Waveform {
   public:
-    Waveform();
+    Waveform(const QByteArray pData = QByteArray());
     virtual ~Waveform();
+
+    int getId() const {
+        return m_id;
+    }
+    void setId(int id) {
+        m_id = id;
+    }
+    QString getVersion() const {
+        return m_version;
+    }
+    void setVersion(QString version) {
+        m_version = version;
+    }
+    QString getDescription() const {
+        return m_description;
+    }
+    void setDescription(QString description) {
+        m_description = description;
+    }
+    QByteArray toByteArray() const;
 
     void reset();
 
@@ -47,11 +73,14 @@ class Waveform {
     WaveformData* data() { return &m_data[0];}
     const WaveformData* data() const { return &m_data[0];}
 
-    QMutex* getMutex() { return m_mutex;}
+    inline QMutex* getMutex() const {
+        return m_mutex;
+    }
 
     void dump() const;
 
   private:
+    void readByteArray(const QByteArray data);
     void resize(int size);
     void assign(int size, int value = 0);
 
@@ -67,6 +96,11 @@ class Waveform {
     int computeTextureSize(int getDataSize);
     void setCompletion(int completion) { m_completion = completion;}
 
+    // If stored in the database, the ID of the waveform.
+    int m_id;
+    QString m_version;
+    QString m_description;
+
     double m_actualSize; //actual song size in visual world
     int m_dataSize; //m_data allocated size
     std::vector<WaveformData> m_data;
@@ -80,11 +114,10 @@ class Waveform {
     int m_textureStride;
     int m_completion;
 
-    QMutex* m_mutex;
+    mutable QMutex* m_mutex;
 
     friend class AnalyserWaveform;
     friend class WaveformStride;
-    friend class WaveformDao;
 
     DISALLOW_COPY_AND_ASSIGN(Waveform);
 };
