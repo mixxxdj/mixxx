@@ -281,6 +281,9 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
             if (pWaveSummary->getId() != -1) {
                 analysis.analysisId = pWaveSummary->getId();
             }
+
+            // Clear analysisId since we are re-using the AnalysisInfo
+            analysis.analysisId = -1;
             analysis.type = AnalysisDao::TYPE_WAVESUMMARY;
             analysis.description = "Waveform Summary 1.0";
             analysis.version = "WaveformSummary-1.0";
