@@ -234,8 +234,6 @@ bool WOverview::drawNextPixmapPart() {
     const int waveformCompletion = m_waveform->getCompletion();
     int completionIncrement = waveformCompletion - m_actualCompletion;
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion" << nextCompletion;
-
     if( (double)completionIncrement < m_visualSamplesByPixel)
         return false;
 
@@ -257,25 +255,22 @@ bool WOverview::drawNextPixmapPart() {
     painter.scale(1.0,2.0*(double)(height()-2)/255.0);
 
     //draw only the new part
-
-    //NOTE: (vrince) using m_waveform->size is not accurate, waveform contain at least two more visual
-    //samples, and one summary waveform sample can represent up to 5000 audio samples ...
     const float pixelStartPosition = (float)m_actualCompletion / (float)m_waveform->getDataSize() * (float)width();
     const float pixelByVisualSamples = 1.0 / m_visualSamplesByPixel;
 
-    const float alpha = math_min( 1.0, math_max( 1.0, pixelByVisualSamples));
+    const float alpha = math_min( 1.0, 2.0*math_max( 0.0, pixelByVisualSamples));
 
     QColor lowColor = m_signalColors.getLowColor();
     lowColor.setAlphaF(alpha);
-    QPen lowColorPen( QBrush(lowColor), 0.9, Qt::SolidLine, Qt::RoundCap);
+    QPen lowColorPen( QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
 
     QColor midColor = m_signalColors.getMidColor();
     midColor.setAlphaF(alpha);
-    QPen midColorPen( QBrush(midColor), 0.9, Qt::SolidLine, Qt::RoundCap);
+    QPen midColorPen( QBrush(midColor), 1.25, Qt::SolidLine, Qt::RoundCap);
 
     QColor highColor = m_signalColors.getHighColor();
     highColor.setAlphaF(alpha);
-    QPen highColorPen( QBrush(highColor), 0.9, Qt::SolidLine, Qt::RoundCap);
+    QPen highColorPen( QBrush(highColor), 1.25, Qt::SolidLine, Qt::RoundCap);
 
     int currentCompletion = m_actualCompletion;
     float pixelPosition = pixelStartPosition;

@@ -40,7 +40,8 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
 
     QStringList columns;
     columns << PLAYLISTTRACKSTABLE_TRACKID
-            << PLAYLISTTRACKSTABLE_POSITION;
+            << PLAYLISTTRACKSTABLE_POSITION
+            << PLAYLISTTRACKSTABLE_DATETIMEADDED;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -90,6 +91,17 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
 
     // TODO(rryan) signal an add to the base, don't select
+    select(); //Repopulate the data model.
+    return true;
+}
+
+bool PlaylistTableModel::appendTrack(int trackId) {
+    if (trackId < 0) {
+        return false;
+    }
+
+    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
+
     select(); //Repopulate the data model.
     return true;
 }
@@ -256,7 +268,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+        qDebug() << query.lastError();
     }
 
     select();
@@ -322,10 +334,14 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
     }
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+       return true;
+    }
     return false;
 }
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
+    Q_UNUSED(i);
     return NULL;
 }
 

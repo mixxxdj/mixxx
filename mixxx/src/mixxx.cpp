@@ -263,8 +263,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
-
-
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);
@@ -329,18 +327,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
 
     // Call inits to invoke all other construction parts
-
-    // Verify path for xml track file.
-    QFile trackfile(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Listfile")));
-    if (m_pConfig->getValueString(ConfigKey("[Playlist]", "Listfile"))
-            .length() < 1 || !trackfile.exists())
-    {
-        m_pConfig->set(ConfigKey("[Playlist]", "Listfile"),
-            QDir::homePath().append("/").append(SETTINGS_PATH)
-                .append(TRACK_FILE));
-        m_pConfig->Save();
-    }
 
     // Intialize default BPM system values
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeStart"))
@@ -434,12 +420,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
-    // assignment itentional in next line
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
-                                        m_pKeyboard,
-                                        m_pPlayerManager,
-                                        m_pLibrary,
-                                        m_pVCManager))) {
+    // assignment intentional in next line
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -701,11 +684,11 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-    m_pFileLoadSongPlayer1 = new QAction(tr("&Load Song (Player 1)..."), this);
+    m_pFileLoadSongPlayer1 = new QAction(tr("Load Song (Player &1)..."), this);
     m_pFileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pFileLoadSongPlayer2 = new QAction(tr("&Load Song (Player 2)..."), this);
+    m_pFileLoadSongPlayer2 = new QAction(tr("Load Song (Player &2)..."), this);
     m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
 
@@ -727,12 +710,10 @@ void MixxxApp::initActions()
     m_pPlaylistsImport->setShortcut(tr("Ctrl+I"));
     m_pPlaylistsImport->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pOptionsBeatMark = new QAction(tr("&Audio Beat Marks"), this);
-
     m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
 
 #ifdef __APPLE__
-    m_pOptionsFullScreen->setShortcut(tr("Ctrl+F"));
+    m_pOptionsFullScreen->setShortcut(tr("Ctrl+Shift+F"));
 #else
     m_pOptionsFullScreen->setShortcut(tr("F11"));
 #endif
@@ -752,17 +733,17 @@ void MixxxApp::initActions()
     m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
 #ifdef __VINYLCONTROL__
-    m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
+    m_pOptionsVinylControl = new QAction(tr("Enable Vinyl Control &1"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pOptionsVinylControl2 = new QAction(tr("Enable &Vinyl Control 2"), this);
+    m_pOptionsVinylControl2 = new QAction(tr("Enable Vinyl Control &2"), this);
     m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
     m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
 #ifdef __SHOUTCAST__
-    m_pOptionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
+    m_pOptionsShoutcast = new QAction(tr("Enable live &broadcasting"), this);
     m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
 #endif
@@ -811,14 +792,6 @@ void MixxxApp::initActions()
     //connect(playlistsImport, SIGNAL(triggered()),
     //        m_pTrack, SLOT(slotImportPlaylist()));
     //FIXME: Disabled due to library rework
-
-    m_pOptionsBeatMark->setCheckable(false);
-    m_pOptionsBeatMark->setChecked(false);
-    m_pOptionsBeatMark->setStatusTip(tr("Audio Beat Marks"));
-    m_pOptionsBeatMark->setWhatsThis(
-        tr("Audio Beat Marks\nMark beats by audio clicks"));
-    connect(m_pOptionsBeatMark, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsBeatMark(bool)));
 
 #ifdef __VINYLCONTROL__
     // Either check or uncheck the vinyl control menu item depending on what
@@ -925,7 +898,6 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry optionsMenu
     //optionsMenu->setCheckable(true);
-    //  optionsBeatMark->addTo(optionsMenu);
 #ifdef __VINYLCONTROL__
     m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
@@ -1055,11 +1027,6 @@ void MixxxApp::slotFileQuit()
     }
     hide();
     qApp->quit();
-}
-
-void MixxxApp::slotOptionsBeatMark(bool)
-{
-// BEAT MARK STUFF
 }
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)
@@ -1215,6 +1182,7 @@ void MixxxApp::slotHelpAbout() {
 "Bill Good<br>"
 "Owen Williams<br>"
 "Vittorio Colao<br>"
+"Daniel Sch&uuml;rmann<br>"
 
 "</p>"
 "<p align=\"center\"><b>%2</b></p>"
@@ -1257,7 +1225,6 @@ void MixxxApp::slotHelpAbout() {
 "Joe Colosimo<br>"
 "Shashank Kumar<br>"
 "Till Hofmann<br>"
-"Daniel Sch&uuml;rmann<br>"
 "Peter V&aacute;gner<br>"
 "Thanasis Liappis<br>"
 "Jens Nachtigall<br>"
@@ -1265,6 +1232,9 @@ void MixxxApp::slotHelpAbout() {
 "Jonas &Aring;dahl<br>"
 "Jonathan Costers<br>"
 "Daniel Lindenfelser<br>"
+"Maxime Bochon<br>"
+"Akash Shetye<br>"
+"Pascal Bleser<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1537,7 +1507,9 @@ void MixxxApp::checkDirectRendering() {
 
 bool MixxxApp::confirmExit() {
     bool playing(false);
+    bool playingSampler(false);
     unsigned int deckCount = m_pPlayerManager->numDecks();
+    unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         ControlObject *pPlayCO(
             ControlObject::getControl(
@@ -1549,10 +1521,29 @@ bool MixxxApp::confirmExit() {
             break;
         }
     }
+    for (unsigned int i = 0; i < samplerCount; ++i) {
+        ControlObject *pPlayCO(
+            ControlObject::getControl(
+                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play")
+            )
+        );
+        if (pPlayCO && pPlayCO->get()) {
+            playingSampler = true;
+            break;
+        }
+    }
     if (playing) {
         QMessageBox::StandardButton btn = QMessageBox::question(this,
             tr("Confirm Exit"),
             tr("A deck is currently playing. Exit Mixxx?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (btn == QMessageBox::No) {
+            return false;
+        }
+    } else if (playingSampler) {
+        QMessageBox::StandardButton btn = QMessageBox::question(this,
+            tr("Confirm Exit"),
+            tr("A sampler is currently playing. Exit Mixxx?"),
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;

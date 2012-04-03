@@ -636,6 +636,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     WSpinny* p = new WSpinny(m_pParent, m_pVCManager);
     setupWidget(node, p);
 
+    WaveformWidgetFactory::instance()->addTimerListener(p);
     connect(p, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 

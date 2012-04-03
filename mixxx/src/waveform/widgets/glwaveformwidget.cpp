@@ -1,6 +1,7 @@
 #include "glwaveformwidget.h"
 
 #include <QPainter>
+#include <QGLContext>
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
@@ -10,10 +11,11 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
+#include "sharedglcontext.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     WaveformWidgetAbstract(group),
-    QGLWidget(parent) {
+    QGLWidget(SharedGLContext::getContext(), parent) {
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -28,7 +30,9 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
 
     setAutoBufferSwap(false);
 
-    makeCurrent();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
     init();
 }
 
@@ -40,7 +44,9 @@ void GLWaveformWidget::castToQWidget() {
 }
 
 void GLWaveformWidget::paintEvent( QPaintEvent* event) {
-    makeCurrent();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
     QPainter painter(this);
     draw(&painter,event);
     QGLWidget::swapBuffers();

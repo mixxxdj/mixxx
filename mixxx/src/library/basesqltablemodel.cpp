@@ -67,6 +67,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Date Added"));
     setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
                   Qt::Horizontal, tr("#"));
+    setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Timestamp"));
     setHeaderData(fieldIndex(LIBRARYTABLE_KEY),
                   Qt::Horizontal, tr("Key"));
 }
@@ -194,7 +196,7 @@ void BaseSqlTableModel::select() {
 
     QLinkedList<int> tableColumnIndices;
     foreach (QString column, m_tableColumns) {
-        Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
+        //Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
         tableColumnIndices.push_back(record.indexOf(column));
     }
     int rows = query.size();
@@ -440,6 +442,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = (value == "true") ? true : false;
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
                 value = value.toDateTime();
+            } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+                value = value.toDateTime().time();
             }
             break;
         case Qt::EditRole:
@@ -628,7 +632,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         // QVariant::toFloat needs >= QT 4.6.x
         pTrack->setBpm(static_cast<float>(value.toDouble()));
     } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
-        pTrack->setPlayed(value.toBool());
+        pTrack->setPlayedAndUpdatePlaycount(value.toBool());
     } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
         pTrack->setTimesPlayed(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
