@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>560</width>
     <height>399</height>
    </rect>
   </property>
@@ -14,19 +14,7 @@
    <string>Manage</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#pushButtonShuffle{
-	border-image: url(:/images/autodj/media-playlist-shuffle.svg);
-}
-
-#pushButtonSkipNext{
-	border-image: url(:/images/autodj/bottom.svg);
-}
-
-#pushButtonFadeNow{
-	border-image: url(:/images/autodj/stock_mail-send-receive.svg);
-}
-
-</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -43,19 +31,22 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
+     <property name="leftMargin">
+      <number>12</number>
+     </property>
+     <property name="rightMargin">
+      <number>12</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
      <item>
       <widget class="QPushButton" name="pushButtonShuffle">
-       <property name="maximumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
        <property name="toolTip">
-        <string>Shuffle Playlist</string>
+        <string>Shuffle the content of the Auto DJ playlist.</string>
        </property>
        <property name="text">
-        <string/>
+        <string>Shuffle</string>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -64,17 +55,11 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonSkipNext">
-       <property name="maximumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
        <property name="toolTip">
-        <string>Skip Next Track</string>
+        <string>Skip the next track in the Auto DJ playlist.</string>
        </property>
        <property name="text">
-        <string/>
+        <string>Skip Track</string>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -82,9 +67,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QPushButton" name="pushButtonFadeNow">
+       <property name="toolTip">
+        <string>Trigger the transition to the next track.</string>
+       </property>
        <property name="text">
-        <string>Transition [sec]</string>
+        <string>Fade Now</string>
        </property>
       </widget>
      </item>
@@ -102,6 +90,9 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Determines the duration of the transition.</string>
+       </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
@@ -111,18 +102,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonFadeNow">
-       <property name="maximumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
+      <widget class="QLabel" name="label_2">
        <property name="toolTip">
-        <string>Fade Now</string>
+        <string comment="&quot;sec.&quot; as in seconds">Seconds</string>
        </property>
        <property name="text">
-        <string/>
+        <string>sec.</string>
        </property>
       </widget>
      </item>
@@ -142,7 +127,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonAutoDJ">
        <property name="toolTip">
-        <string>Enable Auto DJ</string>
+        <string>Turn Auto DJ on or off.</string>
        </property>
        <property name="text">
         <string>Enable Auto DJ</string>
@@ -151,22 +136,6 @@
         <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>12</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>

@@ -1,8 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/autodj/media-playlist-shuffle.svg</file>
-        <file>images/autodj/stock_mail-send-receive.svg</file>
-        <file>images/autodj/bottom.svg</file>
         <file>html/crates.html</file>
         <file>html/playlists.html</file>
         <file>html/setlogs.html</file>
