@@ -96,8 +96,6 @@ class MixxxApp : public QMainWindow
     /** exits the application */
     void slotFileQuit();
 
-    /** toggle audio beat marks */
-    void slotOptionsBeatMark(bool toggle);
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
     void slotControlVinylControl(double toggle);
     void slotCheckboxVinylControl(bool toggle);
@@ -202,8 +200,6 @@ class MixxxApp : public QMainWindow
     QAction *m_pBatchBpmDetect;
 
     QAction *m_pLibraryRescan;
-
-    QAction *m_pOptionsBeatMark;
 
 #ifdef __VINYLCONTROL__
     QMenu *m_pVinylControlMenu;

@@ -300,7 +300,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
                                "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
-    pPlaylistTableModel->setSort(0, Qt::AscendingOrder);
+    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistTableModel->select();
 
     // check config if relative paths are desired
@@ -310,7 +310,11 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
         ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(), useRelativePath);
     } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
-        ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data());
+        if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) == PlaylistDAO::PLHT_SET_LOG) {
+            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), true);
+        } else {
+            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), false);
+        }
     } else {
         // Create and populate a list of files of the playlist
         QList<QString> playlist_items;

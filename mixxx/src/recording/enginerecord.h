@@ -69,7 +69,7 @@ class EngineRecord : public EngineAbstractRecord {
     QByteArray m_OGGquality;
     QByteArray m_MP3quality;
     QByteArray m_Encoding;
-    QByteArray m_filename;
+    QString m_filename;
     QByteArray m_baTitle;
     QByteArray m_baAuthor;
     QByteArray m_baAlbum;
