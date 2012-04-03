@@ -742,6 +742,40 @@ QString TrackInfoObject::getURL()
     return m_sURL;
 }
 
+Waveform* TrackInfoObject::getWaveform() {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveform;
+}
+
+const Waveform* TrackInfoObject::getWaveform() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveform;
+}
+
+void TrackInfoObject::setWaveform(Waveform* pWaveform) {
+    QMutexLocker lock(&m_qMutex);
+    m_waveform = pWaveform;
+    lock.unlock();
+    emit(waveformUpdated());
+}
+
+Waveform* TrackInfoObject::getWaveformSummary() {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveformSummary;
+}
+
+const Waveform* TrackInfoObject::getWaveformSummary() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveformSummary;
+}
+
+void TrackInfoObject::setWaveformSummary(Waveform* pWaveformSummary) {
+    QMutexLocker lock(&m_qMutex);
+    m_waveformSummary = pWaveformSummary;
+    lock.unlock();
+    emit(waveformSummaryUpdated());
+}
+
 void TrackInfoObject::setCuePoint(float cue)
 {
     QMutexLocker lock(&m_qMutex);
