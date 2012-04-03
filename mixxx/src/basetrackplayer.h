@@ -20,8 +20,9 @@ class BaseTrackPlayer : public BasePlayer {
                     EngineMaster* pMixingEngine,
                     EngineChannel::ChannelOrientation defaultOrientation,
                     AnalyserQueue* pAnalyserQueue,
-                    QString group, bool isPreview);
-    virtual ~BaseTrackPlayer();
+                    QString group);
+    ~BaseTrackPlayer();
+
 
     AnalyserQueue* getAnalyserQueue() const;
     WaveformRenderer* getWaveformRenderer() const;
@@ -51,6 +52,9 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
     WaveformRenderer* m_pWaveformRenderer;
+  protected:
+    void initiate(EngineBuffer* pEngineBuffer,const char* pSafeGroupName,
+                  ConfigObject<ConfigValue> *pConfig);
 };
 
 

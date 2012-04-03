@@ -1,17 +1,17 @@
-#ifndef SAMPLER_H
-#define SAMPLER_H
+#ifndef PREVIEWDECK_H
+#define PREVIEWDECK_H
 
 #include "basetrackplayer.h"
 
-class Sampler : public BaseTrackPlayer {
+class PreviewDeck : public BaseTrackPlayer {
     Q_OBJECT
 	public:
-    Sampler(QObject* pParent,
+    PreviewDeck(QObject* pParent,
             ConfigObject<ConfigValue> *pConfig,
             EngineMaster* pMixingEngine,
             EngineChannel::ChannelOrientation defaultOrientation,
             QString group);
-    ~Sampler();
+    virtual ~PreviewDeck();
 };
 
 #endif

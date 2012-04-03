@@ -24,7 +24,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  AnalyserQueue* pAnalyserQueue,
-                                 QString group,bool isPreview)
+                                 QString group)
         : BasePlayer(pParent, group),
           m_pAnalyserQueue(pAnalyserQueue),
           m_pConfig(pConfig),
@@ -33,23 +33,29 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
-    const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
-    
-    EngineBuffer* pEngineBuffer = NULL;
-    if (isPreview) {
-        EnginePreviewDeck* pChannel = new EnginePreviewDeck(pSafeGroupName,
-                                                              pConfig, defaultOrientation);
-        pEngineBuffer = pChannel->getEngineBuffer();
-        pMixingEngine->addChannel(pChannel);
-    } else {
-        EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
-                                          pConfig, defaultOrientation);
-        pEngineBuffer = pChannel->getEngineBuffer();
-        pMixingEngine->addChannel(pChannel);
+
+}
+
+BaseTrackPlayer::~BaseTrackPlayer()
+{
+    if (m_pLoadedTrack) {
+        emit(unloadingTrack(m_pLoadedTrack));
+        m_pLoadedTrack.clear();
     }
 
+    delete m_pCuePoint;
+    delete m_pLoopInPoint;
+    delete m_pLoopOutPoint;
+    delete m_pPlayPosition;
+    delete m_pBPM;
+    delete m_pReplayGain;
+    delete m_pWaveformRenderer;
+    delete m_pDuration;
+}
 
-    ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
+void BaseTrackPlayer::initiate(EngineBuffer* pEngineBuffer,const char* pSafeGroupName,
+                               ConfigObject<ConfigValue> *pConfig){
+        ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);
 
     CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
@@ -101,23 +107,6 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
             m_pWaveformRenderer, SLOT(slotNewTrack(TrackPointer)));
     connect(this, SIGNAL(unloadingTrack(TrackPointer)),
             m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
-}
-
-BaseTrackPlayer::~BaseTrackPlayer()
-{
-    if (m_pLoadedTrack) {
-        emit(unloadingTrack(m_pLoadedTrack));
-        m_pLoadedTrack.clear();
-    }
-
-    delete m_pCuePoint;
-    delete m_pLoopInPoint;
-    delete m_pLoopOutPoint;
-    delete m_pPlayPosition;
-    delete m_pBPM;
-    delete m_pReplayGain;
-    delete m_pWaveformRenderer;
-    delete m_pDuration;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)

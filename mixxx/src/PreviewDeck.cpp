@@ -1,9 +1,9 @@
-#include "sampler.h"
+#include "PreviewDeck.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginedeck.h"
+#include "engine/enginePreviewDeck.h"
 #include "engine/enginemaster.h"
 
-Sampler::Sampler(QObject* pParent,
+PreviewDeck::PreviewDeck(QObject* pParent,
                  ConfigObject<ConfigValue>* pConfig,
                  EngineMaster* pMixingEngine,
                  EngineChannel::ChannelOrientation defaultOrientation,
@@ -12,13 +12,13 @@ Sampler::Sampler(QObject* pParent,
 
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
+    EnginePreviewDeck* pChannel = new EnginePreviewDeck(pSafeGroupName,
                                         pConfig, defaultOrientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
     initiate(pEngineBuffer,pSafeGroupName,pConfig);
 }
 
-Sampler::~Sampler()
+PreviewDeck::~PreviewDeck()
 {
 }
