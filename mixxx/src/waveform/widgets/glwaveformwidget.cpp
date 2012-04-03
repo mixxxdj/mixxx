@@ -48,6 +48,6 @@ void GLWaveformWidget::paintEvent( QPaintEvent* event) {
         makeCurrent();
     }
     QPainter painter(this);
-    draw(&painter,event);
+    draw(&painter, event);
     QGLWidget::swapBuffers();
 }

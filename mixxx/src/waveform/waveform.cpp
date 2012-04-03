@@ -2,19 +2,69 @@
 #include <cmath>
 #include <QtDebug>
 
-Waveform::Waveform() :
-    m_actualSize(0.0),
-    m_dataSize(0),
-    m_textureStride(1024),
-    m_completion(-1),
-    m_audioSamplesPerVisualSample(0),
-    m_visualSampleRate(0),
-    m_audioVisualRatio(0),
-    m_mutex(new QMutex()) {
+Waveform::Waveform(const QByteArray data)
+        : m_id(-1),
+          m_actualSize(0.0),
+          m_dataSize(0),
+          m_audioSamplesPerVisualSample(0),
+          m_visualSampleRate(0),
+          m_audioVisualRatio(0),
+          m_textureStride(1024),
+          m_completion(-1),
+          m_mutex(new QMutex()) {
+    if (!data.isNull()) {
+        readByteArray(data);
+    }
 }
 
 Waveform::~Waveform() {
     delete m_mutex;
+}
+
+struct SerializedWaveformHeader {
+    double actualSize;
+    double dataSize;
+    double visualSampleRate;
+    double audioVisualRatio;
+};
+
+QByteArray Waveform::toByteArray() const {
+    SerializedWaveformHeader header;
+    header.actualSize = m_actualSize;
+    header.dataSize = m_dataSize;
+    header.visualSampleRate = m_visualSampleRate;
+    header.audioVisualRatio = m_audioVisualRatio;
+    QByteArray data;
+    data.append(reinterpret_cast<const char*>(&header), sizeof(header));
+    data.append(reinterpret_cast<const char*>(&m_data[0]),
+                sizeof(m_data[0])*m_dataSize);
+    return data;
+}
+
+void Waveform::readByteArray(const QByteArray data) {
+    int headerBytes = sizeof(SerializedWaveformHeader);
+    int dataBytes = data.size() - headerBytes;
+    if (dataBytes < 0) {
+        qDebug() << "Error reading waveform, not enough bytes to parse:"
+                 << data.size();
+        return;
+    }
+    const SerializedWaveformHeader* header =
+            reinterpret_cast<const SerializedWaveformHeader*>(data.constData());
+
+    if (int(header->dataSize) * sizeof(WaveformData) != dataBytes) {
+        qDebug() << "Parse failure -- did not get number of bytes expected"
+                 << m_dataSize * sizeof(WaveformData) << "vs" << dataBytes;
+        return;
+    }
+
+    m_actualSize = header->actualSize;
+    m_dataSize = int(header->dataSize);
+    m_visualSampleRate = header->visualSampleRate;
+    m_audioVisualRatio = header->audioVisualRatio;
+    resize(m_dataSize);
+    memcpy(&m_data[0], data.constData() + headerBytes, m_dataSize * sizeof(m_data[0]));
+    m_completion = m_dataSize;
 }
 
 void Waveform::reset() {
