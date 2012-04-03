@@ -56,9 +56,14 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void destroyWidgets();
 
+    void addTimerListener(QWidget* pWidget);
+
   public slots:
     void start();
     void stop();
+
+  signals:
+    void waveformUpdateTick();
 
   protected:
     WaveformWidgetFactory();

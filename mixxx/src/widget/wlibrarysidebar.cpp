@@ -199,4 +199,9 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
     QItemSelectionModel* pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
     setSelectionModel(pModel);
+
+    if (index.parent().isValid()) {
+        expand(index.parent());
+    }
+    scrollTo(index);
 }

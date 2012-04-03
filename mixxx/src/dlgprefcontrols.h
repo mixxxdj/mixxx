@@ -65,6 +65,9 @@ public slots:
     void slotSetFrameRate(int);
     void slotSetWaveformType(int);
 
+    virtual void onShow();
+    virtual void onHide();
+
 protected:
     void timerEvent(QTimerEvent *);
 
@@ -74,6 +77,7 @@ private:
 private:
     /** Pointer to ConfigObject */
     ConfigObject<ConfigValue> *m_pConfig;
+    int m_timer;
     ControlObject* m_pControlPositionDisplay;
     QList<ControlObjectThreadMain*> m_cueControls;
     QList<ControlObjectThreadMain*> m_rateControls;

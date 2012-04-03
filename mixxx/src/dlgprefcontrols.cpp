@@ -40,6 +40,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  ConfigObject<ConfigValue> * pConfig)
     :  QWidget(parent), Ui::DlgPrefControlsDlg() {
     m_pConfig = pConfig;
+    m_timer = -1;
     m_mixxx = mixxx;
     m_pSkinLoader = pSkinLoader;
     m_pPlayerManager = pPlayerManager;
@@ -258,7 +259,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     slotUpdate();
 
     initWaveformControl();
-    startTimer(100); //refresh actual frame rate every 100 ms
 }
 
 DlgPrefControls::~DlgPrefControls()
@@ -527,10 +527,21 @@ void DlgPrefControls::slotSetWaveformType(int index)
      }
 }
 
+void DlgPrefControls::onShow() {
+    m_timer = startTimer(100); //refresh actual frame rate every 100 ms
+}
+
+void DlgPrefControls::onHide() {
+    if (m_timer != -1) {
+        killTimer(m_timer);
+    }
+}
+
 void DlgPrefControls::timerEvent(QTimerEvent * /*event*/)
 {
     //Just to refresh actual framrate any time the controller is modified
-    frameRateAverage->setText( QString::number(WaveformWidgetFactory::instance()->getActualFrameRate()));
+    qDebug() << "DlgPrefControls::timerEvent()";
+    frameRateAverage->setText(QString::number(WaveformWidgetFactory::instance()->getActualFrameRate()));
 }
 
 void DlgPrefControls::initWaveformControl()

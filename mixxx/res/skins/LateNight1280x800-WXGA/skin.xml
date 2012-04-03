@@ -2507,6 +2507,7 @@
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Channel>1</Channel>
 						<Pos>0,0</Pos>
+						<Align>bottom</Align>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
@@ -2819,6 +2820,7 @@
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Channel>2</Channel>
 						<Pos>0,73</Pos>
+						<Align>top</Align>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>

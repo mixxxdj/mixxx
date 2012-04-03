@@ -7,7 +7,6 @@
 #include <QEvent>
 #include <QList>
 #include <QMutex>
-#include <QTimerEvent>
 
 #include "defs.h"
 #include "trackinfoobject.h"
@@ -47,11 +46,14 @@ class WWaveformViewer : public QWidget {
     virtual void wheelEvent(QWheelEvent *event);
 
   private:
-    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget) { m_waveformWidget = waveformWidget;}
-    WaveformWidgetAbstract* getWaveformWidget() { return m_waveformWidget;}
+    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
+        m_waveformWidget = waveformWidget;
+    }
+    WaveformWidgetAbstract* getWaveformWidget() {
+        return m_waveformWidget;
+    }
 
-  private:
-    const char *m_pGroup;
+    const char* m_pGroup;
     int m_zoomZoneWidth;
 
     ControlObjectThreadMain* m_pScratchEnable;
