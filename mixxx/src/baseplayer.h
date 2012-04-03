@@ -11,7 +11,7 @@ class BasePlayer : public QObject {
 
     const QString getGroup();
 
-  private:
+  protected:
     const QString m_group;
 };
 
