@@ -86,11 +86,11 @@ void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredV
     m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
 }
 
-void Waveform::allocateForAudioSamples( int audioSamples) {
+void Waveform::allocateForAudioSamples(int audioSamples) {
     m_actualSize = audioSamples / m_audioSamplesPerVisualSample;
     int numberOfVisualSamples = audioSamples / m_audioSamplesPerVisualSample + 1;
     numberOfVisualSamples += numberOfVisualSamples%2;
-    assign(numberOfVisualSamples,0);
+    assign(numberOfVisualSamples, 0);
     setCompletion(0);
 }
 
@@ -103,7 +103,7 @@ void Waveform::resize(int size) {
 void Waveform::assign(int size, int value) {
     m_dataSize = size;
     int textureSize = computeTextureSize(size);
-    m_data.assign(textureSize,value);
+    m_data.assign(textureSize, value);
 }
 
 int Waveform::computeTextureSize(int size) {

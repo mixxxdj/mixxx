@@ -119,8 +119,13 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     m_waveform->computeBestVisualSampleRate(sampleRate,mainWaveformSampleRate);
     m_waveformSummary->computeBestVisualSampleRate(sampleRate,summaryWaveformSampleRate);
 
+    // getDataSize() of both waveform and waveformSummary are now totalSamples
     m_waveform->allocateForAudioSamples(totalSamples);
     m_waveformSummary->allocateForAudioSamples(totalSamples);
+    m_waveformDataSize = m_waveform->getDataSize();
+    m_waveformSummaryDataSize = m_waveformSummary->getDataSize();
+    m_waveformData = &m_waveform->at(0);
+    m_waveformSummaryData = &m_waveformSummary->at(0);
 
     m_stride.init(m_waveform->getAudioSamplesPerVisualSample());
     const double mainSummaryRatio = m_waveform->getVisualSampleRate() / m_waveformSummary->getVisualSampleRate();
@@ -161,9 +166,6 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     if (m_skipProcessing || !m_waveform || !m_waveformSummary)
         return;
 
-    QMutexLocker waveformLocker(m_waveform->getMutex());
-    QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
-
     //this should only append once if bufferLength is constant
     if( bufferLength > (int)m_buffers[0].size()) {
         m_buffers[Low].resize(bufferLength);
@@ -187,12 +189,12 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
         m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];
 
         if( m_stride.m_position >= m_stride.m_length) {
-            if( m_currentStride >= m_waveform->getDataSize()) {
+            if (m_currentStride + ChannelCount > m_waveformDataSize) {
                 qWarning() << "AnalyserWaveform::process - currentStride >= waveform size";
                 return;
             }
 
-            m_stride.store(m_waveform,m_currentStride);
+            m_stride.store(m_waveformData + m_currentStride);
 
             //summary
             m_strideSummary.m_overallData[Right] += m_stride.m_overallData[Right];
@@ -205,7 +207,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
             m_strideSummary.m_filteredData[ Left][High] += m_stride.m_filteredData[ Left][High];
 
             if( m_strideSummary.m_position >= m_strideSummary.m_length) {
-                if( m_currentSummaryStride >= m_waveformSummary->getDataSize()) {
+                if (m_currentSummaryStride + ChannelCount > m_waveformSummaryDataSize) {
                     qWarning() << "AnalyserWaveform::process - current summary stride >= waveform summary size";
                     return;
                 }
@@ -221,7 +223,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
                 test_heatMap->setPixel(point.toPoint(),0xFF0000FF);
 #endif
 
-                m_strideSummary.store(m_waveformSummary,m_currentSummaryStride);
+                m_strideSummary.store(m_waveformSummaryData + m_currentSummaryStride);
                 m_strideSummary.reset();
                 m_currentSummaryStride += 2;
             }
