@@ -176,7 +176,7 @@ ControlObject * ControlObject::getControl(ConfigKey key)
     }
     m_sqCOHashMutex.unlock();
 
-    qDebug() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
+    qWarning() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
     return NULL;
 }
 
@@ -212,6 +212,7 @@ void ControlObject::setValueFromEngine(double dValue)
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v)
 {
+    Q_UNUSED(o);
     m_dValue = v;
     emit(valueChanged(m_dValue));
 }

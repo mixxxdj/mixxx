@@ -211,7 +211,11 @@ void ControllerEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) 
             if (initName!="") {
                 initName.append(".init");
             if (m_bDebug) qDebug() << "ControllerEngine: Executing" << initName;
-            if (!execute(initName, m_pController->getName()))
+            
+            QScriptValueList args;
+            args << QScriptValue(m_pController->getName());
+            args << QScriptValue(m_bDebug);
+            if (!execute(initName, args))
                 qWarning() << "ControllerEngine: No" << initName << "function in script";
         }
     }
@@ -622,37 +626,7 @@ void ControllerEngine::trigger(QString group, QString name) {
     
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
-    // These don't work due to NOP elimination in COT, so we do the below stuff
-//     if(cot != NULL) {
-//         cot->slotSet(cot->get());
-//         cot->emitValueChanged();
-//     }
-
-    if (cot == NULL) return;
-
-    // ControlObject doesn't emit ValueChanged when set to the same value,
-    //  and ControlObjectThread::emitValueChanged also has no effect
-    //  so we have to call the function(s) manually with the current value
-    ConfigKey key = ConfigKey(group,name);
-    if(m_connectedControls.contains(key)) {
-        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
-        while (i != m_connectedControls.end() && i.key() == key) {
-            QString function = i.value();
-
-            QScriptValue function_value = m_pEngine->evaluate(function);
-            QScriptValueList args;
-
-            args << QScriptValue(cot->get());
-            args << QScriptValue(key.group);
-            args << QScriptValue(key.item);
-            QScriptValue result = function_value.call(QScriptValue(), args);
-            if (result.isError()) {
-                qWarning()<< "ControllerEngine: Call to" << function
-                          << "resulted in an error:" << result.toString();
-            }
-            ++i;
-        }
-    }
+    if(cot != NULL) cot->emitValueChanged();
 }
 
 /**-------- ------------------------------------------------------
@@ -663,9 +637,7 @@ void ControllerEngine::trigger(QString group, QString name) {
    -------- ------------------------------------------------------ */
 bool ControllerEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
 
-    // A COT doesn't allow automatic reactions to work because we need valueChangedFromEngine
-//     ControlObjectThread* cobj = getControlObjectThread(group, name);
-    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
+    ControlObjectThread* cobj = getControlObjectThread(group, name);
     ConfigKey key(group, name);
 
     if (cobj == NULL) {
@@ -691,14 +663,10 @@ bool ControllerEngine::connectControl(QString group, QString name, QString funct
             if (!m_connectedControls.contains(key)) {
                 this->disconnect(cobj, SIGNAL(valueChanged(double)),
                                  this, SLOT(slotValueChanged(double)));
-                this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                                 this, SLOT(slotValueChanged(double)));
             }
         } else {
 //             qDebug() << "ControllerEngine::connectControl connected " << group << name << " to " << function;
             connect(cobj, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotValueChanged(double)));
-            connect(cobj, SIGNAL(valueChangedFromEngine(double)),
                     this, SLOT(slotValueChanged(double)));
             m_connectedControls.insert(key, function);
         }
@@ -714,22 +682,18 @@ bool ControllerEngine::connectControl(QString group, QString name, QString funct
    -------- ------------------------------------------------------ */
 void ControllerEngine::slotValueChanged(double value) {
 
-    ControlObject* sender = (ControlObject*)this->sender();
-    // Using a COT doesn't allow automatic reactions to work because sender is null
-    //  when we use a straight CO in connectControl()
-//     ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
+    ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
     if(sender == NULL) {
         qWarning() << "ControllerEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         return;
     }
-    ConfigKey key = sender->getKey();
-    
-//     ControlObject* pSenderCO = sender->getControlObject();
-//     if (pSenderCO == NULL) {
-//         qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
-//         return;
-//     }
-//     ConfigKey key = pSenderCO->getKey();
+
+    ControlObject* pSenderCO = sender->getControlObject();
+    if (pSenderCO == NULL) {
+        qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
+        return;
+    }
+    ConfigKey key = pSenderCO->getKey();
 
     if(m_connectedControls.contains(key)) {
         QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);

@@ -207,8 +207,9 @@ StantonSCS3d.deckSignals = [    ["CurrentChannel", "volume", "StantonSCS3d.gainL
 
 // ----------   Functions   ----------
 
-StantonSCS3d.init = function (id) {    // called when the MIDI device is opened & set up
+StantonSCS3d.init = function (id, debug) {
     StantonSCS3d.id = id;   // Store the ID of this device for later use
+    StantonSCS3d.debug = debug;
     
     // Find out the firmware version
     if (!StantonSCS3d.state["flat"]) midi.sendSysexMsg([0xF0, 0x7E, StantonSCS3d.channel, 0x06, 0x01, 0xF7],6);
@@ -304,14 +305,14 @@ StantonSCS3d.connectSurfaceSignals = function (channel, disconnect) {
         if (group=="CurrentChannel") group = "[Channel"+StantonSCS3d.deck+"]";
         engine.connectControl(group,signalList[i][1],signalList[i][2],disconnect);
         
-        // If connecting a signal, cause it to fire (by setting it to the same value) to update the LEDs
-//         if (!disconnect) engine.trigger(group,signalList[i][1]);  // Commented because there's no sense in wasting queue length
-        if (!disconnect) {
-            // Alternate:
-            var command = signalList[i][2]+"("+engine.getValue(group,signalList[i][1])+")";
-//             print("StantonSCS3d: command="+command);
-            eval(command);
-        }
+        // If connecting a signal, cause it to fire to update the LEDs
+        if (!disconnect) engine.trigger(group,signalList[i][1]);
+//         if (!disconnect) {
+//             // Alternate:
+//             var command = signalList[i][2]+"("+engine.getValue(group,signalList[i][1])+")";
+// //             print("StantonSCS3d: command="+command);
+//             eval(command);
+//         }
         if (StantonSCS3d.debug) {
             if (disconnect) print("StantonSCS3d: "+group+","+signalList[i][1]+" disconnected from "+signalList[i][2]);
             else print("StantonSCS3d: "+group+","+signalList[i][1]+" connected to "+signalList[i][2]);
@@ -353,11 +354,11 @@ StantonSCS3d.connectDeckSignals = function (channel, disconnect, list) {
                 case "cue_default":
                 case "beatsync": break;
                 default:    // Cause the signal to fire to update LEDs
-//                         engine.trigger(group,name);  // No sense in wasting queue length if we can do this another way
-                    // Alternate:
-                        var command = signalList[i][2]+"("+engine.getValue(group,name)+")";
-//                         print("StantonSCS3d: command="+command);
-                        eval(command);
+                        engine.trigger(group,name);
+//                     // Alternate:
+//                         var command = signalList[i][2]+"("+engine.getValue(group,name)+")";
+// //                         print("StantonSCS3d: command="+command);
+//                         eval(command);
                         break;
             }
         }
