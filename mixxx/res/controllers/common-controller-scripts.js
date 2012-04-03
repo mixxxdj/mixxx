@@ -148,8 +148,8 @@ bpm.tapButton = function(deck) {
 // ----------------- Object definitions --------------------------
 
 
-MidiButtonState = {"released":0x00, "pressed":0x7F};
-MidiLedState =  {"off": 0x00, "on": 0x7F};
+ButtonState = {"released":0x00, "pressed":0x7F};
+LedState =  {"off": 0x00, "on": 0x7F};
 
 //Controller
 function Controller () {
@@ -177,7 +177,7 @@ Controller.prototype.setControlValue = function(control, value) {
 //Button
 function Button(controlId) {
    this.controlId = controlId;
-   this.state = MidiButtonState.released;
+   this.state = ButtonState.released;
 }
 Button.prototype.handleEvent = function(value) {
    this.handler(value);

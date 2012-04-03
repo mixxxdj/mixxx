@@ -213,6 +213,10 @@ StantonSCS3d.init = function (id) {    // called when the MIDI device is opened 
     // Find out the firmware version
     if (!StantonSCS3d.state["flat"]) midi.sendSysexMsg([0xF0, 0x7E, StantonSCS3d.channel, 0x06, 0x01, 0xF7],6);
 
+    // Don't finish initializing until we know the firmware version.
+}
+
+StantonSCS3d.init2 = function () {
     // Set the device's MIDI channel to a known value
 //     midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x02, StantonSCS3d.channel, 0xF7]),7);
 
@@ -260,13 +264,13 @@ StantonSCS3d.statusResponse = function (data, length) {
         if ((2008+data[13])==2009 && !StantonSCS3d.state["flat"]) {
             // If the year is 2009, this is the test "smart" firmware
             print ("WARNING: This SCS.3d is running test firmware and should be re-flashed with production firmware!\n\
-                    (Contact Stanton support.)  Changing unit to flat mode and re-initializing...");
+                     (Contact Stanton support.)  Changing unit to flat mode...");
             //  Send the command to change the device to flat mode which is mostly compatible
             midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x10, StantonSCS3d.channel, 0xF7]),7);
             StantonSCS3d.state["flat"]=true;
-            StantonSCS3d.init(StantonSCS3d.id);
         }
     }
+    StantonSCS3d.init2();
 }
 
 StantonSCS3d.shutdown = function () {   // called when the MIDI device is closed

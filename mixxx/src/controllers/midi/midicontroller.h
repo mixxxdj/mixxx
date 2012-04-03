@@ -38,17 +38,20 @@ Q_OBJECT    // For signals & slots
         virtual ~MidiController();
         virtual QString presetExtension();
 
+        inline QString defaultPreset();
+
     signals:
         void midiEvent(MidiKey message);
 
     protected:
         Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
-        Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length) { Controller::send(data,length); }  // Alias
-        /** For System Exclusive message reception */
-        void receive(const unsigned char data[], unsigned int length);
+        // Alias for send()
+        Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length) { Controller::send(data,length); }
 
     protected slots:
         void receive(unsigned char status, unsigned char control = 0, unsigned char value = 0);
+        /** For System Exclusive message reception */
+        void receive(const QByteArray data);
 
     private slots:
 //         virtual int open() = 0;

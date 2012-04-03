@@ -88,7 +88,7 @@ Q_OBJECT
     // Execute a particular function with a data string (e.g. a device ID)
     bool execute(QString function, QString data);
     // Execute a particular function with a data buffer
-    bool execute(QString function, const unsigned char data[], unsigned int length);
+    bool execute(QString function, const QByteArray data);
     void loadScriptFiles(QList<QString> scriptFileNames);
     void initializeScripts(QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown();

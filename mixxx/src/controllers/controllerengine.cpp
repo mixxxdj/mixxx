@@ -284,11 +284,11 @@ bool ControllerEngine::internalExecute(QString scriptCode) {
     }
     if (error!="") {
         error = QString("%1: %2 at line %3, column %4 of script code:\n%5\n")
-        .arg(error)
-        .arg(result.errorMessage())
-        .arg(result.errorLineNumber())
-        .arg(result.errorColumnNumber())
-        .arg(scriptCode);
+                .arg(error,
+                     result.errorMessage(),
+                     QString::number(result.errorLineNumber()),
+                     QString::number(result.errorColumnNumber()),
+                     scriptCode);
 
         if (m_bDebug) qCritical() << "ControllerEngine:" << error;
         else scriptErrorDialog(error);
@@ -379,8 +379,7 @@ bool ControllerEngine::execute(QString function, QString data) {
    Input:   Function name, ponter to data buffer, length of buffer
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
-bool ControllerEngine::execute(QString function, const unsigned char data[],
-                                    unsigned int length) {
+bool ControllerEngine::execute(QString function, const QByteArray data) {
 
     if(m_pEngine == NULL) {
         return false;
@@ -398,11 +397,14 @@ bool ControllerEngine::execute(QString function, const unsigned char data[],
     if (!scriptFunction.isFunction())
         return false;
 
-    const char* buffer=reinterpret_cast<const char*>(data);
+//     const char* buffer=reinterpret_cast<const char*>(data);
     
     QScriptValueList args;
-    args << QScriptValue(m_pBaClass->newInstance(QByteArray::fromRawData(buffer,length)));
-    args << QScriptValue(length);
+//     args << QScriptValue(data);
+    args << QScriptValue(m_pBaClass->newInstance(data));
+    args << QScriptValue(data.size());
+//     args << QScriptValue(m_pBaClass->newInstance(QByteArray::fromRawData(buffer,length)));
+//     args << QScriptValue(length);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -432,14 +434,13 @@ bool ControllerEngine::checkException() {
         m_scriptErrors.insert((filename.isEmpty() ? "passed code" : filename), error);
 
         QString errorText = QString(tr("Uncaught exception at line %1 in file %2: %3"))
-                            .arg(line)
-                            .arg((filename.isEmpty() ? "" : filename))
-                            .arg(errorMessage);
+                            .arg(QString::number(line),
+                                (filename.isEmpty() ? "" : filename),
+                                errorMessage);
 
         if (filename.isEmpty())
             errorText = QString(tr("Uncaught exception at line %1 in passed code: %2"))
-                        .arg(line)
-                        .arg(errorMessage);
+                        .arg(QString::number(line), errorMessage);
 
         if (m_bDebug)
             qCritical() << "ControllerEngine:" << errorText
@@ -596,6 +597,9 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     if(cot != NULL && !m_st.ignore(group,name,newValue)) {
         cot->slotSet(newValue);
+        // We call emitValueChanged so that script functions connected to this
+        // control will get updates.
+        cot->emitValueChanged();
     }
 }
 
@@ -617,8 +621,37 @@ void ControllerEngine::log(QString message) {
 void ControllerEngine::trigger(QString group, QString name) {
     
     ControlObjectThread *cot = getControlObjectThread(group, name);
-    if(cot != NULL) {
-        cot->slotSet(cot->get());
+
+    // These don't work due to NOP elimination in COT, so we do the below stuff
+//     if(cot != NULL) {
+//         cot->slotSet(cot->get());
+//         cot->emitValueChanged();
+//     }
+
+    if (cot == NULL) return;
+
+    // ControlObject doesn't emit ValueChanged when set to the same value,
+    //  and ControlObjectThread::emitValueChanged also has no effect
+    //  so we have to call the function(s) manually with the current value
+    ConfigKey key = ConfigKey(group,name);
+    if(m_connectedControls.contains(key)) {
+        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
+        while (i != m_connectedControls.end() && i.key() == key) {
+            QString function = i.value();
+
+            QScriptValue function_value = m_pEngine->evaluate(function);
+            QScriptValueList args;
+
+            args << QScriptValue(cot->get());
+            args << QScriptValue(key.group);
+            args << QScriptValue(key.item);
+            QScriptValue result = function_value.call(QScriptValue(), args);
+            if (result.isError()) {
+                qWarning()<< "ControllerEngine: Call to" << function
+                          << "resulted in an error:" << result.toString();
+            }
+            ++i;
+        }
     }
 }
 
@@ -629,7 +662,8 @@ void ControllerEngine::trigger(QString group, QString name) {
    Output:  true if successful
    -------- ------------------------------------------------------ */
 bool ControllerEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
-    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
+    ControlObjectThread* cobj = getControlObjectThread(group, name);
+    ConfigKey key(group, name);
 
     if (cobj == NULL) {
         qWarning() << "ControllerEngine: script connecting [" << group << "," << name
@@ -638,7 +672,7 @@ bool ControllerEngine::connectControl(QString group, QString name, QString funct
     }
 
     // Don't add duplicates
-    if (!disconnect && m_connectedControls.contains(cobj->getKey(), function)) return true;
+    if (!disconnect && m_connectedControls.contains(key, function)) return true;
 
     if(m_pEngine == NULL) {
         return false;
@@ -649,23 +683,21 @@ bool ControllerEngine::connectControl(QString group, QString name, QString funct
     if(!checkException() && slot.isFunction()) {
         if(disconnect) {
 //             qDebug() << "ControllerEngine::connectControl disconnected " << group << name << " from " << function;
-            m_connectedControls.remove(cobj->getKey(), function);
+            m_connectedControls.remove(key, function);
             // Only disconnect the signal if there are no other instances of this control using it
-            if (!m_connectedControls.contains(cobj->getKey())) {
+            if (!m_connectedControls.contains(key)) {
                 this->disconnect(cobj, SIGNAL(valueChanged(double)),
-                                this, SLOT(slotValueChanged(double)));
+                                 this, SLOT(slotValueChanged(double)));
                 this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                                this, SLOT(slotValueChanged(double)));
+                                 this, SLOT(slotValueChanged(double)));
             }
         } else {
 //             qDebug() << "ControllerEngine::connectControl connected " << group << name << " to " << function;
             connect(cobj, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotValueChanged(double)),
-                    Qt::QueuedConnection);
+                    this, SLOT(slotValueChanged(double)));
             connect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                    this, SLOT(slotValueChanged(double)),
-                    Qt::QueuedConnection);
-            m_connectedControls.insert(cobj->getKey(), function);
+                    this, SLOT(slotValueChanged(double)));
+            m_connectedControls.insert(key, function);
         }
         return true;
     }
@@ -680,13 +712,17 @@ bool ControllerEngine::connectControl(QString group, QString name, QString funct
 void ControllerEngine::slotValueChanged(double value) {
     
 
-    ControlObject* sender = (ControlObject*)this->sender();
+    ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
     if(sender == NULL) {
         qWarning() << "ControllerEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
-        
         return;
     }
-    ConfigKey key = sender->getKey();
+    ControlObject* pSenderCO = sender->getControlObject();
+    if (pSenderCO == NULL) {
+        qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
+        return;
+    }
+    ConfigKey key = pSenderCO->getKey();
 
     if(m_connectedControls.contains(key)) {
         QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
@@ -747,25 +783,21 @@ bool ControllerEngine::evaluate(QString scriptName, QList<QString> scriptPaths) 
     if (!input.open(QIODevice::ReadOnly)) {
         QString errorLog =
             QString("ControllerEngine: Problem opening the script file: %1, error # %2, %3")
-                .arg(filename)
-                .arg(input.error())
-                .arg(input.errorString());
+                .arg(filename, QString("%1").arg(input.error()), input.errorString());
 
-        // GUI actions do not belong in the MSE. They should be passed to
-        // the above layers, along with input.errorString(), and that layer
-        // can take care of notifying the user. The script engine should do
-        // one thign and one thign alone -- run the scripts.
         if (m_bDebug) {
             qCritical() << errorLog;
         } else {
             qWarning() << errorLog;
             if (m_bPopups) {
+                // Set up error dialog
                 ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
                 props->setType(DLG_WARNING);
                 props->setTitle("Controller script file problem");
                 props->setText(QString("There was a problem opening the controller script file %1.").arg(filename));
                 props->setInfoText(input.errorString());
 
+                // Ask above layer to display the dialog & handle user response
                 ErrorDialogHandler::instance()->requestErrorDialog(props);
             }
         }
@@ -791,11 +823,10 @@ bool ControllerEngine::evaluate(QString scriptName, QList<QString> scriptPaths) 
     }
     if (error!="") {
         error = QString("%1 at line %2, column %3 in file %4: %5")
-                        .arg(error)
-                        .arg(result.errorLineNumber())
-                        .arg(result.errorColumnNumber())
-                        .arg(filename)
-                        .arg(result.errorMessage());
+                    .arg(error,
+                         QString::number(result.errorLineNumber()),
+                         QString::number(result.errorColumnNumber()),
+                         filename, result.errorMessage());
 
         if (m_bDebug) qCritical() << "ControllerEngine:" << error;
         else {

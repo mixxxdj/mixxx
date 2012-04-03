@@ -18,7 +18,5 @@
 #define LPRESETS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/")
 #define CONTROLLER_PRESET_EXTENSION ".cntrlr.xml"
 #define MIDI_MAPPING_EXTENSION ".midi.xml"
-#define DEFAULT_DEVICE_PRESET PRESETS_PATH.append(m_sDeviceName.replace(" ", "_") + CONTROLLER_PRESET_EXTENSION)
-#define DEFAULT_MIDI_DEVICE_PRESET PRESETS_PATH.append(m_sDeviceName.right(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-1).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
 #define REQUIRED_SCRIPT_FILE "common-controller-scripts.js"
 #define XML_SCHEMA_VERSION "1"

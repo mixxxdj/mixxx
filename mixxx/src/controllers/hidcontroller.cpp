@@ -31,7 +31,7 @@ void HidReader::run() {
 
     m_bStop=false;
     int result;
-    unsigned int length=0;
+    int length=0;
 
     while(!m_bStop) {
         // Blocked polling: The only problem with this is that we can't close
@@ -46,11 +46,9 @@ void HidReader::run() {
         if (result > 0) {
             length=result;
 //             qDebug() << "Read" << length << "bytes, pointer:" << data;
-            // Copy the array to avoid thread contention
-            unsigned char *temp = new unsigned char[length];
-            memcpy(temp, data, length);
-            emit(incomingData(temp,length));
-            // WARNING: Receiving slot must delete[] temp!
+
+            QByteArray outArray((char*)data,length);
+            emit(incomingData(outArray));
         }
     }
 
@@ -161,8 +159,8 @@ int HidController::open() {
         m_pReader = new HidReader(m_pHidDevice);
         m_pReader->setObjectName(QString("HidReader %1").arg(m_sDeviceName));
 
-        connect(m_pReader, SIGNAL(incomingData(unsigned char*, unsigned int)),
-                this, SLOT(receivePointer(unsigned char*, unsigned int)));
+        connect(m_pReader, SIGNAL(incomingData(QByteArray)),
+                this, SLOT(receive(QByteArray)));
 
         // Controller input needs to be prioritized since it can affect the audio
         //  directly, like when scratching
@@ -186,8 +184,8 @@ int HidController::close() {
                    << "yet the device is open!";
     }
     else {
-        disconnect(m_pReader, SIGNAL(incomingData(unsigned char*, unsigned int)),
-                this, SLOT(receivePointer(unsigned char*, unsigned int)));
+        disconnect(m_pReader, SIGNAL(incomingData(QByteArray)),
+                   this, SLOT(receive(QByteArray)));
         m_pReader->stop();
         hid_set_nonblocking(m_pHidDevice, 1);   // Quit blocking
         if (debugging()) qDebug() << "  Waiting on reader to finish";
@@ -210,50 +208,35 @@ int HidController::close() {
 }
 
 void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {
-
-    unsigned char * msg;
-    msg = new unsigned char [length];
-
+    
+    QByteArray temp;
     for (unsigned int i=0; i<length; i++) {
-        msg[i] = data.at(i);
+        temp.append(data.at(i));
     }
-
-    send(msg,length,reportID);
-    delete[] msg;
+    send(temp,reportID);
 }
 
-void HidController::sendBa(QByteArray data, unsigned int length, unsigned int reportID) {
+void HidController::send(QByteArray data, unsigned int reportID) {
+    // Append the Report ID to the beginning of data[] per the API..
+    data.prepend(reportID);
     
-    unsigned char* msg = reinterpret_cast<unsigned char*>(data.data());
-    send(msg,length,reportID);
-}
-
-void HidController::send(unsigned char data[], unsigned int length, unsigned int reportID) {
+    int result = hid_write(m_pHidDevice, (unsigned char*)(data.data()), data.size());
     
-    // Append the Report ID to the beginning of data[] per the API.
-    unsigned char * buffer = (unsigned char*) malloc( sizeof(unsigned char) * (length + 1));
-    memcpy(buffer + sizeof(unsigned char), data, length);
-    buffer[0] = (unsigned char) reportID;
-    
-    int result = hid_write(m_pHidDevice, buffer, length+1);
-
     QString serial = QString::fromWCharArray(hid_serial);
     
     if (result==-1) {
         if (debugging()) {
             qWarning() << "Unable to send data to" << m_sDeviceName
-                << "serial #" << serial << ":"
-                << QString::fromWCharArray(hid_error(m_pHidDevice));
+                       << "serial #" << serial << ":"
+                       << QString::fromWCharArray(hid_error(m_pHidDevice));
         }
         else {
             qWarning() << "Unable to send data to" << m_sDeviceName << ":"
-                << QString::fromWCharArray(hid_error(m_pHidDevice));
+                       << QString::fromWCharArray(hid_error(m_pHidDevice));
         }
     }
-    else if (debugging()) 
-        qDebug() << result << "bytes sent to" << m_sDeviceName 
-            << "serial #" << serial
-            << "(including report ID of" << reportID << ")";
-
-    free(buffer);
+    else if (debugging())
+        qDebug() << result << "bytes sent to" << m_sDeviceName
+                 << "serial #" << serial
+                 << "(including report ID of" << reportID << ")";
 }

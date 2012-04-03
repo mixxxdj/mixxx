@@ -44,7 +44,7 @@ class PortMidiController : public MidiController {
         int open();
         int close();
         void send(unsigned int word);
-        void send(unsigned char data[], unsigned int length);
+        void send(QByteArray data);
     private:
         void timerEvent(QTimerEvent *event, bool poll);
 

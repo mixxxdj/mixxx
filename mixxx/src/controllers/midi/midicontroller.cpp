@@ -36,6 +36,12 @@ MidiController::~MidiController(){
 //     close(); // I wish I could put this here to enforce it automatically
 }
 
+QString MidiController::defaultPreset() {
+    return PRESETS_PATH.append(m_sDeviceName.right(m_sDeviceName.size()
+    -m_sDeviceName.indexOf(" ")-1).replace(" ", "_")
+    + MIDI_MAPPING_EXTENSION);
+}
+
 QString MidiController::presetExtension() {
     return MIDI_MAPPING_EXTENSION;
 }
@@ -346,12 +352,13 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     return _newmidivalue;
 }
 
-void MidiController::receive(const unsigned char data[], unsigned int length) {
+void MidiController::receive(QByteArray data) {
 
+    int length = data.size();
     QString message = m_sDeviceName+": [";
-    for (uint i = 0; i < length; ++i) {
+    for (int i = 0; i < length; ++i) {
         message += QString("%1%2").arg(
-            QString("%1").arg(data[i], 2, 16, QChar('0')).toUpper(),
+            QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),
             QString("%1").arg((i < (length-1)) ? ' ' : ']'));
     }
 
@@ -362,7 +369,7 @@ void MidiController::receive(const unsigned char data[], unsigned int length) {
     QPair<ConfigKey, MidiOptions> control;
 
     MidiKey mappingKey;
-    mappingKey.status = data[0];
+    mappingKey.status = data.at(0);
     // Signifies that the second byte is part of the payload, default
     mappingKey.control = 0xFF;
     
@@ -384,7 +391,7 @@ void MidiController::receive(const unsigned char data[], unsigned int length) {
 //         //  (polymorphism doesn't work across class boundaries)
 //         ControllerEngine *pEngine = m_pEngine;
 //         if (!pEngine->execute(ckey.item, data, length)) {
-        if (!m_pEngine->execute(ckey.item, data, length)) {
+        if (!m_pEngine->execute(ckey.item, data)) {
             qDebug() << "MidiController: Invalid script function" << ckey.item;
         }
         return;

@@ -214,7 +214,8 @@ void PortMidiController::timerEvent(QTimerEvent *event, bool poll) {
             }
 
             if (m_bInSysex && m_bEndSysex) {
-                MidiController::receive(m_cReceiveMsg, m_cReceiveMsg_index);
+                const char* buffer=reinterpret_cast<const char*>(m_cReceiveMsg);
+                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index));
                 m_bInSysex=false;
                 m_bEndSysex=false;
                 m_cReceiveMsg_index = 0;
@@ -234,13 +235,12 @@ void PortMidiController::send(unsigned int word)
 }
 
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
-void PortMidiController::send(unsigned char data[], unsigned int length)
+// void PortMidiController::send(unsigned char data[], unsigned int length)
+void PortMidiController::send(QByteArray data)
 {
-    Q_UNUSED(length);   // We have to accept it even if we don't use it
-                        // to be consistent with other MIDI APIs that do need it
     if (m_pOutputStream)
     {
-        PmError err = Pm_WriteSysEx(m_pOutputStream, 0, data);
+        PmError err = Pm_WriteSysEx(m_pOutputStream, 0, (unsigned char*)(data.data()));
         if( err != pmNoError ) qDebug() << "PortMidi sm_bEndSysexMsg error:" << Pm_GetErrorText(err);
     }
 }
