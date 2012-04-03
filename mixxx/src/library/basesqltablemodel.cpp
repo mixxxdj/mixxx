@@ -196,7 +196,7 @@ void BaseSqlTableModel::select() {
 
     QLinkedList<int> tableColumnIndices;
     foreach (QString column, m_tableColumns) {
-        //Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
+        Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
         tableColumnIndices.push_back(record.indexOf(column));
     }
     int rows = query.size();
