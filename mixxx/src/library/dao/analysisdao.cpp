@@ -9,6 +9,12 @@
 
 const QString AnalysisDao::s_analysisTableName = "track_analysis";
 
+// For a track that takes 1.2MB to store the big waveform, the default
+// compression level (-1) takes the size down to about 600KB. The difference
+// between the default and 9 (the max) was only about 1-2KB for a lot of extra
+// CPU time so I think we should stick with the default. rryan 4/3/2012
+const int kCompressionLevel = -1;
+
 AnalysisDao::AnalysisDao(const QSqlDatabase& database)
         : m_db(database) {
 }
@@ -49,8 +55,8 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
             query.record().indexOf("description")).toString();
         info.version = query.value(
             query.record().indexOf("version")).toString();
-        info.data = query.value(
-            query.record().indexOf("data")).toByteArray();
+        info.data = qUncompress(query.value(
+            query.record().indexOf("data")).toByteArray());
         analyses.append(info);
     }
     return analyses;
@@ -83,8 +89,8 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
             query.record().indexOf("description")).toString();
         info.version = query.value(
             query.record().indexOf("version")).toString();
-        info.data = query.value(
-            query.record().indexOf("version")).toByteArray();
+        info.data = qUncompress(query.value(
+            query.record().indexOf("data")).toByteArray());
         analyses.append(info);
     }
     return analyses;
@@ -112,7 +118,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
         query.bindValue(":type", info->type);
         query.bindValue(":description", info->description);
         query.bindValue(":version", info->version);
-        query.bindValue(":data", info->data);
+        query.bindValue(":data", qCompress(info->data, kCompressionLevel));
 
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "couldn't save new analysis";
@@ -121,11 +127,6 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
         info->analysisId = query.lastInsertId().toInt();
         return true;
     }
-
-    query.prepare(QString(
-        "INSERT INTO %1 (track_id, type, description, version, data) "
-        "VALUES (:trackId,:type,:description,:version,:data)")
-                  .arg(s_analysisTableName));
 
     query.prepare(QString(
         "UPDATE %1 SET "
@@ -141,7 +142,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     query.bindValue(":type", info->type);
     query.bindValue(":description", info->description);
     query.bindValue(":version", info->version);
-    query.bindValue(":data", info->data);
+    query.bindValue(":data", qCompress(info->data, kCompressionLevel));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't update existing analysis";
