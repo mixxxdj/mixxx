@@ -1,29 +1,25 @@
-#include "glwaveformrendererfilteredsignal.h"
-
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-
-#include "widget/wskincolor.h"
-#include "trackinfoobject.h"
-#include "widget/wwidget.h"
+#include <QDomNode>
+#include <QLineF>
+#include <QLinearGradient>
+#include <QMutexLocker>
 
 #include "controlobject.h"
 #include "defs.h"
+#include "glwaveformrendererfilteredsignal.h"
+#include "trackinfoobject.h"
+#include "waveform/waveform.h"
+#include "waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
-#include <QLinearGradient>
-#include <QLineF>
-
-#include <QDomNode>
-
-GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract( waveformWidgetRenderer) {
-    m_lowFilterControlObject = 0;
-    m_midFilterControlObject = 0;
-    m_highFilterControlObject = 0;
-    m_lowKillControlObject = 0;
-    m_midKillControlObject = 0;
-    m_highKillControlObject = 0;
-
+GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(WaveformWidgetRenderer* waveformWidgetRenderer)
+        : WaveformRendererAbstract( waveformWidgetRenderer) {
+    m_lowFilterControlObject = NULL;
+    m_midFilterControlObject = NULL;
+    m_highFilterControlObject = NULL;
+    m_lowKillControlObject = NULL;
+    m_midKillControlObject = NULL;
+    m_highKillControlObject = NULL;
     m_alignment = Qt::AlignCenter;
 }
 
@@ -128,8 +124,22 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 
 int GLWaveformRendererFilteredSignal::buildPolygon() {
     const Waveform* waveform = m_waveformRenderer->getTrackInfo()->getWaveform();
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * waveform->getDataSize();
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * waveform->getDataSize();
+    if (waveform == NULL) {
+        return 0;
+    }
+
+    QMutexLocker locker(waveform->getMutex());
+
+    const int dataSize = waveform->getDataSize();
+    if (dataSize == 0) {
+        qDebug() << "0 size waveform";
+        return 0;
+    }
+    const WaveformData* data = &waveform->get(0);
+    locker.unlock();
+
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
     int pointIndex = 0;
     setPoint(m_polygon[0][pointIndex], 0.0, 0.0);
     setPoint(m_polygon[1][pointIndex], 0.0, 0.0);
@@ -188,6 +198,19 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
         for (int x = startPixel;
              (startPixel < endPixel) ? (x <= endPixel) : (x >= endPixel);
              x += delta) {
+
+            // TODO(rryan) remove before 1.11 release. I'm seeing crashes
+            // sometimes where the pointIndex is very very large. It hasn't come
+            // back since adding locking, but I'm leaving this so that we can
+            // get some info about it before crashing. (The crash usually
+            // corrupts a lot of the stack).
+            if (pointIndex > 2*m_waveformRenderer->getWidth()+2) {
+                qDebug() << "OUT OF CONTROL"
+                         << 2*m_waveformRenderer->getWidth()+2
+                         << dataSize
+                         << channel << pointIndex << x;
+            }
+
             // Width of the x position in visual indices.
             const double xSampleWidth = gain * x;
 
@@ -210,7 +233,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
 
             // If the entire sample range is off the screen then don't calculate a
             // point for this pixel.
-            const int lastVisualFrame = waveform->getDataSize() / 2 - 1;
+            const int lastVisualFrame = dataSize / 2 - 1;
             if (visualFrameStop < 0 || visualFrameStart > lastVisualFrame) {
                 setPoint(m_polygon[0][pointIndex], x, 0.0);
                 setPoint(m_polygon[1][pointIndex], x, 0.0);
@@ -244,11 +267,12 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
             unsigned char maxBand = 0;
             unsigned char maxHigh = 0;
 
-            for (int i = visualIndexStart; i <= visualIndexStop; i+=channelSeparation) {
-                const WaveformData& waveformData = waveform->get(i);
-                const unsigned char low = waveformData.filtered.low;
-                const unsigned char mid = waveformData.filtered.mid;
-                const unsigned char high = waveformData.filtered.high;
+            for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
+                 i += channelSeparation) {
+                const WaveformData& waveformData = *(data + i);
+                unsigned char low = waveformData.filtered.low;
+                unsigned char mid = waveformData.filtered.mid;
+                unsigned char high = waveformData.filtered.high;
                 maxLow = math_max(maxLow, low);
                 maxBand = math_max(maxBand, mid);
                 maxHigh = math_max(maxHigh, high);
