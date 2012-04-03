@@ -655,14 +655,17 @@ void ControllerEngine::trigger(QString group, QString name) {
     }
 }
 
-/* -------- ------------------------------------------------------
+/**-------- ------------------------------------------------------
    Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
    Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
                 script function name, true if you want to disconnect
    Output:  true if successful
    -------- ------------------------------------------------------ */
 bool ControllerEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
-    ControlObjectThread* cobj = getControlObjectThread(group, name);
+
+    // A COT doesn't allow automatic reactions to work because we need valueChangedFromEngine
+//     ControlObjectThread* cobj = getControlObjectThread(group, name);
+    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
     ConfigKey key(group, name);
 
     if (cobj == NULL) {
@@ -705,24 +708,28 @@ bool ControllerEngine::connectControl(QString group, QString name, QString funct
     return false;
 }
 
-/* -------- ------------------------------------------------------
+/**-------- ------------------------------------------------------
    Purpose: Receives valueChanged() slots from ControlObjects, and
    fires off the appropriate script function.
    -------- ------------------------------------------------------ */
 void ControllerEngine::slotValueChanged(double value) {
-    
 
-    ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
+    ControlObject* sender = (ControlObject*)this->sender();
+    // Using a COT doesn't allow automatic reactions to work because sender is null
+    //  when we use a straight CO in connectControl()
+//     ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
     if(sender == NULL) {
         qWarning() << "ControllerEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         return;
     }
-    ControlObject* pSenderCO = sender->getControlObject();
-    if (pSenderCO == NULL) {
-        qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
-        return;
-    }
-    ConfigKey key = pSenderCO->getKey();
+    ConfigKey key = sender->getKey();
+    
+//     ControlObject* pSenderCO = sender->getControlObject();
+//     if (pSenderCO == NULL) {
+//         qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
+//         return;
+//     }
+//     ConfigKey key = pSenderCO->getKey();
 
     if(m_connectedControls.contains(key)) {
         QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
