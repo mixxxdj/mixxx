@@ -212,11 +212,13 @@ public:
     /** Set URL for track */
     void setURL(QString url);
 
-    Waveform* getWaveform() { return m_waveform;}
-    const Waveform* getWaveform() const { return m_waveform;}
+    Waveform* getWaveform();
+    const Waveform* getWaveform() const;
+    void setWaveform(Waveform* pWaveform);
 
-    Waveform* getWaveformSummary() { return m_waveformSummary;}
-    const Waveform* getWaveformSummary() const { return m_waveformSummary;}
+    Waveform* getWaveformSummary();
+    const Waveform* getWaveformSummary() const;
+    void setWaveformSummary(Waveform* pWaveformSummary);
 
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
@@ -257,6 +259,8 @@ public slots:
     void slotCueUpdated();
 
 signals:
+    void waveformUpdated();
+    void waveformSummaryUpdated();
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
