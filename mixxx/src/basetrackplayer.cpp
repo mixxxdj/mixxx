@@ -33,29 +33,14 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
+    const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-}
-
-BaseTrackPlayer::~BaseTrackPlayer()
-{
-    if (m_pLoadedTrack) {
-        emit(unloadingTrack(m_pLoadedTrack));
-        m_pLoadedTrack.clear();
-    }
-
-    delete m_pCuePoint;
-    delete m_pLoopInPoint;
-    delete m_pLoopOutPoint;
-    delete m_pPlayPosition;
-    delete m_pBPM;
-    delete m_pReplayGain;
-    delete m_pWaveformRenderer;
-    delete m_pDuration;
-}
-
-void BaseTrackPlayer::initiate(EngineBuffer* pEngineBuffer,const char* pSafeGroupName,
-                               ConfigObject<ConfigValue> *pConfig){
-        ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
+    EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
+                                        pConfig, defaultOrientation);
+    EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
+    pMixingEngine->addChannel(pChannel);
+    
+    ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);
 
     CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
@@ -107,7 +92,32 @@ void BaseTrackPlayer::initiate(EngineBuffer* pEngineBuffer,const char* pSafeGrou
             m_pWaveformRenderer, SLOT(slotNewTrack(TrackPointer)));
     connect(this, SIGNAL(unloadingTrack(TrackPointer)),
             m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
+
 }
+
+BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, QString group):
+                                 BasePlayer(pParent,group){
+
+}
+
+BaseTrackPlayer::~BaseTrackPlayer()
+{
+    if (m_pLoadedTrack) {
+        emit(unloadingTrack(m_pLoadedTrack));
+        m_pLoadedTrack.clear();
+    }
+
+    delete m_pCuePoint;
+    delete m_pLoopInPoint;
+    delete m_pLoopOutPoint;
+    delete m_pPlayPosition;
+    delete m_pBPM;
+    delete m_pReplayGain;
+    delete m_pWaveformRenderer;
+    delete m_pDuration;
+}
+
+
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
 {
