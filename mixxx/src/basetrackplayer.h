@@ -21,6 +21,7 @@ class BaseTrackPlayer : public BasePlayer {
                     EngineChannel::ChannelOrientation defaultOrientation,
                     AnalyserQueue* pAnalyserQueue,
                     QString group);
+    BaseTrackPlayer(QObject* pParent, QString group);
     ~BaseTrackPlayer();
 
 
@@ -39,7 +40,7 @@ class BaseTrackPlayer : public BasePlayer {
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
 
-  private:
+  protected:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
     AnalyserQueue* m_pAnalyserQueue;
@@ -52,9 +53,6 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
     WaveformRenderer* m_pWaveformRenderer;
-  protected:
-    void initiate(EngineBuffer* pEngineBuffer,const char* pSafeGroupName,
-                  ConfigObject<ConfigValue> *pConfig);
 };
 
 
