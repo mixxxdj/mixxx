@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QByteArray>
 #include <QString>
+#include <QAtomicInt>
 #include <vector>
 
 #include "util.h"
@@ -52,14 +53,20 @@ class Waveform {
 
     void reset();
 
-    double getVisualSampleRate() const { return m_visualSampleRate;}
-    double getAudioVisualRatio() const { return m_audioVisualRatio;}
-    int getAudioSamplesPerVisualSample() const { return m_audioSamplesPerVisualSample;}
-    int getCompletion() const { return m_completion;}
-    int getTextureStride() const { return m_textureStride;}
-    int getTextureSize() const { return m_data.size();}
+    double getVisualSampleRate() const { return m_visualSampleRate; }
+    double getAudioVisualRatio() const { return m_audioVisualRatio; }
+    int getAudioSamplesPerVisualSample() const { return m_audioSamplesPerVisualSample; }
 
-    double getActualSize() const { return m_actualSize;}
+    // Atomically lookup the completion of the waveform. Represents the number
+    // of data elements that have been processed out of dataSize.
+    int getCompletion() const { return m_completion; }
+    int getTextureStride() const { return m_textureStride; }
+    int getTextureSize() const { return m_data.size(); }
+
+    double getActualSize() const { return m_actualSize; }
+
+    // Atomically get the number of data elements in this Waveform. You do not
+    // need to lock the Waveform's mutex before calling this method.
     int getDataSize() const { return m_dataSize; }
 
     const std::vector<WaveformData>& getConstData() const { return m_data;}
@@ -84,8 +91,9 @@ class Waveform {
     void resize(int size);
     void assign(int size, int value = 0);
 
-    void computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate);
-    void allocateForAudioSamples( int audioSamples);
+    void computeBestVisualSampleRate(int audioSampleRate,
+                                     double desiredVisualSampleRate);
+    void allocateForAudioSamples(int audioSamples);
 
     inline WaveformData& at(int i) { return m_data[i];}
     inline unsigned char& low(int i) { return m_data[i].filtered.low;}
@@ -102,7 +110,7 @@ class Waveform {
     QString m_description;
 
     double m_actualSize; //actual song size in visual world
-    int m_dataSize; //m_data allocated size
+    QAtomicInt m_dataSize; //m_data allocated size
     std::vector<WaveformData> m_data;
     int m_audioSamplesPerVisualSample;
     double m_visualSampleRate;
@@ -112,7 +120,7 @@ class Waveform {
     //on waveform laoding
 
     int m_textureStride;
-    int m_completion;
+    QAtomicInt m_completion;
 
     mutable QMutex* m_mutex;
 
