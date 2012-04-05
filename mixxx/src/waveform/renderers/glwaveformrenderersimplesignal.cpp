@@ -46,9 +46,24 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event){
 
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-
-    if (!trackInfo)
+    if (!trackInfo) {
         return;
+    }
+
+    const Waveform* waveform = trackInfo->getWaveform();
+    if (waveform == NULL) {
+        return;
+    }
+
+    int dataSize = waveform->getDataSize();
+    if (dataSize <= 1) {
+        return;
+    }
+
+    const WaveformData* data = waveform->data();
+    if (data == NULL) {
+        return;
+    }
 
     painter->save();
 
@@ -59,12 +74,6 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event)
     painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
     painter->scale(1.0,m_waveformRenderer->getGain()*2.0*(double)m_waveformRenderer->getHeight()/255.0);
 
-    const Waveform* waveform = trackInfo->getWaveform();
-    int dataSize = waveform->getDataSize();
-    if (dataSize <= 1) {
-        return;
-    }
-    const WaveformData* data = &waveform->get(0);
     const double xOffset = 0.5;
 
     int pointIndex = 0;
