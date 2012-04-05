@@ -154,7 +154,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         new_playpos = samples_read;
         return buffer;
     }
-
+    
     CSAMPLE* result = do_scale(buffer, buf_size, pBase, iBaseLength, &samples_read);
     new_playpos = samples_read;
     return result;
@@ -172,7 +172,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     float rate_add = rate_add_new;
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
-
+    
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
     m_fOldBaseRate = m_dBaseRate;
@@ -190,6 +190,38 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     //We check for scratch condition in the public function, so this
     //shouldn't happen
     Q_ASSERT(rate_add_new * rate_add_old >= 0);
+    
+    //special case -- no scaling needed!
+    if (rate_add_old == 1.0 && rate_add_new == 1.0)
+    {
+        int read_size = 0;
+        //if we have leftover samples in the internal buffer
+        if ((int)floor(m_dNextSampleIndex)*2+1 < buffer_int_size) 
+        {
+            CSAMPLE* prepend_buf = buf;
+            //use up what's left of the internal buffer
+            for (int i=(int)floor(m_dNextSampleIndex)*2; i<buffer_int_size; i+=2)
+            {
+                *prepend_buf = buffer_int[i]; prepend_buf++;
+                *prepend_buf = buffer_int[i+1]; prepend_buf++;
+                iRateLerpLength -= 2;
+            }
+            read_size = m_pReadAheadManager->getNextSamples(1.0, prepend_buf, iRateLerpLength);
+        }
+        else {
+            read_size = m_pReadAheadManager->getNextSamples(1.0, buf, iRateLerpLength);
+        }
+        *samples_read = read_size;
+        
+        //update our class members so next time we need to scale it's ok
+        //we do blow away the fractional sample position here
+        buffer_int_size = 0; //force buffer read
+        m_dNextSampleIndex = 0;
+        m_fPrevSample[0] = buf[read_size-2];
+        m_fPrevSample[1] = buf[read_size-1];
+        
+        return buf;
+    }
 
     // Simulate the loop to estimate how many samples we need
     double samples = 0;
@@ -222,7 +254,6 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     bool last_read_failed = false;
     CSAMPLE prev_sample[2];
     CSAMPLE cur_sample[2];
-    double prevIndex=0;
 
     prev_sample[0]=0;
     prev_sample[1]=0;
@@ -233,7 +264,6 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     int screwups = 0;
     while(i < buf_size) {
         //shift indicies
-        prevIndex = m_dCurSampleIndex;
         m_dCurSampleIndex = m_dNextSampleIndex;
 
         //we're going to be interpolating between two samples, a lower (prev)
@@ -293,7 +323,6 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
             unscaled_samples_needed -= buffer_int_size;
             //shift the index by the size of the old buffer
             m_dCurSampleIndex -= old_bufsize / 2;
-            prevIndex -= old_bufsize / 2;
             //fractions below 0 is ok, the ceil will bring it up to 0
             //this happens sometimes, somehow?
             //Q_ASSERT(m_dCurSampleIndex > -1.0);
@@ -344,7 +373,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     //    buf[i] = 0.0f;
     //    buf[i+1] = 0.0f;
     //}
-
+    
     //Q_ASSERT(i>=buf_size);
     SampleUtil::applyGain(&buf[i], 0.0f, buf_size-i);
 
