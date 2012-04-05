@@ -190,7 +190,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 #ifdef __VINYLCONTROL__
     // If VinylControl is enabled, add a VinylControlControl. This must be done
     // before RateControl is created.
-    addControl(new VinylControlControl(group, _config));
+    m_pVinylControlControl = new VinylControlControl(group, _config);
+    addControl(m_pVinylControlControl);
 #endif
 
     // Create the Rate Controller
@@ -227,16 +228,19 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             Qt::DirectConnection);
 
     //m_iRampIter = 0;
-
-    /*df.setFileName("mixxx-debug.csv");
+#ifdef __SCALER_DEBUG__
+    df.setFileName("mixxx-debug.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
-    writer.setDevice(&df);*/
+    writer.setDevice(&df);
+#endif    
 }
 
 EngineBuffer::~EngineBuffer()
 {
+#ifdef __SCALER_DEBUG__
     //close the writer
-    /*df.close();*/
+    df.close();
+#endif
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -504,6 +508,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
+                                             
+#ifdef __VINYLCONTROL__
+        if (m_pVinylControlControl->isEnabled() && m_pVinylControlControl->isScratching()) {
+            is_scratching = true;
+        }
+#endif        
+                                             
         //qDebug() << "rate" << rate << " paused" << paused;
 
         // Scratching always disables keylock because keylock sounds terrible
@@ -735,9 +746,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
 
-    /*for (int i=0; i<iBufferSize; i+=2) {
+#ifdef __SCALER_DEBUG__
+    for (int i=0; i<iBufferSize; i+=2) {
         writer << pOutput[i] <<  "\n";
-    }*/
+    }
+#endif
 
     m_bLastBufferPaused = bCurBufferPaused;
 }

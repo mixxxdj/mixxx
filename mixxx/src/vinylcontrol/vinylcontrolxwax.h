@@ -2,6 +2,7 @@
 #define __VINYLCONTROLXWAX_H__
 
 #include "vinylcontrol.h"
+#include "steadypitch.h"
 #include <time.h>
 #include <QTime>
 
@@ -63,9 +64,7 @@ class VinylControlXwax : public VinylControl
     bool bForceResync;
     int iOldMode;
     double dOldFilePos;
-    double dSteadyPitch;
-    double dOldSteadyPitch;
-    double dSteadyPitchTime;
+    SteadyPitch *m_pSteadySubtle, *m_pSteadyGross;
     QTime tSinceSteadyPitch;
     double dUiUpdateTime;
 
