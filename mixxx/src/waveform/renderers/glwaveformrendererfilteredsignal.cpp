@@ -124,17 +124,27 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 }
 
 int GLWaveformRendererFilteredSignal::buildPolygon() {
-    const Waveform* waveform = m_waveformRenderer->getTrackInfo()->getWaveform();
+    // We have to check the track is present because it might have been unloaded
+    // between the call to draw and the call to buildPolygon
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
+        return 0;
+    }
+
+    const Waveform* waveform = pTrack->getWaveform();
     if (waveform == NULL) {
         return 0;
     }
 
     const int dataSize = waveform->getDataSize();
     if (dataSize <= 1) {
-        qDebug() << "0 size waveform";
         return 0;
     }
-    const WaveformData* data = &waveform->get(0);
+
+    const WaveformData* data = waveform->data();
+    if (data == NULL) {
+        return 0;
+    }
 
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;

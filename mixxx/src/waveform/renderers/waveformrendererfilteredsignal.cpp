@@ -42,17 +42,25 @@ void WaveformRendererFilteredSignal::setup(const QDomNode& node) {
 void WaveformRendererFilteredSignal::draw(QPainter* painter,
                                           QPaintEvent* /*event*/) {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-
     if (!trackInfo) {
         return;
     }
 
     const Waveform* waveform = trackInfo->getWaveform();
+    if (waveform == NULL) {
+        return;
+    }
+
     int dataSize = waveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
-    const WaveformData* data = &waveform->get(0);
+
+    const WaveformData* data = waveform->data();
+    if (data == NULL) {
+        return;
+    }
+
     const double xOffset = 0.5;
 
     int samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
