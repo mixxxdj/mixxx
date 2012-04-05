@@ -26,12 +26,16 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* pare
 
     setAutoBufferSwap(false);
 
-    makeCurrent();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
     init();
 }
 
 GLSimpleWaveformWidget::~GLSimpleWaveformWidget(){
-    makeCurrent();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
 }
 
 void GLSimpleWaveformWidget::castToQWidget() {
@@ -39,7 +43,9 @@ void GLSimpleWaveformWidget::castToQWidget() {
 }
 
 void GLSimpleWaveformWidget::paintEvent( QPaintEvent* event) {
-    makeCurrent();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
     QPainter painter(this);
     draw(&painter,event);
     QGLWidget::swapBuffers();
