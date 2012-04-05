@@ -35,37 +35,18 @@ void MarkRange::generatePixmap(int weidth, int height)
     m_activePixmap.fill(QColor(0,0,0,0));
     m_disabledPixmap.fill(QColor(0,0,0,0));
 
-    QColor activeBorderColor = m_activeColor.darker(200);
-    activeBorderColor.setAlphaF(0.0);
-    QColor activeCenterColor = m_activeColor;
-    activeCenterColor.setAlphaF(0.3);
-
-    QLinearGradient linearGrad(QPointF(0,0), QPointF(0,height));
-    linearGrad.setColorAt(0.0, activeBorderColor);
-    linearGrad.setColorAt(0.4, activeCenterColor);
-    linearGrad.setColorAt(0.6, activeCenterColor);
-    linearGrad.setColorAt(1.0, activeBorderColor);
-
-    QBrush brush(linearGrad);
+    QColor activeColor = m_activeColor;
+    activeColor.setAlphaF(0.3);
+    QBrush brush(activeColor);
 
     QPainter painter;
     painter.begin(&m_activePixmap);
     painter.fillRect(m_activePixmap.rect(), brush);
     painter.end();
 
-    QColor disabledBorderColor = m_disabledColor;
-    disabledBorderColor.setAlphaF(0.05);
-    QColor disabledCenterColor = m_disabledColor.darker(100);
-    disabledCenterColor.setAlphaF(0.2);
-
-    linearGrad = QLinearGradient(QPointF(0,0), QPointF(0,height));
-    linearGrad.setColorAt(0.0, disabledBorderColor);
-    linearGrad.setColorAt(0.2, disabledCenterColor);
-    linearGrad.setColorAt(0.8, disabledCenterColor);
-    linearGrad.setColorAt(1.0, disabledBorderColor);
-
-    brush = QBrush(linearGrad);
-
+    QColor disabledColor = m_disabledColor;
+    disabledColor.setAlphaF(0.3);
+    brush = QBrush(disabledColor);
     painter.begin(&m_disabledPixmap);
     painter.fillRect(m_disabledPixmap.rect(), brush);
     painter.end();
