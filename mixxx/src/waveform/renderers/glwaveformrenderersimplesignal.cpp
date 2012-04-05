@@ -38,11 +38,16 @@ void GLWaveformRendererSimpleSignal::setup(const QDomNode &node){
     m_brush = QBrush(gradient);
 }
 
+inline void setPoint(QPointF& point, qreal x, qreal y) {
+    point.setX(x);
+    point.setY(y);
+}
+
 void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event){
 
-    const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
+    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if( !trackInfo)
+    if (!trackInfo)
         return;
 
     painter->save();
@@ -54,17 +59,23 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event)
     painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
     painter->scale(1.0,m_waveformRenderer->getGain()*2.0*(double)m_waveformRenderer->getHeight()/255.0);
 
-    const Waveform* waveform = m_waveformRenderer->getTrackInfo()->getWaveform();
+    const Waveform* waveform = trackInfo->getWaveform();
+    int dataSize = waveform->getDataSize();
+    if (dataSize <= 1) {
+        return;
+    }
+    const WaveformData* data = &waveform->get(0);
+    const double xOffset = 0.5;
 
     int pointIndex = 0;
 
-    int firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()*waveform->getDataSize();
-    int lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition()*waveform->getDataSize();
+    int firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()*dataSize;
+    int lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition()*dataSize;
 
     m_waveformRenderer->regulateVisualSample(firstVisualIndex);
     m_waveformRenderer->regulateVisualSample(lastVisualIndex);
 
-    m_polygon[pointIndex] = QPointF(-0.5,0.0);
+    setPoint(m_polygon[pointIndex], -0.5, 0.0);
 
     const double offset = (double)firstVisualIndex;
     const double gain = (double)(lastVisualIndex - firstVisualIndex) / (double)m_waveformRenderer->getWidth();
@@ -72,57 +83,57 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* event)
     const double visualSamplePerPixel = m_waveformRenderer->getVisualSamplePerPixel();
 
     //Rigth channel
-    for( double x = 0.0; x < (double)m_waveformRenderer->getWidth(); x++)
-    {
+    for (double x = 0.0; x < (double)m_waveformRenderer->getWidth(); x++) {
         pointIndex++;
 
-        int visualIndexStart = floor( gain * x + offset - visualSamplePerPixel/2.0);
+        int visualIndexStart = floor(gain * x + offset - visualSamplePerPixel/2.0);
         visualIndexStart -= visualIndexStart%2;
-        int visualIndexStop = ceil( gain * x + offset + visualSamplePerPixel/2.0);
+        int visualIndexStop = ceil(gain * x + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop < waveform->getDataSize() - 1) {
+        if (visualIndexStart > 0 && visualIndexStop < dataSize - 1) {
             unsigned char maxValue = 0;
 
-            for( int i = visualIndexStart; i <= visualIndexStop; i+=2)
-                maxValue = math_max( maxValue, waveform->getAll(i));
+            for( int i = visualIndexStart; i <= visualIndexStop; i += 2) {
+                maxValue = math_max(maxValue, (data+i)->filtered.all);
+            }
 
-            m_polygon[pointIndex] = QPointF(x+0.5,(float)maxValue);
+            setPoint(m_polygon[pointIndex], x + xOffset, (float)maxValue);
         }
         else {
-            m_polygon[pointIndex] = QPointF(x+0.5,0.0);
+            setPoint(m_polygon[pointIndex], x + xOffset, 0.1);
         }
     }
 
     //pivot point
     pointIndex++;
-    m_polygon[pointIndex] = QPointF(m_waveformRenderer->getWidth()+0.5,0.0);
+    setPoint(m_polygon[pointIndex], m_waveformRenderer->getWidth() + xOffset, 0.0);
 
     //Left channel
-    for( double x = (double)m_waveformRenderer->getWidth() - 1.0; x > -1.0; x--)
-    {
+    for (double x = (double)m_waveformRenderer->getWidth() - 1.0; x > -1.0; x--) {
         pointIndex++;
 
         int visualIndexStart = int( gain * x + offset - visualSamplePerPixel/2.0);
         visualIndexStart -= visualIndexStart%2 + 1; //left channel
         int visualIndexStop = int( gain * x + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop < waveform->getDataSize() - 1) {
+        if( visualIndexStart > 0 && visualIndexStop < dataSize - 1) {
             unsigned char maxValue = 0;
 
-            for( int i = visualIndexStart; i <= visualIndexStop; i+=2)
-                maxValue = math_max( maxValue, waveform->getAll(i));
+            for (int i = visualIndexStart; i <= visualIndexStop; i += 2) {
+                maxValue = math_max(maxValue, (data+i)->filtered.all);
+            }
 
-            m_polygon[pointIndex] = QPointF(x+0.5,-(float)maxValue);
+            setPoint(m_polygon[pointIndex], x + xOffset, -(float)maxValue);
         }
         else {
-            m_polygon[pointIndex] = QPointF(x+0.5,0.0);
+            setPoint(m_polygon[pointIndex], x + xOffset, -0.1);
         }
     }
 
     painter->setPen(m_borderPen);
     painter->setBrush(m_brush);
 
-    painter->drawPolygon(&m_polygon[0],pointIndex);
+    painter->drawPolygon(&m_polygon[0], pointIndex);
 
     painter->restore();
 }

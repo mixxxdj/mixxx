@@ -58,6 +58,11 @@ void Waveform::readByteArray(const QByteArray data) {
         return;
     }
 
+    qDebug() << "Reading waveform from byte array:"
+             << "actualSize" << header->actualSize
+             << "dataSize" << header->dataSize
+             << "visualSampleRate" << header->visualSampleRate
+             << "audioVisualRatio" << header->audioVisualRatio;
     m_actualSize = header->actualSize;
     m_dataSize = int(header->dataSize);
     m_visualSampleRate = header->visualSampleRate;
@@ -88,7 +93,7 @@ void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredV
 
 void Waveform::allocateForAudioSamples(int audioSamples) {
     m_actualSize = audioSamples / m_audioSamplesPerVisualSample;
-    int numberOfVisualSamples = audioSamples / m_audioSamplesPerVisualSample + 1;
+    int numberOfVisualSamples = static_cast<int>(m_actualSize) + 1;
     numberOfVisualSamples += numberOfVisualSamples%2;
     assign(numberOfVisualSamples, 0);
     setCompletion(0);

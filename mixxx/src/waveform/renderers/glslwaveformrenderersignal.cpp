@@ -229,9 +229,9 @@ void GLSLWaveformRendererSignal::onResize(){
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
-    const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
+    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if( !trackInfo) {
+    if (!trackInfo) {
         return;
     }
 
