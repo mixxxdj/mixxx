@@ -18,6 +18,19 @@
 #include "controllermanager.h"
 #include "defs_controllers.h"
 
+#include "midi/portmidienumerator.h"
+#ifdef __HSS1394__
+    #include "midi/hss1394enumerator.h"
+#endif
+
+#ifdef __HID__
+    #include "hidenumerator.h"
+#endif
+#ifdef __OSC__
+    #include "oscenumerator.h"
+#endif
+
+
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 ControllerProcessor::ControllerProcessor(ControllerManager * pManager) : QObject(pManager) {
@@ -73,15 +86,15 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) : QObj
 //     m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
 
     // Instantiate all enumerators
-    m_pPMEnumerator = new PortMidiEnumerator();
+    m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
-    m_pHSSEnumerator = new Hss1394Enumerator();
+    m_enumerators.append(new Hss1394Enumerator());
 #endif
 #ifdef __HID__
-    m_pHIDEnumerator = new HidEnumerator();
+    m_enumerators.append(new HidEnumerator());
 #endif
 #ifdef __OSC__
-    m_pOSCEnumerator = new OscEnumerator();
+    m_enumerators.append(new OscEnumerator());
 #endif
 
     m_pThread = new QThread;
@@ -110,16 +123,11 @@ void ControllerManager::slotShutdown() {
     m_pProcessor->stopPolling();
     
     //Delete enumerators and they'll delete their Devices
-    delete m_pPMEnumerator;
-#ifdef __HSS1394__
-    delete m_pHSSEnumerator;
-#endif
-#ifdef __HID__
-    delete m_pHIDEnumerator;
-#endif
-#ifdef __OSC__
-    delete m_pOSCEnumerator;
-#endif
+    QListIterator<ControllerEnumerator*> enumIt(m_enumerators);
+    while (enumIt.hasNext()) {
+        delete enumIt.next();
+    }
+
     // Stop the processor after the enumerators since the engines live in it
     m_pThread->quit();
 }
@@ -127,16 +135,14 @@ void ControllerManager::slotShutdown() {
 void ControllerManager::updateControllerList() {
     
     QList<Controller*> newDeviceList;
-    newDeviceList.append(m_pPMEnumerator->queryDevices());
-#ifdef __HSS1394__
-    newDeviceList.append(m_pHSSEnumerator->queryDevices());
-#endif
-#ifdef __HID__
-    newDeviceList.append(m_pHIDEnumerator->queryDevices());
-#endif
-#ifdef __OSC__
-    newDeviceList.append(m_pOSCEnumerator->queryDevices());
-#endif
+    if (m_enumerators.isEmpty()) {
+        qWarning() << "updateControllerList called but no enumerators have been added!";
+        return;
+    }
+    QListIterator<ControllerEnumerator*> enumIt(m_enumerators);
+    while (enumIt.hasNext()) {
+        newDeviceList.append(enumIt.next()->queryDevices());
+    }
 
     m_mControllerList.lock();
     if (newDeviceList != m_controllers) {

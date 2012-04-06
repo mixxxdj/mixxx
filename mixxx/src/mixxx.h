@@ -56,7 +56,6 @@ class LibraryScanner;
 class AnalyserQueue;
 class Library;
 class ControllerManager;
-// class MidiDeviceManager;
 class MixxxKeyboard;
 class SkinLoader;
 
@@ -163,7 +162,6 @@ class MixxxApp : public QMainWindow
     // RecordingManager
     RecordingManager* m_pRecordingManager;
     ControllerManager *m_pControllerManager;
-//     MidiDeviceManager *m_pMidiDeviceManager;
 
     ConfigObject<ConfigValue> *m_pConfig;
 
