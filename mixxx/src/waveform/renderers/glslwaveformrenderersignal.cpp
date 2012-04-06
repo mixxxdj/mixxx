@@ -94,11 +94,25 @@ bool GLSLWaveformRendererSignal::loadShaders()
     return true;
 }
 
-bool GLSLWaveformRendererSignal::loadTexture()
-{
+bool GLSLWaveformRendererSignal::loadTexture() {
+    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    Waveform* waveform = NULL;
+    int dataSize = 0;
+    WaveformData* data = NULL;
+
+    if (trackInfo) {
+        waveform = trackInfo->getWaveform();
+        if (waveform != NULL) {
+            dataSize = waveform->getDataSize();
+            if (dataSize > 1) {
+                data = waveform->data();
+            }
+        }
+    }
+
     glEnable(GL_TEXTURE_2D);
 
-    if( m_textureId == 0) {
+    if (m_textureId == 0) {
         glGenTextures(1,&m_textureId);
 
         int error = glGetError();
@@ -115,22 +129,15 @@ bool GLSLWaveformRendererSignal::loadTexture()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    TrackPointer trackPoint = m_waveformRenderer->getTrackInfo();
-    if( trackPoint) {
-        Waveform* waveform = trackPoint->getWaveform();
+    if (waveform != NULL && data != NULL) {
+        int textureWidth = waveform->getTextureStride();
+        int textureHeigth = waveform->getTextureSize() / waveform->getTextureStride();
 
-        if( waveform) {
-            int textureWidth = waveform->getTextureStride();
-            int textureHeigth = waveform->getTextureSize() / waveform->getTextureStride();
-
-            glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,textureWidth,textureHeigth,0,GL_RGBA,GL_UNSIGNED_BYTE,waveform->data());
-
-            int error = glGetError();
-            if( error)
-                qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" << error;
-        }
-    }
-    else {
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,textureWidth,textureHeigth,0,GL_RGBA,GL_UNSIGNED_BYTE, data);
+        int error = glGetError();
+        if( error)
+            qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" << error;
+    } else {
         glDeleteTextures(1,&m_textureId);
         m_textureId = 0;
     }
@@ -228,18 +235,29 @@ void GLSLWaveformRendererSignal::onResize(){
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-
-    const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
-
-    if( !trackInfo) {
+    if (!m_framebuffer || !m_framebuffer->isValid()) {
         return;
     }
 
-    if(!m_framebuffer || !m_framebuffer->isValid()) {
+    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    if (!trackInfo) {
         return;
     }
 
     const Waveform* waveform = trackInfo->getWaveform();
+    if (waveform == NULL) {
+        return;
+    }
+
+    int dataSize = waveform->getDataSize();
+    if (dataSize <= 1) {
+        return;
+    }
+
+    const WaveformData* data = waveform->data();
+    if (data == NULL) {
+        return;
+    }
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
@@ -272,9 +290,11 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_signalMaxShaderProgram->bind();
         glViewport(0,0,m_signalMaxbuffer->width(),m_signalMaxbuffer->height());
 
-        m_signalMaxShaderProgram->setUniformValue("waveformLength",waveform->getDataSize());
-        m_signalMaxShaderProgram->setUniformValue("textureSize",waveform->getTextureSize());
-        m_signalMaxShaderProgram->setUniformValue("textureStride",waveform->getTextureStride());
+        // TODO(XXX) all these accesses of the waveform info need to be made
+        // thread safe.
+        m_signalMaxShaderProgram->setUniformValue("waveformLength", dataSize);
+        m_signalMaxShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
+        m_signalMaxShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
         m_signalMaxShaderProgram->setUniformValue("playPosition",(float)m_waveformRenderer->getPlayPos());
         m_signalMaxShaderProgram->setUniformValue("zoomFactor",(int)m_waveformRenderer->getZoomFactor());
         m_signalMaxShaderProgram->setUniformValue("width",m_signalMaxbuffer->width());
