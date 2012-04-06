@@ -1,6 +1,7 @@
 #include <QSqlQuery>
 #include <QSqlResult>
 #include <QSqlError>
+#include <QTime>
 #include <QDebug>
 
 #include "waveform/waveform.h"
@@ -35,6 +36,10 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
         return analyses;
     }
 
+    QTime time;
+    time.start();
+
+
     QSqlQuery query(m_db);
     query.prepare(QString(
         "SELECT id, type, description, version, data FROM %1 "
@@ -45,6 +50,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
         return analyses;
     }
 
+    int bytes = 0;
     while (query.next()) {
         AnalysisDao::AnalysisInfo info;
         info.analysisId = query.value(query.record().indexOf("id")).toInt();
@@ -57,8 +63,12 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
             query.record().indexOf("version")).toString();
         info.data = qUncompress(query.value(
             query.record().indexOf("data")).toByteArray());
+        bytes += info.data.length();
         analyses.append(info);
     }
+    qDebug() << "AnalysisDAO fetched" << analyses.size() << "analyses,"
+             << bytes << "bytes for track"
+             << trackId << "in" << time.elapsed() << "ms";
     return analyses;
 }
 
@@ -68,6 +78,8 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
     if (!m_db.isOpen() || trackId == -1) {
         return analyses;
     }
+    QTime time;
+    time.start();
 
     QSqlQuery query(m_db);
     query.prepare(QString(
@@ -80,6 +92,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
         return analyses;
     }
 
+    int bytes = 0;
     while (query.next()) {
         AnalysisDao::AnalysisInfo info;
         info.analysisId = query.value(query.record().indexOf("id")).toInt();
@@ -91,8 +104,12 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
             query.record().indexOf("version")).toString();
         info.data = qUncompress(query.value(
             query.record().indexOf("data")).toByteArray());
+        bytes += info.data.length();
         analyses.append(info);
     }
+    qDebug() << "AnalysisDAO fetched" << analyses.size() << "analyses,"
+             << bytes << "bytes for track"
+             << trackId << "in" << time.elapsed() << "ms";
     return analyses;
 }
 
@@ -105,6 +122,8 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
         qDebug() << "Can't save analysis since trackId is invalid.";
         return false;
     }
+    QTime time;
+    time.start();
 
     QSqlQuery query(m_db);
     if (info->analysisId == -1) {
@@ -125,6 +144,9 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
             return false;
         }
         info->analysisId = query.lastInsertId().toInt();
+        qDebug() << "AnalysisDAO saved analysis" << info->analysisId
+                 << info->data.length() << "bytes for track"
+                 << info->trackId << "in" << time.elapsed() << "ms";
         return true;
     }
 
@@ -143,6 +165,9 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     query.bindValue(":description", info->description);
     query.bindValue(":version", info->version);
     query.bindValue(":data", qCompress(info->data, kCompressionLevel));
+    qDebug() << "AnalysisDAO updated analysis" << info->analysisId
+             << info->data.length() << "bytes for track"
+             << info->trackId << "in" << time.elapsed() << "ms";
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't update existing analysis";
