@@ -12,6 +12,7 @@
 #include "trackinfoobject.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
+#include "waveform/waveformwidgetfactory.h"
 
 WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) :
     QWidget(parent) {
@@ -23,19 +24,19 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
     m_bBending = false;
     m_iMouseStart = -1;
     m_pScratchEnable = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
+                ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
     m_pScratch = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "scratch_position")));
+                ControlObject::getControl(ConfigKey(group, "scratch_position")));
     m_pTrackSamples = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "track_samples")));
+                ControlObject::getControl(ConfigKey(group, "track_samples")));
     m_pTrackSampleRate = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "track_samplerate")));
+                ControlObject::getControl(ConfigKey(group, "track_samplerate")));
     m_pRate = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pGroup, "rate")));
+                ControlObject::getControl(ConfigKey(m_pGroup, "rate")));
     m_pRateRange = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pGroup, "rateRange")));
+                ControlObject::getControl(ConfigKey(m_pGroup, "rateRange")));
     m_pRateDir = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
+                ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
 
     setAttribute(Qt::WA_ForceUpdatesDisabled);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -146,8 +147,10 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
                 m_waveformWidget->zoomIn();
             else
                 m_waveformWidget->zoomOut();
+
+            if(WaveformWidgetFactory::instance())
+                WaveformWidgetFactory::instance()->onZoomChange(m_waveformWidget);
         }
-        m_waveformWidget->render();
     }
 }
 
@@ -156,9 +159,9 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
     // Accept the enter event if the thing is a filepath.
     if (event->mimeData()->hasUrls() &&
-        event->mimeData()->urls().size() > 0) {
+            event->mimeData()->urls().size() > 0) {
         ControlObject *pPlayCO = ControlObject::getControl(
-            ConfigKey(m_pGroup, "play"));
+                    ConfigKey(m_pGroup, "play"));
         if (pPlayCO && pPlayCO->get()) {
             event->ignore();
         } else {
@@ -169,7 +172,7 @@ void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
 
 void WWaveformViewer::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls() &&
-        event->mimeData()->urls().size() > 0) {
+            event->mimeData()->urls().size() > 0) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();

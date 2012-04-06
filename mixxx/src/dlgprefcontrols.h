@@ -62,8 +62,10 @@ public slots:
     void slotSetRateRampSensitivity(int);
     void slotApply();
 
-    void slotSetFrameRate(int);
-    void slotSetWaveformType(int);
+    void slotSetFrameRate(int frameRate);
+    void slotSetWaveformType(int index);
+    void slotSetDefaultZoom(int index);
+    void slotSetZoomSynchronization(bool checked);
 
     virtual void onShow();
     virtual void onHide();

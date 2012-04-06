@@ -47,6 +47,7 @@ void MarkRange::generatePixmap(int weidth, int height)
     QColor disabledColor = m_disabledColor;
     disabledColor.setAlphaF(0.3);
     brush = QBrush(disabledColor);
+
     painter.begin(&m_disabledPixmap);
     painter.fillRect(m_disabledPixmap.rect(), brush);
     painter.end();
@@ -62,12 +63,10 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* wavefor
 WaveformRenderMarkRange::~WaveformRenderMarkRange() {
 }
 
-void WaveformRenderMarkRange::init()
-{
+void WaveformRenderMarkRange::init() {
 }
 
-void WaveformRenderMarkRange::setup(const QDomNode &node)
-{
+void WaveformRenderMarkRange::setup(const QDomNode &node) {
     markRanges_.clear();
     markRanges_.reserve(32);
 
@@ -83,8 +82,7 @@ void WaveformRenderMarkRange::setup(const QDomNode &node)
     }
 }
 
-void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
-{
+void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
     painter->save();
 
     painter->setWorldMatrixEnabled(false);

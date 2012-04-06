@@ -2,6 +2,7 @@
 #define WAVEFORMWIDGETFACTORY_H
 
 #include <singleton.h>
+#include "configobject.h"
 
 #include "waveform/widgets/waveformwidgettype.h"
 
@@ -37,6 +38,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     Q_OBJECT
 
   public:
+    bool setConfig(ConfigObject<ConfigValue>* config);
+
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
     bool setWaveformWidget( WWaveformViewer* viewer);
@@ -53,6 +56,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool setWidgetType( int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
+    void setDefaultZoom(int zoom);
+    int getDefaultZoom() const { return m_defaultZoom;}
+
+    void setZoomSync(bool sync);
+    int isZoomSync() const { return m_zoomSync;}
+    void onZoomChange( WaveformWidgetAbstract* widget);
+
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void destroyWidgets();
 
@@ -64,6 +74,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   signals:
     void waveformUpdateTick();
+
+protected:
+    void timerEvent(QTimerEvent *timerEvent);
 
   protected:
     WaveformWidgetFactory();
@@ -83,8 +96,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     WaveformWidgetType::Type m_type;
 
+    ConfigObject<ConfigValue>* m_config;
+
     int m_frameRate;
-    QTimer* m_timer;
+    int m_mainTimerId;
+    int m_defaultZoom;
+    bool m_zoomSync;
 
     bool m_openGLAvailable;
     QString m_openGLVersion;
