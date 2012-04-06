@@ -159,20 +159,25 @@ void WaveformWidgetRenderer::setup( const QDomNode& node) {
         m_rendererStack[i]->setup(node);
 }
 
-bool WaveformWidgetRenderer::zoomIn() {
+void WaveformWidgetRenderer::setZoom(int zoom) {
+    m_zoomFactor = zoom;
+    m_zoomFactor = math_max( 1.0, math_min( m_zoomFactor, 4.0));
+    updateVisualSamplingPerPixel();
+    updateAudioSamplingPerPixel();
+}
+
+void WaveformWidgetRenderer::zoomIn() {
     m_zoomFactor -= 1.0;
     m_zoomFactor = math_max( 1.0, m_zoomFactor);
     updateVisualSamplingPerPixel();
     updateAudioSamplingPerPixel();
-    return true;
 }
 
-bool WaveformWidgetRenderer::zoomOut() {
+void WaveformWidgetRenderer::zoomOut() {
     m_zoomFactor += 1.0;
     m_zoomFactor = math_min( m_zoomFactor, 4.0); //max 400%
     updateVisualSamplingPerPixel();
     updateAudioSamplingPerPixel();
-    return true;
 }
 
 //vRince for the moment only more than one sample per pixel is supported

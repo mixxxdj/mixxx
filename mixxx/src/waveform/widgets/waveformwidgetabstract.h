@@ -10,7 +10,7 @@
 //NOTE: vRince
 //This class represent objects the waveformwidgetfactory can holds,
 //IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!
-//I can do it here because QWidget and QGLWidget are both QWidgets
+//we can't do it here because QWidget and QGLWidget are both QWidgets
 //so they already have a common QWidget base class (ambigous polymorphism)
 
 class QWidget;

@@ -109,12 +109,8 @@ void WaveformRenderMark::setupMark( const QDomNode& node, Mark& mark)
         qDebug() << "Didn't get mark TextColor, using parent's BgColor:" << mark.m_textColor;
     }
 
-    //vRince used contains to be able to add horizontal align soon
-
     QString markAlign = WWidget::selectNodeQString(node, "Align");
-    if (markAlign.contains("center", Qt::CaseInsensitive) == 0) {
-        mark.m_align = Qt::AlignVCenter;
-    } else if (markAlign.contains("bottom", Qt::CaseInsensitive) == 0) {
+    if (markAlign.contains("bottom", Qt::CaseInsensitive)) {
         mark.m_align = Qt::AlignBottom;
     } else {
         mark.m_align = Qt::AlignTop; // Default
@@ -171,17 +167,11 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
         //vRince all the 0.5 stuff produce nicer rounded rectangle ... I don't know why !
         QRectF labelRect(0.5,0.5,(float)labelRectWidth - 0.5f,(float)labelRectHeight - 0.5f);
 
-        //Vrince TODO
-        /*
-        switch(mark.m_align)
-        {
-        case Qt::AlignBottom : labelRect.moveBottom( mark.m_pixmap.height() - 0.5); break;
-        case Qt::AlignVCenter : labelRect.moveBottom( (mark.m_pixmap.height() + wordRect.height())/2.0 - 0.5); break; //vRince should we keep that ?
-        default : labelRect.moveTop( 0.5); break;
-        }
-        */
-
         mark.m_pixmap = QPixmap(labelRectWidth+1, m_waveformRenderer->getHeight());
+
+        if(mark.m_align == Qt::AlignBottom) {
+            labelRect.moveBottom( mark.m_pixmap.height() - 0.6);
+        }
 
         // Fill with transparent pixels
         mark.m_pixmap.fill(QColor(0,0,0,0));
@@ -189,17 +179,12 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
         painter.begin(&mark.m_pixmap);
         painter.setRenderHint(QPainter::TextAntialiasing);
 
-        //vRince : Those produce wierd rounded rectangle and produce 2 pixel width vertical line !
-        //I prefer no antialiasing ...
-        //painter.setRenderHints(QPainter::Antialiasing,true);
-        //painter.setRenderHint(QPainter::HighQualityAntialiasing,true);
-
         painter.setWorldMatrixEnabled(false);
 
         //draw the label rect
         QColor rectColor = mark.m_color;
         rectColor.setAlpha(50);
-        rectColor.darker(100);
+        rectColor.darker(140);
         painter.setPen(rectColor);
         painter.setBrush(QBrush(rectColor));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
@@ -213,17 +198,23 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
 
         //draw line
         QColor lineColor = mark.m_color;
-        lineColor.setAlpha(100);
+        lineColor.setAlpha(140);
         painter.setPen(lineColor);
 
         float middle = mark.m_pixmap.width()/2;
+        //Default line align top
         float lineTop = labelRectHeight + 1;
         float lineBottom = mark.m_pixmap.height();
 
+        if(mark.m_align == Qt::AlignBottom) {
+            lineTop = 0.0;
+            lineBottom = mark.m_pixmap.height() - labelRectHeight - 1;
+        }
+
         painter.drawLine( middle, lineTop, middle, lineBottom);
 
-        //othe lines to increase contrast
-        painter.setPen(QColor(0,0,0,100));
+        //other lines to increase contrast
+        painter.setPen(QColor(0,0,0,120));
         painter.drawLine( middle - 1, lineTop, middle - 1, lineBottom);
         painter.drawLine( middle + 1, lineTop, middle + 1, lineBottom);
 
@@ -240,11 +231,12 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
         painter.setWorldMatrixEnabled(false);
 
         QColor triangleColor = mark.m_color;
-        triangleColor.setAlpha(100);
+        triangleColor.setAlpha(140);
         painter.setPen(QColor(0,0,0,0));
         painter.setBrush(QBrush(triangleColor));
 
-        //vRicne: again don't ask about the +-0.1 0.5 ... just to make it pixel perfect in Qt ...
+        //vRicne: again don't ask about the +-0.1 0.5 ...
+        // just to make it nice in Qt ...
 
         QPolygonF triangle;
         triangle.append(QPointF(0.5,0));
@@ -263,7 +255,7 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
         //TODO vRince duplicated code make a method
         //draw line
         QColor lineColor = mark.m_color;
-        lineColor.setAlpha(100);
+        lineColor.setAlpha(140);
         painter.setPen(lineColor);
         float middle = mark.m_pixmap.width()/2;
 

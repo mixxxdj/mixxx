@@ -513,19 +513,27 @@ void DlgPrefControls::slotApply()
 
 }
 
-void DlgPrefControls::slotSetFrameRate(int frameRate)
-{
+void DlgPrefControls::slotSetFrameRate(int frameRate) {
     WaveformWidgetFactory::instance()->setFrameRate(frameRate);
+    WaveformWidgetFactory::instance()->start();
 }
 
-void DlgPrefControls::slotSetWaveformType(int index)
-{
+void DlgPrefControls::slotSetWaveformType(int index) {
      if (WaveformWidgetFactory::instance()->setWidgetType(index))
      {
          //it actually change to a valid type
          m_mixxx->rebootMixxxView();
      }
 }
+
+void DlgPrefControls::slotSetDefaultZoom(int index) {
+    WaveformWidgetFactory::instance()->setDefaultZoom( index + 1);
+}
+
+void DlgPrefControls::slotSetZoomSynchronization(bool checked) {
+    WaveformWidgetFactory::instance()->setZoomSync(checked);
+}
+
 
 void DlgPrefControls::onShow() {
     m_timer = startTimer(100); //refresh actual frame rate every 100 ms
@@ -570,10 +578,15 @@ void DlgPrefControls::initWaveformControl()
         waveformTypeComboBox->setCurrentIndex(currentIndex);
 
     frameRateSpinBox->setValue(factory->getFrameRate());
+    defaultZoomComboBox->setCurrentIndex( factory->getDefaultZoom() - 1);
+    synchronizeZoomCheckBox->setChecked( factory->isZoomSync());
 
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetFrameRate(int)));
     connect(waveformTypeComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotSetWaveformType(int)));
+    connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(slotSetDefaultZoom(int)));
+    connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
+            this, SLOT(slotSetZoomSynchronization(bool)));
 }
-
