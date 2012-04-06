@@ -54,11 +54,8 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 break;
             default:
                 // Handle platter messages and any others that are not 3 bytes
-                // Copy the array to avoid thread contention
-                unsigned char *temp = new unsigned char[uBufferSize];
-                memcpy(temp, pBuffer, uBufferSize);
-                // WARNING: Receiving slot must delete[] temp!
-                emit(incomingData(temp,uBufferSize));
+                QByteArray outArray((char*)pBuffer,uBufferSize);
+                emit(incomingData(outArray));
                 i=uBufferSize;
                 break;
         }
@@ -118,8 +115,8 @@ int Hss1394Controller::open()
 
     m_pChannelListener = new DeviceChannelListener(m_iDeviceIndex, m_sDeviceName, this);
     
-    connect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
-            this, SLOT(receivePointer(unsigned char*, unsigned int)));
+    connect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
+            this, SLOT(receive(QByteArray)));
     connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
     
@@ -159,8 +156,8 @@ int Hss1394Controller::close()
         return -1;
     }
     
-    disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
-            this, SLOT(receivePointer(unsigned char*, unsigned int)));
+    disconnect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
+            this, SLOT(receive(QByteArray)));
     disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
     
@@ -203,9 +200,9 @@ void Hss1394Controller::send(unsigned int word) {
 }
 
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
-void Hss1394Controller::send(unsigned char data[], unsigned int length)
+void Hss1394Controller::send(QByteArray data)
 {
-    int bytesSent = m_pChannel->SendChannelBytes(data,length);
+    int bytesSent = m_pChannel->SendChannelBytes((unsigned char*)(data.data()),data.size());
 
     //if (bytesSent != length) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";

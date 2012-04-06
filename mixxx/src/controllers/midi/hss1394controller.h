@@ -39,8 +39,7 @@ Q_OBJECT    // For signals
         void Reconnected();
     signals:
         void incomingData(unsigned char status, unsigned char control, unsigned char value);
-        /** WARNING: Receiving slot must delete the data array! */
-        void incomingData(unsigned char* data, unsigned int length);
+        void incomingData(QByteArray data);
     private:
         int m_iId;
         QString m_sName;
@@ -54,7 +53,7 @@ class Hss1394Controller : public MidiController {
         int open();
         int close();
         void send(unsigned int word);
-        void send(unsigned char data[], unsigned int length);
+        void send(QByteArray data);
 
     protected:
         hss1394::TNodeInfo m_deviceInfo;

@@ -64,7 +64,14 @@ HidController::HidController(const hid_device_info deviceInfo) {
     hid_vendor_id = deviceInfo.vendor_id;
     hid_product_id = deviceInfo.product_id;
     hid_interface_number = deviceInfo.interface_number;
+#ifdef __LINUX__
     hid_path = strndup(deviceInfo.path,strlen(deviceInfo.path));
+#else
+    int hid_path_len = strlen(deviceInfo.path);
+    hid_path = (char *)malloc(hid_path_len+1);
+    strncpy(hid_path, deviceInfo.path, hid_path_len);
+    hid_path[hid_path_len] = '\0';
+#endif
     // TODO: Verify that this is the correct thing to do and allows a device
     //  with a null serial number to be used
     if (deviceInfo.serial_number!=NULL) {

@@ -235,7 +235,6 @@ void PortMidiController::send(unsigned int word)
 }
 
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
-// void PortMidiController::send(unsigned char data[], unsigned int length)
 void PortMidiController::send(QByteArray data)
 {
     if (m_pOutputStream)
