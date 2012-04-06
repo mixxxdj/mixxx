@@ -29,8 +29,9 @@ class WaveformWidgetRenderer {
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
 
-    bool zoomIn();
-    bool zoomOut();
+    void setZoom(int zoom);
+    void zoomIn();
+    void zoomOut();
 
     virtual void updateVisualSamplingPerPixel();
     virtual void updateAudioSamplingPerPixel();

@@ -358,6 +358,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pMidiDeviceManager->setupDevices();
 
     WaveformWidgetFactory::create();
+    WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
