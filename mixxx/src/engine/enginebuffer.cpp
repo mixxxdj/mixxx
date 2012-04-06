@@ -190,8 +190,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 #ifdef __VINYLCONTROL__
     // If VinylControl is enabled, add a VinylControlControl. This must be done
     // before RateControl is created.
-    m_pVinylControlControl = new VinylControlControl(group, _config);
-    addControl(m_pVinylControlControl);
+    addControl(new VinylControlControl(group, _config));
 #endif
 
     // Create the Rate Controller
@@ -232,7 +231,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     df.setFileName("mixxx-debug.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
-#endif    
+#endif
 }
 
 EngineBuffer::~EngineBuffer()
@@ -508,13 +507,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
-                                             
-#ifdef __VINYLCONTROL__
-        if (m_pVinylControlControl->isEnabled() && m_pVinylControlControl->isScratching()) {
-            is_scratching = true;
-        }
-#endif        
-                                             
+
         //qDebug() << "rate" << rate << " paused" << paused;
 
         // Scratching always disables keylock because keylock sounds terrible
