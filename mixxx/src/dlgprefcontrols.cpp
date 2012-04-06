@@ -548,7 +548,6 @@ void DlgPrefControls::onHide() {
 void DlgPrefControls::timerEvent(QTimerEvent * /*event*/)
 {
     //Just to refresh actual framrate any time the controller is modified
-    qDebug() << "DlgPrefControls::timerEvent()";
     frameRateAverage->setText(QString::number(WaveformWidgetFactory::instance()->getActualFrameRate()));
 }
 
@@ -561,7 +560,6 @@ void DlgPrefControls::initWaveformControl()
         openGlSatatusIcon->setText(factory->getOpenGLVersion());
     else
         openGlSatatusIcon->setText("X");
-
 
     WaveformWidgetType::Type currentType = factory->getType();
     int currentIndex = -1;

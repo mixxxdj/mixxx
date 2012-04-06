@@ -36,14 +36,14 @@ void MarkRange::generatePixmap(int weidth, int height)
     m_disabledPixmap.fill(QColor(0,0,0,0));
 
     QColor activeBorderColor = m_activeColor.darker(200);
-    activeBorderColor.setAlphaF(0.0);
+    activeBorderColor.setAlphaF(0.05);
     QColor activeCenterColor = m_activeColor;
-    activeCenterColor.setAlphaF(0.3);
+    activeCenterColor.setAlphaF(0.2);
 
     QLinearGradient linearGrad(QPointF(0,0), QPointF(0,height));
     linearGrad.setColorAt(0.0, activeBorderColor);
-    linearGrad.setColorAt(0.4, activeCenterColor);
-    linearGrad.setColorAt(0.6, activeCenterColor);
+    linearGrad.setColorAt(0.05, activeCenterColor);
+    linearGrad.setColorAt(0.95, activeCenterColor);
     linearGrad.setColorAt(1.0, activeBorderColor);
 
     QBrush brush(linearGrad);
@@ -60,8 +60,8 @@ void MarkRange::generatePixmap(int weidth, int height)
 
     linearGrad = QLinearGradient(QPointF(0,0), QPointF(0,height));
     linearGrad.setColorAt(0.0, disabledBorderColor);
-    linearGrad.setColorAt(0.2, disabledCenterColor);
-    linearGrad.setColorAt(0.8, disabledCenterColor);
+    linearGrad.setColorAt(0.05, disabledCenterColor);
+    linearGrad.setColorAt(0.95, disabledCenterColor);
     linearGrad.setColorAt(1.0, disabledBorderColor);
 
     brush = QBrush(linearGrad);
@@ -81,12 +81,10 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* wavefor
 WaveformRenderMarkRange::~WaveformRenderMarkRange() {
 }
 
-void WaveformRenderMarkRange::init()
-{
+void WaveformRenderMarkRange::init() {
 }
 
-void WaveformRenderMarkRange::setup(const QDomNode &node)
-{
+void WaveformRenderMarkRange::setup(const QDomNode &node) {
     markRanges_.clear();
     markRanges_.reserve(32);
 
@@ -102,8 +100,7 @@ void WaveformRenderMarkRange::setup(const QDomNode &node)
     }
 }
 
-void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
-{
+void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
     painter->save();
 
     painter->setWorldMatrixEnabled(false);

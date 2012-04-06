@@ -2842,7 +2842,7 @@
 							<Control>loop_start_position</Control>
 							<Pixmap>marker_loop_in1.png</Pixmap>
 							<Text>LOOP IN</Text>
-							<Align>top</Align>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2850,7 +2850,7 @@
 							<Control>loop_end_position</Control>
 							<Pixmap>marker_loop_out1.png</Pixmap>
 							<Text>LOOP OUT</Text>
-							<Align>top</Align>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -3123,7 +3123,7 @@
 							<Control>cue_point</Control>
 							<Pixmap>marker_cue1.png</Pixmap>
 							<Text> CUE </Text>
-							<Align>center</Align>
+							<Align>bottom</Align>
 							<Color>#FF001C</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
