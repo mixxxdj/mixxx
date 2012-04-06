@@ -53,6 +53,11 @@ class AnalysisDao : public DAO {
                       AnalysisType type);
     bool loadWaveform(const TrackInfoObject& tio,
                       Waveform* waveform, AnalysisType type);
+    QDir getAnalysisStoragePath() const;
+    QByteArray loadDataFromFile(QString fileName) const;
+    bool saveDataToFile(QString fileName, QByteArray data) const;
+    bool deleteFile(QString filename) const;
+    QList<AnalysisInfo> loadAnalysesFromQuery(int trackId, QSqlQuery& query);
 
     QSqlDatabase m_db;
 };
