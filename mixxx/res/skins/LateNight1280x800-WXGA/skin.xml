@@ -2553,7 +2553,7 @@
 							<Control>hotcue_1_position</Control>
 							<Pixmap>marker_hotcue1_1.png</Pixmap>
 							<Text> HOTCUE 1 </Text>
-							<Align>bottom</Align>
+							<Align>top</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2561,7 +2561,7 @@
 							<Control>hotcue_2_position</Control>
 							<Pixmap>marker_hotcue1_2.png</Pixmap>
 							<Text> HOTCUE 2 </Text>
-							<Align>bottom</Align>
+							<Align>top</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2569,7 +2569,7 @@
 							<Control>hotcue_3_position</Control>
 							<Pixmap>marker_hotcue1_3.png</Pixmap>
 							<Text> HOTCUE 3 </Text>
-							<Align>bottom</Align>
+							<Align>top</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2577,7 +2577,7 @@
 							<Control>hotcue_4_position</Control>
 							<Pixmap>marker_hotcue1_4.png</Pixmap>
 							<Text> HOTCUE 4 </Text>
-							<Align>bottom</Align>
+							<Align>top</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>

@@ -633,17 +633,17 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
-    WSpinny* p = new WSpinny(m_pParent, m_pVCManager);
-    setupWidget(node, p);
+    WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
+    setupWidget(node, spinny);
 
-    WaveformWidgetFactory::instance()->addTimerListener(p);
-    connect(p, SIGNAL(trackDropped(QString, QString)),
+    WaveformWidgetFactory::instance()->addTimerListener(spinny);
+    connect(spinny, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    p->setup(node, pSafeChannelStr);
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
-    return p;
+    spinny->setup(node, pSafeChannelStr);
+    setupConnections(node, spinny);
+    spinny->installEventFilter(m_pKeyboard);
+    return spinny;
 }
 
 

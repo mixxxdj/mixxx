@@ -20,17 +20,16 @@
 #include <QtOpenGL/QGLFormat>
 #include <QtOpenGL/QGLShaderProgram>
 
+
 #include <QDebug>
 
 WaveformWidgetFactory::WaveformWidgetFactory() {
-    m_timer = new QTimer();
-    connect(m_timer, SIGNAL(timeout()),
-            this, SLOT(refresh()));
-
     m_time = new QTime();
-
-    //TODO let default and config file to setup this
+    m_config = 0;
     setFrameRate(33);
+    m_defaultZoom = 1;
+    m_zoomSync = false;
+
     m_lastFrameTime = 0;
     m_actualFrameRate = 0;
 
@@ -78,7 +77,9 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
             minorVersion = 1;
         }
 
-        m_openGLVersion = QString::number(majorVersion) + "." + QString::number(minorVersion);
+        if( majorVersion != 0 && minorVersion != 0)
+            m_openGLVersion = QString::number(majorVersion) + "." +
+                    QString::number(minorVersion);
         m_openGLAvailable = true;
         {
             QGLWidget glWidget;
@@ -92,8 +93,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
     if (m_openGLAvailable) {
         if (m_openGLShaderAvailable) {
             //TODO: (vrince) enable when ready
-            m_type = WaveformWidgetType::GLSLWaveform;
-            //m_type = WaveformWidgetType::GLWaveform;
+            //m_type = WaveformWidgetType::GLSLWaveform;
+            m_type = WaveformWidgetType::GLWaveform;
         } else {
             m_type = WaveformWidgetType::GLWaveform;
         }
@@ -106,17 +107,55 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
 }
 
 WaveformWidgetFactory::~WaveformWidgetFactory() {
-    delete m_timer;
     delete m_time;
+}
+
+bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
+    m_config = config;
+    if( !m_config)
+        return false;
+
+    QString framRate = m_config->getValueString(ConfigKey("[Waveform]","FrameRate"));
+    if( !framRate.isEmpty()) {
+        int frameRate = framRate.toInt();
+        setFrameRate(frameRate);
+    } else {
+        m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
+    }
+
+    QString defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom"));
+    if( !defaultZoom.isEmpty()) {
+        int zoom = defaultZoom.toInt();
+        setDefaultZoom(zoom);
+    } else{
+        m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
+    }
+
+    QString zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization"));
+    if( !zoomSync.isEmpty()) {
+        bool sync = zoomSync.toInt();
+        setZoomSync(sync);
+    } else {
+        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
+    }
+
+    return true;
 }
 
 void WaveformWidgetFactory::start() {
     qDebug() << "WaveformWidgetFactory::start";
-    m_timer->start();
+    killTimer(m_mainTimerId);
+    m_mainTimerId = startTimer(1000.0/double(m_frameRate));
 }
 
 void WaveformWidgetFactory::stop() {
-    m_timer->stop();
+    killTimer(m_mainTimerId);
+    m_mainTimerId = 0;
+}
+
+void WaveformWidgetFactory::timerEvent(QTimerEvent *timerEvent) {
+    if( timerEvent->timerId() == m_mainTimerId)
+        refresh();
 }
 
 void WaveformWidgetFactory::destroyWidgets() {
@@ -158,8 +197,9 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::setFrameRate(int frameRate) {
-    m_frameRate = math_min(60, frameRate);
-    m_timer->setInterval(static_cast<int>(1000.0/static_cast<double>(m_frameRate)));
+    m_frameRate = math_min(60, math_max( 10, frameRate));
+    if( m_config)
+        m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
 }
 
 bool WaveformWidgetFactory::setWidgetType(int handleIndex) {
@@ -209,8 +249,38 @@ bool WaveformWidgetFactory::setWidgetType(int handleIndex) {
     return true;
 }
 
-void WaveformWidgetFactory::refresh() {
+void WaveformWidgetFactory::setDefaultZoom(int zoom){
+    m_defaultZoom = math_max(1,math_min(4,zoom));
+    if( m_config)
+        m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
 
+    for (int i = 0; i < m_waveformWidgets.size(); i++)
+        m_waveformWidgets[i]->setZoom(m_defaultZoom);
+}
+
+void WaveformWidgetFactory::setZoomSync(bool sync) {
+    m_zoomSync = sync;
+    if( m_config)
+        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
+
+    if( m_waveformWidgets.isEmpty())
+        return;
+
+    int refZoom = m_waveformWidgets[0]->getZoomFactor();
+    for (int i = 1; i < m_waveformWidgets.size(); i++)
+        m_waveformWidgets[i]->setZoom(refZoom);
+}
+
+void WaveformWidgetFactory::onZoomChange( WaveformWidgetAbstract* widget) {
+    if( isZoomSync()) {
+        int refZoom = widget->getZoomFactor();
+        for (int i = 0; i < m_waveformWidgets.size(); i++)
+            if( m_waveformWidgets[i] != widget)
+                m_waveformWidgets[i]->setZoom(refZoom);
+    }
+}
+
+void WaveformWidgetFactory::refresh() {
     for (int i = 0; i < m_waveformWidgets.size(); i++)
         m_waveformWidgets[i]->preRender();
 
@@ -256,7 +326,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             // NOTE: For the moment non active widget are not added to available handle
             // but it could be useful to have them anyway but not selectable in the combo box
             if ((widget->useOpenGl() && !isOpenGLAvailable()) ||
-                (widget->useOpenGLShaders() && !isOpenGlShaderAvailable())) {
+                    (widget->useOpenGLShaders() && !isOpenGlShaderAvailable())) {
                 handle.m_active = false;
                 continue;
             }
@@ -281,3 +351,4 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidg
     }
     return 0;
 }
+
