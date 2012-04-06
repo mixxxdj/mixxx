@@ -41,13 +41,27 @@ void WaveformRendererFilteredSignal::setup(const QDomNode& node) {
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,
                                           QPaintEvent* /*event*/) {
-    const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
-
+    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
     }
 
     const Waveform* waveform = trackInfo->getWaveform();
+    if (waveform == NULL) {
+        return;
+    }
+
+    int dataSize = waveform->getDataSize();
+    if (dataSize <= 1) {
+        return;
+    }
+
+    const WaveformData* data = waveform->data();
+    if (data == NULL) {
+        return;
+    }
+
+    const double xOffset = 0.5;
 
     int samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
@@ -56,15 +70,13 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     //TODO (vRince) not really accurate since waveform size une visual reasampling and
     //have two mores samples to hold the complete visual data
-    currentPosition = m_waveformRenderer->getPlayPos()*waveform->getDataSize();
+    currentPosition = m_waveformRenderer->getPlayPos() * dataSize;
     m_waveformRenderer->regulateVisualSample(currentPosition);
 
     painter->save();
-
     painter->setRenderHints(QPainter::Antialiasing, false);
     painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
-
     painter->setWorldMatrixEnabled(false);
 
     const float halfHeight = m_waveformRenderer->getHeight()/2.0;
@@ -73,18 +85,23 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     for (int i = 0; i < numberOfSamples; i += samplesPerPixel) {
         const int xPos = i/samplesPerPixel;
         const int visualIndex = currentPosition + 2*i - numberOfSamples;
-        if (visualIndex >= 0 && (visualIndex+1) < waveform->getDataSize()) {
+        if (visualIndex >= 0 && (visualIndex+1) < dataSize) {
             unsigned char maxLow[2] = {0, 0};
             unsigned char maxMid[2] = {0, 0};
             unsigned char maxHigh[2] = {0, 0};
 
-            for (int subIndex = 0; subIndex < 2*samplesPerPixel; ++subIndex) {
-                maxLow[0] = math_max( maxLow[0], waveform->getLow(visualIndex+subIndex));
-                maxLow[1] = math_max( maxLow[1], waveform->getLow(visualIndex+subIndex+1));
-                maxMid[0] = math_max( maxMid[0], waveform->getMid(visualIndex+subIndex));
-                maxMid[1] = math_max( maxMid[1], waveform->getMid(visualIndex+subIndex+1));
-                maxHigh[0] = math_max( maxHigh[0], waveform->getHigh(visualIndex+subIndex));
-                maxHigh[1] = math_max( maxHigh[1], waveform->getHigh(visualIndex+subIndex+1));
+            for (int subIndex = 0;
+                 subIndex < 2*samplesPerPixel &&
+                 visualIndex + subIndex + 1 < dataSize;
+                 subIndex += 2) {
+                const WaveformData& waveformData = *(data + visualIndex + subIndex);
+                const WaveformData& waveformDataNext = *(data + visualIndex + subIndex + 1);
+                maxLow[0] = math_max(maxLow[0], waveformData.filtered.low);
+                maxLow[1] = math_max(maxLow[1], waveformDataNext.filtered.low);
+                maxMid[0] = math_max(maxMid[0], waveformData.filtered.mid);
+                maxMid[1] = math_max(maxMid[1], waveformDataNext.filtered.mid);
+                maxHigh[0] = math_max(maxHigh[0], waveformData.filtered.high);
+                maxHigh[1] = math_max(maxHigh[1], waveformDataNext.filtered.high);
             }
 
             m_lowLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxLow[0]),

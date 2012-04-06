@@ -1,8 +1,7 @@
-#include "glwaveformwidget.h"
-
 #include <QPainter>
 #include <QGLContext>
 
+#include "glwaveformwidget.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrendererfilteredsignal.h"
