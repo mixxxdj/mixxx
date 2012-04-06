@@ -275,10 +275,7 @@ void TrackDAO::bindTrackToLibraryInsert(
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
 
-    //TODO(vrince) re-introduce save waveform
-    //const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    //query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
-
+    // We no longer store the wavesummary in the library table.
     query.bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
 
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());

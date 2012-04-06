@@ -10,9 +10,6 @@
 class EngineMaster;
 class ControlObject;
 class ControlObjectThreadMain;
-class WaveformRenderer;
-
-class WaveformWidgetRenderer;
 
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
@@ -26,7 +23,6 @@ class BaseTrackPlayer : public BasePlayer {
     virtual ~BaseTrackPlayer();
 
     AnalyserQueue* getAnalyserQueue() const;
-    WaveformRenderer* getWaveformRenderer() const;
     TrackPointer getLoadedTrack() const;
 
   public slots:
