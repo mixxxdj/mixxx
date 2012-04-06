@@ -159,6 +159,17 @@ RateControl::RateControl(const char* _group,
     connect(pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlVinyl(double)),
             Qt::DirectConnection);
+
+    ControlObject* pVCScratching = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_scratching"));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(pVCScratching);
+    connect(pVCScratching, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlVinylScratching(double)),
+            Qt::DirectConnection);
+    connect(pVCScratching, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlVinylScratching(double)),
+            Qt::DirectConnection);
 #endif
 }
 
@@ -391,6 +402,11 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         *isScratching = true;
     }
 
+    // If vinyl control is enabled and scratching then also set isScratching
+    if (m_bVinylControlEnabled && m_bVinylControlScratching) {
+        *isScratching = true;
+    }
+
     if (searching) {
         // If searching is in progress, it overrides the playback rate.
         rate = m_pRateSearch->get();
@@ -587,6 +603,11 @@ void RateControl::resetRateTemp(void)
 void RateControl::slotControlVinyl(double toggle)
 {
     m_bVinylControlEnabled = (bool)toggle;
+}
+
+void RateControl::slotControlVinylScratching(double toggle)
+{
+    m_bVinylControlScratching = (bool)toggle;
 }
 
 void RateControl::notifySeek(double playPos) {

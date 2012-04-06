@@ -26,9 +26,6 @@
 #include "configobject.h"
 #include "rotary.h"
 
-#ifdef __VINYLCONTROL__
-#include "engine/vinylcontrolcontrol.h"
-#endif
 //for the writer
 #ifdef __SCALER_DEBUG__
 #include <QtCore>
@@ -230,9 +227,6 @@ private:
 
     ControlObject *m_pVinylStatus;  //Status of vinyl control
     ControlObject *m_pVinylSeek;
-#ifdef __VINYLCONTROL__
-    VinylControlControl *m_pVinylControlControl;
-#endif
 
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
@@ -256,7 +250,7 @@ private:
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
-#ifdef __SCALER_DEBUG__    
+#ifdef __SCALER_DEBUG__
     QFile df;
     QTextStream writer;
 #endif
