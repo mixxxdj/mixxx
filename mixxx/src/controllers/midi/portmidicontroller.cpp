@@ -239,7 +239,7 @@ void PortMidiController::send(QByteArray data)
 {
     if (m_pOutputStream)
     {
-        PmError err = Pm_WriteSysEx(m_pOutputStream, 0, (unsigned char*)(data.data()));
+        PmError err = Pm_WriteSysEx(m_pOutputStream, 0, (unsigned char*)(data.constData()));
         if( err != pmNoError ) qDebug() << "PortMidi sm_bEndSysexMsg error:" << Pm_GetErrorText(err);
     }
 }

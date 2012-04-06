@@ -202,7 +202,7 @@ void Hss1394Controller::send(unsigned int word) {
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
 void Hss1394Controller::send(QByteArray data)
 {
-    int bytesSent = m_pChannel->SendChannelBytes((unsigned char*)(data.data()),data.size());
+    int bytesSent = m_pChannel->SendChannelBytes((unsigned char*)(data.constData()),data.size());
 
     //if (bytesSent != length) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";

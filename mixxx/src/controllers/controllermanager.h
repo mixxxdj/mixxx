@@ -18,18 +18,7 @@
 #define CONTROLLERMANAGER_H
 
 #include "configobject.h"
-
-#include "midi/portmidienumerator.h"
-#ifdef __HSS1394__
-    #include "midi/hss1394enumerator.h"
-#endif
-
-#ifdef __HID__
-    #include "hidenumerator.h"
-#endif
-#ifdef __OSC__
-    #include "oscenumerator.h"
-#endif
+#include "controllerenumerator.h"
 
 //Forward declaration(s)
 class Controller;
@@ -89,20 +78,9 @@ Q_OBJECT
         ConfigObject<ConfigValue> *m_pConfig;
         ControllerProcessor *m_pProcessor;
         QMutex m_mControllerList;
+        QList<ControllerEnumerator*> m_enumerators;
 
         QThread *m_pThread;
-
-        PortMidiEnumerator *m_pPMEnumerator;
-#ifdef __HSS1394__
-        Hss1394Enumerator *m_pHSSEnumerator;
-#endif
-        
-#ifdef __HID__
-        HidEnumerator *m_pHIDEnumerator;
-#endif
-#ifdef __OSC__
-        OscEnumerator *m_pOSCEnumerator;
-#endif
 };
 
 #endif  // CONTROLLERMANAGER_H

@@ -227,7 +227,7 @@ void HidController::send(QByteArray data, unsigned int reportID) {
     // Append the Report ID to the beginning of data[] per the API..
     data.prepend(reportID);
     
-    int result = hid_write(m_pHidDevice, (unsigned char*)(data.data()), data.size());
+    int result = hid_write(m_pHidDevice, (unsigned char*)(data.constData()), data.size());
     
     QString serial = QString::fromWCharArray(hid_serial);
     
