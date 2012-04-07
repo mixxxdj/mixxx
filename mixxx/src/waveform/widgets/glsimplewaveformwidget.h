@@ -10,7 +10,7 @@ public:
     GLSimpleWaveformWidget( const char* group, QWidget* parent);
     virtual ~GLSimpleWaveformWidget();
 
-    virtual QString getWaveformWidgetName() { return "Simple";}
+    virtual QString getWaveformWidgetName() { return tr("Simple");}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform;}
 
     virtual bool useOpenGl() const { return true;}
