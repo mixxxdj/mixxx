@@ -48,7 +48,6 @@ public slots:
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
-    void slotSetVisuals(int pos);
     void slotSetTooltips(int pos);
     void slotSetSkin(int);
     void slotSetScheme(int);
