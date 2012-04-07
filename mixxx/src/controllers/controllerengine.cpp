@@ -135,7 +135,7 @@ bool ControllerEngine::isReady() {
     
     return ret;
 }
-// 
+
 void ControllerEngine::initializeScriptEngine() {
     // Create the script engine
     m_pEngine = new QScriptEngine(this);
@@ -577,7 +577,7 @@ double ControllerEngine::getValue(QString group, QString name) {
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
     if (cot == NULL) {
-        qWarning() << "ControllerEngine: Unknown control" << group << name;
+        qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
         return 0.0;
     }
 
