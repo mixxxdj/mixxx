@@ -230,23 +230,26 @@ bool WOverview::drawNextPixmapPart() {
         return false;
     }
 
-    if (!m_waveform->getMutex()->tryLock()) {
+    // Safe without locking because it is atomic.
+    const int dataSize = m_waveform->getDataSize();
+    if (m_waveform->getDataSize() == 0) {
         return false;
     }
 
-    if (m_waveform->getDataSize() == 0) {
-        m_waveform->getMutex()->unlock();
+    const WaveformData* data = m_waveform->data();
+    if (data == NULL) {
         return false;
     }
 
     //test id there is some new to draw (at least of pixel width)
+
+    // Safe without locking because it is atomic.
     const int waveformCompletion = m_waveform->getCompletion();
     int completionIncrement = waveformCompletion - m_actualCompletion;
 
     //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion" << nextCompletion;
 
     if ((double)completionIncrement < m_visualSamplesByPixel) {
-        m_waveform->getMutex()->unlock();
         return false;
     }
 
@@ -265,7 +268,7 @@ bool WOverview::drawNextPixmapPart() {
     painter.scale(1.0,2.0*(double)(height()-2)/255.0);
 
     //draw only the new part
-    const float pixelStartPosition = (float)m_actualCompletion / (float)m_waveform->getDataSize() * (float)width();
+    const float pixelStartPosition = (float)m_actualCompletion / (float)dataSize * (float)width();
     const float pixelByVisualSamples = 1.0 / m_visualSamplesByPixel;
 
     const float alpha = math_min( 1.0, 2.0*math_max( 0.0, pixelByVisualSamples));
@@ -285,9 +288,11 @@ bool WOverview::drawNextPixmapPart() {
     int currentCompletion = m_actualCompletion;
     float pixelPosition = pixelStartPosition;
     for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
+        const WaveformData& datum = *(data + currentCompletion);
+        const WaveformData& next_datum = *(data + currentCompletion + 1);
         painter.setPen( lowColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getLow(currentCompletion+1) - 1.f),
-                          QPointF(pixelPosition, m_waveform->getLow(currentCompletion) + 1.f));
+        painter.drawLine( QPointF(pixelPosition, - next_datum.filtered.low - 1.f),
+                          QPointF(pixelPosition, datum.filtered.low + 1.f));
         pixelPosition += 2.0*pixelByVisualSamples;
 
     }
@@ -295,23 +300,26 @@ bool WOverview::drawNextPixmapPart() {
     currentCompletion = m_actualCompletion;
     pixelPosition = pixelStartPosition;
     for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
+        const WaveformData& datum = *(data + currentCompletion);
+        const WaveformData& next_datum = *(data + currentCompletion + 1);
         painter.setPen( midColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getMid(currentCompletion+1) - 1.f),
-                          QPointF(pixelPosition, m_waveform->getMid(currentCompletion) + 1.f));
+        painter.drawLine( QPointF(pixelPosition, - next_datum.filtered.mid - 1.f),
+                          QPointF(pixelPosition, datum.filtered.mid + 1.f));
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
     currentCompletion = m_actualCompletion;
     pixelPosition = pixelStartPosition;
     for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
+        const WaveformData& datum = *(data + currentCompletion);
+        const WaveformData& next_datum = *(data + currentCompletion + 1);
         painter.setPen( highColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getHigh(currentCompletion+1) - 1.f),
-                          QPointF(pixelPosition, m_waveform->getHigh(currentCompletion) + 1.f));
+        painter.drawLine( QPointF(pixelPosition, - next_datum.filtered.high - 1.f),
+                          QPointF(pixelPosition, datum.filtered.high + 1.f));
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
     m_actualCompletion = nextCompletion;
-    m_waveform->getMutex()->unlock();
     return true;
 }
 
@@ -448,9 +456,11 @@ void WOverview::timerEvent(QTimerEvent* timer) {
         if (m_waveform == NULL) {
             return;
         }
+        // Safe without locking because it is atomic.
+        const int dataSize = m_waveform->getDataSize();
 
         //qDebug() << "timerEvent - m_timerPixmapRefresh";
-        m_visualSamplesByPixel = (double)m_waveform->getDataSize() / (double)width();
+        m_visualSamplesByPixel = (double)dataSize / (double)width();
 
         if (drawNextPixmapPart())
             update();
@@ -459,8 +469,7 @@ void WOverview::timerEvent(QTimerEvent* timer) {
 
         //if m_waveform is empty ... actual computation do not start !
         //it must be in the analyser queue, we need to wait until it ready to display
-        if (m_waveform->getDataSize() > 0 &&
-            m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
+        if (dataSize > 0 && m_actualCompletion + m_visualSamplesByPixel >= dataSize) {
             //qDebug() << " WOverview::timerEvent - kill timer";
             killTimer(m_timerPixmapRefresh);
             m_timerPixmapRefresh = -1;
