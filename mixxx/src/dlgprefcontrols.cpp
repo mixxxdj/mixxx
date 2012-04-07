@@ -134,21 +134,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     SpinBoxRateRampSensitivity->setEnabled(true);
 
     //
-    // Visuals
-    //
-
-    // Set default value in config file, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
-
-    // Update combo box
-    ComboBoxVisuals->addItem(tr("On"));
-    ComboBoxVisuals->addItem(tr("Off"));
-    ComboBoxVisuals->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
-
-    connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
-
-    //
     // Skin configurations
     //
     ComboBoxSkinconf->clear();
@@ -361,12 +346,6 @@ void DlgPrefControls::slotSetRateDir(int index)
     foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
-}
-
-void DlgPrefControls::slotSetVisuals(int)
-{
-    m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
-    m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int)
