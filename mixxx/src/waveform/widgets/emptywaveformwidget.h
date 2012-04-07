@@ -12,7 +12,7 @@ class EmptyWaveformWidget : public WaveformWidgetAbstract, public QWidget {
   public:
     virtual ~EmptyWaveformWidget();
 
-    virtual QString getWaveformWidgetName() { return "Empty"; }
+    virtual QString getWaveformWidgetName() { return tr("Empty"); }
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::EmptyWaveform; }
 
     virtual bool useOpenGl() const { return false; }
