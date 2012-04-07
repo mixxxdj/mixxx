@@ -9,6 +9,12 @@
 
 WaveformWidgetRenderer::WaveformWidgetRenderer() :
     m_timer(0) {
+    m_playPosControlObject = 0;
+    m_rateControlObject = 0;
+    m_rateRangeControlObject = 0;
+    m_rateDirControlObject = 0;
+    m_gainControlObject = 0;
+    m_trackSamplesControlObject = 0;
 }
 
 WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
@@ -41,7 +47,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_gainControlObject = 0;
     m_gain = 1.0;
     m_trackSamplesControlObject = 0;
-    m_trackSamples = 0;
+    m_trackSamples = -1.0;
 
     //debug
     currentFrame = 0;
@@ -57,28 +63,52 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     if(m_timer) delete m_timer;
     for( int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
+
+    if( m_playPosControlObject)
+        delete m_playPosControlObject;
+    if( m_rateControlObject)
+        delete m_rateControlObject;
+    if( m_rateRangeControlObject)
+        delete m_rateRangeControlObject;
+    if( m_rateDirControlObject)
+        delete m_rateDirControlObject;
+    if( m_gainControlObject)
+        delete m_gainControlObject;
+    if( m_trackSamplesControlObject)
+        delete m_trackSamplesControlObject;
+
 }
 
 void WaveformWidgetRenderer::init() {
-    // TODO(rryan): WARNING unsafe use of ControlObject. Must use COThreadMain
-    m_playPosControlObject = ControlObject::getControl( ConfigKey(m_group,"visual_playposition"));
-    m_rateControlObject = ControlObject::getControl( ConfigKey(m_group,"rate"));
-    m_rateRangeControlObject = ControlObject::getControl( ConfigKey(m_group,"rate_dir"));
-    m_rateDirControlObject = ControlObject::getControl( ConfigKey(m_group,"rateRange"));
-    m_gainControlObject = ControlObject::getControl( ConfigKey(m_group,"total_gain"));
-    m_trackSamplesControlObject = ControlObject::getControl( ConfigKey(m_group, "track_samples"));
+    m_playPosControlObject = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_group,"visual_playposition")));
+    m_rateControlObject = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_group,"rate")));
+    m_rateRangeControlObject = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_group,"rateRange")));
+    m_rateDirControlObject = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_group,"rate_dir")));
+    m_gainControlObject = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_group,"total_gain")));
+    m_trackSamplesControlObject = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_group,"track_samples")));
 
     for( int i = 0; i < m_rendererStack.size(); ++i)
         m_rendererStack[i]->init();
 }
 
 void WaveformWidgetRenderer::preRender() {
+    m_trackSamples = m_trackSamplesControlObject->get();
+    if( m_trackSamples < 0.0)
+        return;
+
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
     m_playPos = m_playPosControlObject->get();
     m_rate = m_rateControlObject->get();
     m_rateDir = m_rateDirControlObject->get();
     m_rateRange = m_rateRangeControlObject->get();
     m_gain = m_gainControlObject->get();
+
 
     //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
@@ -106,34 +136,44 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     m_lastSystemFrameTime = m_timer->elapsed();
     m_timer->restart();
 
-    for( int i = 0; i < m_rendererStack.size(); ++i)
-        m_rendererStack[i]->draw( painter, event);
+    //not ready to display need to wait until track initialization is done
+    //draw only first is stack (backgroung)
+    if( m_trackSamples < 0.0) {
+        if( !m_rendererStack.empty())
+            m_rendererStack[0]->draw( painter, event);
+        return;
+    } else {
 
-    painter->setPen(QColor(255,255,255,200));
-    painter->drawLine( m_width/2, 0, m_width/2, m_height);
+        for( int i = 0; i < m_rendererStack.size(); ++i)
+            m_rendererStack[i]->draw( painter, event);
 
-    int systemMax = -1;
-    int frameMax = -1;
-    for( int i = 0; i < 100; ++i)
-    {
-        frameMax = math_max( frameMax, m_lastFramesTime[i]);
-        systemMax = math_max( systemMax, m_lastSystemFramesTime[i]);
+        painter->setPen(QColor(255,255,255,200));
+        painter->drawLine( m_width/2, 0, m_width/2, m_height);
+
+        int systemMax = -1;
+        int frameMax = -1;
+        for( int i = 0; i < 100; ++i)
+        {
+            frameMax = math_max( frameMax, m_lastFramesTime[i]);
+            systemMax = math_max( systemMax, m_lastSystemFramesTime[i]);
+        }
+
+        //hud debug display
+        painter->drawText(1,12,
+                          QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
+                          QString::number(frameMax).rightJustified(2,'0') + ")" +
+                          QString::number(m_lastSystemFrameTime) + "(" +
+                          QString::number(systemMax) + ")");
+
+        painter->drawText(1,m_height-1,
+                          QString::number(m_playPos) + " [" +
+                          QString::number(m_firstDisplayedPosition) + "-" +
+                          QString::number(m_lastDisplayedPosition) + "]" +
+                          QString::number(m_rate) + " | " +
+                          QString::number(m_gain) + " | " +
+                          QString::number(m_rateDir) + " | " +
+                          QString::number(m_zoomFactor));
     }
-
-    //hud debug display
-    /*
-    painter->drawText(1,12,
-                      QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
-                      QString::number(frameMax).rightJustified(2,'0') + ")" +
-                      QString::number(m_lastSystemFrameTime) + "(" +
-                      QString::number(systemMax) + ")");
-
-    painter->drawText(1,m_height-1,
-                      QString::number(m_playPos) + " [" +
-                      QString::number(m_firstDisplayedPosition) + "-" +
-                      QString::number(m_lastDisplayedPosition) + "]" +
-                      QString::number(m_rate) + " | " +
-                      QString::number(m_gain));
 
     m_lastFrameTime = m_timer->elapsed();
     m_timer->restart();
@@ -142,7 +182,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     currentFrame = currentFrame%100;
     m_lastSystemFramesTime[currentFrame] = m_lastSystemFrameTime;
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
-    */
+
 }
 
 void WaveformWidgetRenderer::resize( int width, int height) {
@@ -233,10 +273,8 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track)
 {
     m_trackInfoObject = track;
     m_playPos = 0.0;
-    if( track.data() && m_trackSamplesControlObject)
-        m_trackSamples = (int)m_trackSamplesControlObject->get();
-    else
-        m_trackSamples = 0;
+    //used to postpone first display until track sample is actually available
+    m_trackSamples = -1.0;
 
     for( int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->onSetTrack();
