@@ -66,8 +66,9 @@ Q_OBJECT    // For signals & slots
         double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
 
         QDomElement loadPreset(QDomElement root, bool forceLoad=false);
-        /** Updates the DOM with what is currently in the hashes */
-        QDomDocument buildDomElement();
+        /** Calls the parent to create the XML document with script files then
+            adds what is currently in the mapping hashes. */
+        QDomDocument buildXML();
         void mappingToXML(QDomElement& parentNode, QString group, QString item,
                           unsigned char status, unsigned char control) const;
         void outputMappingToXML(QDomElement& parentNode, unsigned char on,
@@ -77,7 +78,6 @@ Q_OBJECT    // For signals & slots
         void updateAllOutputs();
         void destroyOutputHandlers();
 
-        QDomElement m_bindings;
         QList<MidiOutputHandler*> m_outputs;
 
         QHash<uint16_t, QPair<ConfigKey, MidiOptions> > m_mappings;

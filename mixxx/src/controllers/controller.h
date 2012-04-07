@@ -32,7 +32,11 @@ Q_OBJECT
     public:
         Controller();
         virtual ~Controller();  // Subclass should call close() at minimum.
-
+        
+        /** Returns the extension for the controller (type) preset files.
+            This is used by the ControllerManager to display only relevant
+            preset files for the controller (type.) */
+        virtual QString presetExtension();
         inline QString defaultPreset();
         
         bool isOpen() { return m_bIsOpen; };
@@ -40,16 +44,17 @@ Q_OBJECT
         bool isInputDevice() { return m_bIsInputDevice; };
         QString getName() { return m_sDeviceName; };
         bool debugging() { return m_bDebug; };
-        /** Returns the extension for the controller (type) preset files.
-            This is used by the ControllerManager to display only relevant
-            preset files for the controller (type.) */
-        virtual QString presetExtension();
         
         void setPolling(bool needPolling) { m_bPolling = needPolling; };
         bool needPolling() { return m_bPolling; };
 
     protected:
         virtual QDomElement loadPreset(QDomElement root, bool forceLoad=false);
+        /** Creates the XML document and includes what script files are currently loaded.
+            Sub-classes need to re-implement this (and call it first) if they
+            need to add any other items. */
+        virtual QDomDocument buildXML();
+        
         /** To be called in sub-class' open() functions after opening the
             device but before starting any input polling/processing. */
         void startEngine();
@@ -61,10 +66,6 @@ Q_OBJECT
             when 'poll' is true and pass the event on to the engine when not. */
         virtual void timerEvent(QTimerEvent *event, bool poll);
         Q_INVOKABLE void send(QList<int> data, unsigned int length);
-        /** Updates the DOM with what script files are currently loaded.
-            Sub-classes need to re-implement this (and call it first) if they
-            need to add any other items. */
-        virtual QDomDocument buildDomElement();
         
         /** Verbose and unique device name suitable for display. */
         QString m_sDeviceName;
@@ -90,6 +91,7 @@ Q_OBJECT
             (Sub-classes may want to reimplement this if they have an alternate
             way of handling such data.) */
         virtual void receive(const QByteArray data);
+        
         /** Initializes the controller engine */
         virtual void applyPreset();
 
@@ -107,6 +109,7 @@ Q_OBJECT
         
         /** Adds a script file name and function prefix to the list to be loaded. */
         void addScriptFile(QString filename, QString functionprefix);
+        
         /** Saves the current preset to the default device XML file. */
         void savePreset();
         /** Given a path, saves the current preset to an XML file. */
