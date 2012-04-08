@@ -67,7 +67,7 @@ VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig) {
     m_pluginbuf = new CSAMPLE*[2];
     m_plugin = NULL;
     m_bDoNotAnalyseMoreSamples = false;
-    m_pconfig = pconfig;
+    m_pConfig = pconfig;
 }
 
 VampAnalyser::~VampAnalyser() {
@@ -96,6 +96,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
 
     if (m_plugin != NULL) {
         delete m_plugin;
+        m_plugin = NULL;
         qDebug() << "VampAnalyser: kill plugin";
     }
 
@@ -116,8 +117,6 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     QString plugin = pluginlist.at(0);
     m_key = loader->composePluginKey(pluginlibrary.toStdString(),
                                      plugin.toStdString());
-
-
     m_plugin = loader->loadPlugin(m_key, m_rate,
                                   Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
 
@@ -150,7 +149,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
 
     m_iStepSize = m_plugin->getPreferredStepSize();
     qDebug() << "Vampanalyser StepSize: " << m_iStepSize;
-    if (m_iStepSize==0 || m_iStepSize > m_iBlockSize) {
+    if (m_iStepSize == 0 || m_iStepSize > m_iBlockSize) {
         // A plugin may return 0 if it has no particular interest in the step
         // size. In this case, the host should make the step size equal to the
         // block size if the plugin is accepting input in the time domain. If
@@ -171,15 +170,15 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     m_pluginbuf[1] = new CSAMPLE[m_iBlockSize];
 
     m_FastAnalysisEnabled = static_cast<bool>(
-        m_pconfig->getValueString(ConfigKey("[Vamp]", "FastAnalysisEnabled")).toInt());
+        m_pConfig->getValueString(ConfigKey("[Vamp]", "FastAnalysisEnabled")).toInt());
 
     if (m_FastAnalysisEnabled) {
         qDebug() << "Using fast analysis methods for BPM and Replay Gain.";
-        m_iMaxSamplesToAnalys = 120 * m_rate; //only consider the first minute
+        m_iMaxSamplesToAnalyse = 120 * m_rate; //only consider the first minute
     } else {
         // Analyse 10 minutes otherwise. If track is longer than 10 min do not
         // care. It might be some recorded mix.
-        m_iMaxSamplesToAnalys = 1200 * m_rate;
+        m_iMaxSamplesToAnalyse = 1200 * m_rate;
     }
 
     return true;
@@ -191,20 +190,18 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
         return false;
     }
 
-    int iIN = 0;
-    bool lastsamples = false;
-    m_iRemainingSamples -= iLen;
     if (m_pluginbuf[0] == NULL || m_pluginbuf[1] == NULL) {
         qDebug() << "VampAnalyser: Buffer points to NULL";
         return false;
     }
 
-    /*
-     * If a track has a duration of more than 10minutes
-     * do not analyse more. It may be a recorded mix.
-     */
-    if(m_bDoNotAnalyseMoreSamples)
+    if (m_bDoNotAnalyseMoreSamples) {
         return true;
+    }
+
+    int iIN = 0;
+    bool lastsamples = false;
+    m_iRemainingSamples -= iLen;
 
     while (iIN < iLen / 2) { //4096
         m_pluginbuf[0][m_iOUT] = pIn[2 * iIN]; //* 32767;
@@ -230,7 +227,6 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
             while (m_iOUT < m_iBlockSize) {
                 m_pluginbuf[0][m_iOUT] = 0;
                 m_pluginbuf[1][m_iOUT] = 0;
-
                 m_iOUT++;
             }
         }
@@ -256,6 +252,10 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
             m_iSampleCount += m_iBlockSize;
             m_iOUT = 0;
 
+            // The step size indicates preferred distance in sample frames
+            // between successive calls to process(). To obey the step-size, we
+            // move (m_iBlockSize - m_iStepSize) samples from m_iStepSize'th
+            // position to 0.
             while (m_iOUT < (m_iBlockSize - m_iStepSize)) {
                 CSAMPLE lframe = m_pluginbuf[0][m_iOUT + m_iStepSize];
                 CSAMPLE rframe = m_pluginbuf[1][m_iOUT + m_iStepSize];
@@ -264,17 +264,13 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
                 m_iOUT++;
             }
 
-            /*
-             * If a track has a duration of more than 10minutes
-             * do not analyse more. It may be a recorded mix.
-             */
-            if (m_iSampleCount >= m_iMaxSamplesToAnalys) {
+            // If a track has a duration of more than 10minutes do not analyse
+            // more. It may be a recorded mix.
+            if (m_iSampleCount >= m_iMaxSamplesToAnalyse) {
                 m_bDoNotAnalyseMoreSamples = true;
                 m_iRemainingSamples = 0;
             }
-
         }
-
     }
     return true;
 }
@@ -286,14 +282,13 @@ bool VampAnalyser::End() {
         m_Results.insert(m_Results.end(), features[m_iOutput].begin(),
                          features[m_iOutput].end());
     }
-    //Clearing buffer arrays
+    // Clearing buffer arrays
     for (int i = 0; i < 2; i++) {
         if (m_pluginbuf[i]) {
             delete [] m_pluginbuf[i];
             m_pluginbuf[i] = NULL;
         }
     }
-    //m_Results.clear();
     return true;
 }
 
