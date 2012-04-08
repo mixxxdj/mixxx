@@ -20,8 +20,6 @@ class AnalyserBPMTest: public testing::Test {
         config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
         abpm = new AnalyserBPM(config);
         tio = TrackPointer(new TrackInfoObject("foo"));
-        //Subpixels per second, from waveformrenderer.cpp:247
-        tio->setVisualResampleRate(200);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];
         for (int i = 0; i < BIGBUF_SIZE; i++)
