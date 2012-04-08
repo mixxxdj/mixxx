@@ -13,9 +13,9 @@ class BeatFactory {
                                                QByteArray* beatsSerialized);
     static BeatsPointer makeBeatGrid(TrackPointer pTrack,
                                      double dBpm, double dFirstBeatSample);
-#ifdef __VAMP__
+
     static BeatsPointer makeBeatMap (TrackPointer pTrack, QVector <double> beats);
-#endif
+
   private:
     static void deleteBeats(Beats* pBeats);
 };

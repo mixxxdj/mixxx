@@ -15,10 +15,9 @@
 #include "beatutils.h"
 
 static bool sDebug = false;
+const double kBpmEpsilon = 0.2;
 
 double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm){
-
-
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.
@@ -31,8 +30,6 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      */
      QList<double> average_bpm_list;
      QMap<QString, int> frequency_table;
-
-
 
     /*
      * Just to demonstrate how you would count the beats manually
@@ -132,8 +129,8 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      * weighted value of all bpm values being at most
      * +-1 BPM from the median away.
      * Please note, this has improved the BPM: While relying on median only
-     * we may have a derivation of about +-0.2 BPM, taking into account
-     * BPM values around the median leads to derivation of +- 0.05
+     * we may have a deviation of about +-0.2 BPM, taking into account
+     * BPM values around the median leads to deviation of +- 0.05
      * Please also note that this value refers to electronic music,
      * but to be honest, the BPM detection of Traktor and Co work best
      * with electronic music, too. But BPM detection for non-electronic
@@ -242,68 +239,149 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      }
 
      return (fabs(bpm_diff) <= BPM_ERROR)? rounded_bpm : global_bpm;
-
 }
 
-double BeatUtils::calculateOffset(const QVector<double> beats1, const QVector<double> beats2
-        , const int SampleRate, int min_bpm, int max_bpm) {
+double BeatUtils::calculateOffset(
+    const QVector<double> beats1, const QVector<double> beats2,
+    const int SampleRate, int min_bpm, int max_bpm) {
     /*
      * Here we compare to beats vector and try to determine the best offset
      * based on the occurences, i.e. by assuming that the almost correct beats
      * are more than the "false" ones.
      */
-    double bpm1 = calculateBpm(beats1, SampleRate, min_bpm, max_bpm);
-    double beatlength1 = (60.0 * SampleRate / bpm1);
-    int MaxFreq = 1;
-    double BestOffset = beats1.at(0) - beats2.at(0);
+    const double bpm1 = calculateBpm(beats1, SampleRate, min_bpm, max_bpm);
+    const double beatlength1 = (60.0 * SampleRate / bpm1);
+    const double beatLength1Epsilon = beatlength1 * 0.2;
+
+    int bestFreq = 1;
+    double bestOffset = beats1.at(0) - beats2.at(0);
+
+    // Sweep offset from [-beatlength1/2, beatlength1/2]
     double offset = floor(-beatlength1 / 2);
-    while (offset < (beatlength1 / 2) )
-    {
-        double freq = 0;
-        for (int i = 0; i < beats2.size(); i+=4)
-        {
-            QVector<double>::const_iterator it;
-            it = qUpperBound(beats1.begin(), beats1.end(), beats2.at(i));
-            if (fabs(*it - beats2.at(i)-offset) <= .02 * (60*SampleRate/bpm1))
+    while (offset < (beatlength1 / 2)) {
+        int freq = 0;
+        for (int i = 0; i < beats2.size(); i += 4) {
+            double beats2_beat = beats2.at(i);
+            QVector<double>::const_iterator it = qUpperBound(
+                beats1.begin(), beats1.end(), beats2_beat);
+            if (fabs(*it - beats2_beat - offset) <= beatLength1Epsilon) {
                 freq++;
+            }
         }
-        if (freq > MaxFreq)
-        {
-            MaxFreq = freq;
-            BestOffset = offset;
+        if (freq > bestFreq) {
+            bestFreq = freq;
+            bestOffset = offset;
         }
         offset++;
     }
 
     if (sDebug) {
-        qDebug() << "Best offset " << BestOffset << " guarantees that "
-                << MaxFreq << " over " << beats1.size()/4
-                << " beats almost coincides. ";
+        qDebug() << "Best offset " << bestOffset << "guarantees that"
+                << bestFreq << "over" << beats1.size()/4
+                << "beats almost coincides.";
     }
 
-    return floor(BestOffset + (.02 * (60*SampleRate/bpm1)));
+    return floor(bestOffset + beatLength1Epsilon);
 }
-double BeatUtils::findFirstCorrectBeat(QVector<double> rawbeats, int SampleRate, double global_bpm){
-    //detect first correct beat
-    for(int i=N; i < rawbeats.size(); i+=N){
-        //get start and end sample of the beats
+
+double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
+                                       int SampleRate, double global_bpm) {
+    // TODO(rryan) I'm not sure this is the best way to do this. Because you are
+    // using a window of N, if the first "correct" beat is at N-1 then you'll
+    // ignore it. It might be better (though more CPU intensive) to slide the
+    // window forward by 1 instead of N.
+    for (int i = N; i < rawbeats.size(); i += N) {
+        // get start and end sample of the beats
         double start_sample = rawbeats.at(i-N);
         double end_sample = rawbeats.at(i);
 
-        //Time needed to count a bar (4 beats)
+        // The time in seconds represented by this sample range.
         double time = (end_sample - start_sample)/(SampleRate);
-        double avg_bpm = 60 * N / time;
+
+        // Average BPM within this sample range.
+        double avg_bpm = 60.0 * N / time;
 
         //qDebug() << "Local BPM between beat " << (i-N) << " and " << i << " is " << avg_bpm;
-        if(global_bpm <= avg_bpm +0.2 && global_bpm >=avg_bpm -0.2){
-            //qDebug() << "Using beat " << (i-1) << " as first beat";
+
+        // If the local BPM is within kBpmEpsilon of the global BPM then use
+        // this window as the first beat.
+        if (fabs(global_bpm - avg_bpm) <= kBpmEpsilon) {
+            //qDebug() << "Using beat " << (i-N) << " as first beat";
             return start_sample;
         }
+    }
 
-    }
-    if(rawbeats.size() > 0)
+    // If we didn't find any beat that matched the window, return the first
+    // beat.
+    if (rawbeats.size() > 0) {
         return rawbeats.at(0);
-    else{
-        return 0.0f;
     }
+    return 0.0f;
+}
+
+// static
+QVector<double> BeatUtils::calculateFixedTempoBeats(
+    bool enableOffsetCorrection,
+    const QVector<double> rawbeats, const int sampleRate,
+    const int totalSamples, const double globalBpm,
+    const int minBpm, const int maxBpm) {
+    /*
+     * By default Vamp does not assume a 4/4 signature.
+     * This is basically a good property of Vamp, however,
+     * it leads to inaccurate beat grids if a 4/4 signature is given.
+     * What is the problem? Almost all modern dance music from the last decades
+     * refer to 4/4 signatures. Thus, we must 'correct' the beat positions of Vamp
+     */
+
+    QVector <double> corrbeats;
+    // Length of a beat at m_dBpm in mono samples.
+    double beat_length = (60.0 * sampleRate / globalBpm);
+    double firstCorrectBeat =
+            BeatUtils::findFirstCorrectBeat(rawbeats, sampleRate, globalBpm);
+
+    // We start building a fixed beat grid from m_dBpm and the first beat from
+    // rawbeats that matches m_dBpm.
+    double i = firstCorrectBeat;
+    while (i <= totalSamples) {
+        corrbeats << i;
+        i += beat_length;
+    }
+
+    if (rawbeats.size() == 1 || corrbeats.size()==1) {
+        return corrbeats;
+    }
+
+    /*
+     * BeatUtils::calculateOffset compares the beats from Vamp and the beats from
+     * the beat grid constructed above. See beatutils.cpp for details.
+     */
+    double offset = 0;
+    if (enableOffsetCorrection) {
+        qDebug() << "Calculating best offset";
+        offset = BeatUtils::calculateOffset(rawbeats, corrbeats, sampleRate,
+                                            minBpm, maxBpm);
+    }
+
+    double FirstFrame = offset + firstCorrectBeat;
+    while (FirstFrame < 0) {
+        FirstFrame += beat_length;
+    }
+    while (FirstFrame > beat_length) {
+        FirstFrame -= beat_length;
+    }
+
+    i = floor(FirstFrame + 0.5);
+
+    if (sDebug) {
+        qDebug() << "First Frame is at " << i;
+        qDebug() << "It was at " << rawbeats.at(0);
+    }
+
+    corrbeats.clear();
+    while (i < totalSamples) {
+        corrbeats << i;
+        i += beat_length;
+    }
+
+    return corrbeats;
 }

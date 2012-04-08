@@ -403,9 +403,10 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
     SignedBeatList temp_beatList;
     SignedBeat Beat;
 
-    if(m_ssubVer.contains("beats_correction=none")){
-        if(fabs(dBpm-dtrack_Bpm)<BPM_TOLERANCE)
+    if (m_ssubVer.contains("beats_correction=none")) {
+        if (fabs(dBpm-dtrack_Bpm)<BPM_TOLERANCE) {
             return;
+        }
         //qDebug()<<"Enabling doubling/halving for noncostant beats";
         while ((dBpm  - (dtrack_Bpm * 2)) >= -BPM_TOLERANCE ) {
 
@@ -462,9 +463,8 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
     } else {
         //qDebug()<<"Constant Grid: Scaling";
         double scale = dtrack_Bpm / dBpm;
-        for (SignedBeatList::iterator it = m_signedBeatList.begin(); it
-        != m_signedBeatList.end(); ++it) {
-
+        for (SignedBeatList::iterator it = m_signedBeatList.begin();
+             it != m_signedBeatList.end(); ++it) {
             double new_pos = scale * (*it).position + (1 - scale)
                                             * m_signedBeatList[0].position;
             (*it).position = floor(new_pos);
