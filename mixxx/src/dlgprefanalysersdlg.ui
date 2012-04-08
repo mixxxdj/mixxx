@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QCheckBox" name="banalyserenabled">
      <property name="toolTip">
-      <string>Enable beat detection. If activated Mixxx alignes the beat grid for your tracks. Using SYNC button, Mixxx can synchronize the tempo of  the playing tracks.</string>
+      <string>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</string>
      </property>
      <property name="text">
       <string>Enable BPM and Beat Detection</string>
@@ -86,20 +86,20 @@
       <item>
        <widget class="QCheckBox" name="bFastAnalysis">
         <property name="toolTip">
-         <string>Enable fast beat detection. If activated Mixxx analyzes the first minute of a track. This may affect negatively the quality of the BPM and beat detection. But it accelerates the track analyzing process drastically on slow computers.</string>
+         <string>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</string>
         </property>
         <property name="text">
-         <string>Enable Fast Analysis (For slow computers but may be less accurate)</string>
+         <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="bfixedtempo">
         <property name="toolTip">
-         <string>Most modern dance music follows a 4/4 signature. Beat detection returns in betters results if checked.</string>
+         <string>Most dance music follows a 4/4 time signature. Using this assumption results in better beatgrids for most dance music.</string>
         </property>
         <property name="text">
-         <string>Assume 4/4 signature </string>
+         <string>Assume 4/4 time signature </string>
         </property>
        </widget>
       </item>
@@ -113,7 +113,7 @@
       <item>
        <widget class="QCheckBox" name="bReanalyse">
         <property name="text">
-         <string>Reanalyze BPM values originating from previous Mixxx versions or 3rd party software</string>
+         <string>Re-analyze beats for tracks with beatgrids from previous versions of Mixxx or 3rd-party software</string>
         </property>
        </widget>
       </item>
