@@ -13,6 +13,7 @@
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "controlpotmeter.h"
 
 WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) :
     QWidget(parent) {
@@ -23,6 +24,14 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
     m_bScratching = false;
     m_bBending = false;
     m_iMouseStart = -1;
+
+    m_pZoom = new ControlPotmeter(ConfigKey(m_pGroup, "waveform_zoom"),1.0,4.0);
+    m_pZoom->setStep(1.0);
+    m_pZoom->setSmallStep(1.0);
+
+    connect(m_pZoom, SIGNAL(valueChanged(double)),
+            this, SLOT(onZoomChange(double)));
+
     m_pScratchEnable = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
     m_pScratch = new ControlObjectThreadMain(
@@ -41,11 +50,13 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
     setAttribute(Qt::WA_ForceUpdatesDisabled);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
+
     m_zoomZoneWidth = 20;
     m_waveformWidget = 0;
 }
 
 WWaveformViewer::~WWaveformViewer() {
+    delete m_pZoom;
     delete m_pScratchEnable;
     delete m_pScratch;
     delete m_pTrackSamples;
@@ -123,7 +134,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
-void WWaveformViewer::mouseReleaseEvent(QMouseEvent* event){
+void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/){
     if (m_bScratching) {
         m_pScratchEnable->slotSet(0.0f);
         m_pScratch->slotSet(0.0f);
@@ -144,12 +155,9 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
     if (m_waveformWidget) {
         if (event->x() > width() - m_zoomZoneWidth) {
             if (event->delta() > 0)
-                m_waveformWidget->zoomIn();
+                m_pZoom->incValue(1.0);
             else
-                m_waveformWidget->zoomOut();
-
-            if(WaveformWidgetFactory::instance())
-                WaveformWidgetFactory::instance()->onZoomChange(m_waveformWidget);
+                m_pZoom->decValue(1.0);
         }
     }
 }
@@ -195,4 +203,16 @@ void WWaveformViewer::onTrackLoaded( TrackPointer track) {
 void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/) {
     if (m_waveformWidget)
         m_waveformWidget->setTrack(TrackPointer(0));
+}
+
+void WWaveformViewer::onZoomChange(double zoom) {
+    if (m_waveformWidget) {
+        m_waveformWidget->setZoom(int(zoom));
+        //notify back the factory to sync zoom if needed
+        WaveformWidgetFactory::instance()->notifyZoomChange(this);
+    }
+}
+
+void WWaveformViewer::setZoom(int zoom) {
+    m_pZoom->setValueFromThread(zoom);
 }

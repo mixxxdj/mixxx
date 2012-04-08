@@ -7,28 +7,44 @@
 #include "waveform/widgets/waveformwidgettype.h"
 
 #include <QObject>
-#include <QVector>
+
+#include <vector>
 
 class WWaveformViewer;
 class WaveformWidgetAbstract;
+class ControlObjectThreadMain;
 class QTimer;
 class QTime;
 
 class WaveformWidgetAbstractHandle {
-  public:
-    WaveformWidgetAbstractHandle() {
-        m_active = true;
-        m_type = WaveformWidgetType::Count_WaveformwidgetType;
-    }
+public:
+    WaveformWidgetAbstractHandle();
 
     WaveformWidgetType::Type getType() const { return m_type;}
     QString getDisplayName() const { return m_displayString;}
     bool isActive() const { return m_active;}
 
-  private:
+private:
     bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
+
+    friend class WaveformWidgetFactory;
+};
+
+class WaveformWidgetHolder {
+private:
+    WaveformWidgetHolder( WaveformWidgetAbstract* waveformWidget,
+                          WWaveformViewer* waveformViewer,
+                          const QDomNode& visualNodeCache);
+
+    WaveformWidgetAbstract* m_waveformWidget;
+    WWaveformViewer* m_waveformViewer;
+
+    //NOTE: (vRince) used to be able to recreat wavfeom widget without
+    //re-building entire skin ... but it does not work for the moment
+    QDomNode m_visualNodeCache;
+
     friend class WaveformWidgetFactory;
 };
 
@@ -37,12 +53,12 @@ class WaveformWidgetAbstractHandle {
 class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
 
-  public:
+public:
     bool setConfig(ConfigObject<ConfigValue>* config);
 
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
-    bool setWaveformWidget( WWaveformViewer* viewer);
+    bool setWaveformWidget(WWaveformViewer* viewer, const QDomElement &node);
 
     void setFrameRate( int frameRate);
     int getFrameRate() const { return m_frameRate;}
@@ -61,43 +77,50 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
-    void onZoomChange( WaveformWidgetAbstract* widget);
 
-    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
+    const std::vector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void destroyWidgets();
 
     void addTimerListener(QWidget* pWidget);
 
-  public slots:
+public slots:
     void start();
     void stop();
 
-  signals:
+    void notifyZoomChange(WWaveformViewer *viewer);
+
+signals:
     void waveformUpdateTick();
 
 protected:
     void timerEvent(QTimerEvent *timerEvent);
 
-  protected:
+protected:
     WaveformWidgetFactory();
     virtual ~WaveformWidgetFactory();
 
     friend class Singleton<WaveformWidgetFactory>;
 
-  private slots:
+private slots:
     void refresh();
 
-  private:
+private:
     void evaluateWidgets();
     WaveformWidgetAbstract* createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer);
+    int findIndexOf( WWaveformViewer* viewer) const;
 
-    QVector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
-    QVector<WaveformWidgetAbstract*> m_waveformWidgets;
+private:
+    //All type of available widgets
+    std::vector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
+
+    //Currently in use widgets/visual/node
+    std::vector<WaveformWidgetHolder> m_waveformWidgetHolders;
 
     WaveformWidgetType::Type m_type;
 
     ConfigObject<ConfigValue>* m_config;
 
+    //bool m_skipRender;
     int m_frameRate;
     int m_mainTimerId;
     int m_defaultZoom;

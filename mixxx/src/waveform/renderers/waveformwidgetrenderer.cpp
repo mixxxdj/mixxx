@@ -7,14 +7,17 @@
 
 #include <QPainter>
 
-WaveformWidgetRenderer::WaveformWidgetRenderer() :
-    m_timer(0) {
+WaveformWidgetRenderer::WaveformWidgetRenderer() {
     m_playPosControlObject = 0;
     m_rateControlObject = 0;
     m_rateRangeControlObject = 0;
     m_rateDirControlObject = 0;
     m_gainControlObject = 0;
     m_trackSamplesControlObject = 0;
+
+#ifdef WAVEFORMWIDGETRENDERER_DEBUG
+    m_timer = 0;
+#endif
 }
 
 WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
@@ -23,7 +26,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_height(-1),
     m_width(-1) {
 
-    m_timer = new QTime();
 
     m_firstDisplayedPosition = 0.0;
     m_lastDisplayedPosition = 0.0;
@@ -49,7 +51,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_trackSamplesControlObject = 0;
     m_trackSamples = -1.0;
 
-    //debug
+#ifdef WAVEFORMWIDGETRENDERER_DEBUG
+    m_timer = new QTime();
     currentFrame = 0;
     m_lastFrameTime = 0;
     m_lastSystemFrameTime = 0;
@@ -57,10 +60,10 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
         m_lastSystemFramesTime[i] = 0;
         m_lastSystemFramesTime[i] = 0;
     }
+#endif
 }
 
 WaveformWidgetRenderer::~WaveformWidgetRenderer() {
-    if(m_timer) delete m_timer;
     for( int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
@@ -77,9 +80,13 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     if( m_trackSamplesControlObject)
         delete m_trackSamplesControlObject;
 
+#ifdef WAVEFORMWIDGETRENDERER_DEBUG
+    if(m_timer) delete m_timer;
+#endif
 }
 
 void WaveformWidgetRenderer::init() {
+
     m_playPosControlObject = new ControlObjectThreadMain(
                 ControlObject::getControl( ConfigKey(m_group,"visual_playposition")));
     m_rateControlObject = new ControlObjectThreadMain(
@@ -98,6 +105,7 @@ void WaveformWidgetRenderer::init() {
 }
 
 void WaveformWidgetRenderer::preRender() {
+
     m_trackSamples = m_trackSamplesControlObject->get();
     if( m_trackSamples < 0.0)
         return;
@@ -133,8 +141,11 @@ void WaveformWidgetRenderer::preRender() {
 }
 
 void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
+
+#ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_lastSystemFrameTime = m_timer->elapsed();
     m_timer->restart();
+#endif
 
     //not ready to display need to wait until track initialization is done
     //draw only first is stack (backgroung)
@@ -149,11 +160,12 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
 
         painter->setPen(QColor(255,255,255,200));
         painter->drawLine( m_width/2, 0, m_width/2, m_height);
+    }
 
+#ifdef WAVEFORMWIDGETRENDERER_DEBUG
         int systemMax = -1;
         int frameMax = -1;
-        for( int i = 0; i < 100; ++i)
-        {
+        for( int i = 0; i < 100; ++i) {
             frameMax = math_max( frameMax, m_lastFramesTime[i]);
             systemMax = math_max( systemMax, m_lastSystemFramesTime[i]);
         }
@@ -173,7 +185,6 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
                           QString::number(m_gain) + " | " +
                           QString::number(m_rateDir) + " | " +
                           QString::number(m_zoomFactor));
-    }
 
     m_lastFrameTime = m_timer->elapsed();
     m_timer->restart();
@@ -182,6 +193,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     currentFrame = currentFrame%100;
     m_lastSystemFramesTime[currentFrame] = m_lastSystemFrameTime;
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
+#endif
 
 }
 
@@ -202,20 +214,6 @@ void WaveformWidgetRenderer::setup( const QDomNode& node) {
 void WaveformWidgetRenderer::setZoom(int zoom) {
     m_zoomFactor = zoom;
     m_zoomFactor = math_max( 1.0, math_min( m_zoomFactor, 4.0));
-    updateVisualSamplingPerPixel();
-    updateAudioSamplingPerPixel();
-}
-
-void WaveformWidgetRenderer::zoomIn() {
-    m_zoomFactor -= 1.0;
-    m_zoomFactor = math_max( 1.0, m_zoomFactor);
-    updateVisualSamplingPerPixel();
-    updateAudioSamplingPerPixel();
-}
-
-void WaveformWidgetRenderer::zoomOut() {
-    m_zoomFactor += 1.0;
-    m_zoomFactor = math_min( m_zoomFactor, 4.0); //max 400%
     updateVisualSamplingPerPixel();
     updateAudioSamplingPerPixel();
 }

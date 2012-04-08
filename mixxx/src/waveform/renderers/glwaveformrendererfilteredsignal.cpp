@@ -316,13 +316,13 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     if (m_alignment == Qt::AlignTop) {
         painter->translate(0.0,0.0);
-        painter->scale(1.0,m_waveformRenderer->getGain()*4.0*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,0.75*4.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else if (m_alignment == Qt::AlignBottom) {
         painter->translate(0.0,m_waveformRenderer->getHeight());
-        painter->scale(1.0,m_waveformRenderer->getGain()*4.0*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,0.75*4.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else {
         painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
-        painter->scale(1.0,m_waveformRenderer->getGain()*2.0*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,0.75*2.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     }
 
     int numberOfPoints = buildPolygon();
