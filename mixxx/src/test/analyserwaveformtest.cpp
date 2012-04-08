@@ -17,6 +17,7 @@ class AnalyserWaveformTest: public testing::Test {
         qDebug() << "SetUp";
         aw = new AnalyserWaveform();
         tio = TrackPointer(new TrackInfoObject("foo"));
+        tio->setSampleRate(44100);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];
         for (int i = 0; i < BIGBUF_SIZE; i++)
@@ -51,7 +52,7 @@ class AnalyserWaveformTest: public testing::Test {
 
 //Test to make sure we don't modify the source buffer.
 TEST_F(AnalyserWaveformTest, simpleAnalyze) {
-    aw->initialise(tio, 44100, BIGBUF_SIZE);
+    aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE);
     aw->process(bigbuf, BIGBUF_SIZE);
     aw->finalise(tio);
     for (int i = 0; i < BIGBUF_SIZE; i++) {
@@ -61,7 +62,7 @@ TEST_F(AnalyserWaveformTest, simpleAnalyze) {
 
 //Basic test to make sure we don't step out of bounds.
 TEST_F(AnalyserWaveformTest, canary) {
-    aw->initialise(tio, 44100, BIGBUF_SIZE);
+    aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE);
     aw->process(&canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
     aw->finalise(tio);
     for (int i = 0; i < CANARY_SIZE; i++) {
@@ -76,9 +77,10 @@ TEST_F(AnalyserWaveformTest, canary) {
 //initialise(..) and process(..) is told to process more samples than that,
 //that we don't step out of bounds.
 TEST_F(AnalyserWaveformTest, wrongTotalSamples) {
-    aw->initialise(tio, 44100, BIGBUF_SIZE);
+    aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE/2);
     //Process in a loop
-    int wrongTotalSamples = BIGBUF_SIZE+1; //Too big by 1 sample...
+    // Deliver double the expected samples
+    int wrongTotalSamples = BIGBUF_SIZE;
     //Note that the correct totalSamples would just be BIGBUF_SIZE. :)
     int blockSize = 2*32768;
     for (int i = CANARY_SIZE; i < CANARY_SIZE+wrongTotalSamples; i += blockSize) {
