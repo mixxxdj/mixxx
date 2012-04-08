@@ -92,7 +92,12 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         m_bBending = true;
         
         //also reset zoom:
-        m_waveformWidget->setZoom(WaveformWidgetFactory::instance()->getDefaultZoom());
+        if (m_waveformWidget) {
+            if(WaveformWidgetFactory::instance()){
+                m_waveformWidget->setZoom(WaveformWidgetFactory::instance()->getDefaultZoom());
+                WaveformWidgetFactory::instance()->onZoomChange(m_waveformWidget);
+            }
+        }
     }
 
     // Set the cursor to a hand while the mouse is down.
