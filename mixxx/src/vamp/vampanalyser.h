@@ -43,11 +43,11 @@ class VampAnalyser {
   private:
     void SelectOutput(const int outputnumber);
 
-    Vamp::HostExt::PluginLoader::PluginKey mKey;
+    Vamp::HostExt::PluginLoader::PluginKey m_key;
     int m_iSampleCount, m_iOUT, m_iRemainingSamples,
-        m_iBlockSize, m_iStepSize, mRate, m_iOutput;
+        m_iBlockSize, m_iStepSize, m_rate, m_iOutput;
     CSAMPLE ** m_pluginbuf;
-    Vamp::Plugin *mPlugin;
+    Vamp::Plugin *m_plugin;
     Vamp::Plugin::ParameterList mParameters;
     Vamp::Plugin::FeatureList m_Results;
 
