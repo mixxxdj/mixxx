@@ -17,13 +17,11 @@
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
 struct SignedBeat{
-
     double position;
     bool isOn;
-    operator double() const
-      {
+    operator double() const {
         return position;
-      }
+    }
 };
 
 typedef QList<SignedBeat> SignedBeatList;
@@ -32,6 +30,7 @@ class BeatMap : public QObject, public Beats {
     Q_OBJECT
   public:
     BeatMap(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
+    BeatMap(TrackPointer pTrack, const QVector<double> beats = QVector<double>());
     virtual ~BeatMap();
 
     // See method comments in beats.h
@@ -42,7 +41,6 @@ class BeatMap : public QObject, public Beats {
 
     virtual QByteArray* toByteArray() const;
     virtual QString getVersion() const;
-    virtual void createFromVector(QVector <double> beats);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -75,7 +73,10 @@ class BeatMap : public QObject, public Beats {
     void slotTrackBpmPluginKey(QString ver);
 
   private:
+    void initialize(TrackPointer pTrack);
     void readByteArray(const QByteArray* pByteArray);
+    void createFromBeatVector(QVector<double> beats);
+
     double calculateBpm(SignedBeat startBeat, SignedBeat stopBeat) const;
     // For internal use only.
     bool isValid() const;

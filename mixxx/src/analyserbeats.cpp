@@ -13,7 +13,7 @@
 #include "track/beatmap.h"
 #include "track/beatfactory.h"
 #include "analyserbeats.h"
-#include "beattools.h"
+#include "track/beatutils.h"
 
 static bool sDebug = false;
 
@@ -81,10 +81,10 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
             // Override preference if the BPM is 0.
             if (tio->getBeats()->getBpm() == 0.0) {
                 m_bShouldAnalyze = true;
-                qDebug() << "BPM is 0 for" << tio << "so re-analyzing."
+                qDebug() << "BPM is 0 for track so re-analyzing.";
             }
 
-            if(!m_bShouldAnalyze) {
+            if (!m_bShouldAnalyze) {
                 qDebug() << "Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
                 return;
             }
@@ -147,7 +147,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
     QVector<double> beats = m_pVamp->GetInitFramesVector();
     if (!beats.isEmpty()) {
-        m_dBpm = BeatTools::calculateBpm(beats, m_iSampleRate, m_iMinBpm, m_iMaxBpm);
+        m_dBpm = BeatUtils::calculateBpm(beats, m_iSampleRate, m_iMinBpm, m_iMaxBpm);
         if (!m_bDisableBeatCorrection) {
             beats = correctedBeats(beats);
         }
@@ -177,7 +177,7 @@ QVector<double> AnalyserBeats::correctedBeats(QVector<double> rawbeats) {
     double BpmFrame = (60.0 * m_iSampleRate / m_dBpm);
 
     // We start building a grid:
-    double i = BeatTools::findFirstCorrectBeat(rawbeats,m_iSampleRate,m_dBpm);
+    double i = BeatUtils::findFirstCorrectBeat(rawbeats,m_iSampleRate,m_dBpm);
     while (i <= m_iTotalSamples) {
         corrbeats << i;
         i += BpmFrame;
@@ -188,19 +188,19 @@ QVector<double> AnalyserBeats::correctedBeats(QVector<double> rawbeats) {
     }
 
     /*
-     * BeatTools::calculateOffset compares the beats from Vamp and the beats from
-     * the beat grid constructed above. See beattools.* for details.
+     * BeatUtils::calculateOffset compares the beats from Vamp and the beats from
+     * the beat grid constructed above. See beatutils.cpp for details.
      */
     double offset = 0;
 
     if (m_bEnableOffsetCorrection) {
         qDebug() << "Calculating best offset";
-        offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate,
+        offset = BeatUtils::calculateOffset(rawbeats, corrbeats, m_iSampleRate,
                                             m_iMinBpm,  m_iMaxBpm);
     }
 
     corrbeats.clear();
-    double FirstFrame = offset + BeatTools::findFirstCorrectBeat(rawbeats, m_iSampleRate, m_dBpm);
+    double FirstFrame = offset + BeatUtils::findFirstCorrectBeat(rawbeats, m_iSampleRate, m_dBpm);
     while (FirstFrame < 0) {
         FirstFrame += BpmFrame;
     }

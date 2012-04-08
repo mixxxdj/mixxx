@@ -21,14 +21,12 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
         pMatrix->setParent(pTrack.data());
         qDebug() << "Successfully deserialized BeatMatrix";
         return BeatsPointer(pMatrix, &BeatFactory::deleteBeats);
-#ifdef __VAMP__
-    } else if (beatsVersion==BEAT_MAP_VERSION) {
+    } else if (beatsVersion == BEAT_MAP_VERSION) {
         BeatMap* pMap = new BeatMap(pTrack, beatsSerialized);
         pMap->moveToThread(pTrack->thread());
         pMap->setParent(pTrack.data());
         qDebug() << "Successfully deserialized BeatMap";
         return BeatsPointer(pMap, &BeatFactory::deleteBeats);
-#endif
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     return BeatsPointer();
@@ -39,14 +37,12 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     pGrid->setGrid(dBpm, dFirstBeatSample);
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
-#ifdef __VAMP__
-BeatsPointer BeatFactory::makeBeatMap (TrackPointer pTrack, QVector <double> beats) {
-    BeatMap* pBeatMap = new BeatMap(pTrack);
-    pBeatMap->createFromVector(beats);
-    return BeatsPointer(pBeatMap,&BeatFactory::deleteBeats);
 
+BeatsPointer BeatFactory::makeBeatMap(TrackPointer pTrack, QVector<double> beats) {
+    BeatMap* pBeatMap = new BeatMap(pTrack, beats);
+    return BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
 }
-#endif
+
 void BeatFactory::deleteBeats(Beats* pBeats) {
     // This assumes all Beats* variants multiply-inherit from QObject. Kind of
     // ugly. Oh well.

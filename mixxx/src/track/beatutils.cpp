@@ -1,5 +1,5 @@
 /*
- * beattools.cpp
+ * beatutils.cpp
  *
  *  Created on: 30/nov/2011
  *      Author: vittorio
@@ -12,11 +12,11 @@
 #include <math.h>
 #define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.05 BPM far away from the correct one
 #define N 12 //the raw beatgrid is divided into blocks of size N from which the local bpm is computed.
-#include "beattools.h"
+#include "beatutils.h"
 
 static bool sDebug = false;
 
-double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm){
+double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm){
 
 
     /*
@@ -245,7 +245,7 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 
 }
 
-double BeatTools::calculateOffset(const QVector<double> beats1, const QVector<double> beats2
+double BeatUtils::calculateOffset(const QVector<double> beats1, const QVector<double> beats2
         , const int SampleRate, int min_bpm, int max_bpm) {
     /*
      * Here we compare to beats vector and try to determine the best offset
@@ -283,7 +283,7 @@ double BeatTools::calculateOffset(const QVector<double> beats1, const QVector<do
 
     return floor(BestOffset + (.02 * (60*SampleRate/bpm1)));
 }
-double BeatTools::findFirstCorrectBeat(QVector<double> rawbeats, int SampleRate, double global_bpm){
+double BeatUtils::findFirstCorrectBeat(QVector<double> rawbeats, int SampleRate, double global_bpm){
     //detect first correct beat
     for(int i=N; i < rawbeats.size(); i+=N){
         //get start and end sample of the beats
