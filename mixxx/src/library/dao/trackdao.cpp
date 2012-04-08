@@ -276,8 +276,10 @@ void TrackDAO::bindTrackToLibraryInsert(
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
-    const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
+
+    // We no longer store the wavesummary in the library table.
+    query.bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
+
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     query.bindValue(":channels", pTrack->getChannels());
@@ -572,8 +574,6 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         int cuepoint = query.value(query.record().indexOf("cuepoint")).toInt();
         QString bpm = query.value(query.record().indexOf("bpm")).toString();
         QString replaygain = query.value(query.record().indexOf("replaygain")).toString();
-        QByteArray* wavesummaryhex = new QByteArray(
-            query.value(query.record().indexOf("wavesummaryhex")).toByteArray());
         int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
         int played = query.value(query.record().indexOf("played")).toInt();
         int channels = query.value(query.record().indexOf("channels")).toInt();
@@ -611,8 +611,6 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         pTrack->setCuePoint((float)cuepoint);
         pTrack->setBpm(bpm.toFloat());
         pTrack->setReplayGain(replaygain.toFloat());
-        pTrack->setWaveSummary(wavesummaryhex, false);
-        delete wavesummaryhex;
 
         QString beatsVersion = query.value(query.record().indexOf("beats_version")).toString();
         QByteArray beatsBlob = query.value(query.record().indexOf("beats")).toByteArray();
@@ -718,7 +716,7 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
         "SELECT library.id, artist, title, album, year, genre, composer, tracknumber, "
         "filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
-        "samplerate, cuepoint, bpm, replaygain, wavesummaryhex, channels, "
+        "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, beats_version, beats, datetime_added, bpm_plugin_key, bpm_lock "
         "FROM Library "
         "INNER JOIN track_locations "
@@ -761,7 +759,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "composer=:composer, filetype=:filetype, tracknumber=:tracknumber, "
                   "comment=:comment, url=:url, duration=:duration, rating=:rating, key=:key, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
-                  "bpm=:bpm, replaygain=:replaygain, wavesummaryhex=:wavesummaryhex, "
+                  "bpm=:bpm, replaygain=:replaygain, "
                   "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats=:beats, bpm_plugin_key=:bpm_plugin_key, "
@@ -785,8 +783,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
     query.bindValue(":rating", pTrack->getRating());
-    const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed());
     query.bindValue(":channels", pTrack->getChannels());

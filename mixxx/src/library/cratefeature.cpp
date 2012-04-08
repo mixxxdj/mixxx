@@ -443,12 +443,11 @@ void CrateFeature::slotExportPlaylist(){
         new CrateTableModel(this, m_pTrackCollection));
     pCrateTableModel->setCrate(m_crateTableModel.getCrate());
     pCrateTableModel->select();
-    int rows = pCrateTableModel->rowCount();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
             ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);
     } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
-             ParserCsv::writeReadableTextFile(file_location, pCrateTableModel.data());
+             ParserCsv::writeReadableTextFile(file_location, pCrateTableModel.data(), false);
     } else{
         // populate a list of files of the crate
         QList<QString> playlist_items;

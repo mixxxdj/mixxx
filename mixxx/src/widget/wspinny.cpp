@@ -6,35 +6,34 @@
 #include "sharedglcontext.h"
 #include "wspinny.h"
 
-WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(SharedGLContext::getContext(), parent),
-    m_pBG(NULL),
-    m_pFG(NULL),
-    m_pGhost(NULL),
-    m_pPlay(NULL),
-    m_pPlayPos(NULL),
-    m_pVisualPlayPos(NULL),
-    m_pDuration(NULL),
-    m_pTrackSamples(NULL),
-    m_pBPM(NULL),
-    m_pScratch(NULL),
-    m_pScratchToggle(NULL),
-    m_pScratchPos(NULL),
-    m_pVinylControlSpeedType(NULL),
-    m_pVinylControlEnabled(NULL),
-    m_bVinylActive(false),
-    m_bSignalActive(true),
-    m_iSize(0),
-    m_iTimerId(0),
-    m_iSignalUpdateTick(0),
-    m_fAngle(0.0f),
-    m_fGhostAngle(0.0f),
-    m_dPausedPosition(0.0f),
-    m_bGhostPlayback(false),
-    m_iStartMouseX(-1),
-    m_iStartMouseY(-1),
-    m_iFullRotations(0),
-    m_dPrevTheta(0.)
-{
+WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
+        : QGLWidget(SharedGLContext::getContext(), parent),
+          m_pBG(NULL),
+          m_pFG(NULL),
+          m_pGhost(NULL),
+          m_pPlay(NULL),
+          m_pPlayPos(NULL),
+          m_pVisualPlayPos(NULL),
+          m_pDuration(NULL),
+          m_pTrackSamples(NULL),
+          m_pBPM(NULL),
+          m_pScratch(NULL),
+          m_pScratchToggle(NULL),
+          m_pScratchPos(NULL),
+          m_pVinylControlSpeedType(NULL),
+          m_pVinylControlEnabled(NULL),
+          m_bVinylActive(false),
+          m_bSignalActive(true),
+          m_iSize(0),
+          m_iSignalUpdateTick(0),
+          m_fAngle(0.0f),
+          m_fGhostAngle(0.0f),
+          m_dPausedPosition(0.0f),
+          m_bGhostPlayback(false),
+          m_iStartMouseX(-1),
+          m_iStartMouseY(-1),
+          m_iFullRotations(0),
+          m_dPrevTheta(0.) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
     m_pVinylControl = NULL;
@@ -331,33 +330,15 @@ double WSpinny::calculatePositionFromAngle(double angle)
 /** Update the playback angle saved in the widget and repaint.
     @param playpos A normalized (0.0-1.0) playback position. (Not an angle!)
 */
-void WSpinny::updateAngle(double playpos)
-{
+void WSpinny::updateAngle(double playpos) {
     m_fAngle = calculateAngle(playpos);
-
-    // if we had the timer going, kill it
-    if (m_iTimerId != 0) {
-        killTimer(m_iTimerId);
-        m_iTimerId = 0;
-    }
-    update();
 }
 
-void WSpinny::updateRate(double rate)
-{
+void WSpinny::updateRate(double rate) {
     //if rate is zero, updateAngle won't get called,
     if (rate == 0.0 && m_bVinylActive)
     {
-        if (m_iTimerId == 0)
-        {
-            m_iTimerId = startTimer(10);
-        }
     }
-}
-
-void WSpinny::timerEvent(QTimerEvent *event)
-{
-    update();
 }
 
 //Update the angle using the ghost playback position.
@@ -368,7 +349,6 @@ void WSpinny::updateAngleForGhost()
     double newPlayPos = m_dPausedPosition +
                          (((double)elapsed)/1000.)/duration;
     m_fGhostAngle = calculateAngle(newPlayPos);
-    update();
 }
 
 void WSpinny::updateVinylControlSpeed(double rpm)
@@ -400,13 +380,6 @@ void WSpinny::updateVinylControlEnabled(double enabled)
     else
     {
         m_bVinylActive = false;
-        //don't need the timer anymore
-        if (m_iTimerId != 0)
-        {
-            killTimer(m_iTimerId);
-        }
-        // draw once more to erase signal
-        update();
     }
 #endif
 }
@@ -416,7 +389,6 @@ void WSpinny::invalidateVinylControl()
 #ifdef __VINYLCONTROL__
     m_bVinylActive = false;
     m_pVinylControl = NULL;
-    update();
 #endif
 }
 
