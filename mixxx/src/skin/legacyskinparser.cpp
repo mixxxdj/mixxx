@@ -436,10 +436,10 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    WaveformWidgetFactory::instance()->setWaveformWidget(viewer);
+    WaveformWidgetFactory::instance()->setWaveformWidget(viewer,node);
 
-    qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
-    qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
+    //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
+    //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
 
     viewer->installEventFilter(m_pKeyboard);
 
@@ -449,12 +449,10 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
         ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
 
-    p->setWidget((QWidget *)viewer, true, true,
+    p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
 
     setupWidget(node, viewer);
-
-    viewer->setup(node);
 
     // connect display with loading/unloading of tracks
     QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),

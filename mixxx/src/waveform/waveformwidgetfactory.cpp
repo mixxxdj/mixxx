@@ -10,6 +10,7 @@
 #include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
 
+#include "controlpotmeter.h"
 #include "defs.h"
 
 #include <QTimer>
@@ -20,12 +21,31 @@
 #include <QtOpenGL/QGLFormat>
 #include <QtOpenGL/QGLShaderProgram>
 
-
 #include <QDebug>
+
+///////////////////////////////////////////
+
+WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle() {
+    m_active = true;
+    m_type = WaveformWidgetType::Count_WaveformwidgetType;
+}
+
+///////////////////////////////////////////
+
+WaveformWidgetHolder::WaveformWidgetHolder( WaveformWidgetAbstract* waveformWidget,
+                                            WWaveformViewer* waveformViewer,
+                                            const QDomNode& visualNodeCache)
+    : m_waveformWidget(waveformWidget)
+    , m_waveformViewer(waveformViewer){
+    m_visualNodeCache = visualNodeCache.cloneNode();
+}
+
+///////////////////////////////////////////
 
 WaveformWidgetFactory::WaveformWidgetFactory() {
     m_time = new QTime();
     m_config = 0;
+    //m_skipRender = false;
     setFrameRate(33);
     m_defaultZoom = 1;
     m_zoomSync = false;
@@ -150,18 +170,19 @@ void WaveformWidgetFactory::start() {
 
 void WaveformWidgetFactory::stop() {
     killTimer(m_mainTimerId);
-    m_mainTimerId = 0;
+    m_mainTimerId = -1;
 }
 
 void WaveformWidgetFactory::timerEvent(QTimerEvent *timerEvent) {
-    if( timerEvent->timerId() == m_mainTimerId)
+    if( timerEvent->timerId() == m_mainTimerId) {
         refresh();
+    }
 }
 
 void WaveformWidgetFactory::destroyWidgets() {
-    for (int i = 0; i < m_waveformWidgets.size(); i++)
-        delete m_waveformWidgets[i];
-    m_waveformWidgets.clear();
+    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+        delete m_waveformWidgetHolders[i].m_waveformWidget;
+    m_waveformWidgetHolders.clear();
 }
 
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
@@ -170,15 +191,11 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
             pWidget, SLOT(update()));
 }
 
-bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer) {
-    int index = -1;
-    if (viewer->getWaveformWidget()) {
-        //it already have a WaveformeWidget
-        index = m_waveformWidgets.indexOf(viewer->getWaveformWidget());
-        if (index == -1) {
-            qDebug() << "WaveformWidgetFactory::setWaveformWidget - "\
-                        "viewer already have a waveform widget but it's not found by the factory !";
-        }
+bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDomElement& node) {
+    int index = findIndexOf(viewer);
+    if( index != -1) {
+        qDebug() << "WaveformWidgetFactory::setWaveformWidget - "\
+                    "viewer already have a waveform widget but it's not found by the factory !";
         delete viewer->getWaveformWidget();
     }
 
@@ -186,10 +203,14 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, viewer);
     waveformWidget->castToQWidget();
     viewer->setWaveformWidget(waveformWidget);
-    viewer->setup();
+    viewer->setup(node);
 
-    m_waveformWidgets.append(waveformWidget);
-    index = m_waveformWidgets.size()-1;
+    if( index == -1) {    //create new holder
+        m_waveformWidgetHolders.push_back( WaveformWidgetHolder( waveformWidget, viewer, node));
+        index = m_waveformWidgetHolders.size()-1;
+    } else { //update holder
+        m_waveformWidgetHolders[index] = WaveformWidgetHolder( waveformWidget, viewer, node);
+    }
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory index" << index;
 
@@ -217,45 +238,44 @@ bool WaveformWidgetFactory::setWidgetType(int handleIndex) {
     //change the type
     m_type = handle.m_type;
 
+    //NOTE: (vRince)
+    //I tried but I can't figure-out what is missing here that append in skin parser
+
     /*
-      vRince
-      I can't just recreate waveform widgets (even if its nicer !!)
-      Waveform widget creation works but it the complete setup (color etc ...) from the skin
-      need to be re-run ! I tried to implement some int the skin loader be it became "spagetti"
-      code :( ... So for the moment a mixxx restart will do ...
+    m_skipRender = true;
+    qDebug() << "recreate start";
 
-    //retrieve existing viewers
-    QVector<WWaveformViewer*> viewers;
-    for( int i = 0; i < m_waveformWidgets.size(); i++)
-    {
-        if( !m_waveformWidgets[i]->isValid())
-        {
-            //should never happend the casting must be check into the setWaveformWidget
-            //method to ensre we never store mis-formed widget in the factory !!
-            continue;
-        }
+    //re-create/setup all waveform widgets
+    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
+        WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
 
-        //it should be safe since only the factory can build WaveformWidget and we know
-        //we give them a WWaveformViewer as a parent
-        WWaveformViewer* viewer = static_cast<WWaveformViewer*>(m_waveformWidgets[i]->getWidget()->parent());
-        viewers.push_back(viewer);
+        holder.m_waveformWidget = createWaveformWidget(m_type, holder.m_waveformViewer);
+        holder.m_waveformWidget->castToQWidget();
+        holder.m_waveformViewer->setWaveformWidget(holder.m_waveformWidget);
+        holder.m_waveformViewer->setup(holder.m_visualNodeCache);
+
+        holder.m_waveformViewer->resize(holder.m_waveformViewer->size());
+
+        holder.m_waveformWidget->setTrack(previousWidget->getTrackInfo());
+        delete previousWidget;
     }
 
-    //re-create them with the current type
-    for( int i = 0; i < viewers.size(); i++)
-        setWaveformWidget(viewers[i]);
+    m_skipRender = false;
+    qDebug() << "recreate done";
     */
 
     return true;
 }
+
 
 void WaveformWidgetFactory::setDefaultZoom(int zoom){
     m_defaultZoom = math_max(1,math_min(4,zoom));
     if( m_config)
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
 
-    for (int i = 0; i < m_waveformWidgets.size(); i++)
-        m_waveformWidgets[i]->setZoom(m_defaultZoom);
+    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(m_defaultZoom);
 }
 
 void WaveformWidgetFactory::setZoomSync(bool sync) {
@@ -263,29 +283,32 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     if( m_config)
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
 
-    if( m_waveformWidgets.isEmpty())
+    if( m_waveformWidgetHolders.size() == 0)
         return;
 
-    int refZoom = m_waveformWidgets[0]->getZoomFactor();
-    for (int i = 1; i < m_waveformWidgets.size(); i++)
-        m_waveformWidgets[i]->setZoom(refZoom);
+    int refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
+    for( unsigned int i = 1; i < m_waveformWidgetHolders.size(); i++)
+        m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
 }
 
-void WaveformWidgetFactory::onZoomChange( WaveformWidgetAbstract* widget) {
+void WaveformWidgetFactory::notifyZoomChange( WWaveformViewer* viewer) {
     if( isZoomSync()) {
-        int refZoom = widget->getZoomFactor();
-        for (int i = 0; i < m_waveformWidgets.size(); i++)
-            if( m_waveformWidgets[i] != widget)
-                m_waveformWidgets[i]->setZoom(refZoom);
+        int refZoom = viewer->getWaveformWidget()->getZoomFactor();
+        for (int i = 0; i < m_waveformWidgetHolders.size(); i++)
+            if( m_waveformWidgetHolders[i].m_waveformViewer != viewer)
+                m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
     }
 }
 
 void WaveformWidgetFactory::refresh() {
-    for (int i = 0; i < m_waveformWidgets.size(); i++)
-        m_waveformWidgets[i]->preRender();
+    //if( m_skipRender)
+    //    return;
 
-    for (int i = 0; i < m_waveformWidgets.size(); i++)
-        m_waveformWidgets[i]->render();
+    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+        m_waveformWidgetHolders[i].m_waveformWidget->preRender();
+
+    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+        m_waveformWidgetHolders[i].m_waveformWidget->render();
 
     // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
     // update.
@@ -352,3 +375,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidg
     return 0;
 }
 
+int WaveformWidgetFactory::findIndexOf( WWaveformViewer* viewer) const {
+    for (int i = 0; i < m_waveformWidgetHolders.size(); i++)
+        if( m_waveformWidgetHolders[i].m_waveformViewer == viewer)
+            return i;
+    return -1;
+}

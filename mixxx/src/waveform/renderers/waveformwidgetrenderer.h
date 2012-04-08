@@ -10,7 +10,7 @@
 #include "util.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
-#define WAVEFORMWIDGETRENDERER_DEBUG
+//#define WAVEFORMWIDGETRENDERER_DEBUG
 
 class TrackInfoObject;
 class ControlObjectThreadMain;
@@ -32,8 +32,6 @@ public:
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
 
     void setZoom(int zoom);
-    void zoomIn();
-    void zoomOut();
 
     virtual void updateVisualSamplingPerPixel();
     virtual void updateAudioSamplingPerPixel();
@@ -84,7 +82,6 @@ protected:
     double m_rendererTransformationGain;
 
     double m_rateAdjust;
-    double m_zoomFactor;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
 
@@ -102,14 +99,17 @@ protected:
     double m_gain;
     ControlObjectThreadMain* m_trackSamplesControlObject;
     int m_trackSamples;
+    ControlObjectThreadMain* m_zoomControlObject;
+    double m_zoomFactor;
 
-    //Debug
+#ifdef WAVEFORMWIDGETRENDERER_DEBUG
     QTime* m_timer;
     int m_lastFrameTime;
     int m_lastFramesTime[100];
     int m_lastSystemFrameTime;
     int m_lastSystemFramesTime[100];
     int currentFrame;
+#endif
 
     WaveformWidgetRenderer();
 private:
