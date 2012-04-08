@@ -24,6 +24,12 @@ class AnalyserBeats: public Analyser {
   private:
     QVector<double> correctedBeats(QVector<double> rawbeats);
     bool m_bShouldAnalyze, m_bDisableBeatCorrection, m_bEnableOffsetCorrection;
+
+    bool m_bPreferencesBeatDetectionEnabled;
+    bool m_bPreferencesReanalyzeOldBpm;
+    bool m_bPreferencesFixedTempo;
+    bool m_bPreferencesOffsetCorrection;
+
     ConfigObject<ConfigValue> *m_pConfigAVT;
     VampAnalyser* m_pVamp;
     int m_iSampleRate, m_iTotalSamples;
