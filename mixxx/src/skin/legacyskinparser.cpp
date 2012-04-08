@@ -17,7 +17,6 @@
 #include "playermanager.h"
 #include "basetrackplayer.h"
 #include "library/library.h"
-#include "waveformviewerfactory.h"
 #include "xmlparse.h"
 
 #include "skin/legacyskinparser.h"
@@ -41,15 +40,11 @@
 #include "widget/wnumberrate.h"
 #include "widget/woverview.h"
 #include "widget/wspinny.h"
-
-#include "widget/wvisualsimple.h"
-#include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
-
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 
@@ -61,13 +56,12 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    PlayerManager* pPlayerManager,
                                    Library* pLibrary,
                                    VinylControlManager* pVCMan)
-        : m_pConfig(pConfig),
-          m_pKeyboard(pKeyboard),
-          m_pPlayerManager(pPlayerManager),
-          m_pLibrary(pLibrary),
-          m_pVCManager(pVCMan),
-          m_pParent(NULL) {
-
+    : m_pConfig(pConfig),
+      m_pKeyboard(pKeyboard),
+      m_pPlayerManager(pPlayerManager),
+      m_pLibrary(pLibrary),
+      m_pVCManager(pVCMan),
+      m_pParent(NULL) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -401,36 +395,26 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WOverview* p = new WOverview(pSafeChannelStr, m_pParent);
+    WOverview* overviewWidget = new WOverview(pSafeChannelStr, m_pParent);
 
-    connect(p, SIGNAL(trackDropped(QString, QString)),
+    connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    setupWidget(node, p);
-    p->setup(node);
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
+    setupWidget(node, overviewWidget);
+    overviewWidget->setup(node);
+    setupConnections(node, overviewWidget);
+    overviewWidget->installEventFilter(m_pKeyboard);
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-            p, SLOT(slotTrackLoaded(TrackPointer)));
+            overviewWidget, SLOT(slotLoadNewTrack(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            p, SLOT(slotUnloadTrack(TrackPointer)));
+            overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
 
-    // Connect the load progress of waveforms signals so that we can use this
-    // widget as a progress bar.
-    AnalyserQueue* pAnalyserQueue = pPlayer->getAnalyserQueue();
-    if (pAnalyserQueue) {
-        connect(pAnalyserQueue, SIGNAL(trackProgress(TrackPointer, int)),
-                p, SLOT(slotTrackProgress(TrackPointer, int)));
-    }
+    //just in case track already loaded
+    overviewWidget->slotLoadNewTrack(pPlayer->getLoadedTrack());
 
-    TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (pTrack) {
-        p->slotTrackLoaded(pTrack);
-    }
-
-    return p;
+    return overviewWidget;
 }
 
 QWidget* LegacySkinParser::parseVisual(QDomElement node) {
@@ -442,37 +426,43 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WaveformRenderer* pWaveformRenderer = pPlayer->getWaveformRenderer();
+    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pParent);
+    viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    WaveformWidgetFactory::instance()->setWaveformWidget(viewer);
 
-    WaveformViewerType type;
-    QWidget* widget = NULL;
-    type = WaveformViewerFactory::createWaveformViewer(pSafeChannelStr, m_pParent,
-                                                       m_pConfig, &widget, pWaveformRenderer);
-    widget->installEventFilter(m_pKeyboard);
+    qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
+    qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
+
+    viewer->installEventFilter(m_pKeyboard);
 
     // Hook up the wheel Control Object to the Visual Controller
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(channelStr, "wheel")), widget);
+        ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
 
-    p->setWidget((QWidget *)widget, true, true,
+    p->setWidget((QWidget *)viewer, true, true,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
 
-    setupWidget(node, widget);
-    if (type == WAVEFORM_GL) {
-        ((WGLWaveformViewer*)widget)->setup(node);
-    } else if (type == WAVEFORM_WIDGET) {
-        ((WWaveformViewer *)widget)->setup(node);
-    } else if (type == WAVEFORM_SIMPLE) {
-        ((WVisualSimple*)widget)->setup(node);
-    }
-    setupConnections(node, widget);
+    setupWidget(node, viewer);
 
-    connect(widget, SIGNAL(trackDropped(QString, QString)),
+    viewer->setup(node);
+
+    // connect display with loading/unloading of tracks
+    QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                     viewer, SLOT(onTrackLoaded(TrackPointer)));
+    QObject::connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+                     viewer, SLOT(onTrackUnloaded(TrackPointer)));
+
+    setupConnections(node, viewer);
+
+    connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    return widget;
+    // if any already loaded (skin/waveform type swithing)
+    viewer->onTrackLoaded(pPlayer->getLoadedTrack());
+
+    return viewer;
 }
 
 QWidget* LegacySkinParser::parseText(QDomElement node) {
@@ -614,12 +604,12 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseTime(QDomElement node) {
-   WTime *p = new WTime(m_pParent);
-   setupWidget(node, p);
-   p->setup(node);
-   setupConnections(node, p);
-   p->installEventFilter(m_pKeyboard);
-   return p;
+    WTime *p = new WTime(m_pParent);
+    setupWidget(node, p);
+    p->setup(node);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    return p;
 }
 
 QWidget* LegacySkinParser::parseKnob(QDomElement node) {
@@ -635,16 +625,17 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
-    WSpinny* p = new WSpinny(m_pParent, m_pVCManager);
-    setupWidget(node, p);
+    WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
+    setupWidget(node, spinny);
 
-    connect(p, SIGNAL(trackDropped(QString, QString)),
+    WaveformWidgetFactory::instance()->addTimerListener(spinny);
+    connect(spinny, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    p->setup(node, pSafeChannelStr);
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
-    return p;
+    spinny->setup(node, pSafeChannelStr);
+    setupConnections(node, spinny);
+    spinny->installEventFilter(m_pKeyboard);
+    return spinny;
 }
 
 
@@ -717,10 +708,10 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     // Add the splitter to the library page's layout, so it's
     // positioned/sized automatically
     pLibraryPageLayout->addWidget(pSplitter,
-                                    1, 0, //From row 1, col 0,
-                                    1,    //Span 1 row
-                                    3,    //Span 3 cols
-                                    0);   //Default alignment
+                                  1, 0, //From row 1, col 0,
+                                  1,    //Span 1 row
+                                  3,    //Span 3 cols
+                                  0);   //Default alignment
 
     pTabWidget->addWidget(pLibraryPage);
 
@@ -964,7 +955,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // parented to the widget and so it dies with it.
             new PropertyBinder(pWidget, property, control);
         } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
-            XmlParse::selectNodeQString(con, "OnOff")=="true") {
+                   XmlParse::selectNodeQString(con, "OnOff")=="true") {
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
             (new ControlObjectThreadWidget(control, pWidget))->setWidgetOnOff(pWidget);
@@ -988,12 +979,12 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
                 connectValueToWidget = false;
 
             Qt::MouseButton state = Qt::NoButton;
-            if (!XmlParse::selectNode(con, "ButtonState").isNull())
-            {
-                if (XmlParse::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
+            if (!XmlParse::selectNode(con, "ButtonState").isNull()) {
+                if (XmlParse::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
                     state = Qt::LeftButton;
-                else if (XmlParse::selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive))
+                } else if (XmlParse::selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
                     state = Qt::RightButton;
+                }
             }
 
             // Connect control proxy to widget. Parented to pWidget so it is not

@@ -122,6 +122,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     // Connections
     connect(this, SIGNAL(showDlg()), this,      SLOT(slotShow()));
     connect(this, SIGNAL(closeDlg()), this,      SLOT(slotHide()));
+
+    connect(this, SIGNAL(showDlg()), m_wcontrols, SLOT(onShow()));
+    connect(this, SIGNAL(closeDlg()), m_wcontrols, SLOT(onHide()));
+
     connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
 
     connect(this, SIGNAL(showDlg()), m_wsound,     SLOT(slotUpdate()));
@@ -382,13 +386,11 @@ bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
     return QWidget::eventFilter(o,e);
 }
 
-void DlgPreferences::slotHide()
-{
+void DlgPreferences::slotHide() {
 }
 
 
-void DlgPreferences::slotShow()
-{
+void DlgPreferences::slotShow() {
     //m_pMixxx->releaseKeyboard();
 
     QSize optimumSize;

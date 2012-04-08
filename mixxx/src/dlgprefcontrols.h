@@ -39,6 +39,7 @@ public:
                     SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
                     ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefControls();
+
 public slots:
     void slotUpdate();
     void slotSetRateRange(int pos);
@@ -47,7 +48,6 @@ public slots:
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
-    void slotSetVisuals(int pos);
     void slotSetTooltips(int pos);
     void slotSetSkin(int);
     void slotSetScheme(int);
@@ -60,9 +60,25 @@ public slots:
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotApply();
+
+    void slotSetFrameRate(int frameRate);
+    void slotSetWaveformType(int index);
+    void slotSetDefaultZoom(int index);
+    void slotSetZoomSynchronization(bool checked);
+
+    virtual void onShow();
+    virtual void onHide();
+
+protected:
+    void timerEvent(QTimerEvent *);
+
+private:
+    void initWaveformControl();
+
 private:
     /** Pointer to ConfigObject */
     ConfigObject<ConfigValue> *m_pConfig;
+    int m_timer;
     ControlObject* m_pControlPositionDisplay;
     QList<ControlObjectThreadMain*> m_cueControls;
     QList<ControlObjectThreadMain*> m_rateControls;

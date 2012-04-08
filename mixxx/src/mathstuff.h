@@ -45,6 +45,8 @@ float sigmoid_zero(double t, double max_t);
 static CSAMPLE pi     = acos(-1.0f);
 static CSAMPLE two_pi = (2.f*acos(-1.f));
 
+int nearestSuperiorPowerOfTwo(int v);
+
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
 #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
