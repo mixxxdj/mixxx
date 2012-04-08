@@ -72,10 +72,17 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         return;
     }
 
-    // If the track has a BeatGrid rather than a BeatMap return unless it is specified in the preferences
+    // If the track has a BeatGrid rather than a BeatMap return unless it is
+    // specified in the preferences
     if(tio->getBeats() != NULL) {
         if(tio->getBeats()->getVersion() == BEAT_GRID_VERSION) {
             m_bShouldAnalyze = m_bPreferencesReanalyzeOldBpm;
+
+            // Override preference if the BPM is 0.
+            if (tio->getBeats()->getBpm() == 0.0) {
+                m_bShouldAnalyze = true;
+                qDebug() << "BPM is 0 for" << tio << "so re-analyzing."
+            }
 
             if(!m_bShouldAnalyze) {
                 qDebug() << "Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
