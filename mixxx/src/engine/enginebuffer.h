@@ -26,6 +26,10 @@
 #include "configobject.h"
 #include "rotary.h"
 
+#ifdef __VINYLCONTROL__
+#include "engine/vinylcontrolcontrol.h"
+#endif
+
 //for the writer
 #ifdef __SCALER_DEBUG__
 #include <QtCore>
