@@ -14,7 +14,6 @@ namespace {
 class AnalyserWaveformTest: public testing::Test {
   protected:
     virtual void SetUp() {
-        qDebug() << "SetUp";
         aw = new AnalyserWaveform();
         tio = TrackPointer(new TrackInfoObject("foo"));
         tio->setSampleRate(44100);
@@ -25,7 +24,6 @@ class AnalyserWaveformTest: public testing::Test {
 
         //Memory layout for canaryBigBuf looks like
         //  [ canary | big buf | canary ]
-        //
 
         canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2*CANARY_SIZE];
         for (int i = 0; i < CANARY_SIZE; i++)
@@ -37,8 +35,6 @@ class AnalyserWaveformTest: public testing::Test {
     }
 
     virtual void TearDown() {
-        qDebug() << "TearDown";
-        qDebug() << "delete aw";
         delete aw;
         delete [] bigbuf;
         delete [] canaryBigBuf;
@@ -78,10 +74,8 @@ TEST_F(AnalyserWaveformTest, canary) {
 //that we don't step out of bounds.
 TEST_F(AnalyserWaveformTest, wrongTotalSamples) {
     aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE/2);
-    //Process in a loop
     // Deliver double the expected samples
     int wrongTotalSamples = BIGBUF_SIZE;
-    //Note that the correct totalSamples would just be BIGBUF_SIZE. :)
     int blockSize = 2*32768;
     for (int i = CANARY_SIZE; i < CANARY_SIZE+wrongTotalSamples; i += blockSize) {
         aw->process(&canaryBigBuf[i], blockSize);

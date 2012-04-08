@@ -16,7 +16,6 @@ namespace {
 class AnalyserBPMTest: public testing::Test {
   protected:
     virtual void SetUp() {
-        qDebug() << "SetUp";
         config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
         abpm = new AnalyserBPM(config);
         tio = TrackPointer(new TrackInfoObject("foo"));
@@ -40,7 +39,6 @@ class AnalyserBPMTest: public testing::Test {
     }
 
     virtual void TearDown() {
-        qDebug() << "TearDown";
         delete abpm;
         delete [] bigbuf;
         delete [] canaryBigBuf;
