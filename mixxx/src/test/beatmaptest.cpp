@@ -48,8 +48,7 @@ TEST_F(BeatMapTest, TestNthBeat) {
     double startOffset = 15.3;
     const int numBeats = 100;
     QVector<double> beats = createBeatVector(startOffset, numBeats, beatLength);
-    BeatMap* pMap = new BeatMap(m_pTrack);
-    pMap->createFromVector(beats);
+    BeatMap* pMap = new BeatMap(m_pTrack, beats);
 
     // Check edge cases
     double firstBeat = startOffset + beatLength * 0;
@@ -68,8 +67,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     double startOffset = 15.3;
     const int numBeats = 100;
     QVector<double> beats = createBeatVector(startOffset, numBeats, beatLength);
-    BeatMap* pMap = new BeatMap(m_pTrack);
-    pMap->createFromVector(beats);
+    BeatMap* pMap = new BeatMap(m_pTrack, beats);
 
     // Pretend we're on the 20th beat;
     const int curBeat = 20;
@@ -94,8 +92,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     double startOffset = 15.3;
     const int numBeats = 100;
     QVector<double> beats = createBeatVector(startOffset, numBeats, beatLength);
-    BeatMap* pMap = new BeatMap(m_pTrack);
-    pMap->createFromVector(beats);
+    BeatMap* pMap = new BeatMap(m_pTrack, beats);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = startOffset + beatLength * 20.0;

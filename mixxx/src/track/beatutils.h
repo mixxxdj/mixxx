@@ -1,18 +1,13 @@
-/*
- * beattools.h
- *
- *  Created on: 30/nov/2011
- *      Author: vittorio
- */
+// Created on: 30/nov/2011
+// Author: vittorio
 
-#ifndef BEATTOOLS_H_
-#define BEATTOOLS_H_
+#ifndef BEATUTILS_H_
+#define BEATUTILS_H_
 
 #include <QVector>
 
-class BeatTools {
-public:
-
+class BeatUtils {
+  public:
     /*
      * This method detects the BPM given a set of beat positions.
      * We compute the average local BPM of by considering 8 beats
@@ -29,4 +24,4 @@ public:
     static double calculateOffset(const QVector<double> beats1, const QVector<double> beats2, const int SampleRate, int min_bpm, int max_bpm);
 };
 
-#endif /* BEATTOOLS_H_ */
+#endif /* BEATUTILS_H_ */
