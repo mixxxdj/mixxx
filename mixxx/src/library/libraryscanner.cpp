@@ -217,8 +217,9 @@ void LibraryScanner::run()
     //recursiveScan() handles it's own transactions.
 
     QList<TrackInfoObject*> tracksToAdd;
+    QStringList verifiedDirectories;
 
-    bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath, tracksToAdd);
+    bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath, tracksToAdd, verifiedDirectories);
 
     if (!bScanFinishedCleanly) {
         qDebug() << "Recursive scan interrupted.";
@@ -260,6 +261,17 @@ void LibraryScanner::run()
     //want to mark those tracks/dirs as deleted in that case) :)
     if (bScanFinishedCleanly)
     {
+
+
+        qDebug() << "Marking unchanged directories and tracks as verified";
+        QListIterator<QString> it(verifiedDirectories);
+        while (it.hasNext()) {
+            QString dirPath = it.next();
+            m_libraryHashDao.updateDirectoryStatus(dirPath, false, true);
+            m_trackDao.markTracksInDirectoryAsVerified(dirPath);
+            emit(progressHashing(dirPath));
+        }
+        
         qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
         qDebug() << "Marking unverified directories as deleted.";
@@ -349,7 +361,7 @@ void LibraryScanner::scan()
     have already been scanned and have not changed. Changes are tracked by performing
     a hash of the directory's file list, and those hashes are stored in the database.
 */
-bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd)
+bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd, QStringList& verifiedDirectories)
 {
     QDirIterator fileIt(dirPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
@@ -396,23 +408,9 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
     }
     else //prevHash == newHash
     {
-        //The files in the directory haven't changed, so we don't need to do anything, right?
-        //Wrong! We need to mark the directory in the database as "existing", so that we can
-        //keep track of directories that have been deleted to stop the database from keeping
-        //rows about deleted directories around. :)
-        //qDebug() << "prevHash == newHash";
-
-        // Mark the directory as verified and not deleted.
-        // m_libraryHashDao.markAsExisting(dirPath);
-        // m_libraryHashDao.markAsVerified(dirPath);
-        m_libraryHashDao.updateDirectoryStatus(dirPath, false, true);
-
-        //We also need to mark the tracks _inside_ this directory as verified.
-        //Note that this doesn't mark the tracks as existing, just that they're in
-        //the same state as the last time we scanned this directory.
-        m_trackDao.markTracksInDirectoryAsVerified(dirPath);
-
-        emit(progressHashing(dirPath));
+        // Add the directory to the verifiedDirectories list, so that later they
+        // (and the tracks inside them) will be marked as verified
+        verifiedDirectories.append(dirPath);
     }
 
     //Let us break out of library directory hashing (the actual file scanning
@@ -435,7 +433,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
         if (m_directoriesBlacklist.contains(nextPath))
             continue;
 
-        if (!recursiveScan(nextPath, tracksToAdd))
+        if (!recursiveScan(nextPath, tracksToAdd, verifiedDirectories))
             bScanFinishedCleanly = false;
     }
 

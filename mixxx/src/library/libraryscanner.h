@@ -45,7 +45,7 @@ class LibraryScanner : public QThread {
     void run();
     void scan(QString libraryPath);
     void scan();
-    bool recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd);
+    bool recursiveScan(QString dirPath, QList<TrackInfoObject*>& tracksToAdd, QStringList& verifiedDirectories);
   public slots:
     void cancel();
     void resetCancel();
