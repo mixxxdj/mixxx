@@ -21,38 +21,68 @@
 #include "engine/enginesync.h"
 
 EngineSync::EngineSync(EngineMaster *master,
-                       const char* _group,
                        ConfigObject<ConfigValue>* _config) :
-        EngineControl(_group, _config)
+        EngineControl("[Master]", _config),
+        m_pEngineMaster(master),
+        m_pSourceRate(NULL),
+        m_pSourceBeatDistance(NULL),
+        m_iSyncSource(SYNC_INTERNAL),
+        m_iSampleRate(44100),
+        m_dMasterRate(128.0f),
+        m_dSamplesPerBeat(20671.875), //128 bpm, whatever.
+        m_dPseudoBufferPos(0.0f)
 {
-    qDebug() << "group should be master" << _group;
-    m_pEngineMaster = master;
-    m_pSourceRate = NULL;
-    m_pSourceBeatDistance = NULL;
-    m_dOldMasterRate = 0.0f;
-    m_pMasterBpm = new ControlObject(ConfigKey(_group, "sync_bpm"));
-    m_pMasterBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
-    //m_pMasterRate = new ControlObject(ConfigKey(_group, "rate"));
-    //m_pMasterRateEnabled = new ControlObject(ConfigKey(_group, "scratch_enable"));
+    m_pMasterBpm = new ControlObject(ConfigKey("[Master]", "sync_bpm"));
+    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotMasterBpmChanged(double)),
+            Qt::DirectConnection);
+    
+    
+    m_pMasterBeatDistance = new ControlObject(ConfigKey("[Master]", "beat_distance"));
+    
+    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    connect(m_pSampleRate, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotSampleRateChanged(double)),
+            Qt::DirectConnection);
 }
 
-bool EngineSync::setMaster(QString deck)
+EngineSync::~EngineSync()
+{
+    delete m_pMasterBpm;
+    delete m_pMasterBeatDistance;
+}
+
+void EngineSync::disconnectMaster()
+{
+    if (m_pSourceRate != NULL)
+    {
+        m_pSourceRate->disconnect();
+        m_pSourceRate = NULL;
+    }
+    if (m_pSourceBeatDistance != NULL)
+    {
+        m_pSourceBeatDistance->disconnect();
+        m_pSourceBeatDistance = NULL;
+    }
+    m_pMasterBuffer = NULL;
+}
+
+bool EngineSync::setInternalMaster(void)
+{
+    disconnectMaster();
+    
+    //this is all we have to do, we'll start using the pseudoposition right away
+    m_iSyncSource = SYNC_INTERNAL;
+    return true;
+}
+
+bool EngineSync::setDeckMaster(QString deck)
 {
     if (deck == NULL || deck == "")
     {
         qDebug() << "----------------------------------------------------unsetting master (got null)";
-        if (m_pSourceRate != NULL)
-        {
-            //m_pSourceRate->disconnect(); //QT experts -- is this necessary?
-            delete m_pSourceRate;
-        }
-        if (m_pSourceBeatDistance != NULL)
-        {
-            //m_pSourceBeatDistance->disconnect();
-            delete m_pSourceBeatDistance;
-        }
-        m_pMasterBuffer = NULL;
-        emit(setSyncMaster(""));
+        disconnectMaster();
+        setInternalMaster();
         return true;
     }
     
@@ -64,11 +94,8 @@ bool EngineSync::setMaster(QString deck)
     
     if (pChannel) {
         m_pMasterBuffer = pChannel->getEngineBuffer();
+        disconnectMaster();
             
-        if (m_pSourceRate != NULL) {
-            //m_pSourceRate->disconnect();
-            delete m_pSourceRate;
-        }
         m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "true_rate"));
         if (m_pSourceRate == NULL)
         {
@@ -79,11 +106,6 @@ bool EngineSync::setMaster(QString deck)
                 this, SLOT(slotSourceRateChanged(double)),
                 Qt::DirectConnection);
 
-        if (m_pSourceBeatDistance != NULL)
-        {
-            //m_pSourceBeatDistance->disconnect();
-            delete m_pSourceBeatDistance;
-        }
         m_pSourceBeatDistance = ControlObject::getControl(ConfigKey(deck, "beat_distance"));
         if (m_pSourceBeatDistance == NULL)
         {
@@ -94,23 +116,8 @@ bool EngineSync::setMaster(QString deck)
                 this, SLOT(slotSourceBeatDistanceChanged(double)),
                 Qt::DirectConnection);
         
-        /*m_pSourceScratch->disconnect();
-        delete m_pSourceScratch;
-        m_pSourceScratch = ControlObject::getControl(ConfigKey(deck, "scratch2"));
-        connect(m_pSourceScratch, SIGNAL(valueChanged(double)),
-                this, SLOT(slotScratchChanged(double)),
-                Qt::DirectConnection);
-
-        m_pSourceScratchEnabled->disconnect();
-        delete m_pSourceScratchEnabled;
-        m_pSourceScratchEnabled = ControlObject::getControl(ConfigKey(deck, "scratch2_enable"));
-        connect(m_pSourceScratchEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotScratchEnabledChanged(double)),
-                Qt::DirectConnection);
-          */      
         qDebug() << "----------------------------setting new master" << deck;
-        emit(setSyncMaster(deck));
-        
+        m_iSyncSource = SYNC_DECK;
         return true;
     }
     else
@@ -122,6 +129,12 @@ bool EngineSync::setMaster(QString deck)
             qDebug() << pChannel << pChannel->isActive() << pChannel->isMaster();
     }
     
+    return false;
+}
+
+bool EngineSync::setMidiMaster()
+{
+    //stub
     return false;
 }
 
@@ -161,9 +174,9 @@ EngineBuffer* EngineSync::chooseMasterBuffer(void)
 
 void EngineSync::slotSourceRateChanged(double true_rate)
 {
-    if (true_rate != m_dOldMasterRate)
+    if (true_rate != m_dMasterRate)
     {
-        m_dOldMasterRate = true_rate;
+        m_dMasterRate = true_rate;
         
         double filebpm = m_pMasterBuffer->getFileBpm();
         double bpm = true_rate * filebpm;
@@ -177,16 +190,72 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
     m_pMasterBeatDistance->set(beat_dist);
 }
 
-/*void EngineSync::slotScratchChanged(double scratch)
+void EngineSync::slotMasterRateChanged(double new_rate)
 {
-    double scratchbpm = m_pMasterBuffer->getExactBpm();
-    m_pMasterRate->set(scratchbpm);
+    if (new_rate != m_dMasterRate)
+    {
+        if (m_iSyncSource != SYNC_INTERNAL)
+        {
+            qDebug() << "can't set master sync when sync isn't internal";
+            return;
+        }
+        m_dMasterRate = new_rate;
+
+        //to get samples per beat, do:
+        //
+        // samples   samples     60 seconds     minutes
+        // ------- = -------  *  ----------  *  -------
+        //   beat    second       1 minute       beats
+        
+        // that last term is 1 over bpm.
+        m_dSamplesPerBeat = (m_iSampleRate * 60.0) / m_dMasterRate;
+        
+        //this change could hypothetically push us over distance 1.0, so check
+        while (m_dPseudoBufferPos >= m_dSamplesPerBeat)
+        {
+            m_dPseudoBufferPos -= m_dSamplesPerBeat;
+        }
+    }
 }
 
-void EngineSync::slotScratchEnabledChanged(double enabled)
+void EngineSync::slotSampleRateChanged(double srate)
 {
-    m_pMasterRateEnabled->set(bool(enabled));
-}*/
+    int new_rate = static_cast<int>(srate);
+    double internal_position = getInternalBeatDistance();
+    if (new_rate != m_iSampleRate)
+    {
+        //recalculate pseudo buffer position based on new sample rate
+        m_dPseudoBufferPos = new_rate * internal_position;
+        m_dSamplesPerBeat = (new_rate * 60.0) / m_dMasterRate;
+    }
+    m_iSampleRate = new_rate;
+}
+
+double EngineSync::getInternalBeatDistance(void)
+{
+    //returns percentage distance from the last beat.
+    Q_ASSERT(m_dPseudoBufferPos > 0);
+    return m_dPseudoBufferPos / m_dSamplesPerBeat;
+}
+
+void EngineSync::incrementPseudoPosition(int bufferSize)
+{
+    //the pseudo position is a double because we want to be precise,
+    //and bpms may not line up exactly with samples.
+    
+    m_dPseudoBufferPos += bufferSize;
+    
+    //can't use mod because we're in double land
+    while (m_dPseudoBufferPos >= m_dSamplesPerBeat)
+    {
+        qDebug() << "beat";
+        m_dPseudoBufferPos -= m_dSamplesPerBeat;
+    }
+    
+    if (m_iSyncSource == SYNC_INTERNAL) {
+        m_pMasterBeatDistance->set(getInternalBeatDistance());
+    }
+}
 
 EngineBuffer* EngineSync::getMaster()
 {

@@ -60,9 +60,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
     
     // Master sync controller
-    m_pMasterSync = new EngineSync(this, group, _config);
+    m_pMasterSync = new EngineSync(this, _config);
     //(XXX) DEBUG TEMP
-    m_pMasterSync->setMaster("[Channel1]");
+    m_pMasterSync->setDeckMaster("[Channel1]");
+    m_pMasterSync->setInternalMaster();
+    ControlObject::getControl(ConfigKey("[Master]","sync_bpm"))->set(124.0);
 
 #ifdef __LADSPA__
     // LADSPA
@@ -171,7 +173,7 @@ EngineSync* EngineMaster::getMasterSync(void)
 
 void EngineMaster::setMasterSync(QString deck)
 {
-    m_pMasterSync->setMaster(deck);
+    m_pMasterSync->setDeckMaster(deck);
 }
 
 void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
@@ -355,6 +357,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
     
+    //increment Internal buffer first in case it is the master
+    m_pMasterSync->incrementPseudoPosition(iBufferSize);
+    
+    //Owen TODO: MIDI goes here?????
     
     //find the Sync Master and process it first
     //then process all the slaves (and skip the master)

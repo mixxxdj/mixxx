@@ -95,14 +95,15 @@ BpmControl::BpmControl(const char* _group,
                 Qt::DirectConnection);
                 
     //(XXX) TEMP DEBUG
-    if (QString("[Channel1]") != _group)
+    m_iSyncState = SYNC_SLAVE;
+/*    if (QString("[Channel1]") != _group)
     {
         m_iSyncState = SYNC_SLAVE;
     }
     else
     {
         m_iSyncState = SYNC_MASTER;
-    }
+    }*/
 }
 
 BpmControl::~BpmControl() {
@@ -113,7 +114,6 @@ BpmControl::~BpmControl() {
     delete m_pButtonSyncPhase;
     delete m_pButtonTap;
     delete m_pTranslateBeats;
-    delete m_pMasterBeatDistance;
 }
 
 double BpmControl::getBpm() {
@@ -334,7 +334,7 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     
     const int MAGIC_FUZZ = 400; //400 samples is Good Enough
     //const int TOO_FAR_OFF = 20000;
-    const double MAGIC_FACTOR = 80000; 
+    const double MAGIC_FACTOR = 120000; //the higher this is, the less we influence sync
     
     double my_distance = getBeatDistance();
     double offset = my_distance - master_distance;

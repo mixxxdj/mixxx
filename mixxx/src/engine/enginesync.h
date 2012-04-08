@@ -25,40 +25,54 @@
 #include "engine/enginemaster.h"
 
 enum SYNC_STATE {
-        SYNC_NONE = 0,
-        SYNC_SLAVE = 1,
-        SYNC_MASTER = 2
+    SYNC_NONE = 0,
+    SYNC_SLAVE = 1,
+    SYNC_MASTER = 2
 };  
+
+enum SYNC_SOURCE {
+    SYNC_INTERNAL = 0,
+    SYNC_DECK = 1,
+    SYNC_MIDI = 2    
+};
 
 class EngineSync : public EngineControl { 
     Q_OBJECT
     
     public:
-        EngineSync(EngineMaster *master, const char* pGroup, ConfigObject<ConfigValue>* pConfig);
-        bool setMaster(QString deck);
+        EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
+        ~EngineSync();
+        bool setDeckMaster(QString deck);
+        bool setInternalMaster(void);
+        bool setMidiMaster(void);
         bool setNone(QString deck);
         EngineBuffer* getMaster();
         
-    signals:
-        void setSyncMaster(QString deck);
+        void incrementPseudoPosition(int bufferSize);
+        double getInternalBeatDistance(void);
         
     private slots:
+        void slotMasterRateChanged(double);
         void slotSourceRateChanged(double);
         void slotSourceBeatDistanceChanged(double);
-        //void slotScratchChanged(double);
-        //void slotScratchEnabledChanged(double);
+        void slotSampleRateChanged(double);
         
     protected:
         EngineBuffer* chooseMasterBuffer(void);
+        void disconnectMaster(void);
 
         EngineMaster* m_pEngineMaster;    
         EngineBuffer* m_pMasterBuffer;
         ControlObject *m_pSourceRate, *m_pMasterBpm;
         ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
-        /*ControlObject* m_pSourceRate, m_pSourceScratch, m_pSourceScratchEnabled;
-        ControlObject* m_pMasterRate, m_pMasterScratch, m_pMasterScratchEnabled;*/
+        ControlObject *m_pSampleRate;
         
-        double m_dOldMasterRate;
+        int m_iSyncSource;
+        int m_iSampleRate;
+        double m_dMasterRate;
+        double m_dSamplesPerBeat;
+        double m_dPseudoBufferPos;
+        
 };
 
 #endif

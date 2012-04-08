@@ -159,14 +159,15 @@ RateControl::RateControl(const char* _group,
                 
     //(XXX) TEMP DEBUG
     qDebug() << "===========================================GROUP" << _group;
-    if (QString("[Channel1]") != _group)
+    m_iSyncState = SYNC_SLAVE;
+/*    if (QString("[Channel1]") != _group)
     {
         m_iSyncState = SYNC_SLAVE;
     }
     else
     {
         m_iSyncState = SYNC_MASTER;
-    }
+    }*/
 
 
 #ifdef __VINYLCONTROL__
@@ -201,8 +202,6 @@ RateControl::~RateControl() {
 
     delete m_pRateSearch;
     
-    delete m_pMasterBpm;
-
     delete m_pReverseButton;
     delete m_pForwardButton;
     delete m_pBackButton;
