@@ -69,6 +69,8 @@ public:
     void slotWheelSensitivity(double);
   protected:
 	static double m_dWheelSensitivity;
+    void slotControlVinylScratching(double);
+
   private:
     double getJogFactor();
     double getWheelFactor();
@@ -85,6 +87,7 @@ public:
     double getTempRate(void);
     /** Is vinyl control enabled? **/
     bool m_bVinylControlEnabled;
+    bool m_bVinylControlScratching;
 
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;

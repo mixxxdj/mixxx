@@ -28,7 +28,7 @@ SteadyPitch::SteadyPitch(double threshold)
     m_dSteadyPitchTime = 0.0f; //last track location we had a steady pitch
     m_dLastSteadyDur = 0.0f;   //last known duration of steadiness
     m_dLastTime = 0.0f;        //track location of previous call
-    m_iPlayDirection = 1;      //1=forward, 0=backward
+    m_iPlayDirection = 1;      //1=forward, -1=backward
 }
 
 

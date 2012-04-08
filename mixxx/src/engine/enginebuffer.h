@@ -26,9 +26,6 @@
 #include "configobject.h"
 #include "rotary.h"
 
-#ifdef __VINYLCONTROL__
-#include "engine/vinylcontrolcontrol.h"
-#endif
 //for the writer
 #ifdef __SCALER_DEBUG__
 #include <QtCore>
@@ -259,7 +256,7 @@ private:
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
-#ifdef __SCALER_DEBUG__    
+#ifdef __SCALER_DEBUG__
     QFile df;
     QTextStream writer;
 #endif

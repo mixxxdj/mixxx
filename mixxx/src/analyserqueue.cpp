@@ -9,15 +9,16 @@
 #endif
 
 #include "analyserwaveform.h"
-#include "analyserwavesummary.h"
 #include "analyserbpm.h"
 #include "analyserrg.h"
 
+#include <typeinfo>
+
 AnalyserQueue::AnalyserQueue() : m_aq(),
-                                 m_tioq(),
-                                 m_qm(),
-                                 m_qwait(),
-                                 m_exit(false)
+    m_tioq(),
+    m_qm(),
+    m_qwait(),
+    m_exit(false)
 {
 
 }
@@ -184,8 +185,10 @@ void AnalyserQueue::run() {
 
 void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
     m_qm.lock();
-    m_tioq.enqueue(tio);
-    m_qwait.wakeAll();
+    if( !m_tioq.contains(tio)){
+        m_tioq.enqueue(tio);
+        m_qwait.wakeAll();
+    }
     m_qm.unlock();
 }
 
@@ -208,7 +211,6 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     ret->addAnalyser(new TonalAnalyser());
 #endif
 
-    ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
@@ -219,7 +221,6 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
     AnalyserQueue* ret = new AnalyserQueue();
-    ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
     ret->start(QThread::LowPriority);
