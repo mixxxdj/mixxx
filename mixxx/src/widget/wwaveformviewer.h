@@ -27,6 +27,7 @@ class WWaveformViewer : public QWidget {
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
+    void setLibraryPrefix(QString sPrefix);
 
     void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
@@ -67,6 +68,7 @@ class WWaveformViewer : public QWidget {
     bool m_bBending;
     int m_iMouseStart;
     QPoint m_mouseAnchor;
+    QString m_sPrefix;
 
     WaveformWidgetAbstract* m_waveformWidget;
 
