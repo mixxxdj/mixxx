@@ -15,13 +15,23 @@ class BeatUtils {
      * from which the statistical median is computed. This value provides
      * a pretty good guess of the global BPM value.
      */
-    static double calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm);
-    static double findFirstCorrectBeat(QVector<double> rawBeats, int SampleRate, double global_bpm);
+    static double calculateBpm(QVector<double> beats, int SampleRate,
+                               int min_bpm, int max_bpm);
+    static double findFirstCorrectBeat(const QVector<double> rawBeats,
+                                       int SampleRate, double global_bpm);
 
     /* This implement a method to find the best offset so that
      * the grid generated from bpm is close enough to the one we get from vamp.
      */
-    static double calculateOffset(const QVector<double> beats1, const QVector<double> beats2, const int SampleRate, int min_bpm, int max_bpm);
+    static double calculateOffset(
+        const QVector<double> beats1, const QVector<double> beats2,
+        const int SampleRate, int min_bpm, int max_bpm);
+
+    static QVector<double> calculateFixedTempoBeats(
+        bool enableOffsetCorrection,
+        const QVector<double> rawbeats, const int sampleRate,
+        const int totalSamples, const double globalBpm,
+        const int minBpm, const int maxBpm);
 };
 
 #endif /* BEATUTILS_H_ */
