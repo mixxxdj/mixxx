@@ -67,6 +67,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Date Added"));
     setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
                   Qt::Horizontal, tr("#"));
+    setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED),
+                  Qt::Horizontal, tr("Timestamp"));
     setHeaderData(fieldIndex(LIBRARYTABLE_KEY),
                   Qt::Horizontal, tr("Key"));
 }
@@ -440,6 +442,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = (value == "true") ? true : false;
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
                 value = value.toDateTime();
+            } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+                value = value.toDateTime().time();
             }
             break;
         case Qt::EditRole:

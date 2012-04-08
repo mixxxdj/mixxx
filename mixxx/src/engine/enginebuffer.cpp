@@ -229,16 +229,19 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             Qt::DirectConnection);
 
     //m_iRampIter = 0;
-
-    /*df.setFileName("mixxx-debug.csv");
+#ifdef __SCALER_DEBUG__
+    df.setFileName("mixxx-debug.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
-    writer.setDevice(&df);*/
+    writer.setDevice(&df);
+#endif
 }
 
 EngineBuffer::~EngineBuffer()
 {
+#ifdef __SCALER_DEBUG__
     //close the writer
-    /*df.close();*/
+    df.close();
+#endif
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -517,8 +520,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             rate = math_max(0.0f, rate);
         }
         
-        
-
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
         if (is_scratching && m_pScale != m_pScaleLinear) {
@@ -748,9 +749,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
 
-    /*for (int i=0; i<iBufferSize; i+=2) {
+#ifdef __SCALER_DEBUG__
+    for (int i=0; i<iBufferSize; i+=2) {
         writer << pOutput[i] <<  "\n";
-    }*/
+    }
+#endif
 
     m_bLastBufferPaused = bCurBufferPaused;
 }

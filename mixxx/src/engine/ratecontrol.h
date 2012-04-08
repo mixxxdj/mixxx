@@ -73,6 +73,7 @@ public:
     void slotFileBpmChanged(double);
     void slotMasterBpmChanged(double);
     void slotSyncStateChanged(double);
+    void slotControlVinylScratching(double);
 
   private:
     QString m_sGroup;
@@ -92,6 +93,7 @@ public:
     double getTempRate(void);
     /** Is vinyl control enabled? **/
     bool m_bVinylControlEnabled;
+    bool m_bVinylControlScratching;
 
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
