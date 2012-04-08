@@ -102,10 +102,9 @@ void DlgPrefAnalysers::loadSettings(){
     }
 }
 
-void DlgPrefAnalysers::setDefaults(){
-
-    if(m_listIdentifier.indexOf("qm-tempotracker:0")==-1){
-        qDebug()<<"DlgPrefAnalysers: qm-tempotracker Vamp plugin not found";
+void DlgPrefAnalysers::setDefaults() {
+    if (m_listIdentifier.indexOf("qm-tempotracker:0")==-1) {
+        qDebug() << "DlgPrefAnalysers: qm-tempotracker Vamp plugin not found";
         return;
     }
     m_selectedAnalyser = "qm-tempotracker:0";

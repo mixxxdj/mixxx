@@ -22,10 +22,10 @@ class AnalyserBeats: public Analyser {
     void finalise(TrackPointer tio);
 
   private:
-    QVector<double> correctedBeats ( QVector<double> rawbeats, bool bypass);
-    bool m_bPass, m_bDisableBeatCorrection, m_bEnableOffsetCorrection;
+    QVector<double> correctedBeats(QVector<double> rawbeats);
+    bool m_bShouldAnalyze, m_bDisableBeatCorrection, m_bEnableOffsetCorrection;
     ConfigObject<ConfigValue> *m_pConfigAVT;
-    VampAnalyser* mvamp;
+    VampAnalyser* m_pVamp;
     int m_iSampleRate, m_iTotalSamples;
     int m_iMinBpm, m_iMaxBpm;
     double m_dBpm;
