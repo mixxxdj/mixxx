@@ -11,9 +11,9 @@
 #include <QString>
 #include <QList>
 #include <QVector>
-
 #include <vamp-hostsdk/vamp-hostsdk.h>
-#include "vamppluginloader.h"
+
+#include "vamp/vamppluginloader.h"
 #include "sampleutil.h"
 #include "configobject.h"
 
@@ -28,11 +28,11 @@ class VampAnalyser {
     bool End();
     bool SetParameter(const QString parameter, const double value);
 
-    QVector <double> GetInitFramesVector();
-    QVector <double> GetEndFramesVector();
+    QVector<double> GetInitFramesVector();
+    QVector<double> GetEndFramesVector();
     QVector<QString> GetLabelsVector();
-    QVector <double> GetFirstValuesVector();
-    QVector <double> GetLastValuesVector();
+    QVector<double> GetFirstValuesVector();
+    QVector<double> GetLastValuesVector();
 
     // Initialize the VAMP_PATH environment variable to point to the default
     // places that Mixxx VAMP plugins are deployed on installation. If a
@@ -53,9 +53,9 @@ class VampAnalyser {
 
     bool m_bDoNotAnalyseMoreSamples;
     bool m_FastAnalysisEnabled;
-    int m_iMaxSamplesToAnalys;
+    int m_iMaxSamplesToAnalyse;
     /** Pointer to config object */
-    ConfigObject<ConfigValue> *m_pconfig;
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* VAMPANALYSER_H_ */
