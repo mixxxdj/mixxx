@@ -115,9 +115,7 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
         double item_value2 = average_bpm_list.at(item_position + 1);
         median = (item_value1 + item_value2)/2;
 
-    }
-    else
-    {
+    } else {
         //find the {(n+1)/2} th item in the sorted list
         int item_position = (average_bpm_list.size() + 1)/2;
         median = average_bpm_list.at(item_position);
@@ -242,14 +240,13 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 }
 
 double BeatUtils::calculateOffset(
-    const QVector<double> beats1, const QVector<double> beats2,
-    const int SampleRate, int min_bpm, int max_bpm) {
+    const QVector<double> beats1, const double bpm1,
+    const QVector<double> beats2, const int SampleRate) {
     /*
      * Here we compare to beats vector and try to determine the best offset
      * based on the occurences, i.e. by assuming that the almost correct beats
      * are more than the "false" ones.
      */
-    const double bpm1 = calculateBpm(beats1, SampleRate, min_bpm, max_bpm);
     const double beatlength1 = (60.0 * SampleRate / bpm1);
     const double beatLength1Epsilon = beatlength1 * 0.2;
 
@@ -358,8 +355,8 @@ QVector<double> BeatUtils::calculateFixedTempoBeats(
     double offset = 0;
     if (enableOffsetCorrection) {
         qDebug() << "Calculating best offset";
-        offset = BeatUtils::calculateOffset(rawbeats, corrbeats, sampleRate,
-                                            minBpm, maxBpm);
+        offset = BeatUtils::calculateOffset(rawbeats, globalBpm,
+                                            corrbeats, sampleRate);
     }
 
     double FirstFrame = offset + firstCorrectBeat;

@@ -4,6 +4,7 @@
 #include "track/beatmatrix.h"
 #include "track/beatmap.h"
 #include "track/beatfactory.h"
+#include "track/beatutils.h"
 
 BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
                                                  QString beatsVersion,
@@ -38,7 +39,19 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
-BeatsPointer BeatFactory::makeBeatMap(TrackPointer pTrack, QVector<double> beats) {
+BeatsPointer BeatFactory::makeBeatMap(TrackPointer pTrack, QVector<double> beats,
+                                      bool bEnableFixedTempoCorrection,
+                                      bool bEnableOffsetCorrection,
+                                      const int iSampleRate, const int iTotalSamples,
+                                      const int iMinBpm, const int iMaxBpm) {
+    if (bEnableFixedTempoCorrection) {
+        double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
+        beats = BeatUtils::calculateFixedTempoBeats(
+            bEnableOffsetCorrection,
+            beats, iSampleRate, iTotalSamples, globalBpm,
+            iMinBpm, iMaxBpm);
+    }
+
     BeatMap* pBeatMap = new BeatMap(pTrack, beats);
     return BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
 }

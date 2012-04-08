@@ -33,8 +33,8 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         return;
     m_iMinBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
-    int allow_above =m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
-    if(allow_above){
+    int allow_above = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
+    if (allow_above) {
         m_iMinBpm = 0;
         m_iMaxBpm = 9999;
     }
@@ -59,45 +59,43 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_sSubver = "";
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
-    bool BpmLock = tio->hasBpmLock();
-    if (BpmLock) {
-        //Note that m_bShouldAnalyze had been set to false
+
+    bool bpmLock = tio->hasBpmLock();
+    if (bpmLock) {
+        m_bShouldAnalyze = false;
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         return;
     }
-    m_bShouldAnalyze = m_bPreferencesBeatDetectionEnabled;
 
-    if(!m_bShouldAnalyze) {
+    m_bShouldAnalyze = m_bPreferencesBeatDetectionEnabled;
+    if (!m_bShouldAnalyze) {
         qDebug() << "Beat calculation is deactivated";
         return;
     }
 
     // If the track has a BeatGrid rather than a BeatMap return unless it is
     // specified in the preferences
-    if(tio->getBeats() != NULL) {
-        if(tio->getBeats()->getVersion() == BEAT_GRID_VERSION) {
-            m_bShouldAnalyze = m_bPreferencesReanalyzeOldBpm;
+    BeatsPointer trackBeats = tio->getBeats();
+    if (trackBeats && trackBeats->getVersion() == BEAT_GRID_VERSION) {
+        m_bShouldAnalyze = m_bPreferencesReanalyzeOldBpm;
 
-            // Override preference if the BPM is 0.
-            if (tio->getBeats()->getBpm() == 0.0) {
-                m_bShouldAnalyze = true;
-                qDebug() << "BPM is 0 for track so re-analyzing.";
-            }
+        // Override preference if the BPM is 0.
+        if (tio->getBeats()->getBpm() == 0.0) {
+            m_bShouldAnalyze = true;
+            qDebug() << "BPM is 0 for track so re-analyzing.";
+        }
 
-            if (!m_bShouldAnalyze) {
-                qDebug() << "Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
-                return;
-            }
+        if (!m_bShouldAnalyze) {
+            qDebug() << "Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
+            return;
         }
     }
 
     qDebug() << "Beat calculation started with plugin" << pluginID;
     QString correction;
 
-    m_bDisableBeatCorrection = !m_bPreferencesFixedTempo;
-    if (!m_bDisableBeatCorrection) {
-        m_bEnableOffsetCorrection = m_bPreferencesOffsetCorrection;
-        if (m_bEnableOffsetCorrection) {
+    if (m_bPreferencesFixedTempo) {
+        if (m_bPreferencesOffsetCorrection) {
             correction = "offset";
         } else {
             correction = "const";
@@ -134,33 +132,32 @@ void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_bShouldAnalyze || m_pVamp == NULL)
         return;
     m_bShouldAnalyze = m_pVamp->Process(pIn, iLen);
+    if (!m_bShouldAnalyze) {
+        delete m_pVamp;
+        m_pVamp = NULL;
+    }
 }
 
 void AnalyserBeats::finalise(TrackPointer tio) {
-    if (!m_bShouldAnalyze || m_pVamp == NULL)
+    if (!m_bShouldAnalyze || m_pVamp == NULL) {
         return;
+    }
 
     // Call End() here, because the number of total samples may have been
     // estimated incorrectly.
-    bool success = m_pVamp->End(); // This will ensure that beattracking succeeds in a beat list
+    bool success = m_pVamp->End();
     qDebug() << "Beat Calculation" << (success ? "complete" : "failed");
 
     QVector<double> beats = m_pVamp->GetInitFramesVector();
     if (!beats.isEmpty()) {
-        double globalBpm = BeatUtils::calculateBpm(beats, m_iSampleRate, m_iMinBpm, m_iMaxBpm);
-
-        if (!m_bDisableBeatCorrection) {
-            beats = BeatUtils::calculateFixedTempoBeats(
-                m_bPreferencesOffsetCorrection,
-                beats, m_iSampleRate, m_iTotalSamples, globalBpm,
-                m_iMinBpm, m_iMaxBpm);
-        }
-
-        BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, beats);
-
+        BeatsPointer pBeats = BeatFactory::makeBeatMap(
+            tio, beats,
+            m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
+            m_iSampleRate, m_iTotalSamples,
+            m_iMinBpm, m_iMaxBpm);
         tio->setBeats(pBeats);
         tio->setBpmPluginKey(m_sSubver);
-        tio->setBpm(globalBpm);
+        tio->setBpm(pBeats->getBpm());
     } else {
         qDebug() << "Could not detect beat positions from Vamp.";
     }

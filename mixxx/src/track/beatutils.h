@@ -24,8 +24,8 @@ class BeatUtils {
      * the grid generated from bpm is close enough to the one we get from vamp.
      */
     static double calculateOffset(
-        const QVector<double> beats1, const QVector<double> beats2,
-        const int SampleRate, int min_bpm, int max_bpm);
+        const QVector<double> beats1, const double bpm1,
+        const QVector<double> beats2, const int SampleRate);
 
     static QVector<double> calculateFixedTempoBeats(
         bool enableOffsetCorrection,
