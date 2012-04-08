@@ -10,7 +10,6 @@
 class EngineMaster;
 class ControlObject;
 class ControlObjectThreadMain;
-class WaveformRenderer;
 
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
@@ -24,7 +23,6 @@ class BaseTrackPlayer : public BasePlayer {
     virtual ~BaseTrackPlayer();
 
     AnalyserQueue* getAnalyserQueue() const;
-    WaveformRenderer* getWaveformRenderer() const;
     TrackPointer getLoadedTrack() const;
 
   public slots:
@@ -50,7 +48,6 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
-    WaveformRenderer* m_pWaveformRenderer;
 };
 
 
