@@ -23,7 +23,7 @@ class AnalyserBeats: public Analyser {
 
   private:
     QVector<double> correctedBeats(QVector<double> rawbeats);
-    bool m_bShouldAnalyze, m_bDisableBeatCorrection, m_bEnableOffsetCorrection;
+    bool m_bShouldAnalyze;
 
     bool m_bPreferencesBeatDetectionEnabled;
     bool m_bPreferencesReanalyzeOldBpm;
