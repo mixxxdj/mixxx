@@ -19,30 +19,40 @@
 #define CONTROLLERPRESETFILEHANDLER_H
 
 #include "xmlparse.h"
-#include "controllerpreset.h"
+#include "controllers/controllerpreset.h"
 
 class ControllerPresetFileHandler {
-
-public:
+  public:
     ControllerPresetFileHandler();
-    ~ControllerPresetFileHandler();
-    
-    ControllerPreset load(const QString path, const QString deviceName,
-                          const bool forceLoad);
-    //virtual
-    ControllerPreset load(const QDomElement root, const QString deviceName,
-                                  const bool forceLoad);
+    virtual ~ControllerPresetFileHandler();
+
+    virtual ControllerPreset* load(const QString path, const QString deviceName,
+                                   const bool forceLoad);
+
     /** Given a path, saves the current preset to an XML file. */
-    bool save(const ControllerPreset preset, const QString deviceName,
+    bool save(const ControllerPreset& preset, const QString deviceName,
               const QString path);
+
     /** Creates the XML document and includes what script files are currently loaded.
         Sub-classes need to re-implement this (and call it first) if they
         need to add any other items. */
-    virtual QDomDocument buildXML(const ControllerPreset preset, const QString deviceName);
+    virtual QDomDocument buildXML(const ControllerPreset& preset, const QString deviceName);
 
     /** Returns just the name of a given device (everything before the first space) */
     QString rootDeviceName(QString deviceName) {
         return deviceName.left(deviceName.indexOf(" "));
     }
+
+  protected:
+    void addScriptFilesToMapping(const QDomElement root,
+                                 const QString deviceName,
+                                 const bool forceLoad,
+                                 ControllerPreset* preset);
+
+  private:
+    // Sub-classes implement this.
+    virtual ControllerPreset* load(const QDomElement root, const QString deviceName,
+                                   const bool forceLoad) = 0;
 };
+
 #endif

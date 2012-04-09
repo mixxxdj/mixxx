@@ -70,16 +70,16 @@ void Controller::stopEngine()
 void Controller::applyPreset() {
     qDebug() << "Applying controller preset...";
 
+    const ControllerPreset* preset = getPreset();
+
     // Load the script code into the engine
-    QStringList scriptFunctions;
     if (m_pEngine != NULL) {
-        scriptFunctions = m_pEngine->getScriptFunctions();
-        if (scriptFunctions.isEmpty() && m_preset.scriptFileNames.isEmpty()) {
+        const QStringList scriptFunctions = m_pEngine->getScriptFunctions();
+        if (scriptFunctions.isEmpty() && preset->scriptFileNames.isEmpty()) {
             qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
-        }
-        else {
-            if (scriptFunctions.isEmpty()) m_pEngine->loadScriptFiles(m_preset.scriptFileNames);
-            m_pEngine->initializeScripts(m_preset.scriptFunctionPrefixes);
+        } else {
+            if (scriptFunctions.isEmpty()) m_pEngine->loadScriptFiles(preset->scriptFileNames);
+            m_pEngine->initializeScripts(preset->scriptFunctionPrefixes);
         }
     }
     else qWarning() << "Controller::applyPreset(): No engine exists!";
@@ -88,7 +88,7 @@ void Controller::applyPreset() {
 void Controller::send(QList<int> data, unsigned int length) {
     // If you change this implementation, also change it in HidController
     //  (That function is required due to HID devices having report IDs)
-    
+
     QByteArray msg;
 
     for (unsigned int i=0; i<length; i++) {

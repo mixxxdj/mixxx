@@ -40,6 +40,14 @@ QString MidiController::presetExtension() {
     return MIDI_MAPPING_EXTENSION;
 }
 
+void MidiController::visit(const MidiControllerPreset* preset) {
+    m_preset = *preset;
+}
+
+void MidiController::visit(const HidControllerPreset* preset) {
+    // TODO(XXX): throw a hissy fit.
+}
+
 void MidiController::applyPreset() {
 
     Controller::applyPreset();  // Handles the engine
@@ -116,7 +124,7 @@ void MidiController::createOutputHandlers() {
             delete moh;
             continue;
         }
-        
+
         m_outputs.append(moh);
     }
 }
@@ -139,7 +147,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     unsigned char channel = status & 0x0F;
     unsigned char opCode = status & 0xF0;
     if (opCode >= 0xF0) opCode = status;
-    
+
     QString message;
     bool twoBytes = true;
 
@@ -204,7 +212,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
         // Signifies that the second byte is part of the payload, default
         mappingKey.control = 0xFF;
     }
-    
+
     if (m_bMidiLearn) {
         emit(midiEvent(mappingKey));
         return; // Don't process midi messages further when MIDI learning
@@ -218,14 +226,14 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     if (options.script) {
         if (m_pEngine == NULL) return;
-        
+
         QScriptValueList args;
         args << QScriptValue(status & 0x0F);
         args << QScriptValue(control);
         args << QScriptValue(value);
         args << QScriptValue(status);
         args << QScriptValue(ckey.group);
-        
+
         m_pEngine->execute(ckey.item, args);
         return;
     }
@@ -259,14 +267,14 @@ void MidiController::receive(unsigned char status, unsigned char control,
         }
 
         ControlObject::sync();
-        
+
         p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
     return;
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
-    
+
     double tempval = 0.;
     double diff = 0.;
 
@@ -287,7 +295,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
             tempval -= diff;
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
-    
+
     if (options.rot64_fast) {
         tempval = _prevmidivalue;
         diff = _newmidivalue - 64.;
@@ -295,7 +303,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         tempval += diff;
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
-    
+
     if (options.diff) {
         //Interpret 7-bit signed value using two's compliment.
         if (_newmidivalue >= 64.)
@@ -306,7 +314,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         //Apply new value to current value.
         _newmidivalue = _prevmidivalue + _newmidivalue;
     }
-    
+
     if (options.selectknob) {
         //Interpret 7-bit signed value using two's compliment.
         if (_newmidivalue >= 64.)
@@ -316,11 +324,11 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
         //Since this is a selection knob, we do not want to inherit previous values.
     }
-    
+
     if (options.button) { _newmidivalue = (_newmidivalue != 0); }
-    
+
     if (options.sw) { _newmidivalue = 1; }
-    
+
     if (options.spread64) {
 //         qDebug() << "MIDI_OPT_SPREAD64";
         // BJW: Spread64: Distance away from centre point (aka "relative CC")
@@ -336,7 +344,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 
          //qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
     }
-    
+
     if (options.herc_jog) {
         if (_newmidivalue > 64.) { _newmidivalue -= 128.; }
         _newmidivalue += _prevmidivalue;
@@ -366,7 +374,7 @@ void MidiController::receive(QByteArray data) {
     mappingKey.status = data.at(0);
     // Signifies that the second byte is part of the payload, default
     mappingKey.control = 0xFF;
-    
+
     if (m_bMidiLearn) {
         emit(midiEvent(mappingKey));
         return; // Don't process midi messages further when MIDI learning
@@ -374,7 +382,7 @@ void MidiController::receive(QByteArray data) {
     // If no control is bound to this MIDI status, return
     if (!m_preset.mappings.contains(mappingKey.key)) return;
     control = m_preset.mappings.value(mappingKey.key);
-    
+
     ConfigKey ckey = control.first;
     MidiOptions options = control.second;
 

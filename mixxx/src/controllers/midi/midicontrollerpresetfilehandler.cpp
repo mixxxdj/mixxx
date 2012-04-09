@@ -13,22 +13,23 @@
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
-MidiControllerPresetFileHandler::MidiControllerPresetFileHandler() : ControllerPresetFileHandler {
+MidiControllerPresetFileHandler::MidiControllerPresetFileHandler()
+        : ControllerPresetFileHandler() {
 }
 
-MidiControllerPresetFileHandler::~MidiControllerPresetFileHandler(){
+MidiControllerPresetFileHandler::~MidiControllerPresetFileHandler() {
 }
 
-MidiControllerPreset MidiControllerPresetFileHandler::load(const QDomElement root,
-                                                           const QString deviceName,
-                                                           const bool forceLoad)
-{
-    MidiControllerPreset preset;
-    
-    if (root.isNull()) return preset;
+ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
+                                                        const QString deviceName,
+                                                        const bool forceLoad) {
+    MidiControllerPreset* preset = new MidiControllerPreset();
+
+    if (root.isNull())
+        return preset;
 
     // Superclass handles script files
-    preset = ControllerPresetFileHandler::load(root,deviceName,forceLoad);
+    addScriptFilesToMapping(root, deviceName, forceLoad, preset);
 
     /*
     // We actually need to load any script code now to verify function
@@ -264,12 +265,11 @@ MidiControllerPreset MidiControllerPresetFileHandler::load(const QDomElement roo
     return preset;
 }
 
-QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset preset,
+QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset& preset,
                                                        const QString deviceName)
 {
     // The XML header and script stuff is handled by the superclass
-    QDomDocument doc = Controller::buildXML(const ControllerPreset preset,
-                                            const QString deviceName);
+    QDomDocument doc = ControllerPresetFileHandler::buildXML(preset, deviceName);
 
     QDomElement controller = doc.documentElement().firstChildElement("controller");
     QDomElement controls = doc.createElement("controls");

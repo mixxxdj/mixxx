@@ -54,7 +54,7 @@ Q_OBJECT
     QStringList getScriptFunctions();
     /** Look up registered script function prefixes */
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
-    
+
 
   protected:
     Q_INVOKABLE double getValue(QString group, QString name);
@@ -83,8 +83,8 @@ Q_OBJECT
     bool execute(QString function, QString data);
     // Execute a particular function with a data buffer
     bool execute(QString function, const QByteArray data);
-    void loadScriptFiles(QList<QString> scriptFileNames);
-    void initializeScripts(QList<QString> scriptFunctionPrefixes);
+    void loadScriptFiles(const QList<QString> scriptFileNames);
+    void initializeScripts(const QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown();
 
   signals:

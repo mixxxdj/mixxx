@@ -23,26 +23,34 @@
 #define MIDICONTROLLER_H
 
 #include "controllers/controller.h"
-#include "midioutputhandler.h"
+#include "controllers/midi/midioutputhandler.h"
 #include "softtakeover.h"
-
-#include "midimessage.h"
-#include "midicontrollerpresetfilehandler.h"
+#include "controllers/midi/midimessage.h"
+#include "controllers/midi/midicontrollerpreset.h"
+#include "controllers/midi/midicontrollerpresetfilehandler.h"
 
 class MidiController : public Controller {
-Q_OBJECT    // For signals & slots
-    
+    Q_OBJECT    // For signals & slots
+
     friend class MidiOutputHandler; // So it can access sendShortMsg()
 
     public:
         MidiController();
         virtual ~MidiController();
-        
+
         virtual QString presetExtension();
         inline QString defaultPreset();
-        MidiControllerPresetFileHandler getFileHandler() {
-            return MidiControllerPresetFileHandler();
+
+        virtual const ControllerPreset* getPreset() const {
+            // TODO(XXX) clone the preset
+            return &m_preset;
         }
+        virtual ControllerPresetFileHandler* getFileHandler() const {
+            return new MidiControllerPresetFileHandler();
+        }
+
+        virtual void visit(const MidiControllerPreset* preset);
+        virtual void visit(const HidControllerPreset* preset);
 
     signals:
         void midiEvent(MidiKey message);
@@ -83,9 +91,8 @@ Q_OBJECT    // For signals & slots
         void destroyOutputHandlers();
 
         QList<MidiOutputHandler*> m_outputs;
-
+        MidiControllerPreset m_preset;
         SoftTakeover m_st;
-
         bool m_bMidiLearn;
 };
 

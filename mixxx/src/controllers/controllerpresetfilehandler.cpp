@@ -16,27 +16,28 @@
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
 *        specified within matches the name of this Controller.
 */
-ControllerPreset ControllerPresetFileHandler::load(const QString path,
-                                                   const QString deviceName,
-                                                   const bool forceLoad) {
+ControllerPreset* ControllerPresetFileHandler::load(const QString path,
+                                                    const QString deviceName,
+                                                    const bool forceLoad) {
     qDebug() << "Loading controller preset from" << path;
     return load(XmlParse::openXMLFile(path, "controller"), deviceName, forceLoad);
 }
 
-/** load(QDomElement,QString,bool)
+/** addScriptFilesToMapping(QDomElement,QString,bool)
 * Loads a controller preset from a QDomElement structure.
 * @param root The root node of the XML document for the preset.
 * @param deviceName The name/id of the controller
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
 *        specified within matches the name of this Controller.
 */
-ControllerPreset ControllerPresetFileHandler::load(const QDomElement root,
-                                                   const QString deviceName,
-                                                   const bool forceLoad)
-{
-    ControllerPreset preset;
+void ControllerPresetFileHandler::addScriptFilesToMapping(
+    const QDomElement root,
+    const QString deviceName,
+    const bool forceLoad,
+    ControllerPreset* preset) {
 
-    if (root.isNull()) return preset;
+    if (root.isNull())
+        return;
 
     // For each controller in the DOM
     QDomElement controller = root.firstChildElement("controller");
@@ -63,22 +64,20 @@ ControllerPreset ControllerPresetFileHandler::load(const QDomElement root,
         QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
 
         // Default currently required file
-        preset.addScriptFile(REQUIRED_SCRIPT_FILE,"");
+        preset->addScriptFile(REQUIRED_SCRIPT_FILE,"");
 
         // Look for additional ones
         while (!scriptFile.isNull()) {
             QString functionPrefix = scriptFile.attribute("functionprefix","");
             QString filename = scriptFile.attribute("filename","");
-            preset.addScriptFile(filename, functionPrefix);
+            preset->addScriptFile(filename, functionPrefix);
 
             scriptFile = scriptFile.nextSiblingElement("file");
         }
-
     }
-    return preset;
 }
 
-bool ControllerPresetFileHandler::save(const ControllerPreset preset,
+bool ControllerPresetFileHandler::save(const ControllerPreset& preset,
                                        const QString deviceName,
                                        const QString path) {
     qDebug() << "Writing preset for" << deviceName << "to file" << path;
@@ -91,7 +90,7 @@ bool ControllerPresetFileHandler::save(const ControllerPreset preset,
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return false;
     QTextStream outputstream(&output);
     // Construct the DOM from the table
-    QDomDocument docPreset = buildXML(preset,deviceName);
+    QDomDocument docPreset = buildXML(preset, deviceName);
     // Save the DOM to the XML file
     docPreset.save(outputstream, 4);
     output.close();
@@ -99,7 +98,7 @@ bool ControllerPresetFileHandler::save(const ControllerPreset preset,
     return true;
 }
 
-QDomDocument ControllerPresetFileHandler::buildXML(const ControllerPreset preset,
+QDomDocument ControllerPresetFileHandler::buildXML(const ControllerPreset& preset,
                                                    const QString deviceName) {
     QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"

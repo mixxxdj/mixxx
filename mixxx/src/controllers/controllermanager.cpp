@@ -104,11 +104,11 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) : QObj
     m_pProcessor = new ControllerProcessor(this);
 
     this->moveToThread(m_pThread); // implies m_pProcessor->moveToThread(m_pThread);
-    
+
     // Controller processing needs to be prioritized since it can affect the audio
     //  directly, like when scratching
     m_pThread->start(QThread::HighPriority);
-    
+
     connect(this, SIGNAL(requestSetUpDevices()), this, SLOT(slotSetUpDevices()));
     connect(this, SIGNAL(requestShutdown()), this, SLOT(slotShutdown()));
     connect(this, SIGNAL(requestSave(bool)), this, SLOT(slotSavePresets(bool)));
@@ -122,7 +122,7 @@ ControllerManager::~ControllerManager() {
 
 void ControllerManager::slotShutdown() {
     m_pProcessor->stopPolling();
-    
+
     //Delete enumerators and they'll delete their Devices
     QListIterator<ControllerEnumerator*> enumIt(m_enumerators);
     while (enumIt.hasNext()) {
@@ -134,7 +134,7 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
-    
+
     QList<Controller*> newDeviceList;
     if (m_enumerators.isEmpty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
@@ -156,16 +156,16 @@ void ControllerManager::updateControllerList() {
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
-    
+
     bool bMatchedCriteria = false;   //Whether or not the current device matched the filtering criteria
 
     //Create a list of controllers filtered to match the given input/output options.
     QList<Controller*> filteredDeviceList;
-    
+
     m_mControllerList.lock();
     QList<Controller*> controllers = m_controllers;
     m_mControllerList.unlock();
-    
+
     QListIterator<Controller*> dev_it(controllers);
     while (dev_it.hasNext())
     {
@@ -217,10 +217,11 @@ int ControllerManager::slotSetUpDevices() {
 
         filenames.append(filename);
 
-        ControllerPresetFileHandler handler = cur->getFileHandler();
-        ControllerPreset preset = handler.load(PRESETS_PATH.append(filename + cur->presetExtension()),name,true);
+        ControllerPresetFileHandler* handler = cur->getFileHandler();
+        ControllerPreset* preset = handler->load(
+            PRESETS_PATH.append(filename + cur->presetExtension()), name, true);
 
-        cur->setPreset(preset);
+        cur->setPreset(*preset);
 //         qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
         m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
 
@@ -228,7 +229,7 @@ int ControllerManager::slotSetUpDevices() {
             continue;
 
         qDebug() << "Opening controller:" << name;
-        
+
         int value = cur->open();
         if (value != 0) {
             qWarning() << "  There was a problem opening" << name;
@@ -243,7 +244,7 @@ int ControllerManager::slotSetUpDevices() {
 
     // Start polling of applicable controller APIs
     enablePolling(polling);
-    
+
     return error;
 }
 
@@ -267,12 +268,12 @@ QList<QString> ControllerManager::getPresetList(QString extension)
     QList<QString> presets;
     // Make sure list is empty
     presets.clear();
-    
+
     // Paths to search for controller presets
     QList<QString> controllerDirPaths;
     controllerDirPaths.append(LPRESETS_PATH);
     controllerDirPaths.append(m_pConfig->getConfigPath().append("controllers/"));
-    
+
     QListIterator<QString> itpth(controllerDirPaths);
     while (itpth.hasNext()) {
         QDirIterator it(itpth.next());
@@ -287,37 +288,40 @@ QList<QString> ControllerManager::getPresetList(QString extension)
             }
         }
     }
-    
+
     return presets;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {
-    
+
     QList<Controller*> deviceList = getControllerList(false, true);
     QListIterator<Controller*> it(deviceList);
-    
+
     QList<QString> filenames;
-    
+
     while (it.hasNext())
     {
         Controller *cur= it.next();
         if (onlyActive && !cur->isOpen()) continue;
         QString name = cur->getName();
-        
+
         QString ofilename = name.replace(" ", "_");
-        
+
         QString filename = ofilename;
-        
+
         int i=1;
         while (filenames.contains(filename)) {
             i++;
             filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
-        
+
         filenames.append(filename);
 //         cur->savePreset(PRESETS_PATH.append(filename + cur->presetExtension()));
-        ControllerPresetFileHandler handler = cur->getFileHandler();
-        handler.save(cur->getPreset(),name,PRESETS_PATH.append(filename + cur->presetExtension()));
-        
+        QScopedPointer<ControllerPresetFileHandler> handler(cur->getFileHandler());
+        const ControllerPreset* preset = cur->getPreset();
+        if (!handler || !preset) {
+            continue;
+        }
+        handler->save(*preset, name, PRESETS_PATH.append(filename + cur->presetExtension()));
     }
 }
