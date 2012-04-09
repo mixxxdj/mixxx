@@ -909,7 +909,7 @@ void TrackInfoObject::setKey(QString key){
         setDirty(true);
 }
 
-void TrackInfoObject::setBpmLock(bool bpmLock){
+void TrackInfoObject::setBpmLock(bool bpmLock) {
     QMutexLocker lock(&m_qMutex);
     bool dirty = bpmLock != m_bBpmLock;
     m_bBpmLock = bpmLock;
@@ -917,12 +917,12 @@ void TrackInfoObject::setBpmLock(bool bpmLock){
         setDirty(true);
 }
 
-bool TrackInfoObject::hasBpmLock() const{
+bool TrackInfoObject::hasBpmLock() const {
     QMutexLocker lock(&m_qMutex);
     return m_bBpmLock;
 }
 
-void TrackInfoObject::setBpmPluginKey(QString& pluginKey){
+void TrackInfoObject::setBpmPluginKey(QString& pluginKey) {
     QMutexLocker lock(&m_qMutex);
     bool dirty = pluginKey != m_bpmPluginKey;
     m_bpmPluginKey = pluginKey;
@@ -930,7 +930,6 @@ void TrackInfoObject::setBpmPluginKey(QString& pluginKey){
         setDirty(true);
     lock.unlock();
     emit(BpmPluginKeyUpdated(pluginKey));
-
 }
 
 QString TrackInfoObject::getBpmPluginKey() const{
