@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-04-01 19:52+0000\n"
-"Last-Translator: Flavio Henrique Araque Gurgel <fhagur@gmail.com>\n"
+"PO-Revision-Date: 2012-04-09 01:01+0000\n"
+"Last-Translator: Neliton Pereira Junior <nelitonpjr@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-02 04:34+0000\n"
-"X-Generator: Launchpad (build 15032)\n"
+"X-Launchpad-Export-Date: 2012-04-09 04:37+0000\n"
+"X-Generator: Launchpad (build 15060)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1739,7 +1739,7 @@ msgstr ""
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Pré-amplificador de tocadiscos"
 
 #: DlgPrefVinylDlg#6
 msgctxt "DlgPrefVinylDlg#6"
@@ -2494,12 +2494,17 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
+"Mixxx não foi capaz de acessar todos os dispositivos de som configurados. "
+"Outra aplicação está utilizando um dispositivo de som que o Mixxx está "
+"configurado para utilizar ou um dispositivo não está conectado."
 
 #: MixxxApp#13
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
+"<b>Tentar novamente</b> após fechar a outra aplicação ou reconectar um "
+"dispositivo de som"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
@@ -2583,7 +2588,7 @@ msgstr "Ctrl+I"
 
 #: MixxxApp#34
 msgid "&Audio Beat Marks"
-msgstr ""
+msgstr "Marcas de Batida de &Áudio"
 
 #: MixxxApp#35
 msgid "&Full Screen"
@@ -2615,7 +2620,7 @@ msgstr "Suporte da Comunidade"
 
 #: MixxxApp#42
 msgid "&User Manual"
-msgstr ""
+msgstr "Manual do &Usuário"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
@@ -2644,7 +2649,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#49
 msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Habilitar transmissão ao vivo."
 
 #: MixxxApp#50
 msgid "Ctrl+L"
@@ -2660,7 +2665,7 @@ msgstr "Ctrl+R"
 
 #: MixxxApp#53
 msgid "Show Studio"
-msgstr "Mostrar estudio"
+msgstr "Mostrar estúdio"
 
 #: MixxxApp#54
 msgid "Opens a song in player 1"
@@ -2749,13 +2754,15 @@ msgstr "Importar lista de reprodução"
 
 #: MixxxApp#67
 msgid "Audio Beat Marks"
-msgstr ""
+msgstr "Marcas de Batida de Áudio"
 
 #: MixxxApp#68
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
+"Marcas de Batida de Áudio\n"
+"Marca batidas por cliques de áudio"
 
 #: MixxxApp#69
 msgid "Activate Vinyl Control"
@@ -2764,6 +2771,8 @@ msgstr "Ativar Controle de Vinil"
 #: MixxxApp#70
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
+"Utilizar vinis com código de tempo em tocadiscos externos para controlar o "
+"Mixxx"
 
 #: MixxxApp#71
 msgid "Activate live broadcasting"
@@ -2819,7 +2828,7 @@ msgstr ""
 
 #: MixxxApp#81
 msgid "Read the Mixxx user manual."
-msgstr ""
+msgstr "Leia o manual do usuário do Mixxx"
 
 #: MixxxApp#82
 msgid ""
@@ -2827,6 +2836,9 @@ msgid ""
 "\n"
 "Read the Mixxx user manual."
 msgstr ""
+"Suporte\n"
+"\n"
+"Leia o manual do usuário do Mixxx."
 
 #: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
@@ -2838,6 +2850,9 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"Suporte\n"
+"\n"
+"Envie suas opiniões para o time do Mixxx."
 
 #: MixxxApp#85
 msgid "Help translate this application into your language."
@@ -2869,7 +2884,7 @@ msgstr ""
 
 #: MixxxApp#89
 msgid "Shows the macro studio window"
-msgstr ""
+msgstr "Mostra a janela do estúdio de macros"
 
 #: MixxxApp#90
 msgid ""
@@ -2877,6 +2892,9 @@ msgid ""
 "\n"
 "Makes the macro studio visible"
 msgstr ""
+"Mostrar Estúdio\n"
+"\n"
+"Torna o estúdio de macros visível"
 
 #: MixxxApp#91
 msgid "&File"
@@ -2948,23 +2966,23 @@ msgstr ""
 
 #: MixxxApp#105
 msgid "Mixxx %1 Development Team"
-msgstr ""
+msgstr "Time de Desenvolvimento do Mixxx %1"
 
 #: MixxxApp#106
 msgid "With contributions from:"
-msgstr ""
+msgstr "Com contribuições de:"
 
 #: MixxxApp#107
 msgid "And special thanks to:"
-msgstr ""
+msgstr "E agradecimentos especiais para:"
 
 #: MixxxApp#108
 msgid "Past Developers"
-msgstr ""
+msgstr "Desenvolvedores antigos"
 
 #: MixxxApp#109
 msgid "Past Contributors"
-msgstr ""
+msgstr "Contribuíntes antigos"
 
 #: MixxxApp#110
 msgid "Confirm Exit"
@@ -2972,7 +2990,7 @@ msgstr "Confirmar Saída"
 
 #: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
-msgstr ""
+msgstr "Um deck está tocando neste momento. Sair do Mixxx?"
 
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
@@ -2987,10 +3005,12 @@ msgstr "Exportação da Lista de Reprodução falhou"
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
 msgstr ""
+"Caminho do arquivo contém caracteres não permitidos em listas de reprodução "
+"m3u.\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "Em vez disto, exporte uma lista de reprodução m2u8!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
@@ -3126,11 +3146,11 @@ msgstr "Microfone"
 
 #: QObject#7
 msgid "Passthrough"
-msgstr ""
+msgstr "Transpassar"
 
 #: QObject#8
 msgid "Unknown path type %1"
-msgstr ""
+msgstr "Tipo de caminho desconhecido %1"
 
 #: RecordingFeature#1
 msgid "Recordings"
@@ -3170,7 +3190,7 @@ msgstr "Não foi possível ler o arquivo de banco de samplers '%1'."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
-msgstr ""
+msgstr "Estúdio de Scripts do Mixxx"
 
 #: ScriptStudio#2
 msgid "File"
@@ -3221,6 +3241,11 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Não foi possível estabelecer uma conexão com o banco de dados.\n"
+"Mixxx requer QT com suporte SQLite. Por favor, leia a documentação do driver "
+"Qt SQL para informações sobre como construí-lo.\n"
+"\n"
+"Clique Ok para sair."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
@@ -3234,6 +3259,12 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Não foi possível atualizar o esquema do seu banco de dados para a versão "
+"%1.\n"
+"Seu arquivo moxxx.db pode estar corrompido.\n"
+"Tente renomeá-lo e reiniciar o Mixxx.\n"
+"\n"
+"Clique Ok para sair."
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -3241,7 +3272,7 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(carregando) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3252,6 +3283,8 @@ msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Houve um erro ao carregar sua biblioteca do Traktor. Algumas de suas músicas "
+"ou listas de reprodução do Traktor podem não ter sido carregadas."
 
 #: Ui#1
 msgctxt "Ui#1"
@@ -3301,6 +3334,8 @@ msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
+"O único tema compatível com o tamanho deste monitor é Outline800x480-WVGA. "
+"Você gostaria de usar esse tema?"
 
 #: Ui#12
 msgctxt "Ui#12"
@@ -3318,7 +3353,7 @@ msgstr "Volume mestre"
 
 #: Ui#15
 msgid "Master balance"
-msgstr ""
+msgstr "Equilíbrio mestre"
 
 #: Ui#16
 msgid "Headphones volume"
@@ -3326,7 +3361,7 @@ msgstr "Volume Fones de Ouvido"
 
 #: Ui#17
 msgid "Headphones mix (pre/main)"
-msgstr ""
+msgstr "Misturador dos fones de ouvido (pré/principal)"
 
 #: Ui#18
 msgid "Cue button for Player %1"
@@ -3334,27 +3369,27 @@ msgstr ""
 
 #: Ui#19
 msgid "Play button for Player %1"
-msgstr ""
+msgstr "Botão play do Tocador %1"
 
 #: Ui#20
 msgid "Fast rewind button for Player %1"
-msgstr ""
+msgstr "Botão retrocesso rápido para o Tocador %1"
 
 #: Ui#21
 msgid "Fast forward button for Player %1"
-msgstr ""
+msgstr "Botão avanço rápido para o Tocador %1"
 
 #: Ui#22
 msgid "Play reverse button for Player %1"
-msgstr ""
+msgstr "Tocar ao contrário para o Tocador %1"
 
 #: Ui#23
 msgid "Headphone listen button for Player %1"
-msgstr ""
+msgstr "Botão de escuta no fone de ouvido para o Tocador %1"
 
 #: Ui#24
 msgid "Beat sync button for Player %1"
-msgstr ""
+msgstr "Botão sincronizador de batidas para o Tocador %1"
 
 #: Ui#25
 msgid "BPM tap button for Player %1"
@@ -3362,59 +3397,59 @@ msgstr ""
 
 #: Ui#26
 msgid "Keylock button for Player %1"
-msgstr ""
+msgstr "Botão cadeado para o Tocador %1"
 
 #: Ui#27
 msgid "Pitch control slider for Player %1"
-msgstr ""
+msgstr "Controle deslizante de tom para o Tocador %1"
 
 #: Ui#28
 msgid "Flanger effect button for Player %1"
-msgstr ""
+msgstr "Botão de efeito flanger para o tocador %1"
 
 #: Ui#29
 msgid "Channel %1 volume fader"
-msgstr ""
+msgstr "Potenciômetro de volume do Canal %1"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
-msgstr ""
+msgstr "Botão de ganho para o Canal %1"
 
 #: Ui#31
 msgid "High EQ knob for Channel %1"
-msgstr ""
+msgstr "Botão de equalização de agudos para o Canal %1"
 
 #: Ui#32
 msgid "Mid EQ knob for Channel %1"
-msgstr ""
+msgstr "Botão de equalização de médios para o Canal %1"
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
-msgstr ""
+msgstr "Botão de equalização de graves para o Canal %1"
 
 #: Ui#34
 msgid "Loop In button for Player %1"
-msgstr ""
+msgstr "Botão de início de ciclo para o Tocador %1"
 
 #: Ui#35
 msgid "Loop Out button for Player %1"
-msgstr ""
+msgstr "Botão de fim de ciclo para o Tocador %1"
 
 #: Ui#36
 msgid "Reloop / Exit button for Player %1"
-msgstr ""
+msgstr "Botão de Re-ciclo/Saída para o Tocador %1"
 
 #: Ui#37
 msgid "Setup a loop over 4 beats for Player %1"
-msgstr ""
+msgstr "Configurar um ciclo sobre 4 batidas para o Tocador %1"
 
 #: Ui#38
 msgid "Halves the current loop's length for Player %1"
-msgstr ""
+msgstr "Diminui o ciclo atual pela metade para o Tocador %1"
 
 #: Ui#39
 msgid "Doubles the current loop's length for Player %1"
-msgstr ""
+msgstr "Dobra o comprimento do ciclo atual para o Tocador %1"
 
 #: Ui#40
 msgid "Hotcue 1 button for Player %1"
@@ -3450,15 +3485,15 @@ msgstr ""
 
 #: Ui#48
 msgid "Play button for Sampler %1"
-msgstr ""
+msgstr "Botão Play para o sampler %1"
 
 #: Ui#49
 msgid "Gain knob for Sampler %1"
-msgstr ""
+msgstr "Controle de ganho para o sampler %1"
 
 #: Ui#50
 msgid "Headphone listen button for Sampler %1"
-msgstr ""
+msgstr "Botão de escuta no fone de ouvido para o sampler %1"
 
 #: Ui#51
 msgid "BPM tap button for Sampler %1"
@@ -3466,11 +3501,11 @@ msgstr ""
 
 #: Ui#52
 msgid "Keylock button for Sampler %1"
-msgstr ""
+msgstr "Botão cadeado para o sampler %1"
 
 #: Ui#53
 msgid "Pitch control slider for Sampler %1"
-msgstr ""
+msgstr "Controle deslizante de tom para o sampler %1"
 
 #: Ui#54
 msgid "Hotcue 1 button for Sampler %1"
