@@ -41,7 +41,14 @@ void SoftTakeover::enable(QString group, QString name) {
 }
 
 void SoftTakeover::enable(MixxxControl control) {
+    // Store current time
     if (!m_times.contains(control)) m_times.insert(control,currentTimeMsecs());
+    // Store current MixxxControl value
+    if (!m_prevValues.contains(control)) {
+        ControlObject* temp = ControlObject::getControl(
+        ConfigKey(control.getControlObjectGroup(), control.getControlObjectValue()));
+        if (temp != NULL) m_prevValues.insert(control,temp->get());
+    }
 }
 
 // For legacy Controls
@@ -64,13 +71,14 @@ bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {
     bool ignore = false;
     QString message;
     if (m_times.contains(mc)) {
-        // We only want to ignore the MIDI controller when all of the following are true:
-        //  - its new value is far away from the MixxxControl
-        //  - it's been awhile since the last MIDI message for this control affected it
+        // We only want to ignore the controller when all of the following are true:
+        //  - its previous and new values are far away from and on the same side
+        //      of the current value of the MixxxControl
+        //  - it's been awhile since the controller last affected this MixxxControl
         
         // 3/128 units away from the current is enough to catch fast non-sequential moves
         //  but not cause an audially noticeable jump.
-        float threshold = 3;
+        float threshold = 3.0f;
         
         ControlObject* temp = ControlObject::getControl(
             ConfigKey(mc.getControlObjectGroup(), mc.getControlObjectValue()));
@@ -93,16 +101,26 @@ bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {
             // End hack
             
             double scaleFactor = maxValue-minValue;
-            threshold = scaleFactor*(threshold/128);
+            threshold = scaleFactor*(threshold/128.0f);
         }
         
-        double oldValue;
-        if (midiVal) oldValue = temp->GetMidiValue();
-        else oldValue = temp->get();
-        double difference = oldValue - newValue;
+        double currentValue;
+        if (midiVal) currentValue = temp->GetMidiValue();
+        else currentValue = temp->get();
+        double difference = currentValue - newValue;
+        double prevDiff = 0;
+        bool sameSide = false;
+        if (m_prevValues.contains(mc)) {
+            double prevValue = m_prevValues.value(mc);
+            prevDiff = currentValue - prevValue;
+            if ((prevDiff < 0 && difference < 0) ||
+                (prevDiff > 0 && difference > 0)) {
+                sameSide = true;
+            }
+        }
         
         uint currentTime = currentTimeMsecs();
-        if (fabs(difference)>threshold
+        if (fabs(difference)>threshold && fabs(prevDiff)>threshold && sameSide
             && (currentTime - m_times.value(mc)) > SUBSEQUENT_VALUE_OVERRIDE_TIME) {
             ignore = true;
         }
@@ -110,6 +128,8 @@ bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {
             //  Update the time only if the value is not ignored
             m_times.insert(mc,currentTime); // Replaces any previous value for this MixxxControl
         }
+        //  Update the previous value every time
+        m_prevValues.insert(mc,newValue);
     }
     return ignore;
 }

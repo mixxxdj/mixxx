@@ -141,6 +141,9 @@
             <key>lfoDepth</key>
             <status>0xB0</status>
             <midino>0x25</midino>
+            <options>
+                <soft-takeover/>
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
@@ -758,6 +761,9 @@
             <key>lfoDepth</key>
             <status>0xB0</status>
             <midino>0x2A</midino>
+            <options>
+                <soft-takeover/>
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
@@ -1252,7 +1258,8 @@
             <status>0xB0</status>
             <midino>0x1F</midino>
             <options>
-               <invert />
+               <invert/>
+               <soft-takeover/>
             </options>
          </control>
          <control>
@@ -1261,7 +1268,7 @@
             <status>0xB0</status>
             <midino>0x22</midino>
             <options>
-                <soft-takeover />
+                <soft-takeover/>
             </options>
          </control>
          <control>

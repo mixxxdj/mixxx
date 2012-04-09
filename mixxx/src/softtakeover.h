@@ -23,7 +23,7 @@ class SoftTakeover {
 
     public:
         /** Enable soft-takeover for the given Control
-            It's okay to call this on a Control that's already enabled. */
+            This does nothing on a Control that's already enabled. */
         void enable(MixxxControl control);
         void enable(QString group, QString name);
         /** Disable soft-takeover for the given Control */
@@ -45,6 +45,7 @@ class SoftTakeover {
         //QHash<MixxxControl,qint64> m_times;
         uint currentTimeMsecs();
         QHash<MixxxControl,uint> m_times;
+        QHash<MixxxControl,double> m_prevValues;
 };
 
 #endif
