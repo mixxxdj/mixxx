@@ -345,6 +345,7 @@ class MixxxCore(Feature):
                    "analyserwaveform.cpp",
 
                    "controllers/controller.cpp",
+                   "controllers/controllerpresetfilehandler.cpp",
                    "controllers/controllermanager.cpp",
                    "controllers/controllerenumerator.cpp",
                    "controllers/controllerengine.cpp",
@@ -355,6 +356,7 @@ class MixxxCore(Feature):
                    # MIDI controllers
                    "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midicontroller.cpp",
+                   "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midioutputhandler.cpp",
 
                    "mixxxcontrol.cpp",

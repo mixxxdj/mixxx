@@ -27,6 +27,7 @@
 #include "softtakeover.h"
 
 #include "midimessage.h"
+#include "midicontrollerpresetfilehandler.h"
 
 class MidiController : public Controller {
 Q_OBJECT    // For signals & slots
@@ -36,9 +37,12 @@ Q_OBJECT    // For signals & slots
     public:
         MidiController();
         virtual ~MidiController();
+        
         virtual QString presetExtension();
-
         inline QString defaultPreset();
+        MidiControllerPresetFileHandler getFileHandler() {
+            return MidiControllerPresetFileHandler();
+        }
 
     signals:
         void midiEvent(MidiKey message);
@@ -79,9 +83,6 @@ Q_OBJECT    // For signals & slots
         void destroyOutputHandlers();
 
         QList<MidiOutputHandler*> m_outputs;
-
-        QHash<uint16_t, QPair<ConfigKey, MidiOptions> > m_mappings;
-        QHash<ConfigKey, MidiOutput> m_outputMappings;
 
         SoftTakeover m_st;
 
