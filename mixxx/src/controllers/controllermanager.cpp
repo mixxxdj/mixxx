@@ -17,6 +17,7 @@
 // #include <QtCore>
 #include "controllermanager.h"
 #include "defs_controllers.h"
+// #include "controllerpresetfilehandler.h"
 
 #include "midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -215,9 +216,13 @@ int ControllerManager::slotSetUpDevices() {
         }
 
         filenames.append(filename);
-        m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
+
+        ControllerPresetFileHandler handler = cur->getFileHandler();
+        ControllerPreset preset = handler.load(PRESETS_PATH.append(filename + cur->presetExtension()),name,true);
+
+        cur->setPreset(preset);
 //         qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
-        cur->loadPreset(PRESETS_PATH.append(filename + cur->presetExtension()),true);
+        m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
 
         if ( m_pConfig->getValueString(ConfigKey("[Controller]", name.replace(" ", "_"))) != "1" )
             continue;
@@ -274,11 +279,11 @@ QList<QString> ControllerManager::getPresetList(QString extension)
         while (it.hasNext())
         {
             it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
-            QString curMapping = it.fileName();
-            if (curMapping.endsWith(extension))
+            QString curPreset = it.fileName();
+            if (curPreset.endsWith(extension))
             {
-                curMapping.chop(QString(extension).length()); //chop off the extension
-                presets.append(curMapping);
+                curPreset.chop(QString(extension).length()); //chop off the extension
+                presets.append(curPreset);
             }
         }
     }
@@ -310,6 +315,9 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         }
         
         filenames.append(filename);
-        cur->savePreset(PRESETS_PATH.append(filename + cur->presetExtension()));
+//         cur->savePreset(PRESETS_PATH.append(filename + cur->presetExtension()));
+        ControllerPresetFileHandler handler = cur->getFileHandler();
+        handler.save(cur->getPreset(),name,PRESETS_PATH.append(filename + cur->presetExtension()));
+        
     }
 }

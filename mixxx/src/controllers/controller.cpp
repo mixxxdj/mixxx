@@ -37,8 +37,13 @@ Controller::~Controller() {
 //     close(); // I wish I could put this here to enforce it automatically
 }
 
-// XML-handling functions in a separate file for clarity
-#include "controller-preset.cpp"
+QString Controller::defaultPreset() {
+    return PRESETS_PATH.append(m_sDeviceName.replace(" ", "_") + presetExtension());
+}
+
+QString Controller::presetExtension() {
+    return CONTROLLER_PRESET_EXTENSION;
+}
 
 void Controller::startEngine()
 {
@@ -69,25 +74,15 @@ void Controller::applyPreset() {
     QStringList scriptFunctions;
     if (m_pEngine != NULL) {
         scriptFunctions = m_pEngine->getScriptFunctions();
-        if (scriptFunctions.isEmpty() && m_scriptFileNames.isEmpty()) {
+        if (scriptFunctions.isEmpty() && m_preset.scriptFileNames.isEmpty()) {
             qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         }
         else {
-            if (scriptFunctions.isEmpty()) m_pEngine->loadScriptFiles(m_scriptFileNames);
-            m_pEngine->initializeScripts(m_scriptFunctionPrefixes);
+            if (scriptFunctions.isEmpty()) m_pEngine->loadScriptFiles(m_preset.scriptFileNames);
+            m_pEngine->initializeScripts(m_preset.scriptFunctionPrefixes);
         }
     }
     else qWarning() << "Controller::applyPreset(): No engine exists!";
-}
-
-/** addScriptFile(QString,QString)
-* Adds an entry to the list of script file names & associated list of function prefixes
-* @param filename Name of the XML file to add
-* @param functionprefix Function prefix to add
-*/
-void Controller::addScriptFile(QString filename, QString functionprefix) {
-    m_scriptFileNames.append(filename);
-    m_scriptFunctionPrefixes.append(functionprefix);
 }
 
 void Controller::send(QList<int> data, unsigned int length) {

@@ -21,11 +21,6 @@
 
 #include "../defs_controllers.h"   // For MIDI_MAPPING_EXTENSION
 
-#define DEFAULT_OUTPUT_MAX  1.0f
-#define DEFAULT_OUTPUT_MIN  0.0f    // Anything above 0 is "on"
-#define DEFAULT_OUTPUT_ON   0x7F
-#define DEFAULT_OUTPUT_OFF  0x00
-
 MidiController::MidiController() : Controller() {
     m_bMidiLearn = false;
 }
@@ -35,8 +30,15 @@ MidiController::~MidiController(){
 //     close(); // I wish I could put this here to enforce it automatically
 }
 
-// XML-handling functions in a separate file for clarity
-#include "midicontroller-preset.cpp"
+QString MidiController::defaultPreset() {
+    return PRESETS_PATH.append(m_sDeviceName.right(m_sDeviceName.size()
+            -m_sDeviceName.indexOf(" ")-1).replace(" ", "_")
+            + presetExtension());
+}
+
+QString MidiController::presetExtension() {
+    return MIDI_MAPPING_EXTENSION;
+}
 
 void MidiController::applyPreset() {
 
@@ -53,9 +55,9 @@ void MidiController::applyPreset() {
 }
 
 void MidiController::createOutputHandlers() {
-    if (m_outputMappings.isEmpty()) return;
+    if (m_preset.outputMappings.isEmpty()) return;
 
-    QHashIterator<ConfigKey, MidiOutput> outIt(m_outputMappings);
+    QHashIterator<ConfigKey, MidiOutput> outIt(m_preset.outputMappings);
     while (outIt.hasNext()) {
         outIt.next();
 
@@ -208,8 +210,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         return; // Don't process midi messages further when MIDI learning
     }
     // If no control is bound to this MIDI message, return
-    if (!m_mappings.contains(mappingKey.key)) return;
-    controlOptions = m_mappings.value(mappingKey.key);
+    if (!m_preset.mappings.contains(mappingKey.key)) return;
+    controlOptions = m_preset.mappings.value(mappingKey.key);
 
     ConfigKey ckey = controlOptions.first;
     MidiOptions options = controlOptions.second;
@@ -370,8 +372,8 @@ void MidiController::receive(QByteArray data) {
         return; // Don't process midi messages further when MIDI learning
     }
     // If no control is bound to this MIDI status, return
-    if (!m_mappings.contains(mappingKey.key)) return;
-    control = m_mappings.value(mappingKey.key);
+    if (!m_preset.mappings.contains(mappingKey.key)) return;
+    control = m_preset.mappings.value(mappingKey.key);
     
     ConfigKey ckey = control.first;
     MidiOptions options = control.second;

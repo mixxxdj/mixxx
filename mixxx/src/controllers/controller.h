@@ -23,6 +23,7 @@
 #define CONTROLLER_H
 
 #include "controllerengine.h"
+#include "controllerpresetfilehandler.h"
 
 class Controller : public QObject {
 Q_OBJECT
@@ -38,6 +39,11 @@ Q_OBJECT
             preset files for the controller (type.) */
         virtual QString presetExtension();
         inline QString defaultPreset();
+        void setPreset(const ControllerPreset preset) { m_preset = preset; };
+        ControllerPreset getPreset() { return m_preset; };
+        virtual ControllerPresetFileHandler getFileHandler() {
+            return ControllerPresetFileHandler();
+        }
         
         bool isOpen() { return m_bIsOpen; };
         bool isOutputDevice() { return m_bIsOutputDevice; };
@@ -48,13 +54,9 @@ Q_OBJECT
         void setPolling(bool needPolling) { m_bPolling = needPolling; };
         bool needPolling() { return m_bPolling; };
 
-    protected:
-        virtual QDomElement loadPreset(QDomElement root, bool forceLoad=false);
-        /** Creates the XML document and includes what script files are currently loaded.
-            Sub-classes need to re-implement this (and call it first) if they
-            need to add any other items. */
-        virtual QDomDocument buildXML();
         
+
+    protected:
         /** To be called in sub-class' open() functions after opening the
             device but before starting any input polling/processing. */
         void startEngine();
@@ -81,8 +83,6 @@ Q_OBJECT
 
         ControllerEngine *m_pEngine;
 
-        QList<QString> m_scriptFileNames;
-
     // Making these slots protected/private ensures that other parts of Mixxx
     //  can only signal them, preventing thread contention
     protected slots:
@@ -98,29 +98,13 @@ Q_OBJECT
     private slots:
         virtual int open() = 0;
         virtual int close() = 0;
-        
-        void loadPreset(bool forceLoad=false);
-        void loadPreset(QString path, bool forceLoad=false);
-        
+
     private:
         /** This must be reimplmented by sub-classes desiring to send raw bytes
             to a controller. */
         virtual void send(QByteArray data);
-        
-        /** Adds a script file name and function prefix to the list to be loaded. */
-        void addScriptFile(QString filename, QString functionprefix);
-        
-        /** Saves the current preset to the default device XML file. */
-        void savePreset();
-        /** Given a path, saves the current preset to an XML file. */
-        void savePreset(QString path);
 
-        /** Returns just the name of a given device (everything before the first space) */
-        QString rootDeviceName(QString deviceName) {
-            return deviceName.left(deviceName.indexOf(" "));
-        }
-
-        QList<QString> m_scriptFunctionPrefixes;
+        ControllerPreset m_preset;
 
         bool m_bPolling;
 };
