@@ -312,16 +312,12 @@ void TrackInfoObject::setReplayGain(float f)
     emit(ReplayGainUpdated(f));
 }
 
-float TrackInfoObject::getBpm() const
-{
+float TrackInfoObject::getBpm() const {
     QMutexLocker lock(&m_qMutex);
     return m_fBpm;
 }
 
-
-
-void TrackInfoObject::setBpm(float f)
-{
+void TrackInfoObject::setBpm(float f) {
     QMutexLocker lock(&m_qMutex);
     bool dirty = m_fBpm != f;
     m_fBpm = f;

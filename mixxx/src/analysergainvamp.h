@@ -5,8 +5,8 @@
  *      Author: vittorio
  */
 
-#ifndef ANALYSERRGAINVAMP_H_
-#define ANALYSERRGAINVAMP_H_
+#ifndef ANALYSERRGAINVAMP_H
+#define ANALYSERRGAINVAMP_H
 
 #include "analyser.h"
 #include "configobject.h"
@@ -15,15 +15,16 @@
 class AnalyserGainVamp: public Analyser {
   public:
     AnalyserGainVamp(ConfigObject<ConfigValue> *_config);
-    ~AnalyserGainVamp();
+    virtual ~AnalyserGainVamp();
+
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);
 
   private:
-    bool m_bPass;
-    ConfigObject<ConfigValue> *m_pConfigAVR;
-    VampAnalyser* mvamprg;
+    ConfigObject<ConfigValue>* m_pConfig;
+    bool m_bShouldAnalyze;
+    VampAnalyser* m_pVamp;
 };
 
-#endif /* ANALYSERRGAINVAMP_H_ */
+#endif /* ANALYSERRGAINVAMP_H */

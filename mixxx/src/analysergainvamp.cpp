@@ -13,54 +13,67 @@
 #include <math.h>
 #include "analysergainvamp.h"
 
-AnalyserGainVamp::AnalyserGainVamp(ConfigObject<ConfigValue> *_config) {
-    m_pConfigAVR = _config;
+AnalyserGainVamp::AnalyserGainVamp(ConfigObject<ConfigValue>* _config) {
+    m_pConfig = _config;
 }
 
 AnalyserGainVamp::~AnalyserGainVamp() {
 }
 
 void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
-    mvamprg = new VampAnalyser(m_pConfigAVR);
-    m_bPass = false;
-    bool bAnalyserEnabled = (bool)m_pConfigAVR->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    m_pVamp = new VampAnalyser(m_pConfig);
+    m_bShouldAnalyze = false;
+    bool bAnalyserEnabled = static_cast<bool>(
+        m_pConfig->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt());
+
     float fReplayGain = tio->getReplayGain();
-    if(totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
+    if (totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
         //qDebug() << "Replaygain Analyser will not start.";
         //if (fReplayGain != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fReplayGain) << "dB for track :" <<(tio->getFilename());
         return;
-   }
+    }
 
-    m_bPass = mvamprg->Init("libmixxxminimal","replaygain:0",sampleRate, totalSamples);
-    if (!m_bPass)
+    m_bShouldAnalyze = m_pVamp->Init("libmixxxminimal", "replaygain:0",
+                                     sampleRate, totalSamples);
+    if (!m_bShouldAnalyze) {
         qDebug() << "Failed to init Vamp Replay Gain Analyser";
+        delete m_pVamp;
+        m_pVamp = NULL;
+    }
 }
 
 void AnalyserGainVamp::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_bPass) {
+    if (!m_bShouldAnalyze) {
         return;
     }
-    m_bPass = mvamprg->Process(pIn, iLen);
+    m_bShouldAnalyze = m_pVamp->Process(pIn, iLen);
+    if (!m_bShouldAnalyze) {
+        delete m_pVamp;
+        m_pVamp = NULL;
+    }
 }
 
 void AnalyserGainVamp::finalise(TrackPointer tio) {
-    if (!m_bPass) {
+    if (!m_bShouldAnalyze) {
         return;
     }
-    QVector<double> values;
-    values = mvamprg->GetFirstValuesVector();
+
+    QVector<double> values = m_pVamp->GetFirstValuesVector();
     if (!values.isEmpty()) {
-        //qDebug()<<"Found a ReplayGain value of"<<pow(10,values[0]/20);
-        float fReplayGain_Result = pow(10,values[0]/20);
+        //qDebug() << "Found a ReplayGain value of" << pow(10,values[0]/20);
+        float fReplayGain_Result = pow(10, values[0]/20);
         tio->setReplayGain(fReplayGain_Result);
     }
-    values.clear();
-    m_bPass = mvamprg->End();
-    if(m_bPass)
-        qDebug()<<"Optimal Gain detection complete";
-    else
-        qDebug()<<"Error in Optimal Gain detection";
 
-    delete mvamprg;
-    mvamprg = NULL;
+    // Should this come before the GetFirstValuesVector call?
+    m_bShouldAnalyze = m_pVamp->End();
+
+    if (m_bShouldAnalyze) {
+        qDebug() << "ReplayGain detection complete";
+    } else {
+        qDebug() << "Error in ReplayGain detection";
+    }
+
+    delete m_pVamp;
+    m_pVamp = NULL;
 }
