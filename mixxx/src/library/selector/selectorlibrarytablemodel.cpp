@@ -15,7 +15,7 @@
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
-                            "mixxx.db.model.prepare") {
+                            "mixxx.db.model.selector") {
 
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
@@ -31,46 +31,9 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_bFilterRating = false;
     m_bFilterKey = false;
     m_bFilterHarmonicKey = false;
-    m_pChannelBpm = NULL;
+    m_channelBpm = NULL;
 
-    // TODO - move this somewhere sensible...
-    m_pHarmonics["Abm"] = "'Dbm', 'C#m', 'B',  'Ebm', 'D#m'";
-    m_pHarmonics["G#m"] = m_pHarmonics["Abm"];
-    m_pHarmonics["Ebm"] = "'Abm', 'G#m', 'F#', 'Bbm', 'A#m'";
-    m_pHarmonics["D#m"] = m_pHarmonics["Ebm"];
-    m_pHarmonics["Bbm"] = "'Ebm', 'D#m', 'Db', 'C#',  'Fm'";
-    m_pHarmonics["A#m"] = m_pHarmonics["Bbm"];
-    m_pHarmonics["Fm"]  = "'Bbm', 'A#m', 'Ab', 'G#',  'Cm'";
-    m_pHarmonics["Cm"]  = "'Fm',  'Eb',  'D#', 'Gm'";
-    m_pHarmonics["Gm"]  = "'Cm',  'Bb',  'A#', 'Dm'";
-    m_pHarmonics["Dm"]  = "'Gm',  'F',   'Am'";
-    m_pHarmonics["Am"]  = "'Dm',  'C',   'Em'";
-    m_pHarmonics["Em"]  = "'Am',  'G',   'Bm'";
-    m_pHarmonics["Bm"]  = "'Em',  'D',   'F#m', 'Gbm'";
-    m_pHarmonics["F#m"] = "'Bm',  'A',   'Dbm', 'C#m'";
-    m_pHarmonics["Gbm"] = m_pHarmonics["F#m"];
-    m_pHarmonics["Dbm"] = "'F#m', 'Gbm', 'F#m', 'E', 'Abm', 'G#m'";
-    m_pHarmonics["C#m"] = m_pHarmonics["Dbm"];
-
-    m_pHarmonics["B"]  = "'E',  'Abm', 'G#m', 'F#'";
-    m_pHarmonics["F#"] = "'B',  'Ebm', 'D#m', 'Db', 'C#'";
-    m_pHarmonics["Db"] = "'F#', 'Bbm', 'A#m', 'Ab', 'G#'";
-    m_pHarmonics["C#"] = m_pHarmonics["Db"];
-    m_pHarmonics["Ab"] = "'Db', 'C#',  'Fm',  'Eb', 'D#'";
-    m_pHarmonics["G#"] = m_pHarmonics["Ab"];
-    m_pHarmonics["Eb"] = "'Ab', 'G#',  'Cm',  'Bb'";
-    m_pHarmonics["D#"] = m_pHarmonics["Eb"];
-    m_pHarmonics["Bb"] = "'Eb', 'D#',  'Gm',  'F'";
-    m_pHarmonics["A#"] = m_pHarmonics["Bb"];
-    m_pHarmonics["F"]  = "'Bb', 'Dm',  'C'";
-    m_pHarmonics["C"]  = "'F',  'Am',  'G'";
-    m_pHarmonics["G"]  = "'C',  'Em',  'D'";
-    m_pHarmonics["D"]  = "'G',  'Bm',  'A'";
-    m_pHarmonics["A"]  = "'D',  'F#m', 'Gbm', 'E'";
-    m_pHarmonics["E"]  = "'A',  'Dbm', 'C#m', 'B'";
-
-    m_pSemitoneList = QString("C,Cm,C#,C#m,D,Dm,Eb,Ebm,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,Bb,Bbm,B,Bm").split(",");
-
+    initializeHarmonicsData();
 
 }
 
@@ -86,14 +49,14 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_pChannel = QString("[Channel%1]").arg(deck);
 
     // disconnect the old pitch slider
-    if (m_pChannelBpm) {
-        m_pChannelBpm->disconnect(this);
+    if (m_channelBpm) {
+        m_channelBpm->disconnect(this);
     }
     // get the new pitch slider object
-    m_pChannelBpm = new ControlObjectThreadMain(
+    m_channelBpm = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
     // listen for slider change events
-    connect(m_pChannelBpm, SIGNAL(valueChanged(double)), this, 
+    connect(m_channelBpm, SIGNAL(valueChanged(double)), this, 
         SLOT(slotChannel1BpmChanged(double)));
 
     m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
@@ -169,8 +132,34 @@ void SelectorLibraryTableModel::setKeyFilters(float rate) {
     // Key
     m_pFilterKey = (TrackKey!="") ? QString("Key == '%1'").arg(TrackKey) : QString();
     // Harmonic Key
-    QString hKeys = m_pHarmonics[TrackKey];
+    //QString hKeys = m_harmonics[TrackKey];
+
+    QString hKeys;
+
+    // determine major or minor key "m" 
+    if (TrackKey.contains("m", Qt::CaseInsensitive)) {
+        hKeys = getHarmonicKeys(m_minors,m_majors,TrackKey);
+    } else {
+        hKeys = getHarmonicKeys(m_majors,m_minors,TrackKey);
+    }
+    
+    qDebug() << "setKeyFilters hKeys = " << hKeys;
+
+
     m_pFilterHarmonicKey = (hKeys!="") ? QString("Key in (%1)").arg(hKeys) : QString();
+}
+
+QString SelectorLibraryTableModel::getHarmonicKeys(QStringList keys1, QStringList keys2, QString key) const {
+    int index = keys1.indexOf(key);
+    if (index<0) return QString("");
+    int lower = index-1;
+    if (lower<0) lower += keys1.count(); 
+    int upper = index+1;
+    if (upper>=keys1.count()) upper -= keys1.count(); 
+    qDebug() << "getHarmonicKeys index = " << index;
+    qDebug() << "getHarmonicKeys lower = " << lower;
+    qDebug() << "getHarmonicKeys upper = " << upper;
+    return QString("'%1','%2','%3'").arg(keys1[lower],keys2[index],keys1[upper]);
 }
 
 
@@ -178,7 +167,7 @@ QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
     if (pitch == "") return pitch;
 
     qDebug() << "adjustPitchBy pitch = " << pitch;
-    int position = m_pSemitoneList.indexOf(pitch);
+    int position = m_semitoneList.indexOf(pitch);
     if (position<0){
         qDebug() << "Pitch " << pitch << " not found in config.";
         return pitch;
@@ -188,7 +177,7 @@ QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
     if (newpos >= 24) {
         newpos = newpos - 24;
     }
-    QString newpitch = m_pSemitoneList.at(newpos);
+    QString newpitch = m_semitoneList.at(newpos);
     return newpitch;
 }
 
@@ -274,4 +263,77 @@ void SelectorLibraryTableModel::filterByKey(bool value) {
 void SelectorLibraryTableModel::filterByHarmonicKey(bool value) {
     m_bFilterHarmonicKey = value;
     emit(doSearch(QString()));
+}
+
+void SelectorLibraryTableModel::initializeHarmonicsData() {
+
+    /*
+    m_enharmonic_preference = "b" // # or b
+    "A# = Bb"
+    "C# = Db"
+    "D# = Eb"
+    "F# = Gb"
+    "G# = Ab"
+
+    m_enharmonic_preference = "#" // # or b
+    "Ab = G#"
+    "Bb = A#"
+    "Db = C#"
+    "Eb = D#"
+    "Gb = F#"
+    */
+    
+    /*
+    m_majors = QString("C,G,D,A,E,B,F#,Db,Ab,Eb,Bb,F").split(",");
+    m_minors = QString("Am,Em,Bm,F#m,Dbm,Abm,Ebm,Bbm,Fm,Cm,Gm,Dm").split(",");
+    m_semitoneList = QString("C,Cm,C#,C#m,D,Dm,Eb,Ebm,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,Bb,Bbm,B,Bm").split(",");
+    */
+
+    if (m_enharmonic_preference == "#") {
+        // prefer #'s
+        m_majors = QString("C,G,D,A,E,B,F#,C#,G#,D#,A#,F").split(",");
+        m_minors = QString("Am,Em,Bm,F#m,C#m,G#m,D#m,A#m,Fm,Cm,Gm,Dm").split(",");
+        m_semitoneList = QString("C,Cm,C#,C#m,D,Dm,D#,D#m,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,A#,A#m,B,Bm").split(",");
+    } else {
+        // prefer b's
+        m_majors = QString("C,G,D,A,E,B,Gb,Db,Ab,Eb,Bb,F").split(",");
+        m_minors = QString("Am,Em,Bm,Gbm,Dbm,Abm,Ebm,Bbm,Fm,Cm,Gm,Dm").split(",");
+        m_semitoneList = QString("C,Cm,Db,Dbm,D,Dm,Eb,Ebm,E,Em,F,Fm,Gb,Gbm,G,Gm,Ab,Abm,A,Am,Bb,Bbm,B,Bm").split(",");
+    }
+
+
+    // OK notation
+    m_majors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("d,");
+    m_minors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("m,");
+    m_semitoneList = QString("1d,10m,8d,5m,3d,12m,10d,7m,5d,2m,12d,9m,7d,4m,2d,11m,9d,6m,4d,1m,11d,8m,6d,Bm").split(",");
+
+QHash<QString, QStringList> hash;
+
+hash["1d"] = "C";
+hash["2d"] = "G";
+hash["3d"] = "D";
+hash["4d"] = "A";
+hash["5d"] = "E";
+hash["6d"] = "B";
+hash["7d"] = "F#,Gb";
+hash["8d"] = "C#,Db";
+hash["9d"] = "G#,Ab";
+hash["10d"] = "D#,Eb";
+hash["11d"] = "A#,Bb";
+hash["12d"] = "F";
+
+hash["1m"] = "Am";
+hash["2m"] = "Em";
+hash["3m"] = "Bm";
+hash["4m"] = "F#m,Gbm";
+hash["5m"] = "C#m,Dbm";
+hash["6m"] = "G#m,Abm";
+hash["7m"] = "D#m,Ebm";
+hash["8m"] = "A#m,Bbm";
+hash["9m"] = "Fm";
+hash["10m"] = "Cm";
+hash["11m"] = "Gm";
+hash["12m"] = "Dm";
+
+
 }

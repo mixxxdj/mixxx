@@ -3,14 +3,13 @@
 
 #include <QtDebug>
 
-#include "library/selectorfeature.h"
+#include "library/selector/selectorfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "dlgselector.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
-#include "analyserqueue.h"
 
 const QString SelectorFeature::m_sSelectorViewName = QString("Selector");
 

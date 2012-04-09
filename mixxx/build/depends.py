@@ -409,15 +409,14 @@ class MixxxCore(Feature):
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
+                   "library/searchqueryparser.cpp",
                    "library/preparelibrarytablemodel.cpp",
-                   "library/selectorlibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
                    "library/preparefeature.cpp",
-                   "library/selectorfeature.cpp",
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/baseplaylistfeature.cpp",
@@ -432,6 +431,9 @@ class MixxxCore(Feature):
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
+
+                   "library/selector/selectorfeature.cpp",
+                   "library/selector/selectorlibrarytablemodel.cpp",
 
                    # External Library Features
                    "library/rhythmbox/rhythmboxfeature.cpp",

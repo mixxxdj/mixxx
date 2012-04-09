@@ -6,8 +6,8 @@
 
 #include <QStringListModel>
 #include "library/libraryfeature.h"
+#include "library/treeitemmodel.h"
 #include "configobject.h"
-#include "treeitemmodel.h"
 
 class LibraryTableModel;
 class TrackCollection;

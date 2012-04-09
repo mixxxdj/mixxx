@@ -4,7 +4,7 @@
 #define SELECTORLIBRARYTABLEMODEL_H_
 
 #include <QModelIndexList>
-#include "librarytablemodel.h"
+#include "library/librarytablemodel.h"
 #include "controlobjectthreadmain.h"
 
 
@@ -57,8 +57,11 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterRating;
     bool m_bFilterKey;
     bool m_bFilterHarmonicKey;
-    QHash<QString, QString> m_pHarmonics;
-    QStringList m_pSemitoneList;
+
+    QStringList m_semitoneList;
+    QStringList m_majors;
+    QStringList m_minors;
+
     QString m_pFilterGenre;
     QString m_pFilterBpm;
     QString m_pFilterYear;
@@ -67,7 +70,9 @@ class SelectorLibraryTableModel : public LibraryTableModel
     QString m_pFilterHarmonicKey;
     QString m_pChannel;
     TrackPointer m_pLoadedTrack;
-    ControlObjectThreadMain* m_pChannelBpm;
+    ControlObjectThreadMain* m_channelBpm;
+    void initializeHarmonicsData();
+    QString getHarmonicKeys(QStringList key1, QStringList key2, QString key) const;
 
 };
 

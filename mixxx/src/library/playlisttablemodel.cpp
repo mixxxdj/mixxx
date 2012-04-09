@@ -40,7 +40,8 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
 
     QStringList columns;
     columns << PLAYLISTTRACKSTABLE_TRACKID
-            << PLAYLISTTRACKSTABLE_POSITION;
+            << PLAYLISTTRACKSTABLE_POSITION
+            << PLAYLISTTRACKSTABLE_DATETIMEADDED;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -332,6 +333,9 @@ bool PlaylistTableModel::isColumnInternal(int column) {
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
+    }
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+       return true;
     }
     return false;
 }

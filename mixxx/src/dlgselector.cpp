@@ -1,7 +1,7 @@
 #include <QSqlTableModel>
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
-#include "library/selectorlibrarytablemodel.h"
+#include "library/selector/selectorlibrarytablemodel.h"
 #include "transposeproxymodel.h"
 #include "widget/wselectorlibrarytableview.h"
 #include "library/trackcollection.h"
@@ -47,7 +47,7 @@ DlgSelector::DlgSelector(QWidget* parent,
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
             this,  SLOT(spinBoxBpmRangeChanged(int)));
 
-    checkBoxGenre->click();
+    //checkBoxGenre->click(); // dont do this - let the user choose
 
     connect(m_pSelectorLibraryTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),

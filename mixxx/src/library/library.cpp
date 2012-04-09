@@ -18,7 +18,7 @@
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
-#include "library/selectorfeature.h"
+#include "library/selector/selectorfeature.h"
 #include "library/promotracksfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
