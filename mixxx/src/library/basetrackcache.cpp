@@ -266,7 +266,7 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         return pTrack->getKey();
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
-            return pTrack->hasBpmLock();
+        return QVariant(pTrack->hasBpmLock());
     }
     return QVariant();
 }
