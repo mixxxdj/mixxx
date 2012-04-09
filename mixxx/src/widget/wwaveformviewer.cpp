@@ -155,9 +155,9 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
     if (m_waveformWidget) {
         if (event->x() > width() - m_zoomZoneWidth) {
             if (event->delta() > 0)
-                m_pZoom->incValue(1.0);
-            else
                 m_pZoom->decValue(1.0);
+            else
+                m_pZoom->incValue(1.0);
         }
     }
 }

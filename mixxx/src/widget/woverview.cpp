@@ -85,7 +85,6 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
         pControl = ControlObject::getControl(hotcueKey);
     }
 
-    //vrince
     m_waveform = NULL;
     m_waveformPixmap = QPixmap();
     m_actualCompletion = 0;
@@ -93,6 +92,9 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
 
     m_timerPixmapRefresh = -1;
     m_renderSampleLimit = 1000;
+
+    m_a = 1.0;
+    m_b = 0.0;
 }
 
 WOverview::~WOverview() {
@@ -131,9 +133,11 @@ void WOverview::setValue(double fValue) {
     if (!m_bDrag)
     {
         // Calculate handle position
-        int iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
+        //int iPos = (int)(((fValue-14.f)/100.f)*((double)width()-2.));
+        int iPos = valueToPosition(fValue);
         if (iPos != m_iPos) {
             m_iPos = iPos;
+            qDebug() << "WOverview::setValue" << fValue << ">>" << m_iPos;
             update();
         }
     }
@@ -193,7 +197,9 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
 }
 
 void WOverview::cueChanged(double v) {
-    //qDebug() << "WOverview::cueChanged()";
+
+    qDebug() << "WOverview::cueChanged()" << v;
+
     QObject* pSender = sender();
     if (!pSender)
         return;
@@ -265,7 +271,7 @@ bool WOverview::drawNextPixmapPart() {
     painter.scale(1.0,2.0*(double)(height()-2)/255.0);
 
     //draw only the new part
-    const float pixelStartPosition = (float)m_actualCompletion / (float)m_waveform->getDataSize() * (float)width();
+    const float pixelStartPosition = 1.0 + (float)m_actualCompletion / (float)m_waveform->getDataSize() * (float)(width()-2);
     const float pixelByVisualSamples = 1.0 / m_visualSamplesByPixel;
 
     const float alpha = math_min( 1.0, 2.0*math_max( 0.0, pixelByVisualSamples));
@@ -318,12 +324,9 @@ bool WOverview::drawNextPixmapPart() {
 void WOverview::mouseMoveEvent(QMouseEvent * e)
 {
     m_iPos = e->x()-m_iStartMousePos;
+    m_iPos = math_max(1,math_min(m_iPos,width()-1));
 
-    if (m_iPos>width()-2)
-        m_iPos = width()-2;
-    else if (m_iPos<0)
-        m_iPos = 0;
-
+    //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
 
     // Update display
     update();
@@ -333,8 +336,9 @@ void WOverview::mouseReleaseEvent(QMouseEvent * e)
 {
     mouseMoveEvent(e);
 
-    // value ranges from 0 to 127 map to -1 to 1
-    float fValue = ((double)m_iPos*(100./(double)(width()-2))) + 14.;
+    float fValue = positionToValue(m_iPos);
+
+    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
 
     if (e->button()==Qt::RightButton)
         emit(valueChangedRightUp(fValue));
@@ -346,6 +350,8 @@ void WOverview::mouseReleaseEvent(QMouseEvent * e)
 
 void WOverview::mousePressEvent(QMouseEvent * e)
 {
+    //qDebug() << "WOverview::mousePressEvent" << e->pos();
+
     m_iStartMousePos = 0;
     mouseMoveEvent(e);
     m_bDrag = true;
@@ -460,12 +466,18 @@ void WOverview::timerEvent(QTimerEvent* timer) {
         //if m_waveform is empty ... actual computation do not start !
         //it must be in the analyser queue, we need to wait until it ready to display
         if (m_waveform->getDataSize() > 0 &&
-            m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
+                m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
             //qDebug() << " WOverview::timerEvent - kill timer";
             killTimer(m_timerPixmapRefresh);
             m_timerPixmapRefresh = -1;
         }
     }
+}
+
+void WOverview::resizeEvent(QResizeEvent *) {
+    //Those coeficient map position from [1;width-1] to value [14;114]
+    m_a = float( (width()-1) - 1)/( 114.f - 14.f);
+    m_b = 1 - 14.f*m_a;
 }
 
 QColor WOverview::getMarkerColor() {
