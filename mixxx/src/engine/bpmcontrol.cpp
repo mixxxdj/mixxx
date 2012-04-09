@@ -213,13 +213,9 @@ bool BpmControl::syncTempo() {
         // effective BPM equivalent to the other decks.
         double fDesiredRate = fOtherBpm / fThisFileBpm;
 
-
-#ifdef __VAMP__
-        // Beattracking through vamp does not need this workaround- vittorio.
-#else
-        // Test if this buffers bpm is the double of the other one, and adjust
+        // Test if this buffer's bpm is the double of the other one, and adjust
         // the rate scale. I believe this is intended to account for our BPM
-        // algorithm sometimes finding double or half BPMs. This avoid drastic
+        // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
 
         float fFileBpmDelta = fabs(fThisFileBpm-fOtherFileBpm);
@@ -228,7 +224,6 @@ bool BpmControl::syncTempo() {
         } else if (fabs(fThisFileBpm - 2.0*fOtherFileBpm) < fFileBpmDelta) {
             fDesiredRate *= 2.0;
         }
-#endif
 
         // Subtract the base 1.0, now fDesiredRate is the percentage
         // increase/decrease in playback rate, not the playback rate.
