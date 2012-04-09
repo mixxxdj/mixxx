@@ -212,6 +212,8 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDo
         m_waveformWidgetHolders[index] = WaveformWidgetHolder( waveformWidget, viewer, node);
     }
 
+    viewer->setZoom(m_defaultZoom);
+
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory index" << index;
 
     return true;
