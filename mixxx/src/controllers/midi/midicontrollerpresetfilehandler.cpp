@@ -175,7 +175,7 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
                         << QString::number(key.control, 16).toUpper()
                         << target.first.group << target.first.item;
 */
-            preset.mappings.insert(key.key, target);
+            preset->mappings.insert(key.key, target);
             // Notify the GUI and anyone else who cares
 //                 emit(newMapping());  // TODO
         }
@@ -255,7 +255,7 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
         */
         // We use insertMulti because certain tricks are done with multiple
         //  entries for the same ConfigKey
-        preset.outputMappings.insertMulti(ConfigKey(controlGroup, controlKey),outputMessage);
+        preset->outputMappings.insertMulti(ConfigKey(controlGroup, controlKey),outputMessage);
 
         output = output.nextSiblingElement("output");
     }
@@ -384,9 +384,10 @@ QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset& p
     return doc;
 }
 
-void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode, QString group,
-                                  QString item, unsigned char status, unsigned char control) const
-{
+void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode,
+                                                   QString group, QString item,
+                                                   unsigned char status,
+                                                   unsigned char control) const {
     QDomText text;
     QDomDocument nodeMaker;
     QDomElement tagNode;
