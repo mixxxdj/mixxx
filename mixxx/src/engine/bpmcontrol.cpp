@@ -320,9 +320,6 @@ EngineBuffer* BpmControl::pickSyncTarget() {
 
 void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
 {
-    //although beats may be different lengths, I think it's ok to just work
-    //in absolute samples
-    
     if (m_iSyncState != SYNC_SLAVE)
         return;
     
@@ -332,27 +329,69 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         return;
     }
     
-    const int MAGIC_FUZZ = 400; //400 samples is Good Enough
-    //const int TOO_FAR_OFF = 20000;
-    const double MAGIC_FACTOR = 120000; //the higher this is, the less we influence sync
+    const double MAGIC_FUZZ = 0.01;
+    const double TOO_FAR_OFF = 0.2;
+    const double MAGIC_FACTOR = 0.1; //the higher this is, the more we influence sync
     
-    double my_distance = getBeatDistance();
-    double offset = my_distance - master_distance;
+    double dThisPosition = getCurrentSample();
     
-/*    if (fabs(offset) > TOO_FAR_OFF)
+    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition); 
+    double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
+    double beat_length = dNextBeat - dPrevBeat;
+    if (beat_length == 0)
     {
-        //fuck it;
-        syncPhase();
-        return;
-    }*/
+        //we are on a beat
+        dNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
+        beat_length = dNextBeat - dPrevBeat;
+    }
+    double my_distance = (dThisPosition - dPrevBeat) / beat_length;
     
-    if (fabs(offset) > MAGIC_FUZZ)
+    //beat wraparound -- any other way to account for this?
+    if (my_distance > 0.9 && master_distance < 0.1)
     {
-        //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << offset;
-        m_dSyncAdjustment = (0.0 - offset) / MAGIC_FACTOR;
+        master_distance += 1.0;
+    }
+    else if (my_distance < 0.1 && master_distance > 0.9)
+    {
+        my_distance += 1.0;
+    }
+    
+    //e.g. if my position is .8, and theirs is .6
+    //then sample_offset = beatlength * .8 - beatlength * .6
+    //or, beatlength * (mypercent - theirpercent)
+    
+    double percent_offset = my_distance - master_distance;
+    double sample_offset = beat_length * percent_offset;
+    
+    //qDebug() << "mine" << my_distance << "master" << master_distance << percent_offset << sample_offset;
+
+    if (fabs(percent_offset) > TOO_FAR_OFF)
+    {
+        if (m_pPlayButton->get() > 0)
+        {
+            //XXX TEMP TODO FIXME: right now we just seek to fix this
+            //we need to more gracefully sync phase using the algorithm elsewhere
+            //in this module
+            
+/*            qDebug() << "we are off by" << percent_offset << "reseek";
+            qDebug() << "would seek" << 0 - sample_offset;*/
+            //have to seek absolute tho
+            emit(seekAbs(dThisPosition-sample_offset));
+            return;
+        }
+    }
+    
+    if (fabs(percent_offset) > MAGIC_FUZZ)
+    {
+        //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << percent_offset;
+        m_dSyncAdjustment = (0.0 - percent_offset) * MAGIC_FACTOR;
         //qDebug() << "how about...." << m_dSyncAdjustment;
         m_dSyncAdjustment = math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
         //qDebug() << "clamped" << m_dSyncAdjustment;
+    }
+    else {
+        //close enough, leave it alone
+        m_dSyncAdjustment = 0.0;
     }
 }
 
@@ -375,13 +414,15 @@ double BpmControl::getBeatDistance()
     }
     double dThisPosition = getCurrentSample();
     double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition); 
-    //double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
-    //return (dThisPosition - dPrevBeat) / (dNextBeat - dPrevBeat);
-    return dThisPosition - dPrevBeat;
+    double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
+    return (dThisPosition - dPrevBeat) / (dNextBeat - dPrevBeat);
+    //return dThisPosition - dPrevBeat;
 }
 
 bool BpmControl::syncPhase() {
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    if (pOtherEngineBuffer == NULL)
+        return false;
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
     BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 

@@ -52,7 +52,7 @@ class EngineSync : public EngineControl {
         double getInternalBeatDistance(void);
         
     private slots:
-        void slotMasterRateChanged(double);
+        void slotMasterBpmChanged(double);
         void slotSourceRateChanged(double);
         void slotSourceBeatDistanceChanged(double);
         void slotSampleRateChanged(double);
@@ -60,6 +60,7 @@ class EngineSync : public EngineControl {
     protected:
         EngineBuffer* chooseMasterBuffer(void);
         void disconnectMaster(void);
+        void updateSamplesPerBeat(void);
 
         EngineMaster* m_pEngineMaster;    
         EngineBuffer* m_pMasterBuffer;
@@ -69,7 +70,7 @@ class EngineSync : public EngineControl {
         
         int m_iSyncSource;
         int m_iSampleRate;
-        double m_dMasterRate;
+        double m_dSourceRate, m_dMasterBpm;
         double m_dSamplesPerBeat;
         double m_dPseudoBufferPos;
         

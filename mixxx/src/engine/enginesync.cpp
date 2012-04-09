@@ -27,23 +27,33 @@ EngineSync::EngineSync(EngineMaster *master,
         m_pSourceRate(NULL),
         m_pSourceBeatDistance(NULL),
         m_iSyncSource(SYNC_INTERNAL),
-        m_iSampleRate(44100),
-        m_dMasterRate(128.0f),
-        m_dSamplesPerBeat(20671.875), //128 bpm, whatever.
-        m_dPseudoBufferPos(0.0f)
+        m_dPseudoBufferPos(0.0f),
+        m_dSourceRate(1.0f),
+        m_dMasterBpm(124.0f)
 {
-    m_pMasterBpm = new ControlObject(ConfigKey("[Master]", "sync_bpm"));
-    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotMasterBpmChanged(double)),
-            Qt::DirectConnection);
-    
-    
     m_pMasterBeatDistance = new ControlObject(ConfigKey("[Master]", "beat_distance"));
     
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
     connect(m_pSampleRate, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotSampleRateChanged(double)),
             Qt::DirectConnection);
+            
+    m_iSampleRate = m_pSampleRate->get();
+    if (m_iSampleRate == 0)
+    {
+        m_iSampleRate = 44100;
+    }
+    
+    m_pMasterBpm = new ControlObject(ConfigKey("[Master]", "sync_bpm"));
+    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotMasterBpmChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotMasterBpmChanged(double)),
+            Qt::DirectConnection);
+            
+    //TODO: get this from configuration
+    m_pMasterBpm->set(m_dMasterBpm); //this will initialize all our values
 }
 
 EngineSync::~EngineSync()
@@ -70,7 +80,10 @@ void EngineSync::disconnectMaster()
 bool EngineSync::setInternalMaster(void)
 {
     disconnectMaster();
+    m_dMasterBpm = m_pMasterBpm->get();
+    updateSamplesPerBeat();
     
+    qDebug() << "*****************WHEEEEEEEEEEEEEEE INTERNAL";
     //this is all we have to do, we'll start using the pseudoposition right away
     m_iSyncSource = SYNC_INTERNAL;
     return true;
@@ -174,13 +187,14 @@ EngineBuffer* EngineSync::chooseMasterBuffer(void)
 
 void EngineSync::slotSourceRateChanged(double true_rate)
 {
-    if (true_rate != m_dMasterRate)
+    if (true_rate != m_dSourceRate)
     {
-        m_dMasterRate = true_rate;
+        m_dSourceRate = true_rate;
         
         double filebpm = m_pMasterBuffer->getFileBpm();
-        double bpm = true_rate * filebpm;
-        m_pMasterBpm->set(bpm); //this will trigger all of the slaves to change rate
+        m_dMasterBpm = true_rate * filebpm;
+        
+        m_pMasterBpm->set(m_dMasterBpm); //this will trigger all of the slaves to change rate
     }
 }
 
@@ -190,27 +204,22 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
     m_pMasterBeatDistance->set(beat_dist);
 }
 
-void EngineSync::slotMasterRateChanged(double new_rate)
+void EngineSync::slotMasterBpmChanged(double new_bpm)
 {
-    if (new_rate != m_dMasterRate)
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~new master bpm" << new_bpm;
+    if (new_bpm != m_dMasterBpm)
     {
         if (m_iSyncSource != SYNC_INTERNAL)
         {
             qDebug() << "can't set master sync when sync isn't internal";
             return;
         }
-        m_dMasterRate = new_rate;
-
-        //to get samples per beat, do:
-        //
-        // samples   samples     60 seconds     minutes
-        // ------- = -------  *  ----------  *  -------
-        //   beat    second       1 minute       beats
-        
-        // that last term is 1 over bpm.
-        m_dSamplesPerBeat = (m_iSampleRate * 60.0) / m_dMasterRate;
+        qDebug() << "using it";
+        m_dMasterBpm = new_bpm;
+        updateSamplesPerBeat();
         
         //this change could hypothetically push us over distance 1.0, so check
+        Q_ASSERT(m_dSamplesPerBeat > 0);
         while (m_dPseudoBufferPos >= m_dSamplesPerBeat)
         {
             m_dPseudoBufferPos -= m_dSamplesPerBeat;
@@ -224,18 +233,43 @@ void EngineSync::slotSampleRateChanged(double srate)
     double internal_position = getInternalBeatDistance();
     if (new_rate != m_iSampleRate)
     {
+        qDebug() << "new samplerate" << srate;
+        m_iSampleRate = new_rate;
         //recalculate pseudo buffer position based on new sample rate
-        m_dPseudoBufferPos = new_rate * internal_position;
-        m_dSamplesPerBeat = (new_rate * 60.0) / m_dMasterRate;
+        m_dPseudoBufferPos = new_rate * internal_position / m_dSamplesPerBeat;
+        updateSamplesPerBeat();
     }
-    m_iSampleRate = new_rate;
+    
 }
 
 double EngineSync::getInternalBeatDistance(void)
 {
-    //returns percentage distance from the last beat.
+    //returns number of samples distance from the last beat.
     Q_ASSERT(m_dPseudoBufferPos > 0);
     return m_dPseudoBufferPos / m_dSamplesPerBeat;
+}
+
+void EngineSync::updateSamplesPerBeat(void)
+{
+    //to get samples per beat, do:
+    //
+    // samples   samples     60 seconds     minutes
+    // ------- = -------  *  ----------  *  -------
+    //   beat    second       1 minute       beats
+    
+    // that last term is 1 over bpm.
+    if (m_dMasterBpm == 0)
+    {
+        m_dSamplesPerBeat = m_iSampleRate;
+        return;
+    }
+    m_dSamplesPerBeat = static_cast<double>(m_iSampleRate * 60.0) / m_dMasterBpm;
+    if (m_dSamplesPerBeat <= 0)
+    {
+        qDebug() << "something went horribly wrong";
+        m_dSamplesPerBeat = m_iSampleRate;
+    }
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~`new samples per beat" << m_dSamplesPerBeat;
 }
 
 void EngineSync::incrementPseudoPosition(int bufferSize)
@@ -243,9 +277,10 @@ void EngineSync::incrementPseudoPosition(int bufferSize)
     //the pseudo position is a double because we want to be precise,
     //and bpms may not line up exactly with samples.
     
-    m_dPseudoBufferPos += bufferSize;
+    m_dPseudoBufferPos += bufferSize / 2; //stereo samples, so divide by 2
     
     //can't use mod because we're in double land
+    Q_ASSERT(m_dSamplesPerBeat > 0);
     while (m_dPseudoBufferPos >= m_dSamplesPerBeat)
     {
         qDebug() << "beat";

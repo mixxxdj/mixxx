@@ -225,7 +225,6 @@ RateControl::~RateControl() {
 }
 
 void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
-    qDebug() << "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=v setting engine master";
     EngineControl::setEngineMaster(pEngineMaster);
     //m_pEngineMaster = pEngineMaster;
     
@@ -397,8 +396,8 @@ void RateControl::slotControlRateTempUpSmall(double)
 
 void RateControl::slotFileBpmChanged(double bpm) {
     m_dFileBpm = bpm;
+    slotMasterBpmChanged(m_pMasterBpm->get());
 }
-
 
 void RateControl::slotMasterBpmChanged(double syncbpm)
 {
@@ -417,20 +416,20 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
         if (m_dFileBpm == 0.0)
         {
             //XXX TODO: what to do about this case
-            //qDebug() << "well fuck, what are we supposed to do with zero bpm????";
+            qDebug() << "well fuck, what are we supposed to do with zero bpm????";
             dDesiredRate = 0.0;
         }
         else {
-            //qDebug() << "yay non-zero" << syncbpm << m_dFileBpm;
+            qDebug() << "yay non-zero" << syncbpm << m_dFileBpm;
             dDesiredRate = syncbpm / m_dFileBpm;
-            //qDebug() << "so how about" << dDesiredRate;
+            qDebug() << "so how about" << dDesiredRate;
             //normalize around 1
             //dDesiredRate -= 1.0;
         }
-/*        if (m_dSyncedRate != dDesiredRate)
+        if (m_dSyncedRate != dDesiredRate)
         {
             qDebug() << "Updating slave rate to:" << dDesiredRate;
-        }*/
+        }
         m_dSyncedRate = dDesiredRate;
     }
 }
@@ -480,7 +479,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     double rate = 0.0;
     
     // if master sync is on, respond to it
-    if (m_iSyncState == SYNC_SLAVE)
+    if (m_iSyncState == SYNC_SLAVE && !paused)
     {
         if (m_dSyncedRate != 0) {
             if (m_dSyncedRate != m_dOldRate) {
@@ -489,6 +488,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         }
         m_dOldRate = m_dSyncedRate;
         m_pRateSlider->set(((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
+        
         m_pTrueRate->set(m_dSyncedRate);
         return m_dSyncedRate * baserate;
     }
