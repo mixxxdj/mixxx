@@ -11,35 +11,13 @@
 
 #include "configobject.h"
 #include "util.h"
-#include "waveform/renderers/waveformrendererabstract.h"
+
+#include "waveformrendererabstract.h"
+#include "waveformmarkrange.h"
 
 class ConfigKey;
 class ControlObjectThreadMain;
 class ControlObject;
-
-class MarkRange {
-  public:
-    MarkRange();
-    virtual ~MarkRange();
-
-    bool isValid() const { return m_markStartPoint && m_markEndPoint;}
-    bool isActive() const;
-
-  private:
-    void generatePixmap(int weidth, int height);
-
-    ControlObject* m_markStartPoint;
-    ControlObject* m_markEndPoint;
-    ControlObject* m_markEnabled;
-
-    QColor m_activeColor;
-    QColor m_disabledColor;
-
-    QPixmap m_activePixmap;
-    QPixmap m_disabledPixmap;
-
-    friend class WaveformRenderMarkRange;
-};
 
 class WaveformRenderMarkRange : public WaveformRendererAbstract {
   public:
@@ -51,10 +29,10 @@ class WaveformRenderMarkRange : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    void setupMarkRange(const QDomNode& node, MarkRange& markRange);
+    void setupMarkRange(const QDomNode& node, WaveformMarkRange& markRange);
     void generatePixmaps();
 
-    QVector<MarkRange> markRanges_;
+    QVector<WaveformMarkRange> markRanges_;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMarkRange);
 };

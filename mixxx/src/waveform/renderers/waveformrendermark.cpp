@@ -12,16 +12,13 @@
 #include "widget/wwidget.h"
 
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract(waveformWidgetRenderer)
-{
+    WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-void WaveformRenderMark::init()
-{
+void WaveformRenderMark::init() {
 }
 
-void WaveformRenderMark::setup( const QDomNode& node)
-{
+void WaveformRenderMark::setup( const QDomNode& node) {
     m_marks.clear();
     m_marks.reserve(32);
 
@@ -30,8 +27,8 @@ void WaveformRenderMark::setup( const QDomNode& node)
     {
         if (child.nodeName() == "Mark")
         {
-            m_marks.push_back(Mark());
-            Mark& mark = m_marks.back();
+            m_marks.push_back(WaveformMark());
+            WaveformMark& mark = m_marks.back();
             setupMark(child,mark);
         }
         child = child.nextSibling();
@@ -39,14 +36,12 @@ void WaveformRenderMark::setup( const QDomNode& node)
 }
 
 
-void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
-{
+void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event) {
     painter->save();
 
     /*
     //DEBUG
-    for( int i = 0; i < m_markPoints.size(); i++)
-    {
+    for( int i = 0; i < m_markPoints.size(); i++) {
         if( m_waveformWidget->getTrackSamples())
             painter->drawText(40*i,12+12*(i%3),QString::number(m_markPoints[i]->get() / (double)m_waveformWidget->getTrackSamples()));
     }
@@ -54,9 +49,8 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
 
     painter->setWorldMatrixEnabled(false);
 
-    for( int i = 0; i < m_marks.size(); i++)
-    {
-        Mark& mark = m_marks[i];
+    for( int i = 0; i < m_marks.size(); i++) {
+        WaveformMark& mark = m_marks[i];
 
         if( !mark.m_point)
             continue;
@@ -67,8 +61,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
             generateMarkPixmap(mark);
 
         int samplePosition = mark.m_point->get();
-        if( samplePosition > 0.0)
-        {
+        if( samplePosition > 0.0) {
             m_waveformRenderer->regulateVisualSample(samplePosition);
             double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
@@ -85,8 +78,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
     painter->restore();
 }
 
-void WaveformRenderMark::setupMark( const QDomNode& node, Mark& mark)
-{
+void WaveformRenderMark::setupMark(const QDomNode& node, WaveformMark &mark) {
     QString item = WWidget::selectNodeQString( node, "Control");
     mark.m_point = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), item));
 
@@ -120,8 +112,7 @@ void WaveformRenderMark::setupMark( const QDomNode& node, Mark& mark)
     mark.m_pixmapPath = WWidget::selectNodeQString(node,"Pixmap");
 }
 
-void WaveformRenderMark::generateMarkPixmap( Mark& mark)
-{
+void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if( mark.m_pixmapPath != "") {
         // TODO(XXX) We could use WPixmapStore here, which would recolor the
@@ -142,8 +133,7 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
     int labelRectHeight = 0;
 
     // If no text is provided, leave m_markPixmap as a null pixmap
-    if( !mark.m_text.isNull())
-    {
+    if( !mark.m_text.isNull()) {
         //QFont font("Bitstream Vera Sans");
         //QFont font("Helvetica");
         QFont font; // Uses the application default
