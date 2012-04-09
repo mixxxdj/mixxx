@@ -48,6 +48,11 @@ void MidiController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
+bool MidiController::savePreset(const QString fileName) const {
+    MidiControllerPresetFileHandler handler;
+    return handler.save(m_preset, getName(), fileName);
+}
+
 void MidiController::applyPreset() {
 
     Controller::applyPreset();  // Handles the engine

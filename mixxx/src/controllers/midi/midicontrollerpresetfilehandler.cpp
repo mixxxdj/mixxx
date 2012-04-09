@@ -43,6 +43,7 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
     else qWarning() << "No engine!";
     */
 
+    QDomElement controller = root.firstChildElement("controller");
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
     //Iterate through each <control> block in the XML
@@ -265,14 +266,19 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
     return preset;
 }
 
-QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset& preset,
-                                                       const QString deviceName)
-{
-    // The XML header and script stuff is handled by the superclass
-    QDomDocument doc = ControllerPresetFileHandler::buildXML(preset, deviceName);
+bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
+                                           const QString deviceName,
+                                           const QString fileName) const {
+    QDomDocument doc = buildRootWithScripts(preset, deviceName);
+    addControllerToDocument(preset, deviceName, &doc);
+    return writeDocument(doc, fileName);
+}
 
-    QDomElement controller = doc.documentElement().firstChildElement("controller");
-    QDomElement controls = doc.createElement("controls");
+void MidiControllerPresetFileHandler::addControllerToDocument(const MidiControllerPreset& preset,
+                                                              const QString deviceName,
+                                                              QDomDocument* doc) const {
+    QDomElement controller = doc->documentElement().firstChildElement("controller");
+    QDomElement controls = doc->createElement("controls");
     controller.appendChild(controls);
 
     //Iterate over all of the command/control pairs in the input mapping
@@ -280,7 +286,7 @@ QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset& p
     while (it.hasNext()) {
         it.next();
 
-        QDomElement controlNode = doc.createElement("control");
+        QDomElement controlNode = doc->createElement("control");
 
         QDomText text;
         QDomDocument nodeMaker;
@@ -363,7 +369,7 @@ QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset& p
         controls.appendChild(controlNode);
     }
 
-    QDomElement outputs = doc.createElement("outputs");
+    QDomElement outputs = doc->createElement("outputs");
     controller.appendChild(outputs);
 
     //Iterate over all of the command/control pairs in the OUTPUT mapping
@@ -371,7 +377,7 @@ QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset& p
     while (outIt.hasNext()) {
         outIt.next();
 
-        QDomElement outputNode = doc.createElement("output");
+        QDomElement outputNode = doc->createElement("output");
         MidiOutput outputPack = outIt.value();
 
         mappingToXML(outputNode, outIt.key().group, outIt.key().item, outputPack.status, outputPack.control);
@@ -380,8 +386,6 @@ QDomDocument MidiControllerPresetFileHandler::buildXML(const ControllerPreset& p
         //Add the control node we just created to the XML document in the proper spot
         outputs.appendChild(outputNode);
     }
-
-    return doc;
 }
 
 void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode,
@@ -422,8 +426,7 @@ void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode,
 }
 
 void MidiControllerPresetFileHandler::outputMappingToXML(QDomElement& parentNode, unsigned char on,
-                                        unsigned char off, float max, float min) const
-{
+                                        unsigned char off, float max, float min) const {
     QDomText text;
     QDomDocument nodeMaker;
     QDomElement tagNode;

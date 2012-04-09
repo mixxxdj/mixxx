@@ -45,6 +45,9 @@ class MidiController : public Controller {
             // TODO(XXX) clone the preset
             return &m_preset;
         }
+
+        virtual bool savePreset(const QString fileName) const;
+
         virtual ControllerPresetFileHandler* getFileHandler() const {
             return new MidiControllerPresetFileHandler();
         }

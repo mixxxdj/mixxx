@@ -29,17 +29,8 @@ class ControllerPresetFileHandler {
     virtual ControllerPreset* load(const QString path, const QString deviceName,
                                    const bool forceLoad);
 
-    /** Given a path, saves the current preset to an XML file. */
-    bool save(const ControllerPreset& preset, const QString deviceName,
-              const QString path);
-
-    /** Creates the XML document and includes what script files are currently loaded.
-        Sub-classes need to re-implement this (and call it first) if they
-        need to add any other items. */
-    virtual QDomDocument buildXML(const ControllerPreset& preset, const QString deviceName);
-
     /** Returns just the name of a given device (everything before the first space) */
-    QString rootDeviceName(QString deviceName) {
+    QString rootDeviceName(QString deviceName) const {
         return deviceName.left(deviceName.indexOf(" "));
     }
 
@@ -47,7 +38,15 @@ class ControllerPresetFileHandler {
     void addScriptFilesToMapping(const QDomElement root,
                                  const QString deviceName,
                                  const bool forceLoad,
-                                 ControllerPreset* preset);
+                                 ControllerPreset* preset) const;
+
+    /** Creates the XML document and includes what script files are currently loaded.
+        Sub-classes need to re-implement this (and call it first) if they
+        need to add any other items. */
+    virtual QDomDocument buildRootWithScripts(const ControllerPreset& preset,
+                                              const QString deviceName) const;
+
+    bool writeDocument(QDomDocument root, const QString fileName) const;
 
   private:
     // Sub-classes implement this.

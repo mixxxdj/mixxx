@@ -34,7 +34,7 @@ void ControllerPresetFileHandler::addScriptFilesToMapping(
     const QDomElement root,
     const QString deviceName,
     const bool forceLoad,
-    ControllerPreset* preset) {
+    ControllerPreset* preset) const {
 
     if (root.isNull())
         return;
@@ -77,29 +77,32 @@ void ControllerPresetFileHandler::addScriptFilesToMapping(
     }
 }
 
-bool ControllerPresetFileHandler::save(const ControllerPreset& preset,
-                                       const QString deviceName,
-                                       const QString path) {
-    qDebug() << "Writing preset for" << deviceName << "to file" << path;
-
+bool ControllerPresetFileHandler::writeDocument(QDomDocument root, const QString fileName) const {
     // Need to do this on Windows
     QDir directory;
-    directory.mkpath(path.left(path.lastIndexOf("/")));
+    if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
+        return false;
+    }
 
-    QFile output(path);
-    if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return false;
-    QTextStream outputstream(&output);
-    // Construct the DOM from the table
-    QDomDocument docPreset = buildXML(preset, deviceName);
+    // TODO(XXX): This is not the right way to replace a file (O_TRUNCATE). The
+    // right thing to do is to create a temporary file, write the output to
+    // it. Delete the existing file, and then move the temporary file to the
+    // existing file's name.
+    QFile output(fileName);
+    if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        return false;
+    }
+
     // Save the DOM to the XML file
-    docPreset.save(outputstream, 4);
+    QTextStream outputstream(&output);
+    root.save(outputstream, 4);
     output.close();
 
     return true;
 }
 
-QDomDocument ControllerPresetFileHandler::buildXML(const ControllerPreset& preset,
-                                                   const QString deviceName) {
+QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerPreset& preset,
+                                                               const QString deviceName) const {
     QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
         "<MixxxControllerPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\">\n"

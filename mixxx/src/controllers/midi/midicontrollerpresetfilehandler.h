@@ -26,9 +26,23 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
     MidiControllerPresetFileHandler();
     virtual ~MidiControllerPresetFileHandler();
 
+    bool save(const MidiControllerPreset& preset,
+              const QString deviceName, const QString fileName) const;
+
+  private:
     virtual ControllerPreset* load(const QDomElement root, const QString deviceName,
                                    const bool forceLoad);
-    QDomDocument buildXML(const ControllerPreset& preset, const QString deviceName);
+
+    void addControllerToDocument(const MidiControllerPreset& preset,
+                                 const QString deviceName, QDomDocument* doc) const;
+
+    void mappingToXML(QDomElement& parentNode,
+                      QString group, QString item,
+                      unsigned char status,
+                      unsigned char control) const;
+
+    void outputMappingToXML(QDomElement& parentNode, unsigned char on,
+                            unsigned char off, float max, float min) const;
 };
 
 #endif
