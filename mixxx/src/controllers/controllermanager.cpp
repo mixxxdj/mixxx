@@ -217,11 +217,21 @@ int ControllerManager::slotSetUpDevices() {
 
         filenames.append(filename);
 
-        ControllerPresetFileHandler* handler = cur->getFileHandler();
-        ControllerPreset* preset = handler->load(
-            PRESETS_PATH.append(filename + cur->presetExtension()), name, true);
+        QScopedPointer<ControllerPresetFileHandler> handler(cur->getFileHandler());
 
+        if (!handler) {
+            qDebug() << "Failed to get a handler for the controller.";
+            continue;
+        }
+
+        QString presetPath = PRESETS_PATH.append(filename + cur->presetExtension());
+        ControllerPreset* preset = handler->load(presetPath, name, true);
+        if (preset == NULL) {
+            qDebug() << "Couldn't load preset" << presetPath;
+            continue;
+        }
         cur->setPreset(*preset);
+
 //         qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
         m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
 
