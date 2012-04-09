@@ -1,5 +1,5 @@
 /*
- * analyservamptest.cpp
+ * analyserbeats.cpp
  *
  *  Created on: 16/mar/2011
  *      Author: vittorio
