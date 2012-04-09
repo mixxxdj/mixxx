@@ -986,34 +986,25 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 }
 
-void WTrackTableView::slotLockBpm()
-{
+void WTrackTableView::slotLockBpm() {
     lockBpm(true);
 }
 
-void WTrackTableView::slotUnlockBpm()
-{
+void WTrackTableView::slotUnlockBpm() {
     lockBpm(false);
 }
 
-void WTrackTableView::lockBpm(bool lock)
-{
-    if(lock)
-        qDebug() << "Lock BPM";
-    else
-        qDebug() << "Unlock BPM";
+void WTrackTableView::lockBpm(bool lock) {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
 
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
-    TrackModel* trackModel = getTrackModel();
-    //TODO: This must be done in a thread for large selections
-    for (int i = 0; i < selectedTrackIndices.size(); ++i)
-    {
-         QModelIndex index = selectedTrackIndices.at(i);
-         TrackPointer track = trackModel->getTrack(index);
-         track->setBpmLock(lock);
-
-     }
+    // TODO: This must be done in a thread for large selections
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        track->setBpmLock(lock);
+    }
 }
-
-
-
