@@ -216,7 +216,7 @@ int ControllerManager::slotSetUpDevices() {
             filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
 
-        filenames.add(filename);
+        filenames.insert(filename);
 
         QScopedPointer<ControllerPresetFileHandler> handler(cur->getFileHandler());
 
@@ -323,13 +323,11 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
             i++;
             filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
-        filenames.add(filename);
-//         cur->savePreset(PRESETS_PATH.append(filename + cur->presetExtension()));
-        QScopedPointer<ControllerPresetFileHandler> handler(cur->getFileHandler());
-        const ControllerPreset* preset = cur->getPreset();
-        if (!handler || !preset) {
-            continue;
+        filenames.insert(filename);
+        QString presetPath = PRESETS_PATH.append(filename + cur->presetExtension());
+        if (!cur->savePreset(presetPath)) {
+            qDebug() << "Failed to write preset for device" << cur->getName()
+                     << "to" << presetPath;
         }
-        handler->save(*preset, name, PRESETS_PATH.append(filename + cur->presetExtension()));
     }
 }

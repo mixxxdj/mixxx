@@ -128,6 +128,11 @@ void HidController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
 }
 
+bool HidController::savePreset(const QString fileName) const {
+    HidControllerPresetFileHandler handler;
+    return handler.save(m_preset, getName(), fileName);
+}
+
 int HidController::open() {
     if (m_bIsOpen) {
         qDebug() << "HID device" << m_sDeviceName << "already open";

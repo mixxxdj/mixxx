@@ -48,14 +48,16 @@ class Controller : public QObject, ControllerPresetVisitor {
             preset.accept(this);
         };
 
-        virtual const ControllerPreset* getPreset() const = 0;
-        virtual ControllerPresetFileHandler* getFileHandler() = 0;
+        virtual bool savePreset(const QString filename) const = 0;
 
-        bool isOpen() { return m_bIsOpen; };
-        bool isOutputDevice() { return m_bIsOutputDevice; };
-        bool isInputDevice() { return m_bIsInputDevice; };
-        QString getName() { return m_sDeviceName; };
-        bool debugging() { return m_bDebug; };
+        virtual const ControllerPreset* getPreset() const = 0;
+        virtual ControllerPresetFileHandler* getFileHandler() const = 0;
+
+        bool isOpen() const { return m_bIsOpen; };
+        bool isOutputDevice() const { return m_bIsOutputDevice; };
+        bool isInputDevice() const { return m_bIsInputDevice; };
+        QString getName() const { return m_sDeviceName; };
+        bool debugging() const { return m_bDebug; };
 
         void setPolling(bool needPolling) { m_bPolling = needPolling; };
         bool needPolling() { return m_bPolling; };
