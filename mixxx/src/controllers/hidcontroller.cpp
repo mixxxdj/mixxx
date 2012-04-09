@@ -42,7 +42,7 @@ void HidReader::run() {
         // This relieves that at the cost of higher CPU usage since we only
         //  block for a short while (500ms)
         result = hid_read_timeout(m_pHidDevice, data, 255, 500);
-        
+
         if (result > 0) {
             length=result;
 //             qDebug() << "Read" << length << "bytes, pointer:" << data;
@@ -58,7 +58,7 @@ void HidReader::run() {
 // ------ HidController ------
 
 HidController::HidController(const hid_device_info deviceInfo) {
-    
+
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
@@ -93,13 +93,13 @@ HidController::HidController(const hid_device_info deviceInfo) {
     // Set the Unique Identifier to the serial_number
     m_sUID = QString::fromWCharArray(hid_serial,wcslen(hid_serial));
 
-    //Note: We include the last 4 digits of the serial number and the 
-    // interface number to allow the user (and Mixxx!) to keep track of 
+    //Note: We include the last 4 digits of the serial number and the
+    // interface number to allow the user (and Mixxx!) to keep track of
     // which is which
     if (hid_interface_number < 0) {
         m_sDeviceName = QString("%1 %2").arg(hid_product)
             .arg(QString::fromWCharArray(hid_serial,wcslen(hid_serial)).right(4));
-    } 
+    }
     else {
         m_sDeviceName = QString("%1 %2_%3").arg(hid_product)
             .arg(QString::fromWCharArray(hid_serial,wcslen(hid_serial)).right(4))
@@ -110,7 +110,7 @@ HidController::HidController(const hid_device_info deviceInfo) {
     // All HID devices are full-duplex
     m_bIsInputDevice = true;
     m_bIsOutputDevice = true;
-    
+
     m_pReader = NULL;
 }
 
@@ -120,6 +120,14 @@ HidController::~HidController() {
     delete [] hid_serial;
 }
 
+void HidController::visit(const MidiControllerPreset* preset) {
+    // TODO(XXX): throw a hissy fit.
+}
+
+void HidController::visit(const HidControllerPreset* preset) {
+    m_preset = *preset;
+}
+
 int HidController::open() {
     if (m_bIsOpen) {
         qDebug() << "HID device" << m_sDeviceName << "already open";
@@ -127,14 +135,14 @@ int HidController::open() {
     }
 
     // Open device by path
-    if (debugging()) 
-        qDebug() << "Opening HID device" 
+    if (debugging())
+        qDebug() << "Opening HID device"
             << m_sDeviceName << "by HID path" << hid_path;
     m_pHidDevice = hid_open_path(hid_path);
-    
+
     // If that fails, try to open device with vendor/product/serial #
     if (m_pHidDevice == NULL) {
-        if (debugging()) 
+        if (debugging())
             qDebug() << "Failed. Trying to open with make, model & serial no:"
                 << hid_vendor_id << hid_product_id << hid_serial;
         m_pHidDevice = hid_open(hid_vendor_id,hid_product_id,hid_serial);
@@ -154,7 +162,7 @@ int HidController::open() {
         qWarning()  << "Unable to open HID device" << m_sDeviceName;
         return -1;
     }
-    
+
     m_bIsOpen = true;
 
     startEngine();
@@ -173,7 +181,7 @@ int HidController::open() {
         //  directly, like when scratching
         m_pReader->start(QThread::HighPriority);
     }
-    
+
     return 0;
 }
 
@@ -182,7 +190,7 @@ int HidController::close() {
         qDebug() << "HID device" << m_sDeviceName << "already closed";
         return -1;
     }
-    
+
     qDebug() << "Shutting down HID device" << m_sDeviceName;
 
     // Stop the reading thread
@@ -200,22 +208,22 @@ int HidController::close() {
         delete m_pReader;
         m_pReader = NULL;
     }
-    
+
     // Stop controller engine here to ensure it's done before the device is closed
     //  incase it has any final parting messages
     stopEngine();
-    
+
     // Close device
     if (debugging()) qDebug() << "  Closing device";
     hid_close(m_pHidDevice);
-    
+
     m_bIsOpen = false;
-    
+
     return 0;
 }
 
 void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {
-    
+
     QByteArray temp;
     for (unsigned int i=0; i<length; i++) {
         temp.append(data.at(i));
@@ -226,11 +234,11 @@ void HidController::send(QList<int> data, unsigned int length, unsigned int repo
 void HidController::send(QByteArray data, unsigned int reportID) {
     // Append the Report ID to the beginning of data[] per the API..
     data.prepend(reportID);
-    
+
     int result = hid_write(m_pHidDevice, (unsigned char*)(data.constData()), data.size());
-    
+
     QString serial = QString::fromWCharArray(hid_serial);
-    
+
     if (result==-1) {
         if (debugging()) {
             qWarning() << "Unable to send data to" << m_sDeviceName

@@ -18,17 +18,17 @@
 #ifndef MIDICONTROLLERPRESETFILEHANDLER_H
 #define MIDICONTROLLERPRESETFILEHANDLER_H
 
-#include "../controllerpresetfilehandler.h"
-#include "midicontrollerpreset.h"
+#include "controllers/controllerpresetfilehandler.h"
+#include "controllers/midi/midicontrollerpreset.h"
 
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
-
-public:
+  public:
     MidiControllerPresetFileHandler();
-    ~MidiControllerPresetFileHandler();
+    virtual ~MidiControllerPresetFileHandler();
 
-    MidiControllerPreset load(const QDomElement root, const QString deviceName,
-                              const bool forceLoad);
-    QDomDocument buildXML(const ControllerPreset preset, const QString deviceName);
+    virtual ControllerPreset* load(const QDomElement root, const QString deviceName,
+                                   const bool forceLoad);
+    QDomDocument buildXML(const ControllerPreset& preset, const QString deviceName);
 };
+
 #endif

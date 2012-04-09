@@ -20,7 +20,10 @@
 
 // #include <QtCore>
 #include <hidapi.h>
-#include "controller.h"
+
+#include "controllers/controller.h"
+#include "controllers/hidcontrollerpreset.h"
+#include "controllers/hidcontrollerpresetfilehandler.h"
 
 class HidReader : public QThread {
     Q_OBJECT    // For signals
@@ -44,7 +47,18 @@ class HidController : public Controller {
     Q_OBJECT    // For Q_INVOKABLE
     public:
         HidController(const hid_device_info deviceInfo);
-        ~HidController();
+        virtual ~HidController();
+
+        virtual const ControllerPreset* getPreset() const {
+            // TODO(XXX) clone the preset
+            return &m_preset;
+        }
+        virtual ControllerPresetFileHandler* getFileHandler() const {
+            return new HidControllerPresetFileHandler();
+        }
+
+        virtual void visit(const MidiControllerPreset* preset);
+        virtual void visit(const HidControllerPreset* preset);
 
     protected:
         Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
@@ -52,11 +66,11 @@ class HidController : public Controller {
     private slots:
         int open();
         int close();
-        
+
     private:
         //  For devices which only support a single report, reportID must be set to 0x0.
         void send(QByteArray data, unsigned int reportID = 0);
-        
+
         // Local copies of things we need from hid_device_info
         int hid_interface_number;
         unsigned short hid_vendor_id;
@@ -65,11 +79,12 @@ class HidController : public Controller {
         wchar_t *hid_serial;
         QString hid_manufacturer;
         QString hid_product;
-        
+
         QString m_sUID;
         static QList<QString> m_deviceList;
         hid_device* m_pHidDevice;
         HidReader* m_pReader;
+        HidControllerPreset m_preset;
 };
 
 #endif

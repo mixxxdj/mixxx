@@ -21,18 +21,24 @@
 #ifndef MIDICONTROLLERPRESET_H
 #define MIDICONTROLLERPRESET_H
 
-#include <QtCore>
-#include "../controllerpreset.h"
+#include <QHash>
 
+#include "configobject.h"
+#include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetvisitor.h"
+#include "controllers/midi/midimessage.h"
 
 class MidiControllerPreset : public ControllerPreset {
+  public:
+    MidiControllerPreset();
+    virtual ~MidiControllerPreset();
 
-    public:
-        MidiControllerPreset();
-        ~MidiControllerPreset();
+    virtual void accept(ControllerPresetVisitor* visitor) const {
+        visitor->visit(this);
+    }
 
-        QHash<uint16_t, QPair<ConfigKey, MidiOptions> > mappings;
-        QHash<ConfigKey, MidiOutput> outputMappings;
+    QHash<uint16_t, QPair<ConfigKey, MidiOptions> > mappings;
+    QHash<ConfigKey, MidiOutput> outputMappings;
 };
 
 #endif

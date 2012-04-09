@@ -23,11 +23,12 @@
 
 #include <QtCore>
 
-class ControllerPreset {
+class ControllerPresetVisitor;
 
+class ControllerPreset {
   public:
     ControllerPreset();
-    ~ControllerPreset();
+    virtual ~ControllerPreset();
 
     /** addScriptFile(QString,QString)
         * Adds an entry to the list of script file names & associated list of function prefixes
@@ -38,6 +39,8 @@ class ControllerPreset {
         scriptFileNames.append(filename);
         scriptFunctionPrefixes.append(functionprefix);
     };
+
+    virtual void accept(ControllerPresetVisitor* visitor) const = 0;
 
     QList<QString> scriptFileNames;
     QList<QString> scriptFunctionPrefixes;
