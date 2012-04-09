@@ -14,7 +14,8 @@
 *                                                                         *
 ***************************************************************************/
 
-// #include <QtCore>
+#include <QSet>
+
 #include "controllermanager.h"
 #include "defs_controllers.h"
 // #include "controllerpresetfilehandler.h"
@@ -193,7 +194,7 @@ int ControllerManager::slotSetUpDevices() {
     QList<Controller*> deviceList = getControllerList(false, true);
     QListIterator<Controller*> it(deviceList);
 
-    QList<QString> filenames;
+    QSet<QString> filenames;
     int error = 0;
 
     bool polling = false;
@@ -215,7 +216,7 @@ int ControllerManager::slotSetUpDevices() {
             filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
 
-        filenames.append(filename);
+        filenames.add(filename);
 
         QScopedPointer<ControllerPresetFileHandler> handler(cur->getFileHandler());
 
@@ -307,7 +308,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
     QList<Controller*> deviceList = getControllerList(false, true);
     QListIterator<Controller*> it(deviceList);
 
-    QList<QString> filenames;
+    QSet<QString> filenames;
 
     while (it.hasNext())
     {
@@ -316,16 +317,13 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         QString name = cur->getName();
 
         QString ofilename = name.replace(" ", "_");
-
         QString filename = ofilename;
-
         int i=1;
         while (filenames.contains(filename)) {
             i++;
             filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
-
-        filenames.append(filename);
+        filenames.add(filename);
 //         cur->savePreset(PRESETS_PATH.append(filename + cur->presetExtension()));
         QScopedPointer<ControllerPresetFileHandler> handler(cur->getFileHandler());
         const ControllerPreset* preset = cur->getPreset();
