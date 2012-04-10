@@ -123,8 +123,12 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     // Connections
     connect(this, SIGNAL(showDlg()), this,      SLOT(slotShow()));
     connect(this, SIGNAL(closeDlg()), this,      SLOT(slotHide()));
+
     connect(m_pControllerManager, SIGNAL(devicesChanged()), this, SLOT(rescanControllers()));
 //     connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
+
+    connect(this, SIGNAL(showDlg()), m_wcontrols, SLOT(onShow()));
+    connect(this, SIGNAL(closeDlg()), m_wcontrols, SLOT(onHide()));
 
     connect(this, SIGNAL(showDlg()), m_wsound,     SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wplaylist,  SLOT(slotUpdate()));
@@ -373,7 +377,7 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 
             //Select the first MIDI device
             //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
-            
+
 //                 foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
 //                 {
 //                 contentsTreeWidget->setItemSelected(item, false);
@@ -405,13 +409,11 @@ bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
     return QWidget::eventFilter(o,e);
 }
 
-void DlgPreferences::slotHide()
-{
+void DlgPreferences::slotHide() {
 }
 
 
-void DlgPreferences::slotShow()
-{
+void DlgPreferences::slotShow() {
     //m_pMixxx->releaseKeyboard();
 
     QSize optimumSize;
@@ -454,16 +456,16 @@ void DlgPreferences::rescanMidi()
 void DlgPreferences::destroyControllerWidgets()
 {
     //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
-    
+
     m_controllerBindingsButtons.clear();
-    
+
     while (!m_wcontrollerBindingsForDevice.isEmpty())
     {
         DlgPrefController* controllerDlg = m_wcontrollerBindingsForDevice.takeLast();
         pagesWidget->removeWidget(controllerDlg);
         delete controllerDlg;
     }
-    
+
     while(m_pControllerTreeItem->childCount() > 0)
     {
         QTreeWidgetItem* controllerBindingsButton = m_pControllerTreeItem->takeChild(0);
@@ -511,7 +513,7 @@ void DlgPreferences::setupControllerWidgets()
         connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
         connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
         connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
-        
+
         QTreeWidgetItem * controllerBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
         //qDebug() << curDeviceName << " QTreeWidgetItem point is " << controllerBindingsButton;
         controllerBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
@@ -520,7 +522,7 @@ void DlgPreferences::setupControllerWidgets()
         controllerBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
         m_pControllerTreeItem->addChild(controllerBindingsButton);
         m_controllerBindingsButtons.append(controllerBindingsButton);
-        
+
         // Set the font correctly
         QFont temp = controllerBindingsButton->font(0);
         if (currentDevice->isOpen()) temp.setBold(true);

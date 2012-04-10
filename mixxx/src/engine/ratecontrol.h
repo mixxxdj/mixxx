@@ -66,6 +66,7 @@ public:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
+    void slotControlVinylScratching(double);
 
   private:
     double getJogFactor();
@@ -83,6 +84,7 @@ public:
     double getTempRate(void);
     /** Is vinyl control enabled? **/
     bool m_bVinylControlEnabled;
+    bool m_bVinylControlScratching;
 
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;

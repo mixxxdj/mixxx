@@ -28,8 +28,7 @@
 #include "engine/enginemicrophone.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
-#include "waveformviewerfactory.h"
-#include "waveform/waveformrenderer.h"
+
 #include "soundsourceproxy.h"
 
 #include "analyserqueue.h"
@@ -50,6 +49,7 @@
 #include "mixxxkeyboard.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #include "build.h" // #defines of details of the build set up (flags,
 // repo number, etc). This isn't a real file, SConscript generates it and it
@@ -353,6 +353,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     //  but do not set up controllers until the end of the application startup
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(m_pConfig);
+
+    WaveformWidgetFactory::create();
+    WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
@@ -1367,6 +1370,9 @@ void MixxxApp::rebootMixxxView() {
 
     qDebug() << "Now in Rebootmixxview...";
 
+    WaveformWidgetFactory::instance()->stop();
+    WaveformWidgetFactory::instance()->destroyWidgets();
+
     // Workaround for changing skins while fullscreen, just go out of fullscreen
     // mode. If you change skins while in fullscreen (on Linux, at least) the
     // window returns to 0,0 but and the backdrop disappears so it looks as if
@@ -1404,6 +1410,8 @@ void MixxxApp::rebootMixxxView() {
     // this doesn't always seem to snap down tight on Windows... sigh -bkgood
     setFixedSize(m_pView->width(), m_pView->height());
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+
+    WaveformWidgetFactory::instance()->start();
 
     // Set native menu bar. Fixes issue on OSX where menu bar went away after a
     // skin change.
@@ -1487,6 +1495,9 @@ void MixxxApp::checkDirectRendering() {
     // THEN
     //  * Warn user
 
+    //TODO vRince replug this kind of warning using ...
+
+    /*
     if (WaveformViewerFactory::numViewers(WAVEFORM_GL) > 0 &&
         !WaveformViewerFactory::isDirectRenderingEnabled() &&
         m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
@@ -1494,6 +1505,7 @@ void MixxxApp::checkDirectRendering() {
                              "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
         m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
     }
+    */
 }
 
 bool MixxxApp::confirmExit() {
