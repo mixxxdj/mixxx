@@ -15,5 +15,4 @@ class HidControllerPresetFileHandler : public ControllerPresetFileHandler {
                                    const bool forceLoad);
 };
 
-
 #endif /* HIDCONTROLLERPRESETFILEHANDLER_H */

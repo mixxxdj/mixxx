@@ -16,42 +16,41 @@
 
 #include <hidapi.h>
 
-#include "hidcontroller.h"
-#include "hidenumerator.h"
+#include "controllers/hidcontroller.h"
+#include "controllers/hidenumerator.h"
 
-HidEnumerator::HidEnumerator() : ControllerEnumerator() {
+HidEnumerator::HidEnumerator()
+        : ControllerEnumerator() {
 }
 
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
+    while (m_devices.size() > 0) {
+        delete m_devices.takeLast();
     }
     hid_exit();
 }
 
 QList<Controller*> HidEnumerator::queryDevices() {
     qDebug() << "Scanning HID devices:";
-    
+
     struct hid_device_info *devs, *cur_dev;
-    
+
     devs = hid_enumerate(0x0, 0x0);
-    cur_dev = devs;
-    while (cur_dev) {
-        printf("  Found %ls %ls r%hx, S/N %ls  Interface %d", cur_dev->manufacturer_string,
+
+    for (cur_dev = devs; cur_dev; cur_dev = cur_dev->next) {
+        printf("  Found %ls %ls r%hx, S/N %ls  Interface %d\n", cur_dev->manufacturer_string,
                cur_dev->product_string, cur_dev->release_number, cur_dev->serial_number,
                cur_dev->interface_number);
-               printf("\n");
-        if (!cur_dev->serial_number && !cur_dev->product_string) qWarning()
-            << "USB permissions problem (or device error.) Your account needs write access to USB HID controllers.";
-        else {
-            HidController *currentDevice = new HidController(*(cur_dev));
-            currentDevice->setPolling(needPolling());
-            m_devices.push_back((Controller*)currentDevice);
+
+        if (!cur_dev->serial_number && !cur_dev->product_string) {
+            qWarning() << "USB permissions problem (or device error.) Your account needs write access to USB HID controllers.";
+            continue;
         }
-        
-        cur_dev = cur_dev->next;
+
+        HidController* currentDevice = new HidController(*cur_dev);
+        currentDevice->setPolling(needPolling());
+        m_devices.push_back(currentDevice);
     }
     hid_free_enumeration(devs);
 

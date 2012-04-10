@@ -19,10 +19,9 @@
 
 #include "controllerenumerator.h"
 
-ControllerEnumerator::ControllerEnumerator() : QObject()
-{
+ControllerEnumerator::ControllerEnumerator()
+        : QObject() {
 }
 
 ControllerEnumerator::~ControllerEnumerator() {
-    // In this function, the inheriting class must delete the Controllers it creates
 }

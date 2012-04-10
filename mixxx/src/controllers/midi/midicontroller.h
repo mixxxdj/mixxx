@@ -30,73 +30,65 @@
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 
 class MidiController : public Controller {
-    Q_OBJECT    // For signals & slots
+    Q_OBJECT
+  public:
+    MidiController();
+    virtual ~MidiController();
 
-    friend class MidiOutputHandler; // So it can access sendShortMsg()
+    virtual QString presetExtension();
+    inline QString defaultPreset();
 
-    public:
-        MidiController();
-        virtual ~MidiController();
+    virtual const ControllerPreset* getPreset() const {
+        // TODO(XXX) clone the preset
+        return &m_preset;
+    }
 
-        virtual QString presetExtension();
-        inline QString defaultPreset();
+    virtual bool savePreset(const QString fileName) const;
 
-        virtual const ControllerPreset* getPreset() const {
-            // TODO(XXX) clone the preset
-            return &m_preset;
-        }
+    virtual ControllerPresetFileHandler* getFileHandler() const {
+        return new MidiControllerPresetFileHandler();
+    }
 
-        virtual bool savePreset(const QString fileName) const;
+    virtual void visit(const MidiControllerPreset* preset);
+    virtual void visit(const HidControllerPreset* preset);
 
-        virtual ControllerPresetFileHandler* getFileHandler() const {
-            return new MidiControllerPresetFileHandler();
-        }
+  signals:
+    void midiEvent(MidiKey message);
 
-        virtual void visit(const MidiControllerPreset* preset);
-        virtual void visit(const HidControllerPreset* preset);
+  protected:
+    Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
+    // Alias for send()
+    Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length) {
+        Controller::send(data, length);
+    }
 
-    signals:
-        void midiEvent(MidiKey message);
+  protected slots:
+    void receive(unsigned char status, unsigned char control = 0,
+                 unsigned char value = 0);
+    // For receiving System Exclusive messages
+    void receive(const QByteArray data);
 
-    protected:
-        Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
-        // Alias for send()
-        Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length) { Controller::send(data,length); }
+  private slots:
+    //virtual int open() = 0;
+    virtual int close() = 0;
 
-    protected slots:
-        void receive(unsigned char status, unsigned char control = 0, unsigned char value = 0);
-        /** For System Exclusive message reception */
-        void receive(const QByteArray data);
+    // Initializes the engine and static output mappings.
+    void applyPreset();
 
-    private slots:
-//         virtual int open() = 0;
-        virtual int close() = 0;
+  private:
+    virtual void send(unsigned int word);
+    double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
+    void createOutputHandlers();
+    void updateAllOutputs();
+    void destroyOutputHandlers();
 
-        /** Initializes the engine and static output mappings. */
-        void applyPreset();
+    QList<MidiOutputHandler*> m_outputs;
+    MidiControllerPreset m_preset;
+    SoftTakeover m_st;
+    bool m_bMidiLearn;
 
-    private:
-        virtual void send(unsigned int word);
-
-        double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
-
-        QDomElement loadPreset(QDomElement root, bool forceLoad=false);
-        /** Calls the parent to create the XML document with script files then
-            adds what is currently in the mapping hashes. */
-        QDomDocument buildXML();
-        void mappingToXML(QDomElement& parentNode, QString group, QString item,
-                          unsigned char status, unsigned char control) const;
-        void outputMappingToXML(QDomElement& parentNode, unsigned char on,
-                                unsigned char off, float max, float min) const;
-
-        void createOutputHandlers();
-        void updateAllOutputs();
-        void destroyOutputHandlers();
-
-        QList<MidiOutputHandler*> m_outputs;
-        MidiControllerPreset m_preset;
-        SoftTakeover m_st;
-        bool m_bMidiLearn;
+    // So it can access sendShortMsg()
+    friend class MidiOutputHandler;
 };
 
 #endif

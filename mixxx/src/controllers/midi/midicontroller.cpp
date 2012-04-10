@@ -15,19 +15,19 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "midicontroller.h"
+#include "controllers/midi/midicontroller.h"
 #include "controlobject.h"
 #include "errordialoghandler.h"
+#include "controllers/defs_controllers.h"   // For MIDI_MAPPING_EXTENSION
 
-#include "../defs_controllers.h"   // For MIDI_MAPPING_EXTENSION
-
-MidiController::MidiController() : Controller() {
-    m_bMidiLearn = false;
+MidiController::MidiController()
+        : Controller(),
+          m_bMidiLearn(false) {
 }
 
-MidiController::~MidiController(){
+MidiController::~MidiController() {
     destroyOutputHandlers();
-//     close(); // I wish I could put this here to enforce it automatically
+    //close(); // I wish I could put this here to enforce it automatically
 }
 
 QString MidiController::defaultPreset() {
@@ -55,28 +55,29 @@ bool MidiController::savePreset(const QString fileName) const {
 }
 
 void MidiController::applyPreset() {
-
-    Controller::applyPreset();  // Handles the engine
+    // Handles the engine
+    Controller::applyPreset();
 
     // Only execute this code if this is an output device
     if (m_bIsOutputDevice) {
-
-        if (m_outputs.count()>0) destroyOutputHandlers();
-
+        if (m_outputs.count() > 0) {
+            destroyOutputHandlers();
+        }
         createOutputHandlers();
         updateAllOutputs();
     }
 }
 
 void MidiController::createOutputHandlers() {
-    if (m_preset.outputMappings.isEmpty()) return;
+    if (m_preset.outputMappings.isEmpty()) {
+        return;
+    }
 
     QHashIterator<ConfigKey, MidiOutput> outIt(m_preset.outputMappings);
     while (outIt.hasNext()) {
         outIt.next();
 
         MidiOutput outputPack = outIt.value();
-
         QString group = outIt.key().group;
         QString key = outIt.key().item;
 
@@ -104,8 +105,7 @@ void MidiController::createOutputHandlers() {
                                         .arg(group, key).toUtf8();
             if (debugging()) {
                 qCritical() << errorLog;
-            }
-            else {
+            } else {
                 qWarning() << errorLog;
                 ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
                 props->setType(DLG_WARNING);
@@ -124,35 +124,34 @@ void MidiController::createOutputHandlers() {
                     " Visit this wiki page for a complete list:"));
                 detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names");
                 props->setDetails(detailsText);
-
                 ErrorDialogHandler::instance()->requestErrorDialog(props);
             }
             delete moh;
             continue;
         }
-
         m_outputs.append(moh);
     }
 }
 
 void MidiController::updateAllOutputs() {
-    for (int i = m_outputs.count()-1; i >= 0; --i) {
-        m_outputs.at(i)->update();
+    foreach (MidiOutputHandler* pOutput, m_outputs) {
+        pOutput->update();
     }
 }
 
 void MidiController::destroyOutputHandlers() {
-    for (int i = m_outputs.count()-1; i >= 0; --i) {
-        delete m_outputs.takeAt(i);
+    while (m_outputs.size() > 0) {
+        delete m_outputs.takeLast();
     }
 }
 
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value) {
-
     unsigned char channel = status & 0x0F;
     unsigned char opCode = status & 0xF0;
-    if (opCode >= 0xF0) opCode = status;
+    if (opCode >= 0xF0) {
+        opCode = status;
+    }
 
     QString message;
     bool twoBytes = true;
@@ -203,35 +202,42 @@ void MidiController::receive(unsigned char status, unsigned char control,
             break;
     }
 
-    if (debugging()) qDebug() << message;
+    if (debugging()) {
+        qDebug() << message;
+    }
 
-//     if (m_bReceiveInhibit) return;
-
-    QPair<ConfigKey, MidiOptions> controlOptions;
+    //if (m_bReceiveInhibit) return;
 
     MidiKey mappingKey;
     mappingKey.status = status;
 
     // When it's part of the message, include it
-    if (twoBytes) mappingKey.control = control;
-    else {
+    if (twoBytes) {
+        mappingKey.control = control;
+    } else {
         // Signifies that the second byte is part of the payload, default
         mappingKey.control = 0xFF;
     }
 
+    // Don't process midi messages further when MIDI learning
     if (m_bMidiLearn) {
         emit(midiEvent(mappingKey));
-        return; // Don't process midi messages further when MIDI learning
+        return;
     }
-    // If no control is bound to this MIDI message, return
-    if (!m_preset.mappings.contains(mappingKey.key)) return;
-    controlOptions = m_preset.mappings.value(mappingKey.key);
 
+    // If no control is bound to this MIDI message, return
+    if (!m_preset.mappings.contains(mappingKey.key)) {
+        return;
+    }
+
+    QPair<ConfigKey, MidiOptions> controlOptions = m_preset.mappings.value(mappingKey.key);
     ConfigKey ckey = controlOptions.first;
     MidiOptions options = controlOptions.second;
 
     if (options.script) {
-        if (m_pEngine == NULL) return;
+        if (m_pEngine == NULL) {
+            return;
+        }
 
         QScriptValueList args;
         args << QScriptValue(status & 0x0F);
@@ -244,49 +250,55 @@ void MidiController::receive(unsigned char status, unsigned char control,
         return;
     }
 
-    ControlObject * p = ControlObject::getControl(ckey);
-
-    if (p) //Only pass values on to valid ControlObjects.
-    {
-        double currMixxxControlValue = p->GetMidiValue();
-
-        double newValue = value;
-
-//         qDebug() << "MIDI Options" << QString::number(options.all, 2).rightJustified(16,'0');
-
-        // compute 14-bit number for pitch bend messages
-        if (opCode == MIDI_PITCH_BEND) {
-            unsigned int ivalue;
-            ivalue = (value << 7) | control;
-
-            currMixxxControlValue = p->get();
-
-            // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
-            newValue = (ivalue-8192)/8191;
-            // computeValue not done on pitch messages because it all assumes 7-bit numbers
-        }
-        else newValue = computeValue(options, currMixxxControlValue, value);
-
-        if (options.soft_takeover) {
-            m_st.enable(ckey.group,ckey.item);  // This is the only place to enable it if it isn't already.
-            if (m_st.ignore(ckey.group,ckey.item,newValue,true)) return;
-        }
-
-        ControlObject::sync();
-
-        p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+    // Only pass values on to valid ControlObjects.
+    ControlObject* p = ControlObject::getControl(ckey);
+    if (p == NULL) {
+        return;
     }
-    return;
+
+    double currMixxxControlValue = p->GetMidiValue();
+
+    double newValue = value;
+
+    //qDebug() << "MIDI Options" << QString::number(options.all, 2).rightJustified(16,'0');
+
+    // compute 14-bit number for pitch bend messages
+    if (opCode == MIDI_PITCH_BEND) {
+        unsigned int ivalue;
+        ivalue = (value << 7) | control;
+
+        currMixxxControlValue = p->get();
+
+        // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
+        newValue = (ivalue-8192)/8191;
+        // computeValue not done on pitch messages because it all assumes 7-bit numbers
+    } else {
+        newValue = computeValue(options, currMixxxControlValue, value);
+    }
+
+    if (options.soft_takeover) {
+        // This is the only place to enable it if it isn't already.
+        m_st.enable(ckey.group,ckey.item);
+        if (m_st.ignore(ckey.group,ckey.item,newValue,true)) {
+            return;
+        }
+    }
+
+    ControlObject::sync();
+    p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
-
     double tempval = 0.;
     double diff = 0.;
 
-    if (options.all == 0) return _newmidivalue;
+    if (options.all == 0) {
+        return _newmidivalue;
+    }
 
-    if (options.invert) return 127. - _newmidivalue;
+    if (options.invert) {
+        return 127. - _newmidivalue;
+    }
 
     if (options.rot64 || options.rot64_inv) {
         tempval = _prevmidivalue;
@@ -331,12 +343,16 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         //Since this is a selection knob, we do not want to inherit previous values.
     }
 
-    if (options.button) { _newmidivalue = (_newmidivalue != 0); }
+    if (options.button) {
+        _newmidivalue = _newmidivalue != 0;
+    }
 
-    if (options.sw) { _newmidivalue = 1; }
+    if (options.sw) {
+        _newmidivalue = 1;
+    }
 
     if (options.spread64) {
-//         qDebug() << "MIDI_OPT_SPREAD64";
+        //qDebug() << "MIDI_OPT_SPREAD64";
         // BJW: Spread64: Distance away from centre point (aka "relative CC")
         // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
         // but with added sensitivity adjustment. This formula is still experimental.
@@ -348,11 +364,13 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
         //if (distance < 0.)
         //    _newmidivalue = -_newmidivalue;
 
-         //qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
+        //qDebug() << "Spread64: in " << distance << "  out " << _newmidivalue;
     }
 
     if (options.herc_jog) {
-        if (_newmidivalue > 64.) { _newmidivalue -= 128.; }
+        if (_newmidivalue > 64.) {
+            _newmidivalue -= 128.;
+        }
         _newmidivalue += _prevmidivalue;
         //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << _prevmidivalue; }
     }
@@ -361,7 +379,6 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 }
 
 void MidiController::receive(QByteArray data) {
-
     int length = data.size();
     QString message = m_sDeviceName+": [";
     for (int i = 0; i < length; ++i) {
@@ -370,35 +387,42 @@ void MidiController::receive(QByteArray data) {
             QString("%1").arg((i < (length-1)) ? ' ' : ']'));
     }
 
-    if (debugging()) qDebug()<< message;
+    if (debugging())
+        qDebug() << message;
 
-//     if (m_bReceiveInhibit) return;
-
-    QPair<ConfigKey, MidiOptions> control;
+    //if (m_bReceiveInhibit) return;
 
     MidiKey mappingKey;
     mappingKey.status = data.at(0);
     // Signifies that the second byte is part of the payload, default
     mappingKey.control = 0xFF;
 
+    // Don't process midi messages further when MIDI learning
     if (m_bMidiLearn) {
         emit(midiEvent(mappingKey));
-        return; // Don't process midi messages further when MIDI learning
+        return;
     }
+
     // If no control is bound to this MIDI status, return
-    if (!m_preset.mappings.contains(mappingKey.key)) return;
-    control = m_preset.mappings.value(mappingKey.key);
+    if (!m_preset.mappings.contains(mappingKey.key)) {
+        return;
+    }
+
+    QPair<ConfigKey, MidiOptions> control = m_preset.mappings.value(mappingKey.key);
 
     ConfigKey ckey = control.first;
     MidiOptions options = control.second;
 
     // Custom script handler
     if (options.script) {
-        if (m_pEngine == NULL) return;
-//         // Up-cast to ControllerEngine since this version of execute() is not in MCE
-//         //  (polymorphism doesn't work across class boundaries)
-//         ControllerEngine *pEngine = m_pEngine;
-//         if (!pEngine->execute(ckey.item, data, length)) {
+        if (m_pEngine == NULL) {
+            return;
+        }
+        // Up-cast to ControllerEngine since this version of execute() is not in MCE
+        //  (polymorphism doesn't work across class boundaries)
+        //ControllerEngine *pEngine = m_pEngine;
+        //if (!pEngine->execute(ckey.item, data, length)) {
+
         if (!m_pEngine->execute(ckey.item, data)) {
             qDebug() << "MidiController: Invalid script function" << ckey.item;
         }
@@ -410,7 +434,7 @@ void MidiController::receive(QByteArray data) {
 
 void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
     unsigned int word = (((unsigned int)byte2) << 16) |
-    (((unsigned int)byte1) << 8) | status;
+            (((unsigned int)byte1) << 8) | status;
     send(word);
 }
 
