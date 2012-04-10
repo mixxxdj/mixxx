@@ -185,8 +185,6 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     m_pParent = new QWidget; // this'll get deleted with pParent
     QDomElement skinDocument = openSkin(skinPath);
 
-    qDebug() << skinPath;
-
     if (skinDocument.isNull()) {
         // TODO error message
         qDebug() << "Could not load skin.";
@@ -318,12 +316,6 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
                 if (pLayout) {
                     pLayout->addWidget(pChild);
                 }
-
-                /*if( node.nodeName() == "Visual")
-                {
-                    pChild->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-                    qDebug() << pChild << pChild->size();
-                }*/
             }
         }
     }
@@ -985,19 +977,19 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
                 connectValueToWidget = false;
 
             Qt::MouseButton state = Qt::NoButton;
-            if (!XmlParse::selectNode(con, "ButtonState").isNull())
-            {
-                if (XmlParse::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
+            if (!XmlParse::selectNode(con, "ButtonState").isNull()) {
+                if (XmlParse::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
                     state = Qt::LeftButton;
-                else if (XmlParse::selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive))
+                } else if (XmlParse::selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
                     state = Qt::RightButton;
+                }
             }
 
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
             (new ControlObjectThreadWidget(control, pWidget))->setWidget(
-                        pWidget, connectValueFromWidget, connectValueToWidget,
-                        emitOption, state);
+                pWidget, connectValueFromWidget, connectValueToWidget,
+                emitOption, state);
 
             // Add keyboard shortcut info to tooltip string
             QString tooltip = pWidget->toolTip();

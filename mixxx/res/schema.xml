@@ -313,7 +313,7 @@ METADATA
       description varchar(1024),
       version varchar(512),
       created DEFAULT CURRENT_TIMESTAMP,
-      data BLOB
+      data_checksum varchar(512)
     );
     UPDATE library SET wavesummaryhex = '';
     CREATE INDEX IF NOT EXISTS track_analysis_track_id_index ON track_analysis (track_id);

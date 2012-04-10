@@ -9,7 +9,7 @@ class SoftwareWaveformWidget : public WaveformWidgetAbstract, public QWidget
 public:
     virtual ~SoftwareWaveformWidget();
 
-    virtual QString getWaveformWidgetName() { return "Filtered";}
+    virtual QString getWaveformWidgetName() { return tr("Filtered");}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::SoftwareWaveform;}
 
     virtual bool useOpenGl() const { return false;}
