@@ -13,13 +13,6 @@
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
-MidiControllerPresetFileHandler::MidiControllerPresetFileHandler()
-        : ControllerPresetFileHandler() {
-}
-
-MidiControllerPresetFileHandler::~MidiControllerPresetFileHandler() {
-}
-
 ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
                                                         const QString deviceName,
                                                         const bool forceLoad) {
@@ -29,7 +22,7 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
         return preset;
 
     // Superclass handles script files
-    addScriptFilesToMapping(root, deviceName, forceLoad, preset);
+    addScriptFilesToPreset(root, deviceName, forceLoad, preset);
 
     /*
     // We actually need to load any script code now to verify function
@@ -269,13 +262,13 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
 bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
                                            const QString deviceName,
                                            const QString fileName) const {
+    qDebug() << "Saving preset for" << deviceName << "to" << fileName;
     QDomDocument doc = buildRootWithScripts(preset, deviceName);
-    addControllerToDocument(preset, deviceName, &doc);
+    addControllerToDocument(preset, &doc);
     return writeDocument(doc, fileName);
 }
 
 void MidiControllerPresetFileHandler::addControllerToDocument(const MidiControllerPreset& preset,
-                                                              const QString deviceName,
                                                               QDomDocument* doc) const {
     QDomElement controller = doc->documentElement().firstChildElement("controller");
     QDomElement controls = doc->createElement("controls");

@@ -162,6 +162,7 @@ int Hss1394Controller::close()
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
     
     stopEngine();
+    MidiController::close();
     
     // Clean up the HSS1394Node
     using namespace hss1394;

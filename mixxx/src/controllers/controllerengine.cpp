@@ -20,6 +20,7 @@
 #include "controller.h"
 #include "controllerengine.h"
 #include "errordialoghandler.h"
+#include "defs_controllers.h"
 
 // #include <QScriptSyntaxCheckResult>
 
@@ -160,11 +161,12 @@ void ControllerEngine::initializeScriptEngine() {
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Load all script files given in the shared list
-   Input:   -
+   Purpose: Load all script files given in the supplied list
+   Input:   Global ConfigObject, QString list of file names to load
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::loadScriptFiles(QList<QString> scriptFileNames) {
+void ControllerEngine::loadScriptFiles(QString configPath,
+                                       QList<QString> scriptFileNames) {
     // Set the Debug flag
     if (m_pController)
         m_bDebug = m_pController->debugging();
@@ -173,14 +175,10 @@ void ControllerEngine::loadScriptFiles(QList<QString> scriptFileNames) {
 
     // scriptPaths holds the paths to search in when we're looking for scripts
     QList<QString> scriptPaths;
-    scriptPaths.append(QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/"));
-
-    // TODO(XXX) Loading the config file again here is not ok! We need to get
-    // the global config object from the rest of Mixxx.
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(
-        QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-    scriptPaths.append(config->getConfigPath().append("controllers/"));
-    delete config;
+//     scriptPaths.append(configPath.append("presets/"));
+//     scriptPaths.append(configPath.append("midi/"));
+    scriptPaths.append(USER_PRESETS_PATH.append("controllers/"));
+    scriptPaths.append(configPath.append("controllers/"));
 
     foreach (QString curScriptFileName, scriptFileNames) {
         evaluate(curScriptFileName, scriptPaths);

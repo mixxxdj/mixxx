@@ -1,16 +1,16 @@
 #include "controllers/hidcontrollerpresetfilehandler.h"
-#include "controllers/hidcontrollerpreset.h"
 
-bool HidControllerPresetFileHandler::save(
-    const HidControllerPreset& preset,
-    const QString deviceName, const QString fileName) const {
+bool HidControllerPresetFileHandler::save(const HidControllerPreset& preset,
+                                          const QString deviceName,
+                                          const QString fileName) const {
     QDomDocument doc = buildRootWithScripts(preset, deviceName);
-    return writeDocument(root, fileName);
+    return writeDocument(doc, fileName);
 }
 
-ControllerPreset* HidControllerPresetFileHandler::load(
-    const QDomElement root, const QString deviceName, const bool forceLoad) {
+ControllerPreset* HidControllerPresetFileHandler::load(const QDomElement root,
+                                                       const QString deviceName,
+                                                       const bool forceLoad) {
     HidControllerPreset* preset = new HidControllerPreset();
-    addScriptFilesToMapping(root, deviceName, forceLoad, preset);
+    addScriptFilesToPreset(root, deviceName, forceLoad, preset);
     return preset;
 }

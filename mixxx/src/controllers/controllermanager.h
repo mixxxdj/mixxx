@@ -79,6 +79,8 @@ class ControllerManager : public QObject {
     // preferences dialog on apply, and only open/close changed devices
     int slotSetUpDevices();
     void slotShutdown();
+    bool loadPreset(Controller* pController, const QString &filename,
+                    const bool force);
 
   private:
     //ConfigObject<ConfigValue> *m_pDeviceSettings;

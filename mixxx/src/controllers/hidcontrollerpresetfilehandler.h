@@ -1,10 +1,13 @@
 #ifndef HIDCONTROLLERPRESETFILEHANDLER_H
 #define HIDCONTROLLERPRESETFILEHANDLER_H
 
+#include "hidcontrollerpreset.h"
+#include "controllerpresetfilehandler.h"
+
 class HidControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:
-    HidControllerPresetFileHandler() {}
-    virtual ~HidControllerPresetFileHandler() {}
+    HidControllerPresetFileHandler() {};
+    virtual ~HidControllerPresetFileHandler() {};
 
     bool save(const HidControllerPreset& preset,
               const QString deviceName, const QString fileName) const;

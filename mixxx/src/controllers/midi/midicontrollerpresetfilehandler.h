@@ -23,8 +23,8 @@
 
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:
-    MidiControllerPresetFileHandler();
-    virtual ~MidiControllerPresetFileHandler();
+    MidiControllerPresetFileHandler() {};
+    virtual ~MidiControllerPresetFileHandler() {};
 
     bool save(const MidiControllerPreset& preset,
               const QString deviceName, const QString fileName) const;
@@ -34,7 +34,7 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
                                    const bool forceLoad);
 
     void addControllerToDocument(const MidiControllerPreset& preset,
-                                 const QString deviceName, QDomDocument* doc) const;
+                                 QDomDocument* doc) const;
 
     void mappingToXML(QDomElement& parentNode,
                       QString group, QString item,
