@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: tras <Unknown>\n"
+"PO-Revision-Date: 2012-04-09 09:56+0000\n"
+"Last-Translator: luyikei <luyikei@live.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-27 05:06+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-04-10 05:03+0000\n"
+"X-Generator: Launchpad (build 15070)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: AutoDJFeature#1
@@ -306,12 +306,12 @@ msgstr "レコードボックスの名前変更に失敗"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "プレイリストファイル(*.m3u *.m3u8 *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3Uプレイリスト (*.m3u);;M3U8 プレイリスト(*.m3u8);;PLS プレイリスト(*.pls)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -349,6 +349,19 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -397,7 +410,7 @@ msgstr "最小"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "曲全体を解析"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -773,7 +786,7 @@ msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
-msgstr ""
+msgstr "1.014 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -1023,42 +1036,42 @@ msgstr "秒"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "スキン内のシグナルクオリティを表示"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "コントロールモード"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "絶対的なモード"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "相対的モード"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "ニードルスキップ防止を有効にする"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "信号の強さ"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
@@ -1190,6 +1203,8 @@ msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"バンドルされている曲をカウントし、共有することにより、Mixxxはサポート\n"
+"再生およびアウトバウンドリンクの統計情報"
 
 #: DlgPrefRecord#1
 msgid "kbps"
@@ -1399,7 +1414,7 @@ msgstr "http://www.mixxx.org"
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr ""
+msgstr "概要"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1644,7 +1659,7 @@ msgstr "なし"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
-msgstr ""
+msgstr "チャンネル %1"
 
 #: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
@@ -1739,57 +1754,57 @@ msgstr "デッキ 2 Vinyl タイプ"
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "スキン内のシグナルクオリティを表示"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr ""
+msgstr "適用"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr ""
+msgstr "リードインの時間"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr ""
+msgstr "秒"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Control Mode"
-msgstr ""
+msgstr "コントロールモード"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "絶対的なモード"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "相対的モード"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "ニードルスキップ防止を有効にする"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "信号の強さ"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1856,11 +1871,11 @@ msgstr "マネージ"
 
 #: DlgPrepare#2
 msgid "New"
-msgstr ""
+msgstr "新規作成"
 
 #: DlgPrepare#3
 msgid "All"
-msgstr ""
+msgstr "全て"
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -1906,19 +1921,19 @@ msgstr "録音停止"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "トラックエディター"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "曲:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "タイトル:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "アーティスト:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1938,7 +1953,7 @@ msgstr "ジャンル:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "ファイル名:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
@@ -1946,19 +1961,19 @@ msgstr "長さ:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "ファイル形式:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "コメント:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -1966,7 +1981,7 @@ msgstr "トラックのメタデータをファイルから再読み込み"
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "トラック情報（クリックして表示）"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2035,7 +2050,7 @@ msgstr "キャンセル(&C)"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2171,7 +2186,7 @@ msgstr "iTunesライブラリを選択"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr ""
+msgstr "(読み込み中)iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2197,7 +2212,7 @@ msgstr "リストからプリセットをドラッグしてここへドロップ
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
-msgstr ""
+msgstr "ライブラリースキャナー"
 
 #: LibraryScannerDlg#2
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
@@ -2234,7 +2249,7 @@ msgstr "コントロール値"
 #: MidiInputMappingTableModel#6
 msgctxt "MidiInputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "概要"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -2291,7 +2306,7 @@ msgstr "コントロール値"
 #: MidiOutputMappingTableModel#6
 msgctxt "MidiOutputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "概要"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
@@ -2540,23 +2555,23 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About"
-msgstr ""
+msgstr "このアプリケーションについて(&A)"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "コミュニティーのサポート(&C)"
 
 #: MixxxApp#42
 msgid "&User Manual"
-msgstr ""
+msgstr "ユーザーマニュアル(_U)"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
-msgstr ""
+msgstr "開発者にフィードバック(&F)"
 
 #: MixxxApp#44
 msgid "&Translate this application"
-msgstr ""
+msgstr "このアプリケーションを翻訳する(&T)"
 
 #: MixxxApp#45
 msgid "Enable &Vinyl Control 1"
@@ -2577,7 +2592,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#49
 msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "ライブ放送を有効にする"
 
 #: MixxxApp#50
 msgid "Ctrl+L"
@@ -2730,7 +2745,7 @@ msgstr "Mixxxを全画面表示にする。"
 #: MixxxApp#77
 msgctxt "MixxxApp#77"
 msgid "Preferences"
-msgstr ""
+msgstr "設定"
 
 #: MixxxApp#78
 msgid ""
@@ -2750,10 +2765,13 @@ msgid ""
 "\n"
 "Get help with Mixxx"
 msgstr ""
+"サポート\n"
+"\n"
+"Mixxxを助ける"
 
 #: MixxxApp#81
 msgid "Read the Mixxx user manual."
-msgstr ""
+msgstr "Mixxxユーザーマニュアルを読む"
 
 #: MixxxApp#82
 msgid ""
@@ -2761,10 +2779,13 @@ msgid ""
 "\n"
 "Read the Mixxx user manual."
 msgstr ""
+"サポート\n"
+"\n"
+"Mixxxユーザーマニュアルを読む"
 
 #: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
-msgstr ""
+msgstr "Mixxxチームにフィードバックを送る"
 
 #: MixxxApp#84
 msgid ""
@@ -2772,10 +2793,13 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"サポート\n"
+"\n"
+"Mixxxチームにフィードバックを送る"
 
 #: MixxxApp#85
 msgid "Help translate this application into your language."
-msgstr ""
+msgstr "あなたの言語でこのアプリケーションを翻訳するのを手伝ってください。"
 
 #: MixxxApp#86
 msgid ""
@@ -2783,6 +2807,9 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"サポート\n"
+"\n"
+"あなたの言語でこのアプリケーションを翻訳するのを手伝ってください。"
 
 #: MixxxApp#87
 msgid "About the application"
@@ -2882,23 +2909,23 @@ msgstr ""
 
 #: MixxxApp#105
 msgid "Mixxx %1 Development Team"
-msgstr ""
+msgstr "Mixxx %1 開発チーム"
 
 #: MixxxApp#106
 msgid "With contributions from:"
-msgstr ""
+msgstr "寄付する方法:"
 
 #: MixxxApp#107
 msgid "And special thanks to:"
-msgstr ""
+msgstr "そしてスペシャルサンクスを:"
 
 #: MixxxApp#108
 msgid "Past Developers"
-msgstr ""
+msgstr "過去の開発"
 
 #: MixxxApp#109
 msgid "Past Contributors"
-msgstr ""
+msgstr "過去の開発"
 
 #: MixxxApp#110
 msgid "Confirm Exit"
