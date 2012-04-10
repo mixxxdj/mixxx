@@ -245,51 +245,16 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
 }
 
 void WOverview::onMarkChanged(double v) {
-
-    qDebug() << "WOverview::onMarkChanged()" << v;
-
-    /*
-    QObject* pSender = sender();
-    if (!pSender)
-        return;
-
-    if (!m_hotcueMap.contains(pSender))
-        return;
-
-    int hotcue = m_hotcueMap[pSender];
-    m_hotcues[hotcue] = v;
-    //qDebug() << "hotcue" << hotcue << "position" << v;
-
-    */
+    //qDebug() << "WOverview::onMarkChanged()" << v;
     update();
 }
 
 void WOverview::onMarkRangeChange(double v) {
-
-    qDebug() << "WOverview::onMarkRangeChange()" << v;
-
+    //qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
 }
-
-/*
-void WOverview::loopStartChanged(double v) {
-    m_dLoopStart = v;
-    update();
-}
-
-void WOverview::loopEndChanged(double v) {
-    m_dLoopEnd = v;
-    update();
-}
-
-void WOverview::loopEnabledChanged(double v) {
-    m_bLoopEnabled = !(v == 0.0f);
-    update();
-}
-*/
 
 bool WOverview::drawNextPixmapPart() {
-
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
     if (!m_waveform) {
@@ -388,7 +353,6 @@ void WOverview::mouseMoveEvent(QMouseEvent * e)
 
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
 
-    // Update display
     update();
 }
 

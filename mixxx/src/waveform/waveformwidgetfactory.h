@@ -69,7 +69,8 @@ public:
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
-    bool setWidgetType( int handleIndex);
+    bool setWidgetType( WaveformWidgetType::Type type);
+    bool setWidgetTypeFromHandle( int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
     void setDefaultZoom(int zoom);
@@ -105,6 +106,7 @@ private slots:
     void refresh();
 
 private:
+    WaveformWidgetType::Type autoChooseWidgetType() const;
     void evaluateWidgets();
     WaveformWidgetAbstract* createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf( WWaveformViewer* viewer) const;

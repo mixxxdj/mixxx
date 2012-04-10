@@ -109,19 +109,6 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
         }
     }
 
-    //default selection
-    if (m_openGLAvailable) {
-        if (m_openGLShaderAvailable) {
-            //TODO: (vrince) enable when ready
-            //m_type = WaveformWidgetType::GLSLWaveform;
-            m_type = WaveformWidgetType::GLWaveform;
-        } else {
-            m_type = WaveformWidgetType::GLWaveform;
-        }
-    } else {
-        m_type = WaveformWidgetType::SoftwareWaveform;
-    }
-
     evaluateWidgets();
     start();
 }
@@ -159,11 +146,21 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
+    QString typeString = m_config->getValueString(ConfigKey("[Waveform]","WaveformType"));
+    if( !typeString.isEmpty()) {
+        WaveformWidgetType::Type type = (WaveformWidgetType::Type)(typeString.toInt());
+        if( !setWidgetType(type)){
+            setWidgetType(autoChooseWidgetType());
+        }
+    } else {
+        setWidgetType(autoChooseWidgetType());
+    }
+
     return true;
 }
 
 void WaveformWidgetFactory::start() {
-    qDebug() << "WaveformWidgetFactory::start";
+    //qDebug() << "WaveformWidgetFactory::start";
     killTimer(m_mainTimerId);
     m_mainTimerId = startTimer(1000.0/double(m_frameRate));
 }
@@ -225,20 +222,49 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
 }
 
-bool WaveformWidgetFactory::setWidgetType(int handleIndex) {
+bool WaveformWidgetFactory::setWidgetType( WaveformWidgetType::Type type) {
+    if( type == m_type)
+        return true;
+
+    //check if type is accetable
+    for( unsigned int i = 0; i < m_waveformWidgetHandles.size(); i++) {
+        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
+        if( handle.m_type == type){
+            //type is acceptable
+            m_type = type;
+
+            if( m_config)
+                m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
+
+            return true;
+        }
+    }
+
+    //fallback
+    m_type = WaveformWidgetType::EmptyWaveform;
+
+    if( m_config)
+        m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
+
+    return false;
+}
+
+bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     if (handleIndex < 0 && handleIndex > m_waveformWidgetHandles.size()) {
-        qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle";
+        qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
+        //fallback empty type
+        m_type = WaveformWidgetType::EmptyWaveform;
         return false;
     }
 
     WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[handleIndex];
     if (handle.m_type == m_type) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - type already in use";
-        return false;
+        return true;
     }
 
     //change the type
-    m_type = handle.m_type;
+    setWidgetType(handle.m_type);
 
     //NOTE: (vRince)
     //I tried but I can't figure-out what is missing here that append in skin parser
@@ -320,6 +346,20 @@ void WaveformWidgetFactory::refresh() {
     m_time->restart();
 
     m_actualFrameRate = 1000.0/(double)(m_lastFrameTime);
+}
+
+WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
+    //default selection
+    if (m_openGLAvailable) {
+        if (m_openGLShaderAvailable) {
+            //TODO: (vrince) enable when ready
+            //return = WaveformWidgetType::GLSLWaveform;
+            return WaveformWidgetType::GLWaveform;
+        } else {
+            return WaveformWidgetType::GLWaveform;
+        }
+    }
+    return WaveformWidgetType::SoftwareWaveform;
 }
 
 void WaveformWidgetFactory::evaluateWidgets() {

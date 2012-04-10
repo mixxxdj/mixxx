@@ -68,7 +68,7 @@
 extern "C" void crashDlg()
 {
     QMessageBox::critical(0, "Mixxx",
-        "Mixxx has encountered a serious error and needs to close.");
+                          "Mixxx has encountered a serious error and needs to close.");
 }
 
 
@@ -92,10 +92,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     QStringList buildInfo;
     if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
         buildInfo.append(
-            QString("bzr %1 r%2").arg(buildBranch, buildRevision));
+                    QString("bzr %1 r%2").arg(buildBranch, buildRevision));
     } else if (!buildRevision.isEmpty()) {
         buildInfo.append(
-            QString("bzr r%2").arg(buildRevision));
+                    QString("bzr r%2").arg(buildRevision));
     }
     buildInfo.append("built on: " __DATE__ " @ " __TIME__);
     if (!buildFlags.isEmpty()) {
@@ -144,7 +144,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // path. This is the lowest precedence QTranslator.
     QTranslator* qtTranslator = new QTranslator(a);
     if (qtTranslator->load("qt_" + locale,
-                          QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+                           QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
         a->installTranslator(qtTranslator);
     } else {
         delete qtTranslator;
@@ -179,7 +179,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
     QString userKeyboard =
-        QDir::homePath().append("/").append(SETTINGS_PATH)
+            QDir::homePath().append("/").append(SETTINGS_PATH)
             .append("Custom.kbd.cfg");
 
     ConfigObject<ConfigValueKbd>* pKbdConfig = NULL;
@@ -225,7 +225,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool hasChanged_MusicDir = false;
     QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
     if (m_pConfig->getValueString(
-        ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
+                ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
     {
         // TODO this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
@@ -235,8 +235,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         // but the user didn't hit cancel, we need to know this and let the
         // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Choose music library directory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+                    this, tr("Choose music library directory"),
+                    QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
         if (fd != "")
         {
@@ -281,22 +281,22 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
-        m_pEngine);
+                                    m_pEngine);
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
-        m_pEngine);
+                                    m_pEngine);
     for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
         // TODO(bkgood) make this look less dumb by putting channelBase after
         // index in the AudioOutput() params
         m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
+                    AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
     }
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, m_pConfig);
     for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
         m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
-            m_pVCManager);
+                    AudioInput(AudioInput::VINYLCONTROL, 0, deck),
+                    m_pVCManager);
     }
 #else
     m_pVCManager = NULL;
@@ -313,18 +313,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
     // rescan the library if we get a new plugin
     QSet<QString> prev_plugins = QSet<QString>::fromList(m_pConfig->getValueString(
-        ConfigKey("[Library]", "SupportedFileExtensions")).split(",", QString::SkipEmptyParts));
+                                                             ConfigKey("[Library]", "SupportedFileExtensions")).split(",", QString::SkipEmptyParts));
     QSet<QString> curr_plugins = QSet<QString>::fromList(
-        SoundSourceProxy::supportedFileExtensions());
+                SoundSourceProxy::supportedFileExtensions());
     rescan = rescan || (prev_plugins != curr_plugins);
 
     if(rescan || hasChanged_MusicDir){
         m_pLibraryScanner->scan(
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+                    m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
         qDebug() << "Rescan finished";
     }
     m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
+                   QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
 
     // Call inits to invoke all other construction parts
 
@@ -364,7 +364,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                 m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+                                    m_pMidiDeviceManager, m_pVCManager, m_pConfig);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -399,16 +399,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-            && i < args.qlMusicFiles.count(); ++i) {
+         && i < args.qlMusicFiles.count(); ++i) {
         m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
     }
 
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
-            m_pLibrary->getTracksToAutoLoad();
+                m_pLibrary->getTracksToAutoLoad();
         for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-                && i < tracksToAutoLoad.count(); i++) {
+             && i < tracksToAutoLoad.count(); i++) {
             m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
         }
     }
@@ -423,7 +423,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Loads the skin as a child of m_pView
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
-        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
+              m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -444,7 +444,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
     m_pApp->installEventFilter(this); // The eventfilter is located in this
-                                      // Mixxx class as a callback.
+    // Mixxx class as a callback.
 
     // If we were told to start in fullscreen mode on the command-line,
     // then turn on fullscreen mode.
@@ -550,16 +550,16 @@ MixxxApp::~MixxxApp()
             leakedConfigKeys.append(key);
         }
 
-       foreach (ConfigKey key, leakedConfigKeys) {
-           // delete just to satisfy valgrind:
-           // check if the pointer is still valid, the control object may have bin already
-           // deleted by its parent in this loop
-           delete ControlObject::getControl(key);
-       }
-   }
-   qDebug() << "~MixxxApp: All leaking controls deleted.";
+        foreach (ConfigKey key, leakedConfigKeys) {
+            // delete just to satisfy valgrind:
+            // check if the pointer is still valid, the control object may have bin already
+            // deleted by its parent in this loop
+            delete ControlObject::getControl(key);
+        }
+    }
+    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
-   delete m_pKeyboard;
+    delete m_pKeyboard;
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -568,35 +568,35 @@ int MixxxApp::noSoundDlg(void)
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("Sound Device Busy"));
     msgBox.setText(
-        "<html>" +
-        tr("Mixxx was unable to access all the configured sound devices. "
-        "Another application is using a sound device Mixxx is configured to "
-        "use or a device is not plugged in.") +
-        "<ul>"
-            "<li>" +
+                "<html>" +
+                tr("Mixxx was unable to access all the configured sound devices. "
+                   "Another application is using a sound device Mixxx is configured to "
+                   "use or a device is not plugged in.") +
+                "<ul>"
+                "<li>" +
                 tr("<b>Retry</b> after closing the other application "
-                "or reconnecting a sound device") +
-            "</li>"
-            "<li>" +
+                   "or reconnecting a sound device") +
+                "</li>"
+                "<li>" +
                 tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
-            "</li>"
-            "<li>" +
+                "</li>"
+                "<li>" +
                 tr("Get <b>Help</b> from the Mixxx Wiki.") +
-            "</li>"
-            "<li>" +
+                "</li>"
+                "<li>" +
                 tr("<b>Exit</b> Mixxx.") +
-            "</li>"
-        "</ul></html>"
-    );
+                "</li>"
+                "</ul></html>"
+                );
 
     QPushButton *retryButton = msgBox.addButton(tr("Retry"),
-        QMessageBox::ActionRole);
+                                                QMessageBox::ActionRole);
     QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"),
-        QMessageBox::ActionRole);
+                                                      QMessageBox::ActionRole);
     QPushButton *wikiButton = msgBox.addButton(tr("Help"),
-        QMessageBox::ActionRole);
+                                               QMessageBox::ActionRole);
     QPushButton *exitButton = msgBox.addButton(tr("Exit"),
-        QMessageBox::ActionRole);
+                                               QMessageBox::ActionRole);
 
     while (true)
     {
@@ -607,9 +607,9 @@ int MixxxApp::noSoundDlg(void)
             return 0;
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
-                "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog")
-            );
+                                          "http://mixxx.org/wiki/doku.php/troubleshooting"
+                                          "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog")
+                                      );
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -639,17 +639,17 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
     msgBox.setText( "<html>Mixxx was configured without any output sound devices. "
                     "Audio processing will be disabled without a configured output device."
                     "<ul>"
-                        "<li>"
-                            "<b>Continue</b> without any outputs."
-                        "</li>"
-                        "<li>"
-                            "<b>Reconfigure</b> Mixxx's sound device settings."
-                        "</li>"
-                        "<li>"
-                            "<b>Exit</b> Mixxx."
-                        "</li>"
+                    "<li>"
+                    "<b>Continue</b> without any outputs."
+                    "</li>"
+                    "<li>"
+                    "<b>Reconfigure</b> Mixxx's sound device settings."
+                    "</li>"
+                    "<li>"
+                    "<b>Exit</b> Mixxx."
+                    "</li>"
                     "</ul></html>"
-    );
+                    );
 
     QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
     QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
@@ -755,13 +755,13 @@ void MixxxApp::initActions()
 
     m_pFileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     m_pFileLoadSongPlayer1->setWhatsThis(
-        tr("Open\n\nOpens a song in player 1"));
+                tr("Open\n\nOpens a song in player 1"));
     connect(m_pFileLoadSongPlayer1, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer1()));
 
     m_pFileLoadSongPlayer2->setStatusTip(tr("Opens a song in player 2"));
     m_pFileLoadSongPlayer2->setWhatsThis(
-        tr("Open\n\nOpens a song in player 2"));
+                tr("Open\n\nOpens a song in player 2"));
     connect(m_pFileLoadSongPlayer2, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer2()));
 
@@ -771,7 +771,7 @@ void MixxxApp::initActions()
 
     m_pLibraryRescan->setStatusTip(tr("Rescans the song library"));
     m_pLibraryRescan->setWhatsThis(
-        tr("Rescan library\n\nRescans the song library"));
+                tr("Rescan library\n\nRescans the song library"));
     m_pLibraryRescan->setCheckable(false);
     connect(m_pLibraryRescan, SIGNAL(triggered()),
             this, SLOT(slotScanLibrary()));
@@ -801,40 +801,40 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setChecked(false);
     m_pOptionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl->setWhatsThis(
-        tr("Use timecoded vinyls on external turntables to control Mixxx"));
+                tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
-        SLOT(slotCheckboxVinylControl(bool)));
+            SLOT(slotCheckboxVinylControl(bool)));
 
-   ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled")),this);
+    ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
+                ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled")),this);
     connect(enabled1, SIGNAL(valueChanged(double)), this,
-        SLOT(slotControlVinylControl(double)));
+            SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2->setCheckable(true);
     m_pOptionsVinylControl2->setChecked(false);
     m_pOptionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl2->setWhatsThis(
-        tr("Use timecoded vinyls on external turntables to control Mixxx"));
+                tr("Use timecoded vinyls on external turntables to control Mixxx"));
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
-        SLOT(slotCheckboxVinylControl2(bool)));
+            SLOT(slotCheckboxVinylControl2(bool)));
 
     ControlObjectThreadMain* enabled2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled")),this);
+                ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled")),this);
     connect(enabled2, SIGNAL(valueChanged(double)), this,
-        SLOT(slotControlVinylControl2(double)));
+            SLOT(slotControlVinylControl2(double)));
 #endif
 
 #ifdef __SHOUTCAST__
     m_pOptionsShoutcast->setCheckable(true);
     bool broadcastEnabled =
-        (m_pConfig->getValueString(ConfigKey("[Shoutcast]", "enabled"))
-            .toInt() == 1);
+            (m_pConfig->getValueString(ConfigKey("[Shoutcast]", "enabled"))
+             .toInt() == 1);
 
     m_pOptionsShoutcast->setChecked(broadcastEnabled);
 
     m_pOptionsShoutcast->setStatusTip(tr("Activate live broadcasting"));
     m_pOptionsShoutcast->setWhatsThis(
-        tr("Stream your mixes to a shoutcast or icecast server"));
+                tr("Stream your mixes to a shoutcast or icecast server"));
 
     connect(m_pOptionsShoutcast, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsShoutcast(bool)));
@@ -850,13 +850,13 @@ void MixxxApp::initActions()
     m_pOptionsFullScreen->setChecked(false);
     m_pOptionsFullScreen->setStatusTip(tr("Full Screen"));
     m_pOptionsFullScreen->setWhatsThis(
-        tr("Display Mixxx using the full screen"));
+                tr("Display Mixxx using the full screen"));
     connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsFullScreen(bool)));
 
     m_pOptionsPreferences->setStatusTip(tr("Preferences"));
     m_pOptionsPreferences->setWhatsThis(
-        tr("Preferences\nPlayback and MIDI preferences"));
+                tr("Preferences\nPlayback and MIDI preferences"));
     connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 
@@ -884,11 +884,11 @@ void MixxxApp::initActions()
 void MixxxApp::initMenuBar()
 {
     // MENUBAR
-   m_pFileMenu = new QMenu(tr("&File"), menuBar());
-   m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
-   m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
-   m_pViewMenu = new QMenu(tr("&View"), menuBar());
-   m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
+    m_pFileMenu = new QMenu(tr("&File"), menuBar());
+    m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
+    m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
+    m_pViewMenu = new QMenu(tr("&View"), menuBar());
+    m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
@@ -964,26 +964,26 @@ bool MixxxApp::queryExit()
 void MixxxApp::slotFileLoadSongPlayer1()
 {
     ControlObject* play =
-        ControlObject::getControl(ConfigKey("[Channel1]", "play"));
+            ControlObject::getControl(ConfigKey("[Channel1]", "play"));
 
     if (play->get() == 1.)
     {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
-            tr("Player 1 is currently playing a song.\n"
-            "Are you sure you want to load a new song?"),
-            QMessageBox::Yes | QMessageBox::No,
-            QMessageBox::No);
+                                       tr("Player 1 is currently playing a song.\n"
+                                          "Are you sure you want to load a new song?"),
+                                       QMessageBox::Yes | QMessageBox::No,
+                                       QMessageBox::No);
 
         if (ret != QMessageBox::Yes)
             return;
     }
 
     QString s =
-        QFileDialog::getOpenFileName(
-            this,
-            tr("Load Song into Player 1"),
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),
-            QString("Audio (%1)")
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 1"),
+                m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),
+                QString("Audio (%1)")
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
@@ -994,26 +994,26 @@ void MixxxApp::slotFileLoadSongPlayer1()
 void MixxxApp::slotFileLoadSongPlayer2()
 {
     ControlObject* play =
-        ControlObject::getControl(ConfigKey("[Channel2]", "play"));
+            ControlObject::getControl(ConfigKey("[Channel2]", "play"));
 
     if (play->get() == 1.)
     {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
-            tr("Player 2 is currently playing a song.\n"
-            "Are you sure you want to load a new song?"),
-            QMessageBox::Yes | QMessageBox::No,
-            QMessageBox::No);
+                                       tr("Player 2 is currently playing a song.\n"
+                                          "Are you sure you want to load a new song?"),
+                                       QMessageBox::Yes | QMessageBox::No,
+                                       QMessageBox::No);
 
         if (ret != QMessageBox::Yes)
             return;
     }
 
     QString s =
-        QFileDialog::getOpenFileName(
-            this,
-            tr("Load Song into Player 2"),
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),
-            QString("Audio (%1)")
+            QFileDialog::getOpenFileName(
+                this,
+                tr("Load Song into Player 2"),
+                m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),
+                QString("Audio (%1)")
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
@@ -1041,16 +1041,16 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 
     if (toggle) {
 #if defined(__LINUX__) || defined(__APPLE__)
-         // this and the later move(m_winpos) doesn't seem necessary
-         // here on kwin, if it's necessary with some other x11 wm, re-enable
-         // it, I guess -bkgood
-         //m_winpos = pos();
-         // fix some x11 silliness -- for some reason the move(m_winpos)
-         // is moving the currentWindow to (0, 0), not the frame (as it's
-         // supposed to, I might add)
-         // if this messes stuff up on your distro yell at me -bkgood
-         //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
-         //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
+        // this and the later move(m_winpos) doesn't seem necessary
+        // here on kwin, if it's necessary with some other x11 wm, re-enable
+        // it, I guess -bkgood
+        //m_winpos = pos();
+        // fix some x11 silliness -- for some reason the move(m_winpos)
+        // is moving the currentWindow to (0, 0), not the frame (as it's
+        // supposed to, I might add)
+        // if this messes stuff up on your distro yell at me -bkgood
+        //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
+        //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
         menuBar()->setNativeMenuBar(false);
         showFullScreen();
@@ -1078,10 +1078,10 @@ void MixxxApp::slotControlVinylControl(double toggle)
         m_pOptionsVinylControl->setChecked(false);
         if (toggle) {
             QMessageBox::warning(this, tr("Mixxx"),
-                tr("No input device(s) select.\nPlease select your soundcard(s) "
-                    "in the sound hardware preferences."),
-                QMessageBox::Ok,
-                QMessageBox::Ok);
+                                 tr("No input device(s) select.\nPlease select your soundcard(s) "
+                                    "in the sound hardware preferences."),
+                                 QMessageBox::Ok,
+                                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
@@ -1107,10 +1107,10 @@ void MixxxApp::slotControlVinylControl2(double toggle)
         m_pOptionsVinylControl2->setChecked(false);
         if (toggle) {
             QMessageBox::warning(this, tr("Mixxx"),
-                tr("No input device(s) select.\nPlease select your soundcard(s) "
-                    "in the sound hardware preferences."),
-                QMessageBox::Ok,
-                QMessageBox::Ok);
+                                 tr("No input device(s) select.\nPlease select your soundcard(s) "
+                                    "in the sound hardware preferences."),
+                                 QMessageBox::Ok,
+                                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
@@ -1170,147 +1170,147 @@ void MixxxApp::slotHelpAbout() {
     QString s_pastContribs=tr("Past Contributors");
 
     QString credits =
-    QString("<p align=\"center\"><b>%1</b></p>"
-"<p align=\"center\">"
-"Adam Davison<br>"
-"Albert Santoni<br>"
-"RJ Ryan<br>"
-"Garth Dahlstrom<br>"
-"Sean Pappalardo<br>"
-"Phillip Whelan<br>"
-"Tobias Rafreider<br>"
-"S. Brandt<br>"
-"Bill Good<br>"
-"Owen Williams<br>"
-"Vittorio Colao<br>"
-"Daniel Sch&uuml;rmann<br>"
+            QString("<p align=\"center\"><b>%1</b></p>"
+                    "<p align=\"center\">"
+                    "Adam Davison<br>"
+                    "Albert Santoni<br>"
+                    "RJ Ryan<br>"
+                    "Garth Dahlstrom<br>"
+                    "Sean Pappalardo<br>"
+                    "Phillip Whelan<br>"
+                    "Tobias Rafreider<br>"
+                    "S. Brandt<br>"
+                    "Bill Good<br>"
+                    "Owen Williams<br>"
+                    "Vittorio Colao<br>"
+                    "Daniel Sch&uuml;rmann<br>"
 
-"</p>"
-"<p align=\"center\"><b>%2</b></p>"
-"<p align=\"center\">"
-"Mark Hills<br>"
-"Andre Roth<br>"
-"Robin Sheat<br>"
-"Mark Glines<br>"
-"Mathieu Rene<br>"
-"Miko Kiiski<br>"
-"Brian Jackson<br>"
-"Andreas Pflug<br>"
-"Bas van Schaik<br>"
-"J&aacute;n Jockusch<br>"
-"Oliver St&ouml;neberg<br>"
-"Jan Jockusch<br>"
-"C. Stewart<br>"
-"Bill Egert<br>"
-"Zach Shutters<br>"
-"Owen Bullock<br>"
-"Graeme Mathieson<br>"
-"Sebastian Actist<br>"
-"Jussi Sainio<br>"
-"David Gnedt<br>"
-"Antonio Passamani<br>"
-"Guy Martin<br>"
-"Anders Gunnarsson<br>"
-"Alex Barker<br>"
-"Mikko Jania<br>"
-"Juan Pedro Bol&iacute;var Puente<br>"
-"Linus Amvall<br>"
-"Irwin C&eacute;spedes B<br>"
-"Micz Flor<br>"
-"Daniel James<br>"
-"Mika Haulo<br>"
-"Matthew Mikolay<br>"
-"Tom Mast<br>"
-"Miko Kiiski<br>"
-"Vin&iacute;cius Dias dos Santos<br>"
-"Joe Colosimo<br>"
-"Shashank Kumar<br>"
-"Till Hofmann<br>"
-"Peter V&aacute;gner<br>"
-"Thanasis Liappis<br>"
-"Jens Nachtigall<br>"
-"Scott Ullrich<br>"
-"Jonas &Aring;dahl<br>"
-"Jonathan Costers<br>"
-"Daniel Lindenfelser<br>"
-"Maxime Bochon<br>"
-"Akash Shetye<br>"
-"Pascal Bleser<br>"
+                    "</p>"
+                    "<p align=\"center\"><b>%2</b></p>"
+                    "<p align=\"center\">"
+                    "Mark Hills<br>"
+                    "Andre Roth<br>"
+                    "Robin Sheat<br>"
+                    "Mark Glines<br>"
+                    "Mathieu Rene<br>"
+                    "Miko Kiiski<br>"
+                    "Brian Jackson<br>"
+                    "Andreas Pflug<br>"
+                    "Bas van Schaik<br>"
+                    "J&aacute;n Jockusch<br>"
+                    "Oliver St&ouml;neberg<br>"
+                    "Jan Jockusch<br>"
+                    "C. Stewart<br>"
+                    "Bill Egert<br>"
+                    "Zach Shutters<br>"
+                    "Owen Bullock<br>"
+                    "Graeme Mathieson<br>"
+                    "Sebastian Actist<br>"
+                    "Jussi Sainio<br>"
+                    "David Gnedt<br>"
+                    "Antonio Passamani<br>"
+                    "Guy Martin<br>"
+                    "Anders Gunnarsson<br>"
+                    "Alex Barker<br>"
+                    "Mikko Jania<br>"
+                    "Juan Pedro Bol&iacute;var Puente<br>"
+                    "Linus Amvall<br>"
+                    "Irwin C&eacute;spedes B<br>"
+                    "Micz Flor<br>"
+                    "Daniel James<br>"
+                    "Mika Haulo<br>"
+                    "Matthew Mikolay<br>"
+                    "Tom Mast<br>"
+                    "Miko Kiiski<br>"
+                    "Vin&iacute;cius Dias dos Santos<br>"
+                    "Joe Colosimo<br>"
+                    "Shashank Kumar<br>"
+                    "Till Hofmann<br>"
+                    "Peter V&aacute;gner<br>"
+                    "Thanasis Liappis<br>"
+                    "Jens Nachtigall<br>"
+                    "Scott Ullrich<br>"
+                    "Jonas &Aring;dahl<br>"
+                    "Jonathan Costers<br>"
+                    "Daniel Lindenfelser<br>"
+                    "Maxime Bochon<br>"
+                    "Akash Shetye<br>"
+                    "Pascal Bleser<br>"
 
-"</p>"
-"<p align=\"center\"><b>%3</b></p>"
-"<p align=\"center\">"
-"Vestax<br>"
-"Stanton<br>"
-"Hercules<br>"
-"EKS<br>"
-"Echo Digital Audio<br>"
-"JP Disco<br>"
-"Adam Bellinson<br>"
-"Alexandre Bancel<br>"
-"Melanie Thielker<br>"
-"Julien Rosener<br>"
-"Pau Arum&iacute;<br>"
-"David Garcia<br>"
-"Seb Ruiz<br>"
-"Joseph Mattiello<br>"
-"</p>"
+                    "</p>"
+                    "<p align=\"center\"><b>%3</b></p>"
+                    "<p align=\"center\">"
+                    "Vestax<br>"
+                    "Stanton<br>"
+                    "Hercules<br>"
+                    "EKS<br>"
+                    "Echo Digital Audio<br>"
+                    "JP Disco<br>"
+                    "Adam Bellinson<br>"
+                    "Alexandre Bancel<br>"
+                    "Melanie Thielker<br>"
+                    "Julien Rosener<br>"
+                    "Pau Arum&iacute;<br>"
+                    "David Garcia<br>"
+                    "Seb Ruiz<br>"
+                    "Joseph Mattiello<br>"
+                    "</p>"
 
-"<p align=\"center\"><b>%4</b></p>"
-"<p align=\"center\">"
-"Tue Haste Andersen<br>"
-"Ken Haste Andersen<br>"
-"Cedric Gestes<br>"
-"John Sully<br>"
-"Torben Hohn<br>"
-"Peter Chang<br>"
-"Micah Lee<br>"
-"Ben Wheeler<br>"
-"Wesley Stessens<br>"
-"Nathan Prado<br>"
-"Zach Elko<br>"
-"Tom Care<br>"
-"Pawel Bartkiewicz<br>"
-"Nick Guenther<br>"
-"Bruno Buccolo<br>"
-"Ryan Baker<br>"
-"</p>"
+                    "<p align=\"center\"><b>%4</b></p>"
+                    "<p align=\"center\">"
+                    "Tue Haste Andersen<br>"
+                    "Ken Haste Andersen<br>"
+                    "Cedric Gestes<br>"
+                    "John Sully<br>"
+                    "Torben Hohn<br>"
+                    "Peter Chang<br>"
+                    "Micah Lee<br>"
+                    "Ben Wheeler<br>"
+                    "Wesley Stessens<br>"
+                    "Nathan Prado<br>"
+                    "Zach Elko<br>"
+                    "Tom Care<br>"
+                    "Pawel Bartkiewicz<br>"
+                    "Nick Guenther<br>"
+                    "Bruno Buccolo<br>"
+                    "Ryan Baker<br>"
+                    "</p>"
 
-"<p align=\"center\"><b>%5</b></p>"
-"<p align=\"center\">"
-"Ludek Hor&#225;cek<br>"
-"Svein Magne Bang<br>"
-"Kristoffer Jensen<br>"
-"Ingo Kossyk<br>"
-"Mads Holm<br>"
-"Lukas Zapletal<br>"
-"Jeremie Zimmermann<br>"
-"Gianluca Romanin<br>"
-"Tim Jackson<br>"
-"Stefan Langhammer<br>"
-"Frank Willascheck<br>"
-"Jeff Nelson<br>"
-"Kevin Schaper<br>"
-"Alex Markley<br>"
-"Oriol Puigb&oacute;<br>"
-"Ulrich Heske<br>"
-"James Hagerman<br>"
-"quil0m80<br>"
-"Martin Sakm&#225;r<br>"
-"Ilian Persson<br>"
-"Dave Jarvis<br>"
-"Thomas Baag<br>"
-"Karlis Kalnins<br>"
-"Amias Channer<br>"
-"Sacha Berger<br>"
-"James Evans<br>"
-"Martin Sakmar<br>"
-"Navaho Gunleg<br>"
-"Gavin Pryke<br>"
-"Michael Pujos<br>"
-"Claudio Bantaloukas<br>"
-"Pavol Rusnak<br>"
-    "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
+                    "<p align=\"center\"><b>%5</b></p>"
+                    "<p align=\"center\">"
+                    "Ludek Hor&#225;cek<br>"
+                    "Svein Magne Bang<br>"
+                    "Kristoffer Jensen<br>"
+                    "Ingo Kossyk<br>"
+                    "Mads Holm<br>"
+                    "Lukas Zapletal<br>"
+                    "Jeremie Zimmermann<br>"
+                    "Gianluca Romanin<br>"
+                    "Tim Jackson<br>"
+                    "Stefan Langhammer<br>"
+                    "Frank Willascheck<br>"
+                    "Jeff Nelson<br>"
+                    "Kevin Schaper<br>"
+                    "Alex Markley<br>"
+                    "Oriol Puigb&oacute;<br>"
+                    "Ulrich Heske<br>"
+                    "James Hagerman<br>"
+                    "quil0m80<br>"
+                    "Martin Sakm&#225;r<br>"
+                    "Ilian Persson<br>"
+                    "Dave Jarvis<br>"
+                    "Thomas Baag<br>"
+                    "Karlis Kalnins<br>"
+                    "Amias Channer<br>"
+                    "Sacha Berger<br>"
+                    "James Evans<br>"
+                    "Martin Sakmar<br>"
+                    "Navaho Gunleg<br>"
+                    "Gavin Pryke<br>"
+                    "Michael Pujos<br>"
+                    "Claudio Bantaloukas<br>"
+                    "Pavol Rusnak<br>"
+                    "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
 
     about->textBrowser->setHtml(credits);
     about->show();
@@ -1346,14 +1346,14 @@ void MixxxApp::slotHelpManual() {
     // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
     if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
-            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+                    configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
 #elif defined(__LINUX__)
     // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
     configDir.cd("doc");
     if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
-            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+                    configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
 #else
     // No idea, default to the mixxx.org hosted version.
@@ -1384,10 +1384,10 @@ void MixxxApp::rebootMixxxView() {
 
     // assignment in next line intentional
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(pNewView,
-                                        m_pKeyboard,
-                                        m_pPlayerManager,
-                                        m_pLibrary,
-                                        m_pVCManager))) {
+                                                           m_pKeyboard,
+                                                           m_pPlayerManager,
+                                                           m_pLibrary,
+                                                           m_pVCManager))) {
         qDebug() << "Could not reload the skin.";
     }
 
@@ -1426,7 +1426,7 @@ void MixxxApp::rebootMixxxView() {
 bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
 {
     static int tooltips =
-        m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips")).toInt();
+            m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips")).toInt();
 
     if (event->type() == QEvent::ToolTip) {
         // QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -1451,7 +1451,7 @@ void MixxxApp::slotScanLibrary()
 {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+                m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
 }
 
 void MixxxApp::slotEnableRescanLibraryAction()
@@ -1465,12 +1465,12 @@ void MixxxApp::slotOptionsMenuShow(){
 
 #ifdef __SHOUTCAST__
     bool broadcastEnabled =
-        (m_pConfig->getValueString(ConfigKey("[Shoutcast]", "enabled")).toInt()
-            == 1);
+            (m_pConfig->getValueString(ConfigKey("[Shoutcast]", "enabled")).toInt()
+             == 1);
     if (broadcastEnabled)
-      m_pOptionsShoutcast->setChecked(true);
+        m_pOptionsShoutcast->setChecked(true);
     else
-      m_pOptionsShoutcast->setChecked(false);
+        m_pOptionsShoutcast->setChecked(false);
 #endif
 }
 
@@ -1493,17 +1493,25 @@ void MixxxApp::checkDirectRendering() {
     // THEN
     //  * Warn user
 
-    //TODO vRince replug this kind of warning using ...
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    if( !factory)
+        return;
 
-    /*
-    if (WaveformViewerFactory::numViewers(WAVEFORM_GL) > 0 &&
-        !WaveformViewerFactory::isDirectRenderingEnabled() &&
-        m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
-		    QMessageBox::warning(0, "OpenGL Direct Rendering",
-                             "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
+    factory->isOpenGLAvailable();
+    if ( !factory->isOpenGLAvailable() &&
+         m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
+        QMessageBox::warning(0, "OpenGL Direct Rendering",
+                             "Direct rendering is not enabled on your machine.<br><br>"
+                             "This means that the waveform displays will be very<br>"
+                             "<b>slow and take a lot of CPU time</b>. Either update your<br>"
+                             "configuration to enable direct rendering, or disable<br>"
+                             "the waveform displays in the control panel by selecting<br>"
+                             "\"Simple\" under waveform displays.<br><br>"
+                             "NOTE: In case you run on NVidia hardware,<br>"
+                             "direct rendering may not be present, but you will<br>"
+                             "not experience a degradation in performance.");
         m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
     }
-    */
 }
 
 bool MixxxApp::confirmExit() {
@@ -1513,10 +1521,10 @@ bool MixxxApp::confirmExit() {
     unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         ControlObject *pPlayCO(
-            ControlObject::getControl(
-                ConfigKey(QString("[Channel%1]").arg(i + 1), "play")
-            )
-        );
+                    ControlObject::getControl(
+                        ConfigKey(QString("[Channel%1]").arg(i + 1), "play")
+                        )
+                    );
         if (pPlayCO && pPlayCO->get()) {
             playing = true;
             break;
@@ -1524,10 +1532,10 @@ bool MixxxApp::confirmExit() {
     }
     for (unsigned int i = 0; i < samplerCount; ++i) {
         ControlObject *pPlayCO(
-            ControlObject::getControl(
-                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play")
-            )
-        );
+                    ControlObject::getControl(
+                        ConfigKey(QString("[Sampler%1]").arg(i + 1), "play")
+                        )
+                    );
         if (pPlayCO && pPlayCO->get()) {
             playingSampler = true;
             break;
@@ -1535,17 +1543,17 @@ bool MixxxApp::confirmExit() {
     }
     if (playing) {
         QMessageBox::StandardButton btn = QMessageBox::question(this,
-            tr("Confirm Exit"),
-            tr("A deck is currently playing. Exit Mixxx?"),
-            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+                                                                tr("Confirm Exit"),
+                                                                tr("A deck is currently playing. Exit Mixxx?"),
+                                                                QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;
         }
     } else if (playingSampler) {
         QMessageBox::StandardButton btn = QMessageBox::question(this,
-            tr("Confirm Exit"),
-            tr("A sampler is currently playing. Exit Mixxx?"),
-            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+                                                                tr("Confirm Exit"),
+                                                                tr("A sampler is currently playing. Exit Mixxx?"),
+                                                                QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;
         }
