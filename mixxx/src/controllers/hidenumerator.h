@@ -16,16 +16,17 @@
 #ifndef HIDENUMERATOR_H
 #define HIDENUMERATOR_H
 
-#include "controllerenumerator.h"
+#include "controllers/controllerenumerator.h"
 
-class HidEnumerator : public ControllerEnumerator
-{
-    public:
-        HidEnumerator();
-        ~HidEnumerator();
-        QList<Controller*> queryDevices();
-    private:
-        QList<Controller*> m_devices;
+class HidEnumerator : public ControllerEnumerator {
+  public:
+    HidEnumerator();
+    virtual ~HidEnumerator();
+
+    QList<Controller*> queryDevices();
+
+  private:
+    QList<Controller*> m_devices;
 };
 
 #endif

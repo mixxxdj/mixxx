@@ -6,8 +6,8 @@
 *
 */
 
-#include "controllerpresetfilehandler.h"
-#include "defs_controllers.h"
+#include "controllers/controllerpresetfilehandler.h"
+#include "controllers/defs_controllers.h"
 
 /** load(QString,QString,bool)
 * Overloaded function for convenience
@@ -35,43 +35,40 @@ void ControllerPresetFileHandler::addScriptFilesToMapping(
     const QString deviceName,
     const bool forceLoad,
     ControllerPreset* preset) const {
-
     if (root.isNull())
         return;
 
     // For each controller in the DOM
     QDomElement controller = root.firstChildElement("controller");
 
-    // For each controller in the preset XML...
-    //(Only parse the <controller> block if its id matches our device name, otherwise
-    //keep looking at the next controller blocks....)
+    // For each controller in the preset XML... (Only parse the <controller>
+    // block if its id matches our device name, otherwise keep looking at the
+    // next controller blocks....)
     QString device;
     while (!controller.isNull()) {
         // Get deviceid
-        device = controller.attribute("id","");
+        device = controller.attribute("id", "");
         if (device != rootDeviceName(deviceName) && !forceLoad) {
             controller = controller.nextSiblingElement("controller");
-        }
-        else
+        } else {
             break;
+        }
     }
 
     if (!controller.isNull()) {
-
         qDebug() << device << "settings found";
         // Build a list of script files to load
-
-        QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
+        QDomElement scriptFile = controller.firstChildElement("scriptfiles")
+                .firstChildElement("file");
 
         // Default currently required file
-        preset->addScriptFile(REQUIRED_SCRIPT_FILE,"");
+        preset->addScriptFile(REQUIRED_SCRIPT_FILE, "");
 
         // Look for additional ones
         while (!scriptFile.isNull()) {
             QString functionPrefix = scriptFile.attribute("functionprefix","");
             QString filename = scriptFile.attribute("filename","");
             preset->addScriptFile(filename, functionPrefix);
-
             scriptFile = scriptFile.nextSiblingElement("file");
         }
     }
@@ -122,7 +119,7 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
     for (int i = 0; i < preset.scriptFileNames.count(); i++) {
         QString filename = preset.scriptFileNames.at(i);
 
-        //Don't need to write anything for the required mapping file.
+        // Don't need to write anything for the required mapping file.
         if (filename != REQUIRED_SCRIPT_FILE) {
             qDebug() << "  writing script block for" << filename;
             QString functionPrefix = preset.scriptFunctionPrefixes.at(i);
@@ -130,7 +127,6 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
 
             scriptFile.setAttribute("filename", filename);
             scriptFile.setAttribute("functionprefix", functionPrefix);
-
             scriptFiles.appendChild(scriptFile);
         }
     }

@@ -19,18 +19,18 @@
 #include <QEvent>
 #include <QtScript>
 #include <QMessageBox>
+
 #include "configobject.h"
-#include "pitchfilter.h"
+#include "controllers/pitchfilter.h"
 #include "softtakeover.h"
 #include "qtscript-bytearray/bytearrayclass.h"
 
-//Forward declaration(s)
+// Forward declaration(s)
 class Controller;
 class ControlObjectThread;
 
 class ControllerEngine : public QObject {
-Q_OBJECT
-
+    Q_OBJECT
   public:
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
@@ -47,12 +47,15 @@ Q_OBJECT
         m_bPopups = bPopups;
     }
 
-    /** Pass in a timer event that scripts might be waiting on */
-    void timerEvent(QTimerEvent *event);    // Needs to be public otherwise we'd have to friend Controller and all derived classes explicitly
+    // Pass in a timer event that scripts might be waiting on. Needs to be
+    // public otherwise we'd have to friend Controller and all derived classes
+    // explicitly.
+    void timerEvent(QTimerEvent *event);
 
-    /** Look up registered script functions */
+    // Look up registered script functions
     QStringList getScriptFunctions();
-    /** Look up registered script function prefixes */
+
+    // Look up registered script function prefixes
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
 
