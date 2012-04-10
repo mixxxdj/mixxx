@@ -16,12 +16,10 @@ namespace {
 class AnalyserBPMTest: public testing::Test {
   protected:
     virtual void SetUp() {
-        qDebug() << "SetUp";
         config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
         abpm = new AnalyserBPM(config);
         tio = TrackPointer(new TrackInfoObject("foo"));
-        //Subpixels per second, from waveformrenderer.cpp:247
-        tio->setVisualResampleRate(200);
+        tio->setSampleRate(44100);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];
         for (int i = 0; i < BIGBUF_SIZE; i++)
@@ -41,7 +39,6 @@ class AnalyserBPMTest: public testing::Test {
     }
 
     virtual void TearDown() {
-        qDebug() << "TearDown";
         delete abpm;
         delete [] bigbuf;
         delete [] canaryBigBuf;
@@ -56,7 +53,7 @@ class AnalyserBPMTest: public testing::Test {
 
 //Test to make sure we don't modify the source buffer.
 TEST_F(AnalyserBPMTest, simpleAnalyze) {
-    abpm->initialise(tio, 44100, BIGBUF_SIZE);
+    abpm->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE);
     abpm->process(bigbuf, BIGBUF_SIZE);
     abpm->finalise(tio);
     for (int i = 0; i < BIGBUF_SIZE; i++) {
@@ -66,7 +63,7 @@ TEST_F(AnalyserBPMTest, simpleAnalyze) {
 
 //Basic test to make sure we don't step out of bounds.
 TEST_F(AnalyserBPMTest, canary) {
-    abpm->initialise(tio, 44100, BIGBUF_SIZE);
+    abpm->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE);
     abpm->process(&canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
     abpm->finalise(tio);
     for (int i = 0; i < CANARY_SIZE; i++) {
@@ -81,9 +78,9 @@ TEST_F(AnalyserBPMTest, canary) {
 //initialise(..) and process(..) is told to process more samples than that,
 //that we don't step out of bounds.
 TEST_F(AnalyserBPMTest, wrongTotalSamples) {
-    abpm->initialise(tio, 44100, BIGBUF_SIZE);
-    //Process in a loop
-    int wrongTotalSamples = BIGBUF_SIZE+1; //Too big by 1 sample...
+    abpm->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE/2);
+    // Deliver double the expected samples
+    int wrongTotalSamples = BIGBUF_SIZE;
     //Note that the correct totalSamples would just be BIGBUF_SIZE. :)
     int blockSize = 2*32768;
     for (int i = CANARY_SIZE; i < CANARY_SIZE+wrongTotalSamples; i += blockSize) {

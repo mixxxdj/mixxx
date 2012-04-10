@@ -38,6 +38,7 @@ class QDomNode;
 class ControlObject;
 class TrackPlaylist;
 class Cue;
+class Waveform;
 
 class TrackInfoObject;
 
@@ -210,20 +211,14 @@ public:
     QString getURL();
     /** Set URL for track */
     void setURL(QString url);
-    /** Set pointer to visual waveform data */
-    void setVisualWaveform(QVector<float> *pWave);
-    /** Get pointer to visual waveform data */
-    QVector<float> * getVisualWaveform();
 
-    /** Set and get this track's desired visual resample rate */
-    void setVisualResampleRate(double dVisualResampleRate);
-    double getVisualResampleRate();
+    Waveform* getWaveform();
+    const Waveform* getWaveform() const;
+    void setWaveform(Waveform* pWaveform);
 
-    /** Set pointer to waveform summary -- updates UI by default */
-    void setWaveSummary(const QByteArray* pWave, bool updateUI = true);
-
-    /** Returns a pointer to waveform summary */
-    const QByteArray* getWaveSummary();
+    Waveform* getWaveformSummary();
+    const Waveform* getWaveformSummary() const;
+    void setWaveformSummary(Waveform* pWaveformSummary);
 
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
@@ -260,11 +255,12 @@ public:
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
-  public slots:
+public slots:
     void slotCueUpdated();
 
-  signals:
-    void wavesummaryUpdated(TrackInfoObject*);
+signals:
+    void waveformUpdated();
+    void waveformSummaryUpdated();
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
@@ -274,10 +270,10 @@ public:
     void clean(TrackInfoObject* pTrack);
     void save(TrackInfoObject* pTrack);
 
-  private slots:
+private slots:
     void slotBeatsUpdated();
 
-  private:
+private:
 
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);
@@ -344,7 +340,7 @@ public:
     /** Number of channels */
     int m_iChannels;
     /**Track rating */
-    int m_Rating;;
+    int m_Rating;
     /** Bitrate, number of kilobits per second of audio in the track*/
     int m_iBitrate;
     /** Number of times the track has been played */
@@ -379,10 +375,6 @@ public:
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
 
-    /** Pointer to visual waveform info */
-    QVector<float> *m_pVisualWave;
-    /** Wave summary info */
-    QByteArray m_waveSummary;
 
     /** Mutex protecting access to object */
     mutable QMutex m_qMutex;
@@ -390,11 +382,14 @@ public:
     /** True if object contains valid information */
     bool m_bIsValid;
 
-    double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;
+
+    //Visual waveform data
+    Waveform* m_waveform;
+    Waveform* m_waveformSummary;
 
     friend class TrackDAO;
 };

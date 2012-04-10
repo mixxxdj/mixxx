@@ -289,24 +289,27 @@ void SelectorLibraryTableModel::initializeHarmonicsData() {
     m_semitoneList = QString("C,Cm,C#,C#m,D,Dm,Eb,Ebm,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,Bb,Bbm,B,Bm").split(",");
     */
 
-    if (m_enharmonic_preference == "#") {
+//    if (m_enharmonic_preference == "#") {
         // prefer #'s
         m_majors = QString("C,G,D,A,E,B,F#,C#,G#,D#,A#,F").split(",");
         m_minors = QString("Am,Em,Bm,F#m,C#m,G#m,D#m,A#m,Fm,Cm,Gm,Dm").split(",");
         m_semitoneList = QString("C,Cm,C#,C#m,D,Dm,D#,D#m,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,A#,A#m,B,Bm").split(",");
-    } else {
+/*    } else {
         // prefer b's
         m_majors = QString("C,G,D,A,E,B,Gb,Db,Ab,Eb,Bb,F").split(",");
         m_minors = QString("Am,Em,Bm,Gbm,Dbm,Abm,Ebm,Bbm,Fm,Cm,Gm,Dm").split(",");
         m_semitoneList = QString("C,Cm,Db,Dbm,D,Dm,Eb,Ebm,E,Em,F,Fm,Gb,Gbm,G,Gm,Ab,Abm,A,Am,Bb,Bbm,B,Bm").split(",");
     }
-
-
+*/
+    
+/*
     // OK notation
     m_majors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("d,");
     m_minors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("m,");
     m_semitoneList = QString("1d,10m,8d,5m,3d,12m,10d,7m,5d,2m,12d,9m,7d,4m,2d,11m,9d,6m,4d,1m,11d,8m,6d,Bm").split(",");
+*/
 
+/*
 QHash<QString, QStringList> hash;
 
 hash["1d"] = "C";
@@ -335,5 +338,20 @@ hash["10m"] = "Cm";
 hash["11m"] = "Gm";
 hash["12m"] = "Dm";
 
+//                majors    minors
+hash["1"] =     { "C",      "Am"        };
+hash["2"] =     { "G",      "Em"        };
+hash["3"] =     { "D",      "Bm"        };
+hash["4"] =     { "A",      "F#m,Gbm"   };
+hash["5"] =     { "E",      "C#m,Dbm"   };
+hash["6"] =     { "B",      "G#m,Abm"   };
+hash["7"] =     { "F#,Gb",  "D#m,Ebm"   };
+hash["8"] =     { "C#,Db",  "A#m,Bbm"   };
+hash["9"] =     { "G#,Ab",  "Fm"        };
+hash["10"] =    { "D#,Eb",  "Cm"        };
+hash["11"] =    { "A#,Bb",  "Gm"        };
+hash["12"] =    { "F",      "Dm"        };
+
+*/
 
 }
