@@ -3118,7 +3118,6 @@
 							<Color>#AE5CFF</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
-
 						<Mark>
 							<Control>cue_point</Control>
 							<Pixmap>marker_cue1.png</Pixmap>
@@ -4376,8 +4375,8 @@
 				<Channel>1</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
-				<!-- transparent background if no <BgColor> & <BgPixmap> is present
 				<BgColor>#1C1C1C</BgColor>
+				<!-- transparent background if no <BgPixmap> is present
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#0099FF</SignalColor>
@@ -4388,6 +4387,55 @@
 					<ConfigKey>[Channel1],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
 				</Connection>
+				                <MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#FFFFFF</DisabledColor>
+						</MarkRange>
+
+						<Mark>
+							<Control>cue_point</Control>
+							<Pixmap>marker_cue1.png</Pixmap>
+							<Text>C</Text>
+							<Align>top</Align>
+							<Color>#FF001C</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_1_position</Control>
+							<Pixmap>marker_hotcue1_1.png</Pixmap>
+							<Text>1</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_2_position</Control>
+							<Pixmap>marker_hotcue1_2.png</Pixmap>
+							<Text>2</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_3_position</Control>
+							<Pixmap>marker_hotcue1_3.png</Pixmap>
+							<Text>3</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_4_position</Control>
+							<Pixmap>marker_hotcue1_4.png</Pixmap>
+							<Text>4</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!-- TODO vrince support full hotcues ?-->		
 			</Overview>
 
 			<!--
@@ -5271,8 +5319,8 @@
 				<Channel>2</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
-				<!-- transparent background if no <BgColor> & <BgPixmap> is present
-				<BgColor>#1C1C1C</BgColor>
+				<BgColor>#1C1C1C</BgColor>			
+				<!-- transparent background if no <BgPixmap> is present
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#E17800</SignalColor>
@@ -5283,6 +5331,50 @@
 					<ConfigKey>[Channel2],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
 				</Connection>
+				                <MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#FFFFFF</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>cue_point</Control>
+							<Pixmap>marker_cue1.png</Pixmap>
+							<Text>C</Text>
+							<Align>top</Align>
+							<Color>#FF001C</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_1_position</Control>
+							<Text>1</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_2_position</Control>
+							<Text>2</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_3_position</Control>
+							<Text>3</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_4_position</Control>
+							<Text>4</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!-- TODO vrince support full hotcues ? -->
 			</Overview>
 
 			<!--

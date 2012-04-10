@@ -5,25 +5,24 @@
 #include "waveformmark.h"
 
 #include <QPixmap>
-#include <QVector>
+#include <vector>
 
 #include "util.h"
 
 class ControlObject;
 
 class WaveformRenderMark : public WaveformRendererAbstract {
-  public:
+public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer);
 
     virtual void init();
     virtual void setup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
-  private:
-    void setupMark(const QDomNode& node, WaveformMark& mark);
+private:
     void generateMarkPixmap(WaveformMark& mark);
 
-    QVector<WaveformMark> m_marks;
+    std::vector<WaveformMark> m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
 
