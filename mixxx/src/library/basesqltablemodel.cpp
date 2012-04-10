@@ -494,7 +494,6 @@ bool BaseSqlTableModel::setData(
 
     // Over-ride sets to TIMESPLAYED and re-direct them to PLAYED
     if (role == Qt::CheckStateRole) {
-        qDebug() << "setData" << index << value << role;
         QString val = value.toInt() > 0 ? QString("true") : QString("false");
         if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
             QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
@@ -558,7 +557,7 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
         return defaultFlags;
     } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
-    } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)){
+    } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else if(column == fieldIndex(LIBRARYTABLE_BPM)) {
         // Allow checking of the BPM-locked indicator.

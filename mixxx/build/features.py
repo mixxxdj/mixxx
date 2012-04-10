@@ -364,7 +364,7 @@ class Tonal(Feature):
 
 class Vamp(Feature):
     def description(self):
-        return "Experimental Vamp Analysers support"
+        return "Vamp Analysers support"
 
     def enabled(self, build):
         build.flags['vamp'] = util.get_flags(build.env, 'vamp', 0)
@@ -372,9 +372,8 @@ class Vamp(Feature):
             return True
         return False
 
-
     def add_options(self, build, vars):
-        vars.Add('vamp', '(EXPERIMENTAL) Set to 1 to enable vamp analysers', 0)
+        vars.Add('vamp', 'Set to 1 to enable vamp analysers', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
