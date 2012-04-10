@@ -3,11 +3,12 @@
 
 #include <QObject>
 #include <QColor>
-#include <QVector>
 #include <QPixmap>
 #include <QDomNode>
 #include <QPainter>
 #include <QPaintEvent>
+
+#include <vector>
 
 #include "configobject.h"
 #include "util.h"
@@ -29,10 +30,9 @@ class WaveformRenderMarkRange : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    void setupMarkRange(const QDomNode& node, WaveformMarkRange& markRange);
     void generatePixmaps();
 
-    QVector<WaveformMarkRange> markRanges_;
+    std::vector<WaveformMarkRange> m_markRanges;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMarkRange);
 };

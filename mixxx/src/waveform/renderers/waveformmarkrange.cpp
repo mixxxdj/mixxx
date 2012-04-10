@@ -1,11 +1,39 @@
 #include "waveformmarkrange.h"
+#include "controlobject.h"
+#include "widget/wwidget.h"
 
 #include <QPainter>
+#include <QDebug>
 
 WaveformMarkRange::WaveformMarkRange(){
-    m_markStartPoint = 0;
-    m_markEndPoint = 0;
-    m_markEnabled = 0;
+    m_markStartPointControl = 0;
+    m_markEndPointControl = 0;
+    m_markEnabledControl = 0;
+}
+
+void WaveformMarkRange::setup( const QString& group, const QDomNode& node) {
+    m_activeColor = WWidget::selectNodeQString(node, "Color");
+    if (m_activeColor == "") {
+        //vRince kind of legacy fallback ...
+        // As a fallback, grab the mark color from the parent's MarkerColor
+        m_activeColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
+        qDebug() << "Didn't get mark Color, using parent's MarkerColor:" << m_activeColor;
+    }
+
+    m_disabledColor = WWidget::selectNodeQString(node, "DisabledColor");
+    if (m_disabledColor == "") {
+        //vRince kind of legacy fallback ...
+        // Read the text color, otherwise use the parent's SignalColor.
+        m_disabledColor = WWidget::selectNodeQString(node.parentNode(), "SignalColor");
+        qDebug() << "Didn't get mark TextColor, using parent's SignalColor:" << m_disabledColor;
+    }
+
+    m_markStartPointControl = ControlObject::getControl(
+                ConfigKey(group, WWidget::selectNodeQString(node, "StartControl")));
+    m_markEndPointControl = ControlObject::getControl(
+                ConfigKey(group, WWidget::selectNodeQString(node, "EndControl")));
+    m_markEnabledControl = ControlObject::getControl(
+                ConfigKey(group, WWidget::selectNodeQString(node, "EnabledControl")));
 }
 
 void WaveformMarkRange::generatePixmap(int weidth, int height) {

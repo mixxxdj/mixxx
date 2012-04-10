@@ -20,7 +20,10 @@
 
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
+
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/renderers/waveformmark.h"
+#include "waveform/renderers/waveformmarkrange.h"
 
 /**
 Waveform overview display
@@ -63,10 +66,13 @@ protected:
     virtual void dropEvent(QDropEvent* event);
 
 private slots:
-    void cueChanged(double v);
+    void onMarkChanged(double v);
+    void onMarkRangeChange(double v);
+/*
     void loopStartChanged(double v);
     void loopEndChanged(double v);
     void loopEnabledChanged(double v);
+    */
     void slotWaveformSummaryUpdated();
 
 private:
@@ -96,6 +102,7 @@ private:
     // Current active track
     TrackPointer m_pCurrentTrack;
 
+    /*
     // Loop controls and values
     ControlObject* m_pLoopStart;
     ControlObject* m_pLoopEnd;
@@ -107,6 +114,7 @@ private:
     QList<ControlObject*> m_hotcueControls;
     QMap<QObject*, int> m_hotcueMap;
     QList<int> m_hotcues;
+    */
 
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
@@ -119,8 +127,10 @@ private:
     QColor m_qColorMarker;
 
     WaveformSignalColors m_signalColors;
+    std::vector<WaveformMark> m_marks;
+    std::vector<WaveformMarkRange> m_markRanges;
 
-    /** coefficient value-positionlinear transposition */
+    /** coefficient value-position linear transposition */
     float m_a;
     float m_b;
 };

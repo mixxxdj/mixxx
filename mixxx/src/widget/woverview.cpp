@@ -38,6 +38,9 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
 
     setAcceptDrops(true);
 
+    //FIXME: vrince rework that
+
+    /*
     m_pLoopStart = ControlObject::getControl(
                 ConfigKey(m_pGroup, "loop_start_position"));
     connect(m_pLoopStart, SIGNAL(valueChanged(double)),
@@ -60,6 +63,7 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
             this, SLOT(loopEnabledChanged(double)));
     loopEnabledChanged(m_pLoopEnabled->get());
 
+
     QString pattern = "hotcue_%1_position";
 
     int i = 1;
@@ -77,13 +81,13 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
         //qDebug() << "Connecting hotcue" << hotcueKey.group << hotcueKey.item;
 
         connect(pControl, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(cueChanged(double)));
+                this, SLOT(onMarkChanged(double)));
         connect(pControl, SIGNAL(valueChanged(double)),
-                this, SLOT(cueChanged(double)));
+                this, SLOT(onMarkChanged(double)));
 
         hotcueKey.item = pattern.arg(++i);
         pControl = ControlObject::getControl(hotcueKey);
-    }
+    }*/
 
     m_waveform = NULL;
     m_waveformPixmap = QPixmap();
@@ -124,8 +128,53 @@ void WOverview::setup(QDomNode node) {
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
 
-    m_waveformPixmap = QPixmap(size());
+    //setup hotcues and cue and loop(s)
+    m_marks.clear();
+    m_marks.reserve(5); //5 hot cues + 1 cue
 
+    m_markRanges.clear();
+    m_markRanges.reserve(1); // one loop for the moment
+
+    QDomNode child = node.firstChild();
+    while (!child.isNull()) {
+        if (child.nodeName() == "Mark") {
+            m_marks.push_back(WaveformMark());
+            WaveformMark& mark = m_marks.back();
+            mark.setup( m_pGroup, child);
+
+            connect( mark.m_pointControl, SIGNAL(valueChanged(double)),
+                     this, SLOT(onMarkChanged(double)));
+            connect( mark.m_pointControl, SIGNAL(valueChangedFromEngine(double)),
+                     this, SLOT(onMarkChanged(double)));
+
+        } else if (child.nodeName() == "MarkRange") {
+            m_markRanges.push_back(WaveformMarkRange());
+            WaveformMarkRange& markRange = m_markRanges.back();
+            markRange.setup( m_pGroup, child);
+
+            connect( markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
+                     this, SLOT(onMarkRangeChange(double)));
+            connect( markRange.m_markEnabledControl, SIGNAL(valueChangedFromEngine(double)),
+                     this, SLOT(onMarkChanged(double)));
+
+            connect( markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
+                     this, SLOT(onMarkRangeChange(double)));
+            connect( markRange.m_markStartPointControl, SIGNAL(valueChangedFromEngine(double)),
+                     this, SLOT(onMarkRangeChange(double)));
+
+            connect( markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
+                     this, SLOT(onMarkRangeChange(double)));
+            connect( markRange.m_markEndPointControl, SIGNAL(valueChangedFromEngine(double)),
+                     this, SLOT(onMarkRangeChange(double)));
+        }
+        child = child.nextSibling();
+    }
+
+    qDebug() << "WOverview : m_marks" << m_marks.size();
+    qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+
+    //init waveform pixmap
+    m_waveformPixmap = QPixmap(size());
     m_waveformPixmap.fill( QColor(0,0,0,0));
 }
 
@@ -195,10 +244,11 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
     update();
 }
 
-void WOverview::cueChanged(double v) {
+void WOverview::onMarkChanged(double v) {
 
-    qDebug() << "WOverview::cueChanged()" << v;
+    qDebug() << "WOverview::onMarkChanged()" << v;
 
+    /*
     QObject* pSender = sender();
     if (!pSender)
         return;
@@ -209,9 +259,19 @@ void WOverview::cueChanged(double v) {
     int hotcue = m_hotcueMap[pSender];
     m_hotcues[hotcue] = v;
     //qDebug() << "hotcue" << hotcue << "position" << v;
+
+    */
     update();
 }
 
+void WOverview::onMarkRangeChange(double v) {
+
+    qDebug() << "WOverview::onMarkRangeChange()" << v;
+
+    update();
+}
+
+/*
 void WOverview::loopStartChanged(double v) {
     m_dLoopStart = v;
     update();
@@ -226,6 +286,7 @@ void WOverview::loopEnabledChanged(double v) {
     m_bLoopEnabled = !(v == 0.0f);
     update();
 }
+*/
 
 bool WOverview::drawNextPixmapPart() {
 
@@ -368,26 +429,106 @@ void WOverview::paintEvent(QPaintEvent *)
     }
 
     if (m_sampleDuration > 0) {
-        // Draw play position
-        //TODO(vrince) could be nice to have a precomputed pixmap for that
-        painter.setPen(m_qColorMarker);
+
+        const float offset = 1.0f;
+        const float gain = (float)(width()-2) / (float)m_sampleDuration;
+
+        //Draw range (loop)
+        for( unsigned int i = 0; i < m_markRanges.size(); i++) {
+            WaveformMarkRange& currentMarkRange = m_markRanges[i];
+
+            const float startPosition = offset + currentMarkRange.m_markStartPointControl->get() * gain;
+            const float endPosition = offset + currentMarkRange.m_markEndPointControl->get() * gain;
+
+            if( startPosition < 0.0 && endPosition < 0.0)
+                continue;
+
+            const bool enabled = (currentMarkRange.m_markEnabledControl->get() > 0.0);
+
+            if( enabled) {
+                painter.setOpacity(0.4);
+                painter.setPen(currentMarkRange.m_activeColor);
+                painter.setBrush(currentMarkRange.m_activeColor);
+            }
+            else {
+                painter.setOpacity(0.2);
+                painter.setPen(currentMarkRange.m_disabledColor);
+                painter.setBrush(currentMarkRange.m_disabledColor);
+            }
+
+            //let top and bottom of the rect out of the widget
+            painter.drawRect( QRectF( QPointF(startPosition,-2.0), QPointF(endPosition,height()+1.0)));
+        }
+
+        //Draw markers (Cue & hotcues)
+        QPen shadowPen( QBrush( m_qColorBackground), 2.5);
+
+        QFont markerFont = painter.font();
+        markerFont.setPixelSize(10);
+
+        QFont shadowFont = painter.font();
+        shadowFont.setWeight(99);
+        shadowFont.setPixelSize(10);
+
         painter.setOpacity(0.9);
-        painter.drawLine(m_iPos,   0, m_iPos,   height());
 
-        painter.drawLine(m_iPos-2,0,m_iPos,2);
-        painter.drawLine(m_iPos,2,m_iPos+2,0);
-        painter.drawLine(m_iPos-2,0,m_iPos+2,0);
+        for( unsigned int i = 0; i < m_marks.size(); i++) {
+            WaveformMark& currentMark = m_marks[i];
+            if( currentMark.m_pointControl->get() > 0.0) {
+                const float markPosition = 1.0 +
+                        (currentMark.m_pointControl->get() / (float)m_sampleDuration) * (float)(width()-2);
 
-        painter.drawLine(m_iPos-2,height()-1,m_iPos,height()-3);
-        painter.drawLine(m_iPos,height()-3,m_iPos+2,height()-1);
-        painter.drawLine(m_iPos-2,height()-1,m_iPos+2,height()-1);
+                const QLineF line(markPosition, 0.0, markPosition, (float)height());
+                painter.setPen( shadowPen);
+                painter.drawLine( line);
 
-        painter.setPen(m_qColorMarker.darker(200));
-        painter.setOpacity(0.4);
-        painter.drawLine(m_iPos+1, 0, m_iPos+1, height());
-        painter.drawLine(m_iPos-1, 0, m_iPos-1, height());
+                painter.setPen( currentMark.m_color);
+                painter.drawLine( line);
 
+                if( !currentMark.m_text.isEmpty()) {
+                    QPointF textPoint;
+                    textPoint.setX(markPosition+0.5f);
+
+                    if( currentMark.m_align == Qt::AlignTop) {
+                        QFontMetricsF metric(markerFont);
+                        textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
+                    } else {
+                        textPoint.setY(float(height())-0.5f);
+                    }
+
+                    painter.setPen(shadowPen);
+                    painter.setFont(shadowFont);
+                    painter.drawText(textPoint,currentMark.m_text);
+
+                    painter.setPen(currentMark.m_textColor);
+                    painter.setFont(markerFont);
+                    painter.drawText(textPoint,currentMark.m_text);
+                }
+            }
+
+            //draw current position
+            painter.setPen(m_qColorMarker);
+            painter.setOpacity(0.9);
+            painter.drawLine(m_iPos,  0, m_iPos,  height());
+
+            painter.drawLine(m_iPos-2,0,m_iPos,2);
+            painter.drawLine(m_iPos,2,m_iPos+2,0);
+            painter.drawLine(m_iPos-2,0,m_iPos+2,0);
+
+            painter.drawLine(m_iPos-2,height()-1,m_iPos,height()-3);
+            painter.drawLine(m_iPos,height()-3,m_iPos+2,height()-1);
+            painter.drawLine(m_iPos-2,height()-1,m_iPos+2,height()-1);
+
+            painter.setPen(m_qColorBackground);
+            painter.setOpacity(0.5);
+            painter.drawLine(m_iPos+1, 0, m_iPos+1, height());
+            painter.drawLine(m_iPos-1, 0, m_iPos-1, height());
+
+        }
+
+        /*
         float fPos;
+
 
         // Draw loop markers
         QColor loopColor = m_qColorMarker;
@@ -443,6 +584,7 @@ void WOverview::paintEvent(QPaintEvent *)
 
             // paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i+1));
         }
+        */
     }
     painter.end();
 }

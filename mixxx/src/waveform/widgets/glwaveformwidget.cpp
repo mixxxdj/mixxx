@@ -19,8 +19,8 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
-    addRenderer<GLWaveformRendererFilteredSignal>();
     addRenderer<WaveformRenderMarkRange>();
+    addRenderer<GLWaveformRendererFilteredSignal>();
     addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
 
