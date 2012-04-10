@@ -38,7 +38,8 @@ Controller::~Controller() {
 }
 
 QString Controller::defaultPreset() {
-    return PRESETS_PATH.append(m_sDeviceName.replace(" ", "_") + presetExtension());
+    return USER_PRESETS_PATH.append("controllers/")
+            .append(m_sDeviceName.replace(" ", "_") + presetExtension());
 }
 
 QString Controller::presetExtension() {
@@ -78,7 +79,10 @@ void Controller::applyPreset() {
         if (scriptFunctions.isEmpty() && preset->scriptFileNames.isEmpty()) {
             qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         } else {
-            if (scriptFunctions.isEmpty()) m_pEngine->loadScriptFiles(preset->scriptFileNames);
+            if (scriptFunctions.isEmpty()) {
+                m_pEngine->loadScriptFiles(m_pConfig->getConfigPath(),
+                                           preset->scriptFileNames);
+            }
             m_pEngine->initializeScripts(preset->scriptFunctionPrefixes);
         }
     }

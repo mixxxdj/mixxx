@@ -6,8 +6,8 @@
 
 class HidControllerPreset : public ControllerPreset {
   public:
-    HidControllerPreset() {}
-    virtual ~HidControllerPreset() {}
+    HidControllerPreset() {};
+    virtual ~HidControllerPreset() {};
 
     virtual void accept(ControllerPresetVisitor* visitor) const {
         visitor->visit(this);

@@ -40,10 +40,13 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
 
     connect(this, SIGNAL(openController(bool)), m_pController, SLOT(open()));
-    connect(this, SIGNAL(openController(bool)), m_pControllerManager, SLOT(enablePolling(bool)));
+    connect(this, SIGNAL(openController(bool)),
+            m_pControllerManager, SLOT(enablePolling(bool)));
     connect(this, SIGNAL(closeController(bool)), m_pController, SLOT(close()));
-    connect(this, SIGNAL(closeController(bool)), m_pControllerManager, SLOT(enablePolling(bool)));
-    connect(this, SIGNAL(loadPreset(QString,bool)), m_pController, SLOT(loadPreset(QString,bool)));
+    connect(this, SIGNAL(closeController(bool)),
+            m_pControllerManager, SLOT(enablePolling(bool)));
+    connect(this, SIGNAL(loadPreset(Controller*,QString,bool)),
+            m_pControllerManager, SLOT(loadPreset(Controller*,QString,bool)));
     connect(this, SIGNAL(applyPreset()), m_pController, SLOT(applyPreset()));
     
     //Load the list of presets into the presets combobox.
@@ -126,17 +129,10 @@ void DlgPrefController::slotApply() {
 */
 void DlgPrefController::slotLoadPreset(const QString &name) {
     
-    if (name == "...")
-        return;
-    
-    QString filename = LPRESETS_PATH + name + m_pController->presetExtension();
-    QFile ftest(filename);
-    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("controllers/") + name + m_pController->presetExtension();
-    
-    if (!filename.isNull()) emit(loadPreset(filename, true));    // It's applied on prefs close
-
-    // Save the file path/name in the config so it can be auto-loaded at startup next time
-    m_pConfig->set(ConfigKey("[ControllerPreset]", m_pController->getName().replace(" ", "_")), filename);
+    if (name != "...") {
+        emit(loadPreset(m_pController, name, true));
+        // It's applied on prefs close
+    }
 }
 
 void DlgPrefController::slotDeviceState(int state) {

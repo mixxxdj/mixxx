@@ -206,19 +206,7 @@ int ControllerManager::slotSetUpDevices() {
         }
         filenames.insert(filename);
 
-        QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
-        if (!handler) {
-            qDebug() << "Failed to get a handler for the controller.";
-            continue;
-        }
-
-        QString presetPath = PRESETS_PATH.append(filename + pController->presetExtension());
-        ControllerPreset* preset = handler->load(presetPath, name, true);
-        if (preset == NULL) {
-            qDebug() << "Couldn't load preset" << presetPath;
-            continue;
-        }
-        pController->setPreset(*preset);
+        if (!loadPreset(pController, name, true)) continue;
 
         //qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", ofilename));
 
@@ -271,8 +259,13 @@ void ControllerManager::enablePolling(bool enable) {
 QList<QString> ControllerManager::getPresetList(QString extension) {
     // Paths to search for controller presets
     QList<QString> controllerDirPaths;
-    controllerDirPaths.append(LPRESETS_PATH);
-    controllerDirPaths.append(m_pConfig->getConfigPath().append("controllers/"));
+    QString configPath = m_pConfig->getConfigPath();
+//     controllerDirPaths.append(configPath.append("presets/"));
+//     controllerDirPaths.append(configPath.append("midi/"));
+    controllerDirPaths.append(configPath.append("controllers/"));
+
+    // Should we also show the presets from USER_PRESETS_PATH?
+    //  That could be confusing.
 
     QList<QString> presets;
     foreach (QString dirPath, controllerDirPaths) {
@@ -292,6 +285,44 @@ QList<QString> ControllerManager::getPresetList(QString extension) {
     return presets;
 }
 
+bool ControllerManager::loadPreset(Controller* pController,
+                                   const QString &filename,
+                                   const bool force) {
+    QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
+    if (!handler) {
+        qWarning() << "Failed to get a file handler for" << pController->getName()
+                   << " Unable to load preset.";
+        return false;
+    }
+    
+    QString filenameWithExt = filename + pController->presetExtension();
+    QString filepath = USER_PRESETS_PATH + filenameWithExt;
+
+    // If the file isn't present in the user's directory, check res/
+    if (!QFile::exists(filepath)) filepath = m_pConfig->getConfigPath()
+                                    .append("controllers/") + filenameWithExt;
+
+    if (QFile::exists(filepath)) {
+        ControllerPreset* preset = handler->load(filepath, filename,
+                                                 force);
+        if (preset == NULL) {
+            qWarning() << "Unable to load preset" << filepath;
+        }
+        else {
+            pController->setPreset(*preset);
+            // Save the file path/name in the config so it can be auto-loaded at startup next time
+            m_pConfig->set(ConfigKey("[ControllerPreset]",
+                                     pController->getName().replace(" ", "_")),
+                           filepath);
+//             qDebug() << "Successfully loaded preset" << filepath;
+            return true;
+        }
+    }
+    qWarning() << "Cannot find" << filenameWithExt << "in either res/"
+             << "or the user's Mixxx directory (~/.mixxx/controllers/)";
+    return false;
+}
+
 void ControllerManager::slotSavePresets(bool onlyActive) {
     QList<Controller*> deviceList = getControllerList(false, true);
     QSet<QString> filenames;
@@ -309,9 +340,10 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
             filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
         filenames.insert(filename);
-        QString presetPath = PRESETS_PATH.append(filename + pController->presetExtension());
+        QString presetPath = USER_PRESETS_PATH + filename
+                                + pController->presetExtension();
         if (!pController->savePreset(presetPath)) {
-            qDebug() << "Failed to write preset for device"
+            qWarning() << "Failed to write preset for device"
                      << name << "to" << presetPath;
         }
     }

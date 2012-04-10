@@ -27,8 +27,8 @@ class ControllerPresetVisitor;
 
 class ControllerPreset {
   public:
-    ControllerPreset();
-    virtual ~ControllerPreset();
+    ControllerPreset() {};
+    virtual ~ControllerPreset() {};
 
     /** addScriptFile(QString,QString)
         * Adds an entry to the list of script file names & associated list of function prefixes

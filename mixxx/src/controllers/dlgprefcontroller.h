@@ -47,7 +47,7 @@ signals:
     void deviceStateChanged(DlgPrefController*, bool);
     void openController(bool);
     void closeController(bool);
-    void loadPreset(QString filename, bool forceLoad);
+    void loadPreset(Controller* pController, QString controllerName, bool force);
     void applyPreset();
 
 private:

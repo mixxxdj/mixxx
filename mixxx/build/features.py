@@ -81,6 +81,7 @@ class HID(Feature):
             build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
         sources = SCons.Split("""controllers/hidcontroller.cpp
                             controllers/hidenumerator.cpp
+                            controllers/hidcontrollerpresetfilehandler.cpp
                             """)
         if build.platform_is_windows:
             # This doesn't work. You need to build it in MSVS like all the other dependencies

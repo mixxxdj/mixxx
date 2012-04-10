@@ -23,14 +23,16 @@ ControllerPreset* ControllerPresetFileHandler::load(const QString path,
     return load(XmlParse::openXMLFile(path, "controller"), deviceName, forceLoad);
 }
 
-/** addScriptFilesToMapping(QDomElement,QString,bool)
-* Loads a controller preset from a QDomElement structure.
+/** addScriptFilesToPreset(QDomElement,QString,bool)
+* Loads script files specified in a QDomElement structure into the supplied
+*   ControllerPreset.
 * @param root The root node of the XML document for the preset.
 * @param deviceName The name/id of the controller
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
 *        specified within matches the name of this Controller.
+* @param preset The ControllerPreset into which the scripts should be placed.
 */
-void ControllerPresetFileHandler::addScriptFilesToMapping(
+void ControllerPresetFileHandler::addScriptFilesToPreset(
     const QDomElement root,
     const QString deviceName,
     const bool forceLoad,
@@ -74,14 +76,15 @@ void ControllerPresetFileHandler::addScriptFilesToMapping(
     }
 }
 
-bool ControllerPresetFileHandler::writeDocument(QDomDocument root, const QString fileName) const {
+bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
+                                                const QString fileName) const {
     // Need to do this on Windows
     QDir directory;
     if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
         return false;
     }
 
-    // TODO(XXX): This is not the right way to replace a file (O_TRUNCATE). The
+    // FIXME(XXX): This is not the right way to replace a file (O_TRUNCATE). The
     // right thing to do is to create a temporary file, write the output to
     // it. Delete the existing file, and then move the temporary file to the
     // existing file's name.

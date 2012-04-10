@@ -53,6 +53,10 @@ class Controller : public QObject, ControllerPresetVisitor {
         virtual const ControllerPreset* getPreset() const = 0;
         virtual ControllerPresetFileHandler* getFileHandler() const = 0;
 
+        void setConfig(ConfigObject<ConfigValue>* config) {
+            m_pConfig = config;
+        };
+        
         bool isOpen() const { return m_bIsOpen; };
         bool isOutputDevice() const { return m_bIsOutputDevice; };
         bool isInputDevice() const { return m_bIsInputDevice; };
@@ -88,6 +92,7 @@ class Controller : public QObject, ControllerPresetVisitor {
         bool m_bDebug;
 
         ControllerEngine *m_pEngine;
+        ConfigObject<ConfigValue> *m_pConfig;
 
     // Making these slots protected/private ensures that other parts of Mixxx
     //  can only signal them, preventing thread contention

@@ -128,6 +128,7 @@ int PortMidiController::close()
     }
 
     stopEngine();
+    MidiController::close();
 
     if (m_pInputStream)
     {

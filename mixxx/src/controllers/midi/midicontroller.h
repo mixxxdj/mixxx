@@ -67,10 +67,10 @@ class MidiController : public Controller {
                  unsigned char value = 0);
     // For receiving System Exclusive messages
     void receive(const QByteArray data);
+    virtual int close();
 
   private slots:
     //virtual int open() = 0;
-    virtual int close() = 0;
 
     // Initializes the engine and static output mappings.
     void applyPreset();

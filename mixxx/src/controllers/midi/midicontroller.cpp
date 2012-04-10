@@ -31,7 +31,7 @@ MidiController::~MidiController() {
 }
 
 QString MidiController::defaultPreset() {
-    return PRESETS_PATH.append(m_sDeviceName.right(m_sDeviceName.size()
+    return USER_PRESETS_PATH.append(m_sDeviceName.right(m_sDeviceName.size()
             -m_sDeviceName.indexOf(" ")-1).replace(" ", "_")
             + presetExtension());
 }
@@ -44,8 +44,14 @@ void MidiController::visit(const MidiControllerPreset* preset) {
     m_preset = *preset;
 }
 
+int MidiController::close() {
+    destroyOutputHandlers();
+    return 0;
+}
+
 void MidiController::visit(const HidControllerPreset* preset) {
-    qDebug() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
+    Q_UNUSED(preset);
+    qWarning() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
     // TODO(XXX): throw a hissy fit.
 }
 
@@ -99,7 +105,9 @@ void MidiController::createOutputHandlers() {
                             QString::number(off, 16).toUpper().rightJustified(2,'0'));
         }
 
-        MidiOutputHandler* moh = new MidiOutputHandler(group, key, this, min, max, status, control, on, off);
+        MidiOutputHandler* moh = new MidiOutputHandler(group, key, this,
+                                                       min, max, status, control,
+                                                       on, off);
         if (!moh->validate()) {
             QString errorLog = QString("Invalid MixxxControl: %1, %2")
                                         .arg(group, key).toUtf8();

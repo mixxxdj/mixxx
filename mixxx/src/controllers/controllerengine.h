@@ -86,7 +86,8 @@ class ControllerEngine : public QObject {
     bool execute(QString function, QString data);
     // Execute a particular function with a data buffer
     bool execute(QString function, const QByteArray data);
-    void loadScriptFiles(const QList<QString> scriptFileNames);
+    void loadScriptFiles(QString configPath,
+                         QList<QString> scriptFileNames);
     void initializeScripts(const QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown();
 
