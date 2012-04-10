@@ -505,26 +505,25 @@ void WOverview::paintEvent(QPaintEvent *)
                     painter.drawText(textPoint,currentMark.m_text);
                 }
             }
-
-            //draw current position
-            painter.setPen(m_qColorMarker);
-            painter.setOpacity(0.9);
-            painter.drawLine(m_iPos,  0, m_iPos,  height());
-
-            painter.drawLine(m_iPos-2,0,m_iPos,2);
-            painter.drawLine(m_iPos,2,m_iPos+2,0);
-            painter.drawLine(m_iPos-2,0,m_iPos+2,0);
-
-            painter.drawLine(m_iPos-2,height()-1,m_iPos,height()-3);
-            painter.drawLine(m_iPos,height()-3,m_iPos+2,height()-1);
-            painter.drawLine(m_iPos-2,height()-1,m_iPos+2,height()-1);
-
-            painter.setPen(m_qColorBackground);
-            painter.setOpacity(0.5);
-            painter.drawLine(m_iPos+1, 0, m_iPos+1, height());
-            painter.drawLine(m_iPos-1, 0, m_iPos-1, height());
-
         }
+
+        //draw current position
+        painter.setPen(m_qColorMarker);
+        painter.setOpacity(0.9);
+        painter.drawLine(m_iPos,  0, m_iPos,  height());
+
+        painter.drawLine(m_iPos-2,0,m_iPos,2);
+        painter.drawLine(m_iPos,2,m_iPos+2,0);
+        painter.drawLine(m_iPos-2,0,m_iPos+2,0);
+
+        painter.drawLine(m_iPos-2,height()-1,m_iPos,height()-3);
+        painter.drawLine(m_iPos,height()-3,m_iPos+2,height()-1);
+        painter.drawLine(m_iPos-2,height()-1,m_iPos+2,height()-1);
+
+        painter.setPen(m_qColorBackground);
+        painter.setOpacity(0.5);
+        painter.drawLine(m_iPos+1, 0, m_iPos+1, height());
+        painter.drawLine(m_iPos-1, 0, m_iPos-1, height());
 
         /*
         float fPos;
