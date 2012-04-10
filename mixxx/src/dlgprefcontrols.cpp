@@ -498,7 +498,7 @@ void DlgPrefControls::slotSetFrameRate(int frameRate) {
 }
 
 void DlgPrefControls::slotSetWaveformType(int index) {
-     if (WaveformWidgetFactory::instance()->setWidgetType(index))
+     if (WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index))
      {
          //it actually change to a valid type
          m_mixxx->rebootMixxxView();
