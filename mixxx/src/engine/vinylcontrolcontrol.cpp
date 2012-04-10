@@ -23,7 +23,10 @@ VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<Config
     connect(m_pControlVinylSeek, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlVinylSeek(double)),
             Qt::DirectConnection);
-
+            
+    m_pControlVinylScratching = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_scratching"));
+    m_pControlVinylScratching->set(0);
+    m_pControlVinylScratching->setToggleButton(true);
     m_pControlVinylEnabled = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_enabled"));
     m_pControlVinylEnabled->set(0);
     m_pControlVinylEnabled->setToggleButton(true);
@@ -121,4 +124,14 @@ void VinylControlControl::slotControlVinylSeek(double change) {
 
     // just seek where it wanted to originally
     emit(seek(change));
+}
+
+bool VinylControlControl::isEnabled()
+{
+    return m_pControlVinylEnabled->get();
+}
+
+bool VinylControlControl::isScratching() 
+{
+    return m_pControlVinylScratching->get();
 }

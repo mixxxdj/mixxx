@@ -339,6 +339,7 @@ class VinylControl(Feature):
                    'dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
+                   'vinylcontrol/steadypitch.cpp',
                    'engine/vinylcontrolcontrol.cpp',]
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.cpp")

@@ -52,7 +52,8 @@ QByteArray* BeatGrid::toByteArray() const {
 void BeatGrid::readByteArray(const QByteArray* pByteArray) {
     if ( pByteArray->size() != sizeof(BeatGridData))
         return;
-    BeatGridData *blob = (BeatGridData *)pByteArray->data();
+    const BeatGridData* blob = (const BeatGridData*)pByteArray->constData();
+
     // We serialize into frame offsets but use sample offsets at runtime
     setGrid(blob->bpm, blob->firstBeat * kFrameSize);
 }
