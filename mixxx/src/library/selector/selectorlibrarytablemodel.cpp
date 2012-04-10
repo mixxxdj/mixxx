@@ -151,14 +151,16 @@ void SelectorLibraryTableModel::setKeyFilters(float rate) {
 
 QString SelectorLibraryTableModel::getHarmonicKeys(QStringList keys1, QStringList keys2, QString key) const {
     int index = keys1.indexOf(key);
-    if (index<0) return QString("");
+    int len = keys1.count();
+    if (index < 0) return QString("");
     int lower = index-1;
-    if (lower<0) lower += keys1.count(); 
+    if (lower < 0) lower += len; 
     int upper = index+1;
-    if (upper>=keys1.count()) upper -= keys1.count(); 
+    if (upper >= len) upper -= len; 
     qDebug() << "getHarmonicKeys index = " << index;
     qDebug() << "getHarmonicKeys lower = " << lower;
     qDebug() << "getHarmonicKeys upper = " << upper;
+    qDebug() << "getHarmonicKeys len = " << len;
     return QString("'%1','%2','%3'").arg(keys1[lower],keys2[index],keys1[upper]);
 }
 
