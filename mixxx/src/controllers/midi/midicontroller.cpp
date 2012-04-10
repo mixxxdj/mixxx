@@ -45,6 +45,7 @@ void MidiController::visit(const MidiControllerPreset* preset) {
 }
 
 void MidiController::visit(const HidControllerPreset* preset) {
+    qDebug() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
     // TODO(XXX): throw a hissy fit.
 }
 
