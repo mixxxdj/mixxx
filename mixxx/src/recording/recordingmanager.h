@@ -23,6 +23,7 @@
  * Note: The RecordingManager lives in the GUI thread
  */
 
+class ControlPushButton;
 class ControlObjectThreadMain;
 
 class RecordingManager : public QObject
@@ -56,10 +57,14 @@ class RecordingManager : public QObject
     void slotIsRecording(bool);
     void slotBytesRecorded(int);
 
+  private slots:
+    void slotToggleRecording(double v);
+
   private:
     QString formatDateTimeForFilename(QDateTime dateTime) const;
     ControlObjectThread* m_recReady;
     ControlObject* m_recReadyCO;
+    ControlPushButton* m_pToggleRecording;
 
     long getFileSplitSize();
 
