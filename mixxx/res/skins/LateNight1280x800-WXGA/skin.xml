@@ -312,6 +312,34 @@
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 							</Overview>
 
 							<!--
@@ -793,6 +821,34 @@
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 							</Overview>
 
 							<!--
@@ -1274,6 +1330,34 @@
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 							</Overview>
 
 							<!--
@@ -1755,6 +1839,34 @@
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 							</Overview>
 
 							<!--
@@ -4387,55 +4499,49 @@
 					<ConfigKey>[Channel1],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
 				</Connection>
-				                <MarkRange>
-							<StartControl>loop_start_position</StartControl>
-							<EndControl>loop_end_position</EndControl>
-							<EnabledControl>loop_enabled</EnabledControl>
-							<Color>#00FF00</Color>
-							<DisabledColor>#FFFFFF</DisabledColor>
-						</MarkRange>
-
-						<Mark>
-							<Control>cue_point</Control>
-							<Pixmap>marker_cue1.png</Pixmap>
-							<Text>C</Text>
-							<Align>top</Align>
-							<Color>#FF001C</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_1_position</Control>
-							<Pixmap>marker_hotcue1_1.png</Pixmap>
-							<Text>1</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_2_position</Control>
-							<Pixmap>marker_hotcue1_2.png</Pixmap>
-							<Text>2</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_3_position</Control>
-							<Pixmap>marker_hotcue1_3.png</Pixmap>
-							<Text>3</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_4_position</Control>
-							<Pixmap>marker_hotcue1_4.png</Pixmap>
-							<Text>4</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<!-- TODO vrince support full hotcues ?-->		
+				<MarkRange>
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#00FF00</Color>
+					<DisabledColor>#FFFFFF</DisabledColor>
+				</MarkRange>
+					<Mark>
+					<Control>cue_point</Control>
+					<Text>C</Text>
+					<Align>top</Align>
+					<Color>#FF001C</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_1_position</Control>
+					<Text>1</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_2_position</Control>
+					<Text>2</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_3_position</Control>
+					<Text>3</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_4_position</Control>
+					<Text>4</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<!-- TODO vrince support full hotcues ?-->		
 			</Overview>
 
 			<!--
@@ -5331,50 +5437,49 @@
 					<ConfigKey>[Channel2],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
 				</Connection>
-				                <MarkRange>
-							<StartControl>loop_start_position</StartControl>
-							<EndControl>loop_end_position</EndControl>
-							<EnabledControl>loop_enabled</EnabledControl>
-							<Color>#00FF00</Color>
-							<DisabledColor>#FFFFFF</DisabledColor>
-						</MarkRange>
-						<Mark>
-							<Control>cue_point</Control>
-							<Pixmap>marker_cue1.png</Pixmap>
-							<Text>C</Text>
-							<Align>top</Align>
-							<Color>#FF001C</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_1_position</Control>
-							<Text>1</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_2_position</Control>
-							<Text>2</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_3_position</Control>
-							<Text>3</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_4_position</Control>
-							<Text>4</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<!-- TODO vrince support full hotcues ? -->
+				<MarkRange>
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#00FF00</Color>
+					<DisabledColor>#FFFFFF</DisabledColor>
+				</MarkRange>
+				<Mark>
+					<Control>cue_point</Control>
+					<Text>C</Text>
+					<Align>top</Align>
+					<Color>#FF001C</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_1_position</Control>
+					<Text>1</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_2_position</Control>
+					<Text>2</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_3_position</Control>
+					<Text>3</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_4_position</Control>
+					<Text>4</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<!-- TODO vrince support full hotcues ? -->
 			</Overview>
 
 			<!--
