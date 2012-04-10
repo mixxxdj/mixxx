@@ -17,8 +17,6 @@ class AnalyserWaveformTest: public testing::Test {
         qDebug() << "SetUp";
         aw = new AnalyserWaveform();
         tio = TrackPointer(new TrackInfoObject("foo"));
-        //Subpixels per second, from waveformrenderer.cpp:247
-        tio->setVisualResampleRate(200);
 
         bigbuf = new CSAMPLE[BIGBUF_SIZE];
         for (int i = 0; i < BIGBUF_SIZE; i++)

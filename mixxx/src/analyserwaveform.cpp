@@ -78,13 +78,13 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
             const AnalysisDao::AnalysisInfo& analysis = it.next();
 
             if (analysis.type == AnalysisDao::TYPE_WAVEFORM &&
-                missingWaveform) {
+                missingWaveform && !foundWaveform) {
                 foundWaveform = true;
                 m_waveform = WaveformFactory::loadWaveformFromAnalysis(
                     tio, analysis);
                 tio->setWaveform(m_waveform);
             } else if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY &&
-                       missingWavesummary) {
+                       missingWavesummary && !foundWavesummary) {
                 foundWavesummary = true;
                 m_waveformSummary = WaveformFactory::loadWaveformFromAnalysis(
                     tio, analysis);
