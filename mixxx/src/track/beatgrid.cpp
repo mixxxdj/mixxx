@@ -4,7 +4,7 @@
 #include "track/beatgrid.h"
 #include "mathstuff.h"
 
-static int kFrameSize = 2;
+static const int kFrameSize = 2;
 
 struct BeatGridData {
 	double bpm;
