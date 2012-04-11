@@ -10,15 +10,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2012-02-01 22:18+0000\n"
+"Last-Translator: Adrian Pardini <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:47+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-02-02 06:17+0000\n"
+"X-Generator: Launchpad (build 14738)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -312,7 +312,7 @@ msgstr "No se pudo renombrar el cajón"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Archivos de lista de reproducción (*.m3u *.m3u8 *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -336,14 +336,18 @@ msgid "About Mixxx"
 msgstr "Acerca de Mixxx"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -351,23 +355,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Créditos Aquí</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -563,11 +550,11 @@ msgstr "Predeterminado"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr "Erro"
+msgstr "Error"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr "Non é posíbel abrir o ficheiro %1"
+msgstr "No se puede abrir el archivo %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
@@ -794,7 +781,7 @@ msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
-msgstr ""
+msgstr "1.014 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -1529,7 +1516,7 @@ msgstr "Formato"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
-msgstr "Ogg-Vorbis"
+msgstr "Ogg Vorbis"
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
@@ -1891,11 +1878,11 @@ msgstr "Xestionar"
 
 #: DlgPrepare#2
 msgid "New"
-msgstr ""
+msgstr "Nuevo"
 
 #: DlgPrepare#3
 msgid "All"
-msgstr ""
+msgstr "Todos"
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -2629,7 +2616,7 @@ msgstr "Soporte de la &Comunidad"
 
 #: MixxxApp#42
 msgid "&User Manual"
-msgstr ""
+msgstr "Manual de &usuario"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
@@ -2658,7 +2645,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#49
 msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Activar la Transmisión en Vivo"
 
 #: MixxxApp#50
 msgid "Ctrl+L"
@@ -2812,7 +2799,7 @@ msgstr "Mostra Mixxx usando a pantalla completa"
 #: MixxxApp#77
 msgctxt "MixxxApp#77"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: MixxxApp#78
 msgid ""
@@ -2838,7 +2825,7 @@ msgstr ""
 
 #: MixxxApp#81
 msgid "Read the Mixxx user manual."
-msgstr ""
+msgstr "Lea el manual de usuario de Mixxx"
 
 #: MixxxApp#82
 msgid ""
@@ -2973,10 +2960,30 @@ msgstr ""
 "de sonido."
 
 #: MixxxApp#105
+msgid "Mixxx %1 Development Team"
+msgstr "Equipo de desarrollo de Mixxx %1"
+
+#: MixxxApp#106
+msgid "With contributions from:"
+msgstr "Con colaboradores de:"
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr "Y agradecimientos especiales a:"
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr "Antiguos desarrolladores"
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr "Antiguos colaboradores"
+
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Confirmar salida"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Una deck esta reproduciendo. ¿Salir de Mixxx?"
 
@@ -3001,7 +3008,7 @@ msgstr ""
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
 msgid "Could not create file"
-msgstr ""
+msgstr "No se pudo crear el archivo"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -3043,7 +3050,7 @@ msgstr "Importar lista de reproducción"
 
 #: PlaylistFeature#7
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportar lista de reproducción"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3086,7 +3093,7 @@ msgstr "Renombrar lista de reproducción fallo"
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Archivos de lista de reproducción (*.m3u *.m3u8 *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
@@ -3149,15 +3156,15 @@ msgstr "Guardar banco de Sampler"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr "Error Guardando Banco de Sampler"
+msgstr "Error guardando banco de Sampler"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr "No se pudo escribir"
+msgstr "No se pudo escribir el banco de Sampler  en «%1»"
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr "Cargar Banco de Sampler"
+msgstr "Cargar banco de Sampler"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
@@ -3194,11 +3201,11 @@ msgstr "Cerrar"
 
 #: ScriptStudio#6
 msgid "Import..."
-msgstr "importar..."
+msgstr "Importar…"
 
 #: ScriptStudio#7
 msgid "Export..."
-msgstr "Exportar..."
+msgstr "Exportar…"
 
 #: ScriptStudio#8
 msgid "Delete Macro"
@@ -3467,11 +3474,11 @@ msgstr "Botón Borrar Hotcue 4 para reproductor %1"
 
 #: Ui#48
 msgid "Play button for Sampler %1"
-msgstr ""
+msgstr "Botón de reproducción para el Sampler %1"
 
 #: Ui#49
 msgid "Gain knob for Sampler %1"
-msgstr ""
+msgstr "Control de ganancia para el Sampler %1"
 
 #: Ui#50
 msgid "Headphone listen button for Sampler %1"
@@ -3551,19 +3558,19 @@ msgstr ""
 
 #: Ui#69
 msgid "Adjusts the intensity of the flange effect"
-msgstr ""
+msgstr "Ajusta la intensidad del efecto flanger"
 
 #: Ui#70
 msgid "Adjusts the phase delay of the flange effect"
-msgstr ""
+msgstr "Ajusta el retraso de fase del efecto flanger"
 
 #: Ui#71
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Micrófono encendido/apagado"
 
 #: Ui#72
 msgid "Microphone volume"
-msgstr ""
+msgstr "Volumen del micrófono"
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3611,6 +3618,8 @@ msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
 msgstr ""
+"Recargar los metadatos de la pista en una pista cargada puede causar cambios "
+"bruscos de volumen. ¿Está seguro?"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
@@ -3622,45 +3631,34 @@ msgstr "Mostrar u ocultar columnas"
 #~ msgid "All Songs"
 #~ msgstr "Todas las canciones"
 
-#~ msgctxt "ParserM3u#2"
-#~ msgid "Could not create file"
-#~ msgstr "No se pudo crear archivo"
-
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "Lista de reproducción M3U (*.m3u);;Lista de reproducción PLS (*.pls)"
-
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Archivos de lista de reproducción (*.m3u *.pls)"
-
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Exportar lista de reproducción"
-
 #~ msgid "Recently Added"
 #~ msgstr "Añadido recientemente"
 
-#~ msgctxt "PlaylistFeature#7"
-#~ msgid "Export Playlist"
-#~ msgstr "Exportar lista de reproducción"
-
-#~ msgctxt "PlaylistFeature#17"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Archivos de la lista de reproducción (*.m3u *.pls)"
-
-#~ msgctxt "PlaylistFeature#18"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "Lista de reproducción M3U (*.m3u);;Lista de reproducción PLS (*.pls)"
-
-#~ msgctxt "DlgPrefNoVinylDlg#21"
-#~ msgid "Apply"
-#~ msgstr "Aplicar"
-
-#~ msgctxt "MixxxApp#48"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Activar la transmisión en vivo"
-
-#~ msgctxt "MixxxApp#76"
-#~ msgid "Preferences"
-#~ msgstr "Preferencias"
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Créditos Aquí</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
