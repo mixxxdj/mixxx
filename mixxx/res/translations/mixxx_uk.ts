@@ -28,7 +28,7 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation>Жанр</translation>
+            <translation>Стиль</translation>
         </message>
         <message>
             <source>Year</source>
@@ -40,7 +40,7 @@
         </message>
         <message>
             <source>Location</source>
-            <translation>Розташування</translation>
+            <translation>Місце розташування</translation>
         </message>
         <message>
             <source>Comment</source>
@@ -56,16 +56,15 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Бітрейт</translation>
+            <translation>Швидкість потоку</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Бітів/хв.</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation>Доріжка #</translation>
+            <translation>Композиція №</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -96,7 +95,7 @@
         </message>
         <message>
             <source>Devices</source>
-            <translation>Пристрої</translation>
+            <translation>Пристої</translation>
         </message>
         <message>
             <source>Removable Devices</source>
@@ -120,7 +119,7 @@
         </message>
         <message>
             <source>Desktop</source>
-            <translation>Стільниця</translation>
+            <translation>Робоче середовище</translation>
         </message>
         <message>
             <source>Browse</source>
@@ -131,7 +130,7 @@
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Назва файлу</translation>
+            <translation>Ім'я файлу</translation>
         </message>
         <message>
             <source>Artist</source>
@@ -147,7 +146,7 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation>Доріжка #</translation>
+            <translation>Композиція №</translation>
         </message>
         <message>
             <source>Year</source>
@@ -155,7 +154,7 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation>Жанр</translation>
+            <translation>Стиль</translation>
         </message>
         <message>
             <source>Comment</source>
@@ -167,8 +166,7 @@
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Бітів/хв.</translation>
         </message>
         <message>
             <source>Key</source>
@@ -181,11 +179,11 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Бітрейт</translation>
+            <translation>Швидкість потоку</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation>Розташування</translation>
+            <translation>Місце розташування</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
@@ -193,11 +191,11 @@
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation>Не вдається завантажити обраний файл, так як він використовується в Mixxx, або в іншій програмі</translation>
+            <translation>Не вдається завантажити обраний файл, тому що він використовується в Mixxx або в іншій програмі</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation>Попередження: Це безповорортно видалить наступні файли:</translation>
+            <translation>Попередження: Це безповоротно видалить наступні файли:</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
@@ -205,11 +203,11 @@
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation>Не вдається знищити обраний файл, так як він використовується в Mixxx, або в іншій програмі.</translation>
+            <translation>Не вдається знищити обраний файл, тому що він використовується в Mixxx або в іншій програмі.</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
-            <translation>Невдається оновити метадані з файлу.</translation>
+            <translation>Не вдається оновити метадані з файлу.</translation>
         </message>
     </context>
     <context>
@@ -224,15 +222,15 @@
         </message>
         <message>
             <source>Rename</source>
-            <translation>Перейменувати</translation>
+            <translation>Змінити назву</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation>Блокувати</translation>
+            <translation>Заблокувати</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation>Імпортувати список програвання</translation>
+            <translation>Імпортувати список композицій</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -256,11 +254,12 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Сталася невідома помилка під-час створення збірки: </translation>
+            <translation>Сталася невідома помилка під час створення збірки: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation>Перейменувати збірку</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>New crate name:</source>
@@ -268,12 +267,11 @@
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation>Перейменування невдалося</translation>
+            <translation>Перейменування не вдалося</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Файли списку програвання (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
@@ -282,11 +280,11 @@
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Збірка не може мати пусту назву.</translation>
+            <translation>Збірка повинна мати назву.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation>Створення збірки невдалося</translation>
+            <translation>Створення збірки не вдалося</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
@@ -300,18 +298,22 @@
             <translation>Про Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -359,15 +361,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Max</source>
-            <translation>Макс.</translation>
+            <translation>Максимум</translation>
         </message>
         <message>
             <source>Min</source>
-            <translation>Мін.</translation>
+            <translation>Мінімум</translation>
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation>Повний аналіз пісні</translation>
+            <translation>Аналiзувати всю пiсню</translation>
         </message>
     </context>
     <context>
@@ -391,7 +393,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Welcome to the MIDI Learning Wizard</source>
-            <translation>Ласкаво просимо, до мастра вивчення MIDI</translation>
+            <translation>Ласкаво просимо до майстра вивчення MIDI</translation>
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
@@ -418,13 +420,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Для продовження чи пропуску натиснiть пробiл</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Вивчення MIDI закiнчено</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -433,13 +433,16 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Finito!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кiнець</translation>
         </message>
     </context>
     <context>
@@ -494,36 +497,30 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Долучити</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Редагування</translation>
         </message>
         <message>
             <source>Delete</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Вилучити</translation>
         </message>
         <message>
             <source>Default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>По-замовчуванню</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefBpm</name>
         <message>
             <source>Error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Помилка.</translation>
         </message>
         <message>
             <source>Cannot open file %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Неможливо відкрити файл %1</translation>
         </message>
     </context>
     <context>
@@ -540,48 +537,39 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>10%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>10%</translation>
         </message>
         <message>
             <source>20%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>20%</translation>
         </message>
         <message>
             <source>30%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>30%</translation>
         </message>
         <message>
             <source>40%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>40%</translation>
         </message>
         <message>
             <source>50%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>50%</translation>
         </message>
         <message>
             <source>60%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>60%</translation>
         </message>
         <message>
             <source>70%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>70%</translation>
         </message>
         <message>
             <source>80%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80%</translation>
         </message>
         <message>
             <source>90%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>90%</translation>
         </message>
         <message>
             <source>Up increases speed</source>
@@ -595,31 +583,26 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Інформація</translation>
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Щоб вiдбулися змiни, потрiбно перезавантажити Mixxx.</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefControlsDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма1</translation>
         </message>
         <message>
             <source>Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Оболонка</translation>
         </message>
         <message>
             <source>Scheme</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Схема</translation>
         </message>
         <message>
             <source>Waveform display</source>
@@ -628,8 +611,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Position display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Вiдображення положення</translation>
         </message>
         <message>
             <source>Tool tips</source>
@@ -638,13 +620,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Увімкнути</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Вимкнути</translation>
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
@@ -658,8 +638,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track load behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поведiнка загруження композицi</translation>
         </message>
         <message>
             <source>Cue behaviour</source>
@@ -678,13 +657,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Left click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Клацнути лівою кнопкою мишки</translation>
         </message>
         <message>
             <source>Right click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Клацнути правою кнопкою мишки</translation>
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when left clicking</source>
@@ -693,8 +670,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%</translation>
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
@@ -731,8 +707,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefCrossfaderDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма1</translation>
         </message>
         <message>
             <source>Crossfader Curve</source>
@@ -756,8 +731,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixing</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Змішування</translation>
         </message>
         <message>
             <source>Scratching</source>
@@ -771,21 +745,18 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Logarithmic</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Логарифмічний</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Скинути</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefEQDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма1</translation>
         </message>
         <message>
             <source>Static EQs (for slower CPUs)</source>
@@ -799,23 +770,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>текстоваМiтка1</translation>
         </message>
         <message>
             <source>16 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>16 Гц</translation>
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1,014 кГц</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>20,05 кГц</translation>
         </message>
         <message>
             <source>Low Shelf EQ</source>
@@ -824,13 +791,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>текстоваМiтка1</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Скинути</translation>
         </message>
     </context>
     <context>
@@ -907,13 +872,11 @@ This will overwrite your existing MIDI mapping.</source>
         <name>DlgPrefMidiBindingsDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Діалогове вікно</translation>
         </message>
         <message>
             <source>Your Device Name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Назва вашого пристрою</translation>
         </message>
         <message>
             <source>Load Preset:</source>
@@ -922,18 +885,15 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Export</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Експортувати</translation>
         </message>
         <message>
             <source>Output:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Виведення:</translation>
         </message>
         <message>
             <source>Enabled</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Активовано</translation>
         </message>
         <message>
             <source>Controls</source>
@@ -942,28 +902,23 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Долучити</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Вилучити</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Майстер вивчення MIDI</translation>
         </message>
         <message>
             <source>Clear All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Очистити все</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</translation>
         </message>
         <message>
             <source>MIDI Input</source>
@@ -985,21 +940,18 @@ This will overwrite your existing MIDI mapping.</source>
         <name>DlgPrefNoMidiDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма3</translation>
         </message>
         <message>
             <source>No MIDI devices available</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Не знайдено MIDI пристроiв</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefNoVinylDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма 1</translation>
         </message>
         <message>
             <source>Input</source>
@@ -1012,8 +964,11 @@ This will overwrite your existing MIDI mapping.</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
@@ -1032,8 +987,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>150</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>150</translation>
         </message>
         <message>
             <source>Vinyl Configuration</source>
@@ -1057,13 +1011,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>секунд(и)</translation>
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Показувати якiсть сигналу в оболочцi</translation>
         </message>
         <message>
             <source>Control Mode</source>
@@ -1087,18 +1039,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Якість сигналу</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Powered by xwax</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1110,8 +1059,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Виберiть папку, де знаходится музична бiблiотека</translation>
         </message>
         <message>
             <source>Multiple iPods Detected</source>
@@ -1121,13 +1069,12 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Mixxx has detected another iPod. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Пiдключений iнший iPod. 
+</translation>
         </message>
         <message>
             <source>Choose Yes to use the newly found iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Для подальшого використання новопiдключеного iPod виберiть Так @ </translation>
         </message>
         <message>
             <source> or to continue to search for other iPods. 
@@ -1156,13 +1103,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylistDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма3</translation>
         </message>
         <message>
             <source>Audio File Formats</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Формати музичних файлiв</translation>
         </message>
         <message>
             <source>Additional Format Plugins:</source>
@@ -1171,13 +1116,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</translation>
         </message>
         <message>
             <source>Loaded Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Загруженi плагiни</translation>
         </message>
         <message>
             <source>None</source>
@@ -1196,8 +1139,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Rescan library on start-up</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Просканувати бiблiотеку при запуску заново</translation>
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
@@ -1206,8 +1148,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>iPod</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod</translation>
         </message>
         <message>
             <source>iPod mountpoint</source>
@@ -1226,23 +1167,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Бібліотека</translation>
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Папка музики</translation>
         </message>
         <message>
             <source>Built-in</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Вбудований</translation>
         </message>
         <message>
             <source>Available Online...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Available Online...</translation>
         </message>
         <message>
             <source>Bundled Songs</source>
@@ -1260,56 +1197,46 @@ playback and outbound link statistics</source>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>кбіт/с</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefRecordDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма3</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кодування</translation>
         </message>
         <message>
             <source>Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Якість</translation>
         </message>
         <message>
             <source>High</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Високий</translation>
         </message>
         <message>
             <source>Low</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Низький</translation>
         </message>
         <message>
             <source>Tags</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Теґи</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Назва</translation>
         </message>
         <message>
             <source>Author</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Автор</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Альбом</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
@@ -1318,8 +1245,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Створити CUE файл</translation>
         </message>
         <message>
             <source>File Splitting</source>
@@ -1346,8 +1272,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Apply volume normalization to loaded songs.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Застосувати нормалiзацiю звуку до гучних пiсень</translation>
         </message>
         <message>
             <source>Enable Replay Gain</source>
@@ -1381,21 +1306,18 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>dB</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>дБ</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Скинути</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefShoutcastDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Форма3</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -1404,13 +1326,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Server connection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Зв'язок з сервером</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Тип</translation>
         </message>
         <message>
             <source>Icecast 2</source>
@@ -1429,53 +1349,43 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Mount</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Монтувати</translation>
         </message>
         <message>
             <source>/mixxx.ogg</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>/mixxx.ogg</translation>
         </message>
         <message>
             <source>Host</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Сервер</translation>
         </message>
         <message>
             <source>192.168.123.8</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192.168.123.8</translation>
         </message>
         <message>
             <source>Port</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Порт</translation>
         </message>
         <message>
             <source>8000</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>8000</translation>
         </message>
         <message>
             <source>Login</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Вхід</translation>
         </message>
         <message>
             <source>source</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>джерело</translation>
         </message>
         <message>
             <source>Password</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Пароль</translation>
         </message>
         <message>
             <source>test1234</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>тест1234</translation>
         </message>
         <message>
             <source>Stream settings</source>
@@ -1484,8 +1394,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Stream name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Назва потоку</translation>
         </message>
         <message>
             <source>Mixxx Icecast Testing</source>
@@ -1494,18 +1403,15 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Website</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Веб-сайт</translation>
         </message>
         <message>
             <source>http://www.mixxx.org</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.mixxx.org</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Опис</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1513,13 +1419,15 @@ playback and outbound link statistics</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;&quot;&gt;This stream is on line for testing purposes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;&quot;&gt;This stream is on line for testing purposes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Стиль</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -1533,48 +1441,39 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кодування</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Швидкість потоку</translation>
         </message>
         <message>
             <source>320 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>320 КБ/с</translation>
         </message>
         <message>
             <source>256 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>256 кбіт/с</translation>
         </message>
         <message>
             <source>224 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>224 кбіт/с</translation>
         </message>
         <message>
             <source>192 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192 кбіт/с</translation>
         </message>
         <message>
             <source>160 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>160 кбіт/с</translation>
         </message>
         <message>
             <source>128 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>128 кбіт/с</translation>
         </message>
         <message>
             <source>112 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>112 кбіт/с</translation>
         </message>
         <message>
             <source>96 kbps</source>
@@ -3093,6 +2992,31 @@ Are you sure you want to load a new song?</source>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
             <translation type="unfinished">
             </translation>
         </message>

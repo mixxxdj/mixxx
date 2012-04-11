@@ -16,7 +16,7 @@
         </message>
         <message>
             <source>Artist</source>
-            <translation>Artistes</translation>
+            <translation>Artiste</translation>
         </message>
         <message>
             <source>Title</source>
@@ -24,11 +24,11 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Albums</translation>
+            <translation>Album</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation>Style</translation>
+            <translation>Genre</translation>
         </message>
         <message>
             <source>Year</source>
@@ -44,7 +44,7 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation>Commentaires</translation>
+            <translation>Commentaire</translation>
         </message>
         <message>
             <source>Duration</source>
@@ -52,7 +52,7 @@
         </message>
         <message>
             <source>Rating</source>
-            <translation>Note</translation>
+            <translation>Appréciation</translation>
         </message>
         <message>
             <source>Bitrate</source>
@@ -60,7 +60,7 @@
         </message>
         <message>
             <source>BPM</source>
-            <translation>BPM</translation>
+            <translation>Tempo</translation>
         </message>
         <message>
             <source>Track #</source>
@@ -68,15 +68,15 @@
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Ajouté le</translation>
+            <translation>Date d'ajout</translation>
         </message>
         <message>
             <source>#</source>
-            <translation>#</translation>
+            <translation>n°</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation>Clé</translation>
+            <translation>Tonalité</translation>
         </message>
     </context>
     <context>
@@ -90,7 +90,7 @@
         <name>BrowseFeature</name>
         <message>
             <source>Quick Links</source>
-            <translation>Liens Rapides</translation>
+            <translation>Accès rapides</translation>
         </message>
         <message>
             <source>Devices</source>
@@ -236,11 +236,11 @@
         </message>
         <message>
             <source>Import Crate</source>
-            <translation>Importer container</translation>
+            <translation>Importer un bac</translation>
         </message>
         <message>
             <source>Export Crate</source>
-            <translation>Exporter container</translation>
+            <translation>Export un bac</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -248,15 +248,15 @@
         </message>
         <message>
             <source>Crate name:</source>
-            <translation>Nom du container :</translation>
+            <translation>Nom du bac :</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Une erreur inconnue s'est produite lors de la création du container : </translation>
+            <translation>Une erreur inconnue s'est produite lors de la création du bac : </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation>Renommer container</translation>
+            <translation>Renommer le bac</translation>
         </message>
         <message>
             <source>New crate name:</source>
@@ -264,21 +264,19 @@
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation>Échec lors du renommage du container</translation>
+            <translation>Le renommage du bac a échoué</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fichiers de la liste de lecture (*. m3u *. m3u8 *. pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liste de lecture M3U (*.m3u);; Liste de lecture M3U8 (*.m3u8);; Liste de lecture PLS (*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Un container doit avoir un nom.</translation>
+            <translation>Le nom d'un bac ne doit pas être vide.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
@@ -296,22 +294,22 @@
             <translation>À propos de Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
             <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Les crédits ici&lt;/span&gt;&lt;/p&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Contributions&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -400,11 +398,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please tweak the control for:</source>
-            <translation>Ajuster le contrôle pour :</translation>
+            <translation>Veuillez ajuster le contrôle pour :</translation>
         </message>
         <message>
             <source>Mixxx Control</source>
-            <translation>Mixxx Contrôle</translation>
+            <translation>Contrôle de Mixxx</translation>
         </message>
         <message>
             <source>Previous</source>
@@ -735,8 +733,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -987,7 +984,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation>Choisissez le dossier de la bibliothèque musicale</translation>
+            <translation>Choisissez le répertoire de la bibliothèque musicale</translation>
         </message>
         <message>
             <source>Multiple iPods Detected</source>
@@ -1657,7 +1654,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Library</source>
-            <translation>Librairie</translation>
+            <translation>Bibliothèque</translation>
         </message>
         <message>
             <source>Interface</source>
@@ -1711,13 +1708,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nouveau</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tous</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1847,7 +1842,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Hint: Use the Library Analyze view to run BPM detection.</source>
-            <translation>Conseil: Utilisez l'Analyse Bibliothèque pour lancer la détection BPM.</translation>
+            <translation>Conseil : utilisez la vue d'analyse de la bibliothèque pour lancer la détection de tempo.</translation>
         </message>
         <message>
             <source>Track BPM</source>
@@ -2018,19 +2013,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Use Default Library</source>
-            <translation>Utiliser la Bibliothèque par défaut</translation>
+            <translation>Utiliser la bibliothèque par défaut</translation>
         </message>
         <message>
             <source>Choose Library...</source>
-            <translation>Choisissez la Bibliothèque…</translation>
+            <translation>Choisissez la bibliothèque…</translation>
         </message>
         <message>
             <source>Error Loading iTunes Library</source>
-            <translation>Erreur lors du chargement de la Bibliothèque iTunes</translation>
+            <translation>Erreur lors du chargement de la bibliothèque iTunes</translation>
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
-            <translation>Il y a eu une erreur de chargement de votre bibliothèque iTunes. Certains de vos morceaux iTunes ou listes de lecture peuvent ne pas avoir été chargé.</translation>
+            <translation>Le chargement de votre bibliothèque iTunes a échoué. Certains de vos titres ou listes de lecture iTunes peuvent ne pas avoir été chargés.</translation>
         </message>
     </context>
     <context>
@@ -2044,12 +2039,11 @@ p, li { white-space: pre-wrap; }
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyser la bibliothèque</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
-            <translation>Cela prend une minute à Mixxx pour analyser votre bibliothèque musicale, veuillez patienter…</translation>
+            <translation>Veuillez patienter quelques instants le temps que Mixxx analyse votre bibliothèque musicale...</translation>
         </message>
         <message>
             <source>Cancel</source>
@@ -2235,7 +2229,7 @@ Ces informations ne seront pas utilisées  personnellement pour vous identifiez,
         </message>
         <message>
             <source>Choose music library directory</source>
-            <translation>Choisissez le dossier de la bibliothèque musicale</translation>
+            <translation>Choisissez le répertoire de la bibliothèque musicale</translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
@@ -2367,8 +2361,7 @@ Ces informations ne seront pas utilisées  personnellement pour vous identifiez,
         </message>
         <message>
             <source>&amp;User Manual</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Manuel de l'utilisateur</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
@@ -2396,8 +2389,7 @@ Ces informations ne seront pas utilisées  personnellement pour vous identifiez,
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activer la diffusion en direct</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2452,8 +2444,7 @@ Quitter l'application</translation>
         <message>
             <source>Rescan library
 Rescans the song library</source>
-            <translation>Rescanner la bibliothèque
-Rescanner la bibliothèque musicale</translation>
+            <translation>Réanalyser la bibliothèque</translation>
         </message>
         <message>
             <source>Create a new playlist</source>
@@ -2523,8 +2514,7 @@ Marquer les repères de tempo audio par un click</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Préférences</translation>
         </message>
         <message>
             <source>Preferences
@@ -2543,14 +2533,13 @@ Trouver de l'aide avec Mixxx</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lire le manuel de l'utilisateur de Mixxx</translation>
         </message>
         <message>
             <source>Support
 Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Support
+Lisez le manuel utilisateur de Mixxx.</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
@@ -2654,6 +2643,26 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation>Équipe de développement Mixxx %1</translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation>Avec les contributions de:</translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation>Et remerciements particuliers à:</translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation>Anciens développeurs</translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation>Anciens contributeurs</translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
             <translation>Confirmer la fermeture</translation>
         </message>
@@ -2678,19 +2687,18 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         <message>
             <source>File path contains characters, not allowed in m3u playlists.
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Le chemin du fichier comporte des caractères, pas autorisés dans les listes de lecture M3U.
+</translation>
         </message>
         <message>
             <source>Export a m3u8 playlist instead!
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exporter une liste de lecture m3u8 à la place!
+</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Impossible de créer le fichier</translation>
         </message>
     </context>
     <context>
@@ -2732,8 +2740,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exporter la liste de lecture</translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2773,13 +2780,11 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fichiers de la liste de lecture (*. m3u *. m3u8 *. pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liste de lecture M3U (*.m3u);; Liste de lecture M3U8 (*.m3u8);; Liste de lecture PLS (*.pls)</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -2957,7 +2962,7 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
-            <translation>Erreur lors du chargement de la Bibliothèque Traktor</translation>
+            <translation>Erreur lors du chargement de la bibliothèque Traktor</translation>
         </message>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
@@ -3112,18 +3117,15 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>Setup a loop over 4 beats for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Installation d'une boucle de plus de 4 battements pour le joueur 1%</translation>
         </message>
         <message>
             <source>Halves the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Réduit de moitié la longueur de la boucle de courant pour le joueur 1%</translation>
         </message>
         <message>
             <source>Doubles the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Double la longueur de la boucle de courant pour le joueur 1%</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Player %1</source>
@@ -3159,73 +3161,59 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>Play button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton Lecture pour Sampler 1%</translation>
         </message>
         <message>
             <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>GAIN pour Sampler 1%</translation>
         </message>
         <message>
             <source>Headphone listen button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton d'écoute au casque pour le mélangeur de sons %1</translation>
         </message>
         <message>
             <source>BPM tap button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton de saisie du tempo pour l'échantillonneur %1</translation>
         </message>
         <message>
             <source>Keylock button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton de verrouillage pour le mélangeur de sons %1</translation>
         </message>
         <message>
             <source>Pitch control slider for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Contrôle de la hauteur pour l'échantillonneur %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton du repère 1 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Hotcue 2 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton du repère 2 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Hotcue 3 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton du repère 3 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Hotcue 4 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton du repère 4 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Hotcue 1 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton de suppression du repère 1 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Hotcue 2 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton de suppression du repère 2 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Hotcue 3 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton de suppression du repère 3 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Hotcue 4 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton de suppression du repère 4 pour l'échantillonneur 1</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -3253,28 +3241,23 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>Adjusts the wavelength of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ajustement de la longueur d'onde de l'effet flanger</translation>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Régler l'intensité de l'effet flanger</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ajuste le retard de phase de l'effet flanger</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microphone en marche / arrêt</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Volume du microphone</translation>
         </message>
     </context>
     <context>
@@ -3324,8 +3307,7 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rechargement des métadonnées d'une piste sur une piste chargée peut provoquer des changements de volume brusques. Êtes-vous sûr?</translation>
         </message>
     </context>
     <context>

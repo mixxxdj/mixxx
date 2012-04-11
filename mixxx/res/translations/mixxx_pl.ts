@@ -268,13 +268,11 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pliki playlist (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Playlista M3U (*.m3u);;Playlista M3U8 (*.m3u8);;Playlista  PLS (*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -296,22 +294,22 @@
             <translation>O Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
             <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Podziękowania dla&lt;/span&gt;&lt;/p&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -365,8 +363,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analizuj Cały Utwór</translation>
         </message>
     </context>
     <context>
@@ -736,8 +733,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1,014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -949,23 +945,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pokaż jakość w skórce</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tryb sterowniczy</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tryb Absolutny</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tryb względny</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
@@ -974,18 +966,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jakość sygnału</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Powered by xwax</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1319,8 +1308,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opis</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1545,8 +1533,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanał %1</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
@@ -1613,13 +1600,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pokaż jakość w skórce</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zastosuj</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1628,23 +1613,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>sekund</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tryb sterowniczy</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tryb Absolutny</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tryb względny</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
@@ -1653,8 +1634,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jakość sygnału</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
@@ -1663,8 +1643,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Powered by Adasqu</translation>
         </message>
     </context>
     <context>
@@ -1733,13 +1712,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nowy</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wszystko</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1789,23 +1766,19 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Edycja Ścieżki</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Utwór:</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tytuł:</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wykonawca:</translation>
         </message>
         <message>
             <source>Album:</source>
@@ -1825,8 +1798,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Plik:</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -1834,23 +1806,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>3:00</translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Typ Pliku:</translation>
         </message>
         <message>
             <source>77</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Komentarze:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -1858,8 +1826,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Informacje o Ścieżcę (Kliknij aby Rozwinąć)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -1927,8 +1894,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alt+O</translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -1943,18 +1909,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt; Mixxx nie może nagrywać lub strumień w formacie MP3 bez MP3 encoder &quot;lame&quot;. Ze względu na problemy licencyjne, nie możemy włączyć ten z Mixxx. Aby rozpocząć nagrywanie lub strumień w formacie MP3, należy pobrać &lt;b&gt; libmp3lame &lt;/ b&gt; i zainstalować go w systemie. &lt;p&gt; Zobacz &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt; Mixxx Wiki &lt;/ a&gt; więcej informacji. &lt;/ html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt; Mixxx nie może nagrywać lub strumień w formacie MP3 bez MP3 encoder &quot;lame&quot;. Ze względu na problemy licencyjne, nie możemy włączyć ten z Mixxx. Aby rozpocząć nagrywanie lub strumień w formacie MP3, należy pobrać &lt;b&gt; libmp3lame &lt;/ b&gt; i zainstalować go w systemie. &lt;p&gt; Zobacz &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt; Mixxx Wiki &lt;/ a&gt; więcej informacji. &lt;/ html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt; Mixxx nie może nagrywać lub strumień w formacie MP3 bez MP3 encoder &quot;lame&quot;. Ze względu na problemy licencyjne, nie możemy włączyć ten z Mixxx. Aby rozpocząć nagrywanie lub strumień w formacie MP3, należy pobrać &lt;b&gt; libmp3lame &lt;/ b&gt; i zainstalować go w systemie. &lt;p&gt; Zobacz &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt; Mixxx Wiki &lt;/ a&gt; więcej informacji. &lt;/ html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2050,8 +2013,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(Ładowanie) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2081,8 +2043,7 @@ p, li { white-space: pre-wrap; }
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skanowanie Biblioteki</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
@@ -2117,8 +2078,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opis</translation>
         </message>
     </context>
     <context>
@@ -2172,8 +2132,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opis</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2398,28 +2357,23 @@ Te informacje nie będą użyte do celów identyfikacyjnych, ani aby się z tob�
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;O programie</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp; Wsparcie Mixxx</translation>
         </message>
         <message>
             <source>&amp;User Manual</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>I instrukcja</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wyślij opinie</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>I tlumaczenie Mixxa</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2439,8 +2393,7 @@ Te informacje nie będą użyte do celów identyfikacyjnych, ani aby się z tob�
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Włącz nadawanie na żywo</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2566,8 +2519,7 @@ Zaznacz bity audio-klikami</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Preferencje</translation>
         </message>
         <message>
             <source>Preferences
@@ -2587,36 +2539,30 @@ Otrzymaj pomoc z Mixxx'em</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Przeczytaj instrukcję użytkownika Mixxx.</translation>
         </message>
         <message>
             <source>Support
 Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Przeczytaj instrukcję Mixxx.</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wyślij opinię do zespołu Mixxx.</translation>
         </message>
         <message>
             <source>Support
 Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wyślij opinię do zespołu Mixxx.</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pomóż przetłumaczyć ta Aplikacje Na Twój język.</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pomóż przetłumaczyć tę aplikację w swoim języku.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2701,6 +2647,29 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation>Przy udziale:</translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation>Specjalne Podziękowania dla:</translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
             <translation>Potwierdź zamknięcie</translation>
         </message>
@@ -2736,8 +2705,7 @@ Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translati
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nie mogę utworzyć pliku</translation>
         </message>
     </context>
     <context>
@@ -2779,8 +2747,7 @@ Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translati
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eksportuj listę odtwarzania</translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -3316,13 +3283,11 @@ Kliknij OK aby wyjść.</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wł / wyĹ Mikrofon</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Głośność mikrofonu</translation>
         </message>
     </context>
     <context>
@@ -3360,8 +3325,7 @@ Kliknij OK aby wyjść.</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Przeładuj metadane utworu</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
@@ -3373,8 +3337,7 @@ Kliknij OK aby wyjść.</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Przeładowanie metadanych utworu na utwór załadowany może spowodować nagłe zmiany głośności. Czy na pewno?</translation>
         </message>
     </context>
     <context>
