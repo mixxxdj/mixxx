@@ -72,7 +72,7 @@
         </message>
         <message>
             <source>#</source>
-            <translation>Nº</translation>
+            <translation>Núm.</translation>
         </message>
         <message>
             <source>Key</source>
@@ -268,13 +268,11 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fitxers de llista de reproducció (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llista de reprodsucció M3U (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -296,22 +294,22 @@
             <translation>Quant al Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
             <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Els crèdits van aquí&lt;/span&gt;&lt;/p&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Crèdits&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -735,8 +733,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -1711,13 +1708,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nou</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tot</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -2044,8 +2039,7 @@ p, li { white-space: pre-wrap; }
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analitzador del contingut</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
@@ -2367,8 +2361,7 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
         </message>
         <message>
             <source>&amp;User Manual</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Manual de l'&amp;usuari</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
@@ -2396,8 +2389,7 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activa la transmissió en directe</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2523,8 +2515,7 @@ Marca el compàs a través de clicks d'àudio</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Preferències</translation>
         </message>
         <message>
             <source>Preferences
@@ -2544,14 +2535,13 @@ Obté ajuda amb Mixxx</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llegiu el manual de l'usuari de Mixxx.</translation>
         </message>
         <message>
             <source>Support
 Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Support
+Llegiu el manual de l'usuari de Mixxx.</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
@@ -2656,6 +2646,26 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 Per favor, selecciona la teua targeta de so a les preferències del maquinari de so.</translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation>Equip del desenvolupament de Mixxx %1</translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation>Amb les contribucions de:</translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation>Mereixements especials a:</translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation>Darrers desenvolupadors</translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation>Darreres contribucions</translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
             <translation>Confirmar eixida</translation>
         </message>
@@ -2680,19 +2690,18 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         <message>
             <source>File path contains characters, not allowed in m3u playlists.
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>La ruta del fitxer conté caràcters no admesos als fitxers de les llistes de reproducció m3u.
+</translation>
         </message>
         <message>
             <source>Export a m3u8 playlist instead!
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exporta al format m3u8!
+</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>No s'ha pogut crear el fitxer</translation>
         </message>
     </context>
     <context>
@@ -2734,8 +2743,7 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exporta la llista de reproducció</translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2775,13 +2783,11 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fitxers de llista de reproducció (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llista de reprodsucció M3U (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -3114,18 +3120,15 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Setup a loop over 4 beats for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crea un bucle de 4 beats al reproductor %1</translation>
         </message>
         <message>
             <source>Halves the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Escurça el bucle a la meitat al reproductor %1</translation>
         </message>
         <message>
             <source>Doubles the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duplica el bucle actual al reproductor %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Player %1</source>
@@ -3161,73 +3164,59 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Play button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó de reproducció per al Sampler %1</translation>
         </message>
         <message>
             <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Manipulació del Sampler %1</translation>
         </message>
         <message>
             <source>Headphone listen button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó de preescolta per al Sampler %1</translation>
         </message>
         <message>
             <source>BPM tap button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó d'assignació dels BPM per al Sampler %1</translation>
         </message>
         <message>
             <source>Keylock button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó de blocatge per al Sampler %1</translation>
         </message>
         <message>
             <source>Pitch control slider for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lliscador del control de la tonalitat Pitch per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Primer botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 2 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Segon botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 3 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tercer botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 4 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quart botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 1 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Primer botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 2 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Segon botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 3 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tercer botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 4 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quart botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -3255,28 +3244,23 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Adjusts the wavelength of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opcions de la durada de l'efecte robòtic</translation>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opcions de la intensitat de l'efecte robòtic</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opcions del retard de l'efecte robòtic</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Micròfon encès/apagat</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Volum del micròfon</translation>
         </message>
     </context>
     <context>
@@ -3326,8 +3310,7 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tornar a carregar les dades de la pista actual podria donar com a resultat un canvi de volum no desitjat. Voleu continuar?</translation>
         </message>
     </context>
     <context>

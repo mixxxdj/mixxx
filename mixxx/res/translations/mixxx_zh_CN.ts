@@ -16,11 +16,11 @@
         </message>
         <message>
             <source>Artist</source>
-            <translation>艺人</translation>
+            <translation>歌手</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation>歌曲标题</translation>
+            <translation>标题</translation>
         </message>
         <message>
             <source>Album</source>
@@ -28,15 +28,15 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation>曲风</translation>
+            <translation>流派</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation>年</translation>
+            <translation>年份</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation>文件格式</translation>
+            <translation>类型</translation>
         </message>
         <message>
             <source>Location</source>
@@ -44,7 +44,7 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation>注释</translation>
+            <translation>备注</translation>
         </message>
         <message>
             <source>Duration</source>
@@ -268,8 +268,7 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>播放列表文件 (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
@@ -296,18 +295,18 @@
             <translation>关于 Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -362,8 +361,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>分析整首歌曲</translation>
         </message>
     </context>
     <context>
@@ -753,13 +751,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>文本标签1</translation>
         </message>
         <message>
             <source>16 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>16 Hz</translation>
         </message>
         <message>
             <source>1.014 kHz</source>
@@ -783,21 +779,18 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>重设</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefMidiBindings</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>无</translation>
         </message>
         <message>
             <source>Apply MIDI device settings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>运用MIDI设备的设置？</translation>
         </message>
         <message>
             <source>Your settings must be applied before starting the MIDI learning wizard.
@@ -807,8 +800,7 @@ Apply settings and continue?</source>
         </message>
         <message>
             <source>Overwrite existing mapping?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>覆盖现存映射？</translation>
         </message>
         <message>
             <source>Are you sure you'd like to load the %1 mapping?
@@ -823,8 +815,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Preset Files (*.midi.xml)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>预设文件（*.midi, xml）</translation>
         </message>
         <message>
             <source>Select Control Group</source>
@@ -871,8 +862,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Load Preset:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>导入预设</translation>
         </message>
         <message>
             <source>Export</source>
@@ -880,28 +870,23 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Output:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输出：</translation>
         </message>
         <message>
             <source>Enabled</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>已启用</translation>
         </message>
         <message>
             <source>Controls</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>控制</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>添加</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>移除</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
@@ -920,8 +905,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>MIDI Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI输入</translation>
         </message>
         <message>
             <source>Outputs</source>
@@ -1065,30 +1049,27 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Multiple iPods Detected</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>检测到多个iPod，选择否</translation>
         </message>
         <message>
             <source>Mixxx has detected another iPod. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx检测到另一个iPod 
+</translation>
         </message>
         <message>
             <source>Choose Yes to use the newly found iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>使用用新找到的iPod，选择是@ </translation>
         </message>
         <message>
             <source> or to continue to search for other iPods. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation> 或者继续搜索其他iPods 
+</translation>
         </message>
         <message>
             <source>Choose No to use the existing iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>使用现有的iPod </translation>
         </message>
         <message>
             <source> and end detection. 
@@ -1098,8 +1079,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Choose iPod mount point</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>选择iPod的挂载点</translation>
         </message>
     </context>
     <context>
@@ -1111,13 +1091,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Audio File Formats</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音频文件格式</translation>
         </message>
         <message>
             <source>Additional Format Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>更多格式插件</translation>
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
@@ -1125,8 +1103,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Loaded Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>已加载插件</translation>
         </message>
         <message>
             <source>None</source>
@@ -1135,8 +1112,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>杂项</translation>
         </message>
         <message>
             <source>Synchronize ID3 tags on track modifications</source>
@@ -1149,8 +1125,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>请尽量使用相对路径来导出播放列表</translation>
         </message>
         <message>
             <source>iPod</source>
@@ -1158,18 +1133,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>iPod mountpoint</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod挂载点</translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>浏览...</translation>
         </message>
         <message>
             <source>Detect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>检测</translation>
         </message>
         <message>
             <source>Library</source>
@@ -1177,8 +1149,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音乐目录:</translation>
         </message>
         <message>
             <source>Built-in</source>
@@ -1217,38 +1188,31 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>编码</translation>
         </message>
         <message>
             <source>Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>品质</translation>
         </message>
         <message>
             <source>High</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>高</translation>
         </message>
         <message>
             <source>Low</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>低</translation>
         </message>
         <message>
             <source>Tags</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>标签</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>标题</translation>
         </message>
         <message>
             <source>Author</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>作者</translation>
         </message>
         <message>
             <source>Album</source>
@@ -1261,8 +1225,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>创建一个CUE文件</translation>
         </message>
         <message>
             <source>File Splitting</source>
@@ -1328,16 +1291,14 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>重设</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefShoutcastDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>表单3</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -1367,8 +1328,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Mount</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>挂载</translation>
         </message>
         <message>
             <source>/mixxx.ogg</source>
@@ -1385,8 +1345,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Port</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>端口</translation>
         </message>
         <message>
             <source>8000</source>
@@ -1429,8 +1388,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Website</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>主页</translation>
         </message>
         <message>
             <source>http://www.mixxx.org</source>
@@ -1438,8 +1396,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>描述</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1532,13 +1489,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Channels</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>通道</translation>
         </message>
         <message>
             <source>Stereo</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>立体声</translation>
         </message>
         <message>
             <source>Custom metadata</source>
@@ -1588,8 +1543,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>a device</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>一个设备</translation>
         </message>
         <message>
             <source>An unknown error occurred</source>
@@ -1619,21 +1573,18 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Configuration error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>配置错误</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefSoundDlg</name>
         <message>
             <source>Sound API</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>声音API</translation>
         </message>
         <message>
             <source>Sample Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>采样率</translation>
         </message>
         <message>
             <source>Latency Tips</source>
@@ -1650,13 +1601,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输出</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输入</translation>
         </message>
         <message>
             <source>Query Devices</source>
@@ -1670,8 +1619,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>应用</translation>
         </message>
         <message>
             <source>Latency</source>
@@ -1716,8 +1664,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输入</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1769,8 +1716,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>应用</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1779,8 +1725,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>秒</translation>
         </message>
         <message>
             <source>Control Mode</source>
@@ -1822,13 +1767,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPreferences</name>
         <message>
             <source>Sound Hardware</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>声音硬件</translation>
         </message>
         <message>
             <source>MIDI Controllers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI控制器</translation>
         </message>
         <message>
             <source>Library</source>
@@ -1836,8 +1779,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Interface</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>接口</translation>
         </message>
         <message>
             <source>Equalizers</source>
@@ -1895,33 +1837,27 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>新建</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>全部</translation>
         </message>
         <message>
             <source>Progress</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>进度</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>全部选中</translation>
         </message>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>分析</translation>
         </message>
         <message>
             <source>Stop Analysis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>停止分析</translation>
         </message>
         <message>
             <source>Analyzing %1%</source>
@@ -1938,13 +1874,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Status:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>状态:</translation>
         </message>
         <message>
             <source>Start Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>开始录制</translation>
         </message>
         <message>
             <source>Start recording here ...</source>
@@ -1953,36 +1887,30 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Stop Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>停止录制</translation>
         </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音轨编辑器</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>曲目：</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>标题：</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>艺术家：</translation>
         </message>
         <message>
             <source>Album:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>专辑：</translation>
         </message>
         <message>
             <source>Date:</source>
@@ -1995,18 +1923,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>流派：</translation>
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>文件名：</translation>
         </message>
         <message>
             <source>Duration:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>持续时间：</translation>
         </message>
         <message>
             <source>3:00</source>
@@ -2015,8 +1940,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>文件类型：</translation>
         </message>
         <message>
             <source>77</source>
@@ -2035,8 +1959,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音轨信息（点击展开）</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -2171,8 +2094,7 @@ p, li { white-space: pre-wrap; }
         <name>EngineShoutcast</name>
         <message>
             <source>Mixxx encountered a problem</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx遇到一个问题</translation>
         </message>
         <message>
             <source>Could not allocate shout_t</source>
@@ -2224,8 +2146,7 @@ p, li { white-space: pre-wrap; }
         <name>ErrorDialogHandler</name>
         <message>
             <source>Fatal error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>致命错误</translation>
         </message>
         <message>
             <source>Critical error</source>
@@ -2234,8 +2155,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Warning</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>警示</translation>
         </message>
         <message>
             <source>Information</source>
@@ -2244,8 +2164,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Question</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>问题</translation>
         </message>
     </context>
     <context>
@@ -2260,8 +2179,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>（加载）iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2339,8 +2257,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>描述</translation>
         </message>
     </context>
     <context>
@@ -2981,6 +2898,31 @@ Are you sure you want to load a new song?</source>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
             <translation type="unfinished">
             </translation>
         </message>

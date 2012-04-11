@@ -212,7 +212,7 @@
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation>Neue Kiste</translation>
+            <translation>Neue Plattenkiste</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -232,15 +232,15 @@
         </message>
         <message>
             <source>Crates</source>
-            <translation>Kisten</translation>
+            <translation>Plattenkisten</translation>
         </message>
         <message>
             <source>Import Crate</source>
-            <translation>Kiste importieren</translation>
+            <translation>Plattenkiste importieren</translation>
         </message>
         <message>
             <source>Export Crate</source>
-            <translation>Kiste exportieren</translation>
+            <translation>Plattenkiste exportieren</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -248,23 +248,23 @@
         </message>
         <message>
             <source>Crate name:</source>
-            <translation>Name der Kiste:</translation>
+            <translation>Name der Plattenkiste:</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Bei der Erstellung der Kiste ist ein unbekannter Fehler aufgetreten: </translation>
+            <translation>Bei der Erstellung der Plattenkiste ist ein unbekannter Fehler aufgetreten: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation>Kiste umbenennen</translation>
+            <translation>Plattenkiste umbenennen</translation>
         </message>
         <message>
             <source>New crate name:</source>
-            <translation>Neuer Name der Kiste:</translation>
+            <translation>Neuer Name der Plattenkiste:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation>Umbenennen der Kiste fehlgeschlagen</translation>
+            <translation>Umbenennen der Plattenkiste fehlgeschlagen</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
@@ -276,15 +276,15 @@
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Der Name einer Kiste darf nicht leer sein.</translation>
+            <translation>Der Name einer Plattenkiste darf nicht leer sein.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation>Erstellung der Kiste fehlgeschlagen</translation>
+            <translation>Erstellung der Plattenkiste fehlgeschlagen</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Eine Kiste mit diesem Namen existiert bereits.</translation>
+            <translation>Eine Plattenkiste mit diesem Namen existiert bereits.</translation>
         </message>
     </context>
     <context>
@@ -294,22 +294,22 @@
             <translation>Über Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
             <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Danksagung&lt;/span&gt;&lt;/p&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Mitwirkende hier hin&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -336,7 +336,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Add tracks to the queue below...</source>
-            <translation>Titel zur Warteschlange hinzufügen …</translation>
+            <translation>Titel zur Warteschlange hinzufügen...</translation>
         </message>
     </context>
     <context>
@@ -390,7 +390,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
-            <translation>Dieser Assistent ermöglicht es, die Bedienelemente Ihres MIDI-Geräte denen von Mixxx zuzuweisen.</translation>
+            <translation>Dieser Assistent ermöglicht es, die Steuerelemente Ihres MIDI-Geräte denen von Mixxx zuzuweisen.</translation>
         </message>
         <message>
             <source>Begin</source>
@@ -398,7 +398,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please tweak the control for:</source>
-            <translation>Bitte justieren Sie das Kontrollelement für:</translation>
+            <translation>Bitte justieren Sie die Steuerung für:</translation>
         </message>
         <message>
             <source>Mixxx Control</source>
@@ -410,7 +410,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation>Zum Fortsetzen oder Überspringen die Leertaste drücken.</translation>
+            <translation>Zum Fortsetzen oder Überspringen Leertaste drücken.</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
@@ -439,7 +439,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPluginDownloader</name>
         <message>
             <source>Missing Audio Plugin Downloader</source>
-            <translation>Audioerweiterungsdownloader fehlt</translation>
+            <translation>Downloader für Plugins fehlt</translation>
         </message>
     </context>
     <context>
@@ -575,7 +575,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Skin</source>
-            <translation>Oberfläche</translation>
+            <translation>Skin</translation>
         </message>
         <message>
             <source>Scheme</source>
@@ -619,7 +619,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Auto Recall Cue</source>
-            <translation>Cue automatisch wiederherstellen</translation>
+            <translation>Cue automatisch abrufen</translation>
         </message>
         <message>
             <source>Permanent Pitch/Rate Buttons</source>
@@ -663,7 +663,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Pitchbend sensitivity</source>
-            <translation>Feinheit der Tonhöhe</translation>
+            <translation>Feinheit der Tonhöhenveränderung</translation>
         </message>
     </context>
     <context>
@@ -678,7 +678,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Slow fade</source>
-            <translation>Langsames ausblenden</translation>
+            <translation>Langsames Ausblenden</translation>
         </message>
         <message>
             <source>Fast cut</source>
@@ -717,7 +717,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Static EQs (for slower CPUs)</source>
-            <translation>Statische EQs (für langsame CPUs)</translation>
+            <translation>Statische EQs (für langsamere CPUs)</translation>
         </message>
         <message>
             <source>High Shelf EQ</source>
@@ -765,38 +765,38 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Your settings must be applied before starting the MIDI learning wizard.
 Apply settings and continue?</source>
-            <translation>Die Einstellugen müssen angewendet werden bevor Sie den MIDI-Lern Assistent starten.
+            <translation>Ihre Einstellungen müssen angewandt werden bevor Sie den MIDI-Lern Assistenten starten.
 Einstellungen anwenden und fortfahren?</translation>
         </message>
         <message>
             <source>Overwrite existing mapping?</source>
-            <translation>Existierende Abbildung überschreiben?</translation>
+            <translation>Existierendes Mapping überschreiben?</translation>
         </message>
         <message>
             <source>Are you sure you'd like to load the %1 mapping?
 This will overwrite your existing MIDI mapping.</source>
             <translation>Wollen Sie wirklich das %1 Mapping laden?
-Es wird Ihr bereits existierendes Mapping überschreiben.</translation>
+Es wird Ihr bereits existierendes MIDI-Mapping überschreiben.</translation>
         </message>
         <message>
             <source>Export Mixxx MIDI Bindings</source>
-            <translation>Mixxx-MIDI-Bindings exportieren</translation>
+            <translation>Mixxx MIDI-Belegungen exportieren</translation>
         </message>
         <message>
             <source>Preset Files (*.midi.xml)</source>
-            <translation>Voreinstellungsdatei (*.midi.xml)</translation>
+            <translation>Voreinstellungsdateien (*.MIDI.xml)</translation>
         </message>
         <message>
             <source>Select Control Group</source>
-            <translation>Elementgruppe auswählen</translation>
+            <translation>Steuergruppe auswählen</translation>
         </message>
         <message>
             <source>Select Control</source>
-            <translation>Element auswählen</translation>
+            <translation>Steuerung auswählen</translation>
         </message>
         <message>
             <source>Clear Input Bindings</source>
-            <translation>Input Belegungen löschen</translation>
+            <translation>Eingangs-Belegungen löschen</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all bindings?</source>
@@ -804,11 +804,11 @@ Es wird Ihr bereits existierendes Mapping überschreiben.</translation>
         </message>
         <message>
             <source>Clear Output Bindings</source>
-            <translation>Output Belegungen löschen</translation>
+            <translation>Ausgangs-Belegungen löschen</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all output bindings?</source>
-            <translation>Wollen Sie wirklich alle Output Belegungen löschen?</translation>
+            <translation>Wollen Sie wirklich alle Ausgangs-Belegungen löschen?</translation>
         </message>
     </context>
     <context>
@@ -839,7 +839,7 @@ Es wird Ihr bereits existierendes Mapping überschreiben.</translation>
         </message>
         <message>
             <source>Controls</source>
-            <translation>Bedienelemente</translation>
+            <translation>Steuerelemente</translation>
         </message>
         <message>
             <source>Add</source>
@@ -913,7 +913,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation>Plattenspieler Vorverstärker</translation>
+            <translation>Plattenspieler-Vorverstärker</translation>
         </message>
         <message>
             <source>1 (Off)</source>
@@ -937,7 +937,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation>Vorlaufzeit (Lead-In)</translation>
+            <translation>Vorlaufzeit</translation>
         </message>
         <message>
             <source>seconds</source>
@@ -949,7 +949,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Kontrollmodus</translation>
+            <translation>Steuermodus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
@@ -977,7 +977,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation>&lt;b&gt;Diese Version von Mixxx unterstützt keine Vinyl-Steuerung.&lt;/b&gt; &lt;br&gt;  Für weitere Informationen besuchen Sie Bitte &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt;.</translation>
+            <translation>&lt;b&gt;Diese Version von Mixxx unterstützt keine Vinyl-Steuerung.&lt;/b&gt; &lt;br&gt; Bitte besuchen Sie &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; für weitere Informationen.</translation>
         </message>
     </context>
     <context>
@@ -998,7 +998,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Choose Yes to use the newly found iPod @ </source>
-            <translation>&quot;Ja&quot; wählen um den neu erkannten iPod zu benutzen @ </translation>
+            <translation>Wählen Sie &quot;Ja&quot; um den neu erkannten iPod zu benutzen @ </translation>
         </message>
         <message>
             <source> or to continue to search for other iPods. 
@@ -1008,12 +1008,12 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Choose No to use the existing iPod @ </source>
-            <translation>„Nein“ wählen um den bisherigen iPod zu benutzen @ </translation>
+            <translation>Wählen Sie &quot;Nein“ um den bisherigen iPod zu benutzen @ </translation>
         </message>
         <message>
             <source> and end detection. 
 </source>
-            <translation> um die Erkennung zu Beenden. 
+            <translation> und die Erkennung zu beenden. 
 </translation>
         </message>
         <message>
@@ -1061,7 +1061,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
-            <translation>Wenn möglich, relative Pfade für den den Export von Wiedergabelisten verwenden</translation>
+            <translation>Wenn möglich, relative Pfade für den Export von Wiedergabelisten verwenden</translation>
         </message>
         <message>
             <source>iPod</source>
@@ -1077,7 +1077,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Detect</source>
-            <translation>Detect</translation>
+            <translation>Erkennen</translation>
         </message>
         <message>
             <source>Library</source>
@@ -1097,14 +1097,13 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Bundled Songs</source>
-            <translation>Mitgelieferte Titel (Bundle)</translation>
+            <translation>Mitgelieferte Titel</translation>
         </message>
         <message>
             <source>Support Mixxx by counting and sharing bundled songs
 playback and outbound link statistics</source>
-            <translation>Unterstütze Mixxx und erlaube das Sammeln und Senden 
-von Statistiken über die Wiedergabe und Anzahl der besuchten Links 
-für die mitgelieferten Titel</translation>
+            <translation>Unterstützen Sie Mixxx und erlauben das Sammeln und Senden
+von Statistiken über die Wiedergabe von mitgelieferten Titel und die Anzahl der ausgehenden Links</translation>
         </message>
     </context>
     <context>
@@ -1497,7 +1496,7 @@ p, li { white-space: pre-wrap; }
 &lt;/ul&gt;</source>
             <translation>&lt;ul&gt;
 &lt;li&gt;Erhöhen Sie die Latenz, wenn Aussetzer während der Wiedergabe zu hören sind.&lt;/li&gt;
-&lt;li&gt;Verringern Sie die Latenz um Mixxx' Reaktionsgeschwindigkeit zu verbessern.&lt;/li&gt;
+&lt;li&gt;Verringern Sie die Latenz um Mixxx's Reaktionsgeschwindigkeit zu verbessern.&lt;/li&gt;
 &lt;/ul&gt;</translation>
         </message>
         <message>
@@ -1576,7 +1575,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation>Plattenspieler Vorverstärker</translation>
+            <translation>Plattenspieler-Vorverstärker</translation>
         </message>
         <message>
             <source>1 (Off)</source>
@@ -1608,7 +1607,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation>Vorlaufzeit (Lead-In)</translation>
+            <translation>Vorlaufzeit</translation>
         </message>
         <message>
             <source>seconds</source>
@@ -1616,7 +1615,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Kontrollmodus</translation>
+            <translation>Steuermodus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
@@ -1752,7 +1751,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Start recording here ...</source>
-            <translation>Aufnahme hier starten...</translation>
+            <translation>Aufnahme hier starten ...</translation>
         </message>
         <message>
             <source>Stop Recording</source>
@@ -1843,7 +1842,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Hint: Use the Library Analyze view to run BPM detection.</source>
-            <translation>Hinweis: Nutzen Sie in der Bibliothek die &quot;Analysieren&quot;-Ansicht für die BPM-Erkennung.</translation>
+            <translation>Hinweis: Nutzen Sie die Analysieren-Ansicht in der Bibliothek für die BPM-Erkennung.</translation>
         </message>
         <message>
             <source>Track BPM</source>
@@ -1902,19 +1901,19 @@ p, li { white-space: pre-wrap; }
         <name>EncoderMp3</name>
         <message>
             <source>Encoder</source>
-            <translation>Encoder</translation>
+            <translation>Kodierer</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx kann ohne den MP3-Kodierer &amp;quot;lame&amp;quot; nicht in MP3 aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;libmp3lame&lt;/b&gt;  herunterladen und auf Ihrem System installieren. &lt;p&gt;Siehe &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; für weitere Informationen. &lt;/html&gt;</translation>
+            <translation>&lt;html&gt;Mixxx kann ohne den MP3-Kodierer &amp;quot;lame&amp;quot; nicht in MP3 aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;libmp3lame&lt;/b&gt; herunterladen und auf Ihrem System installieren. &lt;p&gt;Siehe &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; für weitere Informationen. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx kann ohne den MP3-Kodierer &amp;quot;lame&amp;quot; nicht in MP3 aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;lame_enc.dll&lt;/b&gt;  herunterladen und auf Ihrem System installieren. &lt;p&gt;Siehe &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; für weitere Informationen. &lt;/html&gt;</translation>
+            <translation>&lt;html&gt;Mixxx kann ohne den MP3-Kodierer &amp;quot;lame&amp;quot; nicht in MP3 aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;lame_enc.dll&lt;/b&gt; herunterladen und auf Ihrem System installieren. &lt;p&gt;Siehe &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; für weitere Informationen. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx kann ohne den MP3-Kodierer &amp;quot;lame&amp;quot; nicht in MP3 aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;libmp3lame&lt;/b&gt;  herunterladen und auf Ihrem System installieren. &lt;p&gt;Siehe &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; für weitere Informationen. &lt;/html&gt;</translation>
+            <translation>&lt;html&gt;Mixxx kann ohne den MP3-Kodierer &amp;quot;lame&amp;quot; nicht in MP3 aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie &lt;b&gt;libmp3lame&lt;/b&gt; herunterladen und auf Ihrem System installieren. &lt;p&gt;Siehe &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; für weitere Informationen. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -1956,7 +1955,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
-            <translation>Bitte überprüfen Sie die Internetverbindung und vergewissern Sie sich, dass Ihr Benutzername und Kennwort richtig sind.</translation>
+            <translation>Bitte überprüfen Sie die Internetverbindung und vergewissern sich, dass Ihr Benutzername und Kennwort richtig sind.</translation>
         </message>
         <message>
             <source>Live broadcasting</source>
@@ -1964,7 +1963,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx has successfully connected to the shoutcast server</source>
-            <translation>Mixxx hat sich erfolgreich mit dem Shoutcast Server verbunden</translation>
+            <translation>Mixxx hat sich erfolgreich mit dem Shoutcast-Server verbunden</translation>
         </message>
         <message>
             <source>Mixxx could not connect to streaming server</source>
@@ -1972,7 +1971,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx has successfully disconnected to the shoutcast server</source>
-            <translation>Mixxx hat sich erfolgreich von Shoutcast Server getrennt</translation>
+            <translation>Mixxx hat sich erfolgreich von Shoutcast-Server getrennt</translation>
         </message>
     </context>
     <context>
@@ -2026,14 +2025,14 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
-            <translation>Beim Laden der iTunes-Bibliothek ist ein Fehler aufgetreten. Einige Ihrer iTunesr-Titel oder Wiedergabelisten wurden möglicherweise nicht geladen.</translation>
+            <translation>Beim Laden der iTunes-Bibliothek ist ein Fehler aufgetreten. Einige Ihrer iTunes-Titel oder Wiedergabelisten wurden möglicherweise nicht geladen.</translation>
         </message>
     </context>
     <context>
         <name>LADSPAPresetSlot</name>
         <message>
             <source>Drag a preset from the list &amp; drop it here</source>
-            <translation>Ein Preset aus der Liste hier herziehen und ablegen</translation>
+            <translation>Eine Voreinstellung aus der Liste hierher ziehen und ablegen</translation>
         </message>
     </context>
     <context>
@@ -2055,23 +2054,23 @@ p, li { white-space: pre-wrap; }
         <name>MidiInputMappingTableModel</name>
         <message>
             <source>Midi Status Type</source>
-            <translation>Midi Status Typ</translation>
+            <translation>MIDI-Statustyp</translation>
         </message>
         <message>
             <source>Midi Note</source>
-            <translation>Midi Note</translation>
+            <translation>MIDI-Note</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation>Midi Kanal</translation>
+            <translation>MIDI-Kanal</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation>Elementgruppe</translation>
+            <translation>Steuerungsgruppe</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation>Element Wert</translation>
+            <translation>Steuerungswert</translation>
         </message>
         <message>
             <source>Description</source>
@@ -2082,11 +2081,11 @@ p, li { white-space: pre-wrap; }
         <name>MidiMapping</name>
         <message>
             <source>MIDI script function not found</source>
-            <translation>MIDI-Script Funktion nicht gefunden</translation>
+            <translation>MIDI-Skript Funktion nicht gefunden</translation>
         </message>
         <message>
             <source>The MIDI script function '%1' was not found in loaded scripts.</source>
-            <translation>Die MIDI-Script-Funktion '%1' wurde in den geladenen Skripten nicht gefunden.</translation>
+            <translation>Die MIDI-Skript-Funktion '%1' wurde in den geladenen Skripten nicht gefunden.</translation>
         </message>
         <message>
             <source>The MIDI message %1 %2 will not be bound.
@@ -2097,35 +2096,35 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>* Check to see that the function name is spelled correctly in the mapping file (.xml) and script file (.js)
 </source>
-            <translation>* Überprüfen Sie ob der Funktionsname in der Mappingdatei (.xml) und der Scriptdatei (.js) richtig geschrieben ist
+            <translation>* Überprüfen Sie ob der Funktionsname in der Mappingdatei (.xml) und der Skriptdatei (.js) richtig geschrieben ist
 </translation>
         </message>
         <message>
             <source>* Check to see that the script file name (.js) is spelled correctly in the mapping file (.xml)</source>
-            <translation>* Überprüfen Sie ob der Name der Scriptdatei (.js) in der Mappingdatei (.xml) richtig geschrieben ist</translation>
+            <translation>* Überprüfen Sie ob der Name der Skriptdatei (.js) in der Mappingdatei (.xml) richtig geschrieben ist</translation>
         </message>
     </context>
     <context>
         <name>MidiOutputMappingTableModel</name>
         <message>
             <source>Midi Status</source>
-            <translation>Midi Status Typ</translation>
+            <translation>MIDI-Status</translation>
         </message>
         <message>
             <source>Midi Note</source>
-            <translation>Midi Note</translation>
+            <translation>MIDI-Note</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation>Midi Kanal</translation>
+            <translation>MIDI-Kanal</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation>Element Gruppe</translation>
+            <translation>Steuerungsgruppe</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation>Kontrollwert</translation>
+            <translation>Steuerungswert</translation>
         </message>
         <message>
             <source>Description</source>
@@ -2152,15 +2151,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MIDI script error</source>
-            <translation>MIDI-Script Fehler</translation>
+            <translation>MIDI-Skript Fehler</translation>
         </message>
         <message>
             <source>A MIDI control you just used is not working properly.</source>
-            <translation>Ein gerade benutztes MIDI-Element arbeitet nicht richtig.</translation>
+            <translation>Eine gerade benutztes MIDI-Steuerung arbeitet nicht richtig.</translation>
         </message>
         <message>
             <source>&lt;html&gt;(The MIDI script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
-            <translation>&lt;html&gt;(Der MIDI-Script Code muss korrigiert werden.)&lt;br&gt;Sie können nun:&lt;ul&gt;&lt;li&gt;Den Fehler für diese Sitzung ignorieren, es kann aber zu unvorhergesehenem Verhalten kommen.&lt;/li&gt;&lt;li&gt;Den MIDI-Controller aus/anschalten (Reset)&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</translation>
+            <translation>&lt;html&gt;(Der MIDI-Skript Code muss korrigiert werden.)&lt;br&gt;Sie können nun:&lt;ul&gt;&lt;li&gt;Den Fehler für diese Sitzung ignorieren, es kann aber zu unvorhergesehenem Verhalten kommen&lt;/li&gt;&lt;li&gt;Das MIDI-Gerät aus/anschalten&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</translation>
         </message>
     </context>
     <context>
@@ -2182,7 +2181,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation>Mixxx's Entwicklung richtet sich nach dem Feedback aus der Community. Mit Ihrer Zustimmung kann Mixxx automatisch anonyme Daten über die Programmnutzung an die Entwickler senden. Wollen Sie uns helfen Mixxx besser zu machen indem Sie dieses Feature aktivieren?</translation>
+            <translation>Mixxx's Entwicklung richtet sich nach der Rückmeldung aus der Gemeinschaft. Mit Ihrer Zustimmung kann Mixxx automatisch anonyme Daten über die Programmnutzung an die Entwickler senden. Wollen Sie uns helfen Mixxx besser zu machen indem Sie dieses Merkmal aktivieren?</translation>
         </message>
         <message>
             <source>Yes</source>
@@ -2214,7 +2213,7 @@ Your usage information will include:
 	- Performance statistics (average latency, CPU usage)
 This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
 </source>
-            <translation>Mixxx's Entwicklung richtet sich nach den Meinungen aus der Gemeinde. Um zukünftige Versionen von Mixxx zu verbessern, werden mit Ihrer Zustimmung anonyme Informationen über die benutzte Hardware und die Art der Nutzung von Mixxx gesammelt. Diese Informationen werden vorrangig benutzt um Fehler zu beheben, Funktionen zu verbessern und die Systemvoraussetzungen für spätere Versionen abschätzen zu können. Außerdem werden die Gesamtinformationen für statistische Zwecke genutzt.
+            <translation>Mixxx's Entwicklung richtet sich nach der Rückmeldung aus der Gemeinschaft. Um zukünftige Versionen von Mixxx zu verbessern, werden mit Ihrer Zustimmung anonyme Informationen über die benutzte Hardware und die Art der Nutzung von Mixxx gesammelt. Diese Informationen werden vorrangig benutzt um Fehler zu beheben, Funktionen zu verbessern und die Systemvoraussetzungen für spätere Versionen abschätzen zu können. Außerdem werden die Gesamtinformationen für statistische Zwecke genutzt.
 Informationen über die Hardware beinhalten:
 	- CPU-Modell und Funktionen
 	- Gesamt/verfügbare Größe des Arbeitsspeichers
@@ -2222,9 +2221,9 @@ Informationen über die Hardware beinhalten:
 	- Version des Betriebssystems
 Informationen über die Nutzung beinhalten:
 	- Einstellungen
-	- Mixxx interne Fehler
-	- Mixxx interne Debug-Nachrichten
-	- Statistiken über die Leistung ( Latenz, Prozessorauslastung )
+	- Interne Fehler
+	- Interne Debug-Nachrichten
+	- Statistiken über die Leistung (Latenz, Prozessorauslastung)
 Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identifizieren, zu kontaktieren, gezielt zu bewerben oder anderweitig zu belästigen.
 </translation>
         </message>
@@ -2238,7 +2237,7 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
-            <translation>Holen Sie sich &lt;b&gt;Hilfe&lt;/b&gt;  aus dem Mixxx Wiki.</translation>
+            <translation>Holen Sie sich &lt;b&gt;Hilfe&lt;/b&gt; aus dem Mixxx Wiki.</translation>
         </message>
         <message>
             <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
@@ -2250,7 +2249,7 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx's sound device settings.</source>
-            <translation>Mixxx` Audiogerät-Einstellungen &lt;b&gt;neu konfigurieren&lt;/b&gt;.</translation>
+            <translation>Mixxx`s Audiogerät-Einstellungen &lt;b&gt;neu konfigurieren&lt;/b&gt;.</translation>
         </message>
         <message>
             <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
@@ -2278,7 +2277,7 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>&amp;Load Song (Player 1)...</source>
-            <translation>&amp;Titel in Player 1 laden</translation>
+            <translation>&amp;Titel laden (Player 1)...</translation>
         </message>
         <message>
             <source>Ctrl+O</source>
@@ -2286,7 +2285,7 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>&amp;Load Song (Player 2)...</source>
-            <translation>&amp;Titel in Player 2 laden</translation>
+            <translation>&amp;Titel laden (Player 2)...</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2314,7 +2313,7 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>Add new &amp;crate</source>
-            <translation>Neue &amp;Kiste hinzufügen</translation>
+            <translation>Neue &amp;Plattenkiste hinzufügen</translation>
         </message>
         <message>
             <source>Ctrl+C</source>
@@ -2358,7 +2357,7 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>&amp;Community Support</source>
-            <translation>&amp;Community Support</translation>
+            <translation>&amp;Community Unterstützung</translation>
         </message>
         <message>
             <source>&amp;User Manual</source>
@@ -2366,11 +2365,11 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation>Sende uns &amp;Feedback</translation>
+            <translation>Senden Sie uns Ihre &amp;Meinung</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation>&amp;Übersetze diese Anwendung</translation>
+            <translation>Diese Anwendung überse&amp;tzen</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2386,7 +2385,7 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
         </message>
         <message>
             <source>Ctrl+U</source>
-            <translation>Ctrl+U</translation>
+            <translation>Strg+U</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -2460,13 +2459,13 @@ Erstellt eine neue Wiedergabeliste</translation>
         </message>
         <message>
             <source>Create a new crate</source>
-            <translation>Neue Kiste erstellen</translation>
+            <translation>Neue Plattenkiste erstellen</translation>
         </message>
         <message>
             <source>New crate
 Create a new crate.</source>
-            <translation>Neue Kiste erstellen
-Erstellt eine neue Kiste.</translation>
+            <translation>Neue Plattenkiste erstellen
+Erstellt eine neue Plattenkiste.</translation>
         </message>
         <message>
             <source>Import playlist</source>
@@ -2536,33 +2535,33 @@ Hilfe bei Problemen mit Mixxx</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
-            <translation>Das Mixxx-Benutzerhandbuch lesen.</translation>
+            <translation>Mixxx-Benutzerhandbuch lesen.</translation>
         </message>
         <message>
             <source>Support
 Read the Mixxx user manual.</source>
-            <translation>Support
+            <translation>Unterstützung
 Das Mixxx-Benutzerhandbuch lesen.</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation>Sende Feedback an das Mixxx Team.</translation>
+            <translation>Senden Sie Ihre Meinung an das Mixxx-Team.</translation>
         </message>
         <message>
             <source>Support
 Send feedback to the Mixxx team.</source>
-            <translation>Support
-Sende Feedback an das Mixxx Team.</translation>
+            <translation>Unterstützung
+Senden Sie Ihre Meinung an das Mixxx-Team.</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation>Helfe diese Anwendung in deine Sprache zu übersetzen.</translation>
+            <translation>Helfen Sie mit, um diese Anwendung in Ihrer Sprache zu übersetzen.</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation>Support
-Helfe diese Anwendung in deine Sprache zu übersetzen.</translation>
+            <translation>Unterstützung
+Helfen Sie mit, um diese Anwendung in Ihrer Sprache zu übersetzen.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2582,7 +2581,7 @@ About the application</source>
             <source>Show Studio
 Makes the macro studio visible</source>
             <translation>Studio anzeigen
-Macht das das Macro-Studio sichtbar</translation>
+Macht das Macro-Studio sichtbar</translation>
         </message>
         <message>
             <source>&amp;File</source>
@@ -2647,6 +2646,26 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardware-Einstellungen aus.</translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation>Mixxx %1 Entwicklerteam</translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation>Mit Beiträgen von:</translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation>Und besonderen Dank an:</translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation>Frühere Entwickler</translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation>Frühere Mitwirkende</translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
             <translation>Beenden bestätigen</translation>
         </message>
@@ -2677,8 +2696,8 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
         <message>
             <source>Export a m3u8 playlist instead!
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exportiere eine m3u8 Wiedergabeliste stattdessen!
+</translation>
         </message>
         <message>
             <source>Could not create file</source>
@@ -2748,7 +2767,7 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation>Ein Fehler ist aufgetreten beim Erstellen der Wiedergabeliste: </translation>
+            <translation>Ein Fehler ist beim Erstellen der Wiedergabeliste aufgetreten: </translation>
         </message>
         <message>
             <source>Rename Playlist</source>
@@ -2835,11 +2854,11 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
         <name>SamplerBank</name>
         <message>
             <source>Save Sampler Bank</source>
-            <translation>Sampler Bank speichern</translation>
+            <translation>Sampler-Bank speichern</translation>
         </message>
         <message>
             <source>Error Saving Sampler Bank</source>
-            <translation>Fehler beim Speichern der Sampler Bank</translation>
+            <translation>Fehler beim Speichern der Sampler-Bank</translation>
         </message>
         <message>
             <source>Could not write the sampler bank to '%1'.</source>
@@ -2847,11 +2866,11 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
         </message>
         <message>
             <source>Load Sampler Bank</source>
-            <translation>Sampler Bank laden</translation>
+            <translation>Sampler-Bank laden</translation>
         </message>
         <message>
             <source>Error Reading Sampler Bank</source>
-            <translation>Fehler beim Lesen der Sampler Bank</translation>
+            <translation>Fehler beim Lesen der Sampler-Bank</translation>
         </message>
         <message>
             <source>Could not open the sampler bank file '%1'.</source>
@@ -2866,7 +2885,7 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
         <name>ScriptStudio</name>
         <message>
             <source>Mixxx Script Studio</source>
-            <translation>Mixxx Script Studio</translation>
+            <translation>Mixxx Skript Studio</translation>
         </message>
         <message>
             <source>File</source>
@@ -2886,11 +2905,11 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
         </message>
         <message>
             <source>Import...</source>
-            <translation>Importieren…</translation>
+            <translation>Importieren...</translation>
         </message>
         <message>
             <source>Export...</source>
-            <translation>Exportieren ...</translation>
+            <translation>Exportieren...</translation>
         </message>
         <message>
             <source>Delete Macro</source>
@@ -2898,7 +2917,7 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
         </message>
         <message>
             <source>New Macro...</source>
-            <translation>Neues Makro</translation>
+            <translation>Neues Makro...</translation>
         </message>
         <message>
             <source>Run Macro</source>
@@ -2916,7 +2935,7 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 Click OK to exit.</source>
             <translation>Kann keine Verbindung zur Datenbank herstellen.
-Mixxx benötigt QT mit SQLite Unterstützung. Für weitere Informationen lesen Sie Bitte die Qt SQL Treiber-Dokumentation.
+Mixxx benötigt QT mit SQLite Unterstützung. Für weitere Informationen lesen Sie bitte die Qt SQL Treiber-Dokumentation.
 Zum Beenden OK drücken.</translation>
         </message>
         <message>
@@ -2997,7 +3016,7 @@ Zum Beenden OK drücken.</translation>
         </message>
         <message>
             <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-            <translation>Das einzige mit dieser Anzeigengröße kompatible Skin ist Outline800x480-WVGA. Wollen Sie dieses Skin nutzen?</translation>
+            <translation>Das einzige mit dieser Anzeigengröße kompatible Skin ist Outline800x480-WVGA.  Wollen Sie dieses Skin nutzen?</translation>
         </message>
         <message>
             <source>Preferences</source>
@@ -3259,7 +3278,7 @@ Zum Beenden OK drücken.</translation>
         </message>
         <message>
             <source>Add to Crate</source>
-            <translation>Zur Kiste hinzufügen</translation>
+            <translation>Zur Plattenkiste hinzufügen</translation>
         </message>
         <message>
             <source>Load to Sampler</source>
@@ -3275,7 +3294,7 @@ Zum Beenden OK drücken.</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>
-            <translation>Zur Auto DJ Warteschlange hinzufügen</translation>
+            <translation>Zur Auto-DJ Warteschlange hinzufügen</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>

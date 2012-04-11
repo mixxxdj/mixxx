@@ -268,8 +268,7 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Archivos de lista de reproducción (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
@@ -296,22 +295,18 @@
             <translation>Acerca de Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Créditos Aquí&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -499,11 +494,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefBpm</name>
         <message>
             <source>Error</source>
-            <translation>Erro</translation>
+            <translation>Error</translation>
         </message>
         <message>
             <source>Cannot open file %1</source>
-            <translation>Non é posíbel abrir o ficheiro %1</translation>
+            <translation>No se puede abrir el archivo %1</translation>
         </message>
     </context>
     <context>
@@ -735,8 +730,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -1394,7 +1388,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Ogg Vorbis</source>
-            <translation>Ogg-Vorbis</translation>
+            <translation>Ogg Vorbis</translation>
         </message>
         <message>
             <source>MP3</source>
@@ -1711,13 +1705,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nuevo</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Todos</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -2367,8 +2359,7 @@ Esta informacion no sera utilizada para identificarlo personalmente, contactarlo
         </message>
         <message>
             <source>&amp;User Manual</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Manual de &amp;usuario</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
@@ -2396,8 +2387,7 @@ Esta informacion no sera utilizada para identificarlo personalmente, contactarlo
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar la Transmisión en Vivo</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2523,8 +2513,7 @@ Marcas de compás por clics de audio</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Preferencias</translation>
         </message>
         <message>
             <source>Preferences
@@ -2544,8 +2533,7 @@ Obtenga ayuda con Mixxx</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lea el manual de usuario de Mixxx</translation>
         </message>
         <message>
             <source>Support
@@ -2656,6 +2644,26 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 Por favor seleccione su(s) placa de sonido en las preferencias de hardware de sonido.</translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation>Equipo de desarrollo de Mixxx %1</translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation>Con colaboradores de:</translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation>Y agradecimientos especiales a:</translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation>Antiguos desarrolladores</translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation>Antiguos colaboradores</translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
             <translation>Confirmar salida</translation>
         </message>
@@ -2691,8 +2699,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>No se pudo crear el archivo</translation>
         </message>
     </context>
     <context>
@@ -2734,8 +2741,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exportar lista de reproducción</translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2775,8 +2781,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Archivos de lista de reproducción (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
@@ -2852,15 +2857,15 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Error Saving Sampler Bank</source>
-            <translation>Error Guardando Banco de Sampler</translation>
+            <translation>Error guardando banco de Sampler</translation>
         </message>
         <message>
             <source>Could not write the sampler bank to '%1'.</source>
-            <translation>No se pudo escribir</translation>
+            <translation>No se pudo escribir el banco de Sampler  en «%1»</translation>
         </message>
         <message>
             <source>Load Sampler Bank</source>
-            <translation>Cargar Banco de Sampler</translation>
+            <translation>Cargar banco de Sampler</translation>
         </message>
         <message>
             <source>Error Reading Sampler Bank</source>
@@ -2899,11 +2904,11 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Import...</source>
-            <translation>importar...</translation>
+            <translation>Importar…</translation>
         </message>
         <message>
             <source>Export...</source>
-            <translation>Exportar...</translation>
+            <translation>Exportar…</translation>
         </message>
         <message>
             <source>Delete Macro</source>
@@ -3161,13 +3166,11 @@ Pulse aceptar para salir.</translation>
         </message>
         <message>
             <source>Play button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botón de reproducción para el Sampler %1</translation>
         </message>
         <message>
             <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control de ganancia para el Sampler %1</translation>
         </message>
         <message>
             <source>Headphone listen button for Sampler %1</source>
@@ -3260,23 +3263,19 @@ Pulse aceptar para salir.</translation>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ajusta la intensidad del efecto flanger</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ajusta el retraso de fase del efecto flanger</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Micrófono encendido/apagado</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Volumen del micrófono</translation>
         </message>
     </context>
     <context>
@@ -3326,8 +3325,7 @@ Pulse aceptar para salir.</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recargar los metadatos de la pista en una pista cargada puede causar cambios bruscos de volumen. ¿Está seguro?</translation>
         </message>
     </context>
     <context>
