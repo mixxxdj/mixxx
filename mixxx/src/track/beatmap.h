@@ -19,8 +19,8 @@
 struct SignedBeat{
     double position;
     bool isOn;
-    operator double() const {
-        return position;
+    bool operator<(const SignedBeat& otherBeat) const {
+        return position < otherBeat.position;
     }
 };
 
@@ -30,6 +30,8 @@ class BeatMap : public QObject, public Beats {
     Q_OBJECT
   public:
     BeatMap(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
+    // Construct a BeatMap, optionally providing a list of beat locations in
+    // audio frames.
     BeatMap(TrackPointer pTrack, const QVector<double> beats = QVector<double>());
     virtual ~BeatMap();
 
@@ -52,6 +54,7 @@ class BeatMap : public QObject, public Beats {
     virtual double findNthBeat(double dSamples, int n) const;
     virtual void findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
+
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
 
