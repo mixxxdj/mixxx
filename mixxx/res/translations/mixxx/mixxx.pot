@@ -1,15 +1,16 @@
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"POT-Creation-Date: 2012-04-11 09:42-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Translate Toolkit 1.7.0\n"
+"X-Generator: Translate Toolkit 1.5.3\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1259,7 +1260,6 @@ msgid "Form3"
 msgstr ""
 
 #: DlgPrefShoutcastDlg#2
-msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
 msgstr ""
 
@@ -2347,120 +2347,119 @@ msgid "Continue"
 msgstr ""
 
 #: MixxxApp#21
-msgid "&Load Song (Player 1)..."
-msgstr ""
-
-#: MixxxApp#22
 msgid "Ctrl+O"
 msgstr ""
 
-#: MixxxApp#23
-msgid "&Load Song (Player 2)..."
-msgstr ""
-
-#: MixxxApp#24
+#: MixxxApp#22
 msgid "Ctrl+Shift+O"
 msgstr ""
 
-#: MixxxApp#25
+#: MixxxApp#23
 msgid "&Exit"
 msgstr ""
 
-#: MixxxApp#26
+#: MixxxApp#24
 msgid "Ctrl+Q"
 msgstr ""
 
-#: MixxxApp#27
+#: MixxxApp#25
 msgid "&Rescan Library"
 msgstr ""
 
-#: MixxxApp#28
+#: MixxxApp#26
 msgid "Add &new playlist"
 msgstr ""
 
-#: MixxxApp#29
+#: MixxxApp#27
 msgid "Ctrl+N"
 msgstr ""
 
-#: MixxxApp#30
+#: MixxxApp#28
 msgid "Add new &crate"
 msgstr ""
 
-#: MixxxApp#31
+#: MixxxApp#29
 msgid "Ctrl+C"
 msgstr ""
 
-#: MixxxApp#32
+#: MixxxApp#30
 msgid "&Import playlist"
 msgstr ""
 
-#: MixxxApp#33
+#: MixxxApp#31
 msgid "Ctrl+I"
 msgstr ""
 
-#: MixxxApp#34
+#: MixxxApp#32
 msgid "&Audio Beat Marks"
 msgstr ""
 
-#: MixxxApp#35
+#: MixxxApp#33
 msgid "&Full Screen"
 msgstr ""
 
-#: MixxxApp#36
-msgid "Ctrl+F"
-msgstr ""
-
-#: MixxxApp#37
+#: MixxxApp#34
 msgid "F11"
 msgstr ""
 
-#: MixxxApp#38
+#: MixxxApp#35
 msgid "&Preferences"
 msgstr ""
 
-#: MixxxApp#39
+#: MixxxApp#36
 msgid "Ctrl+P"
 msgstr ""
 
-#: MixxxApp#40
+#: MixxxApp#37
 msgid "&About"
 msgstr ""
 
-#: MixxxApp#41
+#: MixxxApp#38
 msgid "&Community Support"
 msgstr ""
 
-#: MixxxApp#42
+#: MixxxApp#39
 msgid "&User Manual"
 msgstr ""
 
-#: MixxxApp#43
+#: MixxxApp#40
 msgid "Send Us &Feedback"
 msgstr ""
 
-#: MixxxApp#44
+#: MixxxApp#41
 msgid "&Translate this application"
 msgstr ""
 
-#: MixxxApp#45
-msgid "Enable &Vinyl Control 1"
-msgstr ""
-
-#: MixxxApp#46
+#: MixxxApp#42
 msgid "Ctrl+Y"
 msgstr ""
 
-#: MixxxApp#47
-msgid "Enable &Vinyl Control 2"
-msgstr ""
-
-#: MixxxApp#48
+#: MixxxApp#43
 msgid "Ctrl+U"
 msgstr ""
 
+#: MixxxApp#44
+msgid "Load Song (Player &1)..."
+msgstr ""
+
+#: MixxxApp#45
+msgid "Load Song (Player &2)..."
+msgstr ""
+
+#: MixxxApp#46
+msgid "Ctrl+Shift+F"
+msgstr ""
+
+#: MixxxApp#47
+msgid "Enable Vinyl Control &1"
+msgstr ""
+
+#: MixxxApp#48
+msgid "Enable Vinyl Control &2"
+msgstr ""
+
 #: MixxxApp#49
-msgctxt "MixxxApp#49"
-msgid "Enable live broadcasting"
+msgid "Enable live &broadcasting"
 msgstr ""
 
 #: MixxxApp#50
@@ -2756,6 +2755,10 @@ msgstr ""
 
 #: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
+msgstr ""
+
+#: MixxxApp#112
+msgid "A sampler is currently playing. Exit Mixxx?"
 msgstr ""
 
 #: MixxxLibraryFeature#1
@@ -3328,7 +3331,17 @@ msgstr ""
 msgid "Microphone volume"
 msgstr ""
 
+# Search|Focus
 #: WSearchLineEdit#1
+msgid "Ctrl+F"
+msgstr ""
+
+# Search|Clear
+#: WSearchLineEdit#2
+msgid "Esc"
+msgstr ""
+
+#: WSearchLineEdit#3
 msgid "Search..."
 msgstr ""
 
