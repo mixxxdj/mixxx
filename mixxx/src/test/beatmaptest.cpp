@@ -49,7 +49,7 @@ TEST_F(BeatMapTest, TestNthBeat) {
     m_pTrack->setBpm(bpm);
     m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
-    double startOffsetFrames = 7.3;
+    double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
     double startOffsetSamples = startOffsetFrames * 2;
     const int numBeats = 100;
@@ -71,7 +71,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     m_pTrack->setBpm(bpm);
     m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
-    double startOffsetFrames = 7.3;
+    double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
     double startOffsetSamples = startOffsetFrames * 2;
     const int numBeats = 100;
@@ -99,7 +99,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     m_pTrack->setBpm(bpm);
     m_pTrack->setSampleRate(m_iSampleRate);
     double beatLengthFrames = getBeatLengthFrames(bpm);
-    double startOffsetFrames = 7.3;
+    double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
     double startOffsetSamples = startOffsetFrames * 2;
     const int numBeats = 100;
