@@ -76,7 +76,7 @@ void BeatMap::readByteArray(const QByteArray* pByteArray) {
     }
     SignedBeat beat;
     int numBeats = pByteArray->size() / sizeof(double);
-    double* pBuffer = (double*) pByteArray->data();
+    const double* pBuffer = (const double*)pByteArray->constData();
 
     for (int i = 0; i < numBeats; ++i) {
         if (pBuffer[i] < 0) {
@@ -120,6 +120,10 @@ QString BeatMap::getVersion() const {
     return BEAT_MAP_VERSION;
 }
 
+bool BeatMap::isValid() const {
+    return m_iSampleRate > 0 && m_signedBeatList.size() > 0;
+}
+
 double BeatMap::findNextBeat(double dSamples) const {
     return findNthBeat(dSamples, 1);
 }
@@ -141,7 +145,7 @@ double BeatMap::findClosestBeat(double dSamples) const {
 double BeatMap::findNthBeat(double dSamples, int n) const {
     QMutexLocker locker(&m_mutex);
     // Reduce sample offset to a frame offset.
-    dSamples = floorf(dSamples / 2);
+    dSamples = dSamples / 2;
 
     SignedBeat Beat;
     Beat.position = dSamples;
@@ -158,12 +162,13 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 
         // Count down until n=1
         while (it != m_signedBeatList.end()) {
-            while(it != m_signedBeatList.end() && !it->isOn)
+            if (!it->isOn) {
                 it++;
+                continue;
+            }
             if (n == 1) {
                 // Return a sample offset
-                Beat = *it;
-                return (Beat.position * 2);
+                return it->position * 2;
             }
             it++;
             n--;
@@ -180,17 +185,16 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
             // touching it. The guard of this while loop guarantees this does
             // not put us before the start of the loop.
             it--;
-            while(it != m_signedBeatList.begin() && !it->isOn)
-                it--;
+            if (!it->isOn) {
+                continue;
+            }
             if (n == -1) {
                 // Return a Sample Offset
-                Beat = *it;
-                return (Beat.position * 2);
+                return it->position * 2;
             }
             n++;
         }
     }
-
     return -1;
 }
 
@@ -339,8 +343,7 @@ void BeatMap::translate(double dNumSamples) {
     }
 
     for (SignedBeatList::iterator it = m_signedBeatList.begin();
-                                  it!= m_signedBeatList.end();
-                                  ++it) {
+         it != m_signedBeatList.end(); ++it) {
         double newpos = (*it).position + dNumSamples;
         if(newpos>=0)
             (*it).position = newpos;
@@ -525,9 +528,5 @@ double BeatMap::calculateBpm(SignedBeat startBeat, SignedBeat stopBeat) const {
 
     // Statistical approach works better if we have more than 8 samples:
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
-}
-
-bool BeatMap::isValid() const {
-    return m_iSampleRate > 0 && m_signedBeatList.size() > 0;
 }
 
