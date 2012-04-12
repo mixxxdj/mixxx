@@ -20,7 +20,7 @@ string MixxxBpmDetection::getIdentifier() const {
 }
 
 string MixxxBpmDetection::getName() const {
-    return "Mixxx Legacy Bpm Detector";
+    return "SoundTouch BPM Detector (Legacy)";
 }
 
 string MixxxBpmDetection::getDescription() const {
@@ -29,7 +29,7 @@ string MixxxBpmDetection::getDescription() const {
 }
 
 string MixxxBpmDetection::getMaker() const {
-    return "Mixxx Developer Team";
+    return "Olli Parviainen";
 }
 
 int MixxxBpmDetection::getPluginVersion() const {
