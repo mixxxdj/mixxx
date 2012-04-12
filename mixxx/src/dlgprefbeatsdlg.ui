@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgAnalysersDlg</class>
- <widget class="QWidget" name="DlgAnalysersDlg">
+ <class>DlgBeatsDlg</class>
+ <widget class="QWidget" name="DlgBeatsDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Analysers Settings</string>
+   <string>Beat Detection Settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -27,7 +27,7 @@
    <item row="2" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Choose Analyzer</string>
+      <string>Choose Analyser</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>

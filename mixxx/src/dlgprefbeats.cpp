@@ -1,5 +1,5 @@
 /*
- * dlgprefanalysers.cpp
+ * dlgprefbeats.cpp
  *
  *  Created on: 28/apr/2011
  *      Author: vittorio
@@ -20,9 +20,8 @@
 
 #include "track/beat_preferences.h"
 #include "controlobject.h"
-#include "dlgprefanalysers.h"
+#include "dlgprefbeats.h"
 #include "vamp/vampanalyser.h"
-
 
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
@@ -30,10 +29,9 @@ using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
-
-DlgPrefAnalysers::DlgPrefAnalysers(QWidget *parent, ConfigObject<ConfigValue> *_config): QWidget(parent)
-, Ui::DlgAnalysersDlg()
-{
+DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
+        : QWidget(parent),
+          Ui::DlgBeatsDlg() {
     m_pconfig = _config;
     m_selectedAnalyser = "qm-tempotracker:0";
     setupUi(this);
@@ -65,11 +63,11 @@ DlgPrefAnalysers::DlgPrefAnalysers(QWidget *parent, ConfigObject<ConfigValue> *_
 
 }
 
-DlgPrefAnalysers::~DlgPrefAnalysers() {
+DlgPrefBeats::~DlgPrefBeats() {
 }
 
 
-void DlgPrefAnalysers::loadSettings(){
+void DlgPrefBeats::loadSettings(){
     if(m_pconfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID))==QString("")) {
         setDefaults();
@@ -104,9 +102,9 @@ void DlgPrefAnalysers::loadSettings(){
     slotUpdate();
 }
 
-void DlgPrefAnalysers::setDefaults() {
+void DlgPrefBeats::setDefaults() {
     if (m_listIdentifier.indexOf("qm-tempotracker:0")==-1) {
-        qDebug() << "DlgPrefAnalysers: qm-tempotracker Vamp plugin not found";
+        qDebug() << "DlgPrefBeats: qm-tempotracker Vamp plugin not found";
         return;
     }
     m_selectedAnalyser = "qm-tempotracker:0";
@@ -122,39 +120,39 @@ void DlgPrefAnalysers::setDefaults() {
     slotUpdate();
 }
 
-void DlgPrefAnalysers::pluginSelected(int i){
+void DlgPrefBeats::pluginSelected(int i){
     if (i==-1)
         return;
     m_selectedAnalyser = m_listIdentifier[i];
     slotUpdate();
 }
 
-void  DlgPrefAnalysers::analyserEnabled(int i){
+void  DlgPrefBeats::analyserEnabled(int i){
     m_banalyserEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
-void  DlgPrefAnalysers::fixedtempoEnabled(int i){
+void  DlgPrefBeats::fixedtempoEnabled(int i){
     m_bfixedtempoEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
-void DlgPrefAnalysers::offsetEnabled(int i){
+void DlgPrefBeats::offsetEnabled(int i){
     m_boffsetEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
-void DlgPrefAnalysers::minBpmRangeChanged(int value){
+void DlgPrefBeats::minBpmRangeChanged(int value){
     m_minBpm = value;
     slotUpdate();
 }
 
-void DlgPrefAnalysers::maxBpmRangeChanged(int value){
+void DlgPrefBeats::maxBpmRangeChanged(int value){
     m_maxBpm = value;
     slotUpdate();
 }
 
-void DlgPrefAnalysers::slotUpdate(){
+void DlgPrefBeats::slotUpdate(){
     bfixedtempo->setEnabled(m_banalyserEnabled);
     boffset->setEnabled((m_banalyserEnabled && m_bfixedtempoEnabled));
     plugincombo->setEnabled(m_banalyserEnabled);
@@ -173,7 +171,7 @@ void DlgPrefAnalysers::slotUpdate(){
 
     int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
     if( comboselected==-1){
-        qDebug()<<"DlgPrefAnalysers: Plugin not found in slotUpdate()";
+        qDebug()<<"DlgPrefBeats: Plugin not found in slotUpdate()";
         return;
     }
 
@@ -183,17 +181,17 @@ void DlgPrefAnalysers::slotUpdate(){
     bReanalyse->setChecked(m_bReanalyze);
 }
 
-void DlgPrefAnalysers::slotReanalyzeChanged(int value) {
+void DlgPrefBeats::slotReanalyzeChanged(int value) {
     m_bReanalyze = static_cast<bool>(value);
     slotUpdate();
 }
 
-void DlgPrefAnalysers::fastAnalysisEnabled(int i) {
+void DlgPrefBeats::fastAnalysisEnabled(int i) {
     m_FastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
-void DlgPrefAnalysers::slotApply() {
+void DlgPrefBeats::slotApply() {
     int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
     if (selected == -1)
         return;
@@ -219,7 +217,7 @@ void DlgPrefAnalysers::slotApply() {
     m_pconfig->Save();
 }
 
-void DlgPrefAnalysers::populate() {
+void DlgPrefBeats::populate() {
     VampAnalyser::initializePluginPaths();
     QString selectedAnalyser = m_selectedAnalyser;
     m_listIdentifier.clear();
@@ -243,11 +241,11 @@ void DlgPrefAnalysers::populate() {
                                             + QString::number(ioutput);
                 QString displaynametext = QString::fromStdString(plugin->getName());
                 bool goodones = ((displayname.contains("mixxxbpmdetection")||
-                                        displayname.contains("qm-tempotracker:0"))||
-                                        displayname.contains("beatroot:0")||
-                                        displayname.contains("marsyas_ibt:0")||
-                                        displayname.contains("aubiotempo:0")
-                                        );
+                                  displayname.contains("qm-tempotracker:0"))||
+                                 displayname.contains("beatroot:0")||
+                                 displayname.contains("marsyas_ibt:0")||
+                                 displayname.contains("aubiotempo:0")
+                                 );
 
 //                bool goodones = ((displaynametext.contains("Beat Track")));
                 //validate and add rows to qcombobox
@@ -258,11 +256,7 @@ void DlgPrefAnalysers::populate() {
 //                m_listOutput << QString::number(ioutput);
 //                m_listDescription << QString::fromStdString(outputs[ioutput].description);
 
-
-
-
-
-                if (goodones){
+                if (goodones) {
                     m_listName << displaynametext;
                     QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
                     m_listLibrary << pluginlibrary;

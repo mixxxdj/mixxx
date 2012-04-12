@@ -396,7 +396,7 @@ class Vamp(Feature):
                    'vamp/vamppluginloader.cpp',
                    'analyserbeats.cpp',
                    'analysergainvamp.cpp',
-                   'dlgprefanalysers.cpp']
+                   'dlgprefbeats.cpp']
         return sources
 
 class FAAD(Feature):
