@@ -76,7 +76,7 @@ VampAnalyser::~VampAnalyser() {
 }
 
 bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
-                        const int samplerate, const int TotalSamples) {
+                        const int samplerate, const int TotalSamples, bool bFastAnalysis) {
     m_iOutput = 0;
     m_rate = 0;
     m_iRemainingSamples = TotalSamples;
@@ -169,9 +169,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     m_pluginbuf[0] = new CSAMPLE[m_iBlockSize];
     m_pluginbuf[1] = new CSAMPLE[m_iBlockSize];
 
-    m_FastAnalysisEnabled = static_cast<bool>(
-        m_pConfig->getValueString(ConfigKey("[Vamp]", "FastAnalysisEnabled")).toInt());
-
+    m_FastAnalysisEnabled = bFastAnalysis;
     if (m_FastAnalysisEnabled) {
         qDebug() << "Using fast analysis methods for BPM and Replay Gain.";
         m_iMaxSamplesToAnalyse = 120 * m_rate; //only consider the first minute

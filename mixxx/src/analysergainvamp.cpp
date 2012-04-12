@@ -34,7 +34,7 @@ void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSam
     }
 
     m_bShouldAnalyze = m_pVamp->Init("libmixxxminimal", "replaygain:0",
-                                     sampleRate, totalSamples);
+                                     sampleRate, totalSamples, false);
     if (!m_bShouldAnalyze) {
         qDebug() << "Failed to init Vamp Replay Gain Analyser";
         delete m_pVamp;

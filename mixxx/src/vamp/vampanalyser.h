@@ -23,7 +23,7 @@ class VampAnalyser {
     virtual ~VampAnalyser();
 
     bool Init(const QString pluginlibrary, const QString pluginid,
-              const int samplerate, const int TotalSamples);
+              const int samplerate, const int TotalSamples, bool bFastAnalysis);
     bool Process(const CSAMPLE *pIn, const int iLen);
     bool End();
     bool SetParameter(const QString parameter, const double value);

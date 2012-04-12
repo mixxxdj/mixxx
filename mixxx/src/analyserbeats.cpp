@@ -140,7 +140,8 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     qDebug() << "Beat calculation started with plugin" << pluginID;
 
     m_pVamp = new VampAnalyser(m_pConfig);
-    m_bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples);
+    m_bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples,
+                                     m_bPreferencesFastAnalysis);
     if (!m_bShouldAnalyze) {
         delete m_pVamp;
         m_pVamp = NULL;
