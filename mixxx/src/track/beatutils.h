@@ -27,11 +27,16 @@ class BeatUtils {
         const QVector<double> beats1, const double bpm1,
         const QVector<double> beats2, const int SampleRate);
 
-    static QVector<double> calculateFixedTempoBeats(
+    // By default Vamp does not assume a 4/4 signature. This is basically a good
+    // property of Vamp, however, it leads to inaccurate beat grids if a 4/4
+    // signature is given.  What is the problem? Almost all modern dance music
+    // from the last decades refer to 4/4 signatures. Given a set of beat frame
+    // positions, this method calculates the position of the first beat assuming
+    // the beats have a fixed tempo given by globalBpm.
+    static double calculateFixedTempoFirstBeat(
         bool enableOffsetCorrection,
         const QVector<double> rawbeats, const int sampleRate,
-        const int totalSamples, const double globalBpm,
-        const int minBpm, const int maxBpm);
+        const int totalSamples, const double globalBpm);
 
   private:
     static double computeSampleMedian(QList<double> sortedItems);

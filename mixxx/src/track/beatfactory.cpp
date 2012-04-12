@@ -39,18 +39,21 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
-BeatsPointer BeatFactory::makeBeatMap(TrackPointer pTrack, QVector<double> beats,
-                                      const QString subVersion,
-                                      bool bEnableFixedTempoCorrection,
-                                      bool bEnableOffsetCorrection,
-                                      const int iSampleRate, const int iTotalSamples,
-                                      const int iMinBpm, const int iMaxBpm) {
+BeatsPointer BeatFactory::makePreferredBeats(
+    TrackPointer pTrack, QVector<double> beats, const QString subVersion,
+    bool bEnableFixedTempoCorrection, bool bEnableOffsetCorrection,
+    const int iSampleRate, const int iTotalSamples,
+    const int iMinBpm, const int iMaxBpm) {
     if (bEnableFixedTempoCorrection) {
         double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
-        beats = BeatUtils::calculateFixedTempoBeats(
+        double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
             bEnableOffsetCorrection,
-            beats, iSampleRate, iTotalSamples, globalBpm,
-            iMinBpm, iMaxBpm);
+            beats, iSampleRate, iTotalSamples, globalBpm);
+        BeatGrid* pGrid = new BeatGrid(pTrack);
+        // firstBeat is in frames here and setGrid() takes samples.
+        pGrid->setGrid(globalBpm, firstBeat * 2);
+        pGrid->setSubVersion(subVersion);
+        return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     }
 
     BeatMap* pBeatMap = new BeatMap(pTrack, beats);
