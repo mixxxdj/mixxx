@@ -117,7 +117,6 @@ void WaveformWidgetRenderer::preRender() {
     m_rateRange = m_rateRangeControlObject->get();
     m_gain = m_gainControlObject->get();
 
-
     //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
 

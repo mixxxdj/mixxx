@@ -21,6 +21,8 @@ public:
     virtual ~WaveformWidgetRenderer();
 
     void init();
+    virtual void onInit() {}
+
     void setup(const QDomNode& node);
     void preRender();
     void draw(QPainter* painter, QPaintEvent* event);
