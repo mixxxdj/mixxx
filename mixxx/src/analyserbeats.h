@@ -32,6 +32,7 @@ class AnalyserBeats: public Analyser {
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesFixedTempo;
     bool m_bPreferencesOffsetCorrection;
+    bool m_bPreferencesFastAnalysis;
 
     int m_iSampleRate, m_iTotalSamples;
     int m_iMinBpm, m_iMaxBpm;

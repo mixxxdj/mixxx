@@ -17,11 +17,12 @@
 #include <QList>
 #include <QtCore>
 #include <vamp-hostsdk/vamp-hostsdk.h>
+
+#include "track/beat_preferences.h"
 #include "controlobject.h"
 #include "dlgprefanalysers.h"
 #include "vamp/vampanalyser.h"
 
-#define CONFIG_KEY "[Vamp]"
 
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
@@ -69,37 +70,38 @@ DlgPrefAnalysers::~DlgPrefAnalysers() {
 
 
 void DlgPrefAnalysers::loadSettings(){
-    if(m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatPluginID"))==QString(""))
-    {
+    if(m_pconfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID))==QString("")) {
+        setDefaults();
+        return;
+    }
+
+    QString pluginid = m_pconfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
+    m_selectedAnalyser = pluginid;
+
+    m_banalyserEnabled = static_cast<bool>(m_pconfig->getValueString(
+        ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
+
+    m_bfixedtempoEnabled = static_cast<bool>(m_pconfig->getValueString(
+        ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
+
+    m_boffsetEnabled = static_cast<bool>(m_pconfig->getValueString(
+        ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
+
+    m_bReanalyze =  static_cast<bool>(m_pconfig->getValueString(
+        ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
+
+    m_FastAnalysisEnabled = static_cast<bool>(m_pconfig->getValueString(
+        ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
+
+    if(m_listIdentifier.indexOf(pluginid)==-1){
         setDefaults();
     }
-    else
-    {
-        QString pluginid = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatPluginID"));
-        m_selectedAnalyser = pluginid;
-        int i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatEnabled")).toInt();
-        m_banalyserEnabled = static_cast<bool>(i);
+    m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
+    m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
 
-        i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatFixedTempo")).toInt();
-        m_bfixedtempoEnabled = static_cast<bool>(i);
-
-        i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatOffset")).toInt();
-        m_boffsetEnabled = static_cast<bool>(i);
-
-        i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"FastAnalysisEnabled")).toInt();
-        m_FastAnalysisEnabled = static_cast<bool>(i);
-
-        if(m_listIdentifier.indexOf(pluginid)==-1){
-            setDefaults();
-        }
-        m_minBpm = m_pconfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
-        m_maxBpm = m_pconfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
-
-        i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"ReanalyzeOldBPM")).toInt();
-        m_bReanalyze =  static_cast<bool>(i);
-
-        slotUpdate();
-    }
+    slotUpdate();
 }
 
 void DlgPrefAnalysers::setDefaults() {
@@ -125,25 +127,21 @@ void DlgPrefAnalysers::pluginSelected(int i){
         return;
     m_selectedAnalyser = m_listIdentifier[i];
     slotUpdate();
-
 }
 
 void  DlgPrefAnalysers::analyserEnabled(int i){
     m_banalyserEnabled = static_cast<bool>(i);
     slotUpdate();
-
 }
 
 void  DlgPrefAnalysers::fixedtempoEnabled(int i){
     m_bfixedtempoEnabled = static_cast<bool>(i);
     slotUpdate();
-
 }
 
 void DlgPrefAnalysers::offsetEnabled(int i){
     m_boffsetEnabled = static_cast<bool>(i);
     slotUpdate();
-
 }
 
 void DlgPrefAnalysers::minBpmRangeChanged(int value){
@@ -157,7 +155,6 @@ void DlgPrefAnalysers::maxBpmRangeChanged(int value){
 }
 
 void DlgPrefAnalysers::slotUpdate(){
-
     bfixedtempo->setEnabled(m_banalyserEnabled);
     boffset->setEnabled((m_banalyserEnabled && m_bfixedtempoEnabled));
     plugincombo->setEnabled(m_banalyserEnabled);
@@ -169,7 +166,6 @@ void DlgPrefAnalysers::slotUpdate(){
 
     if(!m_banalyserEnabled)
         return;
-
 
     bfixedtempo->setChecked(m_bfixedtempoEnabled);
     boffset->setChecked(m_boffsetEnabled);
@@ -185,60 +181,41 @@ void DlgPrefAnalysers::slotUpdate(){
     txtMaxBpm->setValue(m_maxBpm);
     txtMinBpm->setValue(m_minBpm);
     bReanalyse->setChecked(m_bReanalyze);
-
-
 }
 
-void DlgPrefAnalysers::slotReanalyzeChanged(int value)
-{
+void DlgPrefAnalysers::slotReanalyzeChanged(int value) {
     m_bReanalyze = static_cast<bool>(value);
     slotUpdate();
 }
 
-void DlgPrefAnalysers::fastAnalysisEnabled(int i)
-{
+void DlgPrefAnalysers::fastAnalysisEnabled(int i) {
     m_FastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
-void DlgPrefAnalysers::slotApply(){
-
+void DlgPrefAnalysers::slotApply() {
     int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
     if (selected == -1)
         return;
 
-    if (m_banalyserEnabled)
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatEnabled"), ConfigValue(1));
-    else
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatEnabled"), ConfigValue(0));
+    m_pconfig->set(ConfigKey(
+        VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY), ConfigValue(m_listLibrary[selected]));
+    m_pconfig->set(ConfigKey(
+        VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID), ConfigValue(m_selectedAnalyser));
 
-    if (m_bfixedtempoEnabled)
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatFixedTempo"), ConfigValue(1));
-    else
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatFixedTempo"), ConfigValue(0));
+    m_pconfig->set(ConfigKey(
+        BPM_CONFIG_KEY, BPM_DETECTION_ENABLED), ConfigValue(m_banalyserEnabled ? 1 : 0));
+    m_pconfig->set(ConfigKey(
+        BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION), ConfigValue(m_bfixedtempoEnabled ? 1 : 0));
+    m_pconfig->set(ConfigKey(
+        BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION), ConfigValue(m_boffsetEnabled ? 1 : 0));
+    m_pconfig->set(ConfigKey(
+        BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE), ConfigValue(m_bReanalyze ? 1 : 0));
+    m_pconfig->set(ConfigKey(
+        BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED), ConfigValue(m_FastAnalysisEnabled ? 1 : 0));
 
-    if (m_FastAnalysisEnabled)
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"FastAnalysisEnabled"), ConfigValue(1));
-    else
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"FastAnalysisEnabled"), ConfigValue(0));
-
-
-    if (m_boffsetEnabled)
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatOffset"), ConfigValue(1));
-    else
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatOffset"), ConfigValue(0));
-
-    m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatLibrary"), ConfigValue(m_listLibrary[selected]));
-    m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatPluginID"), ConfigValue(m_selectedAnalyser));
-
-    m_pconfig->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(m_maxBpm));
-    m_pconfig->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(m_minBpm));
-
-    if(m_bReanalyze)
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"ReanalyzeOldBPM"),ConfigValue(1));
-    else
-        m_pconfig->set(ConfigKey(CONFIG_KEY,"ReanalyzeOldBPM"),ConfigValue(0));
-
+    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START), ConfigValue(m_maxBpm));
+    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END), ConfigValue(m_minBpm));
     m_pconfig->Save();
 }
 
