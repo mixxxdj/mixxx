@@ -51,6 +51,11 @@ QString BeatMatrix::getVersion() const {
     return BEAT_MATRIX_VERSION;
 }
 
+QString BeatMatrix::getSubVersion() const {
+    QMutexLocker locker(&m_mutex);
+    return "";
+}
+
 // internal use only
 bool BeatMatrix::isValid() const {
     return m_iSampleRate > 0 && m_beatList.size() > 0;

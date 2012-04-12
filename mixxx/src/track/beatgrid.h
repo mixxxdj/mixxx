@@ -32,6 +32,8 @@ class BeatGrid : public QObject, public virtual Beats {
 
     virtual QByteArray* toByteArray() const;
     virtual QString getVersion() const;
+    virtual QString getSubVersion() const;
+    virtual void setSubVersion(QString subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -68,10 +70,16 @@ class BeatGrid : public QObject, public virtual Beats {
     bool isValid() const;
 
     mutable QMutex m_mutex;
-    int m_iSampleRate;      /** The number of samples per second */
-    double m_dBpm;          /** The number of beats per minute */
-    double m_dFirstBeat;    /** The sample offset of the first beat */
-    double m_dBeatLength;   /** The length of a beat in samples */
+    // The sub-version of this beatgrid.
+    QString m_subVersion;
+    // The number of samples per second
+    int m_iSampleRate;
+    // The number of beats per minute
+    double m_dBpm;
+    // The sample offset of the first beat
+    double m_dFirstBeat;
+    // The length of a beat in samples
+    double m_dBeatLength;
 };
 
 

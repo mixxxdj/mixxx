@@ -261,9 +261,6 @@ public:
      */
     void setBpmLock(bool hasLock);
     bool hasBpmLock() const;
-    /** The Vamp plugin having computed the BPM value **/
-    void setBpmPluginKey(QString& pluginKey);
-    QString getBpmPluginKey() const;
 
   public slots:
     void slotCueUpdated();
@@ -275,7 +272,6 @@ signals:
     void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
-    void BpmPluginKeyUpdated(QString ver);
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
     void clean(TrackInfoObject* pTrack);

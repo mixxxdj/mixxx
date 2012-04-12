@@ -40,6 +40,7 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
 }
 
 BeatsPointer BeatFactory::makeBeatMap(TrackPointer pTrack, QVector<double> beats,
+                                      const QString subVersion,
                                       bool bEnableFixedTempoCorrection,
                                       bool bEnableOffsetCorrection,
                                       const int iSampleRate, const int iTotalSamples,
@@ -53,6 +54,7 @@ BeatsPointer BeatFactory::makeBeatMap(TrackPointer pTrack, QVector<double> beats
     }
 
     BeatMap* pBeatMap = new BeatMap(pTrack, beats);
+    pBeatMap->setSubVersion(subVersion);
     return BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
 }
 

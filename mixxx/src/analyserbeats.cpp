@@ -50,50 +50,29 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesOffsetCorrection = static_cast<bool>(
         m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatOffset")).toInt());
 
+    if (!m_bPreferencesBeatDetectionEnabled) {
+        qDebug() << "Beat calculation is deactivated";
+        m_bShouldAnalyze = false;
+        return;
+    }
+
+    bool bpmLock = tio->hasBpmLock();
+    if (bpmLock) {
+        qDebug() << "Track is BpmLocked: Beat calculation will not start";
+        m_bShouldAnalyze = false;
+        return;
+    }
+
     // At first start config for QM and Vamp does not exist --> set default
     if (library.isEmpty() || library.isNull())
         library = "libmixxxminimal";
     if (pluginID.isEmpty() || pluginID.isNull())
         pluginID="qm-tempotracker:0";
 
-    m_sSubver = "";
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
-    bool bpmLock = tio->hasBpmLock();
-    if (bpmLock) {
-        m_bShouldAnalyze = false;
-        qDebug() << "Track is BpmLocked: Beat calculation will not start";
-        return;
-    }
-
-    m_bShouldAnalyze = m_bPreferencesBeatDetectionEnabled;
-    if (!m_bShouldAnalyze) {
-        qDebug() << "Beat calculation is deactivated";
-        return;
-    }
-
-    // If the track has a BeatGrid rather than a BeatMap return unless it is
-    // specified in the preferences
-    BeatsPointer trackBeats = tio->getBeats();
-    if (trackBeats && trackBeats->getVersion() == BEAT_GRID_VERSION) {
-        m_bShouldAnalyze = m_bPreferencesReanalyzeOldBpm;
-
-        // Override preference if the BPM is 0.
-        if (tio->getBeats()->getBpm() == 0.0) {
-            m_bShouldAnalyze = true;
-            qDebug() << "BPM is 0 for track so re-analyzing.";
-        }
-
-        if (!m_bShouldAnalyze) {
-            qDebug() << "Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
-            return;
-        }
-    }
-
-    qDebug() << "Beat calculation started with plugin" << pluginID;
     QString correction;
-
     if (m_bPreferencesFixedTempo) {
         if (m_bPreferencesOffsetCorrection) {
             correction = "offset";
@@ -103,22 +82,40 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     } else {
         correction = "none";
     }
-
     // Check if BPM algorithm has changed
     QString pluginname = pluginID;
     pluginname.replace(QString(":"),QString("_output="));
-    m_sSubver.append(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
-    BeatsPointer pBeats = tio->getBeats();
-    QString bpmpluginkey = tio->getBpmPluginKey();
+    m_sSubver = QString("plugin=%1_beats_correction=%2").arg(pluginname,correction);
 
+    // If the track already has a Beats object then we need to decide whether to
+    // analyze this track or not.
+    BeatsPointer pBeats = tio->getBeats();
     if (pBeats) {
-        m_bShouldAnalyze = !bpmpluginkey.contains(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
+        QString version = pBeats->getVersion();
+        QString subVersion = pBeats->getSubVersion();
+
+        m_bShouldAnalyze = m_bPreferencesReanalyzeOldBpm;
+        if (!m_bPreferencesReanalyzeOldBpm) {
+            qDebug() << "Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
+        }
+
+        // Override preference if the BPM is 0.
+        if (tio->getBeats()->getBpm() == 0.0) {
+            m_bShouldAnalyze = true;
+            qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
+        } else if (subVersion == m_sSubver) {
+            // Do not re-analyze if the settings are the same and the BPM is not
+            // 0.
+            qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
+            m_bShouldAnalyze = false;
+        }
     }
 
     if (!m_bShouldAnalyze) {
         qDebug() << "Beat calculation will not start";
         return;
     }
+    qDebug() << "Beat calculation started with plugin" << pluginID;
 
     m_pVamp = new VampAnalyser(m_pConfigAVT);
     m_bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples);
@@ -151,12 +148,11 @@ void AnalyserBeats::finalise(TrackPointer tio) {
     QVector<double> beats = m_pVamp->GetInitFramesVector();
     if (!beats.isEmpty()) {
         BeatsPointer pBeats = BeatFactory::makeBeatMap(
-            tio, beats,
+            tio, beats, m_sSubver,
             m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
             m_iSampleRate, m_iTotalSamples,
             m_iMinBpm, m_iMaxBpm);
         tio->setBeats(pBeats);
-        tio->setBpmPluginKey(m_sSubver);
         tio->setBpm(pBeats->getBpm());
     } else {
         qDebug() << "Could not detect beat positions from Vamp.";

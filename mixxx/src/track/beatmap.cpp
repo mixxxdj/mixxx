@@ -45,10 +45,6 @@ BeatMap::BeatMap(TrackPointer pTrack, const QVector<double> beats) :
 
 void BeatMap::initialize(TrackPointer pTrack) {
     m_iSampleRate = pTrack->getSampleRate();
-    connect(pTrack.data(), SIGNAL(BpmPluginKeyUpdated(QString)),
-            this, SLOT(slotTrackBpmPluginKey(QString)),
-            Qt::DirectConnection);
-    slotTrackBpmPluginKey(pTrack->getBpmPluginKey());
     connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
             this, SLOT(slotTrackBpmUpdated(double)),
             Qt::DirectConnection);
@@ -129,6 +125,15 @@ void BeatMap::createFromBeatVector(QVector<double> beats) {
 QString BeatMap::getVersion() const {
     QMutexLocker locker(&m_mutex);
     return BEAT_MAP_VERSION;
+}
+
+QString BeatMap::getSubVersion() const {
+    QMutexLocker locker(&m_mutex);
+    return m_subVersion;
+}
+
+void BeatMap::setSubVersion(QString subVersion) {
+    m_subVersion = subVersion;
 }
 
 bool BeatMap::isValid() const {
@@ -424,7 +429,7 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
     SignedBeatList temp_beatList;
     SignedBeat Beat;
 
-    if (m_ssubVer.contains("beats_correction=none")) {
+    if (m_subVersion.contains("beats_correction=none")) {
         if (delta_bpm < BPM_TOLERANCE) {
             return;
         }
@@ -500,11 +505,6 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
             m_signedBeatList.append(Beat);
         }
     }
-}
-
-void BeatMap::slotTrackBpmPluginKey(QString ver){
-    QMutexLocker locker(&m_mutex);
-    m_ssubVer = ver;
 }
 
 double BeatMap::calculateBpm(SignedBeat startBeat, SignedBeat stopBeat) const {

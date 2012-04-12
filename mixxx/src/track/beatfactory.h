@@ -15,6 +15,7 @@ class BeatFactory {
                                      double dBpm, double dFirstBeatSample);
 
     static BeatsPointer makeBeatMap(TrackPointer pTrack, QVector<double> beats,
+                                    const QString subVersion,
                                     bool bEnableFixedTempoCorrection,
                                     bool bEnableOffsetCorrection,
                                     const int iSampleRate, const int iTotalSamples,
