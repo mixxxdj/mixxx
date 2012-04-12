@@ -1,6 +1,4 @@
 /*
- * dlgprefbeats.cpp
- *
  *  Created on: 28/apr/2011
  *      Author: vittorio
  */
@@ -66,7 +64,6 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
 DlgPrefBeats::~DlgPrefBeats() {
 }
 
-
 void DlgPrefBeats::loadSettings(){
     if(m_pconfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID))==QString("")) {
@@ -93,7 +90,7 @@ void DlgPrefBeats::loadSettings(){
     m_FastAnalysisEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
 
-    if(m_listIdentifier.indexOf(pluginid)==-1){
+    if (!m_listIdentifier.contains(pluginid)) {
         setDefaults();
     }
     m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
@@ -103,7 +100,7 @@ void DlgPrefBeats::loadSettings(){
 }
 
 void DlgPrefBeats::setDefaults() {
-    if (m_listIdentifier.indexOf("qm-tempotracker:0")==-1) {
+    if (!m_listIdentifier.contains("qm-tempotracker:0")) {
         qDebug() << "DlgPrefBeats: qm-tempotracker Vamp plugin not found";
         return;
     }
@@ -200,7 +197,6 @@ void DlgPrefBeats::slotApply() {
         VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY), ConfigValue(m_listLibrary[selected]));
     m_pconfig->set(ConfigKey(
         VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID), ConfigValue(m_selectedAnalyser));
-
     m_pconfig->set(ConfigKey(
         BPM_CONFIG_KEY, BPM_DETECTION_ENABLED), ConfigValue(m_banalyserEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(

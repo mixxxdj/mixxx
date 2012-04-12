@@ -1,6 +1,4 @@
 /*
- * dlgprefbeats.h
- *
  *  Created on: 28/apr/2011
  *      Author: vittorio
  */
@@ -53,6 +51,5 @@ class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {
     int m_maxBpm;
     bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
 };
-
 
 #endif /* DLGPREFBEATS_H_ */

@@ -51,7 +51,7 @@ public:
     vector<double> dfOutput;
     Vamp::RealTime origin;
 };
-    
+
 
 BeatTracker::BeatTracker(float inputSampleRate) :
     Vamp::Plugin(inputSampleRate),
@@ -77,7 +77,7 @@ BeatTracker::getIdentifier() const
 string
 BeatTracker::getName() const
 {
-    return "Tempo and Beat Tracker";
+    return "Queen Mary Tempo and Beat Tracker";
 }
 
 string
@@ -166,7 +166,7 @@ BeatTracker::getParameter(std::string name) const
     } else if (name == "method") {
         return m_method;
     } else if (name == "whiten") {
-        return m_whiten ? 1.0 : 0.0; 
+        return m_whiten ? 1.0 : 0.0;
     }
     return 0.0;
 }
@@ -224,7 +224,7 @@ BeatTracker::initialise(size_t channels, size_t stepSize, size_t blockSize)
     dfConfig.adaptiveWhitening = m_whiten;
     dfConfig.whiteningRelaxCoeff = -1;
     dfConfig.whiteningFloor = -1;
-    
+
     m_d = new BeatTrackerData(dfConfig);
     return true;
 }
@@ -421,7 +421,7 @@ BeatTracker::beatTrackOld()
         size_t frame = i * m_d->dfConfig.stepSize * ttParams.lagLength;
 
 //        std::cerr << "unit " << i << ", step size " << m_d->dfConfig.stepSize << ", hop " << ttParams.lagLength << ", frame = " << frame << std::endl;
-        
+
         if (tempi[i] > 1 && int(tempi[i] * 100) != int(prevTempo * 100)) {
             Feature feature;
             feature.hasTimestamp = true;
@@ -467,7 +467,7 @@ BeatTracker::beatTrackNew()
 
     vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);
-    
+
     FeatureSet returnFeatures;
 
     char label[100];
@@ -475,7 +475,7 @@ BeatTracker::beatTrackNew()
     for (size_t i = 0; i < beats.size(); ++i) {
 
 	size_t frame = beats[i] * m_d->dfConfig.stepSize;
-        
+
 	Feature feature;
 	feature.hasTimestamp = true;
 	feature.timestamp = m_d->origin + Vamp::RealTime::frame2RealTime
@@ -508,7 +508,7 @@ BeatTracker::beatTrackNew()
     for (size_t i = 0; i < tempi.size(); ++i) {
 
 	size_t frame = i * m_d->dfConfig.stepSize;
-        
+
         if (tempi[i] > 1 && int(tempi[i] * 100) != int(prevTempo * 100)) {
             Feature feature;
             feature.hasTimestamp = true;
