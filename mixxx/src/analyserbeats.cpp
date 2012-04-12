@@ -84,6 +84,9 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         return;
     }
 
+    // If we got here, we think we may want to analyze this track.
+    m_bShouldAnalyze = true;
+
     // At first start config for QM and Vamp does not exist --> set default
     if (library.isEmpty() || library.isNull())
         library = "libmixxxminimal";
