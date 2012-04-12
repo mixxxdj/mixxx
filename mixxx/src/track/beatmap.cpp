@@ -16,7 +16,7 @@
 static const int kFrameSize = 2;
 
 inline double samplesToFrames(const double samples) {
-    return samples / kFrameSize;
+    return floorf(samples / kFrameSize);
 }
 
 inline double framesToSamples(const double frames) {
@@ -112,7 +112,7 @@ void BeatMap::createFromBeatVector(QVector<double> beats) {
 
     foreach (double beatpos, beats) {
         // beatpos is in frames. Do not accept fractional frames.
-        beatpos = floor(beatpos);
+        beatpos = floorf(beatpos);
         if (beatpos <= previous_beatpos || beatpos < 0) {
             qDebug() << "BeatMap::createFromeVector: beats not in increasing order or negative";
             qDebug() << "discarding beat " << beatpos;
@@ -376,7 +376,7 @@ void BeatMap::scale(double dScalePercentage) {
                                   it!= m_signedBeatList.end();
                                   ++it) {
         // Need to not accrue fractional frames.
-        it->position = floor(it->position * dScalePercentage);
+        it->position = floorf(it->position * dScalePercentage);
     }
     m_dLastFrame = m_signedBeatList.last().position;
     locker.unlock();
@@ -412,20 +412,25 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
     QMutexLocker locker(&m_mutex);
     if(!isValid() || m_dLastFrame == 0)
         return;
-    double dtrack_Bpm = this->calculateBpm(m_signedBeatList[0], m_signedBeatList.last());
-    if ( fabs(dBpm-dtrack_Bpm)<0.01 || dtrack_Bpm <= 0 || dBpm <= 0)
+
+    double dtrack_Bpm = calculateBpm(m_signedBeatList.first(),
+                                     m_signedBeatList.last());
+    double delta_bpm = fabs(dBpm - dtrack_Bpm);
+
+    if (dtrack_Bpm <= 0 || dBpm <= 0 || delta_bpm < 0.01) {
         return;
+    }
+
     SignedBeatList temp_beatList;
     SignedBeat Beat;
 
     if (m_ssubVer.contains("beats_correction=none")) {
-        if (fabs(dBpm-dtrack_Bpm)<BPM_TOLERANCE) {
+        if (delta_bpm < BPM_TOLERANCE) {
             return;
         }
-        //qDebug()<<"Enabling doubling/halving for noncostant beats";
+
+        //qDebug()<<"Enabling doubling/halving for nonconstant beats";
         while ((dBpm  - (dtrack_Bpm * 2)) >= -BPM_TOLERANCE ) {
-
-
             temp_beatList = m_signedBeatList;
             int i = 0;
 
@@ -438,7 +443,7 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
                         i++;
                     }
                     if (i - old_index == 1) {
-                        Beat.position = floor((temp_beatList[old_index].position
+                        Beat.position = floorf((temp_beatList[old_index].position
                                 + temp_beatList[old_index + 1].position) / 2);
                         Beat.isOn = true;
                         SignedBeatList::iterator it =
@@ -448,7 +453,7 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
                         m_signedBeatList.insert(it, Beat);
 
                     } else {
-                        int pos = (int) floor( ((double(i + old_index) / 2)));
+                        int pos = (int) floorf( ((double(i + old_index) / 2)));
                         SignedBeatList::iterator it =
                                 qLowerBound(m_signedBeatList.begin(),
                                             m_signedBeatList.end(),
@@ -482,14 +487,14 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
              it != m_signedBeatList.end(); ++it) {
             double new_pos = scale * (*it).position + (1 - scale)
                                             * m_signedBeatList[0].position;
-            (*it).position = floor(new_pos);
+            it->position = floorf(new_pos);
         }
 
-        //Adding some beats at the end if we shrank too much the BeatList.
+        // Adding some beats at the end if we shrank too much the BeatList.
         double frame = (m_signedBeatList.last()).position;
         while (frame < m_dLastFrame ){
             //qDebug()<<"Adding beats";
-            frame +=  floor(60.0 * m_iSampleRate / dBpm);
+            frame +=  floorf(60.0 * m_iSampleRate / dBpm);
             Beat.position = frame;
             Beat.isOn = true;
             m_signedBeatList.append(Beat);

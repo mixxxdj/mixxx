@@ -32,6 +32,15 @@ class BeatUtils {
         const QVector<double> rawbeats, const int sampleRate,
         const int totalSamples, const double globalBpm,
         const int minBpm, const int maxBpm);
+
+  private:
+    static double computeSampleMedian(QList<double> sortedItems);
+    static double computeFilteredWeightedAverage(
+        const QMap<QString, int> frequencyTable,
+        const double filterCenter,
+        const double filterTolerance,
+        QMap<QString, int>* filteredFrequencyTable);
+
 };
 
 #endif /* BEATUTILS_H_ */

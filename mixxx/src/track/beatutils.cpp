@@ -17,6 +17,60 @@
 static bool sDebug = false;
 const double kBpmEpsilon = 0.2;
 
+// Given a sorted set of numbers, find the sample median.
+// http://en.wikipedia.org/wiki/Median#The_sample_median
+double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
+    // When there are an even number of elements, the sample median is the mean
+    // of the middle 2 elements.
+    if (sortedItems.size() % 2 == 0) {
+        int item_position = sortedItems.size()/2;
+        double item_value1 = sortedItems.at(item_position);
+        double item_value2 = sortedItems.at(item_position + 1);
+        return (item_value1 + item_value2)/2.0;
+    }
+
+    // When there are an odd number of elements, find the {(n+1)/2}th item in
+    // the sorted list.
+    int item_position = (sortedItems.size() + 1)/2;
+    return sortedItems.at(item_position - 1);
+}
+
+double BeatUtils::computeFilteredWeightedAverage(
+    const QMap<QString, int> frequencyTable,
+    const double filterCenter,
+    const double filterTolerance,
+    QMap<QString, int>* filteredFrequencyTable) {
+    double filterWeightedAverage = 0.0;
+    int filterSum = 0;
+    QMapIterator<QString, int> i(frequencyTable);
+
+    while (i.hasNext()) {
+        i.next();
+        const double value = i.key().toDouble();
+        const int frequency = i.value();
+
+        if (fabs(value - filterCenter) <= filterTolerance) {
+            // TODO(raffitea): Why > 1 ?
+            if (i.value() > 1) {
+                filterSum += frequency;
+                filterWeightedAverage += value * frequency;
+                filteredFrequencyTable->insert(i.key(), frequency);
+                if(sDebug) {
+                    qDebug() << "Filtered Table:" << value
+                             << "Frequency:" << frequency;
+                }
+            }
+        }
+    }
+    if (sDebug) {
+        qDebug() << "Sum of filtered frequencies: " << filterSum;
+    }
+    if (filterSum == 0) {
+        return 0;
+    }
+    return filterWeightedAverage / static_cast<double>(filterSum);
+}
+
 double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm){
     /*
      * Let's compute the average local
@@ -37,31 +91,34 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      *    Beat numbers:   1  2  3  4   5  6  7  8    9
      *    Beat positions: ?  ?  ?  ?  |?  ?  ?  ?  | ?
      *
-     * Usually one measures the time of N beats. One stops
-     * the timer just before the (N+1)th beat begins.
-     * The BPM is then computed by 60*N/<time needed to count N beats (in seconds)>
+     * Usually one measures the time of N beats. One stops the timer just before
+     * the (N+1)th beat begins.  The BPM is then computed by 60*N/<time needed
+     * to count N beats (in seconds)>
      *
-     * Although beat tracking through Vamp is promising,
-     * the local average BPM of 4 beats varies frequently by +-2 BPM.
-     * Somtimes there N subsequent beats in the grid that are computed wrongly by Vamp.
+     * Although beat tracking through QM is promising, the local average BPM of
+     * 4 beats varies frequently by +-2 BPM.  Somtimes there N subsequent beats
+     * in the grid that are computed wrongly by QM.
+     *
      * Their local BPMs can be considered as outliers which would influence the
-     * BPM computation negatively.
-     * Therefore, the average local BPM is build for every N subsequent beats.
-     * The average BPM values are added to a sorted list from which
-     * the central element is choosen in order to compute the median.
-     *
+     * BPM computation negatively. To exclude outliers, we select the median BPM
+     * over a window of N subsequent beats.
+
+     * To do this, we take the average local BPM for every N subsequent
+     * beats. We then sort the averages and take the middle to find the median
+     * BPM.
      */
     int max_frequency = 0;
     double most_freq_bpm = 0;
-    if(beats.size()<2)
+    if (beats.size() < 2) {
         return 0;
-    double avg_bpm = 60*beats.size()*SampleRate/(beats.last() - beats[0]);
-    for(int i=N; i < beats.size(); i+=N){
+    }
+    double avg_bpm = 60.0 * beats.size() * SampleRate/(beats.last() - beats.first());
+    for (int i = N; i < beats.size(); i += N) {
         //get start and end sample of the beats
         double start_sample = beats.at(i-N);
         double end_sample = beats.at(i);
 
-        //Time needed to count a bar (4 beats)
+        // Time needed to count a bar (4 beats)
         double time = (end_sample - start_sample)/(SampleRate);
         avg_bpm = 60*N / time;
 
@@ -72,13 +129,14 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
         if(avg_bpm > max_bpm){
             avg_bpm /=2;
         }
-        //round BPM to have two decimal places
-        float roundedBPM = floorf(avg_bpm * 100 + 0.5) / 100;
 
-        //add to local BPM to list
+        // round BPM to have two decimal places
+        double roundedBPM = floorf(avg_bpm * 100 + 0.5) / 100.0;
+
+        // add to local BPM to list
         average_bpm_list << roundedBPM;
 
-        QString rounded_bpm_str = QString::number(roundedBPM,'g',6);
+        QString rounded_bpm_str = QString::number(roundedBPM, 'g', 6);
         //qDebug() << "Local BPM: " << avg_bpm << " StringVal: " << local_bpm_str;
         if(frequency_table.contains(rounded_bpm_str)){
             int newFreq = frequency_table.value(rounded_bpm_str) + 1;
@@ -89,154 +147,128 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
                 max_frequency = newFreq;
                 most_freq_bpm = roundedBPM;
             }
-
-        }
-        else{
+        } else {
             frequency_table.insert(rounded_bpm_str, 1);
         }
         //qDebug() << "Average Bar BPM: " << avg_bpm;
     }
-    //sort the list of average BPMs
-    qSort(average_bpm_list);
 
+    if (average_bpm_list.empty()) {
+        return avg_bpm;
+    }
+
+    // Get the median BPM.
+    qSort(average_bpm_list);
+    double median = computeSampleMedian(average_bpm_list);
 
     /*
-     * compute the median (bpm)
-     * see http://en.wikipedia.org/wiki/Median#The_sample_median
+     * Okay, let's consider the median an estimation of the BPM To not soley
+     * rely on the median, we build the average weighted value of all bpm values
+     * being at most +-1 BPM from the median away.  Please note, this has
+     * improved the BPM: While relying on median only we may have a deviation of
+     * about +-0.2 BPM, taking into account BPM values around the median leads
+     * to deviation of +- 0.05 Please also note that this value refers to
+     * electronic music, but to be honest, the BPM detection of Traktor and Co
+     * work best with electronic music, too. But BPM detection for
+     * non-electronic music isn't too bad.
      */
-    double median = 0;
-    if(average_bpm_list.size()==0)
-        return avg_bpm;
-    if(average_bpm_list.size() % 2 == 0){
-        //build avg of {(n)/2} and {(n)/2}+1 in the sorted list
-        int item_position = (average_bpm_list.size())/2;
-        //when the list size is eval
-        double item_value1 = average_bpm_list.at(item_position);
-        double item_value2 = average_bpm_list.at(item_position + 1);
-        median = (item_value1 + item_value2)/2;
 
-    } else {
-        //find the {(n+1)/2} th item in the sorted list
-        int item_position = (average_bpm_list.size() + 1)/2;
-        median = average_bpm_list.at(item_position);
+    //qDebug() << "BPM range between " << min_bpm << " and " << max_bpm;
+    //qDebug() << "Max BPM Frequency=" << most_freq_bpm;
+
+    // a subset of the 'frequency_table', where the bpm values are +-1 away from
+    // the median average BPM.
+    QMap<QString, int> filtered_bpm_frequency_table;
+    const double kBpmFilterTolerance = 1.0;
+    const double filterWeightedAverageBpm = computeFilteredWeightedAverage(
+        frequency_table, median, kBpmFilterTolerance, &filtered_bpm_frequency_table);
+
+    if (sDebug) {
+        qDebug() << "Statistical median BPM: " << median;
+        qDebug() << "Weighted Avg of BPM values +- 1BPM from the media"
+                 << filterWeightedAverageBpm;
     }
 
     /*
-     * Okay, let's consider the median an estimation of the BPM
-     * To not soley rely on the median, we build the average
-     * weighted value of all bpm values being at most
-     * +-1 BPM from the median away.
-     * Please note, this has improved the BPM: While relying on median only
-     * we may have a deviation of about +-0.2 BPM, taking into account
-     * BPM values around the median leads to deviation of +- 0.05
-     * Please also note that this value refers to electronic music,
-     * but to be honest, the BPM detection of Traktor and Co work best
-     * with electronic music, too. But BPM detection for non-electronic
-     * music isn't too bad.
+     * Although we have a minimal deviation of about +- 0.05 BPM units compared
+     * to Traktor, this deviation may cause the beat grid to look unaligned,
+     * especially at the end of a track.  Let's try to get the BPM 'perfect' :-)
+     *
+     * Idea: Iterate over the original QM beat set where
+     * some detected beats may be wrong:
+     * The QM beat is considered as correct if:
+     *  - the beat position can be approached by a beat grid obtained by the global BPM
+     *
+     * If the beat turns out correct, we can compute the error in BPM units.
+     * E.g., we can check the QM beat position after 60 seconds. Ideally,
+     * the approached beat is just a couple of samples away, i.e., not worse than 0.05 BPM units.
+     * The distance between these two samples can be used for BPM error correction.
      */
-    QMapIterator<QString, int> i(frequency_table);
-    double avg_weighted_bpm = 0.0;
-    //qDebug() << "BPM range between " << min_bpm << " and " << max_bpm;
-    //qDebug() << "Max BPM Frequency=" << most_freq_bpm;
-    int sum = 0;
-    QMap<QString, int> filtered_bpm_frequency_table;  //a subset of the 'frequency_table', where the bpm values are +-1 1 from the median away
-     while (i.hasNext()) {
-         i.next();
-         double bpmVal = i.key().toDouble();
-
-         if( (bpmVal >= median -1.0) && (bpmVal <= median+1.0)){
-             if(i.value() > 1){
-                 sum += i.value();
-                 avg_weighted_bpm += bpmVal * i.value();
-                 filtered_bpm_frequency_table.insert(i.key(), i.value());
-                 if(sDebug)
-                    qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
-             }
-         }
-     }
-     double global_bpm = (avg_weighted_bpm / (double) sum);
-    //return median;
-     if(sDebug){
-         qDebug() << "Sum of frequencies: " << sum;
-         qDebug() << "Statistical median BPM: " << median;
-         qDebug() << "Weighted Avg of values around median of +- 1 BPM " << global_bpm;
-     }
-     /*
-      * Although we have a minimal deviation of about +- 0.05 BPM units
-      * compared to Traktor, this deviation may cause the beat grid to
-      * look unaligned, especially at the end of a track.
-      * Let's try to get the BPM 'perfect' :-)
-      *
-      * Idea: Iterate over the original VAMP beat set where
-      * some detected beats may be wrong:
-      * The Vamp beat is considered as correct if:
-      *  - the beat position can be approached by a beat grid obtained by the global BPM
-      *
-      * If the beat turns out correct, we can compute the error in BPM units.
-      * E.g., we can check the Vamp beat position after 60 seconds. Ideally,
-      * the approached beat is just a couple of samples away, i.e., not worse than 0.05 BPM units.
-      * The distance between these two samples can be used for BPM error correction.
-      */
-
 
      double perfect_bpm = 0;
-     double firstCorrectBeatSample = 0.0f;
+     double firstCorrectBeatSample = beats.first();
      bool foundFirstCorrectBeat = false;
-
-     if(beats.size() > 0)
-         firstCorrectBeatSample = beats.at(0);
+     double global_bpm = filterWeightedAverageBpm;
 
      int counter = 0;
      int perfectBeats = 0;
-     for(int i=N; i < beats.size(); i+=N){
-         //get start and end sample of the beats
+     for (int i = N; i < beats.size(); i += N) {
+         // get start and end sample of the beats
          double beat_start = beats.at(i-N);
          double beat_end = beats.at(i);
 
-         //Time needed to count a bar (N beats)
-         double time = (beat_end - beat_start)/(SampleRate);
-         double local_bpm = 60*N / time;
-         //round BPM to have two decimal places
+         // Time needed to count a bar (N beats)
+         double time = (beat_end - beat_start)/SampleRate;
+         double local_bpm = 60.0 * N / time;
+         // round BPM to have two decimal places
          local_bpm = floorf(local_bpm * 100 + 0.5) / 100;
 
          //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
          QString local_bpm_str = QString::number(local_bpm,'g',6);
-         if(filtered_bpm_frequency_table.contains(local_bpm_str) && fabs(local_bpm - median) < BPM_ERROR){
-             if(!foundFirstCorrectBeat){
+         if (filtered_bpm_frequency_table.contains(local_bpm_str) &&
+             fabs(local_bpm - median) < BPM_ERROR) {
+             if (!foundFirstCorrectBeat) {
                 firstCorrectBeatSample = beat_start;
                 foundFirstCorrectBeat = true;
-                if(sDebug)
-                    qDebug() << "Beat # " << (i-N) << "is considered as reference beat with BPM: " << local_bpm;
+                if (sDebug) {
+                    qDebug() << "Beat #" << (i-N)
+                             << "is considered as reference beat with BPM:"
+                             << local_bpm;
+                }
             }
          }
-         if(foundFirstCorrectBeat){
+         if (foundFirstCorrectBeat) {
               counter += N;
-              double time2 = (beat_end - firstCorrectBeatSample)/(SampleRate);
-              double correctedBpm = 60*counter / time2;
+              double time2 = (beat_end - firstCorrectBeatSample)/SampleRate;
+              double correctedBpm = 60 * counter / time2;
 
-              if(fabs(correctedBpm - global_bpm) <= BPM_ERROR){
+              if (fabs(correctedBpm - global_bpm) <= BPM_ERROR) {
                   perfect_bpm += correctedBpm;
                   ++perfectBeats;
-                  if(sDebug)
-                      qDebug() << "Beat # " << (i-N) << "is considered as correct -->BPM improved to: " << correctedBpm;
-
+                  if (sDebug) {
+                      qDebug() << "Beat #" << (i-N)
+                               << "is considered as correct -->BPM improved to:"
+                               << correctedBpm;
+                  }
               }
          }
      }
-     if(perfectBeats > 0)
-         global_bpm = perfect_bpm / perfectBeats;
 
-      //last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
-     double rounded_bpm = floor(global_bpm + 0.5);
-     double bpm_diff = rounded_bpm - global_bpm;
-     if(sDebug){
-         qDebug() << "Perfect BPM=" << global_bpm;
-         qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
-         qDebug() << "Rounded difference=" << fabs(bpm_diff);
-         qDebug() << "Perform rounding=" << ((fabs(bpm_diff) <= BPM_ERROR)? true: false);
+     if (perfectBeats > 0) {
+         global_bpm = perfect_bpm / perfectBeats;
      }
 
-     return (fabs(bpm_diff) <= BPM_ERROR)? rounded_bpm : global_bpm;
+     // last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
+     double rounded_bpm = floor(global_bpm + 0.5);
+     double bpm_diff = fabs(rounded_bpm - global_bpm);
+     if (sDebug) {
+         qDebug() << "Perfect BPM=" << global_bpm;
+         qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
+         qDebug() << "Rounded difference=" << bpm_diff;
+         qDebug() << "Perform rounding=" << (bpm_diff <= BPM_ERROR);
+     }
+
+     return fabs(bpm_diff) <= BPM_ERROR ? rounded_bpm : global_bpm;
 }
 
 double BeatUtils::calculateOffset(
