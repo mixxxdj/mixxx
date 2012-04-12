@@ -15,6 +15,7 @@
 #include "track/beatfactory.h"
 #include "analyserbeats.h"
 #include "track/beatutils.h"
+#include "track/beat_preferences.h"
 
 static bool sDebug = false;
 
@@ -29,7 +30,7 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config)
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_iMinBpm(0),
-          m_iMaxBpm(9999999) {
+          m_iMaxBpm(9999) {
 }
 
 AnalyserBeats::~AnalyserBeats(){
@@ -39,24 +40,36 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_bShouldAnalyze = false;
     if (totalSamples == 0)
         return;
-    m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
-    m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
-    int allow_above = m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
+
+    QString library = m_pConfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY));
+    QString pluginID = m_pConfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
+
+    m_iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
+    m_iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+    bool allow_above = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
     if (allow_above) {
         m_iMinBpm = 0;
         m_iMaxBpm = 9999;
     }
-    QString library = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
-    QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
 
     m_bPreferencesBeatDetectionEnabled = static_cast<bool>(
-        m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt());
-    m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
-        m_pConfig->getValueString(ConfigKey("[Vamp]","ReanalyzeOldBPM")).toInt());
+        m_pConfig->getValueString(
+            ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
     m_bPreferencesFixedTempo = static_cast<bool>(
-        m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatFixedTempo")).toInt());
+        m_pConfig->getValueString(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
     m_bPreferencesOffsetCorrection = static_cast<bool>(
-        m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatOffset")).toInt());
+        m_pConfig->getValueString(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
+    m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
+        m_pConfig->getValueString(
+            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
+    m_bPreferencesFastAnalysis = static_cast<bool>(
+        m_pConfig->getValueString(
+            ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
 
     if (!m_bPreferencesBeatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
