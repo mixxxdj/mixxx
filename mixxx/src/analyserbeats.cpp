@@ -103,6 +103,9 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
 
         QHash<QString, QString> extraVersionInfo;
         extraVersionInfo["vamp_plugin_id"] = pluginID;
+        if (m_bPreferencesFastAnalysis) {
+            extraVersionInfo["fast_analysis"] = "1";
+        }
 
         QString newVersion = BeatFactory::getPreferredVersion(
             m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
@@ -168,6 +171,9 @@ void AnalyserBeats::finalise(TrackPointer tio) {
     if (!beats.isEmpty()) {
         QHash<QString, QString> extraVersionInfo;
         extraVersionInfo["vamp_plugin_id"] = m_pluginId;
+        if (m_bPreferencesFastAnalysis) {
+            extraVersionInfo["fast_analysis"] = "1";
+        }
 
         BeatsPointer pBeats = BeatFactory::makePreferredBeats(
             tio, beats, extraVersionInfo,
