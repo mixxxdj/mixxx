@@ -23,21 +23,19 @@ inline double framesToSamples(const double frames) {
     return frames * kFrameSize;
 }
 
-BeatMap::BeatMap(TrackPointer pTrack, const QByteArray* pByteArray) :
-    QObject(),
-    m_mutex(QMutex::Recursive) {
+BeatMap::BeatMap(TrackPointer pTrack, const QByteArray* pByteArray)
+        : QObject(),
+          m_mutex(QMutex::Recursive) {
     initialize(pTrack);
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }
-
 }
 
-BeatMap::BeatMap(TrackPointer pTrack, const QVector<double> beats) :
-    QObject(),
-    m_mutex(QMutex::Recursive) {
+BeatMap::BeatMap(TrackPointer pTrack, const QVector<double> beats)
+        : QObject(),
+          m_mutex(QMutex::Recursive) {
     initialize(pTrack);
-
     if (beats.size() > 0) {
         createFromBeatVector(beats);
     }

@@ -7,6 +7,7 @@
 
 #include <QtDebug>
 #include <QVector>
+#include <QHash>
 #include <QString>
 
 #include "trackinfoobject.h"
@@ -17,11 +18,18 @@
 
 static bool sDebug = false;
 
-AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
-    m_pConfigAVT = _config;
-    m_bShouldAnalyze = false;
-    m_iSampleRate = 0;
-    m_iTotalSamples = 0;
+AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config)
+        : m_pConfig(_config),
+          m_pVamp(NULL),
+          m_bShouldAnalyze(false),
+          m_bPreferencesBeatDetectionEnabled(true),
+          m_bPreferencesReanalyzeOldBpm(false),
+          m_bPreferencesFixedTempo(true),
+          m_bPreferencesOffsetCorrection(false),
+          m_iSampleRate(0),
+          m_iTotalSamples(0),
+          m_iMinBpm(0),
+          m_iMaxBpm(9999999) {
 }
 
 AnalyserBeats::~AnalyserBeats(){
@@ -31,24 +39,24 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_bShouldAnalyze = false;
     if (totalSamples == 0)
         return;
-    m_iMinBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
-    m_iMaxBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
-    int allow_above = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
+    m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+    m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
+    int allow_above = m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
     if (allow_above) {
         m_iMinBpm = 0;
         m_iMaxBpm = 9999;
     }
-    QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
-    QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
+    QString library = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
+    QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
 
     m_bPreferencesBeatDetectionEnabled = static_cast<bool>(
-        m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt());
+        m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt());
     m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
-        m_pConfigAVT->getValueString(ConfigKey("[Vamp]","ReanalyzeOldBPM")).toInt());
+        m_pConfig->getValueString(ConfigKey("[Vamp]","ReanalyzeOldBPM")).toInt());
     m_bPreferencesFixedTempo = static_cast<bool>(
-        m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatFixedTempo")).toInt());
+        m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatFixedTempo")).toInt());
     m_bPreferencesOffsetCorrection = static_cast<bool>(
-        m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatOffset")).toInt());
+        m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserBeatOffset")).toInt());
 
     if (!m_bPreferencesBeatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
@@ -68,24 +76,10 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         library = "libmixxxminimal";
     if (pluginID.isEmpty() || pluginID.isNull())
         pluginID="qm-tempotracker:0";
+    m_pluginId = pluginID;
 
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
-
-    QString correction;
-    if (m_bPreferencesFixedTempo) {
-        if (m_bPreferencesOffsetCorrection) {
-            correction = "offset";
-        } else {
-            correction = "const";
-        }
-    } else {
-        correction = "none";
-    }
-    // Check if BPM algorithm has changed
-    QString pluginname = pluginID;
-    pluginname.replace(QString(":"),QString("_output="));
-    m_sSubver = QString("plugin=%1_beats_correction=%2").arg(pluginname,correction);
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
@@ -94,16 +88,28 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         QString version = pBeats->getVersion();
         QString subVersion = pBeats->getSubVersion();
 
+        QHash<QString, QString> extraVersionInfo;
+        extraVersionInfo["vamp_plugin_id"] = pluginID;
+
+        QString newVersion = BeatFactory::getPreferredVersion(
+            m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
+            m_iMinBpm, m_iMaxBpm, extraVersionInfo);
+        QString newSubVersion = BeatFactory::getPreferredSubVersion(
+            m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
+            m_iMinBpm, m_iMaxBpm, extraVersionInfo);
+
         m_bShouldAnalyze = m_bPreferencesReanalyzeOldBpm;
         if (!m_bPreferencesReanalyzeOldBpm) {
-            qDebug() << "Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
+            qDebug() << "Beat calculation skips analyzing because the track has"
+                     << "a BPM computed by a previous Mixxx version and user"
+                     << "preferences indicate we should not change it.";
         }
 
         // Override preference if the BPM is 0.
         if (tio->getBeats()->getBpm() == 0.0) {
             m_bShouldAnalyze = true;
             qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
-        } else if (subVersion == m_sSubver) {
+        } else if (version == newVersion && subVersion == newSubVersion) {
             // Do not re-analyze if the settings are the same and the BPM is not
             // 0.
             qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
@@ -117,7 +123,7 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     }
     qDebug() << "Beat calculation started with plugin" << pluginID;
 
-    m_pVamp = new VampAnalyser(m_pConfigAVT);
+    m_pVamp = new VampAnalyser(m_pConfig);
     m_bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples);
     if (!m_bShouldAnalyze) {
         delete m_pVamp;
@@ -147,8 +153,11 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
     QVector<double> beats = m_pVamp->GetInitFramesVector();
     if (!beats.isEmpty()) {
+        QHash<QString, QString> extraVersionInfo;
+        extraVersionInfo["vamp_plugin_id"] = m_pluginId;
+
         BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-            tio, beats, m_sSubver,
+            tio, beats, extraVersionInfo,
             m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
             m_iSampleRate, m_iTotalSamples,
             m_iMinBpm, m_iMaxBpm);

@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QStringList>
 
 #include "track/beatgrid.h"
 #include "track/beatmatrix.h"
@@ -39,12 +40,69 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
+QString BeatFactory::getPreferredVersion(
+    const bool bEnableFixedTempoCorrection,
+    const bool bEnableOffsetCorrection,
+    const int iMinBpm, const int iMaxBpm,
+    const QHash<QString, QString> extraVersionInfo) {
+    if (bEnableFixedTempoCorrection) {
+        return BEAT_GRID_VERSION;
+    }
+    return BEAT_MAP_VERSION;
+}
+
+const char* kSubVersionKeyValueSeparator = "=";
+const char* kSubVersionFragmentSeparator = "|";
+QString BeatFactory::getPreferredSubVersion(
+    const bool bEnableFixedTempoCorrection,
+    const bool bEnableOffsetCorrection,
+    const int iMinBpm, const int iMaxBpm,
+    const QHash<QString, QString> extraVersionInfo) {
+    QStringList fragments;
+
+    fragments << QString("min_bpm%1%2").arg(kSubVersionKeyValueSeparator,
+                                            QString::number(iMinBpm));
+    fragments << QString("max_bpm%1%2").arg(kSubVersionKeyValueSeparator,
+                                            QString::number(iMaxBpm));
+
+    QHashIterator<QString, QString> it(extraVersionInfo);
+    while (it.hasNext()) {
+        it.next();
+        if (it.key().contains(kSubVersionKeyValueSeparator) ||
+            it.key().contains(kSubVersionFragmentSeparator) ||
+            it.value().contains(kSubVersionKeyValueSeparator) ||
+            it.value().contains(kSubVersionFragmentSeparator)) {
+            qDebug() << "ERROR: Your analyser key/value contains invalid characters:"
+                     << it.key() << ":" << it.value() << "Skipping.";
+            continue;
+        }
+        fragments << QString("%1%2%3").arg(
+            it.key(), kSubVersionKeyValueSeparator, it.value());
+    }
+    if (bEnableOffsetCorrection) {
+        fragments << QString("offset_correction%11").arg(kSubVersionKeyValueSeparator);
+    }
+    return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
+}
+
+
 BeatsPointer BeatFactory::makePreferredBeats(
-    TrackPointer pTrack, QVector<double> beats, const QString subVersion,
-    bool bEnableFixedTempoCorrection, bool bEnableOffsetCorrection,
+    TrackPointer pTrack, QVector<double> beats,
+    const QHash<QString, QString> extraVersionInfo,
+    const bool bEnableFixedTempoCorrection, const bool bEnableOffsetCorrection,
     const int iSampleRate, const int iTotalSamples,
     const int iMinBpm, const int iMaxBpm) {
-    if (bEnableFixedTempoCorrection) {
+
+    const QString version = getPreferredVersion(bEnableFixedTempoCorrection,
+                                                bEnableOffsetCorrection,
+                                                iMinBpm, iMaxBpm,
+                                                extraVersionInfo);
+    const QString subVersion = getPreferredVersion(bEnableFixedTempoCorrection,
+                                                   bEnableOffsetCorrection,
+                                                   iMinBpm, iMaxBpm,
+                                                   extraVersionInfo);
+
+    if (version == BEAT_GRID_VERSION) {
         double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
             bEnableOffsetCorrection,
@@ -54,11 +112,14 @@ BeatsPointer BeatFactory::makePreferredBeats(
         pGrid->setGrid(globalBpm, firstBeat * 2);
         pGrid->setSubVersion(subVersion);
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+    } else if (version == BEAT_MAP_VERSION) {
+        BeatMap* pBeatMap = new BeatMap(pTrack, beats);
+        pBeatMap->setSubVersion(subVersion);
+        return BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
+    } else {
+        qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
+        return BeatsPointer();
     }
-
-    BeatMap* pBeatMap = new BeatMap(pTrack, beats);
-    pBeatMap->setSubVersion(subVersion);
-    return BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
 }
 
 void BeatFactory::deleteBeats(Beats* pBeats) {
