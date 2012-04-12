@@ -25,6 +25,7 @@ class BeatMatrix : public QObject, public Beats {
 
     virtual QByteArray* toByteArray() const;
     virtual QString getVersion() const;
+    virtual QString getSubVersion() const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations

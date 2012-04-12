@@ -42,6 +42,9 @@ class Beats {
     // produced this Beats instance. Used by BeatsFactory for associating a
     // given serialization with the version that produced it.
     virtual QString getVersion() const = 0;
+    // A sub-version can be used to represent the preferences used to generate
+    // the beats object.
+    virtual QString getSubVersion() const = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations

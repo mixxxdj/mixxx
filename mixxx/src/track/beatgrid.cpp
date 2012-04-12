@@ -63,6 +63,15 @@ QString BeatGrid::getVersion() const {
     return BEAT_GRID_VERSION;
 }
 
+QString BeatGrid::getSubVersion() const {
+    QMutexLocker locker(&m_mutex);
+    return m_subVersion;
+}
+
+void BeatGrid::setSubVersion(QString subVersion) {
+    m_subVersion = subVersion;
+}
+
 // internal use only
 bool BeatGrid::isValid() const {
     return m_iSampleRate > 0 && m_dBpm > 0;

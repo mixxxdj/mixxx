@@ -140,7 +140,6 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_Rating = 0;
     m_key = "";
     m_bBpmLock = false;
-    m_bpmPluginKey = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader) {
@@ -920,19 +919,4 @@ void TrackInfoObject::setBpmLock(bool bpmLock) {
 bool TrackInfoObject::hasBpmLock() const {
     QMutexLocker lock(&m_qMutex);
     return m_bBpmLock;
-}
-
-void TrackInfoObject::setBpmPluginKey(QString& pluginKey) {
-    QMutexLocker lock(&m_qMutex);
-    bool dirty = pluginKey != m_bpmPluginKey;
-    m_bpmPluginKey = pluginKey;
-    if (dirty)
-        setDirty(true);
-    lock.unlock();
-    emit(BpmPluginKeyUpdated(pluginKey));
-}
-
-QString TrackInfoObject::getBpmPluginKey() const{
-    QMutexLocker lock(&m_qMutex);
-    return m_bpmPluginKey;
 }

@@ -326,7 +326,6 @@ bool PlaylistTableModel::isColumnInternal(int column) {
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
-        column == fieldIndex(LIBRARYTABLE_BPM_PLUGIN_KEY) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }

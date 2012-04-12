@@ -325,7 +325,6 @@ METADATA
     </description>
     <sql>
       ALTER TABLE Library ADD COLUMN bpm_lock INTEGER DEFAULT 0;
-      ALTER TABLE Library ADD COLUMN bpm_plugin_key varchar(30) DEFAULT '';
     </sql>
   </revision>
 </schema>

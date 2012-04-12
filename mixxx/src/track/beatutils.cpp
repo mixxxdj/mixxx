@@ -82,9 +82,6 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      * N=8 seems to work great; We coincide with Traktor's
      * BPM value in many case but not worse than +-0.2 BPM
      */
-     QList<double> average_bpm_list;
-     QMap<QString, int> frequency_table;
-
     /*
      * Just to demonstrate how you would count the beats manually
      *
@@ -112,6 +109,8 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
     if (beats.size() < 2) {
         return 0;
     }
+    QList<double> average_bpm_list;
+    QMap<QString, int> frequency_table;
     double avg_bpm = 60.0 * beats.size() * SampleRate/(beats.last() - beats.first());
     for (int i = N; i < beats.size(); i += N) {
         //get start and end sample of the beats
@@ -119,7 +118,7 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
         double end_sample = beats.at(i);
 
         // Time needed to count a bar (4 beats)
-        double time = (end_sample - start_sample)/(SampleRate);
+        double time = (end_sample - start_sample)/SampleRate;
         avg_bpm = 60*N / time;
 
         if(avg_bpm < min_bpm)
@@ -138,12 +137,12 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 
         QString rounded_bpm_str = QString::number(roundedBPM, 'g', 6);
         //qDebug() << "Local BPM: " << avg_bpm << " StringVal: " << local_bpm_str;
-        if(frequency_table.contains(rounded_bpm_str)){
+        if (frequency_table.contains(rounded_bpm_str)) {
             int newFreq = frequency_table.value(rounded_bpm_str) + 1;
             //Set new Frequency
             frequency_table.insert(rounded_bpm_str, newFreq);
 
-            if(newFreq > max_frequency){
+            if (newFreq > max_frequency) {
                 max_frequency = newFreq;
                 most_freq_bpm = roundedBPM;
             }
@@ -364,9 +363,9 @@ QVector<double> BeatUtils::calculateFixedTempoBeats(
 
     QVector <double> corrbeats;
     // Length of a beat at m_dBpm in mono samples.
-    double beat_length = (60.0 * sampleRate / globalBpm);
-    double firstCorrectBeat =
-            BeatUtils::findFirstCorrectBeat(rawbeats, sampleRate, globalBpm);
+    double beat_length = 60.0 * sampleRate / globalBpm;
+    double firstCorrectBeat = findFirstCorrectBeat(
+        rawbeats, sampleRate, globalBpm);
 
     // We start building a fixed beat grid from m_dBpm and the first beat from
     // rawbeats that matches m_dBpm.
@@ -387,8 +386,7 @@ QVector<double> BeatUtils::calculateFixedTempoBeats(
     double offset = 0;
     if (enableOffsetCorrection) {
         qDebug() << "Calculating best offset";
-        offset = BeatUtils::calculateOffset(rawbeats, globalBpm,
-                                            corrbeats, sampleRate);
+        offset = calculateOffset(rawbeats, globalBpm, corrbeats, sampleRate);
     }
 
     double FirstFrame = offset + firstCorrectBeat;
