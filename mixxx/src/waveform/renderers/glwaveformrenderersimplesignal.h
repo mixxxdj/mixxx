@@ -25,6 +25,8 @@ protected:
 
 private:
     WaveformSignalColors m_colors;
+    Qt::Alignment m_alignment;
+
     QBrush m_brush;
     QPen m_borderPen;
     std::vector<QPointF> m_polygon;
