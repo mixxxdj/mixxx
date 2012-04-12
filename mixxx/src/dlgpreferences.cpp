@@ -26,7 +26,7 @@
 #include "dlgprefshoutcast.h"
 #endif
 #ifdef __VAMP__
-    #include "dlgprefanalysers.h"
+    #include "dlgprefbeats.h"
 #else
     #include "dlgprefbpm.h"
 #endif
@@ -90,8 +90,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wcrossfader);
 
 #ifdef __VAMP__
-    m_wanalysers = new DlgPrefAnalysers(this, config);
-    addPageWidget (m_wanalysers);
+    m_wbeats = new DlgPrefBeats(this, config);
+    addPageWidget (m_wbeats);
 #else
     m_wbpm = new DlgPrefBpm(this, config);
     addPageWidget(m_wbpm);
@@ -135,9 +135,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()), m_wcrossfader, SLOT(slotUpdate()));
 
 #ifdef __VAMP__
-    connect(this, SIGNAL(showDlg()), m_wanalysers,       SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()),
+            m_wbeats, SLOT(slotUpdate()));
 #else
-    connect(this, SIGNAL(showDlg()), m_wbpm,       SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()),
+            m_wbpm, SLOT(slotUpdate()));
 #endif
 
     connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
@@ -165,7 +167,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
 
 #ifdef __VAMP__
-    connect(buttonBox, SIGNAL(accepted()), m_wanalysers,      SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wbeats,      SLOT(slotApply()));
 #else
     connect(buttonBox, SIGNAL(accepted()), m_wbpm,      SLOT(slotApply()));
 #endif
@@ -318,7 +320,7 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 
 #ifdef __VAMP__
     } else if (current == m_pAnalysersButton ) {
-        pagesWidget->setCurrentWidget(m_wanalysers->parentWidget()->parentWidget());
+        pagesWidget->setCurrentWidget(m_wbeats->parentWidget()->parentWidget());
 #else
     } else if (current == m_pBPMdetectButton) {
         pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
