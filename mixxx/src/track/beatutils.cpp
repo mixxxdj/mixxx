@@ -279,7 +279,7 @@ double BeatUtils::calculateOffset(
      * are more than the "false" ones.
      */
     const double beatlength1 = (60.0 * SampleRate / bpm1);
-    const double beatLength1Epsilon = beatlength1 * 0.2;
+    const double beatLength1Epsilon = beatlength1 * 0.02;
 
     int bestFreq = 1;
     double bestOffset = beats1.at(0) - beats2.at(0);
