@@ -18,21 +18,21 @@ void main(void)
     //gl_FragColor = rawFiltredSignal;
     //return;
 
-    vec4 output = vec4(0.0);
+    vec4 outputColor = vec4(0.0);
 
     vec4 distanceToRigthSignal = 0.5 - uv.y - 0.5 *texture2D(signalTexture,vec2(uv.x,0.25));
     vec4 distanceToLeftSignal = uv.y - 0.5 * texture2D(signalTexture,vec2(uv.x,0.75)) - 0.5;
 
     if( distanceToRigthSignal.x < 0.0 && distanceToLeftSignal.x < 0.0)
-        output = lowColor;
+        outputColor = lowColor;
 
     if( distanceToRigthSignal.y < 0.0 && distanceToLeftSignal.y < 0.0)
-        output += midColor;
+        outputColor += midColor;
 
     if( distanceToRigthSignal.z < 0.0 && distanceToLeftSignal.z < 0.0)
-        output += highColor;
+        outputColor += highColor;
 
-    gl_FragColor = output;
+    gl_FragColor = outputColor;
     return;
 
 
@@ -83,13 +83,13 @@ void main(void)
     high.a = accumulatedData.z;
 
     if( accumulatedData.x > 0)
-        outputColor = mix( outputColor, low, clamp(accumulatedData.x,0.1f,0.9f));
+        outputColorColor = mix( outputColorColor, low, clamp(accumulatedData.x,0.1f,0.9f));
     if( accumulatedData.y > 0)
-        outputColor = mix( outputColor, mid, clamp(accumulatedData.y,0.1f,0.9f));
+        outputColorColor = mix( outputColorColor, mid, clamp(accumulatedData.y,0.1f,0.9f));
     if( accumulatedData.z > 0)
-        outputColor = mix( outputColor, high, clamp(accumulatedData.z,0.1f,0.9f));
+        outputColorColor = mix( outputColorColor, high, clamp(accumulatedData.z,0.1f,0.9f));
 
-    gl_FragColor = outputColor;
+    gl_FragColor = outputColorColor;
     return;
     */
 }
