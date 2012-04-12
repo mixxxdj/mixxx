@@ -147,7 +147,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
     QVector<double> beats = m_pVamp->GetInitFramesVector();
     if (!beats.isEmpty()) {
-        BeatsPointer pBeats = BeatFactory::makeBeatMap(
+        BeatsPointer pBeats = BeatFactory::makePreferredBeats(
             tio, beats, m_sSubver,
             m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
             m_iSampleRate, m_iTotalSamples,

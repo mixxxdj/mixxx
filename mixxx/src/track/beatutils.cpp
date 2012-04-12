@@ -348,27 +348,19 @@ double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
 }
 
 // static
-QVector<double> BeatUtils::calculateFixedTempoBeats(
+double BeatUtils::calculateFixedTempoFirstBeat(
     bool enableOffsetCorrection,
     const QVector<double> rawbeats, const int sampleRate,
-    const int totalSamples, const double globalBpm,
-    const int minBpm, const int maxBpm) {
-    /*
-     * By default Vamp does not assume a 4/4 signature.
-     * This is basically a good property of Vamp, however,
-     * it leads to inaccurate beat grids if a 4/4 signature is given.
-     * What is the problem? Almost all modern dance music from the last decades
-     * refer to 4/4 signatures. Thus, we must 'correct' the beat positions of Vamp
-     */
-
+    const int totalSamples, const double globalBpm) {
     QVector <double> corrbeats;
-    // Length of a beat at m_dBpm in mono samples.
-    double beat_length = 60.0 * sampleRate / globalBpm;
+    // Length of a beat at globalBpm in mono samples.
+    const double beat_length = 60.0 * sampleRate / globalBpm;
+
     double firstCorrectBeat = findFirstCorrectBeat(
         rawbeats, sampleRate, globalBpm);
 
-    // We start building a fixed beat grid from m_dBpm and the first beat from
-    // rawbeats that matches m_dBpm.
+    // We start building a fixed beat grid at globalBpm and the first beat from
+    // rawbeats that matches globalBpm.
     double i = firstCorrectBeat;
     while (i <= totalSamples) {
         corrbeats << i;
@@ -376,20 +368,23 @@ QVector<double> BeatUtils::calculateFixedTempoBeats(
     }
 
     if (rawbeats.size() == 1 || corrbeats.size()==1) {
-        return corrbeats;
+        return firstCorrectBeat;
     }
 
     /*
-     * BeatUtils::calculateOffset compares the beats from Vamp and the beats from
-     * the beat grid constructed above. See beatutils.cpp for details.
+     * calculateOffset compares the beats from the analyser and the
+     * beats from the beat grid constructed above in corrbeats.
      */
-    double offset = 0;
     if (enableOffsetCorrection) {
         qDebug() << "Calculating best offset";
-        offset = calculateOffset(rawbeats, globalBpm, corrbeats, sampleRate);
+        double offset = calculateOffset(rawbeats, globalBpm, corrbeats, sampleRate);
+        // Adjust firstCorrectBeat by offset
+        firstCorrectBeat += offset;
     }
 
-    double FirstFrame = offset + firstCorrectBeat;
+    // Find the smallest positive beat that is linked to firstCorrectBeat by
+    // beat_length steps.
+    double FirstFrame = firstCorrectBeat;
     while (FirstFrame < 0) {
         FirstFrame += beat_length;
     }
@@ -397,18 +392,11 @@ QVector<double> BeatUtils::calculateFixedTempoBeats(
         FirstFrame -= beat_length;
     }
 
-    i = floor(FirstFrame + 0.5);
-
+    // Round to nearest integer.
+    double firstBeat = floor(FirstFrame + 0.5);
     if (sDebug) {
-        qDebug() << "First Frame is at " << i;
-        qDebug() << "It was at " << rawbeats.at(0);
+        qDebug() << "calculateFixedTempoFirstBeat chose a first beat at frame" << firstBeat
+                 << "while the first raw beat was at" << rawbeats.at(0);
     }
-
-    corrbeats.clear();
-    while (i < totalSamples) {
-        corrbeats << i;
-        i += beat_length;
-    }
-
-    return corrbeats;
+    return firstBeat;
 }

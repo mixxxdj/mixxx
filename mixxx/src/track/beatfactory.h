@@ -14,12 +14,13 @@ class BeatFactory {
     static BeatsPointer makeBeatGrid(TrackPointer pTrack,
                                      double dBpm, double dFirstBeatSample);
 
-    static BeatsPointer makeBeatMap(TrackPointer pTrack, QVector<double> beats,
-                                    const QString subVersion,
-                                    bool bEnableFixedTempoCorrection,
-                                    bool bEnableOffsetCorrection,
-                                    const int iSampleRate, const int iTotalSamples,
-                                    const int iMinBpm, const int iMaxBpm);
+    static BeatsPointer makePreferredBeats(
+        TrackPointer pTrack, QVector<double> beats,
+        const QString subVersion,
+        bool bEnableFixedTempoCorrection,
+        bool bEnableOffsetCorrection,
+        const int iSampleRate, const int iTotalSamples,
+        const int iMinBpm, const int iMaxBpm);
 
   private:
     static void deleteBeats(Beats* pBeats);

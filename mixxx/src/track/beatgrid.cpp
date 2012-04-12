@@ -30,7 +30,6 @@ BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
 }
 
 BeatGrid::~BeatGrid() {
-
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
