@@ -63,12 +63,9 @@ void AnalyserBPM::finalise(TrackPointer tio) {
     }
 
     float bpm = m_pDetector->getBpm();
-    if(bpm != 0) {
+    if (bpm != 0) {
         // Shift it by 2's until it is in the desired range
         float newbpm = correctBPM(bpm, m_iMinBpm, m_iMaxBpm, m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt());
-
-        tio->setBpm(newbpm);
-        tio->setBpmConfirm();
 
         // Currently, the BPM is only analyzed if the track has no BPM. This
         // means we don't have to worry that the track already has an existing

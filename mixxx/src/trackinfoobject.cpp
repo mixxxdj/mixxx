@@ -76,7 +76,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
-    m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_bHeaderParsed = false;
     create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
     if (create_date == "")
@@ -126,7 +125,6 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iTimesPlayed = 0;
     m_bPlayed = false;
     m_fReplayGain = 0.;
-    m_bBpmConfirm = false;
     m_bIsValid = false;
     m_bHeaderParsed = false;
     m_iId = -1;
@@ -181,7 +179,6 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
     XmlParse::addElement( doc, header, "replaygain", QString("%1").arg(m_fReplayGain) );
-    XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
     XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
     XmlParse::addElement( doc, header, "CreateDate", m_dCreateDate.toString() );
@@ -352,18 +349,6 @@ void TrackInfoObject::setBpm(float f) {
 QString TrackInfoObject::getBpmStr() const
 {
     return QString("%1").arg(getBpm(), 3,'f',1);
-}
-
-bool TrackInfoObject::getBpmConfirm()  const
-{
-    QMutexLocker lock(&m_qMutex);
-    return m_bBpmConfirm;
-}
-
-void TrackInfoObject::setBpmConfirm(bool confirm)
-{
-    QMutexLocker lock(&m_qMutex);
-    m_bBpmConfirm = confirm;
 }
 
 void TrackInfoObject::setBeats(BeatsPointer pBeats) {
