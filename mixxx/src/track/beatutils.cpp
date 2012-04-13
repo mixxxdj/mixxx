@@ -158,7 +158,7 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 
     // Get the median BPM.
     qSort(average_bpm_list);
-    double median = computeSampleMedian(average_bpm_list);
+    const double median = computeSampleMedian(average_bpm_list);
 
     /*
      * Okay, let's consider the median an estimation of the BPM To not soley
@@ -207,7 +207,6 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      double perfect_bpm = 0;
      double firstCorrectBeatSample = beats.first();
      bool foundFirstCorrectBeat = false;
-     double global_bpm = filterWeightedAverageBpm;
 
      int counter = 0;
      int perfectBeats = 0;
@@ -252,21 +251,24 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
          }
      }
 
+     const double perfectAverageBpm = filterWeightedAverageBpm;
      if (perfectBeats > 0) {
-         global_bpm = perfect_bpm / perfectBeats;
+         perfectAverageBpm = perfect_bpm / perfectBeats;
      }
 
      // last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
-     double rounded_bpm = floor(global_bpm + 0.5);
-     double bpm_diff = fabs(rounded_bpm - global_bpm);
+     const double rounded_bpm = floor(perfectAverageBpm + 0.5);
+     const double bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
+     bool perform_rounding = (bpm_diff <= BPM_ERROR);
      if (sDebug) {
-         qDebug() << "Perfect BPM=" << global_bpm;
+         qDebug() << "SampleMedianBpm=" << median;
+         qDebug() << "FilterWeightedAverageBpm=" << filterWeightedAverageBpm;
+         qDebug() << "Perfect BPM=" << perfectAverageBpm;
          qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
          qDebug() << "Rounded difference=" << bpm_diff;
-         qDebug() << "Perform rounding=" << (bpm_diff <= BPM_ERROR);
+         qDebug() << "Perform rounding=" << perform_rounding;
      }
-
-     return fabs(bpm_diff) <= BPM_ERROR ? rounded_bpm : global_bpm;
+     return perform_rounding ? rounded_bpm : perfectAverageBpm;
 }
 
 double BeatUtils::calculateOffset(
