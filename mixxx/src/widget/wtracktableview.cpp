@@ -941,7 +941,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     currentSelection->reset(); // remove current selection
 
-    QModelIndex first;
+    QMap<int,int> selectedRows;
     foreach (int trackId, trackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
@@ -954,12 +954,20 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         // trackid.
         QLinkedList<int> rows = trackModel->getTrackRows(trackId);
         foreach (int row, rows) {
-            QModelIndex tl = itemModel->index(row, visibleColumn);
-            currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+            // Restore sort order by rows, so the following commands will act as expected
+            selectedRows.insert(row,0);
+        }
+    }
 
-            if (!first.isValid()) {
-                first = tl;
-            }
+    QModelIndex first;
+    QMapIterator<int,int> i(selectedRows);
+    while (i.hasNext()) {
+        i.next();
+        QModelIndex tl = itemModel->index(i.key(), visibleColumn);
+        currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+
+        if (!first.isValid()) {
+            first = tl;
         }
     }
 
