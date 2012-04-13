@@ -125,10 +125,10 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         }
 
         // Override preference if the BPM is 0.
-        if (pBeats->getBpm() == 0.0) {
+        if (!m_bShouldAnalyze && pBeats->getBpm() == 0.0) {
             m_bShouldAnalyze = true;
             qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
-        } else if (pBeats->findNextBeat(0) <= 0.0) {
+        } else if (!m_bShouldAnalyze && pBeats->findNextBeat(0) <= 0.0) {
             m_bShouldAnalyze = true;
             qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
         }
