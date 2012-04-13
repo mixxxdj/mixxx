@@ -367,7 +367,7 @@ void BeatMap::translate(double dNumSamples) {
 
 void BeatMap::scale(double dScalePercentage) {
     QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
+    if (!isValid() || dScalePercentage == 0.0) {
         return;
     }
     // Scale every beat relative to the first one.
