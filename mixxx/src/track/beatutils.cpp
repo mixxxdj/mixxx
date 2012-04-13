@@ -226,7 +226,7 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
          QString local_bpm_str = QString::number(local_bpm,'g',6);
          if (!foundFirstCorrectBeat &&
              filtered_bpm_frequency_table.contains(local_bpm_str) &&
-             fabs(local_bpm - median) < BPM_ERROR) {
+             fabs(local_bpm - filterWeightedAverageBpm) < BPM_ERROR) {
              firstCorrectBeatSample = beat_start;
              foundFirstCorrectBeat = true;
              if (sDebug) {
@@ -240,7 +240,7 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
               double time2 = (beat_end - firstCorrectBeatSample)/SampleRate;
               double correctedBpm = 60 * counter / time2;
 
-              if (fabs(correctedBpm - global_bpm) <= BPM_ERROR) {
+              if (fabs(correctedBpm - filterWeightedAverageBpm) <= BPM_ERROR) {
                   perfect_bpm += correctedBpm;
                   ++perfectBeats;
                   if (sDebug) {
