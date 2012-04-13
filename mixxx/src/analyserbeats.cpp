@@ -125,10 +125,17 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         }
 
         // Override preference if the BPM is 0.
-        if (tio->getBeats()->getBpm() == 0.0) {
+        if (pBeats->getBpm() == 0.0) {
             m_bShouldAnalyze = true;
             qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
-        } else if (version == newVersion && subVersion == newSubVersion) {
+        } else if (pBeats->findNextBeat(0) <= 0.0) {
+            m_bShouldAnalyze = true;
+            qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
+        }
+
+        // If the version and settings have not changed then if the world is
+        // sane, re-analyzing will do nothing.
+        if (version == newVersion && subVersion == newSubVersion) {
             // Do not re-analyze if the settings are the same and the BPM is not
             // 0.
             qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
@@ -172,24 +179,57 @@ void AnalyserBeats::finalise(TrackPointer tio) {
     qDebug() << "Beat Calculation" << (success ? "complete" : "failed");
 
     QVector<double> beats = m_pVamp->GetInitFramesVector();
-    if (!beats.isEmpty()) {
-        QHash<QString, QString> extraVersionInfo;
-        extraVersionInfo["vamp_plugin_id"] = m_pluginId;
-        if (m_bPreferencesFastAnalysis) {
-            extraVersionInfo["fast_analysis"] = "1";
-        }
-
-        BeatsPointer pBeats = BeatFactory::makePreferredBeats(
-            tio, beats, extraVersionInfo,
-            m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
-            m_iSampleRate, m_iTotalSamples,
-            m_iMinBpm, m_iMaxBpm);
-        tio->setBeats(pBeats);
-        tio->setBpm(pBeats->getBpm());
-    } else {
-        qDebug() << "Could not detect beat positions from Vamp.";
-    }
-
     delete m_pVamp;
     m_pVamp = NULL;
+
+    if (beats.isEmpty()) {
+        qDebug() << "Could not detect beat positions from Vamp.";
+        return;
+    }
+
+    QHash<QString, QString> extraVersionInfo;
+    extraVersionInfo["vamp_plugin_id"] = m_pluginId;
+    if (m_bPreferencesFastAnalysis) {
+        extraVersionInfo["fast_analysis"] = "1";
+    }
+
+    BeatsPointer pBeats = BeatFactory::makePreferredBeats(
+        tio, beats, extraVersionInfo,
+        m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
+        m_iSampleRate, m_iTotalSamples,
+        m_iMinBpm, m_iMaxBpm);
+
+    BeatsPointer pCurrentBeats = tio->getBeats();
+
+    // If the track has no beats object then set our newly generated one
+    // regardless of beat lock.
+    if (!pCurrentBeats) {
+        tio->setBeats(pBeats);
+        return;
+    }
+
+    if (tio->hasBpmLock()) {
+        qDebug() << "Track was BPM-locked as we were analysing it. Aborting analysis.";
+        return;
+    }
+
+    // If the user prefers to replace old beatgrids with newly generated ones or
+    // the old beatgrid has 0-bpm then we replace it.
+    bool zeroCurrentBpm = pCurrentBeats->getBpm() == 0.0f;
+    if (m_bPreferencesReanalyzeOldBpm || zeroCurrentBpm) {
+        if (zeroCurrentBpm) {
+            qDebug() << "Replacing 0-BPM beatgrid with a" << pBeats->getBpm()
+                     << "beatgrid.";
+        }
+        tio->setBeats(pBeats);
+        return;
+    }
+
+    // If we got here then the user doesn't want to replace the beatgrid but
+    // since the first beat is zero we'll apply the offset we just detected.
+    double currentFirstBeat = pCurrentBeats->findNextBeat(0);
+    double newFirstBeat = pBeats->findNextBeat(0);
+    if (currentFirstBeat == 0.0 && newFirstBeat > 0) {
+        pCurrentBeats->translate(newFirstBeat);
+    }
 }
