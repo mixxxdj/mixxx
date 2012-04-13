@@ -114,11 +114,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtType->setText(pTrack->getType());
 
     BeatsPointer pBeats = pTrack->getBeats();
-
-    bool beats_correction_none = pBeats &&
-            pBeats->getSubVersion().contains(QString("beats_correction=none"));
-
-    bool enableBpmEditing = beats_correction_none || pTrack->hasBpmLock();
+    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
+    bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
     bpmDouble->setEnabled(enableBpmEditing);
