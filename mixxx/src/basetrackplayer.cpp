@@ -189,12 +189,9 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     // m_pLoadedTrack->setPlayedAndUpdatePlaycount(true); // Actually the song is loaded but not played
 
-    //Update the BPM and duration values that are stored in ControlObjects
+    // Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());
-
-    float track_bpm = m_pLoadedTrack->getBpm();
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
-
     m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
