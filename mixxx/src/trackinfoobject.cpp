@@ -320,10 +320,19 @@ float TrackInfoObject::getBpm() const {
 }
 
 void TrackInfoObject::setBpm(float f) {
+    if (f < 0) {
+        return;
+    }
+
     QMutexLocker lock(&m_qMutex);
     // TODO(rryan): Assume always dirties.
     bool dirty = false;
-    if (!m_pBeats) {
+    if (f == 0.0) {
+        // If the user sets the BPM to 0, we assume they want to clear the
+        // beatgrid.
+        setBeats(BeatsPointer());
+        dirty = true;
+    } else if (!m_pBeats) {
         setBeats(BeatFactory::makeBeatGrid(this, f, 0));
         dirty = true;
     } else if (m_pBeats->getBpm() != f) {
@@ -372,12 +381,15 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
         }
     }
     m_pBeats = pBeats;
-    double bpm = m_pBeats->getBpm();
-    pObject = dynamic_cast<QObject*>(m_pBeats.data());
-    Q_ASSERT(pObject);
-    if (pObject) {
-        connect(pObject, SIGNAL(updated()),
-                this, SLOT(slotBeatsUpdated()));
+    double bpm = 0.0;
+    if (m_pBeats) {
+        bpm = m_pBeats->getBpm();
+        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        Q_ASSERT(pObject);
+        if (pObject) {
+            connect(pObject, SIGNAL(updated()),
+                    this, SLOT(slotBeatsUpdated()));
+        }
     }
     setDirty(true);
     lock.unlock();
