@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-03-31 21:51+0000\n"
-"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2012-04-13 03:08+0000\n"
+"Last-Translator: Nares Zheng Zoire <nareszheng@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-01 04:36+0000\n"
-"X-Generator: Launchpad (build 15032)\n"
+"X-Launchpad-Export-Date: 2012-04-13 05:20+0000\n"
+"X-Generator: Launchpad (build 15070)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -168,7 +168,7 @@ msgstr "Álbum"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Pista n.º"
+msgstr "Pista #"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
@@ -449,7 +449,7 @@ msgstr ""
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr "Comezar"
+msgstr "Comenzar"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
@@ -537,7 +537,7 @@ msgstr "Si los PPM pueden detectarse pero no entre un rango específico"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr "Permitir GPM encima del rango"
+msgstr "Permitir PPM encima del rango"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
@@ -691,11 +691,11 @@ msgstr "Botones de Pitch/Rate permanentes"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
-msgstr "Clic co botón esquerdo"
+msgstr "Clic con el botón izquierdo"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr "Clic co botón dereito"
+msgstr "Clic con el botón derecho"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
@@ -752,7 +752,7 @@ msgstr "Poder Constante"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr "Mesturador"
+msgstr "Mezcla"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
@@ -820,7 +820,7 @@ msgstr "Ningún"
 
 #: DlgPrefMidiBindings#2
 msgid "Apply MIDI device settings?"
-msgstr "Aplicar as configuracións ao dispositivo MIDI?"
+msgstr "Aplicar la configuración de dispositivos MIDI?"
 
 #: DlgPrefMidiBindings#3
 msgid ""
@@ -833,7 +833,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
-msgstr "Sobrecribir o mapeado existente?"
+msgstr "Sobrescribir la configuración existente?"
 
 #: DlgPrefMidiBindings#5
 msgid ""
@@ -861,7 +861,7 @@ msgstr "Seleccionar Control"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr "Limpiar los Parámetros de Entrada"
+msgstr "Borrar los Parámetros de Entrada"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
@@ -869,7 +869,7 @@ msgstr "¿Estas seguro de borrar todos los parámetros?"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr "Limpiar los Parámetros de Salida"
+msgstr "Borrar los Parámetros de Salida"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
@@ -882,7 +882,7 @@ msgstr "Diálogo"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
-msgstr "O nome do seu dispositivo"
+msgstr "Nombre de tu dispositivo"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
@@ -1094,31 +1094,31 @@ msgstr ""
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr "Seleccione o directorio da biblioteca de música"
+msgstr "Seleccionar el directorio de la biblioteca de la música"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
-msgstr "Foron detectados varios iPods"
+msgstr "Fueron detectados varios iPods"
 
 #: DlgPrefPlaylist#3
 msgid ""
 "Mixxx has detected another iPod. \n"
 "\n"
 msgstr ""
-"Mixxx detectou outro iPod. \n"
+"Mixxx ha detectado otro iPod. \n"
 "\n"
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
-msgstr "Seleccione «Si» para usar o novo iPhone detectado @ "
+msgstr "Seleccione Si para usar el iPod recién detectado @ "
 
 #: DlgPrefPlaylist#5
 msgid " or to continue to search for other iPods. \n"
-msgstr " ou para continuar buscando outros iPods. \n"
+msgstr " o para continuar buscando otros iPods. \n"
 
 #: DlgPrefPlaylist#6
 msgid "Choose No to use the existing iPod @ "
-msgstr "Seleccione «No» para usar el iPod existente @ "
+msgstr "Seleccione No para usar el iPod existente @ "
 
 #: DlgPrefPlaylist#7
 msgid " and end detection. \n"
@@ -1165,7 +1165,7 @@ msgstr "Sincronizar etiquetas ID3 entre modificaciones de pista"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr "Rescanear la biblioteca en cada inicio"
+msgstr "Reescanear la biblioteca en cada inicio"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
@@ -1264,19 +1264,19 @@ msgstr "Álbum"
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Miscellaneous"
-msgstr "Miscelaneas"
+msgstr "Varios"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr "Crear un Archivo .CUE"
+msgstr "Crear un archivo .CUE"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr "Fraccionamiento de Archivo"
+msgstr "División de archivos"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr "Fraccionar grabaciones en"
+msgstr "Dividir grabaciones en"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -1314,7 +1314,7 @@ msgid ""
 "volume."
 msgstr ""
 "En equipos antiguas, puede tomar algunos segundos para que la normalización "
-"se aplique en un tema nuevo. Puede esperar antes de ajustar la preganacia y "
+"se aplique en un tema nuevo. Puede esperar antes de ajustar la preganancia y "
 "el volumen"
 
 #: DlgPrefReplayGainDlg#8
@@ -1337,7 +1337,7 @@ msgstr "Restablecer"
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr "Formulario"
+msgstr "Formulario3"
 
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
@@ -1346,7 +1346,7 @@ msgstr "Activar la transmisión en vivo"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr "Conexión ao servidor"
+msgstr "Conexión al servidor"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
@@ -1415,7 +1415,7 @@ msgstr "Nombre de la emisión"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr "Prueba de «Mixxx Icecast»"
+msgstr "Prueba de Mixxx Icecast"
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
@@ -1537,7 +1537,7 @@ msgstr "MP3"
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr "Canles"
+msgstr "Canales"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
@@ -2547,7 +2547,7 @@ msgstr "Continuar"
 msgid "&Load Song (Player 1)..."
 msgstr "&Cargar canción (reproductor 1)..."
 
-#: MixxxApp#22
+#: MixxxApp#21
 msgid "Ctrl+O"
 msgstr "Ctrl+O"
 
@@ -2555,87 +2555,87 @@ msgstr "Ctrl+O"
 msgid "&Load Song (Player 2)..."
 msgstr "&Cargar canción (reproductor 2)..."
 
-#: MixxxApp#24
+#: MixxxApp#22
 msgid "Ctrl+Shift+O"
 msgstr "Ctrl+Shift+O"
 
-#: MixxxApp#25
+#: MixxxApp#23
 msgid "&Exit"
 msgstr "&Saír"
 
-#: MixxxApp#26
+#: MixxxApp#24
 msgid "Ctrl+Q"
 msgstr "Ctrl+Q"
 
-#: MixxxApp#27
+#: MixxxApp#25
 msgid "&Rescan Library"
 msgstr "&Reescanear Libreria"
 
-#: MixxxApp#28
+#: MixxxApp#26
 msgid "Add &new playlist"
 msgstr "Agregar &nueva lista de reproducción"
 
-#: MixxxApp#29
+#: MixxxApp#27
 msgid "Ctrl+N"
 msgstr "Ctrl+N"
 
-#: MixxxApp#30
+#: MixxxApp#28
 msgid "Add new &crate"
 msgstr "Añadir &cajón nuevo"
 
-#: MixxxApp#31
+#: MixxxApp#29
 msgid "Ctrl+C"
 msgstr "Ctrl+C"
 
-#: MixxxApp#32
+#: MixxxApp#30
 msgid "&Import playlist"
 msgstr "&Importar lista de reproducción"
 
-#: MixxxApp#33
+#: MixxxApp#31
 msgid "Ctrl+I"
 msgstr "Ctrl+I"
 
-#: MixxxApp#34
+#: MixxxApp#32
 msgid "&Audio Beat Marks"
 msgstr "&Marcas de Golpes por Audio"
 
-#: MixxxApp#35
+#: MixxxApp#33
 msgid "&Full Screen"
 msgstr "&Pantalla completa"
 
-#: MixxxApp#36
+#: WSearchLineEdit#1
 msgid "Ctrl+F"
 msgstr "Ctrl+F"
 
-#: MixxxApp#37
+#: MixxxApp#34
 msgid "F11"
 msgstr "F11"
 
-#: MixxxApp#38
+#: MixxxApp#35
 msgid "&Preferences"
 msgstr "&Preferencias"
 
-#: MixxxApp#39
+#: MixxxApp#36
 msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
-#: MixxxApp#40
+#: MixxxApp#37
 msgid "&About"
 msgstr "&Acerca de"
 
-#: MixxxApp#41
+#: MixxxApp#38
 msgid "&Community Support"
 msgstr "Soporte &comunitario"
 
-#: MixxxApp#42
+#: MixxxApp#39
 msgid "&User Manual"
 msgstr "Manual de &usuario"
 
-#: MixxxApp#43
+#: MixxxApp#40
 msgid "Send Us &Feedback"
 msgstr "&Envíenos su opinión"
 
-#: MixxxApp#44
+#: MixxxApp#41
 msgid "&Translate this application"
 msgstr "&Traducir esta aplicación"
 
@@ -2643,7 +2643,7 @@ msgstr "&Traducir esta aplicación"
 msgid "Enable &Vinyl Control 1"
 msgstr "Activar &control por vinilo 1"
 
-#: MixxxApp#46
+#: MixxxApp#42
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
@@ -2651,7 +2651,7 @@ msgstr "Ctrl+Y"
 msgid "Enable &Vinyl Control 2"
 msgstr "Activar &control por vinilo 2"
 
-#: MixxxApp#48
+#: MixxxApp#43
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
@@ -3445,7 +3445,7 @@ msgstr "Botón Reloop/Salir para reproductor %1"
 
 #: Ui#37
 msgid "Setup a loop over 4 beats for Player %1"
-msgstr ""
+msgstr "Configurar un loop por encima de 4 beats para el Reproductor 1%"
 
 #: Ui#38
 msgid "Halves the current loop's length for Player %1"
@@ -3587,7 +3587,7 @@ msgstr "Micrófono encendido/apagado"
 msgid "Microphone volume"
 msgstr "Volumen del micrófono"
 
-#: WSearchLineEdit#1
+#: WSearchLineEdit#3
 msgid "Search..."
 msgstr "Buscar..."
 
