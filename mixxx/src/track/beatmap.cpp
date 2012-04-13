@@ -43,10 +43,7 @@ BeatMap::BeatMap(TrackPointer pTrack, const QVector<double> beats)
 
 void BeatMap::initialize(TrackPointer pTrack) {
     m_iSampleRate = pTrack->getSampleRate();
-    connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
-            this, SLOT(slotTrackBpmUpdated(double)),
-            Qt::DirectConnection);
-    //slotTrackBpmUpdated(pTrack->getBpm());
+    m_dCachedBpm = 0;
     m_dLastFrame = 0;
 }
 
@@ -94,7 +91,7 @@ void BeatMap::readByteArray(const QByteArray* pByteArray) {
         }
         m_signedBeatList.append(beat);
     }
-    m_dLastFrame = m_signedBeatList.last().position;
+    onBeatlistChanged();
 }
 
 void BeatMap::createFromBeatVector(QVector<double> beats) {
@@ -117,7 +114,7 @@ void BeatMap::createFromBeatVector(QVector<double> beats) {
             previous_beatpos = beatpos;
         }
     }
-    m_dLastFrame = m_signedBeatList.last().position;
+    onBeatlistChanged();
 }
 
 QString BeatMap::getVersion() const {
@@ -261,9 +258,7 @@ double BeatMap::getBpm() const {
     QMutexLocker locker(&m_mutex);
     if (!isValid())
         return -1;
-    SignedBeat startBeat = m_signedBeatList.first();
-    SignedBeat stopBeat =  m_signedBeatList.last();
-    return calculateBpm(startBeat, stopBeat);
+    return m_dCachedBpm;
 }
 
 double BeatMap::getBpmRange(double startSample, double stopSample) const {
@@ -294,7 +289,7 @@ void BeatMap::addBeat(double dBeatSample) {
         return;
 
     m_signedBeatList.insert(it, Beat);
-    m_dLastFrame = (m_signedBeatList.last()).position;
+    onBeatlistChanged();
     locker.unlock();
     emit(updated());
 }
@@ -313,7 +308,7 @@ void BeatMap::removeBeat(double dBeatSample) {
     while (it->position == dBeatSample) {
         it = m_signedBeatList.erase(it);
     }
-    m_dLastFrame = m_signedBeatList.last().position;
+    onBeatlistChanged();
     locker.unlock();
     emit(updated());
 }
@@ -343,7 +338,7 @@ void BeatMap::moveBeat(double dBeatSample, double dNewBeatSample) {
     if (it->position != dNewBeatSample) {
         m_signedBeatList.insert(it, NewBeat);
     }
-    m_dLastFrame = m_signedBeatList.last().position;
+    onBeatlistChanged();
     locker.unlock();
     emit(updated());
 }
@@ -365,7 +360,7 @@ void BeatMap::translate(double dNumSamples) {
             m_signedBeatList.erase(it);
         }
     }
-    m_dLastFrame = m_signedBeatList.last().position;
+    onBeatlistChanged();
     locker.unlock();
     emit(updated());
 }
@@ -375,19 +370,21 @@ void BeatMap::scale(double dScalePercentage) {
     if (!isValid()) {
         return;
     }
+    // Scale every beat relative to the first one.
+    SignedBeat firstBeat = m_signedBeatList.first();
     for (SignedBeatList::iterator it = m_signedBeatList.begin();
-                                  it!= m_signedBeatList.end();
-                                  ++it) {
+         it != m_signedBeatList.end(); ++it) {
         // Need to not accrue fractional frames.
-        it->position = floorf(it->position * dScalePercentage);
+        it->position = floorf(
+            (1 - dScalePercentage) * firstBeat.position +
+            dScalePercentage * it->position);
     }
-    m_dLastFrame = m_signedBeatList.last().position;
+    onBeatlistChanged();
     locker.unlock();
     emit(updated());
 }
 
-void BeatMap::slotTrackBpmUpdated(double dBpm) {
-
+void BeatMap::setBpm(double dBpm) {
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
      * that is, calculated bpm is a power-of-two fraction of the bpm of the track.
@@ -410,99 +407,32 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
      * method in beatgrid.cpp.
      *
      * - vittorio.
-     *
      */
     QMutexLocker locker(&m_mutex);
-    if(!isValid() || m_dLastFrame == 0)
+
+    if (!isValid())
         return;
 
-    double dtrack_Bpm = calculateBpm(m_signedBeatList.first(),
+    // This problem is so complicated that for now we are just going to bail and
+    // scale the beatgrid exactly by the ratio indicated by the desired
+    // BPM. This is a downside of using a BeatMap over a BeatGrid. rryan 4/2012
+    double currentBpm = calculateBpm(m_signedBeatList.first(),
                                      m_signedBeatList.last());
-    double delta_bpm = fabs(dBpm - dtrack_Bpm);
+    double ratio = dBpm / currentBpm;
+    locker.unlock();
+    scale(ratio);
+}
 
-    if (dtrack_Bpm <= 0 || dBpm <= 0 || delta_bpm < 0.01) {
+void BeatMap::onBeatlistChanged() {
+    if (!isValid()) {
+        m_dLastFrame = 0;
+        m_dCachedBpm = 0;
         return;
     }
-
-    SignedBeatList temp_beatList;
-    SignedBeat Beat;
-
-    if (m_subVersion.contains("beats_correction=none")) {
-        if (delta_bpm < BPM_TOLERANCE) {
-            return;
-        }
-
-        //qDebug()<<"Enabling doubling/halving for nonconstant beats";
-        while ((dBpm  - (dtrack_Bpm * 2)) >= -BPM_TOLERANCE ) {
-            temp_beatList = m_signedBeatList;
-            int i = 0;
-
-            temp_beatList[0].isOn = true;
-            while (i < temp_beatList.size() -1 ) {
-                if (temp_beatList[i].isOn) {
-                    int old_index = i;
-                    i++;
-                    while (!temp_beatList[i].isOn && i < temp_beatList.size() - 1) {
-                        i++;
-                    }
-                    if (i - old_index == 1) {
-                        Beat.position = floorf((temp_beatList[old_index].position
-                                + temp_beatList[old_index + 1].position) / 2);
-                        Beat.isOn = true;
-                        SignedBeatList::iterator it =
-                                qLowerBound(m_signedBeatList.begin(),
-                                            m_signedBeatList.end(),
-                                            Beat);
-                        m_signedBeatList.insert(it, Beat);
-
-                    } else {
-                        int pos = (int) floorf( ((double(i + old_index) / 2)));
-                        SignedBeatList::iterator it =
-                                qLowerBound(m_signedBeatList.begin(),
-                                            m_signedBeatList.end(),
-                                            temp_beatList[pos]);
-                        it->isOn = true;
-
-                    }
-                }
-
-            }
-            dtrack_Bpm *= 2;
-        }
-
-        while ((dBpm  - (dtrack_Bpm / 2)) <= BPM_TOLERANCE) {
-
-            bool turnoff = false;
-            for (int i = 0; i < m_signedBeatList.size() ; i += 1) {
-                if (m_signedBeatList[i].isOn) {
-                    if (turnoff) {
-                        m_signedBeatList[i].isOn = false;
-                    }
-                    turnoff = !turnoff;
-                }
-            }
-            dtrack_Bpm /= 2;
-        }
-    } else {
-        //qDebug()<<"Constant Grid: Scaling";
-        double scale = dtrack_Bpm / dBpm;
-        for (SignedBeatList::iterator it = m_signedBeatList.begin();
-             it != m_signedBeatList.end(); ++it) {
-            double new_pos = scale * (*it).position + (1 - scale)
-                                            * m_signedBeatList[0].position;
-            it->position = floorf(new_pos);
-        }
-
-        // Adding some beats at the end if we shrank too much the BeatList.
-        double frame = (m_signedBeatList.last()).position;
-        while (frame < m_dLastFrame ){
-            //qDebug()<<"Adding beats";
-            frame +=  floorf(60.0 * m_iSampleRate / dBpm);
-            Beat.position = frame;
-            Beat.isOn = true;
-            m_signedBeatList.append(Beat);
-        }
-    }
+    m_dLastFrame = m_signedBeatList.last().position;
+    SignedBeat startBeat = m_signedBeatList.first();
+    SignedBeat stopBeat =  m_signedBeatList.last();
+    m_dCachedBpm = calculateBpm(startBeat, stopBeat);
 }
 
 double BeatMap::calculateBpm(SignedBeat startBeat, SignedBeat stopBeat) const {

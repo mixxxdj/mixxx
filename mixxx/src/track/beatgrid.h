@@ -15,7 +15,7 @@
 class BeatGrid : public QObject, public virtual Beats {
     Q_OBJECT
   public:
-    BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
+    BeatGrid(TrackInfoObject* pTrack, const QByteArray* pByteArray=NULL);
     virtual ~BeatGrid();
 
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
@@ -27,7 +27,7 @@ class BeatGrid : public QObject, public virtual Beats {
     // comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE;
+        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SET;
     }
 
     virtual QByteArray* toByteArray() const;
@@ -57,12 +57,10 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
     virtual void scale(double dScalePercentage);
+    virtual void setBpm(double dBpm);
 
   signals:
     void updated();
-
-  private slots:
-    void slotTrackBpmUpdated(double bpm);
 
   private:
     void readByteArray(const QByteArray* pByteArray);

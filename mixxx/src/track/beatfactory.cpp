@@ -2,7 +2,6 @@
 #include <QStringList>
 
 #include "track/beatgrid.h"
-#include "track/beatmatrix.h"
 #include "track/beatmap.h"
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
@@ -12,17 +11,11 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
                                                  QByteArray* beatsSerialized) {
 
     if (beatsVersion == BEAT_GRID_VERSION) {
-        BeatGrid* pGrid = new BeatGrid(pTrack, beatsSerialized);
+        BeatGrid* pGrid = new BeatGrid(pTrack.data(), beatsSerialized);
         pGrid->moveToThread(pTrack->thread());
         pGrid->setParent(pTrack.data());
         qDebug() << "Successfully deserialized BeatGrid";
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
-    } else if (beatsVersion == BEAT_MATRIX_VERSION) {
-        BeatMatrix* pMatrix = new BeatMatrix(pTrack, beatsSerialized);
-        pMatrix->moveToThread(pTrack->thread());
-        pMatrix->setParent(pTrack.data());
-        qDebug() << "Successfully deserialized BeatMatrix";
-        return BeatsPointer(pMatrix, &BeatFactory::deleteBeats);
     } else if (beatsVersion == BEAT_MAP_VERSION) {
         BeatMap* pMap = new BeatMap(pTrack, beatsSerialized);
         pMap->moveToThread(pTrack->thread());
@@ -34,7 +27,7 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
     return BeatsPointer();
 }
 
-BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double dFirstBeatSample) {
+BeatsPointer BeatFactory::makeBeatGrid(TrackInfoObject* pTrack, double dBpm, double dFirstBeatSample) {
     BeatGrid* pGrid = new BeatGrid(pTrack);
     pGrid->setGrid(dBpm, dFirstBeatSample);
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
@@ -107,7 +100,7 @@ BeatsPointer BeatFactory::makePreferredBeats(
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
             bEnableOffsetCorrection,
             beats, iSampleRate, iTotalSamples, globalBpm);
-        BeatGrid* pGrid = new BeatGrid(pTrack);
+        BeatGrid* pGrid = new BeatGrid(pTrack.data());
         // firstBeat is in frames here and setGrid() takes samples.
         pGrid->setGrid(globalBpm, firstBeat * 2);
         pGrid->setSubVersion(subVersion);

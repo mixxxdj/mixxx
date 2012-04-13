@@ -38,7 +38,8 @@ class BeatMap : public QObject, public Beats {
     // See method comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE | BEATSCAP_MOVEBEAT;
+        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
+                BEATSCAP_MOVEBEAT | BEATSCAP_SET;
     }
 
     virtual QByteArray* toByteArray() const;
@@ -69,17 +70,16 @@ class BeatMap : public QObject, public Beats {
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
     virtual void scale(double dScalePercentage);
+    virtual void setBpm(double dBpm);
 
   signals:
     void updated();
-
-  private slots:
-    void slotTrackBpmUpdated(double bpm);
 
   private:
     void initialize(TrackPointer pTrack);
     void readByteArray(const QByteArray* pByteArray);
     void createFromBeatVector(QVector<double> beats);
+    void onBeatlistChanged();
 
     double calculateBpm(SignedBeat startBeat, SignedBeat stopBeat) const;
     // For internal use only.
@@ -87,6 +87,7 @@ class BeatMap : public QObject, public Beats {
 
     mutable QMutex m_mutex;
     QString m_subVersion;
+    double m_dCachedBpm;
     int m_iSampleRate;
     double m_dLastFrame;
     SignedBeatList m_signedBeatList;
