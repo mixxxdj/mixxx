@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>690</width>
+    <width>717</width>
     <height>509</height>
    </rect>
   </property>
@@ -48,7 +48,7 @@
          </size>
         </property>
         <property name="text">
-         <string>BPM Analyser:</string>
+         <string>Beat Analyser:</string>
         </property>
        </widget>
       </item>
@@ -80,7 +80,7 @@
    <item row="3" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
-      <string>Analyzer Settings</string>
+      <string>Analyser Settings</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -99,7 +99,7 @@
          <string>Most dance music follows a 4/4 time signature. Using this assumption results in better beatgrids for most dance music.</string>
         </property>
         <property name="text">
-         <string>Assume 4/4 time signature </string>
+         <string>Assume constant tempo (Recommended)</string>
         </property>
        </widget>
       </item>
@@ -113,7 +113,7 @@
       <item>
        <widget class="QCheckBox" name="bReanalyse">
         <property name="text">
-         <string>Re-analyze beats for tracks with beatgrids from previous versions of Mixxx or 3rd-party software</string>
+         <string>Re-analyse beats when beats already present (e.g. from 3rd party programs or older Mixxx versions)</string>
         </property>
        </widget>
       </item>
