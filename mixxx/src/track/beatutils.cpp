@@ -224,17 +224,16 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 
          //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
          QString local_bpm_str = QString::number(local_bpm,'g',6);
-         if (filtered_bpm_frequency_table.contains(local_bpm_str) &&
+         if (!foundFirstCorrectBeat &&
+             filtered_bpm_frequency_table.contains(local_bpm_str) &&
              fabs(local_bpm - median) < BPM_ERROR) {
-             if (!foundFirstCorrectBeat) {
-                firstCorrectBeatSample = beat_start;
-                foundFirstCorrectBeat = true;
-                if (sDebug) {
-                    qDebug() << "Beat #" << (i-N)
-                             << "is considered as reference beat with BPM:"
-                             << local_bpm;
-                }
-            }
+             firstCorrectBeatSample = beat_start;
+             foundFirstCorrectBeat = true;
+             if (sDebug) {
+                 qDebug() << "Beat #" << (i-N)
+                          << "is considered as reference beat with BPM:"
+                          << local_bpm;
+             }
          }
          if (foundFirstCorrectBeat) {
               counter += N;
