@@ -366,10 +366,13 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
     QObject* pObject = NULL;
     if (m_pBeats) {
         pObject = dynamic_cast<QObject*>(m_pBeats.data());
-        if (pObject)
-            pObject->disconnect(this, SIGNAL(updated()));
+        if (pObject) {
+            disconnect(pObject, SIGNAL(updated()),
+                       this, SLOT(slotBeatsUpdated()));
+        }
     }
     m_pBeats = pBeats;
+    double bpm = m_pBeats->getBpm();
     pObject = dynamic_cast<QObject*>(m_pBeats.data());
     Q_ASSERT(pObject);
     if (pObject) {
@@ -378,6 +381,7 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
     }
     setDirty(true);
     lock.unlock();
+    emit(bpmUpdated(bpm));
     emit(beatsUpdated());
 }
 
@@ -389,7 +393,9 @@ BeatsPointer TrackInfoObject::getBeats() const {
 void TrackInfoObject::slotBeatsUpdated() {
     QMutexLocker lock(&m_qMutex);
     setDirty(true);
+    double bpm = m_pBeats->getBpm();
     lock.unlock();
+    emit(bpmUpdated(bpm));
     emit(beatsUpdated());
 }
 
