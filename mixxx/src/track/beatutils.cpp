@@ -251,10 +251,8 @@ double BeatUtils::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
          }
      }
 
-     const double perfectAverageBpm = filterWeightedAverageBpm;
-     if (perfectBeats > 0) {
-         perfectAverageBpm = perfect_bpm / perfectBeats;
-     }
+     const double perfectAverageBpm = perfectBeats > 0 ?
+             perfect_bpm / perfectBeats : filterWeightedAverageBpm;
 
      // last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
      const double rounded_bpm = floor(perfectAverageBpm + 0.5);
