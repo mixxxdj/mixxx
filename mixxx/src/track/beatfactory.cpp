@@ -90,10 +90,10 @@ BeatsPointer BeatFactory::makePreferredBeats(
                                                 bEnableOffsetCorrection,
                                                 iMinBpm, iMaxBpm,
                                                 extraVersionInfo);
-    const QString subVersion = getPreferredVersion(bEnableFixedTempoCorrection,
-                                                   bEnableOffsetCorrection,
-                                                   iMinBpm, iMaxBpm,
-                                                   extraVersionInfo);
+    const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
+                                                      bEnableOffsetCorrection,
+                                                      iMinBpm, iMaxBpm,
+                                                      extraVersionInfo);
 
     if (version == BEAT_GRID_VERSION) {
         double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
