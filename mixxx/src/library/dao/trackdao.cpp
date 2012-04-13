@@ -606,7 +606,6 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         pTrack->setBitrate(bitrate);
         pTrack->setSampleRate(samplerate);
         pTrack->setCuePoint((float)cuepoint);
-        pTrack->setBpm(bpm.toFloat());
         pTrack->setReplayGain(replaygain.toFloat());
 
         QString beatsVersion = query.value(query.record().indexOf("beats_version")).toString();
@@ -614,7 +613,10 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(pTrack, beatsVersion, &beatsBlob);
         if (pBeats) {
             pTrack->setBeats(pBeats);
+        } else {
+            pTrack->setBpm(bpm.toFloat());
         }
+        pTrack->setBpmLock(has_bpm_lock);
 
         pTrack->setTimesPlayed(timesplayed);
         pTrack->setPlayed(played);
@@ -623,9 +625,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         pTrack->setLocation(location);
         pTrack->setHeaderParsed(header_parsed);
         pTrack->setDateAdded(date_created);
-
         pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
-        pTrack->setBpmLock(has_bpm_lock);
 
         pTrack->setDirty(false);
 
@@ -652,15 +652,6 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         // dirty it.
         if (!header_parsed) {
             pTrack->parse();
-        }
-
-        if (!pBeats && pTrack->getBpm() != 0.0f) {
-            // The track has no stored beats but has a previously detected BPM
-            // or a BPM loaded from metadata. Automatically create a beatgrid
-            // for the track. This dirties the track so we have to do it after
-            // all the signal connections, etc. are in place.
-            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, pTrack->getBpm(), 0.0f);
-            pTrack->setBeats(pBeats);
         }
 
         return pTrack;

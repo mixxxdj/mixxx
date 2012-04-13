@@ -119,6 +119,10 @@ public:
     bool getBpmConfirm() const;
     /** Set BPM confidence */
     void setBpmConfirm(bool confirm=true);
+    // A track with a locked BPM will not be re-analyzed by the beats or bpm
+    // analyzer.
+    void setBpmLock(bool hasLock);
+    bool hasBpmLock() const;
     bool getHeaderParsed() const;
     void setHeaderParsed(bool parsed = true);
     /** Returns the user comment */
@@ -135,10 +139,6 @@ public:
     QString getBitrateStr() const;
     /** Sets the bitrate */
     void setBitrate(int);
-    /** Sets first beat pos */
-    void setBeatFirst(float);
-    /** Get first beat pos */
-    float getBeatFirst() const;
     /** Set sample rate */
     void setSampleRate(int iSampleRate);
     /** Get sample rate */
@@ -255,13 +255,6 @@ public:
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
-    /*
-     * A track with a locked BPM will not be re-analyzed
-     * by the beats or bpm analyzer.
-     */
-    void setBpmLock(bool hasLock);
-    bool hasBpmLock() const;
-
   public slots:
     void slotCueUpdated();
 
@@ -356,18 +349,10 @@ private:
     float m_fReplayGain;
     /** Has this track been played this sessions? */
     bool m_bPlayed;
-    /** Beat per minutes (BPM) */
-    float m_fBpm;
-    /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */
-    float m_fMinBpm;
-    /** Maximum BPM range. If this is 0.0, then the config max BPM will be used */
-    float m_fMaxBpm;
     /** True if BPM is confirmed */
     bool m_bBpmConfirm;
     /** True if header was parsed */
     bool m_bHeaderParsed;
-    /** Position of first beat in song */
-    float m_fBeatFirst;
     /** Id. Unique ID of track */
     int m_iId;
     /** Cue point in samples or something */
@@ -381,8 +366,6 @@ private:
 
     /** BPM lock **/
     bool m_bBpmLock;
-    /** The Vamp plugin having computed the BPM value **/
-    QString m_bpmPluginKey;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;

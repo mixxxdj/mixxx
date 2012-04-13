@@ -15,7 +15,6 @@
 #include "engine/clockcontrol.h"
 #include "mathstuff.h"
 #include "track/beatgrid.h"
-#include "track/beatfactory.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,
@@ -195,14 +194,6 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     float track_bpm = m_pLoadedTrack->getBpm();
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
-
-    if (!m_pLoadedTrack->getBeats() && track_bpm > 0) {
-        // This track has no beats object but has a non-zero BPM. Create a
-        // fixed-size beatgrid for it.
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(m_pLoadedTrack,
-                                                        track_bpm, 0.0f);
-        m_pLoadedTrack->setBeats(pBeats);
-    }
 
     m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 

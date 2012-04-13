@@ -11,18 +11,13 @@ struct BeatGridData {
 	double firstBeat;
 };
 
-BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
+BeatGrid::BeatGrid(TrackInfoObject* pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()),
           m_dBpm(0.0),
           m_dFirstBeat(0.0f),
           m_dBeatLength(0.0f) {
-    connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
-            this, SLOT(slotTrackBpmUpdated(double)),
-            Qt::DirectConnection);
-    slotTrackBpmUpdated(pTrack->getBpm());
-
     qDebug() << "New BeatGrid";
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
@@ -210,12 +205,15 @@ void BeatGrid::scale(double dScalePercentage) {
         return;
     }
     m_dBpm *= dScalePercentage;
+    m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
     locker.unlock();
     emit(updated());
 }
 
-void BeatGrid::slotTrackBpmUpdated(double dBpm) {
+void BeatGrid::setBpm(double dBpm) {
     QMutexLocker locker(&m_mutex);
     m_dBpm = dBpm;
     m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
+    locker.unlock();
+    emit(updated());
 }

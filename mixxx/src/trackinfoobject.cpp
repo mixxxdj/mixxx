@@ -29,6 +29,7 @@
 #include "xmlparse.h"
 #include "controlobject.h"
 #include "waveform/waveform.h"
+#include "track/beatfactory.h"
 
 #include "mixxxutils.cpp"
 
@@ -75,9 +76,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
-    m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
     m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
-    m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_bHeaderParsed = false;
     create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
     if (create_date == "")
@@ -126,12 +125,10 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_bPlayed = false;
-    m_fBpm = 0.;
     m_fReplayGain = 0.;
     m_bBpmConfirm = false;
     m_bIsValid = false;
     m_bHeaderParsed = false;
-    m_fBeatFirst = -1.;
     m_iId = -1;
     m_iSampleRate = 0;
     m_iChannels = 0;
@@ -184,9 +181,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
     XmlParse::addElement( doc, header, "replaygain", QString("%1").arg(m_fReplayGain) );
-    XmlParse::addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
     XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
-    XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
     XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
     XmlParse::addElement( doc, header, "CreateDate", m_dCreateDate.toString() );
@@ -313,18 +308,34 @@ void TrackInfoObject::setReplayGain(float f)
 
 float TrackInfoObject::getBpm() const {
     QMutexLocker lock(&m_qMutex);
-    return m_fBpm;
+    if (!m_pBeats) {
+        return 0;
+    }
+    // getBpm() returns -1 when invalid.
+    double bpm = m_pBeats->getBpm();
+    if (bpm >= 0.0) {
+        return bpm;
+    }
+    return 0;
 }
 
 void TrackInfoObject::setBpm(float f) {
     QMutexLocker lock(&m_qMutex);
-    bool dirty = m_fBpm != f;
-    m_fBpm = f;
+    // TODO(rryan): Assume always dirties.
+    bool dirty = false;
+    if (!m_pBeats) {
+        setBeats(BeatFactory::makeBeatGrid(this, f, 0));
+        dirty = true;
+    } else if (m_pBeats->getBpm() != f) {
+        m_pBeats->setBpm(f);
+        dirty = true;
+    }
+
     if (dirty)
         setDirty(true);
 
     lock.unlock();
-    //Tell the GUI to update the bpm label...
+    // Tell the GUI to update the bpm label...
     //qDebug() << "TrackInfoObject signaling BPM update to" << f;
     emit(bpmUpdated(f));
 }
@@ -676,21 +687,6 @@ void TrackInfoObject::setBitrate(int i)
     m_iBitrate = i;
     if (dirty)
         setDirty(true);
-}
-
-void TrackInfoObject::setBeatFirst(float fBeatFirstPos)
-{
-    QMutexLocker lock(&m_qMutex);
-    bool dirty = m_fBeatFirst != fBeatFirstPos;
-    m_fBeatFirst = fBeatFirstPos;
-    if (dirty)
-        setDirty(true);
-}
-
-float TrackInfoObject::getBeatFirst() const
-{
-    QMutexLocker lock(&m_qMutex);
-    return m_fBeatFirst;
 }
 
 int TrackInfoObject::getId() const {
