@@ -115,10 +115,6 @@ public:
     void setBpm(float);
     /** Returns BPM as a string */
     QString getBpmStr() const;
-    /** Retruns if BPM was confirmed (edited or verified manually) */
-    bool getBpmConfirm() const;
-    /** Set BPM confidence */
-    void setBpmConfirm(bool confirm=true);
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.
     void setBpmLock(bool hasLock);
@@ -219,9 +215,6 @@ public:
     Waveform* getWaveformSummary();
     const Waveform* getWaveformSummary() const;
     void setWaveformSummary(Waveform* pWaveformSummary);
-
-    /** Set pointer to ControlObject holding BPM value in engine */
-    void setBpmControlObject(ControlObject *p);
 
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
@@ -349,8 +342,6 @@ private:
     float m_fReplayGain;
     /** Has this track been played this sessions? */
     bool m_bPlayed;
-    /** True if BPM is confirmed */
-    bool m_bBpmConfirm;
     /** True if header was parsed */
     bool m_bHeaderParsed;
     /** Id. Unique ID of track */
