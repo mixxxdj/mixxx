@@ -8,18 +8,21 @@
 
 BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
                                                  QString beatsVersion,
+                                                 QString beatsSubVersion,
                                                  QByteArray* beatsSerialized) {
 
     if (beatsVersion == BEAT_GRID_VERSION) {
         BeatGrid* pGrid = new BeatGrid(pTrack.data(), beatsSerialized);
         pGrid->moveToThread(pTrack->thread());
         pGrid->setParent(pTrack.data());
+        pGrid->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized BeatGrid";
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (beatsVersion == BEAT_MAP_VERSION) {
         BeatMap* pMap = new BeatMap(pTrack, beatsSerialized);
         pMap->moveToThread(pTrack->thread());
         pMap->setParent(pTrack.data());
+        pMap->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized BeatMap";
         return BeatsPointer(pMap, &BeatFactory::deleteBeats);
     }

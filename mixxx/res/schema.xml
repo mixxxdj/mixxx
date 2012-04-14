@@ -325,6 +325,7 @@ METADATA
     </description>
     <sql>
       ALTER TABLE Library ADD COLUMN bpm_lock INTEGER DEFAULT 0;
+      ALTER TABLE Library ADD COLUMN beats_sub_version TEXT DEFAULT '';
     </sql>
   </revision>
 </schema>
