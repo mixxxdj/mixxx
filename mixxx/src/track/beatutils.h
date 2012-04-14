@@ -41,7 +41,7 @@ class BeatUtils {
     static double calculateBpm(const QVector<double>& beats, int SampleRate,
                                int min_bpm, int max_bpm);
     static double findFirstCorrectBeat(const QVector<double> rawBeats,
-                                       int SampleRate, double global_bpm);
+                                       const int SampleRate, const double global_bpm);
 
     /* This implement a method to find the best offset so that
      * the grid generated from bpm is close enough to the one we get from vamp.

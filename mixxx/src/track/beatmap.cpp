@@ -459,18 +459,6 @@ double BeatMap::calculateBpm(SignedBeat startBeat, SignedBeat stopBeat) const {
     if (beatvect.size() == 0)
         return -1;
 
-    // If we have less than 8 samples, just divide the # of beats by the
-    // duration in minutes.
-    if (beatvect.size() < 8) {
-        double rangeDurationMinutes =
-                (stopSample - startSample) / ( 60.0f * m_iSampleRate);
-        // Subtracting returns the number of beats between the samples referred to
-        // by the start and end.
-        double beatsInRange = beatvect.size();
-        return beatsInRange / rangeDurationMinutes;
-    }
-
-    // Statistical approach works better if we have more than 8 samples:
     return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
 
