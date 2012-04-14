@@ -78,9 +78,12 @@ QString BeatFactory::getPreferredSubVersion(
         fragments << QString("%1%2%3").arg(
             it.key(), kSubVersionKeyValueSeparator, it.value());
     }
-    if (bEnableOffsetCorrection) {
-        fragments << QString("offset_correction%11").arg(kSubVersionKeyValueSeparator);
+    if (bEnableFixedTempoCorrection && bEnableOffsetCorrection) {
+        fragments << QString("offset_correction%1%2")
+                .arg(kSubVersionKeyValueSeparator, QString::number(1));
     }
+
+    qSort(fragments);
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
 }
 
@@ -101,11 +104,13 @@ BeatsPointer BeatFactory::makePreferredBeats(
                                                       iMinBpm, iMaxBpm,
                                                       extraVersionInfo);
 
+    BeatUtils::printBeatStatistics(beats, iSampleRate);
     if (version == BEAT_GRID_VERSION) {
         double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
             bEnableOffsetCorrection,
             beats, iSampleRate, iTotalSamples, globalBpm);
+
         BeatGrid* pGrid = new BeatGrid(pTrack.data());
         // firstBeat is in frames here and setGrid() takes samples.
         pGrid->setGrid(globalBpm, firstBeat * 2);
