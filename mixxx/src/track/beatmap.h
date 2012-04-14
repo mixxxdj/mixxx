@@ -13,18 +13,11 @@
 
 #include "trackinfoobject.h"
 #include "track/beats.h"
-
+#include "proto/beats.pb.h"
 
 #define BEAT_MAP_VERSION "BeatMap-1.0"
-struct SignedBeat{
-    double position;
-    bool isOn;
-    bool operator<(const SignedBeat& otherBeat) const {
-        return position < otherBeat.position;
-    }
-};
 
-typedef QList<SignedBeat> SignedBeatList;
+typedef QList<mixxx::track::io::Beat> BeatList;
 
 class BeatMap : public QObject, public Beats {
     Q_OBJECT
@@ -55,7 +48,7 @@ class BeatMap : public QObject, public Beats {
     virtual double findPrevBeat(double dSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual void findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const;
+    virtual void findBeats(double startSample, double stopSample, SampleList* pBeatsList) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
 
     virtual double getBpm() const;
@@ -81,7 +74,8 @@ class BeatMap : public QObject, public Beats {
     void createFromBeatVector(QVector<double> beats);
     void onBeatlistChanged();
 
-    double calculateBpm(SignedBeat startBeat, SignedBeat stopBeat) const;
+    double calculateBpm(const mixxx::track::io::Beat& startBeat,
+                        const mixxx::track::io::Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
 
@@ -90,7 +84,7 @@ class BeatMap : public QObject, public Beats {
     double m_dCachedBpm;
     int m_iSampleRate;
     double m_dLastFrame;
-    SignedBeatList m_signedBeatList;
+    BeatList m_beats;
 };
 
 #endif /* BEATMAP_H_ */

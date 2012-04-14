@@ -6,8 +6,10 @@
 
 #include "trackinfoobject.h"
 #include "track/beats.h"
+#include "proto/beats.pb.h"
 
-#define BEAT_GRID_VERSION "BeatGrid-1.0"
+#define BEAT_GRID_1_VERSION "BeatGrid-1.0"
+#define BEAT_GRID_2_VERSION "BeatGrid-2.0"
 
 // BeatGrid is an implementation of the Beats interface that implements an
 // infinite grid of beats, aligned to a song simply by a starting offset of the
@@ -43,7 +45,7 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual double findPrevBeat(double dSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual void findBeats(double startSample, double stopSample, BeatList* pBeatsList) const;
+    virtual void findBeats(double startSample, double stopSample, SampleList* pBeatsList) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
@@ -63,6 +65,9 @@ class BeatGrid : public QObject, public virtual Beats {
     void updated();
 
   private:
+    double firstBeatSample() const;
+    double bpm() const;
+
     void readByteArray(const QByteArray* pByteArray);
     // For internal use only.
     bool isValid() const;
@@ -72,10 +77,8 @@ class BeatGrid : public QObject, public virtual Beats {
     QString m_subVersion;
     // The number of samples per second
     int m_iSampleRate;
-    // The number of beats per minute
-    double m_dBpm;
-    // The sample offset of the first beat
-    double m_dFirstBeat;
+    // Data storage for BeatGrid
+    mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
     double m_dBeatLength;
 };

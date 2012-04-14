@@ -257,6 +257,12 @@ class TagLib(Dependence):
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
+
+class ProtoBuf(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib('protobuf-lite'):
+            raise Exception("Could not find libprotobuf or its development headers.")
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -525,6 +531,7 @@ class MixxxCore(Feature):
                    "track/beatmap.cpp",
                    "track/beatfactory.cpp",
                    "track/beatutils.cpp",
+                   "proto/beats.pb.cc",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -718,7 +725,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
