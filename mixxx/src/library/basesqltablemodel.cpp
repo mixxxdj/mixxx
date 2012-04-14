@@ -577,6 +577,7 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     }
     QString location = index.sibling(
         index.row(), fieldIndex("location")).data().toString();
+    qDebug() << "get Track location " <<  location <<endl;
     return location;
 }
 
@@ -584,7 +585,7 @@ void BaseSqlTableModel::tracksChanged(QSet<int> trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
-
+    qDebug() << this << "trackChanged" << trackIds.size();
     const int numColumns = columnCount();
     foreach (int trackId, trackIds) {
         QLinkedList<int> rows = getTrackRows(trackId);
