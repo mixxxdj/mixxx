@@ -8,6 +8,29 @@
 
 class BeatUtils {
   public:
+    static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
+
+    static double constrainBpm(double bpm, const int min_bpm,
+                               const int max_bpm, bool aboveRange) {
+        if (bpm <= 0.0 ||
+            min_bpm >= max_bpm ||
+            (bpm >= min_bpm && bpm <= max_bpm)) {
+            return bpm;
+        }
+
+        if (!aboveRange) {
+            while (bpm > max_bpm) {
+                bpm /= 2.0;
+            }
+        }
+        while (bpm < min_bpm) {
+            bpm *= 2.0;
+        }
+
+        return bpm;
+    }
+
+
     /*
      * This method detects the BPM given a set of beat positions.
      * We compute the average local BPM of by considering 8 beats
@@ -15,7 +38,7 @@ class BeatUtils {
      * from which the statistical median is computed. This value provides
      * a pretty good guess of the global BPM value.
      */
-    static double calculateBpm(QVector<double> beats, int SampleRate,
+    static double calculateBpm(const QVector<double>& beats, int SampleRate,
                                int min_bpm, int max_bpm);
     static double findFirstCorrectBeat(const QVector<double> rawBeats,
                                        int SampleRate, double global_bpm);
@@ -41,10 +64,10 @@ class BeatUtils {
   private:
     static double computeSampleMedian(QList<double> sortedItems);
     static double computeFilteredWeightedAverage(
-        const QMap<QString, int> frequencyTable,
+        const QMap<double, int> frequencyTable,
         const double filterCenter,
         const double filterTolerance,
-        QMap<QString, int>* filteredFrequencyTable);
+        QMap<double, int>* filteredFrequencyTable);
 
 };
 
