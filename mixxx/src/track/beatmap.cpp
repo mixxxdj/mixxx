@@ -11,9 +11,7 @@
 #include "track/beatmap.h"
 #include "track/beatutils.h"
 
-#define BPM_TOLERANCE 0.6f
-
-static const int kFrameSize = 2;
+const int kFrameSize = 2;
 
 inline double samplesToFrames(const double samples) {
     return floorf(samples / kFrameSize);
