@@ -363,6 +363,8 @@ class Tonal(Feature):
         return sources
 
 class Vamp(Feature):
+    INTERNAL_LINK = False
+    INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
     def description(self):
         return "Vamp Analysers support"
 
@@ -379,9 +381,13 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
 
+        # If there is no system vamp-hostdk installed, then we'll directly link
+        # the vamp-hostsdk.
         if not conf.CheckLib(['vamp-hostsdk']):
-            raise Exception('Did not find libvamp-hostsdk.a or the libvamp-hostsdk development header files - exiting!')
-        #build.env.Append(CPPPATH=['#lib/vamp'])
+            # For header includes
+            build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
+            self.INTERNAL_LINK = True
+
         build.env.Append(CPPDEFINES = '__VAMP__')
 
         # FFTW3 support
@@ -397,6 +403,17 @@ class Vamp(Feature):
                    'analyserbeats.cpp',
                    'analysergainvamp.cpp',
                    'dlgprefbeats.cpp']
+        if self.INTERNAL_LINK:
+            hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
+            sources.extend(path % hostsdk_src_path for path in
+                           ['%s/PluginBufferingAdapter.cpp',
+                            '%s/PluginChannelAdapter.cpp',
+                            '%s/PluginHostAdapter.cpp',
+                            '%s/PluginInputDomainAdapter.cpp',
+                            '%s/PluginLoader.cpp',
+                            '%s/PluginSummarisingAdapter.cpp',
+                            '%s/PluginWrapper.cpp',
+                            '%s/RealTime.cpp'])
         return sources
 
 class FAAD(Feature):
