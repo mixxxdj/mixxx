@@ -12,7 +12,7 @@ class BeatUtils {
 
     static double constrainBpm(double bpm, const int min_bpm,
                                const int max_bpm, bool aboveRange) {
-        if (bpm <= 0.0 ||
+        if (bpm <= 0.0 || min_bpm < 0 || max_bpm < 0 ||
             min_bpm >= max_bpm ||
             (bpm >= min_bpm && bpm <= max_bpm)) {
             return bpm;
@@ -68,6 +68,9 @@ class BeatUtils {
         const double filterCenter,
         const double filterTolerance,
         QMap<double, int>* filteredFrequencyTable);
+    static QList<double> computeWindowedBpmsAndFrequencyHistogram(
+        const QVector<double> beats, const int windowSize, const int windowStep,
+        const int sampleRate, QMap<double, int>* frequencyHistogram);
 
 };
 

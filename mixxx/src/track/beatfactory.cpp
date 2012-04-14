@@ -53,10 +53,13 @@ QString BeatFactory::getPreferredSubVersion(
     const QHash<QString, QString> extraVersionInfo) {
     QStringList fragments;
 
-    fragments << QString("min_bpm%1%2").arg(kSubVersionKeyValueSeparator,
-                                            QString::number(iMinBpm));
-    fragments << QString("max_bpm%1%2").arg(kSubVersionKeyValueSeparator,
-                                            QString::number(iMaxBpm));
+    // min/max BPM limits only apply to fixed-tempo assumption
+    if (bEnableFixedTempoCorrection) {
+        fragments << QString("min_bpm%1%2").arg(kSubVersionKeyValueSeparator,
+                                                QString::number(iMinBpm));
+        fragments << QString("max_bpm%1%2").arg(kSubVersionKeyValueSeparator,
+                                                QString::number(iMaxBpm));
+    }
 
     QHashIterator<QString, QString> it(extraVersionInfo);
     while (it.hasNext()) {
