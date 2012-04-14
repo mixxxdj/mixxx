@@ -10,19 +10,28 @@
 #include <QList>
 #include <QMap>
 #include <math.h>
-#define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.05 BPM far away from the correct one
-#define N 12 //the raw beatgrid is divided into blocks of size N from which the local bpm is computed.
-#include "beatutils.h"
 
-static bool sDebug = true;
-const double kBpmEpsilon = 0.2;
+#include "track/beatutils.h"
+
+// we are generous and assume the global_BPM to be at most 0.05 BPM far away
+// from the correct one
+#define BPM_ERROR 0.05f
+
+// the raw beatgrid is divided into blocks of size N from which the local bpm is
+// computed.
+#define N 12
+
+static bool sDebug = false;
+
+const double kCorrectBeatLocalBpmEpsilon = 0.05; // = 0.2;
+const int kHistogramDecimalPlaces = 2;
+const double kHistogramDecimalScale = pow(10, kHistogramDecimalPlaces);
+const double kBpmFilterTolerance = 1.0;
 
 void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
     if (!sDebug) {
         return;
     }
-    const int kDecimalPlaces = 2;
-    const double kDecimalScale = pow(10, kDecimalPlaces);
     QMap<double, int> frequency;
 
     for (int i = N; i < beats.size(); i += 1) {
@@ -35,7 +44,7 @@ void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate
 
         qDebug() << "Beat" << i << "local BPM:" << local_bpm;
 
-        local_bpm = floorf(local_bpm * kDecimalScale + 0.5) / kDecimalScale;
+        local_bpm = floorf(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
         frequency[local_bpm] += 1;
     }
 
@@ -64,6 +73,30 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
     // the sorted list.
     int item_position = (sortedItems.size() + 1)/2;
     return sortedItems.at(item_position - 1);
+}
+
+QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
+        const QVector<double> beats, const int windowSize, const int windowStep,
+        const int sampleRate, QMap<double, int>* frequencyHistogram) {
+    QList<double> averageBpmList;
+    for (int i = windowSize; i < beats.size(); i += windowStep) {
+        //get start and end sample of the beats
+        double start_sample = beats.at(i - windowSize);
+        double end_sample = beats.at(i);
+
+        // Time needed to count a bar (4 beats)
+        double time = (end_sample - start_sample)/sampleRate;
+        double localBpm = 60.0 * windowSize / time;
+
+        // round BPM to have two decimal places
+        double roundedBpm = floorf(localBpm * kHistogramDecimalScale + 0.5) /
+                kHistogramDecimalScale;
+
+        // add to local BPM to list and increment frequency count
+        averageBpmList << roundedBpm;
+        (*frequencyHistogram)[roundedBpm] += 1;
+    }
+    return averageBpmList;
 }
 
 double BeatUtils::computeFilteredWeightedAverage(
@@ -146,38 +179,9 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
         return 60.0 * beats.size() * SampleRate / (beats.last() - beats.first());
     }
 
-    int max_frequency = 0;
-    double most_freq_bpm = 0;
-    const int kDecimalPlaces = 2;
-    const double kDecimalScale = pow(10, kDecimalPlaces);
-    QList<double> average_bpm_list;
     QMap<double, int> frequency_table;
-
-    for (int i = N; i < beats.size(); i += 1) {
-        //get start and end sample of the beats
-        double start_sample = beats.at(i-N);
-        double end_sample = beats.at(i);
-
-        // Time needed to count a bar (4 beats)
-        double time = (end_sample - start_sample)/SampleRate;
-        double avg_bpm = 60*N / time;
-
-        // round BPM to have two decimal places
-        double roundedBPM = floorf(avg_bpm * kDecimalScale + 0.5) / kDecimalScale;
-
-        // add to local BPM to list
-        average_bpm_list << roundedBPM;
-
-        frequency_table[roundedBPM] += 1;
-        const int newFreq = frequency_table[roundedBPM];
-        if (newFreq > max_frequency) {
-            max_frequency = newFreq;
-            most_freq_bpm = roundedBPM;
-        }
-
-        //qDebug() << "Local BPM: " << avg_bpm << " StringVal: " << local_bpm_str;
-        //qDebug() << "Average Bar BPM: " << avg_bpm;
-    }
+    QList<double> average_bpm_list = computeWindowedBpmsAndFrequencyHistogram(
+        beats, N, 1, SampleRate, &frequency_table);
 
     // Get the median BPM.
     qSort(average_bpm_list);
@@ -196,12 +200,10 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
      */
 
     //qDebug() << "BPM range between " << min_bpm << " and " << max_bpm;
-    //qDebug() << "Max BPM Frequency=" << most_freq_bpm;
 
     // a subset of the 'frequency_table', where the bpm values are +-1 away from
     // the median average BPM.
     QMap<double, int> filtered_bpm_frequency_table;
-    const double kBpmFilterTolerance = 1.0;
     const double filterWeightedAverageBpm = computeFilteredWeightedAverage(
         frequency_table, median, kBpmFilterTolerance, &filtered_bpm_frequency_table);
 
@@ -216,15 +218,15 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
      * to Traktor, this deviation may cause the beat grid to look unaligned,
      * especially at the end of a track.  Let's try to get the BPM 'perfect' :-)
      *
-     * Idea: Iterate over the original QM beat set where
-     * some detected beats may be wrong:
-     * The QM beat is considered as correct if:
-     *  - the beat position can be approached by a beat grid obtained by the global BPM
+     * Idea: Iterate over the original beat set where some detected beats may be
+     * wrong. The beat is considered 'correct' if the beat position is within
+     * epsilon of a beat grid obtained by the global BPM.
      *
      * If the beat turns out correct, we can compute the error in BPM units.
-     * E.g., we can check the QM beat position after 60 seconds. Ideally,
-     * the approached beat is just a couple of samples away, i.e., not worse than 0.05 BPM units.
-     * The distance between these two samples can be used for BPM error correction.
+     * E.g., we can check the original beat position after 60 seconds. Ideally,
+     * the approached beat is just a couple of samples away, i.e., not worse
+     * than 0.05 BPM units.  The distance between these two samples can be used
+     * for BPM error correction.
      */
 
      double perfect_bpm = 0;
@@ -242,7 +244,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
          double time = (beat_end - beat_start)/SampleRate;
          double local_bpm = 60.0 * N / time;
          // round BPM to have two decimal places
-         local_bpm = floorf(local_bpm * kDecimalScale + 0.5) / kDecimalScale;
+         local_bpm = floorf(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
 
          //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
          if (!foundFirstCorrectBeat &&
@@ -280,10 +282,15 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
      const double perfectAverageBpm = perfectBeats > 0 ?
              perfect_bpm / perfectBeats : filterWeightedAverageBpm;
 
-     // last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
+     // Round values that are within BPM_ERROR of a whole number.
      const double rounded_bpm = floor(perfectAverageBpm + 0.5);
      const double bpm_diff = fabs(rounded_bpm - perfectAverageBpm);
      bool perform_rounding = (bpm_diff <= BPM_ERROR);
+
+     // Finally, restrict the BPM to be within min_bpm and max_bpm.
+     const double maybeRoundedBpm = perform_rounding ? rounded_bpm : perfectAverageBpm;
+     const double constrainedBpm = constrainBpm(maybeRoundedBpm, min_bpm, max_bpm, false);
+
      if (sDebug) {
          qDebug() << "SampleMedianBpm=" << median;
          qDebug() << "FilterWeightedAverageBpm=" << filterWeightedAverageBpm;
@@ -291,8 +298,9 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
          qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
          qDebug() << "Rounded difference=" << bpm_diff;
          qDebug() << "Perform rounding=" << perform_rounding;
+         qDebug() << "Constrained to Range [" << min_bpm << "," << max_bpm << "]=" << constrainedBpm;
      }
-     return perform_rounding ? rounded_bpm : perfectAverageBpm;
+     return constrainedBpm;
 }
 
 double BeatUtils::calculateOffset(
@@ -352,9 +360,9 @@ double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
 
         //qDebug() << "Local BPM between beat " << (i-N) << " and " << i << " is " << avg_bpm;
 
-        // If the local BPM is within kBpmEpsilon of the global BPM then use
-        // this window as the first beat.
-        if (fabs(global_bpm - avg_bpm) <= kBpmEpsilon) {
+        // If the local BPM is within kCorrectBeatLocalBpmEpsilon of the global
+        // BPM then use this window as the first beat.
+        if (fabs(global_bpm - avg_bpm) <= kCorrectBeatLocalBpmEpsilon) {
             //qDebug() << "Using beat " << (i-N) << " as first beat";
             return start_sample;
         }
