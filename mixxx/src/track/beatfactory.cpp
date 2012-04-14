@@ -11,7 +11,8 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
                                                  QString beatsSubVersion,
                                                  QByteArray* beatsSerialized) {
 
-    if (beatsVersion == BEAT_GRID_VERSION) {
+    if (beatsVersion == BEAT_GRID_1_VERSION ||
+        beatsVersion == BEAT_GRID_2_VERSION) {
         BeatGrid* pGrid = new BeatGrid(pTrack.data(), beatsSerialized);
         pGrid->moveToThread(pTrack->thread());
         pGrid->setParent(pTrack.data());
@@ -42,7 +43,7 @@ QString BeatFactory::getPreferredVersion(
     const int iMinBpm, const int iMaxBpm,
     const QHash<QString, QString> extraVersionInfo) {
     if (bEnableFixedTempoCorrection) {
-        return BEAT_GRID_VERSION;
+        return BEAT_GRID_2_VERSION;
     }
     return BEAT_MAP_VERSION;
 }
@@ -83,6 +84,9 @@ QString BeatFactory::getPreferredSubVersion(
                 .arg(kSubVersionKeyValueSeparator, QString::number(1));
     }
 
+    fragments << QString("rounding%1%2").
+            arg(kSubVersionKeyValueSeparator, QString::number(0.05));
+
     qSort(fragments);
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
 }
@@ -105,7 +109,7 @@ BeatsPointer BeatFactory::makePreferredBeats(
                                                       extraVersionInfo);
 
     BeatUtils::printBeatStatistics(beats, iSampleRate);
-    if (version == BEAT_GRID_VERSION) {
+    if (version == BEAT_GRID_2_VERSION) {
         double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
             bEnableOffsetCorrection,
