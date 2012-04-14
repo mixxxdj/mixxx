@@ -171,7 +171,8 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_REMOVE
-            | TRACKMODELCAPS_BPMLOCK;
+            | TRACKMODELCAPS_BPMLOCK
+            | TRACKMODELCAPS_CLEAR_BEATS;
 
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     bool locked = crateDao.isCrateLocked(m_iCrateId);

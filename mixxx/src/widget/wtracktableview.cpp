@@ -279,6 +279,9 @@ void WTrackTableView::createActions() {
     connect(m_pBpmUnlockAction, SIGNAL(triggered()),
             this, SLOT(slotUnlockBpm()));
 
+    m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
+    connect(m_pClearBeatsAction, SIGNAL(triggered()),
+            this, SLOT(slotClearBeats()));
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
@@ -461,10 +464,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     m_pMenu->addSeparator();
 
-     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_BPMLOCK)) {
-         m_pMenu->addAction(m_pBpmLockAction);
-         m_pMenu->addAction(m_pBpmUnlockAction);
-     }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_BPMLOCK)) {
+        m_pMenu->addAction(m_pBpmLockAction);
+        m_pMenu->addAction(m_pBpmUnlockAction);
+    }
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
+        m_pMenu->addAction(m_pClearBeatsAction);
+    }
 
     bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
     m_pRemoveAct->setEnabled(!locked);
@@ -1001,10 +1008,25 @@ void WTrackTableView::lockBpm(bool lock) {
     }
 
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
-    // TODO: This must be done in a thread for large selections
+    // TODO: This should be done in a thread for large selections
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
         track->setBpmLock(lock);
+    }
+}
+
+void WTrackTableView::slotClearBeats() {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    // TODO: This should be done in a thread for large selections
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        track->setBeats(BeatsPointer());
     }
 }
