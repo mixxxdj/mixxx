@@ -14,7 +14,7 @@
 #define N 12 //the raw beatgrid is divided into blocks of size N from which the local bpm is computed.
 #include "beatutils.h"
 
-static bool sDebug = false;
+static bool sDebug = true;
 const double kBpmEpsilon = 0.2;
 
 void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
@@ -135,16 +135,24 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
      * beats. We then sort the averages and take the middle to find the median
      * BPM.
      */
-    int max_frequency = 0;
-    double most_freq_bpm = 0;
+
     if (beats.size() < 2) {
         return 0;
     }
+
+    // If we don't have enough beats for our regular approach, just divide the #
+    // of beats by the duration in minutes.
+    if (beats.size() <= N) {
+        return 60.0 * beats.size() * SampleRate / (beats.last() - beats.first());
+    }
+
+    int max_frequency = 0;
+    double most_freq_bpm = 0;
     const int kDecimalPlaces = 2;
     const double kDecimalScale = pow(10, kDecimalPlaces);
     QList<double> average_bpm_list;
     QMap<double, int> frequency_table;
-    double avg_bpm = 60.0 * beats.size() * SampleRate/(beats.last() - beats.first());
+
     for (int i = N; i < beats.size(); i += 1) {
         //get start and end sample of the beats
         double start_sample = beats.at(i-N);
@@ -152,7 +160,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
 
         // Time needed to count a bar (4 beats)
         double time = (end_sample - start_sample)/SampleRate;
-        avg_bpm = 60*N / time;
+        double avg_bpm = 60*N / time;
 
         // round BPM to have two decimal places
         double roundedBPM = floorf(avg_bpm * kDecimalScale + 0.5) / kDecimalScale;
@@ -169,10 +177,6 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
 
         //qDebug() << "Local BPM: " << avg_bpm << " StringVal: " << local_bpm_str;
         //qDebug() << "Average Bar BPM: " << avg_bpm;
-    }
-
-    if (average_bpm_list.empty()) {
-        return avg_bpm;
     }
 
     // Get the median BPM.
@@ -334,18 +338,14 @@ double BeatUtils::calculateOffset(
 }
 
 double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
-                                       int SampleRate, double global_bpm) {
-    // TODO(rryan) I'm not sure this is the best way to do this. Because you are
-    // using a window of N, if the first "correct" beat is at N-1 then you'll
-    // ignore it. It might be better (though more CPU intensive) to slide the
-    // window forward by 1 instead of N.
-    for (int i = N; i < rawbeats.size(); i += N) {
+                                       const int SampleRate, const double global_bpm) {
+    for (int i = N; i < rawbeats.size(); i++) {
         // get start and end sample of the beats
         double start_sample = rawbeats.at(i-N);
         double end_sample = rawbeats.at(i);
 
         // The time in seconds represented by this sample range.
-        double time = (end_sample - start_sample)/(SampleRate);
+        double time = (end_sample - start_sample)/SampleRate;
 
         // Average BPM within this sample range.
         double avg_bpm = 60.0 * N / time;
@@ -362,10 +362,7 @@ double BeatUtils::findFirstCorrectBeat(const QVector<double> rawbeats,
 
     // If we didn't find any beat that matched the window, return the first
     // beat.
-    if (rawbeats.size() > 0) {
-        return rawbeats.at(0);
-    }
-    return 0.0f;
+    return !rawbeats.empty() ? rawbeats.first() : 0.0f;
 }
 
 // static
