@@ -105,7 +105,7 @@ void BeatMap::createFromBeatVector(QVector<double> beats) {
         // beatpos is in frames. Do not accept fractional frames.
         beatpos = floorf(beatpos);
         if (beatpos <= previous_beatpos || beatpos < 0) {
-            qDebug() << "BeatMap::createFromeVector: beats not in increasing order or negative";
+            qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
             qDebug() << "discarding beat " << beatpos;
         } else {
             beat.position = beatpos;
@@ -410,15 +410,14 @@ void BeatMap::setBpm(double dBpm) {
      */
     QMutexLocker locker(&m_mutex);
 
-    if (!isValid())
+    // Ignore sets of 0 since we can't scale by that.
+    if (!isValid() || dBpm <= 0.0)
         return;
 
     // This problem is so complicated that for now we are just going to bail and
     // scale the beatgrid exactly by the ratio indicated by the desired
     // BPM. This is a downside of using a BeatMap over a BeatGrid. rryan 4/2012
-    double currentBpm = calculateBpm(m_signedBeatList.first(),
-                                     m_signedBeatList.last());
-    double ratio = dBpm / currentBpm;
+    double ratio = m_dCachedBpm / dBpm;
     locker.unlock();
     scale(ratio);
 }
