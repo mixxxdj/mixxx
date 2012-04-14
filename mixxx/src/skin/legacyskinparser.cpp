@@ -662,6 +662,8 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     }
     pTabWidget->setMaximumWidth(width);
 
+
+
     QWidget* pLibraryPage = new QWidget(pTabWidget);
 
     QGridLayout* pLibraryPageLayout = new QGridLayout(pLibraryPage);
@@ -683,7 +685,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     pLineEditSearch->setup(node);
 
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
-    vl->setContentsMargins(0,0,0,0); //Fill entire space
+    vl->setContentsMargins(0,50,0,0); //Fill entire space
     vl->addWidget(pLineEditSearch);
     vl->addWidget(pLibrarySidebar);
     pLibrarySidebarPage->setLayout(vl);
@@ -818,6 +820,14 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     style.prepend(styleHack);
 
     pTabWidget->setStyleSheet(style);
+
+    qDebug() << " my message "<< node.nodeName();
+    qDebug() << " my message "<< node.lastChildElement().previousSiblingElement().previousSiblingElement().nodeName();
+    qDebug() << " my message "<< node.lastChildElement().previousSiblingElement().nodeName();
+    qDebug() << " my message "<< node.lastChildElement().nodeName();
+    parsePushButton(node.lastChildElement().previousSiblingElement().previousSiblingElement());
+    parseOverview(node.lastChildElement().previousSiblingElement());
+    parseText(node.lastChildElement());
 
     return pTabWidget;
 }
