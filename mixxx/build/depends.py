@@ -260,7 +260,7 @@ class TagLib(Dependence):
 
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
-        if not conf.CheckLib('protobuf-lite'):
+        if not conf.CheckLib(['protobuf-lite', 'protobuf']):
             raise Exception("Could not find libprotobuf or its development headers.")
 
 class MixxxCore(Feature):
@@ -531,7 +531,6 @@ class MixxxCore(Feature):
                    "track/beatmap.cpp",
                    "track/beatfactory.cpp",
                    "track/beatutils.cpp",
-                   "proto/beats.pb.cc",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -558,6 +557,19 @@ class MixxxCore(Feature):
                    # (prefs icons, etc.)
                    build.env.Qrc('#res/mixxx.qrc')
                    ]
+
+        proto_args = {
+            'PROTOCPROTOPATH': ['src'],
+            'PROTOCPYTHONOUTDIR': '', # set to None to not generate python
+            'PROTOCOUTDIR': build.build_dir,
+            'PROTOCCPPOUTFLAGS': '',
+            #'PROTOCCPPOUTFLAGS': "dllexport_decl=PROTOCONFIG_EXPORT:"
+        }
+        proto_sources = SCons.Glob('proto/*.proto')
+        proto_objects = [build.env.Protoc([], proto_source, **proto_args)
+                        for proto_source in proto_sources]
+        sources.extend(proto_objects)
+
 
         # Uic these guys (they're moc'd automatically after this) - Generates
         # the code for the QT UI forms
