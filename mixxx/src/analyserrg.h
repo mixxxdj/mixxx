@@ -11,9 +11,7 @@
 #include "analyser.h"
 #include "configobject.h"
 
-
 class AnalyserGain : public Analyser {
-
   public:
     AnalyserGain(ConfigObject<ConfigValue> *_config);
     virtual ~AnalyserGain();
@@ -29,6 +27,5 @@ class AnalyserGain : public Analyser {
     CSAMPLE* m_pRightTempBuffer;
     int m_iBufferSize;
 };
-
 
 #endif /* ANALYSERRG_H_ */

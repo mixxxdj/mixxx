@@ -92,6 +92,8 @@ WTrackTableView::~WTrackTableView()
     delete m_pTrackInfo;
     delete m_pNumSamplers;
     delete m_pNumDecks;
+    delete m_pBpmLockAction;
+    delete m_pBpmUnlockAction;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
@@ -269,6 +271,17 @@ void WTrackTableView::createActions() {
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
+
+    m_pBpmLockAction = new QAction(tr("Lock BPM"), this);
+    m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), this);
+    connect(m_pBpmLockAction, SIGNAL(triggered()),
+            this, SLOT(slotLockBpm()));
+    connect(m_pBpmUnlockAction, SIGNAL(triggered()),
+            this, SLOT(slotUnlockBpm()));
+
+    m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
+    connect(m_pClearBeatsAction, SIGNAL(triggered()),
+            this, SLOT(slotClearBeats()));
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
@@ -447,6 +460,17 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         }
 
         m_pMenu->addMenu(m_pCrateMenu);
+    }
+
+    m_pMenu->addSeparator();
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_BPMLOCK)) {
+        m_pMenu->addAction(m_pBpmLockAction);
+        m_pMenu->addAction(m_pBpmUnlockAction);
+    }
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
+        m_pMenu->addAction(m_pClearBeatsAction);
     }
 
     bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
@@ -974,5 +998,43 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     if (first.isValid()) {
         scrollTo(first, QAbstractItemView::EnsureVisible);
         //scrollTo(first, QAbstractItemView::PositionAtCenter);
+    }
+}
+
+void WTrackTableView::slotLockBpm() {
+    lockBpm(true);
+}
+
+void WTrackTableView::slotUnlockBpm() {
+    lockBpm(false);
+}
+
+void WTrackTableView::lockBpm(bool lock) {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    // TODO: This should be done in a thread for large selections
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        track->setBpmLock(lock);
+    }
+}
+
+void WTrackTableView::slotClearBeats() {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    // TODO: This should be done in a thread for large selections
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        track->setBeats(BeatsPointer());
     }
 }
