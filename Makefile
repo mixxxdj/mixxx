@@ -3,7 +3,8 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
+#SPHINXBUILD   = sphinx-build
+SPHINXBUILD   = sphinx-build-2.7    #For OSX if sphinx has been installed via MacPorts
 
 PAPER         =
 BUILDDIR      = build

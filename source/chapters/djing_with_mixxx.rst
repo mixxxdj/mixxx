@@ -50,13 +50,16 @@ phase of the beats in a song so that they are aligned with the beats in the
 other song. Matching the tempo and aligning the beats are the two things a DJ
 must do to beatmatch.
 
-In Mixxx, you can match the tempo of two songs by adjusting the playback rate
-sliders on left and right side of the user interface. You can adjust the phase
-of the beats by clicking-and-dragging on either waveform display to temporarily
+Mixxx can match the tempo and align the beats for you. This, however, requires
+an accurately detected BPM value and a proper beat grid for both tracks. In this 
+case all you need to do is hit SYNC. To beatmatch manually the tempo of the two songs 
+must be synchronized by adjusting the playback rate sliders on left and right side 
+of the user interface. You can adjust the phase of the beats by 
+clicking-and-dragging on either waveform display to temporarily
 slow down one of the songs until the beats are aligned. The temporary pitch bend
 buttons can also be used to momentarily adjust the playback rate, allowing you
 to “shuffle” the beats in a song forwards or backwards, so they can be aligned
-with another song.
+with another song. 
 
 Once the tempos are matched and the beats aligned between two songs, they are
 said to be beatmatched. A “perfect” beatmatch is near impossible - there will
@@ -66,6 +69,46 @@ distinct “double bass kick” sound which is often preceded by the kick weaken
 in intensity (as the two kicks drift out of phase). When this happens, the beats
 can be realigned by simply tapping one of the temporary pitch bend buttons a few
 times in the appropriate direction. Now get out there and make Tiesto jealous!
+
+BPM and Beat Detection
+======================
+
+Previous versions of Mixxx were able to detect BPM values but unable to determine
+where the beats are. Consequently, the beat grids often looked unaligned. 
+The DJ had to adjust the beat grid unless he or she did not make use of auto-beatmatching 
+via SYNC button .   
+
+Starting with version 1.11, Mixxx comes with a new ultra-precise BPM and beat detector.
+The beat grid gets adjusted after track analysis has finished. Manual 
+adjustments are unnecessary in many cases because Mixxx knows where the beats are.
+
+Preference
+----------
+
+BPM and beat detection is a complex operation. Depending on your computer, the track's bitrate and duration
+this may take some time. By default Mixxx analyzes the complete track, however, it will not analyze more than
+10 minutes of audio. To accelerate BPM detection on slower computers, a "Fast Analysis" option is available 
+in the preferences. If enabled, the BPM is computed by analyzing the first minute of the track. In most 
+cases this does not affect the BPM detection negatively because most modern dance music is written
+in a 4/4 signature. 
+ 
+.. figure:: ../_static/mixxx-1.11-bpm-prefs.png
+   :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Mixxx preferences - Setting up recordings
+   :figclass: pretty-figures
+
+By default Mixxx assumes that your music follows a constant tempo, i.e., a 4/4 signature. 
+
+Correcting beat grids
+---------------------
+
+- If the BPM has been computed wrong
+--> How to get the perfect beat grid
+
+ 
+   
 
 Headphone Cueing
 ================
