@@ -701,7 +701,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
 
             }
         }
-        else
+        else//Drag and drop inside Mixxx is only for few rows, bulks happen here
         {
             //Reset the selected tracks (if you had any tracks highlighted, it
             //clears them)
@@ -734,13 +734,25 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 }
 
                 //Add all the dropped URLs/tracks to the track model (playlist/crate)
-                foreach (url, urls)
-                {
-                    QFileInfo file(url.toLocalFile());
-                    if (!trackModel->addTrack(destIndex, file.absoluteFilePath()))
-                        numNewRows--; //# of rows to select must be decremented if we skipped some tracks
-                }
-
+				if(urls.size() > 1) {//if many items are being dropped
+					//prepare the list of QFileInfos
+					QList <QFileInfo> fileInfoList;
+                	foreach(url, urls) {
+						QFileInfo file(url.toLocalFile());
+						fileInfoList.append(file);
+					}
+					//calling the addTracks returns number of failed additions
+					int failedAdds = trackModel->addTracks(destIndex, fileInfoList);
+					//Decrement # of rows to select if some were skipped
+					numNewRows = numNewRows - failedAdds;
+				}
+				else {
+					QFileInfo file(url.toLocalFile());
+					if(!trackModel->addTrack(destIndex, file.absoluteFilePath())) {
+						newNumRows--;
+					}
+	
+				}	
                 //Create the selection, but only if the track model supports reordering.
                 //(eg. crates don't support reordering/indexes)
                 if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
@@ -760,6 +772,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
     } else {
         event->ignore();
     }
+	qDebug()<<"Track drop of wtracktavleview occured";
 }
 
 TrackModel* WTrackTableView::getTrackModel() {

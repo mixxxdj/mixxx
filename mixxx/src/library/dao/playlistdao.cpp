@@ -396,6 +396,11 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     emit(changed(playlistId));
 }
 
+void PlaylistDAO::insertTracksIntoPlaylist(QList <int> trackIDs, int playlistId, int position) {
+	
+	
+}
+
 void PlaylistDAO::addToAutoDJQueue(int playlistId) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 

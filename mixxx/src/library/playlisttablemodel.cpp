@@ -94,6 +94,41 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     return true;
 }
 
+//Adding multiple tracks at once to a playlist, returns # of failed additions
+int PlaylistTableModel::addTracks(const QModelIndex& index, QList <QString> locations) {
+	int trackAddFails = 0;
+	const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+	int position = index.sibling(index.row(), positionColumn).data().toInt();
+	
+	//Handle weird cases like a drag and drop to an invalid index
+	if (position <= 0) {
+		position = rowCount() + 1;
+	}
+
+	//Prepare a list of QFileInfos
+	QList <QFileInfo> fileInfoList;
+	QString fileLocation;
+	foreach (fileLocation, locations) {
+		qDebug()<<"Location"<< fileLocation;
+		QFileInfo fileInfo(fileLocation);
+		fileInfoList.append(fileInfo);
+	}
+
+	//Use the addTracks of TrackDAO which returns a QList with trackIds
+	QList <int> TrackIDs;
+	trackIDs = m_trackDao.addTracks(fileInfoList, true);
+	
+	//Assuming from the TrackDAO implementation of addTrack which returns -1 for add fails
+	trackAddFails = trackIDs.removeAll(-1);
+	//trackAddFails are # of tracks that couldn't be added to library
+	
+	//Unlike the way addTrack is implemented in CrateTableModel here it does not worry about failing to add track to playlist?
+	m_playlistDao.insertTracksIntoPlaylist(trackIDs, m_iPlaylistId, position);
+	select();
+
+	return trackAddFails;
+}
+
 TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const {
     //FIXME: use position instead of location for playlist tracks?
 
