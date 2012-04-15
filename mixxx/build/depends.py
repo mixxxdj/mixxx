@@ -257,6 +257,12 @@ class TagLib(Dependence):
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
+
+class ProtoBuf(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib('protobuf-lite'):
+            raise Exception("Could not find libprotobuf or its development headers.")
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -522,8 +528,10 @@ class MixxxCore(Feature):
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
-                   "track/beatmatrix.cpp",
+                   "track/beatmap.cpp",
                    "track/beatfactory.cpp",
+                   "track/beatutils.cpp",
+                   "proto/beats.pb.cc",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -563,6 +571,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
         build.env.Uic4('dlgprefbpmdlg.ui')
         build.env.Uic4('dlgprefreplaygaindlg.ui')
+        build.env.Uic4('dlgprefbeatsdlg.ui')
         build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
@@ -716,7 +725,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

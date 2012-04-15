@@ -1,0 +1,29 @@
+package mixxx.track.io;
+
+option optimize_for = LITE_RUNTIME;
+
+enum Source {
+  ANALYSER = 0;
+  FILE_METADATA = 1;
+  USER = 2;
+}
+
+message Beat {
+  optional int32 frame_position = 1;
+  optional bool enabled = 2 [ default = true ];
+  optional Source source = 3 [ default = ANALYSER ];
+}
+
+message Bpm {
+  optional double bpm = 1;
+  optional Source source = 2 [ default = ANALYSER ];
+}
+
+message BeatMap {
+  repeated Beat beat = 1;
+}
+
+message BeatGrid {
+  optional Bpm bpm = 1;
+  optional Beat first_beat = 2;
+}
