@@ -104,7 +104,7 @@ void WaveformWidgetRenderer::init() {
         m_rendererStack[i]->init();
 }
 
-void WaveformWidgetRenderer::preRender() {
+void WaveformWidgetRenderer::onPreRender() {
 
     m_trackSamples = m_trackSamplesControlObject->get();
     if( m_trackSamples < 0.0)

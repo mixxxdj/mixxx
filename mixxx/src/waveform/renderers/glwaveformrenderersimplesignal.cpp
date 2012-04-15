@@ -201,8 +201,6 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             // }
 
             unsigned char maxAll = 0;
-            unsigned char maxBand = 0;
-            unsigned char maxHigh = 0;
 
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
                  i += channelSeparation) {

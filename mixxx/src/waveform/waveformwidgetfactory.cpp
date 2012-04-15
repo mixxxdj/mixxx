@@ -49,6 +49,10 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
     setFrameRate(33);
     m_defaultZoom = 1;
     m_zoomSync = false;
+    m_visualGain[All] = 1.5;
+    m_visualGain[Low] = 1.0;
+    m_visualGain[Mid] = 1.0;
+    m_visualGain[High] = 1.0;
 
     m_lastFrameTime = 0;
     m_actualFrameRate = 0;
@@ -138,9 +142,9 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    QString zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization"));
-    if( !zoomSync.isEmpty()) {
-        bool sync = zoomSync.toInt();
+    QString allVisualGainString = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization"));
+    if( !allVisualGainString.isEmpty()) {
+        bool sync = allVisualGainString.toInt();
         setZoomSync(sync);
     } else {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
@@ -154,6 +158,17 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
         }
     } else {
         setWidgetType(autoChooseWidgetType());
+    }
+
+    for( int i = 0; i < FilterCount; i++) {
+        QString visualGainString = m_config->getValueString(
+                    ConfigKey("[Waveform]","VisualGain_" + QString::number(i)));
+        if( !visualGainString.isEmpty()) {
+            double gain = visualGainString.toDouble();
+            setVisualGain( FilterIndex(i), gain);
+        } else {
+            m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(i)), QString::number(m_visualGain[i]));
+        }
     }
 
     return true;
@@ -319,6 +334,16 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
 }
 
+void WaveformWidgetFactory::setVisualGain( FilterIndex index, double gain) {
+    m_visualGain[index] = gain;
+    if( m_config)
+        m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
+}
+
+double WaveformWidgetFactory::getVisualGain( FilterIndex index) const {
+    return m_visualGain[index];
+}
+
 void WaveformWidgetFactory::notifyZoomChange( WWaveformViewer* viewer) {
     if( isZoomSync()) {
         int refZoom = viewer->getWaveformWidget()->getZoomFactor();
@@ -337,6 +362,9 @@ void WaveformWidgetFactory::refresh() {
 
     for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->render();
+
+    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+        m_waveformWidgetHolders[i].m_waveformWidget->postRender();
 
     // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
     // update.

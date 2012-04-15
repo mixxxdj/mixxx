@@ -27,11 +27,10 @@
 
 /**
 Waveform overview display
-
 @author Tue Haste Andersen
 */
 
-class ControlObject;
+class ControlObjectThreadMain;
 class Waveform;
 
 class WOverview : public WWidget
@@ -66,6 +65,7 @@ protected:
     virtual void dropEvent(QDropEvent* event);
 
 private slots:
+    void onTotalGainChange(double v);
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
 /*
@@ -87,6 +87,8 @@ private:
 
 private:
     const char* m_pGroup;
+    ControlObjectThreadMain* m_totalGainControl;
+    double m_totalGain;
 
     Waveform* m_waveform;
     QPixmap m_waveformPixmap;

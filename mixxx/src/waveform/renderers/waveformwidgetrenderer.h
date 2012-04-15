@@ -24,7 +24,7 @@ public:
     virtual void onInit() {}
 
     void setup(const QDomNode& node);
-    void preRender();
+    void onPreRender();
     void draw(QPainter* painter, QPaintEvent* event);
 
     const char* getGroup() const { return m_group;}

@@ -21,6 +21,11 @@ Waveform::~Waveform() {
     delete m_mutex;
 }
 
+//NOTE: (vRince) Be careful with the SerializedWaveformHeader class
+//modifying its content may crash mixxx while loading old waveform data
+//from database you must increase the version number to be sure old
+//waveform will be reprocessed
+
 struct SerializedWaveformHeader {
     double actualSize;
     double dataSize;
@@ -35,7 +40,7 @@ QByteArray Waveform::toByteArray() const {
     header.visualSampleRate = m_visualSampleRate;
     header.audioVisualRatio = m_audioVisualRatio;
     QByteArray data;
-    data.append(reinterpret_cast<const char*>(&header), sizeof(header));
+    data.append(reinterpret_cast<const char*>(&header), sizeof(SerializedWaveformHeader));
     data.append(reinterpret_cast<const char*>(&m_data[0]),
                 sizeof(m_data[0])*m_dataSize);
     return data;
