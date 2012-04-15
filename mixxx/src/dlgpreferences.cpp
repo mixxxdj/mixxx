@@ -29,7 +29,7 @@
 #include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
-#include "controllers/dlgprefcontroller.h"
+#include "controllers/dlgprefmappablecontroller.h"
 #include "controllers/dlgprefnocontrollers.h"
 #include "dlgprefplaylist.h"
 #include "dlgprefcontrols.h"
@@ -287,17 +287,17 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
            pagesWidget->setCurrentWidget(m_wshoutcast->parentWidget()->parentWidget());
 #endif
     //Handle selection of controller items
-    } else if (m_controllerBindingsButtons.indexOf(current) >= 0) {
-           int index = m_controllerBindingsButtons.indexOf(current);
-           pagesWidget->setCurrentWidget(m_wcontrollerBindingsForDevice.value(index)->parentWidget()->parentWidget());
+    } else if (m_controllerWindowLinks.indexOf(current) >= 0) {
+           int index = m_controllerWindowLinks.indexOf(current);
+           pagesWidget->setCurrentWidget(m_controllerWindows.value(index)->parentWidget()->parentWidget());
            //Manually fire this slot since it doesn't work right...
-           m_wcontrollerBindingsForDevice.value(index)->slotUpdate();
+           m_controllerWindows.value(index)->slotUpdate();
     }
 
     else if (current == m_pControllerTreeItem) {
         //If the root "Controllers" item is clicked, select the first Controller instead.
         //If there is no first controller, display a page that says so (just so we don't not change the page)
-        if (m_wcontrollerBindingsForDevice.count() > 0)
+        if (m_controllerWindows.count() > 0)
         {
             //Expand the Controller subtree
             contentsTreeWidget->setItemExpanded(m_pControllerTreeItem, true);
@@ -370,21 +370,21 @@ void DlgPreferences::destroyControllerWidgets()
 {
     //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
 
-    m_controllerBindingsButtons.clear();
+    m_controllerWindowLinks.clear();
 
-    while (!m_wcontrollerBindingsForDevice.isEmpty())
+    while (!m_controllerWindows.isEmpty())
     {
-        DlgPrefController* controllerDlg = m_wcontrollerBindingsForDevice.takeLast();
+        DlgPrefController* controllerDlg = m_controllerWindows.takeLast();
         pagesWidget->removeWidget(controllerDlg);
         delete controllerDlg;
     }
 
     while(m_pControllerTreeItem->childCount() > 0)
     {
-        QTreeWidgetItem* controllerBindingsButton = m_pControllerTreeItem->takeChild(0);
-        //qDebug() << " Q|T|r\e\eWidgetItem point is " << controllerBindingsButton;
-        m_pControllerTreeItem->removeChild(controllerBindingsButton);
-        delete controllerBindingsButton;
+        QTreeWidgetItem* controllerWindowLink = m_pControllerTreeItem->takeChild(0);
+        //qDebug() << " Q|T|r\e\eWidgetItem point is " << controllerWindowLink;
+        m_pControllerTreeItem->removeChild(controllerWindowLink);
+        delete controllerWindowLink;
     }
 }
 
@@ -398,27 +398,42 @@ void DlgPreferences::setupControllerWidgets()
         Controller* currentDevice = ctrlr.next();
         QString curDeviceName = currentDevice->getName();
         //qDebug() << "curDeviceName: " << curDeviceName;
-        DlgPrefController* controllerDlg = new DlgPrefController(this, currentDevice, m_pControllerManager, config);
-        m_wcontrollerBindingsForDevice.append(controllerDlg);
-        addPageWidget(controllerDlg);
-        connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
-        connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
-        connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
+        if (currentDevice->isMappable()) {
+            DlgPrefMappableController* controllerDlg =
+                new DlgPrefMappableController(this, currentDevice,
+                                              m_pControllerManager, config);
+            m_controllerWindows.append(controllerDlg);
+            addPageWidget(controllerDlg);
+            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
+            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
+            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
+        }
+        else {
+            DlgPrefController* controllerDlg =
+                new DlgPrefController(this, currentDevice, m_pControllerManager,
+                                      config);
+            m_controllerWindows.append(controllerDlg);
+            addPageWidget(controllerDlg);
+            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
+            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
+            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)),
+                    this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
+        }
 
-        QTreeWidgetItem * controllerBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
-        //qDebug() << curDeviceName << " QTreeWidgetItem point is " << controllerBindingsButton;
-        controllerBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
-        controllerBindingsButton->setText(0, curDeviceName);
-        controllerBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-        controllerBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-        m_pControllerTreeItem->addChild(controllerBindingsButton);
-        m_controllerBindingsButtons.append(controllerBindingsButton);
+        QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
+        //qDebug() << curDeviceName << " QTreeWidgetItem point is " << controllerWindowLink;
+        controllerWindowLink->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+        controllerWindowLink->setText(0, curDeviceName);
+        controllerWindowLink->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+        controllerWindowLink->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        m_pControllerTreeItem->addChild(controllerWindowLink);
+        m_controllerWindowLinks.append(controllerWindowLink);
 
         // Set the font correctly
-        QFont temp = controllerBindingsButton->font(0);
+        QFont temp = controllerWindowLink->font(0);
         if (currentDevice->isOpen()) temp.setBold(true);
         else temp.setBold(false);
-        controllerBindingsButton->setFont(0,temp);
+        controllerWindowLink->setFont(0,temp);
     }
 }
 
@@ -430,11 +445,11 @@ void DlgPreferences::slotApply()
 
 void DlgPreferences::slotHighlightDevice(DlgPrefController* dialog, bool enabled)
 {
-    QTreeWidgetItem * controllerBindingsButton = m_controllerBindingsButtons.at(m_wcontrollerBindingsForDevice.indexOf(dialog));
-    QFont temp = controllerBindingsButton->font(0);
+    QTreeWidgetItem * controllerWindowLink = m_controllerWindowLinks.at(m_controllerWindows.indexOf(dialog));
+    QFont temp = controllerWindowLink->font(0);
     if (enabled) temp.setBold(true);
     else temp.setBold(false);
-    controllerBindingsButton->setFont(0,temp);
+    controllerWindowLink->setFont(0,temp);
 }
 
 int DlgPreferences::addPageWidget(QWidget* w) {

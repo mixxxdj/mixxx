@@ -4,8 +4,8 @@
 * @date Mon 9 Apr 2012
 * @brief MIDI Controller preset
 *
-* This class represents a MIDI controller preset, containing the data elements that
-*   make it up.
+* This class represents a MIDI controller preset, containing the data elements
+*   that make it up.
 *
 */
 
@@ -23,7 +23,7 @@
 
 #include <QHash>
 
-#include "configobject.h"
+#include "mixxxcontrol.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/midi/midimessage.h"
@@ -37,8 +37,11 @@ class MidiControllerPreset : public ControllerPreset {
         visitor->visit(this);
     }
 
-    QHash<uint16_t, QPair<ConfigKey, MidiOptions> > mappings;
-    QHash<ConfigKey, MidiOutput> outputMappings;
+    bool isMappable() const { return true; };
+
+    // Additional data elements specific to this controller type
+    QHash<uint16_t, QPair<MixxxControl, MidiOptions> > mappings;
+    QHash<MixxxControl, MidiOutput> outputMappings;
 };
 
 #endif

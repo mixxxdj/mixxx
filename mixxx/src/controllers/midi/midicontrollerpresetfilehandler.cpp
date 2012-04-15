@@ -7,6 +7,7 @@
 */
 
 #include "midicontrollerpresetfilehandler.h"
+#include "mixxxcontrol.h"
 
 #define DEFAULT_OUTPUT_MAX  1.0f
 #define DEFAULT_OUTPUT_MIN  0.0f    // Anything above 0 is "on"
@@ -132,8 +133,8 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
         */
         {
             // Add the static mapping
-            QPair<ConfigKey, MidiOptions> target;
-            target.first = ConfigKey(controlGroup, controlKey);
+            QPair<MixxxControl, MidiOptions> target;
+            target.first = MixxxControl(controlGroup, controlKey);
             target.second = options;
 
             unsigned char opCode = midiStatusByte & 0xF0;
@@ -184,7 +185,7 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
 
     //Iterate through each <control> block in the XML
     while (!output.isNull()) {
-        //Unserialize the ConfigKey components from the XML
+        //Unserialize the MixxxControl components from the XML
         QDomElement groupNode = output.firstChildElement("group");
         QDomElement keyNode = output.firstChildElement("key");
 
@@ -248,8 +249,8 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
                         << controlGroup << controlKey;
         */
         // We use insertMulti because certain tricks are done with multiple
-        //  entries for the same ConfigKey
-        preset->outputMappings.insertMulti(ConfigKey(controlGroup, controlKey),outputMessage);
+        //  entries for the same MixxxControl
+        preset->outputMappings.insertMulti(MixxxControl(controlGroup, controlKey),outputMessage);
 
         output = output.nextSiblingElement("output");
     }
@@ -264,18 +265,18 @@ bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
                                            const QString fileName) const {
     qDebug() << "Saving preset for" << deviceName << "to" << fileName;
     QDomDocument doc = buildRootWithScripts(preset, deviceName);
-    addControllerToDocument(preset, &doc);
+    addControlsToDocument(preset, &doc);
     return writeDocument(doc, fileName);
 }
 
-void MidiControllerPresetFileHandler::addControllerToDocument(const MidiControllerPreset& preset,
+void MidiControllerPresetFileHandler::addControlsToDocument(const MidiControllerPreset& preset,
                                                               QDomDocument* doc) const {
     QDomElement controller = doc->documentElement().firstChildElement("controller");
     QDomElement controls = doc->createElement("controls");
     controller.appendChild(controls);
 
     //Iterate over all of the command/control pairs in the input mapping
-    QHashIterator<uint16_t, QPair<ConfigKey, MidiOptions> > it(preset.mappings);
+    QHashIterator<uint16_t, QPair<MixxxControl, MidiOptions> > it(preset.mappings);
     while (it.hasNext()) {
         it.next();
 
@@ -285,7 +286,7 @@ void MidiControllerPresetFileHandler::addControllerToDocument(const MidiControll
         QDomDocument nodeMaker;
         QDomElement tagNode;
 
-        QPair<ConfigKey, MidiOptions> target = it.value();
+        QPair<MixxxControl, MidiOptions> target = it.value();
         MidiKey package;
         package.key = it.key();
 
@@ -293,8 +294,7 @@ void MidiControllerPresetFileHandler::addControllerToDocument(const MidiControll
 //                  << QString::number(package.status, 16).toUpper()
 //                  << QString::number(package.control, 16).toUpper()
 //                  << target.first.group << target.first.item;
-        mappingToXML(controlNode, target.first.group, target.first.item,
-                     package.status, package.control);
+        mappingToXML(controlNode, target.first, package.status, package.control);
 
         //Midi options
         QDomElement optionsNode = nodeMaker.createElement("options");
@@ -366,14 +366,14 @@ void MidiControllerPresetFileHandler::addControllerToDocument(const MidiControll
     controller.appendChild(outputs);
 
     //Iterate over all of the command/control pairs in the OUTPUT mapping
-    QHashIterator<ConfigKey, MidiOutput> outIt(preset.outputMappings);
+    QHashIterator<MixxxControl, MidiOutput> outIt(preset.outputMappings);
     while (outIt.hasNext()) {
         outIt.next();
 
         QDomElement outputNode = doc->createElement("output");
         MidiOutput outputPack = outIt.value();
 
-        mappingToXML(outputNode, outIt.key().group, outIt.key().item, outputPack.status, outputPack.control);
+        mappingToXML(outputNode, outIt.key(), outputPack.status, outputPack.control);
         outputMappingToXML(outputNode, outputPack.on, outputPack.off, outputPack.max, outputPack.min);
 
         //Add the control node we just created to the XML document in the proper spot
@@ -382,7 +382,7 @@ void MidiControllerPresetFileHandler::addControllerToDocument(const MidiControll
 }
 
 void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode,
-                                                   QString group, QString item,
+                                                   MixxxControl mc,
                                                    unsigned char status,
                                                    unsigned char control) const {
     QDomText text;
@@ -391,13 +391,13 @@ void MidiControllerPresetFileHandler::mappingToXML(QDomElement& parentNode,
 
     //Control object group
     tagNode = nodeMaker.createElement("group");
-    text = nodeMaker.createTextNode(group);
+    text = nodeMaker.createTextNode(mc.group());
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 
     //Control object name
     tagNode = nodeMaker.createElement("key"); //WTF worst name ever
-    text = nodeMaker.createTextNode(item);
+    text = nodeMaker.createTextNode(mc.item());
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 

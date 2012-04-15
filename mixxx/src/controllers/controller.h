@@ -62,6 +62,7 @@ class Controller : public QObject, ControllerPresetVisitor {
         bool isInputDevice() const { return m_bIsInputDevice; };
         QString getName() const { return m_sDeviceName; };
         bool debugging() const { return m_bDebug; };
+        bool isMappable() const { return getPreset()->isMappable(); }
 
         void setPolling(bool needPolling) { m_bPolling = needPolling; };
         bool needPolling() { return m_bPolling; };
@@ -93,6 +94,8 @@ class Controller : public QObject, ControllerPresetVisitor {
 
         ControllerEngine *m_pEngine;
         ConfigObject<ConfigValue> *m_pConfig;
+
+        bool m_bLearning;
 
     // Making these slots protected/private ensures that other parts of Mixxx
     //  can only signal them, preventing thread contention

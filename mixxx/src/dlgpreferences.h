@@ -30,8 +30,6 @@ class SoundManager;
 class DlgPrefSound;
 class DlgPrefController;
 class DlgPrefNoControllers;
-// class DlgPrefNoMidi;
-// class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
 class DlgPrefControls;
 class DlgPrefEQ;
@@ -43,7 +41,6 @@ class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
 class DlgPrefReplayGain;
 class ControllerManager;
-// class MidiDeviceManager;
 class SkinLoader;
 class PlayerManager;
 class VinylControlManager;
@@ -67,11 +64,9 @@ public slots:
     void slotShow();
     void slotHide();
     void rescanControllers();
-//     void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
-//     void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 signals:
     void closeDlg();
@@ -81,16 +76,12 @@ protected:
 private:
     void destroyControllerWidgets();
     void setupControllerWidgets();
-//     void destroyMidiWidgets();
-//     void setupMidiWidgets();
     int addPageWidget(QWidget* w);
-//     QList<DlgPrefMidiBindings*> m_wmidiBindingsForDevice;
-    QList<DlgPrefController*> m_wcontrollerBindingsForDevice;
+    QList<DlgPrefController*> m_controllerWindows;
     
     DlgPrefSound* m_wsound;
     DlgPrefPlaylist* m_wplaylist;
     DlgPrefNoControllers *m_wNoControllers;
-//     DlgPrefNoMidi* m_wNoMidi;
     DlgPrefControls* m_wcontrols;
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
@@ -126,17 +117,14 @@ private:
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
-//     QTreeWidgetItem* m_pMIDITreeItem;
     QTreeWidgetItem* m_pControllerTreeItem;
-//     QList<QTreeWidgetItem*> m_midiBindingsButtons;
-    QList<QTreeWidgetItem*> m_controllerBindingsButtons;
+    QList<QTreeWidgetItem*> m_controllerWindowLinks;
 
     QSize m_pageSizeHint;
 
     ConfigObject<ConfigValue>* config;
     MixxxApp* m_pMixxx;
     ControllerManager* m_pControllerManager;
-//     MidiDeviceManager* m_pMidiDeviceManager;
 };
 
 #endif

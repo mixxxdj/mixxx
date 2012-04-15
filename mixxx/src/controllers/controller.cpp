@@ -1,12 +1,10 @@
-/***************************************************************************
-                             controller.cpp
-                           Controller Class
-                           ----------------
-    begin                : Sat Apr 30 2011
-    copyright            : (C) 2011 Sean M. Pappalardo
-    email                : spappalardo@mixxx.org
-
-***************************************************************************/
+/**
+* @file controller.h
+* @author Sean Pappalardo spappalardo@mixxx.org
+* @date Sat Apr 30 2011
+* @brief Base class representing a physical (or software) controller.
+*
+*/
 
 /***************************************************************************
 *                                                                         *
@@ -27,6 +25,7 @@ Controller::Controller() : QObject() {
     m_bIsOpen = false;
     m_pEngine = NULL;
     m_bPolling = false;
+    m_bLearning = false;
 
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
