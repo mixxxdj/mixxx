@@ -197,6 +197,38 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     return true;
 }
 
+//This method takes a list of track ids to be added to crate and returns # failed track additions
+int CrateDAO::addTracksToCrate(QList <int> trackIdList, int crateId) {
+	int crateAddFails = 0;
+	QSqlQuery query(m_database);
+	//the transaction begins
+	m_database.transaction();
+	for(int i = 0; i<trackIdList.size(); i++) {
+		query.prepare("INSERT INTO " CRATE_TRACKS_TABLE "(crate_id, track_id) VALUES (:crate_id, :track_id)");
+		query.bindValue(":crate_id", crateId);
+		query.bindValue(":track_id", (int) trackIdList.at(i));
+		if(!query.exec()) {
+			LOG_FAILED_QUERY(query);
+			//query failed so increment the # of failed additions to crate
+			crateAddFails++;
+			//we must emit only those trackID that were added
+			//So we need to remove the failed ones
+			trackIdList.removeAt(i);
+		}
+	}
+	//Finished adding tracks to database, commit transaction
+	m_database.commit();
+	int trackId;
+	//Emitting the trackAdded signals for each trackID outside the transaction
+	foreach(trackId, trackIdList) {
+		emit(trackAdded(crateId, trackId));
+	}
+	//Crate has been changed
+	emit(changed(crateId));
+	//return the number of crate additions that have failed
+	return crateAddFails;
+}
+
 void CrateDAO::removeTrackFromCrates(int trackId) {
     QSqlQuery query(m_database);
     QString queryString = QString("DELETE FROM %1 WHERE %2 = %3")

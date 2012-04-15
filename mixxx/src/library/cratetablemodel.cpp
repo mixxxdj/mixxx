@@ -66,6 +66,7 @@ void CrateTableModel::setCrate(int crateId) {
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
+	qDebug()<<"CrateTableModel's addTrack called";
     QFileInfo fileInfo(location);
 
     TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
@@ -87,6 +88,31 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
                  << fileInfo.absoluteFilePath() << "to crate" << m_iCrateId;
         return false;
     }
+}
+
+//Returns the number of unsuccessful track additions
+//Violates the convention of passing QModelIndexes which aren't used though.
+int CrateTableModel::addTracks(const QModelIndex& index, QList <QString> locations) {
+	int trackAddFails = 0;
+	//prepare the list of QFileInfo's
+	QList <QFileInfo> fileInfoList;
+	QString fileLocation;
+	foreach(fileLocation, locations) {
+		qDebug()<<"Location "<< fileLocation;
+		QFileInfo fileInfo(fileLocation);
+		fileInfoList.append(fileInfo);
+	}
+	TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+	QList <int> trackIDs;
+	trackIDs = trackDao.addTracks(fileInfoList, true); // returns ids of tracks in QList
+	//Assuming from trackdao implementation that -1 is returned on add fail
+	trackAddFails = trackIDs.removeAll(-1);
+	//add these trackIDs to the crate in bulk
+	//returns number of unsucessful crate additions
+	int crateAddFails = m_pTrackCollection->getCrateDAO().addTracksToCrate(trackIDs, m_iCrateId);
+	//prompting the errors on console due to unsucessful crate additions are not done
+	select();//doing a select on the model
+	return crateAddFails;//return no of tracks failed to add to crate.
 }
 
 TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
