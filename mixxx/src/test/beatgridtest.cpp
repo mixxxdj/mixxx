@@ -29,6 +29,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     BeatGrid* pGrid = new BeatGrid(pTrack.data());
+    pGrid->setBpm(bpm);
     // Pretend we're on the 20th beat;
     double position = beatLength * 20;
 
@@ -54,6 +55,7 @@ TEST_F(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     BeatGrid* pGrid = new BeatGrid(pTrack.data());
+    pGrid->setBpm(bpm);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = beatLength * 20.0;
