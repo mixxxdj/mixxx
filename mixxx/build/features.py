@@ -50,6 +50,7 @@ class HSS1394(Feature):
         return sources
 
 class HID(Feature):
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.7.0'
     def description(self):
         return "HID controller support"
 
@@ -76,21 +77,22 @@ class HID(Feature):
         build.env.Append(CPPDEFINES = '__HID__')
 
     def sources(self, build):
-        build.env.Append(CPPPATH=['#lib/hidapi-0.7.0/hidapi'])
-        if build.platform_is_linux:
-            build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
-        sources = SCons.Split("""controllers/hidcontroller.cpp
-                            controllers/hidenumerator.cpp
-                            controllers/hidcontrollerpresetfilehandler.cpp
-                            """)
+        build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
+        sources = ['controllers/hidcontroller.cpp',
+                   'controllers/hidenumerator.cpp',
+                   'controllers/hidcontrollerpresetfilehandler.cpp']
+
         if build.platform_is_windows:
             # This doesn't work. You need to build it in MSVS like all the other dependencies
             # sources.append("#lib/hidapi-0.7.0/windows/hid.c")
             return sources
+        elif build.platform_is_linux:
+            build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+            sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
         elif build.platform_is_osx:
-            sources.append("#lib/hidapi-0.7.0/mac/hid.c")
-        else:
-            sources.append("#lib/hidapi-0.7.0/linux/hid-libusb.c")
+            build.env.Append(LINKFLAGS='-framework IOKit')
+            build.env.Append(LINKFLAGS='-framework CoreFoundation')
+            sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
         return sources
 
 class Mad(Feature):
