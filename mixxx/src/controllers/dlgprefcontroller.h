@@ -25,13 +25,13 @@
 class Controller;
 class ControllerManager;
 
-class DlgPrefController : public QWidget, public Ui::DlgPrefControllerDlg  {
+class DlgPrefController : public QWidget {
     Q_OBJECT
 public:
     DlgPrefController(QWidget *parent, Controller* controller,
                         ControllerManager* controllerManager,
                         ConfigObject<ConfigValue> *pConfig);
-    ~DlgPrefController();
+    virtual ~DlgPrefController();
 
 
 public slots:
@@ -62,6 +62,8 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
     Controller* m_pController;
     ControllerManager* m_pControllerManager;
+
+    Ui::DlgPrefControllerDlg m_ui;
 };
 
 #endif /*DLGPREFCONTROLLER_H_*/

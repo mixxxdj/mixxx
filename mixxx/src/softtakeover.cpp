@@ -46,7 +46,7 @@ void SoftTakeover::enable(MixxxControl control) {
     // Store current MixxxControl value
     if (!m_prevValues.contains(control)) {
         ControlObject* temp = ControlObject::getControl(
-        ConfigKey(control.getControlObjectGroup(), control.getControlObjectValue()));
+        ConfigKey(control.group(), control.item()));
         if (temp != NULL) m_prevValues.insert(control,temp->get());
     }
 }
@@ -81,7 +81,7 @@ bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {
         float threshold = 3.0f;
         
         ControlObject* temp = ControlObject::getControl(
-            ConfigKey(mc.getControlObjectGroup(), mc.getControlObjectValue()));
+            ConfigKey(mc.group(), mc.item()));
 
         if (temp == NULL) return ignore;
         

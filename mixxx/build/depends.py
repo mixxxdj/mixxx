@@ -287,6 +287,7 @@ class MixxxCore(Feature):
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
                    "controllers/dlgprefcontroller.cpp",
+                   "controllers/dlgprefmappablecontroller.cpp",
                    "controllers/dlgprefnocontrollers.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
@@ -559,6 +560,8 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefsounddlg.ui')
         
         build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
+        build.env.Uic4('controllers/dlgprefmappablecontrollerdlg.ui')
+        build.env.Uic4('controllers/dlgcontrollerlearning.ui')
         build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
         
         build.env.Uic4('dlgprefplaylistdlg.ui')

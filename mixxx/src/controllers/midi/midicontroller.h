@@ -52,6 +52,8 @@ class MidiController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
+    bool isMappable() const { return true; };
+
   signals:
     void midiEvent(MidiKey message);
 
@@ -85,7 +87,6 @@ class MidiController : public Controller {
     QList<MidiOutputHandler*> m_outputs;
     MidiControllerPreset m_preset;
     SoftTakeover m_st;
-    bool m_bMidiLearn;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

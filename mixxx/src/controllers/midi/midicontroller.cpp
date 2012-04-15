@@ -20,9 +20,7 @@
 #include "errordialoghandler.h"
 #include "controllers/defs_controllers.h"   // For MIDI_MAPPING_EXTENSION
 
-MidiController::MidiController()
-        : Controller(),
-          m_bMidiLearn(false) {
+MidiController::MidiController() : Controller() {
 }
 
 MidiController::~MidiController() {
@@ -79,13 +77,13 @@ void MidiController::createOutputHandlers() {
         return;
     }
 
-    QHashIterator<ConfigKey, MidiOutput> outIt(m_preset.outputMappings);
+    QHashIterator<MixxxControl, MidiOutput> outIt(m_preset.outputMappings);
     while (outIt.hasNext()) {
         outIt.next();
 
         MidiOutput outputPack = outIt.value();
-        QString group = outIt.key().group;
-        QString key = outIt.key().item;
+        QString group = outIt.key().group();
+        QString key = outIt.key().item();
 
         unsigned char status = outputPack.status;
         unsigned char control = outputPack.control;
@@ -228,7 +226,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     }
 
     // Don't process midi messages further when MIDI learning
-    if (m_bMidiLearn) {
+    if (m_bLearning) {
         emit(midiEvent(mappingKey));
         return;
     }
@@ -238,8 +236,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         return;
     }
 
-    QPair<ConfigKey, MidiOptions> controlOptions = m_preset.mappings.value(mappingKey.key);
-    ConfigKey ckey = controlOptions.first;
+    QPair<MixxxControl, MidiOptions> controlOptions = m_preset.mappings.value(mappingKey.key);
+    MixxxControl mc = controlOptions.first;
     MidiOptions options = controlOptions.second;
 
     if (options.script) {
@@ -252,14 +250,14 @@ void MidiController::receive(unsigned char status, unsigned char control,
         args << QScriptValue(control);
         args << QScriptValue(value);
         args << QScriptValue(status);
-        args << QScriptValue(ckey.group);
+        args << QScriptValue(mc.group());
 
-        m_pEngine->execute(ckey.item, args);
+        m_pEngine->execute(mc.item(), args);
         return;
     }
 
     // Only pass values on to valid ControlObjects.
-    ControlObject* p = ControlObject::getControl(ckey);
+    ControlObject* p = mc.getControlObject();
     if (p == NULL) {
         return;
     }
@@ -286,8 +284,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     if (options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
-        m_st.enable(ckey.group,ckey.item);
-        if (m_st.ignore(ckey.group,ckey.item,newValue,true)) {
+        m_st.enable(mc.group(),mc.item());
+        if (m_st.ignore(mc.group(),mc.item(),newValue,true)) {
             return;
         }
     }
@@ -406,7 +404,7 @@ void MidiController::receive(QByteArray data) {
     mappingKey.control = 0xFF;
 
     // Don't process midi messages further when MIDI learning
-    if (m_bMidiLearn) {
+    if (m_bLearning) {
         emit(midiEvent(mappingKey));
         return;
     }
@@ -416,9 +414,9 @@ void MidiController::receive(QByteArray data) {
         return;
     }
 
-    QPair<ConfigKey, MidiOptions> control = m_preset.mappings.value(mappingKey.key);
+    QPair<MixxxControl, MidiOptions> control = m_preset.mappings.value(mappingKey.key);
 
-    ConfigKey ckey = control.first;
+    MixxxControl mc = control.first;
     MidiOptions options = control.second;
 
     // Custom script handler
@@ -429,10 +427,10 @@ void MidiController::receive(QByteArray data) {
         // Up-cast to ControllerEngine since this version of execute() is not in MCE
         //  (polymorphism doesn't work across class boundaries)
         //ControllerEngine *pEngine = m_pEngine;
-        //if (!pEngine->execute(ckey.item, data, length)) {
+        //if (!pEngine->execute(mc.item(), data, length)) {
 
-        if (!m_pEngine->execute(ckey.item, data)) {
-            qDebug() << "MidiController: Invalid script function" << ckey.item;
+        if (!m_pEngine->execute(mc.item(), data)) {
+            qDebug() << "MidiController: Invalid script function" << mc.item();
         }
         return;
     }

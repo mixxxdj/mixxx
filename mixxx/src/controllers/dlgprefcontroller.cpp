@@ -25,19 +25,26 @@
 DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
                                          ControllerManager* controllerManager,
                                          ConfigObject<ConfigValue> *pConfig)
-    : QWidget(parent), Ui::DlgPrefControllerDlg()
+    : QWidget(parent)
 {
-    setupUi(this);
+//     QWidget * containerWidget = new QWidget();
+    QWidget * containerWidget = new QWidget(this);
+    m_ui.setupUi(containerWidget);
+
+//     QVBoxLayout* vLayout = new QVBoxLayout(this);
+//     vLayout->addWidget(containerWidget);
+//     setLayout(vLayout);
+
     m_pConfig = pConfig;
     m_pController = controller;
     m_pControllerManager = controllerManager;
     
     m_bDirty = false;
 
-    labelDeviceName->setText(m_pController->getName());
+    m_ui.labelDeviceName->setText(m_pController->getName());
 
-    connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadPreset(const QString&)));
-    connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadPreset(const QString&)));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
 
     connect(this, SIGNAL(openController(bool)), m_pController, SLOT(open()));
     connect(this, SIGNAL(openController(bool)),
@@ -63,12 +70,12 @@ void DlgPrefController::slotDirty ()
 
 void DlgPrefController::enumeratePresets()
 {
-    comboBoxPreset->clear();
+    m_ui.comboBoxPreset->clear();
 
     //Insert a dummy "..." item at the top to try to make it less confusing.
     //(We don't want the first found file showing up as the default item
     // when a user has their controller plugged in)
-    comboBoxPreset->addItem("...");
+    m_ui.comboBoxPreset->addItem("...");
     
     // Ask the controller manager for a list of applicable presets
     QList<QString> presetsList =
@@ -76,7 +83,7 @@ void DlgPrefController::enumeratePresets()
     
     //Sort in alphabetical order
     qSort(presetsList);
-    comboBoxPreset->addItems(presetsList);
+    m_ui.comboBoxPreset->addItems(presetsList);
 }
 
 /* slotUpdate()
@@ -87,19 +94,19 @@ void DlgPrefController::slotUpdate() {
     //Check if the device that this dialog is for is already enabled...
     if (m_pController->isOpen())
     {
-        chkEnabledDevice->setCheckState(Qt::Checked); //Check the "Enabled" box
+        m_ui.chkEnabledDevice->setCheckState(Qt::Checked); //Check the "Enabled" box
 //         toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
-        groupBoxPresets->setEnabled(true); //Enable presets group box.
+        m_ui.groupBoxPresets->setEnabled(true); //Enable presets group box.
     }
     else {
-        chkEnabledDevice->setCheckState(Qt::Unchecked); //Uncheck the "Enabled" box
+        m_ui.chkEnabledDevice->setCheckState(Qt::Unchecked); //Uncheck the "Enabled" box
 //         toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
-        groupBoxPresets->setEnabled(false); //Disable presets group box.
+        m_ui.groupBoxPresets->setEnabled(false); //Disable presets group box.
     }
 
     //Connect the "Enabled" checkbox after the checkbox state is set
-    connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
-    connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDirty()));
+    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
+    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDirty()));
 }
 
 /* slotApply()
@@ -111,7 +118,7 @@ void DlgPrefController::slotApply() {
      */
     if (m_bDirty)
     {
-        if (chkEnabledDevice->isChecked()) {
+        if (m_ui.chkEnabledDevice->isChecked()) {
             //Enable the device.
             enableDevice();
             emit(applyPreset());
@@ -119,7 +126,7 @@ void DlgPrefController::slotApply() {
         else disableDevice();
 
         //Select the "..." item again in the combobox.
-        comboBoxPreset->setCurrentIndex(0);
+        m_ui.comboBoxPreset->setCurrentIndex(0);
     }
     m_bDirty = false;
 }
@@ -137,11 +144,11 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
 
 void DlgPrefController::slotDeviceState(int state) {
   if (state == Qt::Checked) {
-      groupBoxPresets->setEnabled(true);    //Enable presets group box.
+      m_ui.groupBoxPresets->setEnabled(true);    //Enable presets group box.
       emit deviceStateChanged(this,true);  // Set tree item text to bold
   }
   else {
-      groupBoxPresets->setEnabled(false);   //Disable presets group box.
+      m_ui.groupBoxPresets->setEnabled(false);   //Disable presets group box.
       emit deviceStateChanged(this,false);  // Set tree item text to not bold
   }
 }
