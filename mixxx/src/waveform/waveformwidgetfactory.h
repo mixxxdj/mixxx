@@ -5,6 +5,7 @@
 #include "configobject.h"
 
 #include "waveform/widgets/waveformwidgettype.h"
+#include "waveform/waveform.h"
 
 #include <QObject>
 
@@ -54,6 +55,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     Q_OBJECT
 
 public:
+    //TODO merge this enum woth the waveform analyser one
+    enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
+
+public:
     bool setConfig(ConfigObject<ConfigValue>* config);
 
     //creates the waveform widget and bind it to the viewer
@@ -78,6 +83,9 @@ public:
 
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
+
+    void setVisualGain( FilterIndex index, double gain);
+    double getVisualGain(FilterIndex index) const;
 
     const std::vector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void destroyWidgets();
@@ -127,6 +135,7 @@ private:
     int m_mainTimerId;
     int m_defaultZoom;
     bool m_zoomSync;
+    double m_visualGain[FilterCount];
 
     bool m_openGLAvailable;
     QString m_openGLVersion;

@@ -36,58 +36,13 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_iPos = 0;
     m_bDrag = false;
 
+    m_totalGainControl = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_pGroup,"total_gain")));
+    connect( m_totalGainControl, SIGNAL(valueChanged(double)),
+             this, SLOT(onTotalGainChange(double)));
+    m_totalGain = 1.0;
+
     setAcceptDrops(true);
-
-    //FIXME: vrince rework that
-
-    /*
-    m_pLoopStart = ControlObject::getControl(
-                ConfigKey(m_pGroup, "loop_start_position"));
-    connect(m_pLoopStart, SIGNAL(valueChanged(double)),
-            this, SLOT(loopStartChanged(double)));
-    connect(m_pLoopStart, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(loopStartChanged(double)));
-    loopStartChanged(m_pLoopStart->get());
-    m_pLoopEnd = ControlObject::getControl(
-                ConfigKey(m_pGroup, "loop_end_position"));
-    connect(m_pLoopEnd, SIGNAL(valueChanged(double)),
-            this, SLOT(loopEndChanged(double)));
-    connect(m_pLoopEnd, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(loopEndChanged(double)));
-    loopEndChanged(m_pLoopEnd->get());
-    m_pLoopEnabled = ControlObject::getControl(
-                ConfigKey(m_pGroup, "loop_enabled"));
-    connect(m_pLoopEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(loopEnabledChanged(double)));
-    connect(m_pLoopEnabled, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(loopEnabledChanged(double)));
-    loopEnabledChanged(m_pLoopEnabled->get());
-
-
-    QString pattern = "hotcue_%1_position";
-
-    int i = 1;
-    ConfigKey hotcueKey;
-    hotcueKey.group = m_pGroup;
-    hotcueKey.item = pattern.arg(i);
-    ControlObject* pControl = ControlObject::getControl(hotcueKey);
-
-    //qDebug() << "Connecting hotcue controls.";
-    while (pControl) {
-        m_hotcueControls.push_back(pControl);
-        m_hotcues.push_back(pControl->get());
-        m_hotcueMap[pControl] = i;
-
-        //qDebug() << "Connecting hotcue" << hotcueKey.group << hotcueKey.item;
-
-        connect(pControl, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(onMarkChanged(double)));
-        connect(pControl, SIGNAL(valueChanged(double)),
-                this, SLOT(onMarkChanged(double)));
-
-        hotcueKey.item = pattern.arg(++i);
-        pControl = ControlObject::getControl(hotcueKey);
-    }*/
 
     m_waveform = NULL;
     m_waveformPixmap = QPixmap();
@@ -102,6 +57,7 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
 }
 
 WOverview::~WOverview() {
+    delete m_totalGainControl;
 }
 
 void WOverview::setup(QDomNode node) {
@@ -170,11 +126,12 @@ void WOverview::setup(QDomNode node) {
         child = child.nextSibling();
     }
 
-    qDebug() << "WOverview : m_marks" << m_marks.size();
-    qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+    //qDebug() << "WOverview : m_marks" << m_marks.size();
+    //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 
     //init waveform pixmap
-    m_waveformPixmap = QPixmap(size());
+    //waveform pixmap twice the heigth of the viewport to be scalable by total_gain
+    m_waveformPixmap = QPixmap(width(),2*height());
     m_waveformPixmap.fill( QColor(0,0,0,0));
 }
 
@@ -244,12 +201,17 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
     update();
 }
 
-void WOverview::onMarkChanged(double v) {
+void WOverview::onTotalGainChange(double v) {
+    m_totalGain = v;
+    update();
+}
+
+void WOverview::onMarkChanged(double /*v*/) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
     update();
 }
 
-void WOverview::onMarkRangeChange(double v) {
+void WOverview::onMarkRangeChange(double /*v*/) {
     //qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
 }
@@ -292,14 +254,14 @@ bool WOverview::drawNextPixmapPart() {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 
-    painter.translate(0.0,height()/2.0);
-    painter.scale(1.0,2.0*(double)(height()-2)/255.0);
+    painter.translate(0.0,m_waveformPixmap.height()/2.0);
+    painter.scale(1.0,(double)(m_waveformPixmap.height()-2)/255.0);
 
     //draw only the new part
     const float pixelStartPosition = 1.0 + (float)m_actualCompletion / (float)m_waveform->getDataSize() * (float)(width()-2);
     const float pixelByVisualSamples = 1.0 / m_visualSamplesByPixel;
 
-    const float alpha = math_min( 1.0, 2.0*math_max( 0.0, pixelByVisualSamples));
+    const float alpha = math_min( 1.0, 3.0*math_max( 0.0, pixelByVisualSamples));
 
     QColor lowColor = m_signalColors.getLowColor();
     lowColor.setAlphaF(alpha);
@@ -384,12 +346,35 @@ void WOverview::mousePressEvent(QMouseEvent * e)
 void WOverview::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
+    painter.resetTransform();
     // Fill with transparent pixels
-    painter.drawPixmap(rect(), m_backgroundPixmap);
+    if( !m_backgroundPixmap.isNull())
+        painter.drawPixmap(rect(), m_backgroundPixmap);
 
-    // Draw waveform, then playpos
+    // Draw waveform
     if (m_waveform) {
+
+        //PointF point(0,0);
+        //point.setX((width()-m_waveformPixmap.width())/2);
+        //point.setY((height()-m_waveformPixmap.height())/2);
         painter.drawPixmap(rect(), m_waveformPixmap);
+
+        //NTOS: (vrince) test overview scaling
+        /*
+        double scaleFactor = m_totalGain;
+        float newWidth = float(m_waveformPixmap.width());
+        float newHeight = float(m_waveformPixmap.height()) * scaleFactor;
+        float newX = ((float)m_waveformPixmap.width() - newWidth) / 2.f;
+        float newY = -(float)height()/2.f + ((float)m_waveformPixmap.height() - newHeight) / 2.f;
+
+        painter.save();
+        painter.setRenderHints(QPainter::SmoothPixmapTransform);
+        painter.translate(newX, newY);
+        painter.scale(1.0, scaleFactor);
+        QRectF exposed = painter.matrix().inverted().mapRect(rect()).adjusted(-1, -1, 1, 1);
+        painter.drawPixmap(exposed, m_waveformPixmap, exposed);
+        painter.restore();
+        */
     }
 
     if (m_sampleDuration > 0) {

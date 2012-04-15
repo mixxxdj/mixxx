@@ -28,6 +28,10 @@ void WaveformWidgetAbstract::release() {
     m_widget->show();
 }
 
+void WaveformWidgetAbstract::preRender() {
+    WaveformWidgetRenderer::onPreRender();
+}
+
 void WaveformWidgetAbstract::render() {
     m_widget->update();
 }
