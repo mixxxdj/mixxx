@@ -155,8 +155,8 @@ void DlgPrefBeats::slotUpdate(){
     plugincombo->setEnabled(m_banalyserEnabled);
     banalyserenabled->setChecked(m_banalyserEnabled);
     bFastAnalysis->setEnabled(m_banalyserEnabled);
-    txtMaxBpm->setEnabled(m_banalyserEnabled);
-    txtMinBpm->setEnabled(m_banalyserEnabled);
+    txtMaxBpm->setEnabled(m_banalyserEnabled && m_bfixedtempoEnabled);
+    txtMinBpm->setEnabled(m_banalyserEnabled && m_bfixedtempoEnabled);
     bReanalyse->setEnabled(m_banalyserEnabled);
 
     if(!m_banalyserEnabled)
