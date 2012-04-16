@@ -260,7 +260,7 @@ class TagLib(Dependence):
 
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
-        if not conf.CheckLib(['protobuf-lite', 'protobuf']):
+        if not conf.CheckLib(['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']):
             raise Exception("Could not find libprotobuf or its development headers.")
 
 class MixxxCore(Feature):
