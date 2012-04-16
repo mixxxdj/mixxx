@@ -44,6 +44,10 @@
 #include <cmath>
 #include <cstdlib>
 
+#ifndef M_PI
+#define M_PI           3.14159265358979323846
+#endif
+
 _VAMP_SDK_HOSTSPACE_BEGIN(Window.h)
 
 template <typename T>
