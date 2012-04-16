@@ -29,6 +29,9 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
     m_pZoom->setStep(1.0);
     m_pZoom->setSmallStep(1.0);
 
+    m_pEndOfTrackControl = new ControlObject( ConfigKey( m_pGroup,"end_of_track"));
+    m_pEndOfTrackControl->set(0.);
+
     connect(m_pZoom, SIGNAL(valueChanged(double)),
             this, SLOT(onZoomChange(double)));
 
@@ -57,6 +60,7 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
 
 WWaveformViewer::~WWaveformViewer() {
     delete m_pZoom;
+    delete m_pEndOfTrackControl;
     delete m_pScratchEnable;
     delete m_pScratch;
     delete m_pTrackSamples;

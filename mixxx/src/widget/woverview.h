@@ -66,13 +66,11 @@ protected:
 
 private slots:
     void onTotalGainChange(double v);
+    void onEndOfTrackChange(double v);
+
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
-/*
-    void loopStartChanged(double v);
-    void loopEndChanged(double v);
-    void loopEnabledChanged(double v);
-    */
+
     void slotWaveformSummaryUpdated();
 
 private:
@@ -89,6 +87,8 @@ private:
     const char* m_pGroup;
     ControlObjectThreadMain* m_totalGainControl;
     double m_totalGain;
+    ControlObjectThreadMain* m_endOfTrackControl;
+    double m_endOfTrack;
 
     Waveform* m_waveform;
     QPixmap m_waveformPixmap;
@@ -104,20 +104,6 @@ private:
     // Current active track
     TrackPointer m_pCurrentTrack;
 
-    /*
-    // Loop controls and values
-    ControlObject* m_pLoopStart;
-    ControlObject* m_pLoopEnd;
-    ControlObject* m_pLoopEnabled;
-    double m_dLoopStart, m_dLoopEnd;
-    bool m_bLoopEnabled;
-
-    // Hotcue controls and values
-    QList<ControlObject*> m_hotcueControls;
-    QMap<QObject*, int> m_hotcueMap;
-    QList<int> m_hotcues;
-    */
-
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Internal storage of slider position in pixels */
@@ -127,6 +113,7 @@ private:
     QString m_backgroundPixmapPath;
     QColor m_qColorBackground;
     QColor m_qColorMarker;
+    QColor m_endOfTrackColor;
 
     WaveformSignalColors m_signalColors;
     std::vector<WaveformMark> m_marks;
