@@ -58,7 +58,7 @@ void VampAnalyser::initializePluginPaths() {
     setenv("VAMP_PATH", newPathBA.constData(), 1);
 #else
     QString winpath = "VAMP_PATH=" + newPath;
-    QByteArraw winpathBA = winpath.toLocal8Bit();
+    QByteArray winpathBA = winpath.toLocal8Bit();
     putenv(winpathBA.constData());
 #endif
 }
