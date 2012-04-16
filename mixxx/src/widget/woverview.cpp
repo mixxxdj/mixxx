@@ -42,6 +42,12 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
              this, SLOT(onTotalGainChange(double)));
     m_totalGain = 1.0;
 
+    m_endOfTrackControl = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_pGroup,"end_of_track")));
+    connect( m_endOfTrackControl, SIGNAL(valueChanged(double)),
+             this, SLOT( onEndOfTrackChange(double)));
+    m_endOfTrack = false;
+
     setAcceptDrops(true);
 
     m_waveform = NULL;
@@ -129,6 +135,9 @@ void WOverview::setup(QDomNode node) {
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 
+    //TODO: add in skin
+    m_endOfTrackColor = QColor(200, 25, 20);
+
     //init waveform pixmap
     //waveform pixmap twice the heigth of the viewport to be scalable by total_gain
     m_waveformPixmap = QPixmap(width(),2*height());
@@ -202,7 +211,14 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
 }
 
 void WOverview::onTotalGainChange(double v) {
+    //qDebug() << "WOverview::onTotalGainChange()" << v;
     m_totalGain = v;
+    update();
+}
+
+void WOverview::onEndOfTrackChange(double v) {
+    //qDebug() << "WOverview::onEndOfTrackChange()" << v;
+    m_endOfTrack = v > 0.5;
     update();
 }
 
@@ -219,7 +235,7 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 bool WOverview::drawNextPixmapPart() {
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
-    if (!m_waveform) {
+    if (!m_waveform || m_visualSamplesByPixel < 0.0001) {
         return false;
     }
 
@@ -351,15 +367,23 @@ void WOverview::paintEvent(QPaintEvent *)
     if( !m_backgroundPixmap.isNull())
         painter.drawPixmap(rect(), m_backgroundPixmap);
 
+    //Display viewer contour if end of track
+    if( m_endOfTrack) {
+        painter.setOpacity(0.8);
+        painter.setPen(QPen(QBrush(m_endOfTrackColor),1.5));
+        painter.setBrush(QColor(0,0,0,0));
+        painter.drawRect(rect().adjusted(1,1,-1,-1));
+        painter.setOpacity(0.3);
+        painter.setBrush(m_endOfTrackColor);
+        painter.drawRect(rect().adjusted(1,1,-1,-1));
+    }
+
     // Draw waveform
     if (m_waveform) {
-
-        //PointF point(0,0);
-        //point.setX((width()-m_waveformPixmap.width())/2);
-        //point.setY((height()-m_waveformPixmap.height())/2);
+        painter.setOpacity(1.0);
         painter.drawPixmap(rect(), m_waveformPixmap);
 
-        //NTOS: (vrince) test overview scaling
+        //NOTE: (vrince) test overview scaling
         /*
         double scaleFactor = m_totalGain;
         float newWidth = float(m_waveformPixmap.width());
