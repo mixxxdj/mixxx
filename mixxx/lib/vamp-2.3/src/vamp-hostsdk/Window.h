@@ -39,6 +39,8 @@
 
 #include <vamp-hostsdk/hostguard.h>
 
+// http://msdn.microsoft.com/en-us/library/4hwaceh6(v=vs.80).aspx
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdlib>
 
