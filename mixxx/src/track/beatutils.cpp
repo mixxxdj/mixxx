@@ -25,7 +25,7 @@ static bool sDebug = false;
 
 const double kCorrectBeatLocalBpmEpsilon = 0.05; //0.2;
 const int kHistogramDecimalPlaces = 2;
-const double kHistogramDecimalScale = pow(10, kHistogramDecimalPlaces);
+const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
 
 void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
