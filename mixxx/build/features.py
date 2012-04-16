@@ -369,13 +369,13 @@ class Vamp(Feature):
         return "Vamp Analysers support"
 
     def enabled(self, build):
-        build.flags['vamp'] = util.get_flags(build.env, 'vamp', 0)
+        build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
         if int(build.flags['vamp']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('vamp', 'Set to 1 to enable vamp analysers', 0)
+        vars.Add('vamp', 'Set to 1 to enable vamp analysers', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
