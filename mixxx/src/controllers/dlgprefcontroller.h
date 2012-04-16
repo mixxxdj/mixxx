@@ -33,7 +33,6 @@ public:
                         ConfigObject<ConfigValue> *pConfig);
     virtual ~DlgPrefController();
 
-
 public slots:
     void slotUpdate();
     void slotApply();
@@ -49,6 +48,10 @@ signals:
     void closeController(bool);
     void loadPreset(Controller* pController, QString controllerName, bool force);
     void applyPreset();
+
+protected:
+    QGridLayout *layout;
+    QSpacerItem *verticalSpacer;
 
 private:
     void savePreset(QString path);

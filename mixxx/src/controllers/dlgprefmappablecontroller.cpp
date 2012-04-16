@@ -22,4 +22,10 @@ DlgPrefMappableController::DlgPrefMappableController(QWidget *parent, Controller
                           ConfigObject<ConfigValue> *pConfig)
     : DlgPrefController(parent, controller, controllerManager, pConfig)
 {
+    // Remove the vertical spacer since we're adding stuff
+    layout->removeItem(verticalSpacer);
+    // Add our supplemental UI here
+    QWidget * containerWidget = new QWidget(this);
+    m_ui.setupUi(containerWidget);
+    layout->addWidget(containerWidget);
 }
