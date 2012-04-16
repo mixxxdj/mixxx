@@ -28,8 +28,13 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     : QWidget(parent)
 {
 //     QWidget * containerWidget = new QWidget();
-    QWidget * containerWidget = new QWidget(this);
-    m_ui.setupUi(containerWidget);
+//     QWidget * containerWidget = new QWidget(this);
+//     m_ui.setupUi(containerWidget);
+    m_ui.setupUi(this);
+    layout = m_ui.gridLayout_4;
+
+    verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    layout->addItem(verticalSpacer, 4, 0, 1, 3);
 
 //     QVBoxLayout* vLayout = new QVBoxLayout(this);
 //     vLayout->addWidget(containerWidget);
@@ -40,6 +45,8 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     m_pControllerManager = controllerManager;
     
     m_bDirty = false;
+
+//     T* ui = static_cast<T*>(this)->m_ui;
 
     m_ui.labelDeviceName->setText(m_pController->getName());
 
