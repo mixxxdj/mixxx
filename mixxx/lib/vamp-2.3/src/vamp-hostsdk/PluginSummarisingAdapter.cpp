@@ -38,6 +38,8 @@
 
 #include <map>
 #include <algorithm>
+// http://msdn.microsoft.com/en-us/library/4hwaceh6(v=vs.80).aspx
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <climits>
 
