@@ -566,7 +566,7 @@ class MixxxCore(Feature):
             #'PROTOCCPPOUTFLAGS': "dllexport_decl=PROTOCONFIG_EXPORT:"
         }
         proto_sources = SCons.Glob('proto/*.proto')
-        proto_objects = [build.env.Protoc([], proto_source, **proto_args)
+        proto_objects = [build.env.Protoc([], proto_source, **proto_args)[0]
                         for proto_source in proto_sources]
         sources.extend(proto_objects)
 
