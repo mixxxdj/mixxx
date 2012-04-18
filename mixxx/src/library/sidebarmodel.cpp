@@ -17,8 +17,6 @@ SidebarModel::~SidebarModel() {
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
-    connect(feature, SIGNAL(featureUpdated()),
-            this, SLOT(refreshData()));
     connect(feature, SIGNAL(featureIsLoading(LibraryFeature*)),
             this, SLOT(slotFeatureIsLoading(LibraryFeature*)));
     connect(feature, SIGNAL(featureLoadingFinished(LibraryFeature*)),
@@ -59,16 +57,6 @@ void SidebarModel::activateDefaultSelection() {
     if (m_sFeatures.size() > 0) {
         m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
-}
-
-void SidebarModel::refreshData()
-{
-    //Reset all the model indices and refresh all the data.
-    //TODO: Could do something nicer when a feature's children change,
-    //      but the features know nothing about their model indices,
-    //      so they can't do stuff like beginInsertRow() to help the
-    //      model manage the indices.
-    //reset();
 }
 
 QModelIndex SidebarModel::index(int row, int column,
@@ -343,7 +331,7 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    // qDebug() << "slotRowsInserted" << parent << start << end;
+    //qDebug() << "slotRowsInserted" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
@@ -367,7 +355,7 @@ void SidebarModel::slotModelReset() {
  * Call this slot whenever the title of the feature has changed.
  * See RhythmboxFeature for an example.
  * While the rhythmbox music collection is parsed
- * the title becomes 'Rhythmbox (loading)'
+ * the title becomes '(loading) Rhythmbox'
  */
 void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
 {

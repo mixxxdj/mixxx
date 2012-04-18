@@ -32,6 +32,9 @@ class LoopingControlTest : public MixxxTest {
         m_pTrackSamples->set(kTrackLengthSamples);
 
         m_pLoopingControl.reset(new LoopingControl(m_pGroup, m_pConfig.data()));
+        TrackPointer track = TrackPointer(new TrackInfoObject("foo"));
+        track->setSampleRate(44100);
+        m_pLoopingControl->trackLoaded(track);
         m_pButtonLoopIn.reset(getControlObjectThread(
                 ConfigKey(m_pGroup, "loop_in")));
         m_pButtonLoopOut.reset(getControlObjectThread(

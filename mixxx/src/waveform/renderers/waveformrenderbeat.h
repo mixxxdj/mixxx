@@ -22,7 +22,7 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
     QColor m_beatColor;
     QColor m_highBeatColor;
     ControlObjectThreadMain* m_beatActive;
-    BeatList m_beatsCache;
+    SampleList m_beatsCache;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };
