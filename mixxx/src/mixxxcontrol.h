@@ -87,11 +87,16 @@ inline bool operator<(const MixxxControl &first, const MixxxControl &second)
    return ((first.group() + first.item()) <
             (second.group() + second.item()));
 }
+
+inline bool groupLessThan(const MixxxControl &first, const MixxxControl &second)
+{
+    return (first.group() < second.group());
+}
   
 /** Hash function needed so we can use MixxxControl in a QHash table */
 uint qHash(const MixxxControl& key);
 
-/*
+/*  The below breaks linking.
 QDebug operator<<(QDebug dbg, MixxxControl& control)
 {
     dbg.space() << control.group();

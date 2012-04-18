@@ -102,12 +102,10 @@ void DlgPrefController::slotUpdate() {
     if (m_pController->isOpen())
     {
         m_ui.chkEnabledDevice->setCheckState(Qt::Checked); //Check the "Enabled" box
-//         toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
         m_ui.groupBoxPresets->setEnabled(true); //Enable presets group box.
     }
     else {
         m_ui.chkEnabledDevice->setCheckState(Qt::Unchecked); //Uncheck the "Enabled" box
-//         toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
         m_ui.groupBoxPresets->setEnabled(false); //Disable presets group box.
     }
 

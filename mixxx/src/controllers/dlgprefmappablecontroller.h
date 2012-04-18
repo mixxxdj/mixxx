@@ -30,16 +30,18 @@ class DlgPrefMappableController : public DlgPrefController {
         ~DlgPrefMappableController() {};
 
     public slots:
-        void slotShowLearnDialog() {};
+        void slotShowLearnDialog();
+        void slotUpdate();
+        void slotDeviceState(int state);
 
         //Input mappings
-        void slotClearAllInputMappings() {};
-        void slotRemoveInputMapping() {};
-        void slotAddInputMapping() {};
+//         void slotClearAllInputMappings() {};
+//         void slotRemoveInputMapping() {};
+//         void slotAddInputMapping() {};
 
     private:
         DlgControllerLearning* m_pDlgControllerLearning;
-        Ui::DlgPrefMappableControllerDlg m_ui;
+        Ui::ControllerMappingDlg m_ui;
 };
 
 #endif

@@ -54,9 +54,6 @@ class MidiController : public Controller {
 
     bool isMappable() const { return true; };
 
-  signals:
-    void midiEvent(MidiKey message);
-
   protected:
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
     // Alias for send()

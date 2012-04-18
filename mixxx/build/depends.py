@@ -288,6 +288,7 @@ class MixxxCore(Feature):
                    "dlgprefsounditem.cpp",
                    "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgprefmappablecontroller.cpp",
+                   "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefnocontrollers.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",

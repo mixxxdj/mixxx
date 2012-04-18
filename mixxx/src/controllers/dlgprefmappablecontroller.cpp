@@ -28,4 +28,57 @@ DlgPrefMappableController::DlgPrefMappableController(QWidget *parent, Controller
     QWidget * containerWidget = new QWidget(this);
     m_ui.setupUi(containerWidget);
     layout->addWidget(containerWidget);
+
+    connect(m_ui.btnLearnWizard, SIGNAL(clicked()), this, SLOT(slotShowLearnDialog()));
+    connect(m_ui.btnLearnWizard, SIGNAL(clicked()), this, SLOT(slotDirty()));
+}
+
+void DlgPrefMappableController::slotShowLearnDialog() {
+    // If the user has checked the "Enabled" checkbox but they haven't hit OK to
+    // apply it yet, prompt them to apply the settings before we open the
+    // learning dialog. If we don't apply the settings first and open the
+    // device, the dialog won't react to controller messages.
+    if (DlgPrefController::m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
+        QMessageBox::StandardButton result = QMessageBox::question(
+            this,
+            tr("Apply device settings?"),
+            tr("Your settings must be applied before starting the learning wizard.\n"
+               "Apply settings and continue?"),
+            QMessageBox::Ok | QMessageBox::Cancel,  // Buttons to be displayed
+            QMessageBox::Ok);  // Default button
+        // Stop if the user has not pressed the Ok button,
+        // which could be the Cancel or the Close Button.
+        if (result != QMessageBox::Ok) return;
+    }
+    slotApply();
+
+    // Note that DlgControllerLearning is set to delete itself on close using the
+    // Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
+    m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
+    m_pDlgControllerLearning->show();
+}
+
+void DlgPrefMappableController::slotDeviceState(int state) {
+    
+    DlgPrefController::slotDeviceState(state);
+    
+    if (state == Qt::Checked) {
+        m_ui.toolBox->setEnabled(true); //Enable in/out toolbox.
+    }
+    else {
+        m_ui.toolBox->setEnabled(false); //Disable in/out toolbox.
+    }
+}
+
+void DlgPrefMappableController::slotUpdate() {
+    
+    DlgPrefController::slotUpdate();
+    
+    if (m_pController->isOpen())
+    {
+        m_ui.toolBox->setEnabled(true); //Enable in/out toolbox.
+    }
+    else {
+        m_ui.toolBox->setEnabled(false); //Disable in/out toolbox.
+    }
 }

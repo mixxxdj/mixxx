@@ -18,11 +18,11 @@
 #define DLGPREFCONTROLLER_H_
 
 #include <QtGui>
+#include "controllers/controller.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 
 //Forward declarations
-class Controller;
 class ControllerManager;
 
 class DlgPrefController : public QWidget {
@@ -34,9 +34,9 @@ public:
     virtual ~DlgPrefController();
 
 public slots:
-    void slotUpdate();
     void slotApply();
-    void slotDeviceState(int state);
+    virtual void slotUpdate();
+    virtual void slotDeviceState(int state);
     void slotLoadPreset(const QString &name);
 
     //Mark that we need to apply the settings.
@@ -53,6 +53,10 @@ protected:
     QGridLayout *layout;
     QSpacerItem *verticalSpacer;
 
+    Controller* m_pController;
+
+    Ui::DlgPrefControllerDlg m_ui;
+
 private:
     void savePreset(QString path);
     void enumeratePresets();
@@ -63,10 +67,7 @@ private:
     bool m_bDirty;
     int currentGroupRow;
     ConfigObject<ConfigValue> *m_pConfig;
-    Controller* m_pController;
     ControllerManager* m_pControllerManager;
-
-    Ui::DlgPrefControllerDlg m_ui;
 };
 
 #endif /*DLGPREFCONTROLLER_H_*/

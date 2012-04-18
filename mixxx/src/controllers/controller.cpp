@@ -88,6 +88,18 @@ void Controller::applyPreset() {
     else qWarning() << "Controller::applyPreset(): No engine exists!";
 }
 
+void Controller::learn(MixxxControl control) {
+    qDebug() << m_sDeviceName << ": Learning" << control.group() << "," << control.item();
+    m_controlToLearn = control;
+    m_bLearning = true;
+}
+
+void Controller::cancelLearn() {
+    m_controlToLearn = MixxxControl();
+    m_bLearning = false;
+//     qDebug() << m_sDeviceName << ": Aborted learning.";
+}
+
 void Controller::send(QList<int> data, unsigned int length) {
     // If you change this implementation, also change it in HidController
     //  (That function is required due to HID devices having report IDs)
