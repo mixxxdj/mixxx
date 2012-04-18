@@ -260,6 +260,11 @@ void WPushButton::mousePressEvent(QMouseEvent * e)
     update();
 }
 
+void WPushButton::focusOutEvent(QFocusEvent* e) {
+    m_bPressed = false;
+    update();
+}
+
 void WPushButton::mouseReleaseEvent(QMouseEvent * e)
 {
     m_bPressed = false;

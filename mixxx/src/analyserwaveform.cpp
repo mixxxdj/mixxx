@@ -182,9 +182,9 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
         m_buffers[High].resize(bufferLength);
     }
 
-    m_filter[Low]->process( buffer, &m_buffers[Low][0], bufferLength);
-    m_filter[Mid]->process( buffer, &m_buffers[Mid][0], bufferLength);
-    m_filter[High]->process( buffer, &m_buffers[High][0], bufferLength);
+    m_filter[Low]->process(buffer, &m_buffers[Low][0], bufferLength);
+    m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
+    m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
     for( int i = 0; i < bufferLength; i+=2) {
         //accumulate signal power of the stride
