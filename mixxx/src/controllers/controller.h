@@ -66,6 +66,9 @@ class Controller : public QObject, ControllerPresetVisitor {
 
         void setPolling(bool needPolling) { m_bPolling = needPolling; };
         bool needPolling() { return m_bPolling; };
+        
+    signals:
+        void learnedMessage(QString message);
 
     protected:
         /** To be called in sub-class' open() functions after opening the
@@ -96,6 +99,7 @@ class Controller : public QObject, ControllerPresetVisitor {
         ConfigObject<ConfigValue> *m_pConfig;
 
         bool m_bLearning;
+        MixxxControl m_controlToLearn;
 
     // Making these slots protected/private ensures that other parts of Mixxx
     //  can only signal them, preventing thread contention
@@ -108,6 +112,9 @@ class Controller : public QObject, ControllerPresetVisitor {
 
         /** Initializes the controller engine */
         virtual void applyPreset();
+
+        void learn(MixxxControl control);
+        void cancelLearn();
 
     private slots:
         virtual int open() = 0;
