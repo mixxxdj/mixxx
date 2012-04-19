@@ -71,6 +71,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Timestamp"));
     setHeaderData(fieldIndex(LIBRARYTABLE_KEY),
                   Qt::Horizontal, tr("Key"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_BPM_LOCK),
+                  Qt::Horizontal, tr("BPM Lock"));
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -444,6 +446,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = value.toDateTime();
             } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
                 value = value.toDateTime().time();
+            } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
+                value = (value == "true") ? true : false;
             }
             break;
         case Qt::EditRole:
@@ -462,6 +466,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 bool played = index.sibling(
                     row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
                 value = played ? Qt::Checked : Qt::Unchecked;
+            } else if (column == fieldIndex(LIBRARYTABLE_BPM)) {
+                bool locked = index.sibling(
+                    row, fieldIndex(LIBRARYTABLE_BPM_LOCK)).data().toBool();
+                value = locked ? Qt::Checked : Qt::Unchecked;
             }
             break;
         default:
@@ -484,10 +492,13 @@ bool BaseSqlTableModel::setData(
 
     // Over-ride sets to TIMESPLAYED and re-direct them to PLAYED
     if (role == Qt::CheckStateRole) {
+        QString val = value.toInt() > 0 ? QString("true") : QString("false");
         if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-            QString val = value.toInt() > 0 ? QString("true") : QString("false");
             QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
             return setData(playedIndex, val, Qt::EditRole);
+        } else if (column == fieldIndex(LIBRARYTABLE_BPM)) {
+            QModelIndex bpmLockindex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_BPM_LOCK));
+            return setData(bpmLockindex, val, Qt::EditRole);
         }
         return false;
     }
@@ -542,8 +553,18 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
          || column == fieldIndex(LIBRARYTABLE_BITRATE)
          || column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
         return defaultFlags;
-    } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
+    } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
+    } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
+        return defaultFlags | Qt::ItemIsUserCheckable;
+    } else if(column == fieldIndex(LIBRARYTABLE_BPM)) {
+        // Allow checking of the BPM-locked indicator.
+        defaultFlags |= Qt::ItemIsUserCheckable;
+        // Disable editing of BPM field when BPM is locked
+        bool locked = index.sibling(
+            index.row(), fieldIndex(LIBRARYTABLE_BPM_LOCK))
+                .data().toBool();
+        return locked ? defaultFlags : defaultFlags | Qt::ItemIsEditable;
     } else {
         return defaultFlags | Qt::ItemIsEditable;
     }
@@ -640,6 +661,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         pTrack->setKey(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
+        pTrack->setBpmLock(value.toBool());
     }
 }
 

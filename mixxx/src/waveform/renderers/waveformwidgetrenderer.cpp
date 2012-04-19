@@ -126,7 +126,7 @@ void WaveformWidgetRenderer::onPreRender() {
     //rate adjst may have change sampling per
     updateVisualSamplingPerPixel();
 
-    if(m_trackInfoObject) {
+    if (m_trackInfoObject) {
         updateAudioSamplingPerPixel();
         double displayedLength = 2.0*(double)m_width * getAudioSamplePerPixel() / ((double)m_trackSamples);
         m_firstDisplayedPosition = m_playPos - displayedLength / 2.0;

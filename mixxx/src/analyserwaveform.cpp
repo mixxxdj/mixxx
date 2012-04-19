@@ -81,30 +81,42 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
             const AnalysisDao::AnalysisInfo& analysis = it.next();
 
             if (analysis.type == AnalysisDao::TYPE_WAVEFORM &&
-                    missingWaveform && !foundWaveform) {
+                    missingWaveform && !loadedWaveform) {
                 foundWaveform = true;
-                m_waveform = WaveformFactory::loadWaveformFromAnalysis(
-                            tio, analysis);
-                //if( m_waveform->getId() != -1) {
-                loadedWaveform = true;
-                tio->setWaveform(m_waveform);
-                //}
+                Waveform* pLoadedWaveform =
+                        WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
+                if (pLoadedWaveform && pLoadedWaveform->isValid()) {
+                    //if( m_waveform->getId() != -1) {
+                    m_waveform = pLoadedWaveform;
+                    loadedWaveform = true;
+                    tio->setWaveform(pLoadedWaveform);
+                    //}
+                } else {
+                    delete pLoadedWaveform;
+                    m_analysisDao->deleteAnalysis(analysis.analysisId);
+                }
             } else if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY &&
-                       missingWavesummary && !foundWavesummary) {
+                       missingWavesummary && !loadedWavesummary) {
                 foundWavesummary = true;
-                m_waveformSummary = WaveformFactory::loadWaveformFromAnalysis(
-                            tio, analysis);
-                //if( m_waveformSummary->getId() != -1) {
-                tio->setWaveformSummary(m_waveformSummary);
-                loadedWavesummary = true;
-                //}
+                Waveform* pLoadedWaveformSummary =
+                        WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
+                if (pLoadedWaveformSummary && pLoadedWaveformSummary->isValid()) {
+                    //if( m_waveformSummary->getId() != -1) {
+                    m_waveformSummary = pLoadedWaveformSummary;
+                    tio->setWaveformSummary(pLoadedWaveformSummary);
+                    loadedWavesummary = true;
+                    //}
+                } else {
+                    delete pLoadedWaveformSummary;
+                    m_analysisDao->deleteAnalysis(analysis.analysisId);
+                }
             }
         }
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
     if ((!missingWaveform || (missingWaveform && foundWaveform && loadedWaveform)) &&
-            (!missingWavesummary || (missingWavesummary && foundWavesummary && loadedWavesummary))) {
+        (!missingWavesummary || (missingWavesummary && foundWavesummary && loadedWavesummary))) {
         qDebug() << "AnalyserWaveform::initialise - Waveform loaded";
         m_skipProcessing = true;
         return;
@@ -182,9 +194,9 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
         m_buffers[High].resize(bufferLength);
     }
 
-    m_filter[Low]->process( buffer, &m_buffers[Low][0], bufferLength);
-    m_filter[Mid]->process( buffer, &m_buffers[Mid][0], bufferLength);
-    m_filter[High]->process( buffer, &m_buffers[High][0], bufferLength);
+    m_filter[Low]->process(buffer, &m_buffers[Low][0], bufferLength);
+    m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
+    m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
     for( int i = 0; i < bufferLength; i+=2) {
         //accumulate signal power of the stride
@@ -317,8 +329,8 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
                 analysis.analysisId = pWaveform->getId();
             }
             analysis.type = AnalysisDao::TYPE_WAVEFORM;
-            analysis.description = "Waveform 1.0";
-            analysis.version = "Waveform-1.0";
+            analysis.description = "Waveform 2.0";
+            analysis.version = "Waveform-2.0";
             analysis.data = pWaveform->toByteArray();
 
             bool success = m_analysisDao->saveAnalysis(&analysis);
@@ -333,8 +345,8 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
             // Clear analysisId since we are re-using the AnalysisInfo
             analysis.analysisId = -1;
             analysis.type = AnalysisDao::TYPE_WAVESUMMARY;
-            analysis.description = "Waveform Summary 1.0";
-            analysis.version = "WaveformSummary-1.0";
+            analysis.description = "Waveform Summary 2.0";
+            analysis.version = "WaveformSummary-2.0";
             analysis.data = pWaveSummary->toByteArray();
 
             success = m_analysisDao->saveAnalysis(&analysis);

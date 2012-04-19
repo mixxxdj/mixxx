@@ -33,6 +33,7 @@
 // optimizations where possible.
 class SampleUtil {
   public:
+    static bool m_sOptimizationsOn;
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for use for use with SampleUtil SSE enhanced
@@ -165,7 +166,6 @@ class SampleUtil {
     static void setOptimizations(bool opt);
 
   private:
-    static bool m_sOptimizationsOn;
     static void sseApplyGain(CSAMPLE* pBuffer,
                              CSAMPLE gain, int iNumSamples) _ALIGN_STACK;
     static void sseApplyAlternatingGain(CSAMPLE* pBuffer,
