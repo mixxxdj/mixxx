@@ -26,13 +26,6 @@ Waveform::~Waveform() {
     delete m_mutex;
 }
 
-struct SerializedWaveformHeader {
-    double actualSize;
-    double dataSize;
-    double visualSampleRate;
-    double audioVisualRatio;
-};
-
 QByteArray Waveform::toByteArray() const {
     io::Waveform waveform;
     waveform.set_visual_sample_rate(m_visualSampleRate);
