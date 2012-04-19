@@ -1178,6 +1178,7 @@ void MixxxApp::slotHelpAbout() {
                     "Owen Williams<br>"
                     "Vittorio Colao<br>"
                     "Daniel Sch&uuml;rmann<br>"
+                    "Thomas Vincent<br>"
 
                     "</p>"
                     "<p align=\"center\"><b>%2</b></p>"
