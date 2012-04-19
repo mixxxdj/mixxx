@@ -2411,6 +2411,7 @@
 						<Pos>80,93</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
+							<!--ConfigKey>[Channel1],waveform_zoom_up</ConfigKey-->
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
@@ -2432,6 +2433,7 @@
 						<Pos>54,93</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
+							<!--ConfigKey>[Channel1],waveform_zoom_down</ConfigKey-->
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
@@ -2624,8 +2626,7 @@
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
-						<HfcColor>#1b1b1b</HfcColor>
-						<SignalColor>#0099FF</SignalColor>
+						<SignalColor>#3087BF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
@@ -2917,7 +2918,6 @@
 							<Color>#AE5CFF</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
-
 						<Mark>
 							<Control>cue_point</Control>
 							<Pixmap>marker_cue1.png</Pixmap>
@@ -4491,7 +4491,7 @@
 				<!-- transparent background if no <BgPixmap> is present
 				<BgPixmap></BgPixmap>
 				-->
-				<SignalColor>#0099FF</SignalColor>
+				<SignalColor>#3087BF</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<ProgressColor>#0099FF</ProgressColor>
 				<ProgressAlpha>80</ProgressAlpha>

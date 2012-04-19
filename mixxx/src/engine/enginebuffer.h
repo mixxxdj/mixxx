@@ -237,6 +237,10 @@ private:
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
 
+    /** Waveform dislpay related controls */
+    ControlPotmeter* m_pWaveformZoom;
+    ControlObject* m_pEndOfTrack;
+
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
     float m_fLastSampleValue[2];

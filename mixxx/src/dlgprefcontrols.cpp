@@ -32,6 +32,7 @@
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "playermanager.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
@@ -570,12 +571,19 @@ void DlgPrefControls::initWaveformControl()
         waveformTypeComboBox->setCurrentIndex(currentIndex);
 
     frameRateSpinBox->setValue(factory->getFrameRate());
-    defaultZoomComboBox->setCurrentIndex( factory->getDefaultZoom() - 1);
+
     synchronizeZoomCheckBox->setChecked( factory->isZoomSync());
     allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
     lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
+
+    for( int i = WaveformWidgetRenderer::s_waveformMinZoom;
+         i <= WaveformWidgetRenderer::s_waveformMaxZoom;
+         i++) {
+        defaultZoomComboBox->addItem(QString::number( 100/double(i),'f',1) + " %");
+    }
+    defaultZoomComboBox->setCurrentIndex( factory->getDefaultZoom() - 1);
 
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetFrameRate(int)));
