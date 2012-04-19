@@ -311,9 +311,9 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     return true;
 }
 
-
 void WaveformWidgetFactory::setDefaultZoom(int zoom){
-    m_defaultZoom = math_max(1,math_min(4,zoom));
+    m_defaultZoom = math_max(WaveformWidgetRenderer::s_waveformMinZoom,
+                             math_min(zoom,WaveformWidgetRenderer::s_waveformMaxZoom));
     if( m_config)
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
 
@@ -346,6 +346,7 @@ double WaveformWidgetFactory::getVisualGain( FilterIndex index) const {
 
 void WaveformWidgetFactory::notifyZoomChange( WWaveformViewer* viewer) {
     if( isZoomSync()) {
+        //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         int refZoom = viewer->getWaveformWidget()->getZoomFactor();
         for (int i = 0; i < m_waveformWidgetHolders.size(); i++)
             if( m_waveformWidgetHolders[i].m_waveformViewer != viewer)

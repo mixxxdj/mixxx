@@ -39,13 +39,7 @@ void GLWaveformRendererSimpleSignal::setup(const QDomNode &node){
     m_borderPen.setColor(bornderColor);
     m_borderPen.setWidthF(1.25);
 
-    QLinearGradient gradient(QPointF(0.0,-255.0),QPointF(0.0,255.0));
-    gradient.setColorAt(0.0, signalColor);
-    gradient.setColorAt(0.25,signalColor.lighter(85));
-    gradient.setColorAt(0.5, signalColor.darker(115));
-    gradient.setColorAt(0.75,signalColor.lighter(85));
-    gradient.setColorAt(1.0, signalColor);
-    m_brush = QBrush(gradient);
+    m_brush = QBrush(signalColor);
 }
 
 inline void setPoint(QPointF& point, qreal x, qreal y) {

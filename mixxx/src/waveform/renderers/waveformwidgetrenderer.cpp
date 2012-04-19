@@ -7,6 +7,9 @@
 
 #include <QPainter>
 
+const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
+const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
+
 WaveformWidgetRenderer::WaveformWidgetRenderer() {
     m_playPosControlObject = 0;
     m_rateControlObject = 0;
@@ -26,13 +29,12 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_height(-1),
     m_width(-1) {
 
-
     m_firstDisplayedPosition = 0.0;
     m_lastDisplayedPosition = 0.0;
     m_rendererTransformationOffset = 0.0;
     m_rendererTransformationGain = 0.0;
 
-    m_zoomFactor = 2.0;
+    m_zoomFactor = 1.0;
     m_rateAdjust = 0.0;
     m_visualSamplePerPixel = 1.0;
     m_audioSamplePerPixel = 1.0;
@@ -50,6 +52,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_gain = 1.0;
     m_trackSamplesControlObject = 0;
     m_trackSamples = -1.0;
+
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     m_timer = new QTime();
@@ -137,6 +140,16 @@ void WaveformWidgetRenderer::onPreRender() {
         m_rendererTransformationOffset = 0.0;
         m_rendererTransformationGain = 0.0;
     }
+
+    /*
+    qDebug() << "m_group" << m_group
+             << "m_trackSamples" << m_trackSamples
+             << "m_playPos" << m_playPos
+             << "m_rate" << m_rate
+             << "m_rateDir" << m_rateDir
+             << "m_rateRange" << m_rateRange
+             << "m_gain" << m_gain;
+             */
 }
 
 void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
@@ -211,8 +224,9 @@ void WaveformWidgetRenderer::setup( const QDomNode& node) {
 }
 
 void WaveformWidgetRenderer::setZoom(int zoom) {
+    //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = zoom;
-    m_zoomFactor = math_max( 1.0, math_min( m_zoomFactor, 4.0));
+    m_zoomFactor = math_max( s_waveformMinZoom, math_min( m_zoomFactor, s_waveformMaxZoom));
     updateVisualSamplingPerPixel();
     updateAudioSamplingPerPixel();
 }

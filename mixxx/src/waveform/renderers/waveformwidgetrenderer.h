@@ -17,6 +17,10 @@ class ControlObjectThreadMain;
 
 class WaveformWidgetRenderer {
 public:
+    static const int s_waveformMinZoom;
+    static const int s_waveformMaxZoom;
+
+public:
     explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
@@ -83,6 +87,7 @@ protected:
     double m_rendererTransformationOffset;
     double m_rendererTransformationGain;
 
+    double m_zoomFactor;
     double m_rateAdjust;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
@@ -101,8 +106,7 @@ protected:
     double m_gain;
     ControlObjectThreadMain* m_trackSamplesControlObject;
     int m_trackSamples;
-    ControlObjectThreadMain* m_zoomControlObject;
-    double m_zoomFactor;
+
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     QTime* m_timer;

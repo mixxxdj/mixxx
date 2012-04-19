@@ -62,9 +62,7 @@ private:
 private:
     const char* m_pGroup;
     int m_zoomZoneWidth;
-    ControlPotmeter* m_pZoom;
-    ControlObject* m_pEndOfTrackControl;
-
+    ControlObjectThreadMain* m_pZoom;
     ControlObjectThreadMain* m_pScratchEnable;
     ControlObjectThreadMain* m_pScratch;
     ControlObjectThreadMain* m_pTrackSamples;
