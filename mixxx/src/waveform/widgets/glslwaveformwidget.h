@@ -12,7 +12,7 @@ public:
     GLSLWaveformWidget( const char* group, QWidget* parent);
     virtual ~GLSLWaveformWidget();
 
-    virtual QString getWaveformWidgetName() { return "Filtered (experimental)";}
+    virtual QString getWaveformWidgetName() { return tr("Filtered (experimental)");}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLWaveform;}
 
     virtual bool useOpenGl() const { return true;}
