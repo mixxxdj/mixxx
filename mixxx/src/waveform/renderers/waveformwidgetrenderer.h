@@ -16,7 +16,7 @@ class TrackInfoObject;
 class ControlObjectThreadMain;
 
 class WaveformWidgetRenderer {
-public:
+  public:
     explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
