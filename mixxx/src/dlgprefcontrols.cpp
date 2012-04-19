@@ -50,26 +50,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
         QString group = QString("[Channel%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
-                                     ControlObject::getControl(ConfigKey(group, "rate"))));
+            ControlObject::getControl(ConfigKey(group, "rate"))));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(
-                                          ControlObject::getControl(ConfigKey(group, "rateRange"))));
+            ControlObject::getControl(ConfigKey(group, "rateRange"))));
         m_rateDirControls.push_back(new ControlObjectThreadMain(
-                                        ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
         m_cueControls.push_back(new ControlObjectThreadMain(
-                                    ControlObject::getControl(ConfigKey(group, "cue_mode"))));
+            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
     }
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         QString group = QString("[Sampler%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
-                                     ControlObject::getControl(ConfigKey(group, "rate"))));
+            ControlObject::getControl(ConfigKey(group, "rate"))));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(
-                                          ControlObject::getControl(ConfigKey(group, "rateRange"))));
+            ControlObject::getControl(ConfigKey(group, "rateRange"))));
         m_rateDirControls.push_back(new ControlObjectThreadMain(
-                                        ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
         m_cueControls.push_back(new ControlObjectThreadMain(
-                                    ControlObject::getControl(ConfigKey(group, "cue_mode"))));
-
+            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
     }
 
     // Position display configuration
@@ -498,8 +497,7 @@ void DlgPrefControls::slotSetFrameRate(int frameRate) {
 }
 
 void DlgPrefControls::slotSetWaveformType(int index) {
-    if (WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index))
-    {
+    if (WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index)) {
         //it actually change to a valid type
         m_mixxx->rebootMixxxView();
     }
@@ -539,10 +537,10 @@ void DlgPrefControls::onHide() {
     }
 }
 
-void DlgPrefControls::timerEvent(QTimerEvent * /*event*/)
-{
+void DlgPrefControls::timerEvent(QTimerEvent * /*event*/) {
     //Just to refresh actual framrate any time the controller is modified
-    frameRateAverage->setText(QString::number(WaveformWidgetFactory::instance()->getActualFrameRate()));
+    frameRateAverage->setText(QString::number(
+        WaveformWidgetFactory::instance()->getActualFrameRate()));
 }
 
 void DlgPrefControls::initWaveformControl()
@@ -559,9 +557,8 @@ void DlgPrefControls::initWaveformControl()
     int currentIndex = -1;
 
     std::vector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for( unsigned int i = 0; i < handles.size(); i++)
-    {
-        waveformTypeComboBox->addItem( handles[i].getDisplayName());
+    for (unsigned int i = 0; i < handles.size(); i++) {
+        waveformTypeComboBox->addItem(handles[i].getDisplayName());
         if (handles[i].getType() == currentType)
             currentIndex = i;
     }
