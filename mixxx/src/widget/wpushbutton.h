@@ -22,9 +22,9 @@
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qstring.h>
-//Added by qt3to4:
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QFocusEvent>
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -33,36 +33,41 @@
 class WPushButton : public WWidget
 {
     Q_OBJECT
-public:
+  public:
     WPushButton(QWidget *parent=0);
     ~WPushButton();
     void setup(QDomNode node);
-    /** Sets the number of states associated with this button, and removes associated
-      * pixmaps. */
+
+    // Sets the number of states associated with this button, and removes
+    // associated pixmaps.
     void setStates(int iStatesW);
-    /** Associates a pixmap of a given state of the button with the widget */
+
+    // Associates a pixmap of a given state of the button with the widget
     void setPixmap(int iState, bool bPressed, const QString &filename);
-    /** Associates a background pixmap with the widget. This is only needed if the button
-      * pixmaps contains alpha channel values. */
+
+    // Associates a background pixmap with the widget. This is only needed if
+    // the button pixmaps contains alpha channel values.
     void setPixmapBackground(const QString &filename);
-    /** Paints the widget */
-    void paintEvent(QPaintEvent *);
-    /** Mouse pressed */
-    void mousePressEvent(QMouseEvent *e);
-    /** Mouse released */
-    void mouseReleaseEvent(QMouseEvent *e);
-public slots:
+
+  public slots:
     void setValue(double);
-protected:
-    /** True, if the button is currently pressed */
+
+  protected:
+    virtual void paintEvent(QPaintEvent *);
+    virtual void mousePressEvent(QMouseEvent *e);
+    virtual void mouseReleaseEvent(QMouseEvent *e);
+    virtual void focusOutEvent(QFocusEvent* e);
+
+    // True, if the button is currently pressed
     bool m_bPressed;
-private:
+
+  private:
     bool m_bLeftClickForcePush, m_bRightClickForcePush;
-    /** Number of states associated with this button */
+    // Number of states associated with this button
     int m_iNoStates;
-    /** Array of associated pixmaps */
+    // Array of associated pixmaps
     QPixmap **m_pPixmaps;
-    /** Associated background pixmap */
+    // Associated background pixmap
     QPixmap *m_pPixmapBack;
 };
 

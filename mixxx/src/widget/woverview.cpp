@@ -162,20 +162,28 @@ void WOverview::slotWaveformSummaryUpdated() {
         return;
     }
     m_waveform = m_pCurrentTrack->getWaveformSummary();
-    if (m_timerPixmapRefresh == -1) {
+    // If the waveform is already complete, just draw it.
+    if (m_waveform && m_waveform->getCompletion() == m_waveform->getDataSize()) {
+        m_visualSamplesByPixel = static_cast<double>(m_waveform->getDataSize()) /
+                static_cast<double>(width());
+        drawNextPixmapPart();
+    } else if (m_timerPixmapRefresh == -1) {
+        // The waveform either isn't present or is incomplete so start a timer
+        // to update when we get it.
         m_timerPixmapRefresh = startTimer(60);
     }
     update();
 }
 
 void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
-
     //qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
-
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
     }
+
+    m_actualCompletion = 0;
+    m_visualSamplesByPixel = 0.0;
 
     if (pTrack) {
         m_pCurrentTrack = pTrack;
@@ -188,14 +196,15 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         //qDebug() << "WOverview::slotLoadNewTrack - startTimer";
     }
 
-    m_actualCompletion = 0;
-    m_visualSamplesByPixel = 0.0;
-
     m_waveformPixmap.fill(QColor(0, 0, 0, 0));
     update();
 }
 
 void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
+    if (m_pCurrentTrack) {
+        disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
+                   this, SLOT(slotWaveformSummaryUpdated()));
+    }
     m_pCurrentTrack.clear();
     m_waveform = NULL;
     m_actualCompletion = 0;
@@ -239,31 +248,26 @@ bool WOverview::drawNextPixmapPart() {
         return false;
     }
 
+    const int dataSize = m_waveform->getDataSize();
+    const int waveformCompletion = m_waveform->getCompletion();
+    // test if there is some new to draw (at least of pixel width)
+    int completionIncrement = waveformCompletion - m_actualCompletion;
+
+    if (dataSize == 0 || completionIncrement < m_visualSamplesByPixel) {
+        return false;
+    }
+
     if (!m_waveform->getMutex()->tryLock()) {
         return false;
     }
 
-    if (m_waveform->getDataSize() == 0) {
-        m_waveform->getMutex()->unlock();
-        return false;
-    }
-
-    //test id there is some new to draw (at least of pixel width)
-    const int waveformCompletion = m_waveform->getCompletion();
-    int completionIncrement = waveformCompletion - m_actualCompletion;
-
     //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion" << nextCompletion;
-
-    if ((double)completionIncrement < m_visualSamplesByPixel) {
-        m_waveform->getMutex()->unlock();
-        return false;
-    }
-
     //qDebug() << "WOverview::drawNextPixmapPart() - m_actualCompletion" << m_actualCompletion
     //         << "m_waveform->getCompletion()" << waveformCompletion
     //         << "nextCompletion" << completionIncrement;
 
-    completionIncrement = std::min(completionIncrement,m_renderSampleLimit);
+    // TODO(rryan) was this limit for a reason?
+    //completionIncrement = std::min(completionIncrement,m_renderSampleLimit);
     const int nextCompletion = m_actualCompletion + completionIncrement;
 
     QPainter painter(&m_waveformPixmap);
@@ -579,7 +583,7 @@ void WOverview::timerEvent(QTimerEvent* timer) {
         //if m_waveform is empty ... actual computation do not start !
         //it must be in the analyser queue, we need to wait until it ready to display
         if (m_waveform->getDataSize() > 0 &&
-                m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
+            m_actualCompletion + m_visualSamplesByPixel >= m_waveform->getDataSize()) {
             //qDebug() << " WOverview::timerEvent - kill timer";
             killTimer(m_timerPixmapRefresh);
             m_timerPixmapRefresh = -1;
