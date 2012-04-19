@@ -45,7 +45,7 @@ WaveformWidgetHolder::WaveformWidgetHolder( WaveformWidgetAbstract* waveformWidg
 WaveformWidgetFactory::WaveformWidgetFactory() {
     m_time = new QTime();
     m_config = 0;
-    //m_skipRender = false;
+    m_skipRender = false;
     setFrameRate(33);
     m_defaultZoom = 1;
     m_zoomSync = false;
@@ -284,30 +284,32 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     //NOTE: (vRince)
     //I tried but I can't figure-out what is missing here that append in skin parser
 
-    /*
     m_skipRender = true;
     qDebug() << "recreate start";
 
     //re-create/setup all waveform widgets
-    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+    for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++) {
         WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
-
-        holder.m_waveformWidget = createWaveformWidget(m_type, holder.m_waveformViewer);
-        holder.m_waveformWidget->castToQWidget();
-        holder.m_waveformViewer->setWaveformWidget(holder.m_waveformWidget);
-        holder.m_waveformViewer->setup(holder.m_visualNodeCache);
-
-        holder.m_waveformViewer->resize(holder.m_waveformViewer->size());
-
-        holder.m_waveformWidget->setTrack(previousWidget->getTrackInfo());
+        TrackPointer pTrack = previousWidget->getTrackInfo();
+        previousWidget->hold();
         delete previousWidget;
+        WWaveformViewer* viewer = holder.m_waveformViewer;
+        WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
+        holder.m_waveformWidget = widget;
+        widget->castToQWidget();
+        widget->hold();
+        viewer->setWaveformWidget(widget);
+        viewer->setup(holder.m_visualNodeCache);
+        // resize() doesn't seem to get called on the widget. I think Qt skips
+        // it since the size didn't change.
+        //viewer->resize(viewer->size());
+        widget->resize(viewer->width(), viewer->height());
+        widget->setTrack(pTrack);
     }
 
     m_skipRender = false;
     qDebug() << "recreate done";
-    */
-
     return true;
 }
 
@@ -355,8 +357,8 @@ void WaveformWidgetFactory::notifyZoomChange( WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::refresh() {
-    //if( m_skipRender)
-    //    return;
+    if( m_skipRender)
+       return;
 
     for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->preRender();
