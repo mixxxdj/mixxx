@@ -46,6 +46,7 @@ void BeatGrid::readByteArray(const QByteArray* pByteArray) {
     mixxx::track::io::BeatGrid grid;
     if (grid.ParseFromArray(pByteArray->constData(), pByteArray->length())) {
         m_grid = grid;
+        m_dBeatLength = (60.0 * m_iSampleRate / bpm()) * kFrameSize;
         return;
     }
 
