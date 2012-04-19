@@ -48,11 +48,12 @@ protected:
 
 private slots:
     void onZoomChange(double zoom);
+    void slotWidgetDead() {
+        m_waveformWidget = NULL;
+    }
 
 private:
-    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
-        m_waveformWidget = waveformWidget;
-    }
+    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
     WaveformWidgetAbstract* getWaveformWidget() {
         return m_waveformWidget;
     }

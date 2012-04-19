@@ -50,7 +50,7 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     m_zoomZoneWidth = 20;
-    m_waveformWidget = 0;
+    m_waveformWidget = NULL;
 }
 
 WWaveformViewer::~WWaveformViewer() {
@@ -219,5 +219,19 @@ void WWaveformViewer::setZoom(int zoom) {
     if (m_waveformWidget) {
         m_waveformWidget->setZoom(zoom);
         m_pZoom->slotSet(zoom);
+    }
+}
+
+void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
+    if (m_waveformWidget) {
+        QWidget* pWidget = m_waveformWidget->getWidget();
+        disconnect(pWidget, SIGNAL(destroyed()),
+                   this, SLOT(slotWidgetDead()));
+    }
+    m_waveformWidget = waveformWidget;
+    if (m_waveformWidget) {
+        QWidget* pWidget = m_waveformWidget->getWidget();
+        connect(pWidget, SIGNAL(destroyed()),
+                this, SLOT(slotWidgetDead()));
     }
 }
