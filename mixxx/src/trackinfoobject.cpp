@@ -34,7 +34,7 @@
 #include "mixxxutils.cpp"
 
 TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
-    : m_qMutex(QMutex::Recursive) {
+        : m_qMutex(QMutex::Recursive) {
     QFileInfo fileInfo(sLocation);
     populateLocation(fileInfo);
     initialize(parseHeader);
@@ -43,7 +43,7 @@ TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
 }
 
 TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
-    : m_qMutex(QMutex::Recursive) {
+        : m_qMutex(QMutex::Recursive) {
     populateLocation(fileInfo);
     initialize(parseHeader);
     m_waveform = new Waveform;
@@ -51,7 +51,7 @@ TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-    : m_qMutex(QMutex::Recursive) {
+        : m_qMutex(QMutex::Recursive) {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
     QString create_date;
@@ -750,7 +750,9 @@ const Waveform* TrackInfoObject::getWaveform() const {
 
 void TrackInfoObject::setWaveform(Waveform* pWaveform) {
     QMutexLocker lock(&m_qMutex);
-    if( m_waveform) delete m_waveform;
+    if (m_waveform) {
+        delete m_waveform;
+    }
     m_waveform = pWaveform;
     lock.unlock();
     emit(waveformUpdated());
@@ -768,7 +770,9 @@ const Waveform* TrackInfoObject::getWaveformSummary() const {
 
 void TrackInfoObject::setWaveformSummary(Waveform* pWaveformSummary) {
     QMutexLocker lock(&m_qMutex);
-    if( m_waveformSummary) delete m_waveformSummary;
+    if (m_waveformSummary) {
+        delete m_waveformSummary;
+    }
     m_waveformSummary = pWaveformSummary;
     lock.unlock();
     emit(waveformSummaryUpdated());

@@ -1,5 +1,4 @@
 #include <cmath>
-#include <google/protobuf/stubs/common.h>
 #include <QtDebug>
 
 #include "waveform/waveform.h"
@@ -75,14 +74,9 @@ QByteArray Waveform::toByteArray() const {
 void Waveform::readByteArray(const QByteArray data) {
     io::Waveform waveform;
 
-    try {
-        if (!waveform.ParseFromArray(data.constData(), data.size())) {
-            qDebug() << "ERROR: Could not parse Waveform from QByteArray of size"
-                     << data.size();
-            return;
-        }
-    } catch (google::protobuf::FatalException ex) {
-        qDebug() << "ERROR: Caught exception while parsing Waveform";
+    if (!waveform.ParseFromArray(data.constData(), data.size())) {
+        qDebug() << "ERROR: Could not parse Waveform from QByteArray of size"
+                 << data.size();
         return;
     }
 
