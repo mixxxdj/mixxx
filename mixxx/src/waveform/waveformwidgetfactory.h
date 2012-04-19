@@ -130,7 +130,7 @@ private:
 
     ConfigObject<ConfigValue>* m_config;
 
-    //bool m_skipRender;
+    bool m_skipRender;
     int m_frameRate;
     int m_mainTimerId;
     int m_defaultZoom;
