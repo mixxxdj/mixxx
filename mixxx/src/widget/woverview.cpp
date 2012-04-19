@@ -166,6 +166,7 @@ void WOverview::slotWaveformSummaryUpdated() {
     if (m_waveform && m_waveform->getCompletion() == m_waveform->getDataSize()) {
         m_visualSamplesByPixel = static_cast<double>(m_waveform->getDataSize()) /
                 static_cast<double>(width());
+        m_actualCompletion = 0;
         drawNextPixmapPart();
     } else if (m_timerPixmapRefresh == -1) {
         // The waveform either isn't present or is incomplete so start a timer
@@ -184,6 +185,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
 
     m_actualCompletion = 0;
     m_visualSamplesByPixel = 0.0;
+    m_waveformPixmap.fill(QColor(0, 0, 0, 0));
 
     if (pTrack) {
         m_pCurrentTrack = pTrack;
@@ -195,8 +197,6 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         slotWaveformSummaryUpdated();
         //qDebug() << "WOverview::slotLoadNewTrack - startTimer";
     }
-
-    m_waveformPixmap.fill(QColor(0, 0, 0, 0));
     update();
 }
 
