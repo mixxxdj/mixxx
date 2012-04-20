@@ -116,6 +116,9 @@ class Controller : public QObject, ControllerPresetVisitor {
         void learn(MixxxControl control);
         void cancelLearn();
 
+        virtual void clearInputMappings() {};
+        virtual void clearOutputMappings() {};
+
     private slots:
         virtual int open() = 0;
         virtual int close() = 0;
