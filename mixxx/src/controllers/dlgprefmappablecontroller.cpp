@@ -29,8 +29,25 @@ DlgPrefMappableController::DlgPrefMappableController(QWidget *parent, Controller
     m_ui.setupUi(containerWidget);
     layout->addWidget(containerWidget);
 
+    //Input bindings
     connect(m_ui.btnLearnWizard, SIGNAL(clicked()), this, SLOT(slotShowLearnDialog()));
     connect(m_ui.btnLearnWizard, SIGNAL(clicked()), this, SLOT(slotDirty()));
+    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(clearAllInputBindings()));
+    connect(this, SIGNAL(clearInputs()), m_pController, SLOT(clearInputMappings()));
+    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(slotDirty()));
+//     connect(m_ui.btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
+//     connect(m_ui.btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
+//     connect(m_ui.btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotAddInputBinding()));
+//     connect(m_ui.btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
+
+    //Output bindings
+    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(clearAllOutputBindings()));
+    connect(this, SIGNAL(clearOutputs()), m_pController, SLOT(clearOutputMappings()));
+    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotDirty()));
+//     connect(m_ui.btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
+//     connect(m_ui.btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
+//     connect(m_ui.btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
+//     connect(m_ui.btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 }
 
 void DlgPrefMappableController::slotShowLearnDialog() {
@@ -81,4 +98,22 @@ void DlgPrefMappableController::slotUpdate() {
     else {
         m_ui.toolBox->setEnabled(false); //Disable in/out toolbox.
     }
+}
+
+void DlgPrefMappableController::clearAllInputBindings() {
+    if (QMessageBox::warning(this, tr("Clear Input Bindings"),
+            tr("Are you sure you want to clear all bindings?"),
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
+        return;
+
+    emit(clearInputs());
+}
+
+void DlgPrefMappableController::clearAllOutputBindings() {
+    if (QMessageBox::warning(this, tr("Clear Output Bindings"),
+            tr("Are you sure you want to clear all output bindings?"),
+            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
+        return;
+
+    emit(clearOutputs());
 }

@@ -29,15 +29,22 @@ class DlgPrefMappableController : public DlgPrefController {
                           ConfigObject<ConfigValue> *pConfig);
         ~DlgPrefMappableController() {};
 
+    signals:
+        void clearInputs();
+        void clearOutputs();
+
     public slots:
         void slotShowLearnDialog();
         void slotUpdate();
         void slotDeviceState(int state);
 
         //Input mappings
-//         void slotClearAllInputMappings() {};
+        void clearAllInputBindings();
 //         void slotRemoveInputMapping() {};
 //         void slotAddInputMapping() {};
+
+        //Output mappings
+        void clearAllOutputBindings();
 
     private:
         DlgControllerLearning* m_pDlgControllerLearning;

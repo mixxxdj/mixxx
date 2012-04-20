@@ -42,6 +42,14 @@ void MidiController::visit(const MidiControllerPreset* preset) {
     m_preset = *preset;
 }
 
+void MidiController::clearInputMappings() {
+    m_preset.mappings.clear();
+}
+
+void MidiController::clearOutputMappings() {
+    m_preset.outputMappings.clear();
+}
+
 int MidiController::close() {
     destroyOutputHandlers();
     return 0;

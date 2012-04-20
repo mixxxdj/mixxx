@@ -68,6 +68,9 @@ class MidiController : public Controller {
     void receive(const QByteArray data);
     virtual int close();
 
+    void clearInputMappings();
+    void clearOutputMappings();
+
   private slots:
     //virtual int open() = 0;
 
