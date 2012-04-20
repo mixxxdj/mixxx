@@ -226,39 +226,44 @@ void MidiController::receive(unsigned char status, unsigned char control,
     }
 
     // Learning
-    if (m_bLearning && !m_controlToLearn.isNull()) {
-        MidiOptions options;
-        options.all = 0;
+    if (m_bLearning) {
+        if (!m_controlToLearn.isNull()) {
+            MidiOptions options;
+            options.all = 0;
 
-        QPair<MixxxControl, MidiOptions> target;
-        target.first = m_controlToLearn;
-        target.second = options;
+            QPair<MixxxControl, MidiOptions> target;
+            target.first = m_controlToLearn;
+            target.second = options;
 
-        m_preset.mappings.insert(mappingKey.key,target);
+            // TODO: store these in a temporary hash to be applied on learning
+            //  success, or thrown away on cancel.
+            m_preset.mappings.insert(mappingKey.key,target);
 
-        //If we caught a NOTE_ON message, add a binding for NOTE_OFF as well.
-        if (status == MIDI_NOTE_ON) {
-            MidiKey mappingKeyTemp;
-            mappingKeyTemp.status = MIDI_NOTE_OFF;
-            mappingKeyTemp.control = mappingKey.control;
-            m_preset.mappings.insert(mappingKeyTemp.key,target);
+            //If we caught a NOTE_ON message, add a binding for NOTE_OFF as well.
+            if (status == MIDI_NOTE_ON) {
+                MidiKey mappingKeyTemp;
+                mappingKeyTemp.status = MIDI_NOTE_OFF;
+                mappingKeyTemp.control = mappingKey.control;
+                m_preset.mappings.insert(mappingKeyTemp.key,target);
+            }
+
+            //Reset the saved control.
+            m_controlToLearn = MixxxControl();
+
+            QString message = "error";
+            if (twoBytes) {
+                message = QString("0x%1 0x%2")
+                            .arg(QString::number(mappingKey.status, 16).toUpper(),
+                                QString::number(mappingKey.control, 16).toUpper()
+                                    .rightJustified(2,'0'));
+            }
+            else {
+                message = QString("0x%1")
+                            .arg(QString::number(mappingKey.status, 16).toUpper());
+            }
+            emit(learnedMessage(message));
         }
-
-        //Reset the saved control.
-        m_controlToLearn = MixxxControl();
-        
-        QString message = "error";
-        if (twoBytes) {
-            message = QString("%1 %2")
-                    .arg((unsigned char)(mappingKey.status), 2, 16, QChar('0')).toUpper()
-                    .arg((unsigned char)(mappingKey.control), 2, 16, QChar('0')).toUpper();
-        }
-        else {
-            message = QString("%1")
-                    .arg((unsigned char)(mappingKey.status), 2, 16, QChar('0')).toUpper();
-        }
-        emit(learnedMessage(message));
-        // Don't process MIDI messages further when learning
+        // Don't process MIDI messages when learning
         return;
     }
 
@@ -435,23 +440,27 @@ void MidiController::receive(QByteArray data) {
     mappingKey.control = 0xFF;
 
     // Learning
-    if (m_bLearning && !m_controlToLearn.isNull()) {
-        MidiOptions options;
-        options.all = 0;
-        
-        QPair<MixxxControl, MidiOptions> target;
-        target.first = m_controlToLearn;
-        target.second = options;
-        
-        m_preset.mappings.insert(mappingKey.key,target);
-        
-        //Reset the saved control.
-        m_controlToLearn = MixxxControl();
-        
-        QString message = QString("%1")
-                .arg((unsigned char)(mappingKey.status), 2, 16, QChar('0')).toUpper();
-        emit(learnedMessage(message));
-        // Don't process MIDI messages further when learning
+    if (m_bLearning) {
+        if (!m_controlToLearn.isNull()) {
+            MidiOptions options;
+            options.all = 0;
+
+            QPair<MixxxControl, MidiOptions> target;
+            target.first = m_controlToLearn;
+            target.second = options;
+
+            // TODO: store these in a temporary hash to be applied on learning
+            //  success, or thrown away on cancel.
+            m_preset.mappings.insert(mappingKey.key,target);
+
+            //Reset the saved control.
+            m_controlToLearn = MixxxControl();
+
+            QString message = QString("0x%1")
+                        .arg(QString::number(mappingKey.status, 16).toUpper());
+            emit(learnedMessage(message));
+        }
+        // Don't process MIDI messages when learning
         return;
     }
 
