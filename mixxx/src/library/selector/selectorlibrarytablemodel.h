@@ -19,6 +19,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
 
     virtual void search(const QString& searchText);
     virtual bool isColumnInternal(int column);
+    virtual int rowCount();
 
   public slots:
     void filterByGenre(bool value);
@@ -27,6 +28,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void filterByRating(bool value);
     void filterByKey(bool value);
     void filterByHarmonicKey(bool value);
+
     /*
     void updateFilter(
         bool filterByGenre, 
@@ -41,15 +43,16 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void slotSearch(const QString& searchText);
     void slotPlayingDeckChanged(int deck);
     void slotChannel1BpmChanged(double value);
+    void slotFiltersChanged();
   signals:
+    void filtersChanged();
     void doSearch(const QString& searchText);
   private:
-    float frequencyRatioToOctaveDifference(
-        float currentBpm, float originalBpm);
+
+    void updateFilterText();
     QString adjustPitchBy(QString pitch, int change);
-    void setBpmFilter(float rate);
-    void setKeyFilters(float rate);
-    float getRate();
+    void setRate();
+    float m_rate;
     bool m_bFilterGenre;
     bool m_bFilterBpm;
     int m_iFilterBpmRange;
@@ -62,13 +65,8 @@ class SelectorLibraryTableModel : public LibraryTableModel
     QStringList m_majors;
     QStringList m_minors;
 
-    QString m_pFilterGenre;
-    QString m_pFilterBpm;
-    QString m_pFilterYear;
-    QString m_pFilterRating;
-    QString m_pFilterKey;
-    QString m_pFilterHarmonicKey;
     QString m_pChannel;
+    QString m_filtersText;
     TrackPointer m_pLoadedTrack;
     ControlObjectThreadMain* m_channelBpm;
     void initializeHarmonicsData();

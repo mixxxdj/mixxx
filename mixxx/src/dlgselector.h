@@ -42,6 +42,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     void filterByKey();
     void filterByHarmonicKey();
     void installEventFilter(QObject* pFilter);
+    void slotFiltersChanged();
 
   signals:
     void loadTrack(TrackPointer pTrack);

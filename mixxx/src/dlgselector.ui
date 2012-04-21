@@ -61,7 +61,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bpm filter range&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="maximum">
-        <number>4</number>
+        <number>8</number>
        </property>
        <property name="pageStep">
         <number>1</number>
@@ -117,6 +117,13 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelMatchCount">
+       <property name="text">
+        <string>Tracks</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

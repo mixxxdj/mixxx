@@ -47,12 +47,18 @@ DlgSelector::DlgSelector(QWidget* parent,
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
             this,  SLOT(spinBoxBpmRangeChanged(int)));
 
-    //checkBoxGenre->click(); // dont do this - let the user choose
-
     connect(m_pSelectorLibraryTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+    connect(m_pSelectorLibraryTableModel,
+            SIGNAL(doSearch(const QItemSelection &, const QItemSelection&)),
+            this,
+            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+
+    connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
+            this, SLOT(slotFiltersChanged()));
+
 }
 
 DlgSelector::~DlgSelector() {
@@ -60,16 +66,12 @@ DlgSelector::~DlgSelector() {
 
 void DlgSelector::onShow()
 {
-    //Refresh crates
-    //m_pCratesTableModel->select();
-
-
+    qDebug() << "DlgSelector::onShow()";
 }
-
 
 void DlgSelector::setup(QDomNode node)
 {
-
+    qDebug() << "DlgSelector::setup()";
 }
 
 void DlgSelector::onSearchStarting()
@@ -78,6 +80,12 @@ void DlgSelector::onSearchStarting()
 
 void DlgSelector::onSearchCleared()
 {
+}
+
+void DlgSelector::slotFiltersChanged() {
+    int count = m_pSelectorLibraryTableModel->rowCount();
+    QString labelMatchText = QString(tr("%1 Tracks Found ")).arg(count);
+    labelMatchCount->setText(labelMatchText);
 }
 
 void DlgSelector::onSearch(const QString& text)
@@ -114,8 +122,6 @@ void DlgSelector::filterByBpm()
 {
     bool bpm = checkBoxBpm->isChecked();
     int range = horizontalSliderBpmRange->value();
-    qDebug() << "Range " << range << " ";
-
     m_pSelectorLibraryTableModel->filterByBpm(bpm, range);
 }
 
