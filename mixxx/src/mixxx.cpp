@@ -686,136 +686,147 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-    m_pFileLoadSongPlayer1 = new QAction(tr("Load Song (Player &1)..."), this);
+    QString loadTrackText = tr("Load track to Deck %1");
+    QString loadTrackStatusText = tr("Loads a track in deck %1");
+    QString openText = tr("Open");
+
+    QString player1LoadStatusText = loadTrackStatusText.arg(QString::number(1));
+    m_pFileLoadSongPlayer1 = new QAction(loadTrackText.arg(QString::number(1)), this);
     m_pFileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pFileLoadSongPlayer2 = new QAction(tr("Load Song (Player &2)..."), this);
-    m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
-    m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pFileQuit = new QAction(tr("&Exit"), this);
-    m_pFileQuit->setShortcut(tr("Ctrl+Q"));
-    m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pLibraryRescan = new QAction(tr("&Rescan Library"), this);
-
-    m_pPlaylistsNew = new QAction(tr("Add &new playlist"), this);
-    m_pPlaylistsNew->setShortcut(tr("Ctrl+N"));
-    m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pCratesNew = new QAction(tr("Add new &crate"), this);
-    m_pCratesNew->setShortcut(tr("Ctrl+C"));
-    m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pPlaylistsImport = new QAction(tr("&Import playlist"), this);
-    m_pPlaylistsImport->setShortcut(tr("Ctrl+I"));
-    m_pPlaylistsImport->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
-
-#ifdef __APPLE__
-    m_pOptionsFullScreen->setShortcut(tr("Ctrl+Shift+F"));
-#else
-    m_pOptionsFullScreen->setShortcut(tr("F11"));
-#endif
-
-    m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
-    // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
-    // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
-
-    m_pOptionsPreferences = new QAction(tr("&Preferences"), this);
-    m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
-    m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pHelpAboutApp = new QAction(tr("&About"), this);
-    m_pHelpSupport = new QAction(tr("&Community Support"), this);
-    m_pHelpManual = new QAction(tr("&User Manual"), this);
-    m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
-    m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
-
-#ifdef __VINYLCONTROL__
-    m_pOptionsVinylControl = new QAction(tr("Enable Vinyl Control &1"), this);
-    m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
-    m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pOptionsVinylControl2 = new QAction(tr("Enable Vinyl Control &2"), this);
-    m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
-    m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
-#endif
-
-#ifdef __SHOUTCAST__
-    m_pOptionsShoutcast = new QAction(tr("Enable live &broadcasting"), this);
-    m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
-    m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
-#endif
-
-    m_pOptionsRecord = new QAction(tr("&Record Mix"), this);
-    m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
-    m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pFileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
-    m_pFileLoadSongPlayer1->setWhatsThis(
-        tr("Open\n\nOpens a song in player 1"));
+    m_pFileLoadSongPlayer1->setStatusTip(player1LoadStatusText);
+    m_pFileLoadSongPlayer1->setWhatsThis(openText + "\n\n" + player1LoadStatusText);
     connect(m_pFileLoadSongPlayer1, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer1()));
 
-    m_pFileLoadSongPlayer2->setStatusTip(tr("Opens a song in player 2"));
-    m_pFileLoadSongPlayer2->setWhatsThis(
-        tr("Open\n\nOpens a song in player 2"));
+    QString player2LoadStatusText = loadTrackStatusText.arg(QString::number(2));
+    m_pFileLoadSongPlayer2 = new QAction(loadTrackText.arg(QString::number(2)), this);
+    m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
+    m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
+    m_pFileLoadSongPlayer2->setStatusTip(player2LoadStatusText);
+    m_pFileLoadSongPlayer2->setWhatsThis(openText + "\n\n" + player2LoadStatusText);
     connect(m_pFileLoadSongPlayer2, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer2()));
 
-    m_pFileQuit->setStatusTip(tr("Quits the application"));
-    m_pFileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
+    QString quitText = tr("Quits the application");
+    m_pFileQuit = new QAction(tr("&Exit"), this);
+    m_pFileQuit->setShortcut(tr("Ctrl+Q"));
+    m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
+    m_pFileQuit->setStatusTip(quitText);
+    m_pFileQuit->setWhatsThis(tr("Exit") + "\n\n" + quitText);
     connect(m_pFileQuit, SIGNAL(triggered()), this, SLOT(slotFileQuit()));
 
-    m_pLibraryRescan->setStatusTip(tr("Rescans the song library"));
-    m_pLibraryRescan->setWhatsThis(
-        tr("Rescan library\n\nRescans the song library"));
+    QString rescanText = tr("Rescans library folders for changes to tracks.");
+    m_pLibraryRescan = new QAction(tr("&Rescan Library"), this);
+    m_pLibraryRescan->setStatusTip(rescanText);
+    m_pLibraryRescan->setWhatsThis(tr("Rescan Library") + "\n\n" + rescanText);
     m_pLibraryRescan->setCheckable(false);
     connect(m_pLibraryRescan, SIGNAL(triggered()),
             this, SLOT(slotScanLibrary()));
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
-    m_pPlaylistsNew->setStatusTip(tr("Create a new playlist"));
-    m_pPlaylistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
+    QString createPlaylistText = tr("Create a new playlist");
+    m_pPlaylistsNew = new QAction(tr("Add &new playlist"), this);
+    m_pPlaylistsNew->setShortcut(tr("Ctrl+N"));
+    m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
+    m_pPlaylistsNew->setStatusTip(createPlaylistText);
+    m_pPlaylistsNew->setWhatsThis(tr("New Playlist") + "\n\n" + createPlaylistText);
     connect(m_pPlaylistsNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreatePlaylist()));
 
-    m_pCratesNew->setStatusTip(tr("Create a new crate"));
-    m_pCratesNew->setWhatsThis(tr("New crate\n\nCreate a new crate."));
+    QString createCrateText = tr("Create a new crate");
+    m_pCratesNew = new QAction(tr("Add new &crate"), this);
+    m_pCratesNew->setShortcut(tr("Ctrl+C"));
+    m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
+    m_pCratesNew->setStatusTip(createCrateText);
+    m_pCratesNew->setWhatsThis(tr("New Crate") + "\n\n" + createCrateText);
     connect(m_pCratesNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreateCrate()));
 
-    m_pPlaylistsImport->setStatusTip(tr("Import playlist"));
-    m_pPlaylistsImport->setWhatsThis(tr("Import playlist"));
-    //connect(playlistsImport, SIGNAL(triggered()),
-    //        m_pTrack, SLOT(slotImportPlaylist()));
-    //FIXME: Disabled due to library rework
+    m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
+#ifdef __APPLE__
+    m_pOptionsFullScreen->setShortcut(tr("Ctrl+Shift+F"));
+#else
+    m_pOptionsFullScreen->setShortcut(tr("F11"));
+#endif
+    m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
+    // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
+    // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
+    m_pOptionsFullScreen->setCheckable(true);
+    m_pOptionsFullScreen->setChecked(false);
+    m_pOptionsFullScreen->setStatusTip(tr("Full Screen"));
+    m_pOptionsFullScreen->setWhatsThis(
+        tr("Display Mixxx using the full screen"));
+    connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
+            this, SLOT(slotOptionsFullScreen(bool)));
+
+    QString preferencesText = tr("Preferences");
+    m_pOptionsPreferences = new QAction(tr("&Preferences"), this);
+    m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
+    m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
+    m_pOptionsPreferences->setStatusTip(preferencesText);
+    m_pOptionsPreferences->setWhatsThis(
+        preferencesText + "\n\n" + tr("Change Mixxx settings (e.g. playback, MIDI, controls)"));
+    connect(m_pOptionsPreferences, SIGNAL(triggered()),
+            this, SLOT(slotOptionsPreferences()));
+
+    QString aboutText = tr("About the application");
+    m_pHelpAboutApp = new QAction(tr("&About"), this);
+    m_pHelpAboutApp->setStatusTip(aboutText);
+    m_pHelpAboutApp->setWhatsThis(tr("About") + "\n\n" + aboutText);
+    connect(m_pHelpAboutApp, SIGNAL(triggered()),
+            this, SLOT(slotHelpAbout()));
+
+    QString supportHelp = tr("Support");
+    m_pHelpSupport = new QAction(tr("&Community Support"), this);
+    m_pHelpSupport->setStatusTip(supportHelp);
+    m_pHelpSupport->setWhatsThis(supportHelp + "\n\n" + tr("Get help with Mixxx"));
+    connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
+
+    QString manualHelp = tr("Read the Mixxx user manual.");
+    m_pHelpManual = new QAction(tr("&User Manual"), this);
+    m_pHelpManual->setStatusTip(manualHelp);
+    m_pHelpManual->setWhatsThis(supportHelp + "\n\n" + manualHelp);
+    connect(m_pHelpManual, SIGNAL(triggered()), this, SLOT(slotHelpManual()));
+
+    QString feedbackHelp = tr("Send feedback to the Mixxx team.");
+    m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
+    m_pHelpFeedback->setStatusTip(feedbackHelp);
+    m_pHelpFeedback->setWhatsThis(supportHelp + "\n\n" + feedbackHelp);
+    connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
+
+    QString translateHelp = tr("Help translate this application into your language.");
+    m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
+    m_pHelpTranslation->setStatusTip(translateHelp);
+    m_pHelpTranslation->setWhatsThis(supportHelp + "\n\n" + translateHelp);
+    connect(m_pHelpTranslation, SIGNAL(triggered()), this, SLOT(slotHelpTranslation()));
 
 #ifdef __VINYLCONTROL__
+    QString vinylControlText = tr("Use timecoded vinyls on external turntables to control Mixxx");
+    m_pOptionsVinylControl = new QAction(tr("Enable Vinyl Control &1"), this);
+    m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
+    m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
     m_pOptionsVinylControl->setCheckable(true);
     m_pOptionsVinylControl->setChecked(false);
-    m_pOptionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
-    m_pOptionsVinylControl->setWhatsThis(
-        tr("Use timecoded vinyls on external turntables to control Mixxx"));
+    m_pOptionsVinylControl->setStatusTip(vinylControlText);
+    m_pOptionsVinylControl->setWhatsThis(vinylControlText);
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
         SLOT(slotCheckboxVinylControl(bool)));
-
-   ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
+    ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled")),this);
     connect(enabled1, SIGNAL(valueChanged(double)), this,
         SLOT(slotControlVinylControl(double)));
 
+    m_pOptionsVinylControl2 = new QAction(tr("Enable Vinyl Control &2"), this);
+    m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
+    m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsVinylControl2->setCheckable(true);
     m_pOptionsVinylControl2->setChecked(false);
-    m_pOptionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
-    m_pOptionsVinylControl2->setWhatsThis(
-        tr("Use timecoded vinyls on external turntables to control Mixxx"));
+    m_pOptionsVinylControl2->setStatusTip(vinylControlText);
+    m_pOptionsVinylControl2->setWhatsThis(vinylControlText);
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
         SLOT(slotCheckboxVinylControl2(bool)));
 
@@ -826,70 +837,41 @@ void MixxxApp::initActions()
 #endif
 
 #ifdef __SHOUTCAST__
+    QString shoutcastHelpText = tr("Stream your mixes to a shoutcast or icecast server");
+    m_pOptionsShoutcast = new QAction(tr("Enable live &broadcasting"), this);
+    m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
+    m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsShoutcast->setCheckable(true);
     bool broadcastEnabled =
         (m_pConfig->getValueString(ConfigKey("[Shoutcast]", "enabled"))
             .toInt() == 1);
 
     m_pOptionsShoutcast->setChecked(broadcastEnabled);
-
-    m_pOptionsShoutcast->setStatusTip(tr("Activate live broadcasting"));
-    m_pOptionsShoutcast->setWhatsThis(
-        tr("Stream your mixes to a shoutcast or icecast server"));
+    m_pOptionsShoutcast->setStatusTip(shoutcastHelpText);
+    m_pOptionsShoutcast->setWhatsThis(shoutcastHelpText);
 
     connect(m_pOptionsShoutcast, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsShoutcast(bool)));
 #endif
 
+    m_pOptionsRecord = new QAction(tr("&Record Mix"), this);
+    m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
+    m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsRecord->setCheckable(true);
     m_pOptionsRecord->setStatusTip(tr("Start Recording your Mix"));
     m_pOptionsRecord->setWhatsThis(tr("Record your mix to a file"));
     connect(m_pOptionsRecord, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsRecord(bool)));
-
-    m_pOptionsFullScreen->setCheckable(true);
-    m_pOptionsFullScreen->setChecked(false);
-    m_pOptionsFullScreen->setStatusTip(tr("Full Screen"));
-    m_pOptionsFullScreen->setWhatsThis(
-        tr("Display Mixxx using the full screen"));
-    connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsFullScreen(bool)));
-
-    m_pOptionsPreferences->setStatusTip(tr("Preferences"));
-    m_pOptionsPreferences->setWhatsThis(
-        tr("Preferences\nPlayback and MIDI preferences"));
-    connect(m_pOptionsPreferences, SIGNAL(triggered()),
-            this, SLOT(slotOptionsPreferences()));
-
-    m_pHelpSupport->setStatusTip(tr("Support..."));
-    m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
-    connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
-
-    m_pHelpManual->setStatusTip(tr("Read the Mixxx user manual."));
-    m_pHelpManual->setWhatsThis(tr("Support\n\nRead the Mixxx user manual."));
-    connect(m_pHelpManual, SIGNAL(triggered()), this, SLOT(slotHelpManual()));
-
-    m_pHelpFeedback->setStatusTip(tr("Send feedback to the Mixxx team."));
-    m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
-    connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
-
-    m_pHelpTranslation->setStatusTip(tr("Help translate this application into your language."));
-    m_pHelpTranslation->setWhatsThis(tr("Support\n\nHelp translate this application into your language."));
-    connect(m_pHelpTranslation, SIGNAL(triggered()), this, SLOT(slotHelpTranslation()));
-
-    m_pHelpAboutApp->setStatusTip(tr("About the application"));
-    m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
-    connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
 }
 
 void MixxxApp::initMenuBar()
 {
     // MENUBAR
-   m_pFileMenu = new QMenu(tr("&File"), menuBar());
-   m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
-   m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
-   m_pViewMenu = new QMenu(tr("&View"), menuBar());
-   m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
+    m_pFileMenu = new QMenu(tr("&File"), menuBar());
+    m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
+    m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
+    m_pViewMenu = new QMenu(tr("&View"), menuBar());
+    m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
@@ -914,12 +896,10 @@ void MixxxApp::initMenuBar()
     m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsPreferences);
 
-    //    libraryMenu->setCheckable(true);
     m_pLibraryMenu->addAction(m_pLibraryRescan);
     m_pLibraryMenu->addSeparator();
     m_pLibraryMenu->addAction(m_pPlaylistsNew);
     m_pLibraryMenu->addAction(m_pCratesNew);
-    //libraryMenu->addAction(playlistsImport);
 
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
@@ -941,25 +921,6 @@ void MixxxApp::initMenuBar()
     menuBar()->addMenu(m_pHelpMenu);
 
     m_NativeMenuBarSupport = menuBar()->isNativeMenuBar();
-}
-
-void MixxxApp::slotlibraryMenuAboutToShow(){
-}
-
-bool MixxxApp::queryExit()
-{
-    int exit=QMessageBox::information(this, tr("Quit..."),
-                                      tr("Do your really want to quit?"),
-                                      QMessageBox::Ok, QMessageBox::Cancel);
-
-    if (exit==1)
-    {
-    }
-    else
-    {
-    };
-
-    return (exit==1);
 }
 
 void MixxxApp::slotFileLoadSongPlayer1()
