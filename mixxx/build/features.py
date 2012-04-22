@@ -362,6 +362,60 @@ class Tonal(Feature):
                    'tonal/ConstantQFolder.cxx']
         return sources
 
+class Vamp(Feature):
+    INTERNAL_LINK = False
+    INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+    def description(self):
+        return "Vamp Analysers support"
+
+    def enabled(self, build):
+        build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
+        if int(build.flags['vamp']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('vamp', 'Set to 1 to enable vamp analysers', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        # If there is no system vamp-hostdk installed, then we'll directly link
+        # the vamp-hostsdk.
+        if not conf.CheckLib(['vamp-hostsdk']):
+            # For header includes
+            build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
+            self.INTERNAL_LINK = True
+
+        build.env.Append(CPPDEFINES = '__VAMP__')
+
+        # FFTW3 support
+        have_fftw3_h = conf.CheckHeader('fftw3.h')
+        have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
+        if(have_fftw3_h and have_fftw3 and build.platform_is_linux):
+             build.env.Append(CPPDEFINES = 'HAVE_FFTW3')
+             build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
+
+    def sources(self, build):
+        sources = ['vamp/vampanalyser.cpp',
+                   'vamp/vamppluginloader.cpp',
+                   'analyserbeats.cpp',
+                   'analysergainvamp.cpp',
+                   'dlgprefbeats.cpp']
+        if self.INTERNAL_LINK:
+            hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
+            sources.extend(path % hostsdk_src_path for path in
+                           ['%s/PluginBufferingAdapter.cpp',
+                            '%s/PluginChannelAdapter.cpp',
+                            '%s/PluginHostAdapter.cpp',
+                            '%s/PluginInputDomainAdapter.cpp',
+                            '%s/PluginLoader.cpp',
+                            '%s/PluginSummarisingAdapter.cpp',
+                            '%s/PluginWrapper.cpp',
+                            '%s/RealTime.cpp'])
+        return sources
+
 class FAAD(Feature):
     def description(self):
         return "FAAD AAC audio file decoder plugin"

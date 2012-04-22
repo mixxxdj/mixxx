@@ -22,6 +22,7 @@ plugins = []
 Import('build')
 Import('sources')
 Import('soundsource_plugins')
+Import('mixxxminimal_plugins')
 
 env = build.env
 flags = build.flags
@@ -115,6 +116,9 @@ resource_files = Glob('#res/schema.xml')
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
 
+#VAMP beat tracking and key detection plugin
+libmixxxminimal_vamp_plugin = mixxxminimal_plugins
+
 #Skins
 skin_files = Glob('#res/skins/*')
 
@@ -195,6 +199,10 @@ if build.platform_is_linux or build.platform_is_bsd:
 		binary = env.Install(unix_bin_path, binary_files)
 		resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
 		skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
+		vamp_plugin =  env.Install(
+                        os.path.join(unix_lib_path, 'mixxx', 'vamp'),
+                        libmixxxminimal_vamp_plugin)
+                        
 		soundsource_plugins = env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
                         soundsource_plugin_files)
@@ -223,6 +231,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 		env.Alias('install', dotdesktop)
 		env.Alias('install', icon)
 		env.Alias('install', promotracks)
+		env.Alias('install', vamp_plugin)
 
 		#Delete the old Mixxx installation (because SCONS won't overwrite it)
 		#if 'install' in COMMAND_LINE_TARGETS:
@@ -258,6 +267,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	# from SCons File nodes to strings)
 	for x in soundsource_plugins:
 		plugins.append(x.get_abspath())
+		
+	for x in mixxxminimal_plugins:
+	    plugins.append(x.get_abspath())
 
         resource_map = {}
         translation_files = Glob('#res/translations/*.qm')
@@ -330,6 +342,7 @@ if build.platform_is_windows:
 	#icon = env.Install(base_dist_dir+"", icon_files)
 	dlls = env.Install(base_dist_dir+"/", dll_files)
 	soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"), soundsource_plugin_files)
+	vamp_plugins = env.Install(base_dist_dir+"/", libmixxxminimal_vamp_plugin)
 	binary = env.Install(base_dist_dir+"/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
@@ -344,6 +357,7 @@ if build.platform_is_windows:
 	env.Alias('mixxx', docs)
 	env.Alias('mixxx', dlls)
 	env.Alias('mixxx', soundsource_plugins)
+	env.Alias('mixxx', vamp_plugins)
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 

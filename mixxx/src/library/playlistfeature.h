@@ -28,6 +28,9 @@ class PlaylistFeature : public BasePlaylistFeature {
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
+  private slots:
+    void slotPlaylistTableChanged(int playlistId);
+
  protected:
     QModelIndex constructChildModel(int selected_id);
 };

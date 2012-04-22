@@ -49,7 +49,7 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
-    void slotPlaylistTableChanged(int playlistId);
+    virtual void slotPlaylistTableChanged(int playlistId) = 0;
 
   protected:
     virtual QModelIndex constructChildModel(int selected_id) = 0;
