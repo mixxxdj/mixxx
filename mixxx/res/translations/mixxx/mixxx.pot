@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-22 14:03-0400\n"
+"POT-Creation-Date: 2012-04-22 18:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -430,26 +430,6 @@ msgid "About Mixxx"
 msgstr ""
 
 #: DlgAboutDlg#2
-msgid "1.x.x"
-msgstr ""
-
-#: DlgAboutDlg#3
-msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
-"html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
-"weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
-"font-family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-msgstr ""
-
-#: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
 msgstr ""
 
@@ -2692,384 +2672,248 @@ msgid "Continue"
 msgstr ""
 
 #: MixxxApp#18
-msgid "Ctrl+O"
+msgid "Load track to Deck %1"
 msgstr ""
 
 #: MixxxApp#19
-msgid "Ctrl+Shift+O"
+msgid "Loads a track in deck %1"
 msgstr ""
 
 #: MixxxApp#20
-msgid "&Exit"
+msgid "Open"
 msgstr ""
 
 #: MixxxApp#21
-msgid "Ctrl+Q"
+msgid "Ctrl+O"
 msgstr ""
 
 #: MixxxApp#22
-msgid "&Rescan Library"
+msgid "Ctrl+Shift+O"
 msgstr ""
 
 #: MixxxApp#23
-msgid "Add &new playlist"
+msgid "&Exit"
 msgstr ""
 
 #: MixxxApp#24
-msgid "Ctrl+N"
+msgid "Quits Mixxx"
 msgstr ""
 
 #: MixxxApp#25
-msgid "Add new &crate"
+msgid "Ctrl+Q"
 msgstr ""
 
 #: MixxxApp#26
-msgid "Ctrl+C"
+msgid "&Rescan Library"
 msgstr ""
 
 #: MixxxApp#27
-msgid "&Import playlist"
+msgid "Rescans library folders for changes to tracks."
 msgstr ""
 
 #: MixxxApp#28
-msgid "Ctrl+I"
+msgid "Add &new playlist"
 msgstr ""
 
 #: MixxxApp#29
-msgid "&Full Screen"
+msgid "Ctrl+N"
 msgstr ""
 
 #: MixxxApp#30
-msgid "F11"
+msgid "Add new &crate"
 msgstr ""
 
 #: MixxxApp#31
-msgid "&Preferences"
+msgid "Ctrl+C"
 msgstr ""
 
 #: MixxxApp#32
-msgid "Ctrl+P"
+msgid "Deck %1 is currently playing a track."
 msgstr ""
 
 #: MixxxApp#33
-msgid "&About"
+msgid "Are you sure you want to load a new track?"
 msgstr ""
 
 #: MixxxApp#34
-msgid "&Community Support"
+msgid "&Full Screen"
 msgstr ""
 
 #: MixxxApp#35
-msgid "&User Manual"
+msgid "F11"
 msgstr ""
 
 #: MixxxApp#36
-msgid "Send Us &Feedback"
+msgid "&Preferences"
 msgstr ""
 
 #: MixxxApp#37
-msgid "&Translate this application"
+msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr ""
 
 #: MixxxApp#38
-msgid "Ctrl+Y"
+msgid "Ctrl+P"
 msgstr ""
 
 #: MixxxApp#39
-msgid "Ctrl+U"
+msgid "&About"
 msgstr ""
 
 #: MixxxApp#40
-msgid "Ctrl+L"
+msgid "&Community Support"
 msgstr ""
 
 #: MixxxApp#41
-msgid "&Record Mix"
+msgid "Get help with Mixxx"
 msgstr ""
 
 #: MixxxApp#42
-msgid "Ctrl+R"
+msgid "&User Manual"
 msgstr ""
 
 #: MixxxApp#43
-msgid "Opens a song in player 1"
+msgid "Send Us &Feedback"
 msgstr ""
 
 #: MixxxApp#44
-msgid ""
-"Open\n"
-"\n"
-"Opens a song in player 1"
+msgid "&Translate this application"
 msgstr ""
 
 #: MixxxApp#45
-msgid "Opens a song in player 2"
+msgid "Ctrl+Y"
 msgstr ""
 
 #: MixxxApp#46
-msgid ""
-"Open\n"
-"\n"
-"Opens a song in player 2"
+msgid "Ctrl+U"
 msgstr ""
 
 #: MixxxApp#47
-msgid "Quits the application"
+msgid "Ctrl+L"
 msgstr ""
 
 #: MixxxApp#48
-msgid ""
-"Exit\n"
-"\n"
-"Quits the application"
+msgid "&Record Mix"
 msgstr ""
 
 #: MixxxApp#49
-msgid "Rescans the song library"
+msgid "Ctrl+R"
 msgstr ""
 
 #: MixxxApp#50
-msgid ""
-"Rescan library\n"
-"\n"
-"Rescans the song library"
-msgstr ""
-
-#: MixxxApp#51
 msgid "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#52
-msgid ""
-"New playlist\n"
-"\n"
-"Create a new playlist"
-msgstr ""
-
-#: MixxxApp#53
+#: MixxxApp#51
 msgid "Create a new crate"
 msgstr ""
 
-#: MixxxApp#54
-msgid ""
-"New crate\n"
-"\n"
-"Create a new crate."
-msgstr ""
-
-#: MixxxApp#55
-msgid "Import playlist"
-msgstr ""
-
-#: MixxxApp#56
-msgid "Load Song (Player &1)..."
-msgstr ""
-
-#: MixxxApp#57
-msgid "Load Song (Player &2)..."
-msgstr ""
-
-#: MixxxApp#58
+#: MixxxApp#52
 msgid "Ctrl+Shift+F"
 msgstr ""
 
-#: MixxxApp#59
+#: MixxxApp#53
 msgid "Enable Vinyl Control &1"
 msgstr ""
 
-#: MixxxApp#60
+#: MixxxApp#54
 msgid "Enable Vinyl Control &2"
 msgstr ""
 
-#: MixxxApp#61
+#: MixxxApp#55
 msgid "Enable live &broadcasting"
 msgstr ""
 
-#: MixxxApp#62
-msgid "Activate Vinyl Control"
-msgstr ""
-
-#: MixxxApp#63
+#: MixxxApp#56
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
 
-#: MixxxApp#64
-msgid "Activate live broadcasting"
-msgstr ""
-
-#: MixxxApp#65
+#: MixxxApp#57
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr ""
 
-#: MixxxApp#66
-msgid "Start Recording your Mix"
-msgstr ""
-
-#: MixxxApp#67
+#: MixxxApp#58
 msgid "Record your mix to a file"
 msgstr ""
 
-#: MixxxApp#68
-msgid "Full Screen"
-msgstr ""
-
-#: MixxxApp#69
+#: MixxxApp#59
 msgid "Display Mixxx using the full screen"
 msgstr ""
 
-#: MixxxApp#70
-msgctxt "MixxxApp#70"
-msgid "Preferences"
-msgstr ""
-
-#: MixxxApp#71
-msgid ""
-"Preferences\n"
-"Playback and MIDI preferences"
-msgstr ""
-
-#: MixxxApp#72
-msgid "Support..."
-msgstr ""
-
-#: MixxxApp#73
-msgid ""
-"Support\n"
-"\n"
-"Get help with Mixxx"
-msgstr ""
-
-#: MixxxApp#74
+#: MixxxApp#60
 msgid "Read the Mixxx user manual."
 msgstr ""
 
-#: MixxxApp#75
-msgid ""
-"Support\n"
-"\n"
-"Read the Mixxx user manual."
-msgstr ""
-
-#: MixxxApp#76
+#: MixxxApp#61
 msgid "Send feedback to the Mixxx team."
 msgstr ""
 
-#: MixxxApp#77
-msgid ""
-"Support\n"
-"\n"
-"Send feedback to the Mixxx team."
-msgstr ""
-
-#: MixxxApp#78
+#: MixxxApp#62
 msgid "Help translate this application into your language."
 msgstr ""
 
-#: MixxxApp#79
-msgid ""
-"Support\n"
-"\n"
-"Help translate this application into your language."
-msgstr ""
-
-#: MixxxApp#80
+#: MixxxApp#63
 msgid "About the application"
 msgstr ""
 
-#: MixxxApp#81
-msgid ""
-"About\n"
-"\n"
-"About the application"
-msgstr ""
-
-#: MixxxApp#82
+#: MixxxApp#64
 msgid "A sampler is currently playing. Exit Mixxx?"
 msgstr ""
 
-#: MixxxApp#83
+#: MixxxApp#65
 msgid "&File"
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#66
 msgid "&Options"
 msgstr ""
 
-#: MixxxApp#85
+#: MixxxApp#67
 msgid "&Library"
 msgstr ""
 
-#: MixxxApp#86
+#: MixxxApp#68
 msgid "&View"
 msgstr ""
 
-#: MixxxApp#87
+#: MixxxApp#69
 msgid "&Help"
 msgstr ""
 
-#: MixxxApp#88
+#: MixxxApp#70
 msgid "&Vinyl Control"
 msgstr ""
 
-#: MixxxApp#89
-msgid "Quit..."
-msgstr ""
-
-#: MixxxApp#90
-msgid "Do your really want to quit?"
-msgstr ""
-
-#: MixxxApp#91
-msgid ""
-"Player 1 is currently playing a song.\n"
-"Are you sure you want to load a new song?"
-msgstr ""
-
-#: MixxxApp#92
-msgid "Load Song into Player 1"
-msgstr ""
-
-#: MixxxApp#93
-msgid ""
-"Player 2 is currently playing a song.\n"
-"Are you sure you want to load a new song?"
-msgstr ""
-
-#: MixxxApp#94
-msgid "Load Song into Player 2"
-msgstr ""
-
-#: MixxxApp#95
+#: MixxxApp#71
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
 
-#: MixxxApp#96
+#: MixxxApp#72
 msgid "Mixxx %1 Development Team"
 msgstr ""
 
-#: MixxxApp#97
+#: MixxxApp#73
 msgid "With contributions from:"
 msgstr ""
 
-#: MixxxApp#98
+#: MixxxApp#74
 msgid "And special thanks to:"
 msgstr ""
 
-#: MixxxApp#99
+#: MixxxApp#75
 msgid "Past Developers"
 msgstr ""
 
-#: MixxxApp#100
+#: MixxxApp#76
 msgid "Past Contributors"
 msgstr ""
 
-#: MixxxApp#101
+#: MixxxApp#77
 msgid "Confirm Exit"
 msgstr ""
 
-#: MixxxApp#102
+#: MixxxApp#78
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
@@ -3339,7 +3183,6 @@ msgid ""
 msgstr ""
 
 #: Ui#12
-msgctxt "Ui#12"
 msgid "Preferences"
 msgstr ""
 
