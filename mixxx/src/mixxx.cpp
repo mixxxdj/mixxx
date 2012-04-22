@@ -636,18 +636,18 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setWindowTitle("No Output Devices");
-    msgBox.setText( "<html>Mixxx was configured without any output sound devices. "
-                    "Audio processing will be disabled without a configured output device."
+    msgBox.setWindowTitle(tr("No Output Devices"));
+    msgBox.setText( "<html>" + tr("Mixxx was configured without any output sound devices. "
+                    "Audio processing will be disabled without a configured output device.") +
                     "<ul>"
-                        "<li>"
-                            "<b>Continue</b> without any outputs."
+                        "<li>" +
+                            tr("<b>Continue</b> without any outputs.") +
                         "</li>"
-                        "<li>"
-                            "<b>Reconfigure</b> Mixxx's sound device settings."
+                        "<li>" +
+                            tr("<b>Reconfigure</b> Mixxx's sound device settings.") +
                         "</li>"
-                        "<li>"
-                            "<b>Exit</b> Mixxx."
+                        "<li>" +
+                            tr("<b>Exit</b> Mixxx.") +
                         "</li>"
                     "</ul></html>"
     );
