@@ -131,7 +131,6 @@ private:
     QSize m_pageSizeHint;
 
     ConfigObject<ConfigValue>* config;
-    MixxxApp* m_pMixxx;
     MidiDeviceManager* m_pMidiDeviceManager;
 };
 
