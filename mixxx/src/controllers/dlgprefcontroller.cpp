@@ -43,7 +43,7 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     m_pConfig = pConfig;
     m_pController = controller;
     m_pControllerManager = controllerManager;
-    
+
     m_bDirty = false;
 
 //     T* ui = static_cast<T*>(this)->m_ui;
@@ -62,7 +62,7 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     connect(this, SIGNAL(loadPreset(Controller*,QString,bool)),
             m_pControllerManager, SLOT(loadPreset(Controller*,QString,bool)));
     connect(this, SIGNAL(applyPreset()), m_pController, SLOT(applyPreset()));
-    
+
     //Load the list of presets into the presets combobox.
     enumeratePresets();
 }
@@ -83,11 +83,11 @@ void DlgPrefController::enumeratePresets()
     //(We don't want the first found file showing up as the default item
     // when a user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
-    
+
     // Ask the controller manager for a list of applicable presets
     QList<QString> presetsList =
         m_pControllerManager->getPresetList(m_pController->presetExtension());
-    
+
     //Sort in alphabetical order
     qSort(presetsList);
     m_ui.comboBoxPreset->addItems(presetsList);
@@ -140,7 +140,7 @@ void DlgPrefController::slotApply() {
 * Loads the specified XML preset.
 */
 void DlgPrefController::slotLoadPreset(const QString &name) {
-    
+
     if (name != "...") {
         emit(loadPreset(m_pController, name, true));
         // It's applied on prefs close
