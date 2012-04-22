@@ -78,7 +78,7 @@
    <item>
     <widget class="QLabel" name="version_label">
      <property name="text">
-      <string>1.x.x</string>
+      <string notr="true">1.x.x</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

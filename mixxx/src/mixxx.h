@@ -67,21 +67,18 @@ class VinylControlManager;
   * For the main view, an instance of class MixxxView is
   * created which creates your view.
   */
-class MixxxApp : public QMainWindow
-{
+class MixxxApp : public QMainWindow {
     Q_OBJECT
 
   public:
     /** Construtor. files is a list of command line arguments */
     MixxxApp(QApplication *app, struct CmdlineArgs args);
-    /** destructor */
     virtual ~MixxxApp();
+
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
     void initMenuBar();
-    /** overloaded for Message box on last window exit */
-    bool queryExit();
 
     void rebootMixxxView();
 
@@ -116,10 +113,6 @@ class MixxxApp : public QMainWindow
     void slotHelpManual();
     // Visits translation interface on launchpad.net
     void slotHelpTranslation();
-    /** Change of file to play */
-    //void slotChangePlay(int,int,int, const QPoint &);
-
-    void slotlibraryMenuAboutToShow();
     /** Scan or rescan the music library directory */
     void slotScanLibrary();
     /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
@@ -129,14 +122,10 @@ class MixxxApp : public QMainWindow
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
 
-
-
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
     void closeEvent(QCloseEvent *event);
-
-
 
   private:
     void checkDirectRendering();
@@ -190,16 +179,9 @@ class MixxxApp : public QMainWindow
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
     QAction *m_pFileQuit;
-
     QAction *m_pPlaylistsNew;
     QAction *m_pCratesNew;
-    QAction *m_pPlaylistsImport;
-    QAction **m_pPlaylistsList;
-
-    QAction *m_pBatchBpmDetect;
-
     QAction *m_pLibraryRescan;
-
 #ifdef __VINYLCONTROL__
     QMenu *m_pVinylControlMenu;
     QAction *m_pOptionsVinylControl;
@@ -211,7 +193,6 @@ class MixxxApp : public QMainWindow
 #ifdef __SHOUTCAST__
     QAction *m_pOptionsShoutcast;
 #endif
-
     QAction *m_pHelpAboutApp;
     QAction *m_pHelpSupport;
     QAction *m_pHelpFeedback;
