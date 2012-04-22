@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: Kristjan SCHMIDT <Unknown>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2012-02-16 15:26+0000\n"
+"Last-Translator: Michael Moroni <michael.moroni@mailoo.org>\n"
 "Language-Team: Esperanto <eo@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:45+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-02-17 04:54+0000\n"
+"X-Generator: Launchpad (build 14814)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -43,7 +43,7 @@ msgstr "Albumo"
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Ĝenro"
+msgstr "Ĝenro"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
@@ -333,14 +333,18 @@ msgid "About Mixxx"
 msgstr "Pri Miksss"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -348,23 +352,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Ĉi tie estas agnoskoj</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -2763,10 +2750,30 @@ msgid ""
 msgstr ""
 
 #: MixxxApp#105
-msgid "Confirm Exit"
+msgid "Mixxx %1 Development Team"
 msgstr ""
 
 #: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
+msgid "Confirm Exit"
+msgstr ""
+
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
@@ -3391,14 +3398,120 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr ""
 
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Ludlistdosieroj (*.m3u *.pls)"
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Ĉi tie estas agnoskoj</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Eksporti ludliston"
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analizi tutan kanton"
 
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U-ludlisto (*.m3u);;PLS-ludlisto (*.pls)"
+#~ msgid "to"
+#~ msgstr "al"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "BPM-skemo:"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM-detektado"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgid "<< Prev"
+#~ msgstr "« Antaŭa"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Kanto:"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Trakredaktilo"
+
+#~ msgid "&Close"
+#~ msgstr "Fermi"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "BPM-redaktilo (Alklaki por malfaldi)"
+
+#~ msgid "Next >>"
+#~ msgstr "Sekva »"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Trakinformoj (alklaki por malfaldi)"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgid "&Go"
+#~ msgstr "Ek"
+
+#~ msgid "BPM Range:"
+#~ msgstr "BPM-rango:"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "Bitoj minute:"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analizi tutan kanton"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Artisto:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Titolo:"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Dosiernomo:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Komentoj:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Dosiertipo:"
