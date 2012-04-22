@@ -18,48 +18,24 @@
 #ifndef MIXXX_H
 #define MIXXX_H
 
-// include files for QT
-#include <qaction.h>
-#include <qdom.h>
-#include <qmenubar.h>
-#include <qtoolbutton.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qpixmap.h>
-#include <qprinter.h>
-#include <qpainter.h>
-#include <qpoint.h>
-#include <qapplication.h>
+#include <QAction>
 #include <QList>
-//Added by qt3to4:
-#include <QFrame>
-#include <qstringlist.h>
-
-// application specific includes
-#include "defs.h"
-#include "trackinfoobject.h"
-#include "engine/enginemaster.h"
-#include "controlobject.h"
-#include "dlgpreferences.h"
-//#include "trackplaylist.h"
-#include "recording/recordingmanager.h"
+#include <QMainWindow>
+#include <QString>
 
 class EngineMaster;
-class PlayerManager;
-class TrackInfoObject;
-class PlayerProxy;
-class BpmDetector;
-class QSplashScreen;
-class ScriptEngine;
-class Player;
-class LibraryScanner;
-class AnalyserQueue;
 class Library;
+class LibraryScanner;
 class MidiDeviceManager;
 class MixxxKeyboard;
+class PlayerManager;
+class RecordingManager;
 class SkinLoader;
-
 class VinylControlManager;
+class DlgPreferences;
+class SoundManager;
+
+#include "configobject.h"
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -85,6 +61,7 @@ class MixxxApp : public QMainWindow {
   public slots:
 
     //void slotQuitFullScreen();
+    void slotFileLoadSongPlayer(int deck);
     /** Opens a file in player 1 */
     void slotFileLoadSongPlayer1();
     /** Opens a file in player 2 */
