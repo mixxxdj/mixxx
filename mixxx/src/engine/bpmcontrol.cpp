@@ -22,6 +22,8 @@ BpmControl::BpmControl(const char* _group,
         //m_pMasterSync(NULL),
         m_iSyncState(0),
         m_dSyncAdjustment(0.0),
+        m_bUserTweakingSync(false),
+        m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval) {
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
@@ -319,6 +321,14 @@ EngineBuffer* BpmControl::pickSyncTarget() {
     return NULL;
 }
 
+void BpmControl::userTweakingSync(bool tweakActive)
+{
+    //TODO XXX: this might be one loop off.  ie, user tweaks but we've already
+    //calculated a new rate.  Then next time we pay attention to the tweak.
+    //I think it might not matter though
+    m_bUserTweakingSync = tweakActive;
+}
+
 void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
 {
     if (m_iSyncState != SYNC_SLAVE)
@@ -348,11 +358,13 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     double my_distance = (dThisPosition - dPrevBeat) / beat_length;
     
     //beat wraparound -- any other way to account for this?
-    if (my_distance > 0.9 && master_distance < 0.1)
+    
+    //XXX doublecheck math for applying the user offset here (almost certainly wrong)
+    if (my_distance - m_dUserOffset > 0.9 && master_distance < 0.1)
     {
         master_distance += 1.0;
     }
-    else if (my_distance < 0.1 && master_distance > 0.9)
+    else if (my_distance - m_dUserOffset < 0.1 && master_distance > 0.9)
     {
         my_distance += 1.0;
     }
@@ -365,34 +377,54 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     double sample_offset = beat_length * percent_offset;
     
     //qDebug() << "mine" << my_distance << "master" << master_distance << percent_offset << sample_offset;
-
-    if (fabs(percent_offset) > TOO_FAR_OFF)
-    {
-        if (m_pPlayButton->get() > 0)
-        {
-            //XXX TEMP TODO FIXME: right now we just seek to fix this
-            //we need to more gracefully sync phase using the algorithm elsewhere
-            //in this module
-            
-/*            qDebug() << "we are off by" << percent_offset << "reseek";
-            qDebug() << "would seek" << 0 - sample_offset;*/
-            //have to seek absolute tho
-            emit(seekAbs(dThisPosition-sample_offset));
-            return;
-        }
-    }
     
-    if (fabs(percent_offset) > MAGIC_FUZZ)
+    m_dSyncAdjustment = 0.0;
+    
+    if (m_dUserOffset != 0)
+        qDebug() << "offset val:" << m_dUserOffset << "cur offset" << percent_offset;
+    
+    if (m_bUserTweakingSync)
     {
-        //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << percent_offset;
-        m_dSyncAdjustment = (0.0 - percent_offset) * MAGIC_FACTOR;
-        //qDebug() << "how about...." << m_dSyncAdjustment;
-        m_dSyncAdjustment = math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
-        //qDebug() << "clamped" << m_dSyncAdjustment;
-    }
-    else {
-        //close enough, leave it alone
-        m_dSyncAdjustment = 0.0;
+        qDebug() << "user is tweaking sync, let's use their value" << percent_offset;
+        m_dUserOffset = percent_offset;
+        
+        //don't do anything else, leave it
+    } 
+    else
+    {
+        //else
+            //qDebug() << "user not tweaking";
+            
+
+
+        /*if (fabs(percent_offset - m_dUserOffset) > TOO_FAR_OFF)
+        {
+            if (m_pPlayButton->get() > 0)
+            {
+                //qDebug() << "SEEKING TO GET BACK IN SYNC" <<  percent_offset << m_dUserOffset << TOO_FAR_OFF;
+                //XXX TEMP TODO FIXME: right now we just seek to fix this
+                //we need to more gracefully sync phase using the algorithm elsewhere
+                //in this module
+                
+    /*            qDebug() << "we are off by" << percent_offset << "reseek";
+                qDebug() << "would seek" << 0 - sample_offset;
+                //have to seek absolute tho
+                
+                //how about never do it.
+                //emit(seekAbs(dThisPosition-sample_offset));
+                //return;
+            }
+        }*/
+        
+        if (fabs(percent_offset - m_dUserOffset) > MAGIC_FUZZ)
+        {
+            //qDebug() << "tweak to get back in sync" << percent_offset << m_dUserOffset << MAGIC_FUZZ;
+            //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << percent_offset;
+            m_dSyncAdjustment = (0.0 - percent_offset) * MAGIC_FACTOR;
+            //qDebug() << "how about...." << m_dSyncAdjustment;
+            m_dSyncAdjustment = math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
+            //qDebug() << "clamped" << m_dSyncAdjustment;
+        }
     }
 }
 
@@ -400,7 +432,8 @@ double BpmControl::getSyncAdjustment()
 {
     if (m_iSyncState != SYNC_SLAVE)
         return 0.0;
-    qDebug() << "sync value" << m_dSyncAdjustment;
+    if (m_dSyncAdjustment != 0)
+        qDebug() << "sync value" << m_dSyncAdjustment;
     return m_dSyncAdjustment;
 }
 
@@ -517,6 +550,9 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
     if (m_pTrack) {
         trackUnloaded(m_pTrack);
     }
+    
+    qDebug() << "resetting user offset";
+    m_dUserOffset = 0.0; //reset for new track
 
     if (pTrack) {
         m_pTrack = pTrack;

@@ -506,12 +506,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (sr > 0)
             baserate = ((double)file_srate_old/sr);
 
-        bool paused = playButton->get() != 0.0f ? false : true;
+        bool paused = playButton->get() == 0.0f;
 
         bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
         
+        m_pBpmControl->userTweakingSync(m_pRateControl->getUserTweakingSync());
         beatDistance->set(m_pBpmControl->getBeatDistance());
         
         if (!paused) {

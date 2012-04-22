@@ -23,6 +23,7 @@ class BpmControl : public EngineControl {
     double getFileBpm();
     double getBeatDistance();
     double getSyncAdjustment();
+    void userTweakingSync(bool tweakActive);
 
   public slots:
 
@@ -56,6 +57,8 @@ class BpmControl : public EngineControl {
     ControlObject *m_pMasterBeatDistance;
     int m_iSyncState;
     double m_dSyncAdjustment;
+    bool m_bUserTweakingSync;
+    double m_dUserOffset;
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;

@@ -41,6 +41,7 @@ public:
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate();
     double getCurrentRate();
+    bool getUserTweakingSync();
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -124,6 +125,7 @@ public:
     ControlObject *m_pTrueRate, *m_pMasterBpm, *m_pSyncState;
     double m_dSyncedRate;
     int m_iSyncState;
+    bool m_bUserTweakingSync;
     
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;

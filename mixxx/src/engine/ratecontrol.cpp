@@ -40,6 +40,7 @@ RateControl::RateControl(const char* _group,
     m_dRateTempRampbackChange(0.0),
     m_dOldRate(1.0f),
     m_iSyncState(0),
+    m_bUserTweakingSync(false),
     m_pConfig(_config) {
     m_pScratchController = new PositionScratchController(_group);
 
@@ -474,9 +475,21 @@ double RateControl::getJogFactor() {
     return jogFactor;
 }
 
+bool RateControl::getUserTweakingSync()
+{
+    return m_bUserTweakingSync;
+}
+
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
                                   bool* isScratching) {
     double rate = 0.0;
+    
+    double wheelFactor = getWheelFactor();
+    double jogFactor = getJogFactor();
+    bool searching = m_pRateSearch->get() != 0.;
+    bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
+    double scratchFactor = m_pScratch->get();
+    double oldScratchFactor = m_pOldScratch->get(); // Deprecated
     
     // if master sync is on, respond to it
     if (m_iSyncState == SYNC_SLAVE && !paused)
@@ -487,19 +500,24 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             }
         }
         m_dOldRate = m_dSyncedRate;
-        m_pRateSlider->set(((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
+        rate = m_dSyncedRate;
+        //rate = ((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get();
+        double oldrate = rate;
+        double userTweak = getTempRate() + wheelFactor + jogFactor;
+        rate += userTweak;
+        m_bUserTweakingSync = (userTweak != 0.0);
+        if (m_bUserTweakingSync)
+        {
+            qDebug() << "ratecontrol: user is tweaking sync" << oldrate << userTweak << rate;
+        }
         
-        m_pTrueRate->set(m_dSyncedRate);
-        return m_dSyncedRate * baserate;
+        m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
+        m_pTrueRate->set(rate);
+        //return rate * baserate;
+        qDebug() << m_dSyncedRate << rate;
+        return rate * baserate;
     }
-    
-    
-    double wheelFactor = getWheelFactor();
-    double jogFactor = getJogFactor();
-    bool searching = m_pRateSearch->get() != 0.;
-    bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
-    double scratchFactor = m_pScratch->get();
-    double oldScratchFactor = m_pOldScratch->get(); // Deprecated
+
 
     // Don't trust values from m_pScratch
     if(isnan(scratchFactor)) {
