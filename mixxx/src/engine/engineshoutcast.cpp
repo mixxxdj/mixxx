@@ -166,47 +166,47 @@ void EngineShoutcast::updateFromPreferences()
 
 
     if (shout_set_host(m_pShout, baHost.data()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting hostname!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting hostname!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_protocol(m_pShout, SHOUT_PROTOCOL_HTTP) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting protocol!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_port(m_pShout, baPort.toUInt()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting port!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting port!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_password(m_pShout, baPassword.data()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting password!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting password!"), shout_get_error(m_pShout));
         return;
     }
     if (shout_set_mount(m_pShout, baMountPoint.data()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting mount!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_user(m_pShout, baLogin.data()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting username!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
         return;
     }
     if (shout_set_name(m_pShout, baStreamName.data()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting stream name!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting stream name!"), shout_get_error(m_pShout));
         return;
     }
     if (shout_set_description(m_pShout, baStreamDesc.data()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting stream description!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting stream description!"), shout_get_error(m_pShout));
         return;
     }
     if (shout_set_genre(m_pShout, baStreamGenre.data()) != SHOUTERR_SUCCESS) {
-          errorDialog("Error setting stream genre!", shout_get_error(m_pShout));
+          errorDialog(tr("Error setting stream genre!"), shout_get_error(m_pShout));
         return;
     }
     if (shout_set_url(m_pShout, baStreamWebsite.data()) != SHOUTERR_SUCCESS) {
-       errorDialog("Error setting stream url!", shout_get_error(m_pShout));
+       errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
        return;
     }
 
@@ -234,16 +234,16 @@ void EngineShoutcast::updateFromPreferences()
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
     if (format == SHOUT_FORMAT_OGG && iMasterSamplerate == 96000) {
-        errorDialog("Broadcasting at 96kHz with Ogg Vorbis is not currently "
+        errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
                     "supported. Please try a different sample-rate or switch "
-                    "to a different encoding.",
-                    "See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
-                    "information.");
+                    "to a different encoding."),
+                    tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
+                    "information."));
         return;
     }
 
     if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.data()) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting bitrate", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting bitrate"), shout_get_error(m_pShout));
         return;
     }
 
@@ -254,17 +254,17 @@ void EngineShoutcast::updateFromPreferences()
     } else if ( ! qstricmp(baServerType.data(), "Icecast 1")) {
         protocol = SHOUT_PROTOCOL_XAUDIOCAST;
     } else {
-        errorDialog("Error: unknown server protocol!", shout_get_error(m_pShout));
+        errorDialog(tr("Error: unknown server protocol!"), shout_get_error(m_pShout));
         return;
     }
 
     if (( protocol == SHOUT_PROTOCOL_ICY ) && ( format != SHOUT_FORMAT_MP3)) {
-        errorDialog("Error: libshout only supports Shoutcast with MP3 format!", shout_get_error(m_pShout));
+        errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_protocol(m_pShout, protocol) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting protocol!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
         return;
     }
 
