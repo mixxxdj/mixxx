@@ -5,81 +5,70 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Automatisk DJ</translation>
         </message>
     </context>
     <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spilt</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation>Artist</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tittel</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation>Album</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Genre</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation>År</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Type</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Plassering</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kommentar</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation>Padelezh</translation>
+            <translation>Varighet</translation>
         </message>
         <message>
             <source>Rating</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vurdering</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitrate</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spor nr</translation>
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Deiziad ouzhpennet</translation>
+            <translation>Lagt til</translation>
         </message>
         <message>
             <source>#</source>
@@ -87,28 +76,26 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
         <name>BaseTrackPlayer</name>
         <message>
             <source>Couldn't load track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fikk ikke lastet sporet</translation>
         </message>
     </context>
     <context>
         <name>BrowseFeature</name>
         <message>
             <source>Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hurtiglenker</translation>
         </message>
         <message>
             <source>Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Enheter</translation>
         </message>
         <message>
             <source>Removable Devices</source>
@@ -117,102 +104,91 @@
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx-bibliotek</translation>
         </message>
         <message>
             <source>Home</source>
-            <translation>Degemer</translation>
+            <translation>Hjem</translation>
         </message>
         <message>
             <source>Music</source>
-            <translation>Sonerezh</translation>
+            <translation>Musikk</translation>
         </message>
         <message>
             <source>Documents</source>
-            <translation>Teuliadoù</translation>
+            <translation>Dokumenter</translation>
         </message>
         <message>
             <source>Desktop</source>
-            <translation>Burev</translation>
+            <translation>Skrivebord</translation>
         </message>
         <message>
             <source>Browse</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bla gjennom</translation>
         </message>
     </context>
     <context>
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Anv restr</translation>
+            <translation>Filnavn</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation>Artist</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tittel</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation>Album</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spor nr</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation>År</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Genre</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kommentar</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Varighet</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Type</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitrate</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Plassering</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx-bibliotek</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -221,23 +197,19 @@
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Advarsel: Følgende filer vil bli slettet permanent:</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Er du sikker på at du vil slette disse filene fra datamaskinen?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Følgende fil er i bruk av Mixxx eller et annet program, og kunne ikke slettes:</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fikk ikke oppdatert filens metadata .</translation>
         </message>
     </context>
     <context>
@@ -249,23 +221,19 @@
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fjern</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gi nytt navn</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lås</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importér spilleliste</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -284,8 +252,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lås opp</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -314,13 +281,11 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spillelister (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>M3U-spilleliste (*.m3u);;M3U8-spilleliste (*.m3u8);;PLS-spilleliste (*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -342,13 +307,11 @@
         <name>DlgAboutDlg</name>
         <message>
             <source>About Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Om Mixxx</translation>
         </message>
         <message>
             <source>1.x.x</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -362,31 +325,26 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Offisielt nettsted&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
         <name>DlgAutoDJ</name>
         <message>
             <source>Disable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deaktivér automatisk DJ</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktivér automatisk DJ</translation>
         </message>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Administrér</translation>
         </message>
         <message>
             <source>Shuffle playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bland spilleliste</translation>
         </message>
         <message>
             <source>Add tracks to the queue below...</source>
@@ -413,26 +371,22 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Max</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Maks</translation>
         </message>
         <message>
             <source>Min</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Min</translation>
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analysér hele sangen</translation>
         </message>
     </context>
     <context>
         <name>DlgMidiLearning</name>
         <message>
             <source>Skip</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hopp over</translation>
         </message>
         <message>
             <source>Successfully mapped to: </source>
@@ -441,18 +395,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Next</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Neste</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hjelper for MIDI-oppsett</translation>
         </message>
         <message>
             <source>Welcome to the MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Velkommen til hjelperen for MIDI-oppsett</translation>
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
@@ -461,8 +412,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Begin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Start</translation>
         </message>
         <message>
             <source>Please tweak the control for:</source>
@@ -476,18 +426,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Previous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Forrige</translation>
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Trykk mellomrom for å fortsette eller hoppe over</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI-oppsettshjelpen er ferdig</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -496,13 +443,16 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Denne hjelperen kan kjøres når som helst.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Nå får du snurre noen skiver!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Finito!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Finito!</translation>
         </message>
     </context>
     <context>
@@ -517,28 +467,23 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefBPMDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Innstillinger for BPM-gjenkjenning</translation>
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM-gjenkjenning</translation>
         </message>
         <message>
             <source>Enable BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Slå på BPM-gjenkjenning</translation>
         </message>
         <message>
             <source>Detect Song BPM on Import</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Finn sangens BPM når den legges til</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skriv BPM i ID3-taggen</translation>
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
@@ -557,36 +502,30 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Legg til</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Redigér</translation>
         </message>
         <message>
             <source>Delete</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Slett</translation>
         </message>
         <message>
             <source>Default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Standard</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefBpm</name>
         <message>
             <source>Error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Feil</translation>
         </message>
         <message>
             <source>Cannot open file %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Får ikke åpnet filen %1</translation>
         </message>
     </context>
     <context>
@@ -598,73 +537,59 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>8% (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>8% (Technics SL1210)</translation>
         </message>
         <message>
             <source>10%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>10%</translation>
         </message>
         <message>
             <source>20%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>20%</translation>
         </message>
         <message>
             <source>30%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>30%</translation>
         </message>
         <message>
             <source>40%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>40%</translation>
         </message>
         <message>
             <source>50%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>50%</translation>
         </message>
         <message>
             <source>60%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>60%</translation>
         </message>
         <message>
             <source>70%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>70%</translation>
         </message>
         <message>
             <source>80%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80%</translation>
         </message>
         <message>
             <source>90%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>90%</translation>
         </message>
         <message>
             <source>Up increases speed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opp øker hastigheten</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ned øker hastigheten (Technics SL1210)</translation>
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Informasjon</translation>
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Før endringene trer i kraft, må Mixxx startes på nytt.</translation>
         </message>
     </context>
     <context>
@@ -676,8 +601,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tema</translation>
         </message>
         <message>
             <source>Scheme</source>
@@ -686,8 +610,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Waveform display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lydbølgevisning</translation>
         </message>
         <message>
             <source>Position display</source>
@@ -701,13 +624,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>På</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Av</translation>
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
@@ -721,8 +642,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track load behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Oppførsel ved lasting av spor</translation>
         </message>
         <message>
             <source>Cue behaviour</source>
@@ -741,13 +661,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Left click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Venstreklikk</translation>
         </message>
         <message>
             <source>Right click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Høyreklikk</translation>
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when left clicking</source>
@@ -756,8 +674,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%</translation>
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
@@ -819,28 +736,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixing</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Miksing</translation>
         </message>
         <message>
             <source>Scratching</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Scratching</translation>
         </message>
         <message>
             <source>Linear</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lineært</translation>
         </message>
         <message>
             <source>Logarithmic</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Logaritmisk</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tilbakestill</translation>
         </message>
     </context>
     <context>
@@ -867,18 +779,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>16 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>16 Hz</translation>
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>20.05 kHz</translation>
         </message>
         <message>
             <source>Low Shelf EQ</source>
@@ -892,16 +801,14 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tilbakestill</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefMidiBindings</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ingen</translation>
         </message>
         <message>
             <source>Apply MIDI device settings?</source>
@@ -985,8 +892,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Export</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eksportér</translation>
         </message>
         <message>
             <source>Output:</source>
@@ -995,53 +901,43 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Enabled</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Slått på</translation>
         </message>
         <message>
             <source>Controls</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontroller</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Legg til</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fjern</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hjelper for MIDI-oppsett</translation>
         </message>
         <message>
             <source>Clear All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fjern alt</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Feilsøking&lt;/a&gt;</translation>
         </message>
         <message>
             <source>MIDI Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI-inngang</translation>
         </message>
         <message>
             <source>Outputs</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Utganger</translation>
         </message>
         <message>
             <source>MIDI Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI-utgang</translation>
         </message>
     </context>
     <context>
@@ -1053,8 +949,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>No MIDI devices available</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ingen tilgjengelige MIDI-enheter</translation>
         </message>
     </context>
     <context>
@@ -1066,8 +961,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inngang</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1080,8 +974,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Feilsøkingshjelp&lt;/a&gt;</translation>
         </message>
         <message>
             <source>Turntable Preamp</source>
@@ -1100,18 +993,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyloppsett</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyltype på spiller 1</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyltype på spiller 2</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1120,8 +1010,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>sekunder</translation>
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
@@ -1150,8 +1039,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signalkvalitet</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
@@ -1165,8 +1053,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt;Denne versjonen av Mixxx støtter ikke vinylkontroll.&lt;/b&gt; &lt;br&gt; Besøk &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for å finne ut mer.</translation>
         </message>
     </context>
     <context>
@@ -1178,36 +1065,33 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Multiple iPods Detected</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Oppdaget flere IPod'er</translation>
         </message>
         <message>
             <source>Mixxx has detected another iPod. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx har oppdaget én iPod til 
+</translation>
         </message>
         <message>
             <source>Choose Yes to use the newly found iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Velg Ja for å bruke den nyoppdagede iPod'en @ </translation>
         </message>
         <message>
             <source> or to continue to search for other iPods. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation> eller for å fortsette å lete etter andre iPod'er. 
+</translation>
         </message>
         <message>
             <source>Choose No to use the existing iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Velg Nei for å bruke eksisterende iPod @ </translation>
         </message>
         <message>
             <source> and end detection. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation> og avslutte letingen. 
+</translation>
         </message>
         <message>
             <source>Choose iPod mount point</source>
@@ -1234,8 +1118,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</translation>
         </message>
         <message>
             <source>Loaded Plugins:</source>
@@ -1244,13 +1127,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ingen</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Diverse</translation>
         </message>
         <message>
             <source>Synchronize ID3 tags on track modifications</source>
@@ -1259,8 +1140,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Rescan library on start-up</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Søk gjennom biblioteket ved oppstart</translation>
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
@@ -1269,8 +1149,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>iPod</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod</translation>
         </message>
         <message>
             <source>iPod mountpoint</source>
@@ -1279,28 +1158,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bla gjennom</translation>
         </message>
         <message>
             <source>Detect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Oppdag</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bibliotek</translation>
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Musikkmappe:</translation>
         </message>
         <message>
             <source>Built-in</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Innebygget</translation>
         </message>
         <message>
             <source>Available Online...</source>
@@ -1323,8 +1197,7 @@ playback and outbound link statistics</source>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kbps</translation>
         </message>
     </context>
     <context>
@@ -1341,18 +1214,15 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kvalitet</translation>
         </message>
         <message>
             <source>High</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Høy</translation>
         </message>
         <message>
             <source>Low</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lav</translation>
         </message>
         <message>
             <source>Tags</source>
@@ -1361,8 +1231,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tittel</translation>
         </message>
         <message>
             <source>Author</source>
@@ -1371,18 +1240,15 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Album</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Diverse</translation>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opprett en CUE-fil</translation>
         </message>
         <message>
             <source>File Splitting</source>
@@ -1399,8 +1265,7 @@ playback and outbound link statistics</source>
         <name>DlgPrefReplayGainDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Innstillinger for BPM-gjenkjenning</translation>
         </message>
         <message>
             <source>ReplayGain Normalization</source>
@@ -1444,13 +1309,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>dB</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>dB</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tilbakestill</translation>
         </message>
     </context>
     <context>
@@ -1467,28 +1330,23 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Server connection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Servertilkobling</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Type</translation>
         </message>
         <message>
             <source>Icecast 2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Icecast 2</translation>
         </message>
         <message>
             <source>Shoutcast</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Shoutcast</translation>
         </message>
         <message>
             <source>Icecast 1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Icecast 1</translation>
         </message>
         <message>
             <source>Mount</source>
@@ -1497,48 +1355,39 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>/mixxx.ogg</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>/mixxx.ogg</translation>
         </message>
         <message>
             <source>Host</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vert</translation>
         </message>
         <message>
             <source>192.168.123.8</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192.168.123.8</translation>
         </message>
         <message>
             <source>Port</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Port</translation>
         </message>
         <message>
             <source>8000</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>8000</translation>
         </message>
         <message>
             <source>Login</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Logg inn</translation>
         </message>
         <message>
             <source>source</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>kilde</translation>
         </message>
         <message>
             <source>Password</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Passord</translation>
         </message>
         <message>
             <source>test1234</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>test1234</translation>
         </message>
         <message>
             <source>Stream settings</source>
@@ -1557,18 +1406,15 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Website</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nettsted</translation>
         </message>
         <message>
             <source>http://www.mixxx.org</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.mixxx.org</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beskrivelse</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1581,8 +1427,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Genre</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -1601,103 +1446,83 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitrate</translation>
         </message>
         <message>
             <source>320 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>320 kbps</translation>
         </message>
         <message>
             <source>256 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>256 kbps</translation>
         </message>
         <message>
             <source>224 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>224 kbps</translation>
         </message>
         <message>
             <source>192 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192 kbps</translation>
         </message>
         <message>
             <source>160 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>160 kbps</translation>
         </message>
         <message>
             <source>128 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>128 kbps</translation>
         </message>
         <message>
             <source>112 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>112 kbps</translation>
         </message>
         <message>
             <source>96 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>96 kbps</translation>
         </message>
         <message>
             <source>80 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80 kbps</translation>
         </message>
         <message>
             <source>64 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>64 kbps</translation>
         </message>
         <message>
             <source>48 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>48 kbps</translation>
         </message>
         <message>
             <source>Format</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Format</translation>
         </message>
         <message>
             <source>Ogg Vorbis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ogg Vorbis</translation>
         </message>
         <message>
             <source>MP3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3</translation>
         </message>
         <message>
             <source>Channels</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanaler</translation>
         </message>
         <message>
             <source>Stereo</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stereo</translation>
         </message>
         <message>
             <source>Custom metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Egendefinerte metadata</translation>
         </message>
         <message>
             <source>Enable custom metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tillat egendefinerte metadata</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artist</translation>
         </message>
         <message>
             <source>%mainartist</source>
@@ -1706,8 +1531,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tittel</translation>
         </message>
         <message>
             <source>%maintitle</source>
@@ -1724,13 +1548,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefSound</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ingen</translation>
         </message>
         <message>
             <source>%1 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 Hz</translation>
         </message>
         <message>
             <source>a device</source>
@@ -1739,8 +1561,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>An unknown error occurred</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>En ukjent feil oppsto</translation>
         </message>
         <message>
             <source>sound device &quot;%1&quot;</source>
@@ -1755,18 +1576,16 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Error opening %1
 %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Feil ved åpning av %1
+%2</translation>
         </message>
         <message>
             <source>%1 ms</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 ms</translation>
         </message>
         <message>
             <source>Configuration error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Feil i oppsettet</translation>
         </message>
     </context>
     <context>
@@ -1778,8 +1597,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Sample Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Samplingsfrekvens</translation>
         </message>
         <message>
             <source>Latency Tips</source>
@@ -1811,36 +1629,30 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sett til standarverdier</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bruk</translation>
         </message>
         <message>
             <source>Latency</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Forsinkelse</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefSoundItem</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ingen</translation>
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanal %1</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanalene %1 - %2</translation>
         </message>
         <message>
             <source>Form</source>
@@ -1896,18 +1708,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyloppsett</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyltype på spiller 1</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyltype på spiller 2</translation>
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
@@ -1916,8 +1725,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bruk</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1926,8 +1734,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>sekunder</translation>
         </message>
         <message>
             <source>Control Mode</source>
@@ -1951,13 +1758,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signalkvalitet</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
@@ -1979,8 +1784,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bibliotek</translation>
         </message>
         <message>
             <source>Interface</source>
@@ -2004,13 +1808,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM-gjenkjenning</translation>
         </message>
         <message>
             <source>Normalization</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Normalisering</translation>
         </message>
         <message>
             <source>Vinyl Control</source>
@@ -2040,28 +1842,23 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrepare</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Administrér</translation>
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ny</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alle</translation>
         </message>
         <message>
             <source>Progress</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fremdrift</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Velg alle</translation>
         </message>
         <message>
             <source>Analyze</source>
@@ -2075,69 +1872,57 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyzing %1%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyserer %1%</translation>
         </message>
     </context>
     <context>
         <name>DlgRecording</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Administrér</translation>
         </message>
         <message>
             <source>Status:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Status:</translation>
         </message>
         <message>
             <source>Start Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Start opptak</translation>
         </message>
         <message>
             <source>Start recording here ...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Start opptak her ...</translation>
         </message>
         <message>
             <source>Stop Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stopp opptak</translation>
         </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sporredigeringsverktøy</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sang:</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tittel:</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artist:</translation>
         </message>
         <message>
             <source>Album:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Album:</translation>
         </message>
         <message>
             <source>Date:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Dato:</translation>
         </message>
         <message>
             <source>Track #:</source>
@@ -2146,38 +1931,31 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Genre:</translation>
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Filnavn:</translation>
         </message>
         <message>
             <source>Duration:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Varighet:</translation>
         </message>
         <message>
             <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>3:00</translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Filtype:</translation>
         </message>
         <message>
             <source>77</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kommentarer:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -2196,13 +1974,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>x2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>x2</translation>
         </message>
         <message>
             <source>/2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>/2</translation>
         </message>
         <message>
             <source>Tap to Beat</source>
@@ -2236,8 +2012,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Label</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Etikett</translation>
         </message>
         <message>
             <source>Activate Cue</source>
@@ -2256,28 +2031,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;&lt; &amp;Prev</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;&lt; &amp;Forrige</translation>
         </message>
         <message>
             <source>&amp;Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Bruk</translation>
         </message>
         <message>
             <source>&amp;Cancel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Avbryt</translation>
         </message>
         <message>
             <source>Alt+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alt+O</translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Neste &gt;&gt;</translation>
         </message>
     </context>
     <context>
@@ -2312,8 +2082,7 @@ p, li { white-space: pre-wrap; }
         <name>EngineRecord</name>
         <message>
             <source>Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opptak</translation>
         </message>
         <message>
             <source>&lt;html&gt;Could not create audio file for recording!&lt;p&gt;&lt;br&gt;Maybe you do not have enough free disk space or file permissions.&lt;/html&gt;</source>
@@ -2378,66 +2147,54 @@ p, li { white-space: pre-wrap; }
         <name>ErrorDialogHandler</name>
         <message>
             <source>Fatal error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fatal feil</translation>
         </message>
         <message>
             <source>Critical error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kritisk feil</translation>
         </message>
         <message>
             <source>Warning</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Advarsel</translation>
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Informasjon</translation>
         </message>
         <message>
             <source>Question</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spørsmål</translation>
         </message>
     </context>
     <context>
         <name>ITunesFeature</name>
         <message>
             <source>iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iTunes</translation>
         </message>
         <message>
             <source>Select your iTunes library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Velg ditt ITunes-bibliotek</translation>
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(laster) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bruk standardbiblioteket</translation>
         </message>
         <message>
             <source>Choose Library...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Velg bibliotek ...</translation>
         </message>
         <message>
             <source>Error Loading iTunes Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Feil ved lasting av iTunes-bibliotek</translation>
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Det oppstod en feil under lasting av iTunes-biblioteket. Noen av sporene eller spillelistene har muligens ikke blitt lastet.</translation>
         </message>
     </context>
     <context>
@@ -2457,13 +2214,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx bruker litt tid på å søke gjennom musikksamlingen din. Det er bare å vente...</translation>
         </message>
         <message>
             <source>Cancel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Avbryt</translation>
         </message>
     </context>
     <context>
@@ -2475,28 +2230,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi-note</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi-kanal</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrollgruppe</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrollverdi</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beskrivelse</translation>
         </message>
     </context>
     <context>
@@ -2533,33 +2283,27 @@ p, li { white-space: pre-wrap; }
         <name>MidiOutputMappingTableModel</name>
         <message>
             <source>Midi Status</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi-status</translation>
         </message>
         <message>
             <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi-note</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi-kanal</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrollgruppe</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrollverdi</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beskrivelse</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2604,21 +2348,18 @@ p, li { white-space: pre-wrap; }
         <name>MidiStatusDelegate</name>
         <message>
             <source>Unknown</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ukjent</translation>
         </message>
     </context>
     <context>
         <name>MixxxApp</name>
         <message>
             <source>Mixxx </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx </translation>
         </message>
         <message>
             <source>Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx</translation>
         </message>
         <message>
             <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
@@ -2627,13 +2368,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Yes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ja</translation>
         </message>
         <message>
             <source>No</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nei</translation>
         </message>
         <message>
             <source>Privacy Policy</source>
@@ -2674,8 +2413,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Finn &lt;b&gt;Hjelp&lt;/b&gt; i Mixxx-wiki'en.</translation>
         </message>
         <message>
             <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
@@ -2699,28 +2437,23 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Retry</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Prøv igjen</translation>
         </message>
         <message>
             <source>Reconfigure</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sett opp på nytt</translation>
         </message>
         <message>
             <source>Help</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hjelp</translation>
         </message>
         <message>
             <source>Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Avslutt</translation>
         </message>
         <message>
             <source>Continue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fortsett</translation>
         </message>
         <message>
             <source>&amp;Load Song (Player 1)...</source>
@@ -2729,8 +2462,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+O</translation>
         </message>
         <message>
             <source>&amp;Load Song (Player 2)...</source>
@@ -2739,18 +2471,15 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Shift+O</translation>
         </message>
         <message>
             <source>&amp;Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Avslutt</translation>
         </message>
         <message>
             <source>Ctrl+Q</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
@@ -2764,8 +2493,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+N</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+N</translation>
         </message>
         <message>
             <source>Add new &amp;crate</source>
@@ -2774,8 +2502,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+C</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+C</translation>
         </message>
         <message>
             <source>&amp;Import playlist</source>
@@ -2784,8 +2511,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+I</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+I</translation>
         </message>
         <message>
             <source>&amp;Audio Beat Marks</source>
@@ -2794,33 +2520,27 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>&amp;Full Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Fullskjerm</translation>
         </message>
         <message>
             <source>Ctrl+F</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>F11</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>F11</translation>
         </message>
         <message>
             <source>&amp;Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Innstillinger</translation>
         </message>
         <message>
             <source>Ctrl+P</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+P</translation>
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Om</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
@@ -2839,8 +2559,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Oversett dette programmet</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2849,8 +2568,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+Y</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Y</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 2</source>
@@ -2859,8 +2577,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+U</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+U</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -2869,8 +2586,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+L</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+L</translation>
         </message>
         <message>
             <source>&amp;Record Mix</source>
@@ -2879,8 +2595,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+R</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+R</translation>
         </message>
         <message>
             <source>Show Studio</source>
@@ -2911,8 +2626,7 @@ Opens a song in player 2</source>
         </message>
         <message>
             <source>Quits the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Avslutter programmet</translation>
         </message>
         <message>
             <source>Exit
@@ -2933,8 +2647,7 @@ Rescans the song library</source>
         </message>
         <message>
             <source>Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lag en ny spilleliste</translation>
         </message>
         <message>
             <source>New playlist
@@ -3001,18 +2714,15 @@ Mark beats by audio clicks</source>
         </message>
         <message>
             <source>Full Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fullskjerm</translation>
         </message>
         <message>
             <source>Display Mixxx using the full screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vis Mixxx på hele skjermen</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Instillinger</translation>
         </message>
         <message>
             <source>Preferences
@@ -3022,14 +2732,13 @@ Playback and MIDI preferences</source>
         </message>
         <message>
             <source>Support...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Brukerstøtte...</translation>
         </message>
         <message>
             <source>Support
 Get help with Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Brukerstøtte
+Få hjelp til å bruke Mixxx</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
@@ -3055,25 +2764,23 @@ Send feedback to the Mixxx team.</source>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hjelp til med å oversette dette programmet til ditt språk.</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Brukerstøtte
+Hjelp til med å oversette dette programmet til ditt språk.</translation>
         </message>
         <message>
             <source>About the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Om programmet</translation>
         </message>
         <message>
             <source>About
 About the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Om
+Om programmet</translation>
         </message>
         <message>
             <source>Shows the macro studio window</source>
@@ -3088,48 +2795,39 @@ Makes the macro studio visible</source>
         </message>
         <message>
             <source>&amp;File</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Fil</translation>
         </message>
         <message>
             <source>&amp;Options</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Alternativer</translation>
         </message>
         <message>
             <source>&amp;Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Bibliotek</translation>
         </message>
         <message>
             <source>&amp;View</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Vis</translation>
         </message>
         <message>
             <source>&amp;Help</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Hjelp</translation>
         </message>
         <message>
             <source>&amp;Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Makro</translation>
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Vinylkontroll</translation>
         </message>
         <message>
             <source>Quit...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Avslutt...</translation>
         </message>
         <message>
             <source>Do your really want to quit?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ønsker du virkelig å avslutte?</translation>
         </message>
         <message>
             <source>Player 1 is currently playing a song.
@@ -3166,23 +2864,19 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>With contributions from:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Med bidrag fra:</translation>
         </message>
         <message>
             <source>And special thanks to:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Og spesielt takk til:</translation>
         </message>
         <message>
             <source>Past Developers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tidligere utviklere</translation>
         </message>
         <message>
             <source>Past Contributors</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tidligere bidragsytere</translation>
         </message>
         <message>
             <source>Confirm Exit</source>
@@ -3199,8 +2893,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>MixxxLibraryFeature</name>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bibliotek</translation>
         </message>
     </context>
     <context>
@@ -3245,8 +2938,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>PlaylistFeature</name>
         <message>
             <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ny spilleliste</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue</source>
@@ -3255,43 +2947,35 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fjern</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gi nytt navn</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lås</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importér spilleliste</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eksportér spilleliste</translation>
         </message>
         <message>
             <source>Playlists</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spillelister</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lås opp</translation>
         </message>
         <message>
             <source>Playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Navn på spilleliste:</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
@@ -3310,13 +2994,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gi spillelisten nytt navn</translation>
         </message>
         <message>
             <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nytt navn til spillelisten:</translation>
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
@@ -3325,34 +3007,29 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spillelister (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>M3U-spilleliste (*.m3u);;M3U8-spilleliste (*.m3u8);;PLS-spilleliste (*.pls)</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Det finnes allerede en spilleliste med det navnet</translation>
         </message>
     </context>
     <context>
         <name>PrepareFeature</name>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analysér</translation>
         </message>
     </context>
     <context>
         <name>QObject</name>
         <message>
             <source>Invalid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ugyldig</translation>
         </message>
         <message>
             <source>Master</source>
@@ -3361,8 +3038,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Headphones</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hodetelefoner</translation>
         </message>
         <message>
             <source>Deck</source>
@@ -3376,8 +3052,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofon</translation>
         </message>
         <message>
             <source>Passthrough</source>
@@ -3453,23 +3128,19 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>File</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fil</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Redigér</translation>
         </message>
         <message>
             <source>Run</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kjør</translation>
         </message>
         <message>
             <source>Close</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lukk</translation>
         </message>
         <message>
             <source>Import...</source>
@@ -3483,26 +3154,22 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Delete Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Slett makro</translation>
         </message>
         <message>
             <source>New Macro...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ny makro...</translation>
         </message>
         <message>
             <source>Run Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kjør makro</translation>
         </message>
     </context>
     <context>
         <name>TrackCollection</name>
         <message>
             <source>Cannot open database</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Får ikke åpnet databasen</translation>
         </message>
         <message>
             <source>Unable to establish a database connection.
@@ -3513,8 +3180,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Cannot upgrade database schema</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Får ikke oppgradert databaseskjemaene</translation>
         </message>
         <message>
             <source>Unable to upgrade your database schema to version %1.
@@ -3529,8 +3195,7 @@ Click OK to exit.</source>
         <name>TraktorFeature</name>
         <message>
             <source>Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Traktor</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
@@ -3539,8 +3204,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Feil ved lasting av Traktor-biblioteket</translation>
         </message>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
@@ -3562,13 +3226,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>På</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Av</translation>
         </message>
         <message>
             <source>Don't load tracks into a playing deck</source>
@@ -3857,13 +3519,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bytt til neste visning (bibliotek, spilleliste...)</translation>
         </message>
         <message>
             <source>Switch to the previous view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bytt til forrige visning (bibliotek, spilleliste...)</translation>
         </message>
         <message>
             <source>Scroll to next track in library/playlist</source>
@@ -3902,29 +3562,25 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofon av/på</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofonvolum</translation>
         </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>
         <message>
             <source>Search...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Søk…</translation>
         </message>
     </context>
     <context>
         <name>WTrackTableView</name>
         <message>
             <source>Add to Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Legg til i spilleliste</translation>
         </message>
         <message>
             <source>Add to Crate</source>
@@ -3938,13 +3594,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fjern</translation>
         </message>
         <message>
             <source>Properties...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Egenskaper...</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>

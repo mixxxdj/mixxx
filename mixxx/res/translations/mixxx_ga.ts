@@ -5,67 +5,58 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>DJ Uathoibríoch</translation>
         </message>
     </context>
     <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Imir</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation>Ceolteoir</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Teideal</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation>Albam</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seánra</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation>Bliain</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Saghas</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Áit</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Trácht</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation>Padelezh</translation>
+            <translation>Fad ama</translation>
         </message>
         <message>
             <source>Rating</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Meastachán</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ráta giotán</translation>
         </message>
         <message>
             <source>BPM</source>
@@ -74,12 +65,11 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Amhrán #</translation>
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Deiziad ouzhpennet</translation>
+            <translation>Dáta Curtha Leis</translation>
         </message>
         <message>
             <source>#</source>
@@ -87,7 +77,7 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation>Eochair</translation>
         </message>
     </context>
     <context>
@@ -102,55 +92,50 @@
         <name>BrowseFeature</name>
         <message>
             <source>Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nasc Luas</translation>
         </message>
         <message>
             <source>Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gléasanna</translation>
         </message>
         <message>
             <source>Removable Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gléasanna Inbhainte</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Leabharlann Mixxx</translation>
         </message>
         <message>
             <source>Home</source>
-            <translation>Degemer</translation>
+            <translation>Baile</translation>
         </message>
         <message>
             <source>Music</source>
-            <translation>Sonerezh</translation>
+            <translation>Ceol</translation>
         </message>
         <message>
             <source>Documents</source>
-            <translation>Teuliadoù</translation>
+            <translation>Cáipéisí</translation>
         </message>
         <message>
             <source>Desktop</source>
-            <translation>Burev</translation>
+            <translation>Deasc</translation>
         </message>
         <message>
             <source>Browse</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Brabhsáil</translation>
         </message>
     </context>
     <context>
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Anv restr</translation>
+            <translation>Ainm Comhaid</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation>Ceolteoir</translation>
         </message>
         <message>
             <source>Title</source>
@@ -159,7 +144,8 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Track #</source>
@@ -168,7 +154,8 @@
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Genre</source>
@@ -192,7 +179,8 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Type</source>
