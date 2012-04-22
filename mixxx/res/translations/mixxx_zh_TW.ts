@@ -18,7 +18,8 @@
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Title</source>
@@ -27,7 +28,7 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation>專輯</translation>
         </message>
         <message>
             <source>Genre</source>
@@ -36,12 +37,12 @@
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>類型</translation>
         </message>
         <message>
             <source>Location</source>
@@ -55,7 +56,8 @@
         </message>
         <message>
             <source>Duration</source>
-            <translation>Padelezh</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Rating</source>
@@ -79,15 +81,18 @@
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Deiziad ouzhpennet</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>#</source>
-            <translation>#</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -122,19 +127,23 @@
         </message>
         <message>
             <source>Home</source>
-            <translation>Degemer</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Music</source>
-            <translation>Sonerezh</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Documents</source>
-            <translation>Teuliadoù</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Desktop</source>
-            <translation>Burev</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Browse</source>
@@ -146,11 +155,13 @@
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Anv restr</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Title</source>
@@ -159,7 +170,8 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Track #</source>
@@ -168,7 +180,8 @@
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Genre</source>
@@ -192,7 +205,8 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Type</source>

@@ -5,29 +5,26 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
     </context>
     <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Puštano</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation>Izvođač</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Naslov</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation>Album</translation>
         </message>
         <message>
             <source>Genre</source>
@@ -36,50 +33,43 @@
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation>Godina</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vrsta</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lokacija</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Komentar</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation>Padelezh</translation>
+            <translation>Trajanje</translation>
         </message>
         <message>
             <source>Rating</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rang</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Učestanost bita</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Numera #</translation>
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Deiziad ouzhpennet</translation>
+            <translation>Pridodata</translation>
         </message>
         <message>
             <source>#</source>
@@ -87,33 +77,29 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation>Ključevi</translation>
         </message>
     </context>
     <context>
         <name>BaseTrackPlayer</name>
         <message>
             <source>Couldn't load track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nemoguče pustiti pjesmu</translation>
         </message>
     </context>
     <context>
         <name>BrowseFeature</name>
         <message>
             <source>Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Brzi linkovi</translation>
         </message>
         <message>
             <source>Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uređaji</translation>
         </message>
         <message>
             <source>Removable Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uklonjivi uređaji</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
@@ -122,35 +108,35 @@
         </message>
         <message>
             <source>Home</source>
-            <translation>Degemer</translation>
+            <translation>Početak</translation>
         </message>
         <message>
             <source>Music</source>
-            <translation>Sonerezh</translation>
+            <translation>Muzika</translation>
         </message>
         <message>
             <source>Documents</source>
-            <translation>Teuliadoù</translation>
+            <translation>Dokumenti</translation>
         </message>
         <message>
             <source>Desktop</source>
-            <translation>Burev</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Browse</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pretraži</translation>
         </message>
     </context>
     <context>
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Anv restr</translation>
+            <translation>Ime datoteke</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Arzour</translation>
+            <translation>Izvođač</translation>
         </message>
         <message>
             <source>Title</source>
@@ -159,7 +145,8 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Pladenn</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Track #</source>
@@ -168,7 +155,8 @@
         </message>
         <message>
             <source>Year</source>
-            <translation>Bloaz</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Genre</source>
@@ -182,22 +170,19 @@
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Trajanje</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation>Alc'hwez</translation>
+            <translation>Ključevi</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vrsta</translation>
         </message>
         <message>
             <source>Bitrate</source>
@@ -2798,11 +2783,6 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
-            <source>Ctrl+F</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>F11</source>
             <translation type="unfinished">
             </translation>
@@ -3191,6 +3171,19 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>A deck is currently playing. Exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>WSearchLineEdit</name>
+        <message>
+            <source>Ctrl+F</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Search...</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3907,14 +3900,6 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-    </context>
-    <context>
-        <name>WSearchLineEdit</name>
-        <message>
-            <source>Search...</source>
             <translation type="unfinished">
             </translation>
         </message>
