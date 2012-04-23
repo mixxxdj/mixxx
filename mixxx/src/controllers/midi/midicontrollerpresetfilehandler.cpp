@@ -7,7 +7,6 @@
 */
 
 #include "midicontrollerpresetfilehandler.h"
-#include "mixxxcontrol.h"
 
 #define DEFAULT_OUTPUT_MAX  1.0f
 #define DEFAULT_OUTPUT_MIN  0.0f    // Anything above 0 is "on"

@@ -16,7 +16,7 @@
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllerpresetfilehandler.h"
-#include "mixxxcontrol.h"
+#include "controllers/mixxxcontrol.h"
 
 class Controller : public QObject, ControllerPresetVisitor {
   Q_OBJECT

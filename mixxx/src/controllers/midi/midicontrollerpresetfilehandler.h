@@ -10,6 +10,7 @@
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/midi/midicontrollerpreset.h"
+#include "controllers/mixxxcontrol.h"
 
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:

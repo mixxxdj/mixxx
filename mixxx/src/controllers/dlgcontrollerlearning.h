@@ -8,13 +8,12 @@
 #ifndef DLGCONTROLLERLEARNING_H
 #define DLGCONTROLLERLEARNING_H
 
-// #include <QtCore>
 #include <QtGui>
 
 #include "controllers/ui_dlgcontrollerlearning.h"
 #include "controllers/controller.h"
+#include "controllers/mixxxcontrol.h"
 #include "configobject.h"
-#include "mixxxcontrol.h"
 
 class ControllerPreset;
 
@@ -22,15 +21,19 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
     Q_OBJECT
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
-    ~DlgControllerLearning();
+    virtual ~DlgControllerLearning();
   signals:
     void cancelLearning();
     void learn(MixxxControl control);
   public slots:
-    void begin();   /** Begin the learning process */
-    void next();    /** Ask to map the next control */
-    void prev();    /** Ask to map the previous control */
-    void controlMapped(QString); /** Gets called when a control has just been mapped successfully */
+    // Begin the learning process
+    void begin();
+    // Ask to map the next control
+    void next();
+    // Ask to map the previous control
+    void prev();
+    // Gets called when a control has just been mapped successfully
+    void controlMapped(QString);
   private:
     void addControl(QString group, QString control, QString helpText);
     void addDeckControl(QString control, QString helpText);
