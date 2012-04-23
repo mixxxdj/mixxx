@@ -21,14 +21,16 @@
 
 class MidiControllerPreset : public ControllerPreset {
   public:
-    MidiControllerPreset() {};
-    virtual ~MidiControllerPreset() {};
+    MidiControllerPreset() {}
+    virtual ~MidiControllerPreset() {}
 
     virtual void accept(ControllerPresetVisitor* visitor) const {
-        visitor->visit(this);
+        if (visitor) {
+            visitor->visit(this);
+        }
     }
 
-    bool isMappable() const { return true; };
+    bool isMappable() const { return true; }
 
     // Additional data elements specific to this controller type
     QHash<uint16_t, QPair<MixxxControl, MidiOptions> > mappings;

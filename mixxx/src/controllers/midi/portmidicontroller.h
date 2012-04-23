@@ -31,13 +31,15 @@ class PortMidiController : public MidiController {
                         int inputDeviceIndex,
                         int outputDeviceIndex);
         virtual ~PortMidiController();
-        int open();
-        int close();
         void send(unsigned int word);
         void send(QByteArray data);
-    private:
-        void timerEvent(QTimerEvent *event, bool poll);
 
+    private slots:
+        virtual int open();
+        virtual int close();
+        virtual void poll();
+
+    private:
         const PmDeviceInfo* m_pInputDeviceInfo;
         const PmDeviceInfo* m_pOutputDeviceInfo;
         int m_iInputDeviceIndex;
@@ -45,7 +47,6 @@ class PortMidiController : public MidiController {
         PortMidiStream *m_pInputStream;
         PortMidiStream *m_pOutputStream;
         PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
-        static QList<QString> m_deviceList;
 
         // Storage for SysEx messages
         unsigned char m_cReceiveMsg[1024];

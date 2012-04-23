@@ -39,11 +39,6 @@ class ControllerEngine : public QObject {
         m_bPopups = bPopups;
     }
 
-    // Pass in a timer event that scripts might be waiting on. Needs to be
-    // public otherwise we'd have to friend Controller and all derived classes
-    // explicitly.
-    void timerEvent(QTimerEvent *event);
-
     // Look up registered script functions
     QStringList getScriptFunctions();
 
@@ -64,6 +59,9 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
+
+    // Handler for timers that scripts set.
+    virtual void timerEvent(QTimerEvent *event);
 
   public slots:
     void slotValueChanged(double value);

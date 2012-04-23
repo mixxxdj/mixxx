@@ -17,21 +17,23 @@ class ControllerPresetVisitor;
 
 class ControllerPreset {
   public:
-    ControllerPreset() {};
-    virtual ~ControllerPreset() {};
+    ControllerPreset() {}
+    virtual ~ControllerPreset() {}
 
     /** addScriptFile(QString,QString)
-        * Adds an entry to the list of script file names & associated list of function prefixes
-        * @param filename Name of the XML file to add
-        * @param functionprefix Function prefix to add
-        */
+     * Adds an entry to the list of script file names & associated list of function prefixes
+     * @param filename Name of the XML file to add
+     * @param functionprefix Function prefix to add
+     */
     void addScriptFile(QString filename, QString functionprefix) {
         scriptFileNames.append(filename);
         scriptFunctionPrefixes.append(functionprefix);
-    };
+    }
 
     virtual void accept(ControllerPresetVisitor* visitor) const = 0;
-    virtual bool isMappable() const { return false; };
+    virtual bool isMappable() const {
+        return false;
+    }
 
     // Data elements
     QList<QString> scriptFileNames;

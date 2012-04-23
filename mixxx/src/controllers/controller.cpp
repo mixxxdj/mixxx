@@ -150,10 +150,3 @@ void Controller::receive(const QByteArray data) {
     }
     return;
 }
-
-void Controller::timerEvent(QTimerEvent *event, bool poll) {
-    if (poll) return; // Sub-classes use the poll flag
-
-    // Pass it on to the engine
-    m_pEngine->timerEvent(event);
-}

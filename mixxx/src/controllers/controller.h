@@ -21,8 +21,7 @@
 class Controller : public QObject, ControllerPresetVisitor {
   Q_OBJECT
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
-    friend class ControllerProcessor;   // so our timerEvent() can remain protected
-
+    friend class ControllerProcessor;
     public:
         Controller();
         virtual ~Controller();  // Subclass should call close() at minimum.
@@ -55,8 +54,12 @@ class Controller : public QObject, ControllerPresetVisitor {
         bool debugging() const { return m_bDebug; };
         bool isMappable() const { return getPreset()->isMappable(); }
 
-        void setPolling(bool needPolling) { m_bPolling = needPolling; };
-        bool needPolling() { return m_bPolling; };
+        void setPolling(bool polling) {
+            m_bPolling = polling;
+        }
+        bool isPolling() {
+            return m_bPolling;
+        }
 
     signals:
         void learnedMessage(QString message);
@@ -68,10 +71,6 @@ class Controller : public QObject, ControllerPresetVisitor {
         /** To be called in sub-class' close() functions after stopping any
             input polling/processing but before closing the device. */
         void stopEngine();
-        /** By default, this passes the event on to the engine.
-            APIs that are not thread-safe or are only non-blocking should poll
-            when 'poll' is true and pass the event on to the engine when not. */
-        virtual void timerEvent(QTimerEvent *event, bool poll);
         Q_INVOKABLE void send(QList<int> data, unsigned int length);
 
         /** Verbose and unique device name suitable for display. */
@@ -113,6 +112,8 @@ class Controller : public QObject, ControllerPresetVisitor {
     private slots:
         virtual int open() = 0;
         virtual int close() = 0;
+        // Requests that the device poll if it is a polling device.
+        virtual void poll() { }
 
     private:
         /** This must be reimplmented by sub-classes desiring to send raw bytes

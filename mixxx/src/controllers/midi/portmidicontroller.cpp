@@ -144,72 +144,68 @@ int PortMidiController::close()
     return 0;
 }
 
-void PortMidiController::timerEvent(QTimerEvent *event, bool poll) {
+void PortMidiController::poll() {
+    // Poll the controller for new data
+    int numEvents = 0;
 
-    if (!poll) m_pEngine->timerEvent(event);
-    else {
-        // Poll the controller for new data
-        int numEvents = 0;
+    if (m_pInputStream) {
+        PmError gotEvents = Pm_Poll(m_pInputStream);
+        if (gotEvents == FALSE) return;
+        if (gotEvents < 0) {
+            qWarning() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
+            return;
+        }
 
-        if (m_pInputStream) {
-            PmError gotEvents = Pm_Poll(m_pInputStream);
-            if (gotEvents == FALSE) return;
-            if (gotEvents < 0) {
-                qWarning() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
-                return;
+        numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+
+        if (numEvents < 0) {
+            qDebug() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
+
+            // Don't process anything
+            numEvents = 0;
+        }
+
+        for (int i = 0; i < numEvents; i++) {
+            unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
+
+            if ((status & 0xF8) == 0xF8) {
+                // Handle real-time MIDI messages at any time
+                receive(status, 0, 0);
             }
 
-            numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+            if (!m_bInSysex) {
+                if (status == 0xF0) {
+                    m_bInSysex=true;
+                    status = 0;
+                }
+                else {
+                    //                         unsigned char channel = status & 0x0F;
+                    unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
+                    unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
 
-            if (numEvents < 0) {
-                qDebug() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
-
-                // Don't process anything
-                numEvents = 0;
+                    receive(status, note, velocity);
+                }
             }
 
-            for (int i = 0; i < numEvents; i++) {
-                unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
-
-                if ((status & 0xF8) == 0xF8) {
-                    // Handle real-time MIDI messages at any time
-                    receive(status, 0, 0);
-                }
-
-                if (!m_bInSysex) {
-                    if (status == 0xF0) {
-                        m_bInSysex=true;
-                        status = 0;
-                    }
-                    else {
-//                         unsigned char channel = status & 0x0F;
-                        unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
-                        unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-
-                        receive(status, note, velocity);
-                    }
-                }
-
-                if (m_bInSysex) {
-                    int data = 0;
-                    // Collect bytes from PmMessage
-                    for (int shift = 0; shift < 32 && (data != MIDI_EOX); shift += 8) {
-                        m_cReceiveMsg[m_cReceiveMsg_index++] = data =
+            if (m_bInSysex) {
+                int data = 0;
+                // Collect bytes from PmMessage
+                for (int shift = 0; shift < 32 && (data != MIDI_EOX); shift += 8) {
+                    m_cReceiveMsg[m_cReceiveMsg_index++] = data =
                             (m_midiBuffer[i].message >> shift) & 0xFF;
-                    }
-                    // End System Exclusive message if the EOX byte or
-                    //  a non-realtime status byte was received
-                    if (data == MIDI_EOX || status > 0x7F) m_bEndSysex=true;
                 }
+                // End System Exclusive message if the EOX byte or
+                //  a non-realtime status byte was received
+                if (data == MIDI_EOX || status > 0x7F) m_bEndSysex=true;
             }
+        }
 
-            if (m_bInSysex && m_bEndSysex) {
-                const char* buffer=reinterpret_cast<const char*>(m_cReceiveMsg);
-                receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index));
-                m_bInSysex=false;
-                m_bEndSysex=false;
-                m_cReceiveMsg_index = 0;
-            }
+        if (m_bInSysex && m_bEndSysex) {
+            const char* buffer=reinterpret_cast<const char*>(m_cReceiveMsg);
+            receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index));
+            m_bInSysex=false;
+            m_bEndSysex=false;
+            m_cReceiveMsg_index = 0;
         }
     }
 }

@@ -40,9 +40,10 @@ void ControllerProcessor::startPolling() {
     if (m_pollingTimerId == 0) {
         qDebug() << "Starting controller polling";
         m_pollingTimerId = startTimer(1);
-        if (m_pollingTimerId == 0) qWarning() << "Could not start polling timer!";
+        if (m_pollingTimerId == 0) {
+            qWarning() << "Could not start polling timer!";
+        }
     }
-    //else qWarning() << "Polling timer already running!";
 }
 
 void ControllerProcessor::stopPolling() {
@@ -57,16 +58,12 @@ void ControllerProcessor::stopPolling() {
 }
 
 void ControllerProcessor::timerEvent(QTimerEvent *event) {
-    bool poll = false;
     // See if this is the polling timer
     if (event->timerId() == m_pollingTimerId) {
-        poll = true;
-    }
-
-    // Pass it on to the active controllers in any case
-    foreach (Controller* pDevice, m_pManager->getControllers()) {
-        if (pDevice->isOpen()) {
-            pDevice->timerEvent(event, poll);
+        foreach (Controller* pDevice, m_pManager->getControllers()) {
+            if (pDevice->isOpen() && pDevice->isPolling()) {
+                pDevice->poll();
+            }
         }
     }
 }
@@ -212,7 +209,7 @@ int ControllerManager::slotSetUpDevices() {
         pController->applyPreset();
 
         // Only enable polling when open controllers actually need it
-        if (pController->needPolling()) {
+        if (pController->isPolling()) {
             polling = true;
         }
     }
@@ -231,7 +228,7 @@ void ControllerManager::enablePolling(bool enable) {
         // before disabling it
         foreach (Controller* pController, m_controllers) {
             // (re-using enable here)
-            if (pController->isOpen() && pController->needPolling()) {
+            if (pController->isOpen() && pController->isPolling()) {
                 enable = true;
             }
         }

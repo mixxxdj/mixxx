@@ -152,7 +152,7 @@ void DlgPrefController::slotDeviceState(int state) {
 void DlgPrefController::enableDevice()
 {
     emit(closeController(false));
-    emit(openController(m_pController->needPolling()));
+    emit(openController(m_pController->isPolling()));
     m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 1);
 
     //TODO: Should probably check if open() actually succeeded.
