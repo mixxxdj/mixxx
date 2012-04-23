@@ -73,6 +73,11 @@ class TrackModel {
         Q_UNUSED(location);
         return false;
     }
+	virtual int addTracks(const QModelIndex& index, QList <QString> locations) {
+		Q_UNUSED(index);
+		Q_UNUSED(locations);
+		return -1;
+	}
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex) {
         Q_UNUSED(sourceIndex);

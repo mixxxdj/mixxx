@@ -736,20 +736,20 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 //Add all the dropped URLs/tracks to the track model (playlist/crate)
 				if(urls.size() > 1) {//if many items are being dropped
 					//prepare the list of QFileInfos
-					QList <QFileInfo> fileInfoList;
+					QList <QString> fileLocationList;
                 	foreach(url, urls) {
-						QFileInfo file(url.toLocalFile());
-						fileInfoList.append(file);
+						QString file(url.toLocalFile());
+						fileLocationList.append(file);
 					}
 					//calling the addTracks returns number of failed additions
-					int failedAdds = trackModel->addTracks(destIndex, fileInfoList);
+					int failedAdds = trackModel->addTracks(destIndex, fileLocationList);
 					//Decrement # of rows to select if some were skipped
 					numNewRows = numNewRows - failedAdds;
 				}
 				else {
 					QFileInfo file(url.toLocalFile());
 					if(!trackModel->addTrack(destIndex, file.absoluteFilePath())) {
-						newNumRows--;
+						numNewRows--;
 					}
 	
 				}	

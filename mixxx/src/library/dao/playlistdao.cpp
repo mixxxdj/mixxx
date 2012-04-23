@@ -396,9 +396,49 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     emit(changed(playlistId));
 }
 
+//Takes a list of trackIDs to be inserted into a given playlist
 void PlaylistDAO::insertTracksIntoPlaylist(QList <int> trackIDs, int playlistId, int position) {
-	
-	
+	if (playlistId < 0 || position < 0 ) {
+		return;
+	}
+	m_database.transaction();
+
+    int trackID = -1;
+    foreach (trackID, trackIDs) {
+        if (!(trackID < 0)) {
+            //move all tracks in playlist up by 1
+            //Any reason why a prepared statement isn't used here ??
+            QString queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
+                                            "WHERE position>=%1 AND"
+                                            "playlist_id=%2").arg(position).arg(playlistId);
+            QSqlQuery query(m_database);
+            if (!query.exec(queryString)) {
+                LOG_FAILED_QUERY(query);
+            }
+
+            //Insert the track at the given position
+            query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
+                            "VALUES (:playlist_id, :track_id, :position)");
+            query.bindValue(":playlist_id", playlistId);
+            query.bindValue(":track_id", trackID);
+            query.bindValue(":position", position);
+        
+            if (!query.exec()) {
+                LOG_FAILED_QUERY(query);
+            }
+        }
+    }
+    
+    m_database.commit();
+    //all failed tracks are with trackID -1
+    trackIDs.removeAll(-1);
+    
+    foreach (trackID, trackIDs) {
+        // The emitted position isn't actually the real position of the track
+        emit(trackAdded(playlistId, trackID, position));
+    }
+    emit(changed(playlistId));
+    
 }
 
 void PlaylistDAO::addToAutoDJQueue(int playlistId) {
