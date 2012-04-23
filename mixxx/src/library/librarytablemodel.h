@@ -24,6 +24,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
+	virtual int addTracks(const QModelIndex& index, QList <QString> locations);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
 

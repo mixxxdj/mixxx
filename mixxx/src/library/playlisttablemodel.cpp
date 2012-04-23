@@ -115,7 +115,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index, QList <QString> loca
 	}
 
 	//Use the addTracks of TrackDAO which returns a QList with trackIds
-	QList <int> TrackIDs;
+	QList <int> trackIDs;
 	trackIDs = m_trackDao.addTracks(fileInfoList, true);
 	
 	//Assuming from the TrackDAO implementation of addTrack which returns -1 for add fails

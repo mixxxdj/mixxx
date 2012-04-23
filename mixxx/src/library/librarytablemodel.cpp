@@ -64,6 +64,23 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
+//Takes a list of locations and add the tracks to the library, returns the number of failed additions.
+int LibraryTableModel::addTracks(const QModelIndex& index, QList <QString> locations) {
+	int trackAddFails = 0;
+	//Prepare the list of QFileInfo's
+	QList <QFileInfo> fileInfoList;
+	QString fileLocation;
+	foreach (fileLocation, locations) {
+		QFileInfo fileInfo(fileLocation);
+		fileInfoList.append(fileInfo);
+	}
+	QList <int> trackIDs;
+	trackIDs = m_trackDao.addTracks(fileInfoList, true); //returns the ids of tracks in a QList
+	//Assuming from the trackdao implementation that -1 is returned on an add fail
+	trackAddFails = trackIDs.removeAll(-1);
+	return trackAddFails;
+}
+
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const {
     int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
