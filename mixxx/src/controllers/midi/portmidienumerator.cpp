@@ -102,24 +102,25 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
                 }
             }
 
-            //So at this point, we either have an input-only MIDI device (outputDeviceInfo == NULL)
-            //or we've found a matching output MIDI device (outputDeviceInfo != NULL).
+            // So at this point, we either have an input-only MIDI device
+            // (outputDeviceInfo == NULL) or we've found a matching output MIDI
+            // device (outputDeviceInfo != NULL).
 
             //.... so create our (aggregate) MIDI device!
-            PortMidiController *currentDevice = new PortMidiController(inputDeviceInfo,
-                                                                       outputDeviceInfo,
-                                                                       inputDevIndex,
-                                                                       outputDevIndex);
+            PortMidiController *currentDevice = new PortMidiController(
+                inputDeviceInfo, outputDeviceInfo,
+                inputDevIndex, outputDevIndex);
             currentDevice->setPolling(needPolling());
-            m_devices.push_back((Controller*)currentDevice);
+            m_devices.push_back(currentDevice);
         }
 
-        // Is there a use-case for output-only devices (such as message displays?)
-        //  If so, handle them here.
-//         else if (deviceInfo->output) {
-//             PortMidiController *currentDevice = new PortMidiController(deviceInfo, i);
-//             m_devices.push_back((MidiController*)currentDevice);
-//         }
+        // Is there a use-case for output-only devices (such as message
+        // displays?) If so, handle them here.
+
+        //else if (deviceInfo->output) {
+        //    PortMidiController *currentDevice = new PortMidiController(deviceInfo, i);
+        //    m_devices.push_back((MidiController*)currentDevice);
+        //}
     }
     return m_devices;
 }

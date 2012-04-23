@@ -10,8 +10,7 @@
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hidenumerator.h"
 
-HidEnumerator::HidEnumerator()
-        : ControllerEnumerator() {
+HidEnumerator::HidEnumerator() : ControllerEnumerator() {
 }
 
 HidEnumerator::~HidEnumerator() {

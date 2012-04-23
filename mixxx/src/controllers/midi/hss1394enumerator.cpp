@@ -42,9 +42,10 @@ QList<Controller*> Hss1394Enumerator::queryDevices() {
                          QString("%1").arg(tNodeInfo.uGUID.mu32Low, 0, 16),
                          QString("%1").arg(tNodeInfo.uProtocolVersion, 0, 16));
             qDebug() << " " << message;
-            Hss1394Controller *currentDevice = new Hss1394Controller(tNodeInfo, i);
+            Hss1394Controller *currentDevice = new Hss1394Controller(
+                tNodeInfo, i);
             currentDevice->setPolling(needPolling());
-            m_devices.push_back((Controller*)currentDevice);
+            m_devices.push_back(currentDevice);
         }
     }
     return m_devices;

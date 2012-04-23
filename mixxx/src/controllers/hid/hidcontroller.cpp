@@ -19,37 +19,28 @@ HidReader::~HidReader() {
 
 void HidReader::run() {
     unsigned char *data = new unsigned char[255];
-
-    m_bStop=false;
-    int result;
-    int length=0;
-
-    while(!m_bStop) {
+    m_bStop = false;
+    while (!m_bStop) {
         // Blocked polling: The only problem with this is that we can't close
-        //  the device until the block is released, which means the controller
-        //  has to send more data
-//         result = hid_read_timeout(m_pHidDevice, data, 255, -1);
+        // the device until the block is released, which means the controller
+        // has to send more data
+        //result = hid_read_timeout(m_pHidDevice, data, 255, -1);
 
         // This relieves that at the cost of higher CPU usage since we only
-        //  block for a short while (500ms)
-        result = hid_read_timeout(m_pHidDevice, data, 255, 500);
-
+        // block for a short while (500ms)
+        int result = hid_read_timeout(m_pHidDevice, data, 255, 500);
         if (result > 0) {
-            length=result;
-//             qDebug() << "Read" << length << "bytes, pointer:" << data;
-
-            QByteArray outArray((char*)data,length);
-            emit(incomingData(outArray));
+            //qDebug() << "Read" << result << "bytes, pointer:" << data;
+            QByteArray outData(reinterpret_cast<char*>(data), result);
+            emit(incomingData(outData));
         }
     }
-
-    delete data;
+    delete [] data;
 }
 
 // ------ HidController ------
 
 HidController::HidController(const hid_device_info deviceInfo) {
-
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;

@@ -77,7 +77,6 @@ class HidController : public Controller {
     QString hid_product;
 
     QString m_sUID;
-    static QList<QString> m_deviceList;
     hid_device* m_pHidDevice;
     HidReader* m_pReader;
     HidControllerPreset m_preset;
