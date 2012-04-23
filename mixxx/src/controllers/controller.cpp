@@ -3,7 +3,6 @@
 * @author Sean Pappalardo spappalardo@mixxx.org
 * @date Sat Apr 30 2011
 * @brief Base class representing a physical (or software) controller.
-*
 */
 
 /***************************************************************************
@@ -33,7 +32,8 @@ Controller::Controller() : QObject() {
 }
 
 Controller::~Controller() {
-//     close(); // I wish I could put this here to enforce it automatically
+    // We can't close the device here.
+    //close();
 }
 
 QString Controller::defaultPreset() {
@@ -47,7 +47,9 @@ QString Controller::presetExtension() {
 
 void Controller::startEngine()
 {
-    if (debugging()) qDebug() << "  Starting engine";
+    if (debugging()) {
+        qDebug() << "  Starting engine";
+    }
     if (m_pEngine != NULL) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
@@ -57,7 +59,9 @@ void Controller::startEngine()
 
 void Controller::stopEngine()
 {
-    if (debugging()) qDebug() << "  Shutting down engine";
+    if (debugging()) {
+        qDebug() << "  Shutting down engine";
+    }
     if (m_pEngine == NULL) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
@@ -84,8 +88,9 @@ void Controller::applyPreset() {
             }
             m_pEngine->initializeScripts(preset->scriptFunctionPrefixes);
         }
+    } else {
+        qWarning() << "Controller::applyPreset(): No engine exists!";
     }
-    else qWarning() << "Controller::applyPreset(): No engine exists!";
 }
 
 void Controller::learn(MixxxControl control) {
@@ -97,12 +102,12 @@ void Controller::learn(MixxxControl control) {
 void Controller::cancelLearn() {
     m_controlToLearn = MixxxControl();
     m_bLearning = false;
-//     qDebug() << m_sDeviceName << ": Aborted learning.";
+    //qDebug() << m_sDeviceName << ": Aborted learning.";
 }
 
 void Controller::send(QList<int> data, unsigned int length) {
-    // If you change this implementation, also change it in HidController
-    //  (That function is required due to HID devices having report IDs)
+    // If you change this implementation, also change it in HidController (That
+    // function is required due to HID devices having report IDs)
 
     QByteArray msg;
 
@@ -118,9 +123,8 @@ void Controller::send(QByteArray data) {
 }
 
 void Controller::receive(const QByteArray data) {
-
     if (m_pEngine == NULL) {
-//         qWarning() << "Controller::receive called with no active engine!";
+        //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
         return;
@@ -138,7 +142,7 @@ void Controller::receive(const QByteArray data) {
                         .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
                         .arg(spacer);
         }
-        qDebug()<< message;
+        qDebug() << message;
     }
 
     QListIterator<QString> prefixIt(m_pEngine->getScriptFunctionPrefixes());

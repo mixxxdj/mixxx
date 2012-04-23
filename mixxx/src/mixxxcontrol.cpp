@@ -3,17 +3,12 @@
 #include "mixxxcontrol.h"
 
 /** MixxxControl constructor */
-MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_item, 
-                           QString controlobject_description, bool internal,
-                           bool read, bool write)
-{
+MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_item,
+                           QString controlobject_description) {
+
     m_sGroup = controlobject_group;
     m_sItem = controlobject_item;
     m_sDescription = controlobject_description;
-
-    m_bReadable = read;
-    m_bWriteable = write;
-    m_bInternal = internal;
 }
 
 /** Constructor that unserializes a MixxxControl object from a <control> or <output>
@@ -32,5 +27,5 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
 
 uint qHash(const MixxxControl& key)
 {
-    return (qHash(key.group() + key.item()));
+    return qHash(key.group() + key.item());
 }

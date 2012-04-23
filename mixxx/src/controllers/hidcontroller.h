@@ -3,17 +3,7 @@
   * @author Sean M. Pappalardo	spappalardo@mixxx.org
   * @date Sun May 1 2011
   * @brief HID controller backend
-  *
   */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 
 #ifndef HIDCONTROLLER_H
 #define HIDCONTROLLER_H
