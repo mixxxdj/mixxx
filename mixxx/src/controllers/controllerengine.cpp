@@ -1138,8 +1138,8 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
 }
 
 /*  -------- ------------------------------------------------------
-    Purpose: [En/dis]ables soft-takeover status for a particular MixxxControl
-    Input:   MixxxControl group and key values,
+    Purpose: [En/dis]ables soft-takeover status for a particular ControlObject
+    Input:   ControlObject group and key values,
                 whether to set the soft-takeover status or not
     Output:  -
     -------- ------------------------------------------------------ */

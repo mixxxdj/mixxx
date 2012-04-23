@@ -14,9 +14,9 @@
 
 #include <QHash>
 
-#include "mixxxcontrol.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"
+#include "controllers/mixxxcontrol.h"
 #include "controllers/midi/midimessage.h"
 
 class MidiControllerPreset : public ControllerPreset {

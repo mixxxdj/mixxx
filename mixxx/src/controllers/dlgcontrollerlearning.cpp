@@ -6,22 +6,22 @@
 *
 */
 
-#include "dlgcontrollerlearning.h"
-#include "mixxxcontrol.h"
+#include "controllers/dlgcontrollerlearning.h"
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
-    : QDialog(parent), Ui::DlgControllerLearning() {
+        : QDialog(parent), Ui::DlgControllerLearning(),
+          m_pController(controller) {
     qRegisterMetaType<MixxxControl>("MixxxControl");
 
     setupUi(this);
-    m_pController = controller;
     labelMappedTo->setText("");
     iCurrentControl = 0;
-    stackedWidget->setCurrentIndex(0); //Ensure the first page is always shown regardless
-                                       //of the last page shown when the .ui file was saved.
+    // Ensure the first page is always shown regardless of the last page shown
+    // when the .ui file was saved.
+    stackedWidget->setCurrentIndex(0);
 
-    //Delete this dialog when its closed. We don't want any persistence.
+    // Delete this dialog when its closed. We don't want any persistence.
     QWidget::setAttribute(Qt::WA_DeleteOnClose);
 
     m_pSkipShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
@@ -111,11 +111,10 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     qSort(m_controlsToMap);
 
     // TODO: Sort them by group in the order they were entered
-//     qSort(m_controlsToMap.begin(), m_controlsToMap.end(), groupLessThan);
+    //qSort(m_controlsToMap.begin(), m_controlsToMap.end(), groupLessThan);
 }
 
-DlgControllerLearning::~DlgControllerLearning()
-{
+DlgControllerLearning::~DlgControllerLearning() {
     //If there was any ongoing learning, cancel it (benign if there wasn't).
     emit(cancelLearning());
 
@@ -144,9 +143,8 @@ void DlgControllerLearning::addSamplerControl(QString control, QString descripti
     }
 }
 
-void DlgControllerLearning::begin()
-{
-    //Switch pages in the stacked widget so that we show the mapping stuff.
+void DlgControllerLearning::begin() {
+    // Switch pages in the stacked widget so that we show the mapping stuff.
     stackedWidget->setCurrentIndex(1);
 
     connect(m_pSkipShortcut, SIGNAL(activated()), pushButtonSkip, SLOT(click()));
@@ -160,8 +158,7 @@ void DlgControllerLearning::begin()
     labelMixxxControl->setText(control.description()+"\n"+count);
 }
 
-void DlgControllerLearning::next()
-{
+void DlgControllerLearning::next() {
     iCurrentControl++;
     if (iCurrentControl < m_controlsToMap.size())
     {
@@ -183,8 +180,7 @@ void DlgControllerLearning::next()
     }
 }
 
-void DlgControllerLearning::prev()
-{
+void DlgControllerLearning::prev() {
     iCurrentControl--;
     if (iCurrentControl >= 0)
     {
@@ -203,9 +199,7 @@ void DlgControllerLearning::prev()
 
 }
 
-/** Gets called when a control has just been mapped successfully */
-void DlgControllerLearning::controlMapped(QString message)
-{
+void DlgControllerLearning::controlMapped(QString message) {
     labelMappedTo->setText(tr("Successfully mapped to: ") + message);
 
     //Set the label on the "Skip" button to "Next" because we're proceeding

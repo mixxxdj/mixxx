@@ -345,23 +345,19 @@ class MixxxCore(Feature):
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
-                   "controllers/softtakeover.cpp",
                    "controllers/controller.cpp",
-                   "controllers/controllerpresetfilehandler.cpp",
-                   "controllers/controllermanager.cpp",
-                   "controllers/controllerenumerator.cpp",
                    "controllers/controllerengine.cpp",
-
-                   "controllers/qtscript-bytearray/bytearrayclass.cpp",
-                   "controllers/qtscript-bytearray/bytearrayprototype.cpp",
-
-                   # MIDI controllers
-                   "controllers/midi/midienumerator.cpp",
+                   "controllers/controllerenumerator.cpp",
+                   "controllers/controllermanager.cpp",
+                   "controllers/controllerpresetfilehandler.cpp",
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
+                   "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midioutputhandler.cpp",
-                   "mixxxcontrol.cpp",
-
+                   "controllers/mixxxcontrol.cpp",
+                   "controllers/qtscript-bytearray/bytearrayclass.cpp",
+                   "controllers/qtscript-bytearray/bytearrayprototype.cpp",
+                   "controllers/softtakeover.cpp",
 
                    "main.cpp",
                    "mixxx.cpp",
