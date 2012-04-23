@@ -1096,7 +1096,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="583"/>
-        <source>Waveform dislay</source>
+        <source>Waveform Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
