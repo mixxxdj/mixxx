@@ -7,24 +7,13 @@
   *
   */
 
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "portmidicontroller.h"
+#include "controllers/midi/portmidicontroller.h"
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
                                        const PmDeviceInfo* outputDeviceInfo,
                                        int inputDeviceIndex,
                                        int outputDeviceIndex)
-                                        : MidiController()
-{
+                                        : MidiController() {
     m_pInputStream = NULL;
     m_pOutputStream = NULL;
     m_pInputDeviceInfo = inputDeviceInfo;
@@ -58,11 +47,11 @@ int PortMidiController::open()
 
     if (m_sDeviceName == MIXXX_PORTMIDI_NO_DEVICE_STRING)
         return -1;
-    
+
     m_bInSysex = false;
     m_bEndSysex = false;
     m_cReceiveMsg_index = 0;
-    
+
     PmError err = Pm_Initialize();
     if( err != pmNoError )
     {
@@ -169,7 +158,7 @@ void PortMidiController::timerEvent(QTimerEvent *event, bool poll) {
                 qWarning() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
                 return;
             }
-            
+
             numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
 
             if (numEvents < 0) {

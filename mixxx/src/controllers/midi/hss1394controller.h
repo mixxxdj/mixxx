@@ -15,42 +15,45 @@
 #define HSS1394CONTROLLER_H
 
 #include <hss1394/HSS1394.h>
-#include "midicontroller.h"
+
+#include "controllers/midi/midicontroller.h"
 
 #define MIXXX_HSS1394_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
 #define MIXXX_HSS1394_NO_DEVICE_STRING "None" /**String to display for no HSS1394 devices present */
 
 class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
-Q_OBJECT    // For signals
-    public:
-        DeviceChannelListener(int id, QString name, MidiController* controller);
-        void Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize);
-        void Disconnected();
-        void Reconnected();
-    signals:
-        void incomingData(unsigned char status, unsigned char control, unsigned char value);
-        void incomingData(QByteArray data);
-    private:
-        int m_iId;
-        QString m_sName;
-        MidiController *m_pController;
+    Q_OBJECT
+  public:
+    DeviceChannelListener(int id, QString name, MidiController* controller);
+    ~DeviceChannelListener();
+    void Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize);
+    void Disconnected();
+    void Reconnected();
+  signals:
+    void incomingData(unsigned char status, unsigned char control, unsigned char value);
+    void incomingData(QByteArray data);
+  private:
+    int m_iId;
+    QString m_sName;
+    MidiController *m_pController;
 };
 
 class Hss1394Controller : public MidiController {
-    public:
-        Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
-        ~Hss1394Controller();
-        int open();
-        int close();
-        void send(unsigned int word);
-        void send(QByteArray data);
+  public:
+    Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
+    virtual ~Hss1394Controller();
 
-    protected:
-        hss1394::TNodeInfo m_deviceInfo;
-        int m_iDeviceIndex;
-        static QList<QString> m_deviceList;
-        hss1394::Channel* m_pChannel;
-        DeviceChannelListener *m_pChannelListener;
+    int open();
+    int close();
+    void send(unsigned int word);
+    void send(QByteArray data);
+
+  protected:
+    hss1394::TNodeInfo m_deviceInfo;
+    int m_iDeviceIndex;
+    static QList<QString> m_deviceList;
+    hss1394::Channel* m_pChannel;
+    DeviceChannelListener *m_pChannelListener;
 };
 
 #endif

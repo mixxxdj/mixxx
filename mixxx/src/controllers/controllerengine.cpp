@@ -6,21 +6,13 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include "controllers/controllerengine.h"
 
+#include "controllers/controller.h"
+#include "controllers/defs_controllers.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
-#include "controller.h"
-#include "controllerengine.h"
 #include "errordialoghandler.h"
-#include "defs_controllers.h"
 
 // #include <QScriptSyntaxCheckResult>
 

@@ -9,7 +9,7 @@
 #include <math.h>  // for fabs()
 #include <qdatetime.h>
 
-#include "softtakeover.h"
+#include "controllers/softtakeover.h"
 #include "controlpotmeter.h"
 
 uint SoftTakeover::currentTimeMsecs() {

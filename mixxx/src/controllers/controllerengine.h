@@ -14,7 +14,7 @@
 
 #include "configobject.h"
 #include "controllers/pitchfilter.h"
-#include "softtakeover.h"
+#include "controllers/softtakeover.h"
 #include "qtscript-bytearray/bytearrayclass.h"
 
 // Forward declaration(s)

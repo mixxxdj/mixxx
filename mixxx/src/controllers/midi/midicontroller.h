@@ -14,11 +14,11 @@
 #define MIDICONTROLLER_H
 
 #include "controllers/controller.h"
-#include "controllers/midi/midioutputhandler.h"
-#include "softtakeover.h"
-#include "controllers/midi/midimessage.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/midi/midimessage.h"
+#include "controllers/midi/midioutputhandler.h"
+#include "controllers/softtakeover.h"
 
 class MidiController : public Controller {
     Q_OBJECT
