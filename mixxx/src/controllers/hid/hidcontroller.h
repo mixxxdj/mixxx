@@ -11,8 +11,8 @@
 #include <hidapi.h>
 
 #include "controllers/controller.h"
-#include "controllers/hidcontrollerpreset.h"
-#include "controllers/hidcontrollerpresetfilehandler.h"
+#include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
 class HidReader : public QThread {
     Q_OBJECT

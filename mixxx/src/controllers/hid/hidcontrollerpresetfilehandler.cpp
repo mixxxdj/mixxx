@@ -1,4 +1,4 @@
-#include "controllers/hidcontrollerpresetfilehandler.h"
+#include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
 bool HidControllerPresetFileHandler::save(const HidControllerPreset& preset,
                                           const QString deviceName,

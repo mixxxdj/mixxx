@@ -1,8 +1,8 @@
 #ifndef HIDCONTROLLERPRESETFILEHANDLER_H
 #define HIDCONTROLLERPRESETFILEHANDLER_H
 
-#include "hidcontrollerpreset.h"
-#include "controllerpresetfilehandler.h"
+#include "controllers/hid/hidcontrollerpreset.h"
+#include "controllers/controllerpresetfilehandler.h"
 
 class HidControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:

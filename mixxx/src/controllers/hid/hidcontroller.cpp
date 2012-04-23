@@ -6,7 +6,7 @@
   *
   */
 
-#include "controllers/hidcontroller.h"
+#include "controllers/hid/hidcontroller.h"
 
 // ------ HID controller reader thread ------
 
