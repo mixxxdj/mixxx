@@ -16,10 +16,7 @@
 #endif
 
 #ifdef __HID__
-    #include "controllers/hidenumerator.h"
-#endif
-#ifdef __OSC__
-    #include "controllers/osc/oscenumerator.h"
+    #include "controllers/hid/hidenumerator.h"
 #endif
 
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
@@ -85,9 +82,6 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
-#endif
-#ifdef __OSC__
-    m_enumerators.append(new OscEnumerator());
 #endif
 
     m_pThread = new QThread;

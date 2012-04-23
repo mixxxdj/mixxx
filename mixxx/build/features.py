@@ -76,9 +76,9 @@ class HID(Feature):
 
     def sources(self, build):
         build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
-        sources = ['controllers/hidcontroller.cpp',
-                   'controllers/hidenumerator.cpp',
-                   'controllers/hidcontrollerpresetfilehandler.cpp']
+        sources = ['controllers/hid/hidcontroller.cpp',
+                   'controllers/hid/hidenumerator.cpp',
+                   'controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
         if build.platform_is_windows:
             # This doesn't work. You need to build it in MSVS like all the other dependencies

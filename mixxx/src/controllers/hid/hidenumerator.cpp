@@ -7,8 +7,8 @@
 
 #include <hidapi.h>
 
-#include "controllers/hidcontroller.h"
-#include "controllers/hidenumerator.h"
+#include "controllers/hid/hidcontroller.h"
+#include "controllers/hid/hidenumerator.h"
 
 HidEnumerator::HidEnumerator()
         : ControllerEnumerator() {
