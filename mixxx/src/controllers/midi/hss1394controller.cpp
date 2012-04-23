@@ -3,19 +3,9 @@
   * @author Sean M. Pappalardo  spappalardo@mixxx.org
   * @date Thu 15 Mar 2012
   * @brief HSS1394-based MIDI backend
-  *
   */
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "hss1394controller.h"
+#include "controllers/midi/hss1394controller.h"
 
 // HSS1394 Channel listener stuff
 
@@ -25,6 +15,9 @@ DeviceChannelListener::DeviceChannelListener(int id, QString name,
     m_iId = id;
     m_sName = name;
     m_pController = controller;
+}
+
+DeviceChannelListener::~DeviceChannelListener() {
 }
 
 void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize) {
@@ -114,12 +107,12 @@ int Hss1394Controller::open()
     }
 
     m_pChannelListener = new DeviceChannelListener(m_iDeviceIndex, m_sDeviceName, this);
-    
+
     connect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
             this, SLOT(receive(QByteArray)));
     connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
-    
+
     if (false == m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << m_sDeviceName;
         delete m_pChannelListener;
@@ -155,15 +148,15 @@ int Hss1394Controller::close()
         qDebug() << "HSS1394 device" << m_sDeviceName << "already closed";
         return -1;
     }
-    
+
     disconnect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
             this, SLOT(receive(QByteArray)));
     disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
-    
+
     stopEngine();
     MidiController::close();
-    
+
     // Clean up the HSS1394Node
     using namespace hss1394;
     if (!Node::Instance()->ReleaseChannel(m_pChannel)) {

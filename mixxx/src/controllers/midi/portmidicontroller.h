@@ -18,8 +18,7 @@
 #define PORTMIDICONTROLLER_H
 
 #include <portmidi.h>
-// #include <porttime.h>
-#include "midicontroller.h"
+#include "controllers/midi/midicontroller.h"
 
 #define MIXXX_PORTMIDI_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None" /**String to display for no MIDI devices present */
@@ -31,7 +30,7 @@ class PortMidiController : public MidiController {
                         const PmDeviceInfo* outputDeviceInfo,
                         int inputDeviceIndex,
                         int outputDeviceIndex);
-        ~PortMidiController();
+        virtual ~PortMidiController();
         int open();
         int close();
         void send(unsigned int word);

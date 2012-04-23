@@ -8,13 +8,12 @@
 #ifndef PORTMIDIENUMERATOR_H
 #define PORTMIDIENUMERATOR_H
 
-#include "midienumerator.h"
+#include "controllers/midi/midienumerator.h"
 
-class PortMidiEnumerator : public MidiEnumerator
-{
+class PortMidiEnumerator : public MidiEnumerator {
     public:
         PortMidiEnumerator();
-        ~PortMidiEnumerator();
+        virtual ~PortMidiEnumerator();
         QList<Controller*> queryDevices();
         bool needPolling() { return true; };
     private:

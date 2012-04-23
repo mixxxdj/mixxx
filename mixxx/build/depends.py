@@ -345,6 +345,7 @@ class MixxxCore(Feature):
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
+                   "controllers/softtakeover.cpp",
                    "controllers/controller.cpp",
                    "controllers/controllerpresetfilehandler.cpp",
                    "controllers/controllermanager.cpp",
@@ -359,9 +360,8 @@ class MixxxCore(Feature):
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midioutputhandler.cpp",
-
                    "mixxxcontrol.cpp",
-                   "softtakeover.cpp",
+
 
                    "main.cpp",
                    "mixxx.cpp",
@@ -559,12 +559,12 @@ class MixxxCore(Feature):
         # the code for the QT UI forms
         build.env.Uic4('dlgpreferencesdlg.ui')
         build.env.Uic4('dlgprefsounddlg.ui')
-        
+
         build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
         build.env.Uic4('controllers/dlgprefmappablecontrollerdlg.ui')
         build.env.Uic4('controllers/dlgcontrollerlearning.ui')
         build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
-        
+
         build.env.Uic4('dlgprefplaylistdlg.ui')
         build.env.Uic4('dlgprefcontrolsdlg.ui')
         build.env.Uic4('dlgprefeqdlg.ui')

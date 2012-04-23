@@ -12,17 +12,13 @@
 #define MIDIENUMERATOR_H
 
 #include "controllers/controllerenumerator.h"
-#include "midicontroller.h"
+#include "controllers/midi/midicontroller.h"
 
-class MidiEnumerator : public ControllerEnumerator
-{
-    public:
-        MidiEnumerator();
-        virtual ~MidiEnumerator();
-        virtual QList<Controller*> queryDevices() = 0;
-//         virtual bool needPolling() { return false; };
-    private:
-        QList<Controller*> m_devices;
+class MidiEnumerator : public ControllerEnumerator {
+  public:
+    MidiEnumerator();
+    virtual ~MidiEnumerator();
+    virtual QList<Controller*> queryDevices() = 0;
 };
 
 #endif

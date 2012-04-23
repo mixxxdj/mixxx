@@ -10,14 +10,13 @@
 
 #include "midienumerator.h"
 
-class Hss1394Enumerator : public MidiEnumerator
-{
-    public:
-        Hss1394Enumerator();
-        ~Hss1394Enumerator();
-        QList<Controller*> queryDevices();
-    private:
-        QList<Controller*> m_devices;
+class Hss1394Enumerator : public MidiEnumerator {
+  public:
+    Hss1394Enumerator();
+    virtual ~Hss1394Enumerator();
+    QList<Controller*> queryDevices();
+  private:
+    QList<Controller*> m_devices;
 };
 
 #endif

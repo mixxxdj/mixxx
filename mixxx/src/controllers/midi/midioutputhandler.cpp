@@ -6,17 +6,8 @@
 *
 */
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "midioutputhandler.h"
-#include "midicontroller.h"
+#include "controllers/midi/midioutputhandler.h"
+#include "controllers/midi/midicontroller.h"
 
 #include <QDebug>
 
@@ -48,7 +39,7 @@ bool MidiOutputHandler::validate() {
 
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)));
     connect(m_cobj, SIGNAL(valueChanged(double)), this, SLOT(controlChanged(double)));
-    
+
     return true;
 }
 
@@ -59,7 +50,7 @@ void MidiOutputHandler::update() {
 void MidiOutputHandler::controlChanged(double value) {
     // Don't send redundant messages unless asked to
     if (!dupes && value == m_lastVal) return;
-    
+
     m_lastVal = value;
 
     unsigned char byte3 = m_off;
