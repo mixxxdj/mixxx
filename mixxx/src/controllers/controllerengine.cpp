@@ -593,7 +593,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
-    if (cot != NULL && !m_st.ignore(group,name,newValue)) {
+    if (cot != NULL && !m_st.ignore(cot->getControlObject(), newValue)) {
         cot->slotSet(newValue);
         // We call emitValueChanged so that script functions connected to this
         // control will get updates.
@@ -1152,10 +1152,13 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeover(QString group, QString name, bool set) {
-    MixxxControl mc = MixxxControl(group,name);
+    ControlObject* pControl = ControlObject::getControl(ConfigKey(group, name));
+    if (!pControl) {
+        return;
+    }
     if (set) {
-        m_st.enable(mc);
+        m_st.enable(pControl);
     } else {
-        m_st.disable(mc);
+        m_st.disable(pControl);
     }
 }

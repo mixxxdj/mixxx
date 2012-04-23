@@ -6,46 +6,33 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 #ifndef SOFTTAKEOVER_H
 #define SOFTTAKEOVER_H
 
-#include "mixxxcontrol.h"
+#include <QHash>
+
+class ControlObject;
 
 class SoftTakeover {
+  public:
+    // Enable soft-takeover for the given Control This does nothing on a Control
+    // that's already enabled.
+    void enable(ControlObject* control);
+    // Disable soft-takeover for the given Control
+    void disable(ControlObject* control);
+    // Check to see if the new value for the Control should be ignored
+    bool ignore(ControlObject* control, float newValue, bool midiVal = false);
 
-    public:
-        /** Enable soft-takeover for the given Control
-            This does nothing on a Control that's already enabled. */
-        void enable(MixxxControl control);
-        void enable(QString group, QString name);
-        /** Disable soft-takeover for the given Control */
-        void disable(MixxxControl control);
-        void disable(QString group, QString name);
-        /** Check to see if the new value for the Control should be ignored */
-        bool ignore(MixxxControl control, float newValue, bool midiVal = false);
-        /** For legacy Controls */
-        bool ignore(QString group, QString name, float newValue, bool midiVal = false);
-    
-    private:
-        /** If a new value is received within this amount of time,
-            jump to it regardless. This allows quickly whipping controls to work
-            while retaining the benefits of soft-takeover for slower movements.
-            
-            Setting this too high will defeat the purpose of soft-takeover.*/        
-        static const uint SUBSEQUENT_VALUE_OVERRIDE_TIME = 50;   // Milliseconds
-        //qint64 currentTimeMsecs();
-        //QHash<MixxxControl,qint64> m_times;
-        uint currentTimeMsecs();
-        QHash<MixxxControl,uint> m_times;
-        QHash<MixxxControl,double> m_prevValues;
+  private:
+    // If a new value is received within this amount of time, jump to it
+    // regardless. This allows quickly whipping controls to work while retaining
+    // the benefits of soft-takeover for slower movements.  Setting this too
+    // high will defeat the purpose of soft-takeover.
+    static const uint SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS = 50;
+
+    uint currentTimeMsecs();
+    QHash<ControlObject*, uint> m_times;
+    QHash<ControlObject*, double> m_prevValues;
 };
 
 #endif

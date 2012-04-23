@@ -328,8 +328,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     if (options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
-        m_st.enable(mc.group(),mc.item());
-        if (m_st.ignore(mc.group(),mc.item(),newValue,true)) {
+        m_st.enable(p);
+        if (m_st.ignore(p, newValue, true)) {
             return;
         }
     }
