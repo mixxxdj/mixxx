@@ -6,15 +6,6 @@
 *
 */
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "dlgcontrollerlearning.h"
 #include "mixxxcontrol.h"
 
@@ -22,7 +13,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
     : QDialog(parent), Ui::DlgControllerLearning() {
     qRegisterMetaType<MixxxControl>("MixxxControl");
-        
+
     setupUi(this);
     m_pController = controller;
     labelMappedTo->setText("");
@@ -118,7 +109,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     // Sort them by group so you work with one deck at a time
     //  This also puts them in alphabetical order by item
     qSort(m_controlsToMap);
-    
+
     // TODO: Sort them by group in the order they were entered
 //     qSort(m_controlsToMap.begin(), m_controlsToMap.end(), groupLessThan);
 }
@@ -127,7 +118,7 @@ DlgControllerLearning::~DlgControllerLearning()
 {
     //If there was any ongoing learning, cancel it (benign if there wasn't).
     emit(cancelLearning());
-    
+
     delete m_pSkipShortcut;
 }
 

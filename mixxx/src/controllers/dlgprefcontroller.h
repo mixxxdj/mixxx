@@ -13,18 +13,18 @@
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 
-//Forward declarations
+// Forward declarations
 class ControllerManager;
 
 class DlgPrefController : public QWidget {
     Q_OBJECT
-public:
+  public:
     DlgPrefController(QWidget *parent, Controller* controller,
                         ControllerManager* controllerManager,
                         ConfigObject<ConfigValue> *pConfig);
     virtual ~DlgPrefController();
 
-public slots:
+  public slots:
     void slotApply();
     virtual void slotUpdate();
     virtual void slotDeviceState(int state);
@@ -33,14 +33,14 @@ public slots:
     //Mark that we need to apply the settings.
     void slotDirty ();
 
-signals:
+  signals:
     void deviceStateChanged(DlgPrefController*, bool);
     void openController(bool);
     void closeController(bool);
     void loadPreset(Controller* pController, QString controllerName, bool force);
     void applyPreset();
 
-protected:
+  protected:
     QGridLayout *layout;
     QSpacerItem *verticalSpacer;
 
@@ -48,7 +48,7 @@ protected:
 
     Ui::DlgPrefControllerDlg m_ui;
 
-private:
+  private:
     void savePreset(QString path);
     void enumeratePresets();
 

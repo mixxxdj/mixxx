@@ -9,7 +9,7 @@
 #define CONTROLLERMANAGER_H
 
 #include "configobject.h"
-#include "controllerenumerator.h"
+#include "controllers/controllerenumerator.h"
 
 //Forward declaration(s)
 class Controller;

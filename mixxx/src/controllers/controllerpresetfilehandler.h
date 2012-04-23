@@ -16,6 +16,13 @@ class ControllerPresetFileHandler {
     ControllerPresetFileHandler() {};
     virtual ~ControllerPresetFileHandler() {};
 
+    /** load(QString,QString,bool)
+     * Overloaded function for convenience
+     * @param path The path to a controller preset XML file.
+     * @param deviceName The name/id of the controller
+     * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
+     *        specified within matches the name of this Controller.
+     */
     ControllerPreset* load(const QString path, const QString deviceName,
                                    const bool forceLoad);
 
@@ -26,6 +33,15 @@ class ControllerPresetFileHandler {
     }
 
   protected:
+    /** addScriptFilesToPreset(QDomElement,QString,bool)
+     * Loads script files specified in a QDomElement structure into the supplied
+     *   ControllerPreset.
+     * @param root The root node of the XML document for the preset.
+     * @param deviceName The name/id of the controller
+     * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
+     *        specified within matches the name of this Controller.
+     * @param preset The ControllerPreset into which the scripts should be placed.
+     */
     void addScriptFilesToPreset(const QDomElement root,
                                  const QString deviceName,
                                  const bool forceLoad,

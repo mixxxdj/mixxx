@@ -8,16 +8,16 @@
 #ifndef DLGPREFNOCONTROLLERS_H
 #define DLGPREFNOCONTROLLERS_H
 
+#include <QWidget>
+
 #include "controllers/ui_dlgprefnocontrollersdlg.h"
 #include "configobject.h"
 
-//class QWidget;
-
 class DlgPrefNoControllers : public QWidget, public Ui::DlgPrefNoControllersDlg  {
     Q_OBJECT
-public:
+  public:
     DlgPrefNoControllers(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefNoControllers();
+    virtual ~DlgPrefNoControllers();
 };
 
 #endif
