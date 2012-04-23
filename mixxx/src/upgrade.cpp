@@ -289,14 +289,12 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         QStringListIterator it(contents);
         QString cur;
         //Iterate over all the files in the source directory and copy them to the dest dir.
-        while (it.hasNext())
-        {
+        while (it.hasNext()) {
             cur = it.next();
             QString src = midiPath + "/" + cur;
             QString dest = controllerPath + "/" + cur;
             qDebug() << "Copying" << src << "to" << dest;
-            if (!QFile::copy(src, dest))
-            {
+            if (!QFile::copy(src, dest)) {
                 qDebug() << "Failed to copy file during upgrade.";
                 successful = false;
             }
@@ -304,9 +302,9 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 
         if (successful) {
             qDebug() << "Upgrade Successful";
-            configVersion = VERSION;
+            configVersion = "1.11.0";
             m_bUpgraded = true;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(configVersion));
         }
         else {
             qDebug() << "Upgrade Failed";

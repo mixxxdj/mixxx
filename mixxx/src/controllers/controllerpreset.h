@@ -5,18 +5,8 @@
 * @brief Controller preset
 *
 * This class represents a controller preset, containing the data elements that
-*   make it up.
-*
+* make it up.
 */
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 
 #ifndef CONTROLLERPRESET_H
 #define CONTROLLERPRESET_H

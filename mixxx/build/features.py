@@ -44,10 +44,8 @@ class HSS1394(Feature):
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):
-        sources = SCons.Split("""controllers/midi/hss1394controller.cpp
-                            controllers/midi/hss1394enumerator.cpp
-                            """)
-        return sources
+        return ['controllers/midi/hss1394controller.cpp',
+                'controllers/midi/hss1394enumerator.cpp']
 
 class HID(Feature):
     HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.7.0'

@@ -9,17 +9,7 @@
   * IEEE1394 (FireWire))
   * It uses the HSS1394 API to send and receive MIDI messages to/from
   * the device.
-  *
   */
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 
 #ifndef HSS1394CONTROLLER_H
 #define HSS1394CONTROLLER_H

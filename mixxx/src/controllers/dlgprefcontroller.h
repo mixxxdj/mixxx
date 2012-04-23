@@ -5,15 +5,6 @@
 * @brief Configuration dialog for a DJ controller
 *
 */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 #ifndef DLGPREFCONTROLLER_H_
 #define DLGPREFCONTROLLER_H_
 
@@ -41,7 +32,7 @@ public slots:
 
     //Mark that we need to apply the settings.
     void slotDirty ();
-    
+
 signals:
     void deviceStateChanged(DlgPrefController*, bool);
     void openController(bool);
@@ -63,7 +54,7 @@ private:
 
     void enableDevice();
     void disableDevice();
-    
+
     bool m_bDirty;
     int currentGroupRow;
     ConfigObject<ConfigValue> *m_pConfig;

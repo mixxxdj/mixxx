@@ -4,20 +4,10 @@
 * @date Sat Apr 30 2011
 * @brief Base class representing a physical (or software) controller.
 *
-* This is a base class representing a physical (or software) controller.
-*   It must be inherited by a class that implements it on some API.
-*
-*   Note that the subclass' destructor should call close() at a minimum.
+* This is a base class representing a physical (or software) controller.  It
+* must be inherited by a class that implements it on some API. Note that the
+* subclass' destructor should call close() at a minimum.
 */
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
 
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
@@ -56,7 +46,7 @@ class Controller : public QObject, ControllerPresetVisitor {
         void setConfig(ConfigObject<ConfigValue>* config) {
             m_pConfig = config;
         };
-        
+
         bool isOpen() const { return m_bIsOpen; };
         bool isOutputDevice() const { return m_bIsOutputDevice; };
         bool isInputDevice() const { return m_bIsInputDevice; };
@@ -66,7 +56,7 @@ class Controller : public QObject, ControllerPresetVisitor {
 
         void setPolling(bool needPolling) { m_bPolling = needPolling; };
         bool needPolling() { return m_bPolling; };
-        
+
     signals:
         void learnedMessage(QString message);
 

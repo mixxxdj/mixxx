@@ -4,8 +4,8 @@
 * @date Tue 11 Feb 2012
 * @brief Static MIDI output mapping handler
 *
-* This class listens to a control object and sends a midi message based on the value
-*
+* This class listens to a control object and sends a midi message based on the
+* value.
 */
 
 #ifndef MIDIOUTPUTHANDLER_H
@@ -23,10 +23,10 @@ class MidiOutputHandler : QObject {
                           unsigned char status, unsigned char midino,
                           unsigned char on, unsigned char off);
         ~MidiOutputHandler();
-        
+
         bool validate();
         void update();
-        
+
         bool dupes;
 
     public slots:
@@ -43,7 +43,7 @@ class MidiOutputHandler : QObject {
 
         MidiController* m_pController;
         unsigned char m_controlno;
-        
+
         double m_lastVal;
 };
 

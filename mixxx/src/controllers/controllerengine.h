@@ -5,14 +5,6 @@
 * @brief The script engine for use by a Controller.
 */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 #ifndef CONTROLLERENGINE_H
 #define CONTROLLERENGINE_H
 
@@ -57,7 +49,6 @@ class ControllerEngine : public QObject {
 
     // Look up registered script function prefixes
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
-
 
   protected:
     Q_INVOKABLE double getValue(QString group, QString name);
@@ -112,6 +103,9 @@ class ControllerEngine : public QObject {
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
 
+    // Scratching functions & variables
+    void scratchProcess(int timerId);
+
     Controller* m_pController;
     bool m_bDebug;
     bool m_bPopups;
@@ -122,12 +116,7 @@ class ControllerEngine : public QObject {
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
     QHash<int, QPair<QString, bool> > m_timers;
     SoftTakeover m_st;
-
     ByteArrayClass *m_pBaClass;
-
-    // Scratching functions & variables
-    void scratchProcess(int timerId);
-
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray <int> m_intervalAccumulator;
