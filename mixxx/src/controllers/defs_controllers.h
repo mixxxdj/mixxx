@@ -5,15 +5,6 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #define USER_PRESETS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("controllers/")
 #define OLD_USER_PRESETS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("midi/")
 #define CONTROLLER_PRESET_EXTENSION ".cntrlr.xml"

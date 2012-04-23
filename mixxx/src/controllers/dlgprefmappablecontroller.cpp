@@ -76,9 +76,9 @@ void DlgPrefMappableController::slotShowLearnDialog() {
 }
 
 void DlgPrefMappableController::slotDeviceState(int state) {
-    
+
     DlgPrefController::slotDeviceState(state);
-    
+
     if (state == Qt::Checked) {
         m_ui.toolBox->setEnabled(true); //Enable in/out toolbox.
     }
@@ -88,9 +88,9 @@ void DlgPrefMappableController::slotDeviceState(int state) {
 }
 
 void DlgPrefMappableController::slotUpdate() {
-    
+
     DlgPrefController::slotUpdate();
-    
+
     if (m_pController->isOpen())
     {
         m_ui.toolBox->setEnabled(true); //Enable in/out toolbox.

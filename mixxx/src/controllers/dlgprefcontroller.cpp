@@ -6,27 +6,18 @@
 *
 */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 #include <QtGui>
 #include <QDebug>
-#include "dlgprefcontroller.h"
-#include "controller.h"
-#include "controllermanager.h"
+#include "controllers/dlgprefcontroller.h"
+#include "controllers/controller.h"
+#include "controllers/controllermanager.h"
+#include "controllers/defs_controllers.h"
 #include "configobject.h"
-#include "defs_controllers.h"
 
 DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
-                                         ControllerManager* controllerManager,
-                                         ConfigObject<ConfigValue> *pConfig)
-    : QWidget(parent)
-{
+                                     ControllerManager* controllerManager,
+                                     ConfigObject<ConfigValue> *pConfig)
+        : QWidget(parent) {
 //     QWidget * containerWidget = new QWidget();
 //     QWidget * containerWidget = new QWidget(this);
 //     m_ui.setupUi(containerWidget);

@@ -14,32 +14,32 @@
 
 class DlgPrefMappableController : public DlgPrefController {
     Q_OBJECT
-    public:
-        DlgPrefMappableController(QWidget *parent, Controller* controller,
-                          ControllerManager* controllerManager,
-                          ConfigObject<ConfigValue> *pConfig);
-        ~DlgPrefMappableController() {};
+  public:
+    DlgPrefMappableController(QWidget *parent, Controller* controller,
+                              ControllerManager* controllerManager,
+                              ConfigObject<ConfigValue> *pConfig);
+    virtual ~DlgPrefMappableController() {};
 
-    signals:
-        void clearInputs();
-        void clearOutputs();
+  signals:
+    void clearInputs();
+    void clearOutputs();
 
-    public slots:
-        void slotShowLearnDialog();
-        void slotUpdate();
-        void slotDeviceState(int state);
+  public slots:
+    void slotShowLearnDialog();
+    void slotUpdate();
+    void slotDeviceState(int state);
 
-        //Input mappings
-        void clearAllInputBindings();
-//         void slotRemoveInputMapping() {};
-//         void slotAddInputMapping() {};
+    // Input mappings
+    void clearAllInputBindings();
+    //void slotRemoveInputMapping() {};
+    //void slotAddInputMapping() {};
 
-        //Output mappings
-        void clearAllOutputBindings();
+    // Output mappings
+    void clearAllOutputBindings();
 
-    private:
-        DlgControllerLearning* m_pDlgControllerLearning;
-        Ui::ControllerMappingDlg m_ui;
+  private:
+    DlgControllerLearning* m_pDlgControllerLearning;
+    Ui::ControllerMappingDlg m_ui;
 };
 
 #endif
