@@ -17,9 +17,7 @@ class PortMidiEnumerator : public MidiEnumerator {
     virtual ~PortMidiEnumerator();
 
     QList<Controller*> queryDevices();
-    bool needPolling() {
-        return true;
-    }
+
   private:
     QList<Controller*> m_devices;
 };

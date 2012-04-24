@@ -110,7 +110,6 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
             PortMidiController *currentDevice = new PortMidiController(
                 inputDeviceInfo, outputDeviceInfo,
                 inputDevIndex, outputDevIndex);
-            currentDevice->setPolling(needPolling());
             m_devices.push_back(currentDevice);
         }
 

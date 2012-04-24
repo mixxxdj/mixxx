@@ -39,7 +39,6 @@ QList<Controller*> HidEnumerator::queryDevices() {
         }
 
         HidController* currentDevice = new HidController(*cur_dev);
-        currentDevice->setPolling(needPolling());
         m_devices.push_back(currentDevice);
     }
     hid_free_enumeration(devs);
