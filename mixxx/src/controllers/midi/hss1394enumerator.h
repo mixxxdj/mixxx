@@ -8,13 +8,16 @@
 #ifndef HSS1394ENUMERATOR_H
 #define HSS1394ENUMERATOR_H
 
-#include "midienumerator.h"
+#include "controllers/midi/midienumerator.h"
 
 class Hss1394Enumerator : public MidiEnumerator {
+    Q_OBJECT
   public:
     Hss1394Enumerator();
     virtual ~Hss1394Enumerator();
+
     QList<Controller*> queryDevices();
+
   private:
     QList<Controller*> m_devices;
 };
