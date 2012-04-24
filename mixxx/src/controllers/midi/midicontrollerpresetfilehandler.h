@@ -1,9 +1,9 @@
 /**
-* @file midicontrollerpresetfilehandler.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Mon 9 Apr 2012
-* @brief Handles loading and saving of MIDI controller presets.
-*/
+ * @file midicontrollerpresetfilehandler.h
+ * @author Sean Pappalardo spappalardo@mixxx.org
+ * @date Mon 9 Apr 2012
+ * @brief Handles loading and saving of MIDI controller presets.
+ */
 
 #ifndef MIDICONTROLLERPRESETFILEHANDLER_H
 #define MIDICONTROLLERPRESETFILEHANDLER_H
@@ -25,7 +25,7 @@ class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
                                    const bool forceLoad);
 
     void addControlsToDocument(const MidiControllerPreset& preset,
-                                 QDomDocument* doc) const;
+                               QDomDocument* doc) const;
 
     void mappingToXML(QDomElement& parentNode, MixxxControl mc,
                       unsigned char status, unsigned char control) const;

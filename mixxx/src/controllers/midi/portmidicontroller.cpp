@@ -1,11 +1,11 @@
 /**
-  * @file portmidicontroller.h
-  * @author Albert Santoni alberts@mixxx.org
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Thu 15 Mar 2012
-  * @brief PortMidi-based MIDI backend
-  *
-  */
+ * @file portmidicontroller.h
+ * @author Albert Santoni alberts@mixxx.org
+ * @author Sean M. Pappalardo  spappalardo@mixxx.org
+ * @date Thu 15 Mar 2012
+ * @brief PortMidi-based MIDI backend
+ *
+ */
 
 #include "controllers/midi/portmidicontroller.h"
 
@@ -13,7 +13,7 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
                                        const PmDeviceInfo* outputDeviceInfo,
                                        int inputDeviceIndex,
                                        int outputDeviceIndex)
-                                        : MidiController() {
+        : MidiController() {
     m_pInputStream = NULL;
     m_pOutputStream = NULL;
     m_pInputDeviceInfo = inputDeviceInfo;
@@ -22,7 +22,7 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
     m_iOutputDeviceIndex = outputDeviceIndex;
 
     //Note: We prepend the input stream's index to the device's name to prevent duplicate devices from causing mayhem.
-//     m_sDeviceName = QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name);
+    //     m_sDeviceName = QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name);
     m_sDeviceName = QString("%1").arg(inputDeviceInfo->name);
 
     if (inputDeviceInfo) {
@@ -66,11 +66,11 @@ int PortMidiController::open()
             if (debugging()) qDebug() << "PortMidiController: Opening" << m_pInputDeviceInfo->name << "index" << m_iInputDeviceIndex << "for input";
 
             err = Pm_OpenInput( &m_pInputStream,
-                    m_iInputDeviceIndex,
-                    NULL, //No drive hacks
-                    MIXXX_PORTMIDI_BUFFER_LEN,
-                    NULL,
-                    NULL);
+                                m_iInputDeviceIndex,
+                                NULL, //No drive hacks
+                                MIXXX_PORTMIDI_BUFFER_LEN,
+                                NULL,
+                                NULL);
 
             if( err != pmNoError )
             {
@@ -86,12 +86,12 @@ int PortMidiController::open()
             if (debugging()) qDebug() << "PortMidiController: Opening" << m_pOutputDeviceInfo->name << "index" << m_iOutputDeviceIndex << "for output";
 
             err = Pm_OpenOutput( &m_pOutputStream,
-                    m_iOutputDeviceIndex,
-                    NULL, // No driver hacks
-                    0,      // No buffering
-                    NULL, // Use PortTime for timing
-                    NULL, // No time info
-                    0);   // No latency compensation.
+                                 m_iOutputDeviceIndex,
+                                 NULL, // No driver hacks
+                                 0,      // No buffering
+                                 NULL, // Use PortTime for timing
+                                 NULL, // No time info
+                                 0);   // No latency compensation.
 
             if( err != pmNoError )
             {

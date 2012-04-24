@@ -39,16 +39,19 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
 };
 
 class Hss1394Controller : public MidiController {
+    Q_OBJECT
   public:
     Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
     virtual ~Hss1394Controller();
 
-    int open();
-    int close();
+  private slots:
+    virtual int open();
+    virtual int close();
+
+  private:
     void send(unsigned int word);
     void send(QByteArray data);
 
-  protected:
     hss1394::TNodeInfo m_deviceInfo;
     int m_iDeviceIndex;
     static QList<QString> m_deviceList;

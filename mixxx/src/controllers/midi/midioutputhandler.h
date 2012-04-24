@@ -1,12 +1,12 @@
 /**
-* @file midioutputhandler.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Tue 11 Feb 2012
-* @brief Static MIDI output mapping handler
-*
-* This class listens to a control object and sends a midi message based on the
-* value.
-*/
+ * @file midioutputhandler.h
+ * @author Sean Pappalardo spappalardo@mixxx.org
+ * @date Tue 11 Feb 2012
+ * @brief Static MIDI output mapping handler
+ *
+ * This class listens to a control object and sends a midi message based on the
+ * value.
+ */
 
 #ifndef MIDIOUTPUTHANDLER_H
 #define MIDIOUTPUTHANDLER_H
@@ -17,34 +17,34 @@ class MidiController;   // forward declaration
 
 class MidiOutputHandler : QObject {
     Q_OBJECT
-    public:
-        MidiOutputHandler(QString group, QString key, MidiController* controller,
-                          float min, float max,
-                          unsigned char status, unsigned char midino,
-                          unsigned char on, unsigned char off);
-        ~MidiOutputHandler();
+  public:
+    MidiOutputHandler(QString group, QString key, MidiController* controller,
+                      float min, float max,
+                      unsigned char status, unsigned char midino,
+                      unsigned char on, unsigned char off);
+    virtual ~MidiOutputHandler();
 
-        bool validate();
-        void update();
+    bool validate();
+    void update();
 
-        bool dupes;
+    bool dupes;
 
-    public slots:
-        void controlChanged(double value);
+  public slots:
+    void controlChanged(double value);
 
-    private:
-        ControlObject* m_cobj;
-        float m_min;
-        float m_max;
-        unsigned char m_status;
-        unsigned char m_midino;
-        unsigned char m_on;
-        unsigned char m_off;
+  private:
+    ControlObject* m_cobj;
+    float m_min;
+    float m_max;
+    unsigned char m_status;
+    unsigned char m_midino;
+    unsigned char m_on;
+    unsigned char m_off;
 
-        MidiController* m_pController;
-        unsigned char m_controlno;
+    MidiController* m_pController;
+    unsigned char m_controlno;
 
-        double m_lastVal;
+    double m_lastVal;
 };
 
 #endif

@@ -15,9 +15,11 @@
 #include "controllers/midi/midicontroller.h"
 
 class MidiEnumerator : public ControllerEnumerator {
+    Q_OBJECT
   public:
     MidiEnumerator();
     virtual ~MidiEnumerator();
+
     virtual QList<Controller*> queryDevices() = 0;
 };
 
