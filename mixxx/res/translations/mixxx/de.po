@@ -3,14 +3,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-22 18:05-0400\n"
-"PO-Revision-Date: 2012-04-22 21:01+0000\n"
+"POT-Creation-Date: 2012-04-23 14:07-0400\n"
+"PO-Revision-Date: 2012-04-23 18:38+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-23 04:40+0000\n"
+"X-Launchpad-Export-Date: 2012-04-24 04:40+0000\n"
 "X-Generator: Launchpad (build 15135)\n"
 "Language: de\n"
 
@@ -472,7 +472,7 @@ msgstr "Löst die Überblendung zum nächten Titel aus."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Überblenden"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
@@ -960,7 +960,7 @@ msgid "Pitchbend sensitivity"
 msgstr "Feinheit der Tonhöhenveränderung"
 
 #: DlgPrefControlsDlg#25
-msgid "Waveform dislay"
+msgid "Waveform Display"
 msgstr "Wellenformanzeige"
 
 #: DlgPrefControlsDlg#26
@@ -2793,7 +2793,7 @@ msgstr "Audio-Gerät beschäftigt"
 
 #: MixxxApp#5
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr "Holen Sie sich <b>Hilfe</b> aus dem Mixxx-Wiki."
+msgstr "Erhalten SIe  <b>Hilfe</b> aus dem Mixxx Wiki."
 
 #: MixxxApp#6
 msgid ""
@@ -2859,15 +2859,15 @@ msgstr "Weiter"
 
 #: MixxxApp#18
 msgid "Load track to Deck %1"
-msgstr ""
+msgstr "Titel in Deck %1 laden"
 
 #: MixxxApp#19
 msgid "Loads a track in deck %1"
-msgstr ""
+msgstr "Lädt einen Titel in Deck %1"
 
 #: MixxxApp#20
 msgid "Open"
-msgstr ""
+msgstr "Öffnen"
 
 #: MixxxApp#21
 msgid "Ctrl+O"
@@ -2883,7 +2883,7 @@ msgstr "&Beenden"
 
 #: MixxxApp#24
 msgid "Quits Mixxx"
-msgstr ""
+msgstr "Beendet Mixxx"
 
 #: MixxxApp#25
 msgid "Ctrl+Q"
@@ -2895,7 +2895,7 @@ msgstr "&Bibliothek erneut einlesen"
 
 #: MixxxApp#27
 msgid "Rescans library folders for changes to tracks."
-msgstr ""
+msgstr "Liest die Bilbliothek für Änderungen an Titeln erneut ein."
 
 #: MixxxApp#28
 msgid "Add &new playlist"
@@ -2915,11 +2915,11 @@ msgstr "Strg+C"
 
 #: MixxxApp#32
 msgid "Deck %1 is currently playing a track."
-msgstr ""
+msgstr "Deck %1 spielt derzeit einen Titel."
 
 #: MixxxApp#33
 msgid "Are you sure you want to load a new track?"
-msgstr ""
+msgstr "Möchten Sie wirklich einen neuen Titel laden?"
 
 #: MixxxApp#34
 msgid "&Full Screen"
@@ -2936,6 +2936,7 @@ msgstr "&Einstellungen"
 #: MixxxApp#37
 msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr ""
+"Mixxx Einstellungen verändern (z.B. Wiedergabe, MIDI, Steuerelemente)"
 
 #: MixxxApp#38
 msgid "Ctrl+P"
@@ -2951,7 +2952,7 @@ msgstr "&Community Unterstützung"
 
 #: MixxxApp#41
 msgid "Get help with Mixxx"
-msgstr ""
+msgstr "Hilfe zu Mixxx erhalten"
 
 #: MixxxApp#42
 msgid "&User Manual"
@@ -3044,8 +3045,7 @@ msgstr "Über diese Anwendung"
 
 #: MixxxApp#64
 msgid "A sampler is currently playing. Exit Mixxx?"
-msgstr ""
-"Ein Lied wird momentan noch abgespielt. Soll Mixxx wirklich beendet werden?"
+msgstr "Ein Sampler spielt derzeit. Mixxx beenden?"
 
 #: MixxxApp#65
 msgid "&File"
@@ -3130,7 +3130,7 @@ msgstr "Datei konnte nicht erstellt werden"
 
 #: ParserCsv#4
 msgid "Readable text Export Failed"
-msgstr ""
+msgstr "Exportieren des Lesbaren Textes fehlgeschlagen"
 
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
@@ -3390,7 +3390,7 @@ msgstr ""
 
 #: Ui#12
 msgid "Preferences"
-msgstr ""
+msgstr "Einstellungen"
 
 #: Ui#13
 msgctxt "Ui#13"
