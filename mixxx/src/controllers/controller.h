@@ -20,15 +20,13 @@
 
 class Controller : public QObject, ControllerPresetVisitor {
     Q_OBJECT
-    friend class ControllerManager; // accesses lots of our stuff, but in the same thread
-    friend class ControllerProcessor;
   public:
     Controller();
     virtual ~Controller();  // Subclass should call close() at minimum.
 
-    /** Returns the extension for the controller (type) preset files.
-        This is used by the ControllerManager to display only relevant
-        preset files for the controller (type.) */
+    // Returns the extension for the controller (type) preset files.  This is
+    // used by the ControllerManager to display only relevant preset files for
+    // the controller (type.)
     virtual QString presetExtension();
     inline QString defaultPreset();
 
@@ -46,14 +44,24 @@ class Controller : public QObject, ControllerPresetVisitor {
     void setConfig(ConfigObject<ConfigValue>* config) {
         m_pConfig = config;
     }
-
-    bool isOpen() const { return m_bIsOpen; }
-    bool isOutputDevice() const { return m_bIsOutputDevice; }
-    bool isInputDevice() const { return m_bIsInputDevice; }
-    QString getName() const { return m_sDeviceName; }
-    bool debugging() const { return m_bDebug; }
-    bool isMappable() const { return getPreset()->isMappable(); }
-
+    bool isOpen() const {
+        return m_bIsOpen;
+    }
+    bool isOutputDevice() const {
+        return m_bIsOutputDevice;
+    }
+    bool isInputDevice() const {
+        return m_bIsInputDevice;
+    }
+    QString getName() const {
+        return m_sDeviceName;
+    }
+    bool debugging() const {
+        return m_bDebug;
+    }
+    bool isMappable() const {
+        return getPreset()->isMappable();
+    }
     void setPolling(bool polling) {
         m_bPolling = polling;
     }
@@ -67,45 +75,45 @@ class Controller : public QObject, ControllerPresetVisitor {
   // Making these slots protected/private ensures that other parts of Mixxx
   // can only signal them, preventing thread contention
   protected slots:
-    /** Handles packets of raw bytes and passes them to an ".incomingData"
-        script function that is assumed to exist.
-        (Sub-classes may want to reimplement this if they have an alternate
-        way of handling such data.) */
+    // Handles packets of raw bytes and passes them to an ".incomingData" script
+    // function that is assumed to exist. (Sub-classes may want to reimplement
+    // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray data);
 
-    /** Initializes the controller engine */
+    // Initializes the controller engine
     virtual void applyPreset();
 
     void learn(MixxxControl control);
     void cancelLearn();
 
-    virtual void clearInputMappings() {};
-    virtual void clearOutputMappings() {};
+    virtual void clearInputMappings() {}
+    virtual void clearOutputMappings() {}
 
   protected:
-    /** To be called in sub-class' open() functions after opening the
-        device but before starting any input polling/processing. */
+    // To be called in sub-class' open() functions after opening the device but
+    // before starting any input polling/processing.
     void startEngine();
-    /** To be called in sub-class' close() functions after stopping any
-        input polling/processing but before closing the device. */
+    // To be called in sub-class' close() functions after stopping any input
+    // polling/processing but before closing the device.
     void stopEngine();
+
     Q_INVOKABLE void send(QList<int> data, unsigned int length);
 
-    /** Verbose and unique device name suitable for display. */
+    // Verbose and unique device name suitable for display.
     QString m_sDeviceName;
-    /** Flag indicating if this device supports output (receiving data from Mixxx)*/
+    // Flag indicating if this device supports output (receiving data from
+    // Mixxx)
     bool m_bIsOutputDevice;
-    /** Flag indicating if this device supports input (sending data to Mixxx)*/
+    // Flag indicating if this device supports input (sending data to Mixxx)
     bool m_bIsInputDevice;
-    /** Indicates whether or not the device has been opened for input/output. */
+    // Indicates whether or not the device has been opened for input/output.
     bool m_bIsOpen;
-    /** Specifies whether or not we should dump incoming data to the console at runtime. This is useful
-        for end-user debugging and script-writing. */
+    // Specifies whether or not we should dump incoming data to the console at
+    // runtime. This is useful for end-user debugging and script-writing.
     bool m_bDebug;
 
-    ControllerEngine *m_pEngine;
-    ConfigObject<ConfigValue> *m_pConfig;
-
+    ControllerEngine* m_pEngine;
+    ConfigObject<ConfigValue>* m_pConfig;
     bool m_bLearning;
     MixxxControl m_controlToLearn;
 
@@ -118,9 +126,12 @@ class Controller : public QObject, ControllerPresetVisitor {
   private:
     // This must be reimplmented by sub-classes desiring to send raw bytes to a
     // controller.
-    virtual void send(QByteArray data);
+    virtual void send(QByteArray data) = 0;
 
     bool m_bPolling;
+
+    friend class ControllerManager; // accesses lots of our stuff, but in the same thread
+    friend class ControllerProcessor;
 };
 
 #endif

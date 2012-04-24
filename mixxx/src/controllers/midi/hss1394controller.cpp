@@ -7,27 +7,20 @@
 
 #include "controllers/midi/hss1394controller.h"
 
-// HSS1394 Channel listener stuff
-
-DeviceChannelListener::DeviceChannelListener(int id, QString name,
-                                             MidiController* controller)
-                                             : QObject(),hss1394::ChannelListener() {
-    m_iId = id;
-    m_sName = name;
-    m_pController = controller;
+DeviceChannelListener::DeviceChannelListener(QString name)
+        : QObject(),
+          hss1394::ChannelListener(),
+          m_sName(name) {
 }
 
 DeviceChannelListener::~DeviceChannelListener() {
 }
 
 void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize) {
-    // Called when data has arrived.
-    //! This call will occur inside a separate thread.
-
     unsigned int i = 0;
 
     // If multiple three-byte messages arrive right next to each other, handle them all
-    while (i<uBufferSize) {
+    while (i < uBufferSize) {
         unsigned char status = pBuffer[i];
         unsigned char opcode = status & 0xF0;
         unsigned char channel = status & 0x0F;
@@ -39,38 +32,40 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
             case MIDI_AFTERTOUCH:
             case MIDI_CC:
             case MIDI_PITCH_BEND:
-                note = pBuffer[i+1];
-                velocity = pBuffer[i+2];
-
-                emit(incomingData(status, note, velocity));
-                i+=3;
+                if (i + 2 < uBufferSize) {
+                    note = pBuffer[i+1];
+                    velocity = pBuffer[i+2];
+                    emit(incomingData(status, note, velocity));
+                } else {
+                    qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
+                }
+                i += 3;
                 break;
             default:
                 // Handle platter messages and any others that are not 3 bytes
                 QByteArray outArray((char*)pBuffer,uBufferSize);
                 emit(incomingData(outArray));
-                i=uBufferSize;
+                i = uBufferSize;
                 break;
         }
     }
 }
 
 void DeviceChannelListener::Disconnected() {
-    qDebug()<<"HSS1394 device" << m_sName << "disconnected";
+    qDebug() << "HSS1394 device" << m_sName << "disconnected";
 }
 
 void DeviceChannelListener::Reconnected() {
-    qDebug()<<"HSS1394 device" << m_sName << "re-connected";
+    qDebug() << "HSS1394 device" << m_sName << "re-connected";
 }
 
-// Main Hss1394Controller code
-
 Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
-                                     int deviceIndex) : MidiController() {
-    m_deviceInfo = deviceInfo;
-    m_iDeviceIndex = deviceIndex;
-
-    //Note: We prepend the input stream's index to the device's name to prevent duplicate devices from causing mayhem.
+                                     int deviceIndex)
+        : MidiController(),
+          m_deviceInfo(deviceInfo),
+          m_iDeviceIndex(deviceIndex) {
+    // Note: We prepend the input stream's index to the device's name to prevent
+    // duplicate devices from causing mayhem.
     //m_sDeviceName = QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str()));
     m_sDeviceName = QString("%1").arg(QString(deviceInfo.sName.c_str()));
 
@@ -79,22 +74,23 @@ Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
     m_bIsOutputDevice = true;
 }
 
-Hss1394Controller::~Hss1394Controller()
-{
+Hss1394Controller::~Hss1394Controller() {
     close();
 }
 
-int Hss1394Controller::open()
-{
+int Hss1394Controller::open() {
     if (m_bIsOpen) {
         qDebug() << "HSS1394 device" << m_sDeviceName << "already open";
         return -1;
     }
 
-    if (m_sDeviceName == MIXXX_HSS1394_NO_DEVICE_STRING)
+    if (m_sDeviceName == MIXXX_HSS1394_NO_DEVICE_STRING) {
         return -1;
+    }
 
-    if (debugging()) qDebug() << "Hss1394Controller: Opening" << m_sDeviceName << "index" << m_iDeviceIndex;
+    if (debugging()) {
+        qDebug() << "Hss1394Controller: Opening" << m_sDeviceName << "index" << m_iDeviceIndex;
+    }
 
     using namespace hss1394;
 
@@ -105,8 +101,7 @@ int Hss1394Controller::open()
         return -1;
     }
 
-    m_pChannelListener = new DeviceChannelListener(m_iDeviceIndex, m_sDeviceName, this);
-
+    m_pChannelListener = new DeviceChannelListener(m_sDeviceName);
     connect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
             this, SLOT(receive(QByteArray)));
     connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
@@ -141,17 +136,16 @@ int Hss1394Controller::open()
     return 0;
 }
 
-int Hss1394Controller::close()
-{
+int Hss1394Controller::close() {
     if (!m_bIsOpen) {
         qDebug() << "HSS1394 device" << m_sDeviceName << "already closed";
         return -1;
     }
 
     disconnect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
-            this, SLOT(receive(QByteArray)));
+               this, SLOT(receive(QByteArray)));
     disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
-            this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
+               this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
 
     stopEngine();
     MidiController::close();
@@ -173,7 +167,6 @@ int Hss1394Controller::close()
 }
 
 void Hss1394Controller::send(unsigned int word) {
-
     unsigned char data[2];
     data[0] = word & 0xFF;
     data[1] = (word >> 8) & 0xFF;
@@ -192,10 +185,9 @@ void Hss1394Controller::send(unsigned int word) {
     //}
 }
 
-// The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
-void Hss1394Controller::send(QByteArray data)
-{
-    int bytesSent = m_pChannel->SendChannelBytes((unsigned char*)(data.constData()),data.size());
+void Hss1394Controller::send(QByteArray data) {
+    int bytesSent = m_pChannel->SendChannelBytes(
+        (unsigned char*)data.constData(), data.size());
 
     //if (bytesSent != length) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";

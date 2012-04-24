@@ -24,8 +24,10 @@
 class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     Q_OBJECT
   public:
-    DeviceChannelListener(int id, QString name, MidiController* controller);
-    ~DeviceChannelListener();
+    DeviceChannelListener(QString name);
+    virtual ~DeviceChannelListener();
+    // Called when data has arrived. This call will occur inside a separate
+    // thread.
     void Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize);
     void Disconnected();
     void Reconnected();
@@ -33,9 +35,7 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     void incomingData(unsigned char status, unsigned char control, unsigned char value);
     void incomingData(QByteArray data);
   private:
-    int m_iId;
     QString m_sName;
-    MidiController *m_pController;
 };
 
 class Hss1394Controller : public MidiController {
@@ -50,6 +50,8 @@ class Hss1394Controller : public MidiController {
 
   private:
     void send(unsigned int word);
+    // The sysex data must already contain the start byte 0xf0 and the end byte
+    // 0xf7.
     void send(QByteArray data);
 
     hss1394::TNodeInfo m_deviceInfo;

@@ -43,7 +43,9 @@ class MidiController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
-    bool isMappable() const { return true; };
+    bool isMappable() const {
+        return true;
+    }
 
   protected:
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
@@ -63,8 +65,6 @@ class MidiController : public Controller {
     void clearOutputMappings();
 
   private slots:
-    //virtual int open() = 0;
-
     // Initializes the engine and static output mappings.
     void applyPreset();
 
