@@ -28,6 +28,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_trackInfoObject(0),
     m_height(-1),
     m_width(-1) {
+    //qDebug() << "WaveformWidgetRenderer";
 
     m_firstDisplayedPosition = 0.0;
     m_lastDisplayedPosition = 0.0;
@@ -67,6 +68,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
 }
 
 WaveformWidgetRenderer::~WaveformWidgetRenderer() {
+    //qDebug() << "~WaveformWidgetRenderer";
+
     for( int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
@@ -89,6 +92,8 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 }
 
 void WaveformWidgetRenderer::init() {
+
+    //qDebug() << "WaveformWidgetRenderer::init";
 
     m_playPosControlObject = new ControlObjectThreadMain(
                 ControlObject::getControl( ConfigKey(m_group,"visual_playposition")));
@@ -175,28 +180,28 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
-        int systemMax = -1;
-        int frameMax = -1;
-        for( int i = 0; i < 100; ++i) {
-            frameMax = math_max( frameMax, m_lastFramesTime[i]);
-            systemMax = math_max( systemMax, m_lastSystemFramesTime[i]);
-        }
+    int systemMax = -1;
+    int frameMax = -1;
+    for( int i = 0; i < 100; ++i) {
+        frameMax = math_max( frameMax, m_lastFramesTime[i]);
+        systemMax = math_max( systemMax, m_lastSystemFramesTime[i]);
+    }
 
-        //hud debug display
-        painter->drawText(1,12,
-                          QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
-                          QString::number(frameMax).rightJustified(2,'0') + ")" +
-                          QString::number(m_lastSystemFrameTime) + "(" +
-                          QString::number(systemMax) + ")");
+    //hud debug display
+    painter->drawText(1,12,
+                      QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
+                      QString::number(frameMax).rightJustified(2,'0') + ")" +
+                      QString::number(m_lastSystemFrameTime) + "(" +
+                      QString::number(systemMax) + ")");
 
-        painter->drawText(1,m_height-1,
-                          QString::number(m_playPos) + " [" +
-                          QString::number(m_firstDisplayedPosition) + "-" +
-                          QString::number(m_lastDisplayedPosition) + "]" +
-                          QString::number(m_rate) + " | " +
-                          QString::number(m_gain) + " | " +
-                          QString::number(m_rateDir) + " | " +
-                          QString::number(m_zoomFactor));
+    painter->drawText(1,m_height-1,
+                      QString::number(m_playPos) + " [" +
+                      QString::number(m_firstDisplayedPosition) + "-" +
+                      QString::number(m_lastDisplayedPosition) + "]" +
+                      QString::number(m_rate) + " | " +
+                      QString::number(m_gain) + " | " +
+                      QString::number(m_rateDir) + " | " +
+                      QString::number(m_zoomFactor));
 
     m_lastFrameTime = m_timer->elapsed();
     m_timer->restart();
