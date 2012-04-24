@@ -3,34 +3,37 @@
 * @author Sean M. Pappalardo  spappalardo@mixxx.org
 * @date Mon May 2 2011
 * @brief Configuration dialog for a DJ controller
-*
 */
+
 #ifndef DLGPREFCONTROLLER_H_
 #define DLGPREFCONTROLLER_H_
 
 #include <QtGui>
-#include "controllers/controller.h"
+
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 
 // Forward declarations
+class Controller;
 class ControllerManager;
 
 class DlgPrefController : public QWidget {
     Q_OBJECT
   public:
     DlgPrefController(QWidget *parent, Controller* controller,
-                        ControllerManager* controllerManager,
-                        ConfigObject<ConfigValue> *pConfig);
+                      ControllerManager* controllerManager,
+                      ConfigObject<ConfigValue> *pConfig);
     virtual ~DlgPrefController();
 
   public slots:
-    void slotApply();
+    // Called when the OK button is pressed.
+    virtual void slotApply();
+    // Called when the dialog is displayed.
     virtual void slotUpdate();
     virtual void slotDeviceState(int state);
+    // Loads the specified XML preset.
     void slotLoadPreset(const QString &name);
-
-    //Mark that we need to apply the settings.
+    // Mark that we need to apply the settings.
     void slotDirty ();
 
   signals:
@@ -41,12 +44,13 @@ class DlgPrefController : public QWidget {
     void applyPreset();
 
   protected:
-    QGridLayout *layout;
-    QSpacerItem *verticalSpacer;
-
-    Controller* m_pController;
-
-    Ui::DlgPrefControllerDlg m_ui;
+    Controller* getController() const {
+        return m_pController;
+    }
+    void addWidgetToLayout(QWidget* pWidget);
+    bool isEnabled() const {
+        return m_ui.chkEnabledDevice->isChecked();
+    }
 
   private:
     void savePreset(QString path);
@@ -55,10 +59,13 @@ class DlgPrefController : public QWidget {
     void enableDevice();
     void disableDevice();
 
-    bool m_bDirty;
-    int currentGroupRow;
-    ConfigObject<ConfigValue> *m_pConfig;
+    Ui::DlgPrefControllerDlg m_ui;
+    ConfigObject<ConfigValue>* m_pConfig;
     ControllerManager* m_pControllerManager;
+    Controller* m_pController;
+    QGridLayout* m_pLayout;
+    QSpacerItem* m_pVerticalSpacer;
+    bool m_bDirty;
 };
 
 #endif /*DLGPREFCONTROLLER_H_*/

@@ -98,7 +98,7 @@ void ControllerManager::updateControllerList() {
         newDeviceList.append(pEnumerator->queryDevices());
     }
 
-    locke.relock();
+    locker.relock();
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
         locker.unlock();

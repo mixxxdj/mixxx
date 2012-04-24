@@ -24,7 +24,7 @@ class DlgPrefMappableController : public DlgPrefController {
     void clearInputs();
     void clearOutputs();
 
-  public slots:
+  private slots:
     void slotShowLearnDialog();
     void slotUpdate();
     void slotDeviceState(int state);
