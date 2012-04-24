@@ -301,7 +301,9 @@ bool ControllerManager::loadPreset(Controller* pController,
     if (!QFile::exists(filepath)) {
         filepath = m_pConfig->getConfigPath()
                 .append("controllers/") + filenameWithExt;
-    } else {
+    }
+
+    if (QFile::exists(filepath)) {
         ControllerPreset* preset = handler->load(
             filepath, filename, force);
         if (preset == NULL) {

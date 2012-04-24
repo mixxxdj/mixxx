@@ -67,8 +67,8 @@ class Controller : public QObject, ControllerPresetVisitor {
   signals:
     void learnedMessage(QString message);
 
-  // Making these slots protected/private ensures that other parts of Mixxx
-  // can only signal them, preventing thread contention
+  // Making these slots protected/private ensures that other parts of Mixxx can
+  // only signal them which allows us to use no locks.
   protected slots:
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement

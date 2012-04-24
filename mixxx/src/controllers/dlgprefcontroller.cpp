@@ -3,11 +3,11 @@
 * @author Sean M. Pappalardo  spappalardo@mixxx.org
 * @date Mon May 2 2011
 * @brief Configuration dialog for a DJ controller
-*
 */
 
 #include <QtGui>
 #include <QDebug>
+
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
