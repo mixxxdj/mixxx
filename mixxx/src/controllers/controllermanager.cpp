@@ -70,8 +70,10 @@ void ControllerManager::slotShutdown() {
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
     // paths from accessing them.
+    QMutexLocker locker(&m_mutex);
     QList<ControllerEnumerator*> enumerators = m_enumerators;
     m_enumerators.clear();
+    m_mutex.unlock();
 
     // Delete enumerators and they'll delete their Devices
     foreach (ControllerEnumerator* pEnumerator, enumerators) {
@@ -83,17 +85,20 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
+    QMutexLocker locker(&m_mutex);
     if (m_enumerators.isEmpty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
         return;
     }
+    QList<ControllerEnumerator*> enumerators = m_enumerators;
+    locker.unlock();
 
     QList<Controller*> newDeviceList;
-    foreach (ControllerEnumerator* pEnumerator, m_enumerators) {
+    foreach (ControllerEnumerator* pEnumerator, enumerators) {
         newDeviceList.append(pEnumerator->queryDevices());
     }
 
-    QMutexLocker locker(&m_mControllerList);
+    locke.relock();
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
         locker.unlock();
@@ -101,12 +106,17 @@ void ControllerManager::updateControllerList() {
     }
 }
 
+QList<Controller*> ControllerManager::getControllers() const {
+    QMutexLocker locker(&m_mutex);
+    return m_controllers;
+}
+
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
 
-    m_mControllerList.lock();
+    QMutexLocker locker(&m_mutex);
     QList<Controller*> controllers = m_controllers;
-    m_mControllerList.unlock();
+    locker.unlock();
 
     // Create a list of controllers filtered to match the given input/output
     // options.
@@ -138,7 +148,7 @@ int ControllerManager::slotSetUpDevices() {
             pController->close();
         }
 
-        const QString ofilename = name.replace(" ", "_");
+        const QString ofilename = presetFilenameFromName(name);
         QString filename = ofilename;
         int i=1;
         while (filenames.contains(filename)) {
@@ -147,7 +157,9 @@ int ControllerManager::slotSetUpDevices() {
         }
         filenames.insert(filename);
 
-        if (!loadPreset(pController, name, true)) continue;
+        if (!loadPreset(pController, name, true)) {
+            continue;
+        }
 
         //qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", ofilename));
 
@@ -222,12 +234,12 @@ QList<QString> ControllerManager::getPresetList(QString extension) {
     // Paths to search for controller presets
     QList<QString> controllerDirPaths;
     QString configPath = m_pConfig->getConfigPath();
-//     controllerDirPaths.append(configPath.append("presets/"));
-//     controllerDirPaths.append(configPath.append("midi/"));
+    //controllerDirPaths.append(configPath.append("presets/"));
+    //controllerDirPaths.append(configPath.append("midi/"));
     controllerDirPaths.append(configPath.append("controllers/"));
 
-    // Should we also show the presets from USER_PRESETS_PATH?
-    //  That could be confusing.
+    // Should we also show the presets from USER_PRESETS_PATH? That could be
+    // confusing.
 
     QList<QString> presets;
     foreach (QString dirPath, controllerDirPaths) {
@@ -261,22 +273,23 @@ bool ControllerManager::loadPreset(Controller* pController,
     QString filepath = USER_PRESETS_PATH + filenameWithExt;
 
     // If the file isn't present in the user's directory, check res/
-    if (!QFile::exists(filepath)) filepath = m_pConfig->getConfigPath()
-                                    .append("controllers/") + filenameWithExt;
-
-    if (QFile::exists(filepath)) {
-        ControllerPreset* preset = handler->load(filepath, filename,
-                                                 force);
+    if (!QFile::exists(filepath)) {
+        filepath = m_pConfig->getConfigPath()
+                .append("controllers/") + filenameWithExt;
+    } else {
+        ControllerPreset* preset = handler->load(
+            filepath, filename, force);
         if (preset == NULL) {
             qWarning() << "Unable to load preset" << filepath;
-        }
-        else {
+        } else {
             pController->setPreset(*preset);
-            // Save the file path/name in the config so it can be auto-loaded at startup next time
-            m_pConfig->set(ConfigKey("[ControllerPreset]",
-                                     pController->getName().replace(" ", "_")),
-                           filepath);
-//             qDebug() << "Successfully loaded preset" << filepath;
+            // Save the file path/name in the config so it can be auto-loaded at
+            // startup next time
+            m_pConfig->set(
+                ConfigKey("[ControllerPreset]",
+                          presetFilenameFromName(pController->getName())),
+                filepath);
+            //qDebug() << "Successfully loaded preset" << filepath;
             return true;
         }
     }
@@ -294,7 +307,7 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
             continue;
         }
         QString name = pController->getName();
-        QString ofilename = name.replace(" ", "_");
+        QString ofilename = presetFilenameFromName(name);
         QString filename = ofilename;
         int i=1;
         while (filenames.contains(filename)) {
@@ -303,10 +316,10 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         }
         filenames.insert(filename);
         QString presetPath = USER_PRESETS_PATH + filename
-                                + pController->presetExtension();
+                + pController->presetExtension();
         if (!pController->savePreset(presetPath)) {
             qWarning() << "Failed to write preset for device"
-                     << name << "to" << presetPath;
+                       << name << "to" << presetPath;
         }
     }
 }

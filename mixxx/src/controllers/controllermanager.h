@@ -21,10 +21,9 @@ class ControllerManager : public QObject {
     ControllerManager(ConfigObject<ConfigValue> * pConfig);
     virtual ~ControllerManager();
 
-    QList<Controller*> getControllers() { return m_controllers; };
+    QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     QList<QString> getPresetList(QString extension);
-    //ConfigObject<ConfigValue>* getDeviceSettings() { return m_pDeviceSettings; };
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit(requestSetUpDevices()); };
@@ -59,12 +58,16 @@ class ControllerManager : public QObject {
     void startPolling();
     void stopPolling();
 
+    static QString presetFilenameFromName(QString name) {
+        return name.replace(" ", "_");
+    }
+
   private:
     ConfigObject<ConfigValue> *m_pConfig;
-    QList<Controller*> m_controllers;
     QTimer m_pollTimer;
-    QMutex m_mControllerList;
+    mutable QMutex m_mutex;
     QList<ControllerEnumerator*> m_enumerators;
+    QList<Controller*> m_controllers;
     QThread* m_pThread;
 };
 

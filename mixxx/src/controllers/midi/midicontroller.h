@@ -43,10 +43,6 @@ class MidiController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
-    bool isMappable() const {
-        return true;
-    }
-
   protected:
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
     // Alias for send()
@@ -69,7 +65,7 @@ class MidiController : public Controller {
     void applyPreset();
 
   private:
-    virtual void send(unsigned int word);
+    virtual void send(unsigned int word) = 0;
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
     void updateAllOutputs();

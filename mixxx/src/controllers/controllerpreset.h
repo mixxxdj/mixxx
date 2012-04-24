@@ -31,9 +31,7 @@ class ControllerPreset {
     }
 
     virtual void accept(ControllerPresetVisitor* visitor) const = 0;
-    virtual bool isMappable() const {
-        return false;
-    }
+    virtual bool isMappable() const = 0;
 
     // Data elements
     QList<QString> scriptFileNames;

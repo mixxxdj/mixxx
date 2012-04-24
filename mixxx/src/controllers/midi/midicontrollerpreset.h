@@ -30,7 +30,9 @@ class MidiControllerPreset : public ControllerPreset {
         }
     }
 
-    bool isMappable() const { return true; }
+    virtual bool isMappable() const {
+        return true;
+    }
 
     // Additional data elements specific to this controller type
     QHash<uint16_t, QPair<MixxxControl, MidiOptions> > mappings;

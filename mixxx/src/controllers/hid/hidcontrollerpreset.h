@@ -14,6 +14,10 @@ class HidControllerPreset : public ControllerPreset {
             visitor->visit(this);
         }
     }
+
+    virtual bool isMappable() const {
+        return false;
+    }
 };
 
 #endif /* HIDCONTROLLERPRESET_H */

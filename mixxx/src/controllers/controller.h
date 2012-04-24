@@ -56,8 +56,9 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline bool debugging() const {
         return m_bDebug;
     }
-    inline bool isMappable() const {
-        return getPreset()->isMappable();
+    virtual bool isMappable() const {
+        const ControllerPreset* pPreset = getPreset();
+        return pPreset ? pPreset->isMappable() : false;
     }
     inline bool isLearning() const {
         return m_bLearning;
@@ -100,7 +101,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline ControllerEngine* getEngine() const {
         return m_pEngine;
     }
-
     inline void setDeviceName(QString deviceName) {
         m_sDeviceName = deviceName;
     }

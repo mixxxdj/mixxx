@@ -498,8 +498,3 @@ void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, uns
             (((unsigned int)byte1) << 8) | status;
     send(word);
 }
-
-void MidiController::send(unsigned int word) {
-    Q_UNUSED(word);
-    qDebug() << "MIDI short message sending not yet implemented for this API or platform";
-}
