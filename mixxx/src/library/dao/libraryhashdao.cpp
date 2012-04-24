@@ -95,12 +95,12 @@ void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, bool deleted,
     QSqlQuery query(m_database);
     query.prepare(
         QString("UPDATE LibraryHashes "
-                "SET directory_deleted=%1, "
-                "needs_verification=%2 "
-                "WHERE directory_path IN (%3)")
-        .arg(deleted ? "1" : "0",
-             !verified ? "1" : "0",
-             dirPaths.join(",")));
+                "SET directory_deleted=:directory_deleted, "
+                "needs_verification=:needs_verification "
+                "WHERE directory_path IN (%1)")
+        .arg(dirPaths.join(",")));
+    query.bindValue(":directory_deleted", deleted ? 1 : 0);
+    query.bindValue(":needs_verification", !verified ? 1 : 0);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Updating directory status failed.";
     }
