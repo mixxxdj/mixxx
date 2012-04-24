@@ -354,8 +354,10 @@ void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd, bool unremove) {
     QSqlQuery track_lookup(m_database);
     // Mapping of track library record id to mixxx_deleted field.
     QHash<int, QPair<int, bool> > tracksPresent;
-    track_lookup.prepare("SELECT location, id, mixxx_deleted from library WHERE location IN (" +
-                         trackLocationIds.join(",")+ ")");
+    track_lookup.prepare(
+        QString("SELECT location, id, mixxx_deleted from library WHERE location IN (%1)")
+        .arg(trackLocationIds.join(",")));
+
     if (!track_lookup.exec()) {
         LOG_FAILED_QUERY(track_lookup)
                 << "Failed to lookup existing tracks:";
@@ -516,7 +518,7 @@ void TrackDAO::unremoveTrack(int trackId) {
     QSqlQuery query(m_database);
     query.prepare("UPDATE library "
                   "SET mixxx_deleted=0 "
-                  "WHERE id = " + QString("%1").arg(trackId));
+                  "WHERE id = " + QString::number(trackId));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Failed to set track" << trackId << "as undeleted";
@@ -707,8 +709,8 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-        "WHERE library.id=" + QString("%1").arg(id)
-    );
+        "WHERE library.id=:track_id");
+    query.bindValue(":track_id", id);
 
     TrackPointer pTrack;
 
@@ -749,7 +751,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats=:beats "
-                  "WHERE id="+QString::number(trackId));
+                  "WHERE id=:track_id");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
@@ -774,6 +776,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
+    query.bindValue(":track_id", trackId);
 
     BeatsPointer pBeats = pTrack->getBeats();
     QByteArray* pBeatsBlob = NULL;
