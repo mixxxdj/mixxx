@@ -156,6 +156,9 @@ int ControllerManager::slotSetUpDevices() {
         }
         filenames.insert(filename);
 
+        // TODO(Pegasus_RPG) Something is fishy here. We loadPreset on 'name'
+        // but later check that ofilename is set to '1' in the preferences. The
+        // section above (calculating 'filename') is unused also.
         if (!loadPreset(pController, name, true)) {
             continue;
         }
@@ -321,8 +324,21 @@ bool ControllerManager::loadPreset(Controller* pController,
         }
     }
     qWarning() << "Cannot find" << filenameWithExt << "in either res/"
-             << "or the user's Mixxx directory (~/.mixxx/controllers/)";
+               << "or the user's Mixxx directory (~/.mixxx/controllers/)";
     return false;
+}
+
+
+QString firstAvailableFilename(QSet<QString>& filenames,
+                               const QString originalFilename) {
+    QString filename = originalFilename;
+    int i = 1;
+    while (filenames.contains(filename)) {
+        i++;
+        filename = QString("%1--%2").arg(originalFilename, QString::number(i));
+    }
+    filenames.insert(filename);
+    return filename;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {
@@ -334,14 +350,8 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
             continue;
         }
         QString name = pController->getName();
-        QString ofilename = presetFilenameFromName(name);
-        QString filename = ofilename;
-        int i=1;
-        while (filenames.contains(filename)) {
-            i++;
-            filename = QString("%1--%2").arg(ofilename, QString::number(i));
-        }
-        filenames.insert(filename);
+        QString filename = firstAvailableFilename(
+            filenames, presetFilenameFromName(name));
         QString presetPath = USER_PRESETS_PATH + filename
                 + pController->presetExtension();
         if (!pController->savePreset(presetPath)) {
