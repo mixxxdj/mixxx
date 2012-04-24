@@ -13,24 +13,6 @@
 
 //Forward declaration(s)
 class Controller;
-class ControllerManager;
-
-class ControllerProcessor : public QObject {
-    Q_OBJECT
-  public:
-    ControllerProcessor(ControllerManager *pManager);
-    virtual ~ControllerProcessor();
-    // Starts controller polling if it hasn't already been started
-    void startPolling();
-    void stopPolling();
-
-  protected:
-    void timerEvent(QTimerEvent *event);
-
-  private:
-    int m_pollingTimerId;
-    ControllerManager *m_pManager;
-};
 
 /** Manages enumeration/operation/deletion of hardware controllers. */
 class ControllerManager : public QObject {
@@ -72,15 +54,18 @@ class ControllerManager : public QObject {
     void slotShutdown();
     bool loadPreset(Controller* pController, const QString &filename,
                     const bool force);
+    // Calls poll() on all devices that have isPolling() true.
+    void pollDevices();
+    void startPolling();
+    void stopPolling();
 
   private:
-    //ConfigObject<ConfigValue> *m_pDeviceSettings;
     ConfigObject<ConfigValue> *m_pConfig;
     QList<Controller*> m_controllers;
-    ControllerProcessor *m_pProcessor;
+    QTimer m_pollTimer;
     QMutex m_mControllerList;
     QList<ControllerEnumerator*> m_enumerators;
-    QThread *m_pThread;
+    QThread* m_pThread;
 };
 
 #endif  // CONTROLLERMANAGER_H
