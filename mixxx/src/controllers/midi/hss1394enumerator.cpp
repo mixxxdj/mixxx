@@ -44,7 +44,6 @@ QList<Controller*> Hss1394Enumerator::queryDevices() {
             qDebug() << " " << message;
             Hss1394Controller *currentDevice = new Hss1394Controller(
                 tNodeInfo, i);
-            currentDevice->setPolling(needPolling());
             m_devices.push_back(currentDevice);
         }
     }

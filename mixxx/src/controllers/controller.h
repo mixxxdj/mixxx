@@ -41,33 +41,30 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual const ControllerPreset* getPreset() const = 0;
     virtual ControllerPresetFileHandler* getFileHandler() const = 0;
 
-    void setConfig(ConfigObject<ConfigValue>* config) {
-        m_pConfig = config;
-    }
-    bool isOpen() const {
+    inline bool isOpen() const {
         return m_bIsOpen;
     }
-    bool isOutputDevice() const {
+    inline bool isOutputDevice() const {
         return m_bIsOutputDevice;
     }
-    bool isInputDevice() const {
+    inline bool isInputDevice() const {
         return m_bIsInputDevice;
     }
-    QString getName() const {
+    inline QString getName() const {
         return m_sDeviceName;
     }
-    bool debugging() const {
+    inline bool debugging() const {
         return m_bDebug;
     }
-    bool isMappable() const {
+    inline bool isMappable() const {
         return getPreset()->isMappable();
     }
-    void setPolling(bool polling) {
-        m_bPolling = polling;
+    inline bool isLearning() const {
+        return m_bLearning;
     }
-    bool isPolling() {
-        return m_bPolling;
-    }
+
+    // TODO(rryan) make private once
+    virtual bool isPolling() const = 0;
 
   signals:
     void learnedMessage(QString message);
@@ -90,14 +87,55 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual void clearOutputMappings() {}
 
   protected:
+    Q_INVOKABLE void send(QList<int> data, unsigned int length);
+
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
     void startEngine();
+
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
     void stopEngine();
 
-    Q_INVOKABLE void send(QList<int> data, unsigned int length);
+    inline ControllerEngine* getEngine() const {
+        return m_pEngine;
+    }
+
+    inline void setDeviceName(QString deviceName) {
+        m_sDeviceName = deviceName;
+    }
+    inline void setOutputDevice(bool outputDevice) {
+        m_bIsOutputDevice = outputDevice;
+    }
+    inline void setInputDevice(bool inputDevice) {
+        m_bIsInputDevice = inputDevice;
+    }
+    inline void setConfig(ConfigObject<ConfigValue>* config) {
+        m_pConfig = config;
+    }
+    inline void setOpen(bool open) {
+        m_bIsOpen = open;
+    }
+    inline MixxxControl controlToLearn() const {
+        return m_controlToLearn;
+    }
+    inline void setControlToLearn(MixxxControl control) {
+        m_controlToLearn = control;
+    }
+
+  private slots:
+    virtual int open() = 0;
+    virtual int close() = 0;
+    // Requests that the device poll if it is a polling device.
+    virtual void poll() { }
+
+  private:
+    // This must be reimplemented by sub-classes desiring to send raw bytes to a
+    // controller.
+    virtual void send(QByteArray data) = 0;
+
+    ConfigObject<ConfigValue>* m_pConfig;
+    ControllerEngine* m_pEngine;
 
     // Verbose and unique device name suitable for display.
     QString m_sDeviceName;
@@ -111,24 +149,8 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Specifies whether or not we should dump incoming data to the console at
     // runtime. This is useful for end-user debugging and script-writing.
     bool m_bDebug;
-
-    ControllerEngine* m_pEngine;
-    ConfigObject<ConfigValue>* m_pConfig;
     bool m_bLearning;
     MixxxControl m_controlToLearn;
-
-  private slots:
-    virtual int open() = 0;
-    virtual int close() = 0;
-    // Requests that the device poll if it is a polling device.
-    virtual void poll() { }
-
-  private:
-    // This must be reimplmented by sub-classes desiring to send raw bytes to a
-    // controller.
-    virtual void send(QByteArray data) = 0;
-
-    bool m_bPolling;
 
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
     friend class ControllerProcessor;

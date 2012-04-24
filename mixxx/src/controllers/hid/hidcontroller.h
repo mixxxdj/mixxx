@@ -55,6 +55,10 @@ class HidController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
+    virtual bool isPolling() const {
+        return false;
+    }
+
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 

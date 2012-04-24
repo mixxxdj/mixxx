@@ -66,12 +66,12 @@ Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
           m_iDeviceIndex(deviceIndex) {
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
-    //m_sDeviceName = QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str()));
-    m_sDeviceName = QString("%1").arg(QString(deviceInfo.sName.c_str()));
+    //setDeviceName(QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str())));
+    setDeviceName(QString("%1").arg(QString(deviceInfo.sName.c_str())));
 
     // All HSS1394 devices are full-duplex
-    m_bIsInputDevice = true;
-    m_bIsOutputDevice = true;
+    setInputDevice(true);
+    setOutputDevice(true);
 }
 
 Hss1394Controller::~Hss1394Controller() {
@@ -79,43 +79,43 @@ Hss1394Controller::~Hss1394Controller() {
 }
 
 int Hss1394Controller::open() {
-    if (m_bIsOpen) {
-        qDebug() << "HSS1394 device" << m_sDeviceName << "already open";
+    if (isOpen()) {
+        qDebug() << "HSS1394 device" << getName() << "already open";
         return -1;
     }
 
-    if (m_sDeviceName == MIXXX_HSS1394_NO_DEVICE_STRING) {
+    if (getName() == MIXXX_HSS1394_NO_DEVICE_STRING) {
         return -1;
     }
 
     if (debugging()) {
-        qDebug() << "Hss1394Controller: Opening" << m_sDeviceName << "index" << m_iDeviceIndex;
+        qDebug() << "Hss1394Controller: Opening" << getName() << "index" << m_iDeviceIndex;
     }
 
     using namespace hss1394;
 
     m_pChannel = Node::Instance()->OpenChannel(m_iDeviceIndex);
     if (m_pChannel == NULL) {
-        qDebug() << "HSS1394 device" << m_sDeviceName << "could not be opened";
+        qDebug() << "HSS1394 device" << getName() << "could not be opened";
         m_pChannelListener = NULL;
         return -1;
     }
 
-    m_pChannelListener = new DeviceChannelListener(this, m_sDeviceName);
+    m_pChannelListener = new DeviceChannelListener(this, getName());
     connect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
             this, SLOT(receive(QByteArray)));
     connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
 
     if (!m_pChannel->InstallChannelListener(m_pChannelListener)) {
-        qDebug() << "HSS1394 channel listener could not be installed for device" << m_sDeviceName;
+        qDebug() << "HSS1394 channel listener could not be installed for device" << getName();
         delete m_pChannelListener;
         m_pChannelListener = NULL;
         m_pChannel = NULL;
     }
 
     // TODO(XXX): Should be done in script, not in Mixxx
-    if (m_sDeviceName.contains("SCS.1d",Qt::CaseInsensitive)) {
+    if (getName().contains("SCS.1d",Qt::CaseInsensitive)) {
         // If we are an SCS.1d, set the record encoder event timer to fire at 1ms intervals
         //  to match the 1ms scratch timer in the controller engine
         //
@@ -129,16 +129,14 @@ int Hss1394Controller::open() {
             qWarning() << "Unable to set SCS.1d platter timer period.";
     }
 
-    m_bIsOpen = true;
-
+    setOpen(true);
     startEngine();
-
     return 0;
 }
 
 int Hss1394Controller::close() {
-    if (!m_bIsOpen) {
-        qDebug() << "HSS1394 device" << m_sDeviceName << "already closed";
+    if (!isOpen()) {
+        qDebug() << "HSS1394 device" << getName() << "already closed";
         return -1;
     }
 
@@ -153,7 +151,7 @@ int Hss1394Controller::close() {
     // Clean up the HSS1394Node
     using namespace hss1394;
     if (!Node::Instance()->ReleaseChannel(m_pChannel)) {
-        qDebug() << "HSS1394 device" << m_sDeviceName << "could not be released";
+        qDebug() << "HSS1394 device" << getName() << "could not be released";
         return -1;
     }
     if (m_pChannelListener != NULL) {
@@ -161,8 +159,7 @@ int Hss1394Controller::close() {
         m_pChannelListener = NULL;
     }
 
-    m_bIsOpen = false;
-
+    setOpen(false);
     return 0;
 }
 

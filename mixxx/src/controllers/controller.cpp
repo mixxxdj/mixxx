@@ -10,14 +10,15 @@
 #include "controllers/controller.h"
 #include "controllers/defs_controllers.h"
 
-Controller::Controller() : QObject() {
-    m_bIsOutputDevice = false;
-    m_bIsInputDevice = false;
-    m_bIsOpen = false;
-    m_pEngine = NULL;
-    m_bPolling = false;
-    m_bLearning = false;
-
+Controller::Controller()
+        : QObject(),
+          m_pConfig(NULL),
+          m_pEngine(NULL),
+          m_bIsOutputDevice(false),
+          m_bIsInputDevice(false),
+          m_bIsOpen(false),
+          m_bDebug(false),
+          m_bLearning(false) {
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive);

@@ -44,6 +44,10 @@ class Hss1394Controller : public MidiController {
     Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
     virtual ~Hss1394Controller();
 
+    virtual bool isPolling() const {
+        return false;
+    }
+
   private slots:
     virtual int open();
     virtual int close();

@@ -22,8 +22,9 @@ MidiController::~MidiController() {
 }
 
 QString MidiController::defaultPreset() {
-    return USER_PRESETS_PATH.append(m_sDeviceName.right(m_sDeviceName.size()
-            -m_sDeviceName.indexOf(" ")-1).replace(" ", "_")
+    QString name = getName();
+    return USER_PRESETS_PATH.append(name.right(name.size()
+            -name.indexOf(" ")-1).replace(" ", "_")
             + presetExtension());
 }
 
@@ -64,7 +65,7 @@ void MidiController::applyPreset() {
     Controller::applyPreset();
 
     // Only execute this code if this is an output device
-    if (m_bIsOutputDevice) {
+    if (isOutputDevice()) {
         if (m_outputs.count() > 0) {
             destroyOutputHandlers();
         }
@@ -227,13 +228,14 @@ void MidiController::receive(unsigned char status, unsigned char control,
     }
 
     // Learning
-    if (m_bLearning) {
-        if (!m_controlToLearn.isNull()) {
+    if (isLearning()) {
+        MixxxControl control = controlToLearn();
+        if (!control.isNull()) {
             MidiOptions options;
             options.all = 0;
 
             QPair<MixxxControl, MidiOptions> target;
-            target.first = m_controlToLearn;
+            target.first = control;
             target.second = options;
 
             // TODO: store these in a temporary hash to be applied on learning
@@ -249,7 +251,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
             }
 
             //Reset the saved control.
-            m_controlToLearn = MixxxControl();
+            setControlToLearn(MixxxControl());
 
             QString message = "error";
             if (twoBytes) {
@@ -278,7 +280,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
     MidiOptions options = controlOptions.second;
 
     if (options.script) {
-        if (m_pEngine == NULL) {
+        ControllerEngine* pEngine = getEngine();
+        if (pEngine == NULL) {
             return;
         }
 
@@ -289,7 +292,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
         args << QScriptValue(status);
         args << QScriptValue(mc.group());
 
-        m_pEngine->execute(mc.item(), args);
+        pEngine->execute(mc.item(), args);
         return;
     }
 
@@ -423,7 +426,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 
 void MidiController::receive(QByteArray data) {
     int length = data.size();
-    QString message = m_sDeviceName+": [";
+    QString message = getName() + ": [";
     for (int i = 0; i < length; ++i) {
         message += QString("%1%2").arg(
             QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),
@@ -441,13 +444,14 @@ void MidiController::receive(QByteArray data) {
     mappingKey.control = 0xFF;
 
     // Learning
-    if (m_bLearning) {
-        if (!m_controlToLearn.isNull()) {
+    if (isLearning()) {
+        MixxxControl control = controlToLearn();
+        if (!control.isNull()) {
             MidiOptions options;
             options.all = 0;
 
             QPair<MixxxControl, MidiOptions> target;
-            target.first = m_controlToLearn;
+            target.first = control;
             target.second = options;
 
             // TODO: store these in a temporary hash to be applied on learning
@@ -455,7 +459,7 @@ void MidiController::receive(QByteArray data) {
             m_preset.mappings.insert(mappingKey.key,target);
 
             //Reset the saved control.
-            m_controlToLearn = MixxxControl();
+            setControlToLearn(MixxxControl());
 
             QString message = QString("0x%1")
                         .arg(QString::number(mappingKey.status, 16).toUpper());
@@ -477,20 +481,15 @@ void MidiController::receive(QByteArray data) {
 
     // Custom script handler
     if (options.script) {
-        if (m_pEngine == NULL) {
+        ControllerEngine* pEngine = getEngine();
+        if (pEngine == NULL) {
             return;
         }
-        // Up-cast to ControllerEngine since this version of execute() is not in MCE
-        //  (polymorphism doesn't work across class boundaries)
-        //ControllerEngine *pEngine = m_pEngine;
-        //if (!pEngine->execute(mc.item(), data, length)) {
-
-        if (!m_pEngine->execute(mc.item(), data)) {
+        if (!pEngine->execute(mc.item(), data)) {
             qDebug() << "MidiController: Invalid script function" << mc.item();
         }
         return;
     }
-
     qWarning() << "MidiController: No script function specified for" << message;
 }
 
