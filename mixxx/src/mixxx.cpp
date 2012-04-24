@@ -422,19 +422,23 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
               m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
-        qDebug() << "Could not load default skin.";
+        //
+        qCritical("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+
+        //TODO (XXX) add dialog to warn user and launch skin choice page
+        resize(640,480);
+    } else {
+        // this has to be after the OpenGL widgets are created or depending on a
+        // million different variables the first waveform may be horribly
+        // corrupted. See bug 521509 -- bkgood ?? -- vrince
+        setCentralWidget(m_pView);
+
+        // keep gui centered (esp for fullscreen)
+        m_pView->setLayout( new QHBoxLayout(m_pView));
+        m_pView->layout()->setContentsMargins(0,0,0,0);
+        m_pView->layout()->addWidget(m_pWidgetParent);
+        resize(m_pView->size());
     }
-
-    // this has to be after the OpenGL widgets are created or depending on a
-    // million different variables the first waveform may be horribly
-    // corrupted. See bug 521509 -- bkgood ?? -- vrince
-    setCentralWidget(m_pView);
-
-    // keep gui centered (esp for fullscreen)
-    m_pView->setLayout( new QHBoxLayout(m_pView));
-    m_pView->layout()->setContentsMargins(0,0,0,0);
-    m_pView->layout()->addWidget(m_pWidgetParent);
-    resize(m_pView->size());
 
     //move the app in the center of the primary screen
     slotToCenterOfPrimaryScreen();
@@ -1398,24 +1402,26 @@ void MixxxApp::rebootMixxxView() {
                                                            m_pPlayerManager,
                                                            m_pLibrary,
                                                            m_pVCManager))) {
-        qDebug() << "Could not reload the skin.";
+
+        QMessageBox::critical(this,
+                              tr("Error in skin file"),
+                              tr("The selected skin cannot be loaded."));
     }
+    else {
+        // don't move this before loadDefaultSkin above. bug 521509 --bkgood
+        // NOTE: (vrince) I don't know this comment is relevant now ...
+        setCentralWidget(m_pView);
 
-    // don't move this before loadDefaultSkin above. bug 521509 --bkgood
-    // NOTE: (vrince) I don't know this comment is relevant now ...
-    setCentralWidget(m_pView);
+        // keep gui centered (esp for fullscreen)
+        m_pView->setLayout( new QHBoxLayout(m_pView));
+        m_pView->layout()->setContentsMargins(0,0,0,0);
+        m_pView->layout()->addWidget(m_pWidgetParent);
 
-    // keep gui centered (esp for fullscreen)
-    m_pView->setLayout( new QHBoxLayout(m_pView));
-    m_pView->layout()->setContentsMargins(0,0,0,0);
-    m_pView->layout()->addWidget(m_pWidgetParent);
+         //qDebug() << "view size" << m_pView->size();
 
-    //qDebug() << "view size" << m_pView->size();
-
-    //NOTE: (vrince) since we use a layout it will resize to windows to the minimum
-    //acceptable size giving its content
-    //TODO: (vrince) size is good but resize do not append !!
-    resize(m_pView->size());
+        //TODO: (vrince) size is good but resize do not append !!
+        resize(m_pView->size());
+    }
 
     if( wasFullScreen) {
         slotOptionsFullScreen(true);
@@ -1425,7 +1431,6 @@ void MixxxApp::rebootMixxxView() {
     }
 
     WaveformWidgetFactory::instance()->start();
-
 
     // Set native menu bar. Fixes issue on OSX where menu bar went away after a
     // skin change.

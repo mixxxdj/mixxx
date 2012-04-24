@@ -87,6 +87,7 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
     QDir skinDir(skinPath);
 
     if (!skinDir.exists()) {
+        qDebug() << "LegacySkinParser::openSkin - skin dir do not exist:" << skinPath;
         return QDomElement();
     }
 
@@ -94,12 +95,21 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
     QFile skinXmlFile(skinXmlPath);
 
     if (!skinXmlFile.open(QIODevice::ReadOnly)) {
+        qDebug() << "LegacySkinParser::openSkin - can't open file:" << skinXmlPath
+                 << "in directory:" << skinDir.path();
         return QDomElement();
     }
 
     QDomDocument skin("skin");
 
-    if (!skin.setContent(&skinXmlFile)) {
+    QString errorMessage;
+    int errorLine;
+    int errorColumn;
+
+    if (!skin.setContent(&skinXmlFile,&errorMessage,&errorLine,&errorColumn)) {
+        qDebug() << "LegacySkinParser::openSkin - setContent failed see"
+                 << "line:" << errorLine << "column:" << errorColumn;
+        qDebug() << "LegacySkinParser::openSkin - message:" << errorMessage;
         return QDomElement();
     }
 
@@ -186,8 +196,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     QDomElement skinDocument = openSkin(skinPath);
 
     if (skinDocument.isNull()) {
-        // TODO error message
-        qDebug() << "Could not load skin.";
+        qDebug() << "LegacySkinParser::parseSkin - failed for skin:" << skinPath;
         return NULL;
     }
 
@@ -439,7 +448,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
+                ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
 
     p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
@@ -988,8 +997,8 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
             (new ControlObjectThreadWidget(control, pWidget))->setWidget(
-                pWidget, connectValueFromWidget, connectValueToWidget,
-                emitOption, state);
+                        pWidget, connectValueFromWidget, connectValueToWidget,
+                        emitOption, state);
 
             // Add keyboard shortcut info to tooltip string
             QString tooltip = pWidget->toolTip();

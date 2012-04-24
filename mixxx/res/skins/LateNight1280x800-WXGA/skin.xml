@@ -2627,10 +2627,13 @@
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
 						<SignalColor>#3087BF</SignalColor>
+						<LowColor>#3087BF</LowColor>
+						<MidColor>#74BBE9</MidColor>
+						<HighColor>#A2CDE9</HighColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
+						<EndOfTrackColor>#FF6834</EndOfTrackColor>
 						<MarkRange>
 							<StartControl>loop_start_position</StartControl>
 							<EndControl>loop_end_position</EndControl>
@@ -2939,10 +2942,13 @@
 						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
 						<SignalColor>#E17800</SignalColor>
+						<LowColor>#E17900</LowColor>
+						<MidColor>#F5A951</MidColor>
+						<HighColor>#F5C791</HighColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
+						<EndOfTrackColor>#00A046</EndOfTrackColor>
 						<MarkRange>
 							<StartControl>loop_start_position</StartControl>
 							<EndControl>loop_end_position</EndControl>
@@ -4491,8 +4497,12 @@
 				<!-- transparent background if no <BgPixmap> is present
 				<BgPixmap></BgPixmap>
 				-->
-				<SignalColor>#3087BF</SignalColor>
+				<SignalColor>#3087BF</SignalColor>								
+				<LowColor>#3087BF</LowColor>
+				<MidColor>#74BBE9</MidColor>
+				<HighColor>#A2CDE9</HighColor>
 				<MarkerColor>#00FF00</MarkerColor>
+				<EndOfTrackColor>#FF6834</EndOfTrackColor>				
 				<ProgressColor>#0099FF</ProgressColor>
 				<ProgressAlpha>80</ProgressAlpha>
 				<Connection>
@@ -5431,6 +5441,10 @@
 				-->
 				<SignalColor>#E17800</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
+				<LowColor>#E17900</LowColor>
+				<MidColor>#F5A951</MidColor>
+				<HighColor>#F5C791</HighColor>
+				<EndOfTrackColor>#00A046</EndOfTrackColor>
 				<ProgressColor>#E17800</ProgressColor>
 				<ProgressAlpha>80</ProgressAlpha>
 				<Connection>

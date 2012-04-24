@@ -69,8 +69,9 @@ WOverview::~WOverview() {
 void WOverview::setup(QDomNode node) {
     // Background color and pixmap, default background color to transparent
     m_qColorBackground = QColor(0, 0, 0, 0);
-    if (!selectNode(node, "BgColor").isNull()) {
-        m_qColorBackground.setNamedColor(selectNodeQString(node, "BgColor"));
+    const QString bgColorName = WWidget::selectNodeQString(node, "BgColor");
+    if (!bgColorName.isNull()) {
+        m_qColorBackground.setNamedColor(bgColorName);
         m_qColorBackground = WSkinColor::getCorrectColor(m_qColorBackground);
     }
 
@@ -79,6 +80,13 @@ void WOverview::setup(QDomNode node) {
     m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
+    }
+
+    m_endOfTrackColor = QColor(200, 25, 20);
+    const QString endOfTrackColorName = WWidget::selectNodeQString(node, "EndOfTrackColor");
+    if (!endOfTrackColorName.isNull()) {
+        m_endOfTrackColor.setNamedColor(endOfTrackColorName);
+        m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
     }
 
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
@@ -134,9 +142,6 @@ void WOverview::setup(QDomNode node) {
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
-
-    //TODO: add in skin
-    m_endOfTrackColor = QColor(200, 25, 20);
 
     //init waveform pixmap
     //waveform pixmap twice the heigth of the viewport to be scalable by total_gain
@@ -376,10 +381,10 @@ void WOverview::paintEvent(QPaintEvent *)
         painter.setOpacity(0.8);
         painter.setPen(QPen(QBrush(m_endOfTrackColor),1.5));
         painter.setBrush(QColor(0,0,0,0));
-        painter.drawRect(rect().adjusted(1,1,-1,-1));
+        painter.drawRect(rect().adjusted(0,0,-1,-1));
         painter.setOpacity(0.3);
         painter.setBrush(m_endOfTrackColor);
-        painter.drawRect(rect().adjusted(1,1,-1,-1));
+        painter.drawRect(rect().adjusted(1,1,-2,-2));
     }
 
     // Draw waveform
