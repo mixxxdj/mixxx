@@ -83,6 +83,8 @@ class MixxxApp : public QMainWindow
     /** overloaded for Message box on last window exit */
     bool queryExit();
 
+    void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
+
     void rebootMixxxView();
 
   public slots:
@@ -129,14 +131,12 @@ class MixxxApp : public QMainWindow
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
 
-
+    void slotToCenterOfPrimaryScreen();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
     void closeEvent(QCloseEvent *event);
-
-
 
   private:
     void checkDirectRendering();

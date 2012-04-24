@@ -17,6 +17,8 @@
 
 WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) :
     QWidget(parent) {
+    //qDebug() << "WWaveformViewer";
+
     m_pGroup = group;
 
     setAcceptDrops(true);
@@ -54,6 +56,8 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
 }
 
 WWaveformViewer::~WWaveformViewer() {
+    //qDebug() << "~WWaveformViewer";
+
     delete m_pZoom;
     delete m_pScratchEnable;
     delete m_pScratch;
@@ -208,7 +212,7 @@ void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/) {
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {
-    //qDebug() << "WaveformWidgetRenderer::onZoomChange" << zoom;
+    //qDebug() << "WaveformWidgetRenderer::onZoomChange" << this << zoom;
     setZoom(zoom);
     //notify back the factory to sync zoom if needed
     WaveformWidgetFactory::instance()->notifyZoomChange(this);
