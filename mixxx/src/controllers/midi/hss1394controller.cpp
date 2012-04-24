@@ -99,8 +99,7 @@ int Hss1394Controller::open()
     using namespace hss1394;
 
     m_pChannel = Node::Instance()->OpenChannel(m_iDeviceIndex);
-    if( m_pChannel == NULL )
-    {
+    if (m_pChannel == NULL) {
         qDebug() << "HSS1394 device" << m_sDeviceName << "could not be opened";
         m_pChannelListener = NULL;
         return -1;
@@ -113,14 +112,15 @@ int Hss1394Controller::open()
     connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
 
-    if (false == m_pChannel->InstallChannelListener(m_pChannelListener)) {
+    if (!m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << m_sDeviceName;
         delete m_pChannelListener;
         m_pChannelListener = NULL;
         m_pChannel = NULL;
     }
 
-    if (m_pChannel != NULL && m_sDeviceName.contains("SCS.1d",Qt::CaseInsensitive)) {
+    // TODO(XXX): Should be done in script, not in Mixxx
+    if (m_sDeviceName.contains("SCS.1d",Qt::CaseInsensitive)) {
         // If we are an SCS.1d, set the record encoder event timer to fire at 1ms intervals
         //  to match the 1ms scratch timer in the controller engine
         //
@@ -139,7 +139,6 @@ int Hss1394Controller::open()
     startEngine();
 
     return 0;
-
 }
 
 int Hss1394Controller::close()
