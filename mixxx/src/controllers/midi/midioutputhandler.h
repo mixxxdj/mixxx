@@ -27,12 +27,11 @@ class MidiOutputHandler : QObject {
     bool validate();
     void update();
 
-    bool dupes;
-
   public slots:
     void controlChanged(double value);
 
   private:
+    MidiController* m_pController;
     ControlObject* m_cobj;
     float m_min;
     float m_max;
@@ -40,10 +39,6 @@ class MidiOutputHandler : QObject {
     unsigned char m_midino;
     unsigned char m_on;
     unsigned char m_off;
-
-    MidiController* m_pController;
-    unsigned char m_controlno;
-
     double m_lastVal;
 };
 
