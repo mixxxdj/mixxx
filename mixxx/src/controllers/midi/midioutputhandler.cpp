@@ -49,7 +49,9 @@ void MidiOutputHandler::update() {
 
 void MidiOutputHandler::controlChanged(double value) {
     // Don't send redundant messages unless asked to
-    if (!dupes && value == m_lastVal) return;
+    if (!dupes && value == m_lastVal) {
+        return;
+    }
 
     m_lastVal = value;
 

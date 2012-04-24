@@ -17,7 +17,8 @@ MidiController::MidiController() : Controller() {
 
 MidiController::~MidiController() {
     destroyOutputHandlers();
-    //close(); // I wish I could put this here to enforce it automatically
+    // Don't close the device here. Sub-classes should close the device in their
+    // destructors.
 }
 
 QString MidiController::defaultPreset() {

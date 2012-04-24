@@ -24,8 +24,8 @@ Controller::Controller() : QObject() {
 }
 
 Controller::~Controller() {
-    // We can't close the device here.
-    //close();
+    // Don't close the device here. Sub-classes should close the device in their
+    // destructors.
 }
 
 QString Controller::defaultPreset() {
@@ -102,16 +102,10 @@ void Controller::send(QList<int> data, unsigned int length) {
     // function is required due to HID devices having report IDs)
 
     QByteArray msg;
-
-    for (unsigned int i=0; i<length; i++) {
+    for (unsigned int i = 0; i < length; i++) {
         msg[i] = data.at(i);
     }
     send(msg);
-}
-
-void Controller::send(QByteArray data) {
-    Q_UNUSED(data);
-    qWarning() << "Error: data sending not yet implemented for this API or platform!";
 }
 
 void Controller::receive(const QByteArray data) {
@@ -137,16 +131,13 @@ void Controller::receive(const QByteArray data) {
         qDebug() << message;
     }
 
-    QListIterator<QString> prefixIt(m_pEngine->getScriptFunctionPrefixes());
-    while (prefixIt.hasNext()) {
-        QString function = prefixIt.next();
-        if (function!="") {
-            function.append(".incomingData");
-
-            if (!m_pEngine->execute(function, data)) {
-                qWarning() << "Controller: Invalid script function" << function;
-            }
+    foreach (QString function, m_pEngine->getScriptFunctionPrefixes()) {
+        if (function == "") {
+            continue;
+        }
+        function.append(".incomingData");
+        if (!m_pEngine->execute(function, data)) {
+            qWarning() << "Controller: Invalid script function" << function;
         }
     }
-    return;
 }

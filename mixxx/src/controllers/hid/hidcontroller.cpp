@@ -212,12 +212,15 @@ int HidController::close() {
 }
 
 void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {
-
     QByteArray temp;
-    for (unsigned int i=0; i<length; i++) {
-        temp.append(data.at(i));
+    foreach (int datum, data) {
+        temp.append(datum);
     }
-    send(temp,reportID);
+    send(temp, reportID);
+}
+
+void HidController::send(QByteArray data) {
+    send(data, 0);
 }
 
 void HidController::send(QByteArray data, unsigned int reportID) {
