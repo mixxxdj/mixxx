@@ -361,8 +361,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analysera hela låten</translation>
         </message>
     </context>
     <context>
