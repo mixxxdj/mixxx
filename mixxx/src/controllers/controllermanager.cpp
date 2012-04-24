@@ -21,56 +21,13 @@
 
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
-ControllerProcessor::ControllerProcessor(ControllerManager* pManager)
-        : QObject(pManager),
-          m_pManager(pManager),
-          m_pollingTimerId(0) {
-}
-
-ControllerProcessor::~ControllerProcessor() {
-}
-
-void ControllerProcessor::startPolling() {
-    // Set up polling timer
-
-    // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
-    // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
-
-    // Poll every 1ms (where possible) for good controller response
-    if (m_pollingTimerId == 0) {
-        qDebug() << "Starting controller polling";
-        m_pollingTimerId = startTimer(1);
-        if (m_pollingTimerId == 0) {
-            qWarning() << "Could not start polling timer!";
-        }
-    }
-}
-
-void ControllerProcessor::stopPolling() {
-    if (m_pollingTimerId == 0) {
-        return;
-    }
-
-    // Stop the timer
-    killTimer(m_pollingTimerId);
-    m_pollingTimerId = 0;
-    qDebug() << "Controller polling stopped";
-}
-
-void ControllerProcessor::timerEvent(QTimerEvent *event) {
-    // See if this is the polling timer
-    if (event->timerId() == m_pollingTimerId) {
-        foreach (Controller* pDevice, m_pManager->getControllers()) {
-            if (pDevice->isOpen() && pDevice->isPolling()) {
-                pDevice->poll();
-            }
-        }
-    }
-}
+// Poll every 1ms (where possible) for good controller response
+const int kPollIntervalMillis = 1;
 
 ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
         QObject(),
-        m_pConfig(pConfig) {
+        m_pConfig(pConfig),
+        m_pollTimer(this) {
 
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
@@ -81,12 +38,15 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
     m_enumerators.append(new HidEnumerator());
 #endif
 
+    m_pollTimer.setInterval(kPollIntervalMillis);
+    connect(&m_pollTimer, SIGNAL(timeout()),
+            this, SLOT(pollDevices()));
+
     m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
 
-    m_pProcessor = new ControllerProcessor(this);
-
-    this->moveToThread(m_pThread); // implies m_pProcessor->moveToThread(m_pThread);
+    // Moves all children (including the poll timer) to m_pThread
+    moveToThread(m_pThread);
 
     // Controller processing needs to be prioritized since it can affect the
     // audio directly, like when scratching
@@ -102,12 +62,11 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
 
 ControllerManager::~ControllerManager() {
     m_pThread->wait();
-    delete m_pProcessor;
     delete m_pThread;
 }
 
 void ControllerManager::slotShutdown() {
-    m_pProcessor->stopPolling();
+    stopPolling();
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
     // paths from accessing them.
@@ -222,7 +181,7 @@ int ControllerManager::slotSetUpDevices() {
 
 void ControllerManager::enablePolling(bool enable) {
     if (enable) {
-        m_pProcessor->startPolling();
+        startPolling();
     } else {
         // This controller doesn't need it, but check to make sure others don't
         // before disabling it
@@ -233,7 +192,28 @@ void ControllerManager::enablePolling(bool enable) {
             }
         }
         if (!enable) {
-            m_pProcessor->stopPolling();
+            stopPolling();
+        }
+    }
+}
+
+void ControllerManager::startPolling() {
+    // Start the polling timer.
+    if (!m_pollTimer.isActive()) {
+        m_pollTimer.start();
+        qDebug() << "Controller polling started.";
+    }
+}
+
+void ControllerManager::stopPolling() {
+    m_pollTimer.stop();
+    qDebug() << "Controller polling stopped.";
+}
+
+void ControllerManager::pollDevices() {
+    foreach (Controller* pDevice, m_controllers) {
+        if (pDevice->isOpen() && pDevice->isPolling()) {
+            pDevice->poll();
         }
     }
 }
