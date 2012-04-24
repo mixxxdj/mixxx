@@ -10,6 +10,9 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
+
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererAbstract(waveformWidgetRenderer),
@@ -46,8 +49,13 @@ void WaveformRendererEndOfTrack::init() {
                 ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "loop_enabled")));
 }
 
-void WaveformRendererEndOfTrack::setup(const QDomNode& /*node*/) {
-   // TODO(vrince): add EnfOfTrack color in skins and why not blinking period
+void WaveformRendererEndOfTrack::setup(const QDomNode& node) {
+    m_color = QColor(200, 25, 20);
+    const QString endOfTrackColorName = WWidget::selectNodeQString(node, "EndOfTrackColor");
+    if (!endOfTrackColorName.isNull()) {
+        m_color.setNamedColor(endOfTrackColorName);
+        m_color = WSkinColor::getCorrectColor(m_color);
+    }
     m_pen = QPen( QBrush( m_color), 2.5);
 }
 
