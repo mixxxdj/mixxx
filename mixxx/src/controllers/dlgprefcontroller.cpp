@@ -17,57 +17,64 @@
 DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
                                      ControllerManager* controllerManager,
                                      ConfigObject<ConfigValue> *pConfig)
-        : QWidget(parent) {
-//     QWidget * containerWidget = new QWidget();
-//     QWidget * containerWidget = new QWidget(this);
-//     m_ui.setupUi(containerWidget);
+        : QWidget(parent),
+          m_pConfig(pConfig),
+          m_pControllerManager(controllerManager),
+          m_pController(controller),
+          m_bDirty(false) {
+    //QWidget * containerWidget = new QWidget();
+    //QWidget * containerWidget = new QWidget(this);
+    //m_ui.setupUi(containerWidget);
     m_ui.setupUi(this);
-    layout = m_ui.gridLayout_4;
+    m_pLayout = m_ui.gridLayout_4;
+    m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
 
-    verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    layout->addItem(verticalSpacer, 4, 0, 1, 3);
-
-//     QVBoxLayout* vLayout = new QVBoxLayout(this);
-//     vLayout->addWidget(containerWidget);
-//     setLayout(vLayout);
-
-    m_pConfig = pConfig;
-    m_pController = controller;
-    m_pControllerManager = controllerManager;
-
-    m_bDirty = false;
-
-//     T* ui = static_cast<T*>(this)->m_ui;
+    //QVBoxLayout* vLayout = new QVBoxLayout(this);
+    //vLayout->addWidget(containerWidget);
+    //setLayout(vLayout);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
 
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadPreset(const QString&)));
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
+            this, SLOT(slotLoadPreset(const QString&)));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
+            this, SLOT(slotDirty()));
 
-    connect(this, SIGNAL(openController(bool)), m_pController, SLOT(open()));
+    connect(this, SIGNAL(openController(bool)),
+            m_pController, SLOT(open()));
     connect(this, SIGNAL(openController(bool)),
             m_pControllerManager, SLOT(enablePolling(bool)));
-    connect(this, SIGNAL(closeController(bool)), m_pController, SLOT(close()));
+
+    connect(this, SIGNAL(closeController(bool)),
+            m_pController, SLOT(close()));
     connect(this, SIGNAL(closeController(bool)),
             m_pControllerManager, SLOT(enablePolling(bool)));
-    connect(this, SIGNAL(loadPreset(Controller*,QString,bool)),
-            m_pControllerManager, SLOT(loadPreset(Controller*,QString,bool)));
-    connect(this, SIGNAL(applyPreset()), m_pController, SLOT(applyPreset()));
 
-    //Load the list of presets into the presets combobox.
+    connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
+            m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
+
+    connect(this, SIGNAL(applyPreset()),
+            m_pController, SLOT(applyPreset()));
+
+    // Load the list of presets into the presets combobox.
     enumeratePresets();
 }
 
 DlgPrefController::~DlgPrefController() {
 }
 
-void DlgPrefController::slotDirty ()
-{
+void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
+    // Remove the vertical spacer since we're adding stuff
+    m_pLayout->removeItem(m_pVerticalSpacer);
+    m_pLayout->addWidget(pWidget);
+}
+
+void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
-void DlgPrefController::enumeratePresets()
-{
+void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
     //Insert a dummy "..." item at the top to try to make it less confusing.
@@ -84,42 +91,30 @@ void DlgPrefController::enumeratePresets()
     m_ui.comboBoxPreset->addItems(presetsList);
 }
 
-/* slotUpdate()
- * Called when the dialog is displayed.
- */
 void DlgPrefController::slotUpdate() {
-
-    //Check if the device that this dialog is for is already enabled...
-    if (m_pController->isOpen())
-    {
-        m_ui.chkEnabledDevice->setCheckState(Qt::Checked); //Check the "Enabled" box
-        m_ui.groupBoxPresets->setEnabled(true); //Enable presets group box.
-    }
-    else {
-        m_ui.chkEnabledDevice->setCheckState(Qt::Unchecked); //Uncheck the "Enabled" box
-        m_ui.groupBoxPresets->setEnabled(false); //Disable presets group box.
-    }
-
-    //Connect the "Enabled" checkbox after the checkbox state is set
+    // Check if the device that this dialog is for is already enabled...
+    bool deviceOpen = m_pController->isOpen();
+    // Check/uncheck the "Enabled" box
+    m_ui.chkEnabledDevice->setCheckState(deviceOpen ? Qt::Checked : Qt::Unchecked);
+    // Enable/disable presets group box.
+    m_ui.groupBoxPresets->setEnabled(deviceOpen);
+    // Connect the "Enabled" checkbox after the checkbox state is set
     connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
     connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDirty()));
 }
 
-/* slotApply()
- * Called when the OK button is pressed.
- */
 void DlgPrefController::slotApply() {
     /* User has pressed OK, so if anything has been changed, enable or disable
      * the device, write the controls to the DOM, and reload the presets.
      */
-    if (m_bDirty)
-    {
+    if (m_bDirty) {
         if (m_ui.chkEnabledDevice->isChecked()) {
             //Enable the device.
             enableDevice();
             emit(applyPreset());
+        } else {
+            disableDevice();
         }
-        else disableDevice();
 
         //Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
@@ -127,9 +122,6 @@ void DlgPrefController::slotApply() {
     m_bDirty = false;
 }
 
-/* slotLoadPreset()
-* Loads the specified XML preset.
-*/
 void DlgPrefController::slotLoadPreset(const QString &name) {
 
     if (name != "...") {
@@ -141,16 +133,15 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
 void DlgPrefController::slotDeviceState(int state) {
   if (state == Qt::Checked) {
       m_ui.groupBoxPresets->setEnabled(true);    //Enable presets group box.
-      emit deviceStateChanged(this,true);  // Set tree item text to bold
+      emit(deviceStateChanged(this, true));  // Set tree item text to bold
   }
   else {
       m_ui.groupBoxPresets->setEnabled(false);   //Disable presets group box.
-      emit deviceStateChanged(this,false);  // Set tree item text to not bold
+      emit(deviceStateChanged(this, false));  // Set tree item text to not bold
   }
 }
 
-void DlgPrefController::enableDevice()
-{
+void DlgPrefController::enableDevice() {
     emit(closeController(false));
     emit(openController(m_pController->isPolling()));
     m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 1);
@@ -158,10 +149,8 @@ void DlgPrefController::enableDevice()
     //TODO: Should probably check if open() actually succeeded.
 }
 
-void DlgPrefController::disableDevice()
-{
+void DlgPrefController::disableDevice() {
     emit(closeController(false));
     m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 0);
-
     //TODO: Should probably check if close() actually succeeded.
 }

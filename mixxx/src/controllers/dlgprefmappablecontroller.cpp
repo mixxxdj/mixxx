@@ -20,30 +20,36 @@
 DlgPrefMappableController::DlgPrefMappableController(QWidget *parent, Controller* controller,
                           ControllerManager* controllerManager,
                           ConfigObject<ConfigValue> *pConfig)
-    : DlgPrefController(parent, controller, controllerManager, pConfig)
-{
-    // Remove the vertical spacer since we're adding stuff
-    layout->removeItem(verticalSpacer);
-    // Add our supplemental UI here
-    QWidget * containerWidget = new QWidget(this);
-    m_ui.setupUi(containerWidget);
-    layout->addWidget(containerWidget);
+    : DlgPrefController(parent, controller, controllerManager, pConfig) {
 
-    //Input bindings
-    connect(m_ui.btnLearnWizard, SIGNAL(clicked()), this, SLOT(slotShowLearnDialog()));
-    connect(m_ui.btnLearnWizard, SIGNAL(clicked()), this, SLOT(slotDirty()));
-    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(clearAllInputBindings()));
-    connect(this, SIGNAL(clearInputs()), m_pController, SLOT(clearInputMappings()));
-    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(slotDirty()));
+    // Add our supplemental UI here
+    QWidget* containerWidget = new QWidget(this);
+    m_ui.setupUi(containerWidget);
+    addWidgetToLayout(containerWidget);
+
+    // Input bindings
+    connect(m_ui.btnLearnWizard, SIGNAL(clicked()),
+            this, SLOT(slotShowLearnDialog()));
+    connect(m_ui.btnLearnWizard, SIGNAL(clicked()),
+            this, SLOT(slotDirty()));
+    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()),
+            this, SLOT(clearAllInputBindings()));
+    connect(this, SIGNAL(clearInputs()),
+            getController(), SLOT(clearInputMappings()));
+    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()),
+            this, SLOT(slotDirty()));
 //     connect(m_ui.btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
 //     connect(m_ui.btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 //     connect(m_ui.btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotAddInputBinding()));
 //     connect(m_ui.btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 
-    //Output bindings
-    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(clearAllOutputBindings()));
-    connect(this, SIGNAL(clearOutputs()), m_pController, SLOT(clearOutputMappings()));
-    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotDirty()));
+    // Output bindings
+    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()),
+            this, SLOT(clearAllOutputBindings()));
+    connect(this, SIGNAL(clearOutputs()),
+            getController(), SLOT(clearOutputMappings()));
+    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()),
+            this, SLOT(slotDirty()));
 //     connect(m_ui.btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
 //     connect(m_ui.btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 //     connect(m_ui.btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
@@ -55,7 +61,7 @@ void DlgPrefMappableController::slotShowLearnDialog() {
     // apply it yet, prompt them to apply the settings before we open the
     // learning dialog. If we don't apply the settings first and open the
     // device, the dialog won't react to controller messages.
-    if (DlgPrefController::m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
+    if (isEnabled() && !getController()->isOpen()) {
         QMessageBox::StandardButton result = QMessageBox::question(
             this,
             tr("Apply device settings?"),
@@ -65,39 +71,26 @@ void DlgPrefMappableController::slotShowLearnDialog() {
             QMessageBox::Ok);  // Default button
         // Stop if the user has not pressed the Ok button,
         // which could be the Cancel or the Close Button.
-        if (result != QMessageBox::Ok) return;
+        if (result != QMessageBox::Ok) {
+            return;
+        }
     }
     slotApply();
 
     // Note that DlgControllerLearning is set to delete itself on close using the
     // Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
-    m_pDlgControllerLearning = new DlgControllerLearning(this, m_pController);
+    m_pDlgControllerLearning = new DlgControllerLearning(this, getController());
     m_pDlgControllerLearning->show();
 }
 
 void DlgPrefMappableController::slotDeviceState(int state) {
-
     DlgPrefController::slotDeviceState(state);
-
-    if (state == Qt::Checked) {
-        m_ui.toolBox->setEnabled(true); //Enable in/out toolbox.
-    }
-    else {
-        m_ui.toolBox->setEnabled(false); //Disable in/out toolbox.
-    }
+    m_ui.toolBox->setEnabled(state == Qt::Checked);
 }
 
 void DlgPrefMappableController::slotUpdate() {
-
     DlgPrefController::slotUpdate();
-
-    if (m_pController->isOpen())
-    {
-        m_ui.toolBox->setEnabled(true); //Enable in/out toolbox.
-    }
-    else {
-        m_ui.toolBox->setEnabled(false); //Disable in/out toolbox.
-    }
+    m_ui.toolBox->setEnabled(getController()->isOpen());;
 }
 
 void DlgPrefMappableController::clearAllInputBindings() {
@@ -105,7 +98,6 @@ void DlgPrefMappableController::clearAllInputBindings() {
             tr("Are you sure you want to clear all bindings?"),
             QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
         return;
-
     emit(clearInputs());
 }
 
@@ -114,6 +106,5 @@ void DlgPrefMappableController::clearAllOutputBindings() {
             tr("Are you sure you want to clear all output bindings?"),
             QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
         return;
-
     emit(clearOutputs());
 }
