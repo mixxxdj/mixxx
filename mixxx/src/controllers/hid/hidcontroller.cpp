@@ -8,17 +8,18 @@
 
 #include "controllers/hid/hidcontroller.h"
 
-HidReader::HidReader(hid_device* device) : QThread() {
-    m_pHidDevice = device;
+HidReader::HidReader(hid_device* device)
+        : QThread(),
+          m_pHidDevice(device) {
 }
 
 HidReader::~HidReader() {
 }
 
 void HidReader::run() {
+    m_stop = 0;
     unsigned char *data = new unsigned char[255];
-    m_bStop = false;
-    while (!m_bStop) {
+    while (m_stop == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data

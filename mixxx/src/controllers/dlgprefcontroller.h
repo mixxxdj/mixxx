@@ -38,10 +38,9 @@ class DlgPrefController : public QWidget {
 
   signals:
     void deviceStateChanged(DlgPrefController*, bool);
-    void openController(bool);
-    void closeController(bool);
+    void openController(Controller* pController);
+    void closeController(Controller* pController);
     void loadPreset(Controller* pController, QString controllerName, bool force);
-    void applyPreset();
 
   protected:
     Controller* getController() const {

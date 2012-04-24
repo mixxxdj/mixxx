@@ -64,9 +64,6 @@ class Controller : public QObject, ControllerPresetVisitor {
         return m_bLearning;
     }
 
-    // TODO(rryan) make private once
-    virtual bool isPolling() const = 0;
-
   signals:
     void learnedMessage(QString message);
 
@@ -123,6 +120,7 @@ class Controller : public QObject, ControllerPresetVisitor {
         m_controlToLearn = control;
     }
 
+
   private slots:
     virtual int open() = 0;
     virtual int close() = 0;
@@ -133,6 +131,10 @@ class Controller : public QObject, ControllerPresetVisitor {
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
     virtual void send(QByteArray data) = 0;
+
+    // Returns true if this device should receive polling signals via calls to
+    // its poll() method.
+    virtual bool isPolling() const = 0;
 
     ConfigObject<ConfigValue>* m_pConfig;
     ControllerEngine* m_pEngine;
@@ -153,7 +155,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     MixxxControl m_controlToLearn;
 
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
-    friend class ControllerProcessor;
 };
 
 #endif

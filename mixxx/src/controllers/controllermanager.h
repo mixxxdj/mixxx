@@ -38,9 +38,9 @@ class ControllerManager : public QObject {
 
   public slots:
     void updateControllerList();
-    // This enables or disables polling as needed. To conserve CPU resources,
-    // this should be called with FALSE when a controller is closed.
-    void enablePolling(bool enable);
+
+    void openController(Controller* pController);
+    void closeController(Controller* pController);
 
     // Writes out presets for currently connected input devices
     void slotSavePresets(bool onlyActive=false);
@@ -57,6 +57,7 @@ class ControllerManager : public QObject {
     void pollDevices();
     void startPolling();
     void stopPolling();
+    void maybeStartOrStopPolling();
 
     static QString presetFilenameFromName(QString name) {
         return name.replace(" ", "_");

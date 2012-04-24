@@ -90,7 +90,7 @@ void DlgPrefMappableController::slotDeviceState(int state) {
 
 void DlgPrefMappableController::slotUpdate() {
     DlgPrefController::slotUpdate();
-    m_ui.toolBox->setEnabled(getController()->isOpen());;
+    m_ui.toolBox->setEnabled(getController()->isOpen());
 }
 
 void DlgPrefMappableController::clearAllInputBindings() {

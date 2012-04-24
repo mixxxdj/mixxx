@@ -44,19 +44,20 @@ class Hss1394Controller : public MidiController {
     Hss1394Controller(const hss1394::TNodeInfo deviceInfo, int deviceIndex);
     virtual ~Hss1394Controller();
 
-    virtual bool isPolling() const {
-        return false;
-    }
-
   private slots:
     virtual int open();
     virtual int close();
 
   private:
     void send(unsigned int word);
+
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
     void send(QByteArray data);
+
+    virtual bool isPolling() const {
+        return false;
+    }
 
     hss1394::TNodeInfo m_deviceInfo;
     int m_iDeviceIndex;

@@ -32,6 +32,13 @@ class PortMidiController : public MidiController {
                        int inputDeviceIndex,
                        int outputDeviceIndex);
     virtual ~PortMidiController();
+
+  private slots:
+    virtual int open();
+    virtual int close();
+    virtual void poll();
+
+  private:
     void send(unsigned int word);
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf.7
@@ -41,12 +48,6 @@ class PortMidiController : public MidiController {
         return true;
     }
 
-  private slots:
-    virtual int open();
-    virtual int close();
-    virtual void poll();
-
-  private:
     const PmDeviceInfo* m_pInputDeviceInfo;
     const PmDeviceInfo* m_pOutputDeviceInfo;
     int m_iInputDeviceIndex;
