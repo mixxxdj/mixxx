@@ -41,21 +41,12 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
             this, SLOT(slotDirty()));
 
-    connect(this, SIGNAL(openController(bool)),
-            m_pController, SLOT(open()));
-    connect(this, SIGNAL(openController(bool)),
-            m_pControllerManager, SLOT(enablePolling(bool)));
-
-    connect(this, SIGNAL(closeController(bool)),
-            m_pController, SLOT(close()));
-    connect(this, SIGNAL(closeController(bool)),
-            m_pControllerManager, SLOT(enablePolling(bool)));
-
+    connect(this, SIGNAL(openController(Controller*)),
+            m_pControllerManager, SLOT(openController(Controller*)));
+    connect(this, SIGNAL(closeController(Controller*)),
+            m_pControllerManager, SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
             m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
-
-    connect(this, SIGNAL(applyPreset()),
-            m_pController, SLOT(applyPreset()));
 
     // Load the list of presets into the presets combobox.
     enumeratePresets();
@@ -99,8 +90,10 @@ void DlgPrefController::slotUpdate() {
     // Enable/disable presets group box.
     m_ui.groupBoxPresets->setEnabled(deviceOpen);
     // Connect the "Enabled" checkbox after the checkbox state is set
-    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
-    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDirty()));
+    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)),
+            this, SLOT(slotDeviceState(int)));
+    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)),
+            this, SLOT(slotDirty()));
 }
 
 void DlgPrefController::slotApply() {
@@ -109,9 +102,7 @@ void DlgPrefController::slotApply() {
      */
     if (m_bDirty) {
         if (m_ui.chkEnabledDevice->isChecked()) {
-            //Enable the device.
             enableDevice();
-            emit(applyPreset());
         } else {
             disableDevice();
         }
@@ -123,7 +114,6 @@ void DlgPrefController::slotApply() {
 }
 
 void DlgPrefController::slotLoadPreset(const QString &name) {
-
     if (name != "...") {
         emit(loadPreset(m_pController, name, true));
         // It's applied on prefs close
@@ -131,26 +121,19 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
 }
 
 void DlgPrefController::slotDeviceState(int state) {
-  if (state == Qt::Checked) {
-      m_ui.groupBoxPresets->setEnabled(true);    //Enable presets group box.
-      emit(deviceStateChanged(this, true));  // Set tree item text to bold
-  }
-  else {
-      m_ui.groupBoxPresets->setEnabled(false);   //Disable presets group box.
-      emit(deviceStateChanged(this, false));  // Set tree item text to not bold
-  }
+    bool checked = state == Qt::Checked;
+    // Enable/disable presets group box.
+    m_ui.groupBoxPresets->setEnabled(checked);
+    // Set tree item text to normal/bold
+    emit(deviceStateChanged(this, checked));
 }
 
 void DlgPrefController::enableDevice() {
-    emit(closeController(false));
-    emit(openController(m_pController->isPolling()));
-    m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 1);
-
+    emit(openController(m_pController));
     //TODO: Should probably check if open() actually succeeded.
 }
 
 void DlgPrefController::disableDevice() {
-    emit(closeController(false));
-    m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 0);
+    emit(closeController(m_pController));
     //TODO: Should probably check if close() actually succeeded.
 }

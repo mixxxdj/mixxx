@@ -10,6 +10,8 @@
 
 #include <hidapi.h>
 
+#include <QAtomicInt>
+
 #include "controllers/controller.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
@@ -21,7 +23,7 @@ class HidReader : public QThread {
     virtual ~HidReader();
 
     void stop() {
-        m_bStop=true;
+        m_stop = 1;
     }
 
   signals:
@@ -32,7 +34,7 @@ class HidReader : public QThread {
 
   private:
     hid_device* m_pHidDevice;
-    bool m_bStop;
+    QAtomicInt m_stop;
 };
 
 class HidController : public Controller {
@@ -55,10 +57,6 @@ class HidController : public Controller {
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
 
-    virtual bool isPolling() const {
-        return false;
-    }
-
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 
@@ -71,6 +69,10 @@ class HidController : public Controller {
     // 0x0.
     virtual void send(QByteArray data);
     virtual void send(QByteArray data, unsigned int reportID);
+
+    virtual bool isPolling() const {
+        return false;
+    }
 
     // Local copies of things we need from hid_device_info
     int hid_interface_number;

@@ -407,8 +407,7 @@ void DlgPreferences::setupControllerWidgets()
             connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
             connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
             connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
-        }
-        else {
+        } else {
             DlgPrefController* controllerDlg =
                 new DlgPrefController(this, currentDevice, m_pControllerManager,
                                       config);

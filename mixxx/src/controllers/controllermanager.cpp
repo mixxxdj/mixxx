@@ -139,7 +139,6 @@ int ControllerManager::slotSetUpDevices() {
 
     QSet<QString> filenames;
     int error = 0;
-    bool polling = false;
 
     foreach (Controller* pController, deviceList) {
         QString name = pController->getName();
@@ -178,34 +177,27 @@ int ControllerManager::slotSetUpDevices() {
             continue;
         }
         pController->applyPreset();
-
-        // Only enable polling when open controllers actually need it
-        if (pController->isPolling()) {
-            polling = true;
-        }
     }
 
-    // Start polling of applicable controller APIs
-    enablePolling(polling);
-
+    maybeStartOrStopPolling();
     return error;
 }
 
-void ControllerManager::enablePolling(bool enable) {
-    if (enable) {
+void ControllerManager::maybeStartOrStopPolling() {
+    QMutexLocker locker(&m_mutex);
+    QList<Controller*> controllers = m_controllers;
+    locker.unlock();
+
+    bool shouldPoll = false;
+    foreach (Controller* pController, controllers) {
+        if (pController->isOpen() && pController->isPolling()) {
+            shouldPoll = true;
+        }
+    }
+    if (shouldPoll) {
         startPolling();
     } else {
-        // This controller doesn't need it, but check to make sure others don't
-        // before disabling it
-        foreach (Controller* pController, m_controllers) {
-            // (re-using enable here)
-            if (pController->isOpen() && pController->isPolling()) {
-                enable = true;
-            }
-        }
-        if (!enable) {
-            stopPolling();
-        }
+        stopPolling();
     }
 }
 
@@ -257,6 +249,39 @@ QList<QString> ControllerManager::getPresetList(QString extension) {
         }
     }
     return presets;
+}
+
+void ControllerManager::openController(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+    if (pController->isOpen()) {
+        pController->close();
+    }
+    int result = pController->open();
+    maybeStartOrStopPolling();
+
+    // If successfully opened the device, apply the preset and save the
+    // preference setting.
+    if (result == 0) {
+        pController->applyPreset();
+
+        // Update configuration to reflect controller is enabled.
+        m_pConfig->set(ConfigKey(
+            "[Controller]", presetFilenameFromName(pController->getName())), 1);
+    }
+
+}
+
+void ControllerManager::closeController(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+    pController->close();
+    maybeStartOrStopPolling();
+    // Update configuration to reflect controller is disabled.
+    m_pConfig->set(ConfigKey(
+        "[Controller]", presetFilenameFromName(pController->getName())), 0);
 }
 
 bool ControllerManager::loadPreset(Controller* pController,
