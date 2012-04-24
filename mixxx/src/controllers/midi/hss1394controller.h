@@ -24,7 +24,7 @@
 class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     Q_OBJECT
   public:
-    DeviceChannelListener(QString name);
+    DeviceChannelListener(QObject* pParent, QString name);
     virtual ~DeviceChannelListener();
     // Called when data has arrived. This call will occur inside a separate
     // thread.

@@ -7,8 +7,8 @@
 
 #include "controllers/midi/hss1394controller.h"
 
-DeviceChannelListener::DeviceChannelListener(QString name)
-        : QObject(),
+DeviceChannelListener::DeviceChannelListener(QObject* pParent, QString name)
+        : QObject(pParent),
           hss1394::ChannelListener(),
           m_sName(name) {
 }
@@ -101,7 +101,7 @@ int Hss1394Controller::open() {
         return -1;
     }
 
-    m_pChannelListener = new DeviceChannelListener(m_sDeviceName);
+    m_pChannelListener = new DeviceChannelListener(this, m_sDeviceName);
     connect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
             this, SLOT(receive(QByteArray)));
     connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
