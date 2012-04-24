@@ -488,19 +488,14 @@ void TrackDAO::removeTrack(int id) {
 }
 
 void TrackDAO::removeTracks(QList<int> ids) {
-    QString idList = "";
-
+    QStringList idList;
     foreach (int id, ids) {
-        idList.append(QString("%1,").arg(id));
-    }
-
-    // Strip the last ,
-    if (idList.count() > 0) {
-        idList.truncate(idList.count() - 1);
+        idList.append(QString::number(id));
     }
 
     QSqlQuery query(m_database);
-    query.prepare(QString("UPDATE library SET mixxx_deleted=1 WHERE id in (%1)").arg(idList));
+    query.prepare(QString("UPDATE library SET mixxx_deleted=1 WHERE id in (%1)")
+                  .arg(idList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -754,7 +749,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats=:beats "
-                  "WHERE id="+QString("%1").arg(trackId));
+                  "WHERE id="+QString::number(trackId));
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
@@ -855,18 +850,24 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
     }
 }
 
-void TrackDAO::markTracksInDirectoryAsVerified(QString directory) {
+void TrackDAO::markTracksInDirectoriesAsVerified(QStringList directories) {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTracksInDirectoryAsVerified()" << directory;
 
+    FieldEscaper escaper(m_database);
+    QMutableStringListIterator it(directories);
+    while (it.hasNext()) {
+        it.setValue(escaper.escapeString(it.next()));
+    }
+
     QSqlQuery query(m_database);
-    query.prepare("UPDATE track_locations "
-                  "SET needs_verification=0 "
-                  "WHERE directory=:directory");
-    query.bindValue(":directory", directory);
+    query.prepare(
+        QString("UPDATE track_locations "
+                "SET needs_verification=0 "
+                "WHERE directory IN (%1)").arg(directories.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in" << directory << " as verified.";
+                << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
     }
 }
 
