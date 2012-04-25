@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-23 14:07-0400\n"
-"PO-Revision-Date: 2012-04-23 23:51+0000\n"
-"Last-Translator: Maxime Bochon <Unknown>\n"
+"PO-Revision-Date: 2012-04-24 07:52+0000\n"
+"Last-Translator: Maxime <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-24 04:40+0000\n"
-"X-Generator: Launchpad (build 15135)\n"
+"X-Launchpad-Export-Date: 2012-04-25 04:35+0000\n"
+"X-Generator: Launchpad (build 15139)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -24,16 +24,16 @@ msgstr "Nouvelle liste de lecture"
 
 #: BasePlaylistFeature#2
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Ajouter à file Auto (en dessous)"
 
 #: BasePlaylistFeature#3
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Ajouter à file Auto (au dessus)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Retirer"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
@@ -313,7 +313,7 @@ msgstr "Emplacement"
 #: BrowseTableModel#16
 msgctxt "BrowseTableModel#16"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Bibliothèque Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -408,7 +408,7 @@ msgstr "Le renommage du bac a échoué"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Fichiers de liste de lecture (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -416,6 +416,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Liste de lecture M3U (*.m3u);;Liste de lecture M3U8 (*.m3u8);;Liste de "
+"lecture PLS (*.pls);;Format texte CSV (*.csv);;Texte simple (*.txt)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -439,11 +441,11 @@ msgstr "<a href=\"http://mixxx.org/\">Site Officiel [ENG]</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "Auto"
 
 #: DlgAutoDJ#2
 msgid "One player must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "Une platine doit être arrêtée pour activer le mode Auto."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -451,43 +453,43 @@ msgstr "Désactiver Auto DJ"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "Lire aléatoirement le contenu de la liste de lecture Auto"
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Lecture aléatoire"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "Sauter le prochain morceau de la liste de lecture Auto."
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "Sauter le morceau"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Lancer la transition avec le prochain morceau"
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Baisser maintenant"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Détermine la durée de la transition"
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Secondes"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "sec."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Allumer ou éteindre le mode Auto."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -496,7 +498,7 @@ msgstr "Activer Auto DJ"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Gérer"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
@@ -539,6 +541,10 @@ msgid ""
 "minute of a track for beat information. This can speed up beat detection on "
 "slower computers but may result in lower quality beatgrids."
 msgstr ""
+"Activer la détection rapide des battements. Activée, Mixxx utilise seulement "
+"la première minute du morceau pour déterminer les informations de battement. "
+"Ceci peut accélérer la détection des battements sur des ordinateurs lents "
+"mais peut produire des grilles rythmiques de moins bonne qualité."
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
@@ -553,6 +559,11 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Convertit les battements détectés par l'analyseur en une grille rythmique à "
+"tempo constant. Utilisez ce paramétrage si vos morceaux ont un tempo "
+"constant (par ex. la plupart de la musique électronique). Donne souvent une "
+"grille rythmique de meilleure qualité, mais ne fonctionnera pas bien avec "
+"des morceaux qui comportent des variations de tempo."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
@@ -563,6 +574,8 @@ msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
 "analyzing the beats to discard outliers."
 msgstr ""
+"Tente de corriger la phase (premier battement) des grilles rythmiques à "
+"tempo constant en analysant les battements et en éliminant les cas aberrants."
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
@@ -574,6 +587,10 @@ msgid ""
 "If set, this setting will also re-analyse beatgrids generated by 3rd-party "
 "programs or previous versions of Mixxx."
 msgstr ""
+"Activé, réanalyse les grilles rythmiques lorsque vous modifiez les "
+"préférences sur cette page. S'il y a lieu, ce paramétrage réanalysera les "
+"grilles rythmiques générées par des programmes tiers ou des versions "
+"antérieures de Mixxx."
 
 #: DlgBeatsDlg#15
 msgid ""
@@ -591,11 +608,11 @@ msgstr "Plage du tempo"
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "Min. :"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "Max. :"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
@@ -625,7 +642,7 @@ msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr "Analyser le morceau en entier"
+msgstr "Analyser le morceau entier"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -674,11 +691,11 @@ msgstr "Précédent"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr "Appuyez sur la barre d'espace pour continuer ou sauter cette étape."
+msgstr "Appuyez sur la barre d'espace pour effectuer ou sauter cette étape."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr "Apprentissage Midi terminé"
+msgstr "Apprentissage Midi terminé !"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -705,10 +722,10 @@ msgstr ""
 "font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Cet "
-"assistant peux être relancé à tout instants.</p>\n"
+"assistant peux être relancé à n'importe quel moment.</p>\n"
 "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
-"go spin some beats!</p></body></html>"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br "
+"/>Maintenant, allons faire tourner des battements !</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -759,7 +776,7 @@ msgstr "Ajouter"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Editer"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
@@ -959,23 +976,23 @@ msgstr "Zoom par défaut"
 
 #: DlgPrefControlsDlg#30
 msgid "100%"
-msgstr ""
+msgstr "100 %"
 
 #: DlgPrefControlsDlg#31
 msgid "200%"
-msgstr ""
+msgstr "200 %"
 
 #: DlgPrefControlsDlg#32
 msgid "300%"
-msgstr ""
+msgstr "300 %"
 
 #: DlgPrefControlsDlg#33
 msgid "400%"
-msgstr ""
+msgstr "400 %"
 
 #: DlgPrefControlsDlg#34
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1905,7 +1922,7 @@ msgstr "Interroger périphériques"
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Rétablir les paramètres par défaut"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
@@ -2189,11 +2206,11 @@ msgstr "Arrêter l'enregistrement"
 
 #: DlgRecording#6
 msgid "Recording to file: "
-msgstr ""
+msgstr "Enregistrement dans le fichier : "
 
 #: DlgRecording#7
 msgid "MB written"
-msgstr ""
+msgstr "Mo écrits"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
@@ -2229,7 +2246,7 @@ msgstr "Genre:"
 
 #: DlgTrackInfo#9
 msgid "Composer:"
-msgstr ""
+msgstr "Compositeur :"
 
 #: DlgTrackInfo#10
 msgid "Filename:"
@@ -2296,7 +2313,7 @@ msgstr "Cue Id"
 #: DlgTrackInfo#25
 msgctxt "DlgTrackInfo#25"
 msgid "Position"
-msgstr ""
+msgstr "Position"
 
 #: DlgTrackInfo#26
 msgid "Hotcue"
@@ -2340,7 +2357,7 @@ msgstr "&Suivant >>"
 
 #: EmptyWaveformWidget#1
 msgid "Empty"
-msgstr ""
+msgstr "Vide"
 
 #: EncoderMp3#1
 msgid "Encoder"
@@ -2436,66 +2453,70 @@ msgstr "Erreur de configuration en mode non-bloquant:"
 
 #: EngineShoutcast#5
 msgid "Error setting hostname!"
-msgstr ""
+msgstr "Erreur lors de la définition du nom d'hôte !"
 
 #: EngineShoutcast#6
 msgid "Error setting protocol!"
-msgstr ""
+msgstr "Erreur lors de la définition du protocole !"
 
 #: EngineShoutcast#7
 msgid "Error setting port!"
-msgstr ""
+msgstr "Erreur lors de la définition du port !"
 
 #: EngineShoutcast#8
 msgid "Error setting password!"
-msgstr ""
+msgstr "Erreur lors de la définition du mot de passe !"
 
 #: EngineShoutcast#9
 msgid "Error setting mount!"
-msgstr ""
+msgstr "Erreur lors de la définition du montage !"
 
 #: EngineShoutcast#10
 msgid "Error setting username!"
-msgstr ""
+msgstr "Erreur lors de la définition du nom d'utilisateur !"
 
 #: EngineShoutcast#11
 msgid "Error setting stream name!"
-msgstr ""
+msgstr "Erreur lors de la définition du nom du flux !"
 
 #: EngineShoutcast#12
 msgid "Error setting stream description!"
-msgstr ""
+msgstr "Erreur lors de la définition de la description du flux !"
 
 #: EngineShoutcast#13
 msgid "Error setting stream genre!"
-msgstr ""
+msgstr "Erreur lors de la définition du genre du flux !"
 
 #: EngineShoutcast#14
 msgid "Error setting stream url!"
-msgstr ""
+msgstr "Erreur lors de la définition de l'URL du flux !"
 
 #: EngineShoutcast#15
 msgid ""
 "Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try "
 "a different sample-rate or switch to a different encoding."
 msgstr ""
+"La diffusion à 96 Khz avec Ogg Vorbis n'est pas supportée pour le moment. "
+"Veuillez essayer un taux d’échantillonnage différent ou sélectionnez un "
+"encodage différent."
 
 #: EngineShoutcast#16
 msgid ""
 "See https://bugs.launchpad.net/mixxx/+bug/686212 for more information."
 msgstr ""
+"Voir https://bugs.launchpad.net/mixxx/+bug/686212 pour plus d'informations."
 
 #: EngineShoutcast#17
 msgid "Error setting bitrate"
-msgstr ""
+msgstr "Erreur lors de la définition du débit"
 
 #: EngineShoutcast#18
 msgid "Error: unknown server protocol!"
-msgstr ""
+msgstr "Erreur : protocole du serveur inconnu !"
 
 #: EngineShoutcast#19
 msgid "Error: libshout only supports Shoutcast with MP3 format!"
-msgstr ""
+msgstr "Erreur : libshout ne supporte Shoutcast qu'avec le format MP3 !"
 
 #: EngineShoutcast#20
 msgid "Lost connection to streaming server"
@@ -2554,12 +2575,12 @@ msgstr "Filtré"
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
 msgid "Simple"
-msgstr ""
+msgstr "Simple"
 
 #: GLWaveformWidget#1
 msgctxt "GLWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Filtré"
 
 #: ITunesFeature#1
 msgid "iTunes"
@@ -2755,7 +2776,7 @@ msgstr "Mixxx"
 #: MixxxApp#3
 msgctxt "MixxxApp#3"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Choisissez le répertoire de la bibliothèque musicale"
 
 #: MixxxApp#4
 msgid "Sound Device Busy"
@@ -2808,17 +2829,19 @@ msgstr "Quitter"
 
 #: MixxxApp#14
 msgid "No Output Devices"
-msgstr ""
+msgstr "Aucun périphérique de sortie"
 
 #: MixxxApp#15
 msgid ""
 "Mixxx was configured without any output sound devices. Audio processing will "
 "be disabled without a configured output device."
 msgstr ""
+"Mixxx a été configuré sans aucun périphérique de sortie audio. Sans "
+"périphérique de sortie configuré, le traitement du son sera désactivé ."
 
 #: MixxxApp#16
 msgid "<b>Continue</b> without any outputs."
-msgstr ""
+msgstr "<b>Continuer</b> sans aucune sortie."
 
 #: MixxxApp#17
 msgid "Continue"
@@ -2826,15 +2849,15 @@ msgstr "Continuer"
 
 #: MixxxApp#18
 msgid "Load track to Deck %1"
-msgstr ""
+msgstr "Charger le morceau sur la platine %1"
 
 #: MixxxApp#19
 msgid "Loads a track in deck %1"
-msgstr ""
+msgstr "Charge un morceau dans la platine %1"
 
 #: MixxxApp#20
 msgid "Open"
-msgstr ""
+msgstr "Ouvrir"
 
 #: MixxxApp#21
 msgid "Ctrl+O"
@@ -2850,7 +2873,7 @@ msgstr "&Quitter"
 
 #: MixxxApp#24
 msgid "Quits Mixxx"
-msgstr ""
+msgstr "Quitte Mixxx"
 
 #: MixxxApp#25
 msgid "Ctrl+Q"
@@ -2863,6 +2886,8 @@ msgstr "&Scanner de nouveau la bibliothèque"
 #: MixxxApp#27
 msgid "Rescans library folders for changes to tracks."
 msgstr ""
+"Balaye les dossiers de la bibliothèque à la recherche de modifications dans "
+"les pistes."
 
 #: MixxxApp#28
 msgid "Add &new playlist"
@@ -2882,11 +2907,11 @@ msgstr "Ctrl+C"
 
 #: MixxxApp#32
 msgid "Deck %1 is currently playing a track."
-msgstr ""
+msgstr "La platine %1 est en cours d'utilisation."
 
 #: MixxxApp#33
 msgid "Are you sure you want to load a new track?"
-msgstr ""
+msgstr "Êtes-vous certain(e) de vouloir charger un nouveau morceau ?"
 
 #: MixxxApp#34
 msgid "&Full Screen"
@@ -2903,6 +2928,7 @@ msgstr "&Préférences"
 #: MixxxApp#37
 msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr ""
+"Modifier les paramètres de Mixxx (par ex. diffusion, MIDI, contrôleurs)"
 
 #: MixxxApp#38
 msgid "Ctrl+P"
@@ -2918,7 +2944,7 @@ msgstr "Support &Communautaire"
 
 #: MixxxApp#41
 msgid "Get help with Mixxx"
-msgstr ""
+msgstr "Obtenir de l'aide sur Mixxx"
 
 #: MixxxApp#42
 msgid "&User Manual"
@@ -2966,11 +2992,11 @@ msgstr "Ctrl+Maj+F"
 
 #: MixxxApp#53
 msgid "Enable Vinyl Control &1"
-msgstr ""
+msgstr "Activer le contrôle vinyle &1"
 
 #: MixxxApp#54
 msgid "Enable Vinyl Control &2"
-msgstr ""
+msgstr "Activer le contrôle vinyle &2"
 
 #: MixxxApp#55
 msgid "Enable live &broadcasting"
@@ -3087,16 +3113,16 @@ msgstr "Emplacement"
 #: ParserCsv#2
 msgctxt "ParserCsv#2"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "L'exportation de la liste de lecture a échoué"
 
 #: ParserCsv#3
 msgctxt "ParserCsv#3"
 msgid "Could not create file"
-msgstr ""
+msgstr "Impossible de créer le fichier"
 
 #: ParserCsv#4
 msgid "Readable text Export Failed"
-msgstr ""
+msgstr "Échec de l'export au format texte en clair"
 
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
@@ -3131,7 +3157,7 @@ msgstr "Impossible de créer le fichier"
 #: PlaylistFeature#1
 msgctxt "PlaylistFeature#1"
 msgid "Lock"
-msgstr ""
+msgstr "Verrouiller"
 
 #: PlaylistFeature#2
 msgid "Playlists"
@@ -3140,7 +3166,7 @@ msgstr "Liste de lecture"
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Unlock"
-msgstr ""
+msgstr "Déverrouiller"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3182,11 +3208,11 @@ msgstr "Chemin inconnu type %1"
 
 #: QObject#9
 msgid "(GL)"
-msgstr ""
+msgstr "(GL)"
 
 #: QObject#10
 msgid "(GLSL)"
-msgstr ""
+msgstr "(GLSL)"
 
 #: RecordingFeature#1
 msgid "Recordings"
@@ -3226,26 +3252,26 @@ msgstr "Impossible de lire la banque d'échantillon '%1'."
 
 #: SetlogFeature#1
 msgid "Join with previous"
-msgstr ""
+msgstr "Joindre avec les précédents"
 
 #: SetlogFeature#2
 msgid "Set Logs"
-msgstr ""
+msgstr "Définir les journaux"
 
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
 msgid "Unlock"
-msgstr ""
+msgstr "Déverrouiller"
 
 #: SetlogFeature#4
 msgctxt "SetlogFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Verrouiller"
 
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Filtré"
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -3337,7 +3363,7 @@ msgstr "Mode CDJ"
 #: Ui#8
 msgctxt "Ui#8"
 msgid "Simple"
-msgstr ""
+msgstr "Simple"
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
@@ -3357,7 +3383,7 @@ msgstr ""
 
 #: Ui#12
 msgid "Preferences"
-msgstr ""
+msgstr "Préférences"
 
 #: Ui#13
 msgctxt "Ui#13"
@@ -3637,11 +3663,11 @@ msgstr "Propriétés…"
 
 #: WTrackTableView#6
 msgid "Add to Auto-DJ Queue (bottom)"
-msgstr ""
+msgstr "Ajouter à la file Auto (en dessous)"
 
 #: WTrackTableView#7
 msgid "Add to Auto-DJ Queue (top)"
-msgstr ""
+msgstr "Ajouter à la file Auto (au dessus)"
 
 #: WTrackTableView#8
 msgid "Reload Track Metadata"
@@ -3649,15 +3675,15 @@ msgstr "Recharger les métadonnées de la piste"
 
 #: WTrackTableView#9
 msgid "Lock BPM"
-msgstr ""
+msgstr "Verrouiller le tempo"
 
 #: WTrackTableView#10
 msgid "Unlock BPM"
-msgstr ""
+msgstr "Déverrouiller le tempo"
 
 #: WTrackTableView#11
 msgid "Clear BPM and Beatgrid"
-msgstr ""
+msgstr "Réinitialiser le tempo et la grille rythmique"
 
 #: WTrackTableView#12
 msgid "Load to Deck %1"
@@ -4699,3 +4725,9 @@ msgstr "Montrer ou cacher les colonnes."
 #~ msgctxt "MixxxApp#9"
 #~ msgid "Choose music library directory"
 #~ msgstr "Choisissez le répertoire de la bibliothèque musicale"
+
+#~ msgid "Load Song (Player &1)..."
+#~ msgstr "Charger le morceau (Lecteur &1)..."
+
+#~ msgid "Load Song (Player &2)..."
+#~ msgstr "Charger le morceau (Lecteur &2)..."

@@ -1,16 +1,16 @@
-# Uzbek translation for mixxx
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Marathi translation for mixxx
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the mixxx package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-04-23 14:07-0400\n"
-"PO-Revision-Date: 2012-04-24 17:53+0000\n"
-"Last-Translator: Akmal Xushvaqov <akmalxster@gmail.com>\n"
-"Language-Team: Uzbek <uz@li.org>\n"
+"PO-Revision-Date: 2012-04-24 14:04+0000\n"
+"Last-Translator: Suresh Shinde <sureshinde@inbox.com>\n"
+"Language-Team: Marathi <mr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,11 +19,11 @@ msgstr ""
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Авто DJ"
+msgstr ""
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Янги қўшиқ рўйхати"
+msgstr "नवीन वादकयादी"
 
 #: BasePlaylistFeature#2
 msgid "Add to Auto DJ Queue (bottom)"
@@ -36,30 +36,30 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Олиб ташлаш"
+msgstr "काढून टाका"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "Қайта номлаш"
+msgstr "पुनःनामांकन करा"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr "Қулфлаш"
+msgstr "कुलूपबंद करा"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Ижро рўйхатини импорт қилиш"
+msgstr ""
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Қўшиқ рўйхатини экспорт қилиш"
+msgstr ""
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Ижро рўйхатини қайта номлаш"
+msgstr ""
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr "Қўшиқ рўйхатининг номи:"
+msgstr ""
 
 #: BasePlaylistFeature#15
 msgid "Playlist Creation Failed"
@@ -103,27 +103,27 @@ msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Ижро этилди"
+msgstr ""
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Санъаткор"
+msgstr "कलाकार"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr "Сарлавҳа"
+msgstr "शिर्षक"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "Альбом"
+msgstr "अल्बम"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Жанри"
+msgstr "श्रेणी"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
@@ -133,36 +133,36 @@ msgstr ""
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "वर्ष"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "प्रकार"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "ठिकाण"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "मतप्रदर्शन"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "कालावधी"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
-msgstr "Рейтинг"
+msgstr "गुणांकन"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "बीट दर"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -176,20 +176,20 @@ msgstr ""
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
-msgstr "Қўшилган санаси"
+msgstr ""
 
 #: BaseSqlTableModel#17
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "कालमुद्रा"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr ""
+msgstr "किल्ली"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
@@ -197,78 +197,78 @@ msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "Қўшиқ қўшилмади"
+msgstr ""
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr "Тез боғламалар"
+msgstr ""
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr "Ускуналар"
+msgstr "उपकरणे"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr "Ташувчи қурилмалар"
+msgstr "काढता येणारी उपकरणे"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Микс кутубхонаси"
+msgstr ""
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr "Уй жилди"
+msgstr "मुख्यपृष्ठ"
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr "Мусиқа"
+msgstr "संगीत"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr "Ҳужжатлар"
+msgstr "दस्तऐवज"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr "Иш столи"
+msgstr "कार्यस्थळ"
 
 #: BrowseFeature#9
 msgid "Browse"
-msgstr "Кўриш"
+msgstr "तपासणी करा"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr "Файл номи"
+msgstr "फाइलचे नाव"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr "Санъаткор"
+msgstr "कलाकार"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr "Сарлавҳа"
+msgstr "शिर्षक"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr "Альбом"
+msgstr "अल्बम"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Қўшиқ #"
+msgstr ""
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr "Йил"
+msgstr "वर्ष"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "Жанри"
+msgstr "श्रेणी"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
@@ -278,12 +278,12 @@ msgstr ""
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "मतप्रदर्शन"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "कार्यकाळ"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
@@ -293,22 +293,22 @@ msgstr ""
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr ""
+msgstr "किल्ली"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "प्रकार"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "बीट दर"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "ठिकाण"
 
 #: BrowseTableModel#16
 msgctxt "BrowseTableModel#16"
@@ -320,89 +320,85 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Қуйидаги файлни юклаб бўлмади, чунки  Микс ёки бошқа дастур томонидан "
-"фойдаланилмоқда."
 
 #: BrowseTableModel#18
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Диққат: Қуйидаги файллар бутунлай ўчирилади."
+msgstr ""
 
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Ушбу файлларни компьютерингиздан ўчирилишига розимисиз?"
+msgstr ""
 
 #: BrowseTableModel#20
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Қуйидаги файлни ўчириб бўлмади, чунки у Микс ёки бошқа дастур томонидан "
-"фойдаланилмоқда"
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "Файл метадатасини янгилаб бўлмади"
+msgstr ""
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Янги қути"
+msgstr ""
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "Олиб ташлаш"
+msgstr "काढून टाका"
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Қайта номлаш"
+msgstr "पुनःनामांकन करा"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr "Қулфлаш"
+msgstr "कुलूपबंद करा"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Ижро рўйхатини импорт қилиш"
+msgstr ""
 
 #: CrateFeature#6
 msgid "Crates"
-msgstr "Қутилар"
+msgstr ""
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr "Қутини импорт қилиш"
+msgstr ""
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr "Қутини экспорт қилиш"
+msgstr ""
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr "Қулфдан чиқариш"
+msgstr "कुलूप उघडा"
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr "Қути номи:"
+msgstr ""
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Қути яратилаётганда номаълум зато рўй берди: "
+msgstr ""
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr "Қутини қайта номлаш"
+msgstr ""
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr "Янги қути номи:"
+msgstr ""
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Қутини қайта номлаш муваффақиятсиз якунланди"
+msgstr ""
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -418,23 +414,23 @@ msgstr ""
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
-msgstr "Қутида бўш ном бўлмайди"
+msgstr ""
 
 #: CrateFeature#18
 msgid "Creating Crate Failed"
-msgstr "Қути яратиш муваффақиятсиз якунланди"
+msgstr ""
 
 #: CrateFeature#19
 msgid "A crate by that name already exists."
-msgstr "Ушбу номли қути аллақачон мавжуд."
+msgstr ""
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr "Mixxx ҳақида"
+msgstr ""
 
 #: DlgAboutDlg#2
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr "<a href=\"http://mixxx.org/\">Расмий веб сайти</a>"
+msgstr ""
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
@@ -446,7 +442,7 @@ msgstr ""
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
-msgstr "Auto DJ'ни ўчириш"
+msgstr ""
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
@@ -454,7 +450,7 @@ msgstr ""
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "अदलाबदल करा"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
@@ -490,7 +486,7 @@ msgstr ""
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
-msgstr "Auto DJ'ни ёқиш"
+msgstr ""
 
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
@@ -594,11 +590,11 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "BPM схемаси"
+msgstr ""
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "Схема номи"
+msgstr ""
 
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
@@ -607,48 +603,46 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr "Максимум"
+msgstr ""
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "Минимум"
+msgstr ""
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr "Киритилган қўшиқларнинг таҳлили"
+msgstr ""
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr "Ўтказиб юбориш"
+msgstr ""
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr "Муваффақиятли харитага қўшилди: "
+msgstr ""
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr "Кейинги"
+msgstr ""
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr "MIDI ўргатиш устаси"
+msgstr ""
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr "MIDI ўргатиш устасига хуш келибсиз"
+msgstr ""
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
-"Ушбу уста  MIDI бошқарувчингизни Mixxx бошқарувига осонгина харита қилишга "
-"рухсат беради."
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr "Бошлаш"
+msgstr ""
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
@@ -656,19 +650,19 @@ msgstr ""
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr "Mixxx бошқаруви"
+msgstr ""
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr "Олдинги"
+msgstr ""
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr "Жараёнда давом этиш ёки ташлаб ўтиш учун spacebar тугмасини босинг"
+msgstr ""
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr "MIDI ўргатиш тугалланди!"
+msgstr ""
 
 #: DlgMidiLearning#13
 msgid ""
@@ -686,19 +680,6 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
-"font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This "
-"wizard can be re-run at any time.</p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
-"go spin some beats!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -706,25 +687,25 @@ msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr "Аудио плагин ёзиб олувчи вақти ўтиб кетди"
+msgstr ""
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr "BPM аниқлаш параметрлари"
+msgstr ""
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr "BPM аниқлаш"
+msgstr ""
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr "BPM аниқлашни ёқиш"
+msgstr ""
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr "Импорт қилишда BPM қўшиқ аниқланди"
+msgstr ""
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -3527,113 +3508,3 @@ msgstr ""
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
 msgstr ""
-
-#~ msgctxt "BaseSqlTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Мулоҳаза"
-
-#~ msgctxt "BaseSqlTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Манзили"
-
-#~ msgctxt "BaseSqlTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Тури"
-
-#~ msgctxt "BaseSqlTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Йил"
-
-#~ msgctxt "BaseSqlTableModel#17"
-#~ msgid "Key"
-#~ msgstr "Калит"
-
-#~ msgctxt "BaseSqlTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "BaseSqlTableModel#14"
-#~ msgid "Track #"
-#~ msgstr "Қўшиқ #"
-
-#~ msgctxt "BaseSqlTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Битрейт"
-
-#~ msgctxt "BaseSqlTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Давомийлиги"
-
-#~ msgctxt "BrowseTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Давомийлиги"
-
-#~ msgctxt "BrowseTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Мулоҳаза"
-
-#~ msgctxt "BrowseTableModel#10"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "BrowseTableModel#11"
-#~ msgid "Key"
-#~ msgstr "Калит"
-
-#~ msgctxt "BrowseTableModel#12"
-#~ msgid "Type"
-#~ msgstr "Тури"
-
-#~ msgctxt "BrowseTableModel#15"
-#~ msgid "Mixxx Library"
-#~ msgstr "Микс кутубхонаси"
-
-#~ msgctxt "BrowseTableModel#13"
-#~ msgid "Bitrate"
-#~ msgstr "Битрейт"
-
-#~ msgctxt "BrowseTableModel#14"
-#~ msgid "Location"
-#~ msgstr "Манзили"
-
-#~ msgid "1.x.x"
-#~ msgstr "1.x.x"
-
-#~ msgid ""
-#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-#~ "type=\"text/css\">\n"
-#~ "p, li { white-space: pre-wrap; }\n"
-#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
-#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
-#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-#~ msgstr ""
-#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-#~ "type=\"text/css\">\n"
-#~ "p, li { white-space: pre-wrap; }\n"
-#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
-#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
-#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#~ msgid "Shuffle playlist"
-#~ msgstr "Shuffle қўшиқ рўйхати"
-
-#~ msgctxt "DlgAutoDJ#3"
-#~ msgid "Manage"
-#~ msgstr "Бошқариш"
-
-#~ msgid "Add tracks to the queue below..."
-#~ msgstr "Қуйидаги сўралганга қўшиқ қўшиш..."
