@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2011-11-10 11:34+0000\n"
 "Last-Translator: Олег Резников <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:46+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-08 04:51+0000\n"
+"X-Generator: Launchpad (build 14640)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -333,14 +333,18 @@ msgid "About Mixxx"
 msgstr "Сведения о Mixxx"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -348,23 +352,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Авторы</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -2971,10 +2958,30 @@ msgstr ""
 "(ы) в звуковых   настройках   компьютера."
 
 #: MixxxApp#105
+msgid "Mixxx %1 Development Team"
+msgstr ""
+
+#: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Подтвердите выход"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 "В данный момент дека используется для воспроизведения. Выйти из Mixxx?"
@@ -3616,8 +3623,111 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr "Показать или скрыть столбцы."
 
+#~ msgid "You don't have permission to view this folder."
+#~ msgstr "У вас не достаточно прав для просмотра этого каталога."
+
+#~ msgid "Permission Denied"
+#~ msgstr "Доступ запрещён"
+
+#~ msgid "Crate Creation Failed"
+#~ msgstr "Ошибка создания списка"
+
+#~ msgctxt "DlgPrefControls#4"
+#~ msgid "Information"
+#~ msgstr "Сведения"
+
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 кГц"
+
+#~ msgctxt "DlgPrefRecord#1"
+#~ msgid "Save Recording As..."
+#~ msgstr "Сохранить запись как..."
+
+#~ msgctxt "DlgPrefRecordDlg#9"
+#~ msgid "Title"
+#~ msgstr "Название"
+
+#~ msgctxt "DlgPrefRecordDlg#4"
+#~ msgid "Encoding"
+#~ msgstr "Кодирование"
+
+#~ msgctxt "DlgPrefRecordDlg#3"
+#~ msgid "Browse..."
+#~ msgstr "Обзор..."
+
+#~ msgctxt "DlgPrefRecordDlg#11"
+#~ msgid "Album"
+#~ msgstr "Альбом"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
+#~ "line for testing purposes!</span></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Этот вэб поток "
+#~ "используется для проверки!</span></p></body></html>"
+
+#~ msgid "Description"
+#~ msgstr "Описание"
+
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+#~ "ubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Реш"
+#~ "ение проблем</a>"
+
+#~ msgid "Vinyl Configuration"
+#~ msgstr "Конфигурирование винила"
+
+#~ msgid "Vinyl Type"
+#~ msgstr "Тип винила"
+
+#~ msgid "Signal Quality"
+#~ msgstr "Качество сигнала"
+
+#~ msgid "Scratch Mode"
+#~ msgstr "Режим скретча"
+
+#~ msgid "seconds"
+#~ msgstr "секунд"
+
+#~ msgid "Control Mode"
+#~ msgstr "Режим управления"
+
+#~ msgid "Absolute Mode"
+#~ msgstr "Абсолютный режим"
+
+#~ msgid "Relative Mode"
+#~ msgstr "Относительный режим"
+
+#~ msgid "Turntable Preamp"
+#~ msgstr "Проигрыватель предуселитель"
+
+#~ msgid "Lead-in time"
+#~ msgstr "Время вступления"
+
+#~ msgid "Enable Needle Skip Prevention"
+#~ msgstr "Использовать защиту от пропусков иглы"
 
 #~ msgid "Recently Added"
 #~ msgstr "Недавно добавленные"
@@ -3625,42 +3735,397 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "All Songs"
 #~ msgstr "Все композиции"
 
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "М3U Плэй-лист (*.m3u);;PLS Плэй-лист (*.pls)"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx не может найти или загрузить кодек MP3 lame. <p>Пожалуйста, "
+#~ "установите libmp3lame (также известен под названием lame) и убедитесь, что "
+#~ "он размещен в /usr/lib/libmp3lame.so </html>"
 
-#~ msgctxt "ParserM3u#2"
-#~ msgid "Could not create file"
-#~ msgstr "Невозможно создать файл"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx не может найти или загрузить кодек MP3 lame. <p>Пожалуйста, "
+#~ "переместите lame_enc.dll в каталог с установленной программой Mixxx </html>"
 
-#~ msgctxt "PlaylistFeature#18"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "М3U Плейлист (*.m3u);;PLS Плэй-лист (*.pls)"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx не может найти или загрузить кодек MP3 lame. <p>Пожалуйста, "
+#~ "установите libmp3lame (также известен под названием lame) и убедитесь, что "
+#~ "он размещен в /usr/local/lib/libmp3lame.dylib </html>"
 
-#~ msgctxt "PlaylistFeature#17"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Вид файлов воспроизведения (*.m3u *.pls)"
+#~ msgid "Would you like to load your iTunes library?"
+#~ msgstr "Вы действительно хотите загрузить вашу библиотеку из iTunes?"
 
-#~ msgctxt "PlaylistFeature#7"
-#~ msgid "Export Playlist"
-#~ msgstr "Экспортировать список воспроизведения"
+#~ msgid "Load iTunes Library?"
+#~ msgstr "Загрузить библиотеку iTunes?"
 
-#~ msgctxt "DlgPrefNoVinylDlg#21"
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Авторы</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+
+#~ msgctxt "MidiStatusDelegate#1"
+#~ msgid "Unknown"
+#~ msgstr "Неизвестно"
+
+#~ msgid "Enable &Vinyl Control"
+#~ msgstr "Использовать управление &винилом"
+
+#~ msgid "&Community Support..."
+#~ msgstr "&Поддержка оказываемая сообществом..."
+
+#~ msgid "&About..."
+#~ msgstr "&Сведения о программе..."
+
+#~ msgid ""
+#~ "The file %1 already exists. Would you like to overwrite it?\n"
+#~ "Selecting \"No\" will abort the recording."
+#~ msgstr ""
+#~ "Файл %1 уже существует. Вы действительно хотите заменить его?\n"
+#~ "Выбрав \"Нет\" произойдёт отмена записи."
+
+#~ msgid "Missing Songs"
+#~ msgstr "Отсутствующие композиции"
+
+#~ msgctxt "MixxxApp#95"
+#~ msgid "Save Recording As..."
+#~ msgstr "Сохранить запись как..."
+
+#~ msgctxt "MixxxLibraryFeature#2"
+#~ msgid "Library"
+#~ msgstr "Библиотека"
+
+#~ msgid "Mixxx Recording"
+#~ msgstr "Mixxx запись"
+
+#~ msgctxt "PlaylistFeature#2"
+#~ msgid "Remove"
+#~ msgstr "Удалить"
+
+#~ msgctxt "RhythmboxPlaylistModel#1"
+#~ msgid "Artist"
+#~ msgstr "Исполнитель"
+
+#~ msgctxt "RhythmboxPlaylistModel#2"
+#~ msgid "Title"
+#~ msgstr "Название"
+
+#~ msgid "Load Rhythmbox Library?"
+#~ msgstr "Загрузить библиотеку Rhythmbox?"
+
+#~ msgid "Would you like to load your Rhythmbox library?"
+#~ msgstr "Вы действительно хотите загрузить библиотеку Rhythmbox?"
+
+#~ msgctxt "RhythmboxPlaylistModel#4"
+#~ msgid "Year"
+#~ msgstr "Год"
+
+#~ msgctxt "RhythmboxPlaylistModel#3"
+#~ msgid "Album"
+#~ msgstr "Альбом"
+
+#~ msgctxt "RhythmboxTrackModel#5"
+#~ msgid "Genre"
+#~ msgstr "Жанр"
+
+#~ msgctxt "RhythmboxTrackModel#6"
+#~ msgid "Location"
+#~ msgstr "Расположение"
+
+#~ msgctxt "RhythmboxTrackModel#2"
+#~ msgid "Title"
+#~ msgstr "Название"
+
+#~ msgctxt "RhythmboxTrackModel#1"
+#~ msgid "Artist"
+#~ msgstr "Исполнитель"
+
+#~ msgctxt "RhythmboxPlaylistModel#8"
+#~ msgid "Unknown"
+#~ msgstr "Неизвестно"
+
+#~ msgctxt "RhythmboxPlaylistModel#7"
+#~ msgid "Duration"
+#~ msgstr "Длительность"
+
+#~ msgctxt "RhythmboxPlaylistModel#6"
+#~ msgid "Location"
+#~ msgstr "Расположение"
+
+#~ msgctxt "RhythmboxPlaylistModel#5"
+#~ msgid "Genre"
+#~ msgstr "Жанр"
+
+#~ msgctxt "RhythmboxTrackModel#3"
+#~ msgid "Album"
+#~ msgstr "Альбом"
+
+#~ msgctxt "RhythmboxTrackModel#7"
+#~ msgid "Duration"
+#~ msgstr "Длительность"
+
+#~ msgctxt "Ui#10"
+#~ msgid "Preferences"
+#~ msgstr "Параметры"
+
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Выполнить анализ всей композиции"
+
+#~ msgid "to"
+#~ msgstr "до"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "Профиль темпа:"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "Определение темпа"
+
+#~ msgid "Next >>"
+#~ msgstr "Следующая >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Предыдущая"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Композиция:"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Редактор дорожек"
+
+#~ msgid "&Close"
+#~ msgstr "&Закрыть"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "Редактор темпа (Щёлкните чтобы развернуть)"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Сведения о дорожке (Щёлкните, чтобы развернуть)"
+
+#~ msgid "&Go"
+#~ msgstr "П&ерейти"
+
+#~ msgid "BPM Range:"
+#~ msgstr "Диапазон темпа:"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Выполнить анализ всей композиции"
+
+#~ msgid "BPM:"
+#~ msgstr "Удар./мин:"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Исполнитель:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Название:"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Имя файла:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Описания:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Время воспроизведения:"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Тип файла:"
+
+#~ msgid "Miscellaneous"
+#~ msgstr "Разные"
+
+#~ msgctxt "DlgPrefPlaylistDlg#14"
+#~ msgid "Library"
+#~ msgstr "Библиотека"
+
+#~ msgctxt "DlgPrefPlaylistDlg#12"
+#~ msgid "Browse..."
+#~ msgstr "Обзор..."
+
+#~ msgctxt "DlgPrefRecordDlg#2"
+#~ msgid "File"
+#~ msgstr "Файл"
+
+#~ msgid "Mixxx Error"
+#~ msgstr "Ошибка Mixxx"
+
+#~ msgid ""
+#~ "FinalScratch records currently only work properly with a 44100 Hz sample "
+#~ "rate.\n"
+#~ "The sample rate has been reset to 44100 Hz."
+#~ msgstr ""
+#~ "FinalScratch правильно записывает, только с частотой выборки 44100 Гц.\n"
+#~ "Частота выборки была назначена до 44100 Гц."
+
 #~ msgid "Apply"
 #~ msgstr "Применить"
 
-#~ msgctxt "MixxxApp#48"
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
+#~ "pane.</span></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "weight:600;\">Выберите звуковые устройства для управления винилом в окне "
+#~ "звукового обрудования.</span></p></body></html>"
+
+#~ msgid "1 (Off)"
+#~ msgstr "1 (Выкл.)"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Исполнитель:"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Композиция:"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Имя файла:"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Название:"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Редактор дорожек"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Описания:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Сведения о дорожке (Щёлкните, чтобы развернуть)"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Тип файла:"
+
+#~ msgctxt "MixxxApp#44"
 #~ msgid "Enable live broadcasting"
-#~ msgstr "Прямой эфир"
+#~ msgstr "Использовать вещание в прямом эфире"
 
-#~ msgctxt "MixxxApp#76"
+#~ msgctxt "MixxxApp#72"
 #~ msgid "Preferences"
-#~ msgstr "Настройки"
+#~ msgstr "Параметры"
 
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Экспортировать список воспроизведения"
+#~ msgid ""
+#~ "No input device(s) selected.\n"
+#~ "Please select your soundcard(s) in the sound hardware preferences."
+#~ msgstr ""
+#~ "Устройства ввода не выбраны.\n"
+#~ "Пожалуйста, выберите вашу звуковую карту в параметрах звукового оборудования."
 
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Файлы списков воспроизведения (*.m3u *.pls)"
+#~ msgctxt "ScriptStudio#2"
+#~ msgid "File"
+#~ msgstr "Файл"
+
+#~ msgctxt "Ui#11"
+#~ msgid "Crossfader"
+#~ msgstr "Плавное микширование"
+
+#~ msgid "Channel 2 volume fader"
+#~ msgstr "Микшер громкости 2-го канала"
+
+#~ msgid "Gain knob for Channel 2"
+#~ msgstr "Ручка регулировки усиления для 2-го канала"
+
+#~ msgid "Mixxx has detected th"
+#~ msgstr "Mixxx обнаружил"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "Настучать темп"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+О"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+П"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+О"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"

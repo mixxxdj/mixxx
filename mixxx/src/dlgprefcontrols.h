@@ -20,13 +20,14 @@
 
 #include "ui_dlgprefcontrolsdlg.h"
 #include "configobject.h"
-#include "mixxx.h"
 
 class QWidget;
 class ControlObjectThreadMain;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
+class MixxxApp;
+class ControlObject;
 
 /**
   *@author Tue & Ken Haste Andersen

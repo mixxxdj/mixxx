@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2011-11-30 20:30+0000\n"
 "Last-Translator: Jakub Hadámek <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:45+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-08 04:49+0000\n"
+"X-Generator: Launchpad (build 14640)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -331,14 +331,18 @@ msgid "About Mixxx"
 msgstr "O aplikaci Mixxx"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -346,23 +350,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -2952,10 +2939,30 @@ msgstr ""
 "Prosím vyberte svou zvukovou kartu v nastavení zvukového hardware."
 
 #: MixxxApp#105
+msgid "Mixxx %1 Development Team"
+msgstr ""
+
+#: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Potvrďte ukončení"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Některá z ploten hraje. Opravdu chcete vypnout Mixxx?"
 
@@ -3594,8 +3601,92 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr "Ukázat nebo skrýt sloupce."
 
+#~ msgid "You don't have permission to view this folder."
+#~ msgstr "Nemáte oprávnění procházet tuto složku."
+
+#~ msgid "Permission Denied"
+#~ msgstr "Oprávnění byla odepřena"
+
+#~ msgctxt "DlgPrefControls#4"
+#~ msgid "Information"
+#~ msgstr "Informace"
+
+#~ msgid "Crate Creation Failed"
+#~ msgstr "Přepravka nebyla vytvořena"
+
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kHz"
+
+#~ msgctxt "DlgPrefRecordDlg#3"
+#~ msgid "Browse..."
+#~ msgstr "Procházet..."
+
+#~ msgctxt "DlgPrefRecord#1"
+#~ msgid "Save Recording As..."
+#~ msgstr "Uložit nahrávku jako..."
+
+#~ msgctxt "DlgPrefRecordDlg#9"
+#~ msgid "Title"
+#~ msgstr "Titul"
+
+#~ msgctxt "DlgPrefRecordDlg#4"
+#~ msgid "Encoding"
+#~ msgstr "Kódování"
+
+#~ msgctxt "DlgPrefRecordDlg#11"
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgid "Description"
+#~ msgstr "Popis"
+
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+#~ "ubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Řeš"
+#~ "ení problémů</a>"
+
+#~ msgid "150"
+#~ msgstr "150"
+
+#~ msgid "Vinyl Configuration"
+#~ msgstr "Nastavení vinylu"
+
+#~ msgid "Turntable Preamp"
+#~ msgstr "Předzesilovač gramofonu"
+
+#~ msgid "1 (Off)"
+#~ msgstr "1 (vypnuto)"
+
+#~ msgid "Vinyl Type"
+#~ msgstr "Typ vinylu"
+
+#~ msgid "Scratch Mode"
+#~ msgstr "Scratch režim"
+
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
+
+#~ msgid "Signal Quality"
+#~ msgstr "Kvalita signálu"
+
+#~ msgid "Powered by xwax"
+#~ msgstr "Powered by xwax"
+
+#~ msgid "seconds"
+#~ msgstr "sekundy"
+
+#~ msgid "Control Mode"
+#~ msgstr "Režim kontroly"
+
+#~ msgid "Absolute Mode"
+#~ msgstr "Absolutní režim"
+
+#~ msgid "Relative Mode"
+#~ msgstr "Relativní režim"
 
 #~ msgid "Recently Added"
 #~ msgstr "Nedávno přidané"
@@ -3603,42 +3694,305 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "All Songs"
 #~ msgstr "Všechny songy"
 
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "Seznam skladeb M3U (*.m3u);;Seznam skladeb PLS (*.pls)"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx nemůže najít MP3 encoder lame. <p>Nainstalujte prosím libmp3lame "
+#~ "(známou jako lame) a zkontrolujte, jestli je /usr/lib/libmp3lame.so ve vašem "
+#~ "systému </html>"
 
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Seznamy skladeb (*.m3u *.pls)"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx nemůže najít MP3 encoder lame. <p>Vložte prosím lame_enc.dll do "
+#~ "adresáře, který nainstaloval Mixxx </html>"
 
-#~ msgctxt "ParserM3u#2"
-#~ msgid "Could not create file"
-#~ msgstr "Nelze vytvořit soubor"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx nemůže nahrát nebo nalézt MP3 enkodér lame. <p>Prosím "
+#~ "nainstalujte libmp3lame (známou také jako lame) a zkontrolujte jestli "
+#~ "/usr/local/lib/libmp3lame.dylib je ve vašem systému </html>"
 
-#~ msgctxt "PlaylistFeature#18"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "Seznam skladeb M3U (*.m3u);;Seznam skladeb PLS (*.pls)"
+#~ msgid "Load iTunes Library?"
+#~ msgstr "Nahrát knihovnu iTunes?"
 
-#~ msgctxt "PlaylistFeature#17"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Seznamy skladeb (*.m3u *.pls)"
+#~ msgid "Would you like to load your iTunes library?"
+#~ msgstr "Chcete nahrát knihovnu iTunes?"
 
-#~ msgctxt "PlaylistFeature#7"
-#~ msgid "Export Playlist"
-#~ msgstr "Export seznamu skladeb"
+#~ msgctxt "MidiStatusDelegate#1"
+#~ msgid "Unknown"
+#~ msgstr "Neznámý"
 
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Exportovat seznam skladeb"
+#~ msgid "&Community Support..."
+#~ msgstr "&Komunitní podpora..."
 
-#~ msgctxt "DlgPrefNoVinylDlg#21"
-#~ msgid "Apply"
-#~ msgstr "Použít"
+#~ msgid "&About..."
+#~ msgstr "&O programu"
 
-#~ msgctxt "MixxxApp#48"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Povolit živé vysílání"
+#~ msgid ""
+#~ "The file %1 already exists. Would you like to overwrite it?\n"
+#~ "Selecting \"No\" will abort the recording."
+#~ msgstr ""
+#~ "Soubor %1 existuje. Chcete ho přepsat?\n"
+#~ "Vybrání \"Ne\" přeruší nahrávání."
 
-#~ msgctxt "MixxxApp#76"
+#~ msgid "Missing Songs"
+#~ msgstr "Chybějící hudba"
+
+#~ msgctxt "MixxxApp#95"
+#~ msgid "Save Recording As..."
+#~ msgstr "Uložit nahrávku jako..."
+
+#~ msgid "Mixxx Recording"
+#~ msgstr "Mixxx nahrává"
+
+#~ msgctxt "PlaylistFeature#2"
+#~ msgid "Remove"
+#~ msgstr "Odstranit"
+
+#~ msgctxt "MixxxLibraryFeature#2"
+#~ msgid "Library"
+#~ msgstr "Knihovna"
+
+#~ msgctxt "RhythmboxPlaylistModel#1"
+#~ msgid "Artist"
+#~ msgstr "Interpret"
+
+#~ msgctxt "RhythmboxPlaylistModel#2"
+#~ msgid "Title"
+#~ msgstr "Název"
+
+#~ msgid "Load Rhythmbox Library?"
+#~ msgstr "Nahrát knihovnu z Rhythmboxu?"
+
+#~ msgid "Would you like to load your Rhythmbox library?"
+#~ msgstr "Chcete nahrát knihovnu z Rhythmboxu?"
+
+#~ msgctxt "RhythmboxTrackModel#2"
+#~ msgid "Title"
+#~ msgstr "Název"
+
+#~ msgctxt "RhythmboxPlaylistModel#6"
+#~ msgid "Location"
+#~ msgstr "Umístění"
+
+#~ msgctxt "RhythmboxTrackModel#1"
+#~ msgid "Artist"
+#~ msgstr "Interpret"
+
+#~ msgctxt "RhythmboxPlaylistModel#8"
+#~ msgid "Unknown"
+#~ msgstr "Neznámý"
+
+#~ msgctxt "RhythmboxPlaylistModel#7"
+#~ msgid "Duration"
+#~ msgstr "Prolnutí"
+
+#~ msgctxt "RhythmboxPlaylistModel#5"
+#~ msgid "Genre"
+#~ msgstr "Styl"
+
+#~ msgctxt "RhythmboxPlaylistModel#4"
+#~ msgid "Year"
+#~ msgstr "Rok"
+
+#~ msgctxt "RhythmboxPlaylistModel#3"
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgctxt "RhythmboxTrackModel#3"
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgctxt "RhythmboxTrackModel#7"
+#~ msgid "Duration"
+#~ msgstr "Prolnutí"
+
+#~ msgctxt "RhythmboxTrackModel#5"
+#~ msgid "Genre"
+#~ msgstr "Styl"
+
+#~ msgctxt "RhythmboxTrackModel#6"
+#~ msgid "Location"
+#~ msgstr "Umístění"
+
+#~ msgid "OK"
+#~ msgstr "OK"
+
+#~ msgctxt "Ui#10"
 #~ msgid "Preferences"
-#~ msgstr "Předvolby"
+#~ msgstr "Nastavení"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analyzovat celou skladbu"
+
+#~ msgid "BPM Range:"
+#~ msgstr "Rozsah BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "Rozpoznání BPM"
+
+#~ msgid "<< Prev"
+#~ msgstr "<<Předchozí"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Skladba:"
+
+#~ msgid "&Close"
+#~ msgstr "&Zavřít"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analyzovat celou skladbu"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Interpret:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Název:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Komentář:"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Informace o skladbě (rozbalit)"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "Vykle&pávat tempo"
+
+#~ msgid "Play Time:"
+#~ msgstr "Čas přehrávání:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Interpret:"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Skladba:"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Editor skladeb"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Jméno souboru:"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Název:"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Komentář:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Informace o skladbě (rozbalit)"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Typ souboru:"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Editor skladeb"
+
+#~ msgid "to"
+#~ msgstr "do"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "Editor BPM (rozbalit)"
+
+#~ msgid "Next >>"
+#~ msgstr "Následující>>"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "Režim rozpoznání BPM:"
+
+#~ msgid "&Go"
+#~ msgstr "Př&ejít"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Název souboru:"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Formát:"
