@@ -156,10 +156,7 @@ int ControllerManager::slotSetUpDevices() {
         }
         filenames.insert(filename);
 
-        // TODO(Pegasus_RPG) Something is fishy here. We loadPreset on 'name'
-        // but later check that ofilename is set to '1' in the preferences. The
-        // section above (calculating 'filename') is unused also.
-        if (!loadPreset(pController, name, true)) {
+        if (!loadPreset(pController, filename, true)) {
             continue;
         }
 
