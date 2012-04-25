@@ -43,7 +43,7 @@ void ControlPushButton::setStates(int num_states)
     m_iNoStates = num_states;
 }
 
-void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
+void ControlPushButton::setValueFromMidi(MidiOpCode o, double v)
 {
     //if (m_bMidiSimulateLatching)
 
@@ -60,16 +60,16 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
                     m_dValue = 0;
             }
         } else {
-            if (c == NOTE_ON) {
+            if (o == MIDI_NOTE_ON) {
                 if (v > 0.) {
                     m_dValue = !m_dValue;
                 }
             }
         }
     } else { //Not a toggle button (trigger only when button pushed)
-        if (c == NOTE_ON) {
+        if (o == MIDI_NOTE_ON) {
             m_dValue = v;
-        } else if (c == NOTE_OFF) {
+        } else if (o == MIDI_NOTE_OFF) {
             m_dValue = 0.0;
         }
     }

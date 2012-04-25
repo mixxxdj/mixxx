@@ -1,0 +1,46 @@
+<ui version="4.0" >
+ <class>DlgPrefNoControllersDlg</class>
+ <widget class="QWidget" name="DlgPrefNoControllersDlg" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>462</width>
+    <height>87</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form3</string>
+  </property>
+  <layout class="QVBoxLayout" >
+     <property name="alignment" >
+       <enum>Qt::AlignTop</enum>
+     </property>
+  <item>
+    <widget class="QLabel" name="TextLabel3_2" >
+     <property name="enabled" >
+      <bool>true</bool>
+     </property>
+     <property name="font" >
+      <font/>
+     </property>
+            <property name="minimumSize" >
+             <size>
+              <width>100</width>
+              <height>10</height>
+             </size>
+            </property>
+     <property name="text" >
+      <string>No controllers available.</string>
+     </property>
+     <property name="wordWrap" >
+      <bool>false</bool>
+     </property>
+    </widget>
+
+   </item>
+
+
+  </layout>
+ </widget>
+</ui>
