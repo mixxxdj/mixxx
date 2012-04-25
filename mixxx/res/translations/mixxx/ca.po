@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-04-23 14:07-0400\n"
-"PO-Revision-Date: 2012-04-23 16:48+0000\n"
+"PO-Revision-Date: 2012-04-24 15:57+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-24 04:40+0000\n"
-"X-Generator: Launchpad (build 15135)\n"
+"X-Launchpad-Export-Date: 2012-04-25 04:35+0000\n"
+"X-Generator: Launchpad (build 15139)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -276,47 +276,47 @@ msgstr "Gènere"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "Compositor"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Comentari"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Duració"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "PPM"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr ""
+msgstr "Tecla"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Tipus"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "Taxa de bits"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Ubicació"
 
 #: BrowseTableModel#16
 msgctxt "BrowseTableModel#16"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Biblioteca de Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -410,7 +410,7 @@ msgstr "Renombrant caixa fallida"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Arxius de llista de reproducció (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -418,6 +418,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Llista de repr. M3U (*.m3u);;Llista de repr. M3U8 (*.m3u8);;Llista de repr. "
+"PLS (*.pls);;Text CSV (*.csv);;Text llegible (*.txt)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -441,11 +443,11 @@ msgstr "<a href=\"http://mixxx.org/\">Pàgina Oficial</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: DlgAutoDJ#2
 msgid "One player must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "És necessari detindre un reproductor per a activar el mode Auto-DJ"
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -453,43 +455,43 @@ msgstr "Desactiva el DJ automàtic"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "Mescla el contingut de la llista de reproducció d'Auto-DJ."
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Barreja"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "Ometre la següent pista a la llista de reproducció d'Auto-DJ."
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "Ometre pista"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Passa la transició a la següent pista."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Esvair ara"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Determina la duració de la transició."
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Segons"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "seg."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Activa o desactiva Auto DJ."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -498,11 +500,11 @@ msgstr "Activa el Dj automàtic"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Gestiona"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Configuració de detecció de ritme"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -510,26 +512,29 @@ msgid ""
 "of your tracks, automatically shows a beat-grid for them, and allows you to "
 "synchronize tracks using their beat information."
 msgstr ""
+"Quan està activada la detecció de ritme, Mixxx detecta les pulsacions per "
+"minut de les seues cançons, mostra automàticament una xarxa de ritmes i "
+"permet sincronitzar les pistes en base a la seua informació de ritme."
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr ""
+msgstr "Activa la detecció de PPM i ritme"
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
-msgstr ""
+msgstr "Tria analitzador"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr ""
+msgstr "Analitzador de ritme:"
 
 #: DlgBeatsDlg#6
 msgid "Choose beween different algorithms to detect beats."
-msgstr ""
+msgstr "Tria entre diferents algoritmes per detectar el ritme."
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
-msgstr ""
+msgstr "Configuració d'analitzador"
 
 #: DlgBeatsDlg#8
 msgid ""
