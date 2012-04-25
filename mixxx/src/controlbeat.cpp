@@ -36,8 +36,9 @@ ControlBeat::~ControlBeat()
     delete [] buffer;
 }
 
-void ControlBeat::setValueFromMidi(MidiCategory, double v)
+void ControlBeat::setValueFromMidi(MidiOpCode o, double v)
 {
+    Q_UNUSED(o);
     if (!m_bPressed || !m_bMidiSimulateLatching)
     {
         beatTap();

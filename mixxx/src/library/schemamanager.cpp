@@ -5,7 +5,7 @@
 #include <QtDebug>
 
 #include "library/schemamanager.h"
-#include "widget/wwidget.h"
+#include "xmlparse.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
@@ -41,7 +41,7 @@ bool SchemaManager::upgradeToSchemaVersion(ConfigObject<ConfigValue>* config,
     QString schemaFilename = config->getConfigPath();
     schemaFilename.append("schema.xml");
     qDebug() << "Loading schema" << schemaFilename;
-    QDomElement schemaRoot = WWidget::openXMLFile(schemaFilename, "schema");
+    QDomElement schemaRoot = XmlParse::openXMLFile(schemaFilename, "schema");
 
     QDomNodeList revisions = schemaRoot.childNodes();
 

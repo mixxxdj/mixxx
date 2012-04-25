@@ -112,7 +112,8 @@ double ControlLogpotmeter::GetMidiValue()
     return midival;
 }
 
-void ControlLogpotmeter::setValueFromMidi(MidiCategory, double v) {
+void ControlLogpotmeter::setValueFromMidi(MidiOpCode o, double v) {
+    Q_UNUSED(o);
   //    m_dValue = m_dMinValue + (v/127.)*m_dValueRange;
     m_dValue = getValueFromWidget(v);
     //    qDebug() << "SetValueFromMidiValue : " << m_dValue;
