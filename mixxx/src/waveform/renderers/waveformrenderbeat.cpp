@@ -71,20 +71,21 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     QPen highBeatPen(m_highBeatColor);
     highBeatPen.setWidth(1.5);
 
-    for (Const_BeatIterator it = m_beatsCache.begin(); it != m_beatsCache.end(); it++)
-    {
+    for (Const_SampleIterator it = m_beatsCache.begin(); it != m_beatsCache.end(); it++) {
         int beatPosition = *it;
         m_waveformRenderer->regulateVisualSample(beatPosition);
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
         //NOTE: (vRince) RJ should we keep this ?
-        if (m_beatActive && m_beatActive->get() > 0.0 && abs(xBeatPoint - m_waveformRenderer->getWidth()/2) < 20)
+        if (m_beatActive && m_beatActive->get() > 0.0 &&
+            abs(xBeatPoint - m_waveformRenderer->getWidth()/2) < 20)
             painter->setPen(highBeatPen);
         else
             painter->setPen(beatPen);
 
-        painter->drawLine( QPointF(xBeatPoint,0.f),
-                           QPointF(xBeatPoint,(float)m_waveformRenderer->getHeight()));
+        painter->drawLine(QPointF(xBeatPoint, 0.f),
+                          QPointF(xBeatPoint,
+                                  (float)m_waveformRenderer->getHeight()));
     }
 
     painter->restore();

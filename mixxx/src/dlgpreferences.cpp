@@ -15,6 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QTabWidget>
+#include <QTabBar>
+#include <QDialog>
+#include <QtGui>
+#include <QEvent>
+#include <QScrollArea>
 
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"
@@ -25,8 +31,12 @@
 #ifdef __SHOUTCAST__
 #include "dlgprefshoutcast.h"
 #endif
+#ifdef __VAMP__
+    #include "dlgprefbeats.h"
+#else
+    #include "dlgprefbpm.h"
+#endif
 
-#include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "controllers/dlgprefmappablecontroller.h"
@@ -40,20 +50,13 @@
 #include "mixxx.h"
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
-#include <QTabWidget>
-
-#include <QTabBar>
-#include <QDialog>
-#include <QtGui>
-#include <QEvent>
-#include <QScrollArea>
+#include "library/library.h"
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
                                ConfigObject<ConfigValue> * _config)
         :  QDialog(), Ui::DlgPreferencesDlg() {
-    m_pMixxx = mixxx;
     m_pControllerManager = controllers;
 
     setupUi(this);
@@ -84,8 +87,14 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_weq);
     m_wcrossfader = new DlgPrefCrossfader(this, config);
     addPageWidget(m_wcrossfader);
+
+#ifdef __VAMP__
+    m_wbeats = new DlgPrefBeats(this, config);
+    addPageWidget (m_wbeats);
+#else
     m_wbpm = new DlgPrefBpm(this, config);
     addPageWidget(m_wbpm);
+#endif
     m_wreplaygain = new DlgPrefReplayGain(this, config);
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, config);
@@ -122,10 +131,18 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()), m_wcontrols,  SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_weq,        SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wcrossfader, SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), m_wbpm,       SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
 
+#ifdef __VAMP__
+    connect(this, SIGNAL(showDlg()),
+            m_wbeats, SLOT(slotUpdate()));
+#else
+    connect(this, SIGNAL(showDlg()),
+            m_wbpm, SLOT(slotUpdate()));
+#endif
+
+    connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wrecord,    SLOT(slotUpdate()));
+
 #ifdef __VINYLCONTROL__
     connect(this, SIGNAL(showDlg()), m_wvinylcontrol, SLOT(slotShow()));
     connect(this, SIGNAL(closeDlg()), m_wvinylcontrol,SLOT(slotClose()));
@@ -146,7 +163,12 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(buttonBox, SIGNAL(accepted()), m_weq,       SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wcrossfader,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
+
+#ifdef __VAMP__
+    connect(buttonBox, SIGNAL(accepted()), m_wbeats,      SLOT(slotApply()));
+#else
     connect(buttonBox, SIGNAL(accepted()), m_wbpm,      SLOT(slotApply()));
+#endif
     connect(buttonBox, SIGNAL(accepted()), m_wreplaygain,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
@@ -210,12 +232,20 @@ void DlgPreferences::createIcons()
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+
+#ifdef __VAMP__
+    m_pAnalysersButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pAnalysersButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
+    m_pAnalysersButton->setText(0, tr("Beat Detection"));
+    m_pAnalysersButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pAnalysersButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#else
     m_pBPMdetectButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pBPMdetectButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     m_pBPMdetectButton->setText(0, tr("BPM Detection"));
     m_pBPMdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pBPMdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
+#endif
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
     m_pReplayGainButton->setText(0, tr("Normalization"));
@@ -270,8 +300,14 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     	pagesWidget->setCurrentWidget(m_wcrossfader->parentWidget()->parentWidget());
     } else if (current == m_pRecordingButton) {
     	pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
+
+#ifdef __VAMP__
+    } else if (current == m_pAnalysersButton ) {
+        pagesWidget->setCurrentWidget(m_wbeats->parentWidget()->parentWidget());
+#else
     } else if (current == m_pBPMdetectButton) {
-    	pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
+        pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
+#endif
     } else if (current == m_pReplayGainButton) {
     	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
 
@@ -333,8 +369,6 @@ void DlgPreferences::slotHide() {
 
 
 void DlgPreferences::slotShow() {
-    //m_pMixxx->releaseKeyboard();
-
     QSize optimumSize;
     QSize deltaSize;
     QSize pagesSize;
@@ -439,7 +473,6 @@ void DlgPreferences::setupControllerWidgets()
 void DlgPreferences::slotApply()
 {
     m_pControllerManager->savePresets();
-    //m_pMixxx->grabKeyboard();
 }
 
 void DlgPreferences::slotHighlightDevice(DlgPrefController* dialog, bool enabled)

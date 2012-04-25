@@ -28,9 +28,10 @@
 
 #include "waveform/waveform.h"
 
-WOverview::WOverview(const char *pGroup, QWidget * parent)
+WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
     : WWidget(parent),
-      m_pGroup(pGroup) {
+      m_pGroup(pGroup),
+      m_pConfig(pConfig) {
 
     m_sampleDuration = 0;
     m_iPos = 0;
@@ -483,15 +484,16 @@ QColor WOverview::getMarkerColor() {
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // Accept the enter event if the thing is a filepath and nothing's playing
-    // in this deck.
+    // in this deck or the settings allow to interrupt the playing deck.
     if (event->mimeData()->hasUrls() &&
             event->mimeData()->urls().size() > 0) {
         ControlObject *pPlayCO = ControlObject::getControl(
                     ConfigKey(m_pGroup, "play"));
-        if (pPlayCO && pPlayCO->get()) {
-            event->ignore();
-        } else {
+        if (pPlayCO && (!pPlayCO->get() ||
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
             event->acceptProposedAction();
+        } else {
+            event->ignore();
         }
     }
 }

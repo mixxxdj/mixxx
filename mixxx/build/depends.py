@@ -222,6 +222,12 @@ class ReplayGain(Dependence):
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.6.0'
 
+    def sse_enabled(self, build):
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        return (build.machine_is_64bit or
+                (build.toolchain_is_msvs and optimize > 2) or
+                (build.toolchain_is_gnu and optimize > 1))
+
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
                    '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
@@ -231,16 +237,21 @@ class SoundTouch(Dependence):
                    '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,]
+                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
 
         # SoundTouch CPU optimizations are only for x86
         # architectures. SoundTouch automatically ignores these files when it is
         # not being built for an architecture that supports them.
         cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else \
-                '#lib/%s/cpu_detect_x86_gcc.cpp'
+            '#lib/%s/cpu_detect_x86_gcc.cpp'
         sources.append(cpu_detection % self.SOUNDTOUCH_PATH)
+
+        # Check if the compiler has SSE extention enabled
+        # Allways the case on x64 (core instructions)
+        if self.sse_enabled(build):
+            sources.extend(
+                ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,])
         return sources
 
     def configure(self, build, conf):
@@ -248,6 +259,12 @@ class SoundTouch(Dependence):
             # Regardless of the bitwidth, ST checks for WIN32
             build.env.Append(CPPDEFINES = 'WIN32')
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
+
+        # Check if the compiler has SSE extention enabled
+        # Allways the case on x64 (core instructions)
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        if self.sse_enabled(build):
+            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
@@ -259,6 +276,12 @@ class TagLib(Dependence):
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
+
+class ProtoBuf(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']):
+            raise Exception("Could not find libprotobuf or its development headers.")
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -522,8 +545,9 @@ class MixxxCore(Feature):
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
-                   "track/beatmatrix.cpp",
+                   "track/beatmap.cpp",
                    "track/beatfactory.cpp",
+                   "track/beatutils.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -551,6 +575,19 @@ class MixxxCore(Feature):
                    build.env.Qrc('#res/mixxx.qrc')
                    ]
 
+        proto_args = {
+            'PROTOCPROTOPATH': ['src'],
+            'PROTOCPYTHONOUTDIR': '', # set to None to not generate python
+            'PROTOCOUTDIR': build.build_dir,
+            'PROTOCCPPOUTFLAGS': '',
+            #'PROTOCCPPOUTFLAGS': "dllexport_decl=PROTOCONFIG_EXPORT:"
+        }
+        proto_sources = SCons.Glob('proto/*.proto')
+        proto_objects = [build.env.Protoc([], proto_source, **proto_args)[0]
+                        for proto_source in proto_sources]
+        sources.extend(proto_objects)
+
+
         # Uic these guys (they're moc'd automatically after this) - Generates
         # the code for the QT UI forms
         build.env.Uic4('dlgpreferencesdlg.ui')
@@ -567,6 +604,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
         build.env.Uic4('dlgprefbpmdlg.ui')
         build.env.Uic4('dlgprefreplaygaindlg.ui')
+        build.env.Uic4('dlgprefbeatsdlg.ui')
         build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
@@ -719,7 +757,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

@@ -15,6 +15,9 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QThread>
+#include <QDir>
+#include <QtDebug>
 #include <qapplication.h>
 #include <qfont.h>
 #include <qstring.h>

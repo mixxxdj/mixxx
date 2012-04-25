@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: RJ Ryan <Unknown>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2012-02-23 19:31+0000\n"
+"Last-Translator: Rikard Edgren <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:47+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-02-24 04:44+0000\n"
+"X-Generator: Launchpad (build 14860)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -247,7 +247,7 @@ msgstr "Uppdatering av metadatan misslyckades"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr ""
+msgstr "Låda"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -300,11 +300,11 @@ msgstr "Döp om Låda"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr ""
+msgstr "Namn på ny låda:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Omdöpning av låda misslyckades"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -318,29 +318,33 @@ msgstr ""
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "En låda kan inte ha ett tomt namn."
 
 #: CrateFeature#18
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Skapande av låda misslyckades"
 
 #: CrateFeature#19
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "En låda med det namnet finns redan."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
 msgstr "Om Mixxx"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -348,10 +352,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -691,7 +691,7 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Permanent hastighetsändring (mellan 1 och 8000) vid högerklick"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
@@ -699,11 +699,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Tillfällig hastighetsändring (mellan 1 och 8000) vid vänsterklick"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Tillfällig hastighetsändring (mellan 1 och 8000) vid högerklick"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
@@ -817,7 +817,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
-msgstr ""
+msgstr "Vill du skriva över existerande kopplingar?"
 
 #: DlgPrefMidiBindings#5
 msgid ""
@@ -841,7 +841,7 @@ msgstr "Välj kontrollgrupp"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
-msgstr ""
+msgstr "Välj kontroll"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
@@ -853,11 +853,11 @@ msgstr "Är du säker på att du vill rensa alla bindningar?"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr ""
+msgstr "Rensa utmatningsbindningar"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Är du säker på att du vill rensa alla utmatningsbindningar?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -866,7 +866,7 @@ msgstr "Dialog"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
-msgstr ""
+msgstr "Namn på enhet"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
@@ -963,6 +963,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Välj ljudenhet för vinylkontrol i panelen för "
+"ljudhårdvara</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -971,11 +982,14 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Pro"
+"blemlösning (på engelska)</a>"
 
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Förförstärkare skivspelare"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
@@ -1067,7 +1081,7 @@ msgstr "Välj mapp för musikbibliotek"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
-msgstr ""
+msgstr "Flera iPoddar upptäcktes"
 
 #: DlgPrefPlaylist#3
 msgid ""
@@ -1108,7 +1122,7 @@ msgstr "Filformat för audio"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Extra plugins för format:"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
@@ -1266,10 +1280,12 @@ msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Beräkna normalisering av uppspelningsförstärkning för låtar som saknar "
+"metadata för uppspelningsförstärkning."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr ""
+msgstr "Aktivera uppspelningsförstärkningsanalys"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1368,11 +1384,11 @@ msgstr "test1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
-msgstr ""
+msgstr "Inställningar för strömning"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr ""
+msgstr "Namn på strömning"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
@@ -1578,7 +1594,7 @@ msgstr "Samplingsfrekvens"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
-msgstr ""
+msgstr "Latenstips"
 
 #: DlgPrefSoundDlg#4
 msgid ""
@@ -1587,6 +1603,10 @@ msgid ""
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
+"<ul>\n"
+"<li>Öka latensen om du hör missljud vid uppspelning</li>\n"
+"<li>Minska latensen för att öka Mixxx:s responsivitet</li>\n"
+"</ul>"
 
 #: DlgPrefSoundDlg#5
 msgid "Output"
@@ -1599,7 +1619,7 @@ msgstr "Ingång"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr ""
+msgstr "Fråga enheter"
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
@@ -1608,7 +1628,7 @@ msgstr "Återställ till standardvärden"
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr "Verktställ"
+msgstr "Verkställ"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -2789,10 +2809,30 @@ msgid ""
 msgstr ""
 
 #: MixxxApp#105
-msgid "Confirm Exit"
+msgid "Mixxx %1 Development Team"
 msgstr ""
 
 #: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
+msgid "Confirm Exit"
+msgstr ""
+
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
@@ -3417,16 +3457,93 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr ""
 
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Exportera spellista"
+#~ msgid "Next >>"
+#~ msgstr "Nästa >>"
 
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Spellistor (*.m3u *.pls)"
+#~ msgid "<< Prev"
+#~ msgstr "<< Föreg"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Låt"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Spårredigerare"
+
+#~ msgid "&Close"
+#~ msgstr "&Stäng"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analysera hela låten"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgid "to"
+#~ msgstr "till"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "BPM-schema"
+
+#~ msgid "&Go"
+#~ msgstr "&Gå till"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analysera hela låten"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Spårinformation (Klicka för att expandera)"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Artist:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Filnamn:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Kommentar:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Speltid"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Filtyp:"
 
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kHz"
+
+#~ msgid "Description"
+#~ msgstr "Beskrivning"
 
 #~ msgid "Recently Added"
 #~ msgstr "Nyligen tillagda"
@@ -3434,6 +3551,78 @@ msgstr ""
 #~ msgid "All Songs"
 #~ msgstr "Alla låtar"
 
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U-spellista (*.m3u);;PLS spellista (*.pls)"
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Låt:"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Spårredigerare"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Artist:"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Kommentarer:"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Filnamn:"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Filtyp:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Spårinformation (Klicka för att expandera)"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx kan inte ladda eller hitta mp3-kodaren lame. <p>Var god "
+#~ "installera libmp3lame (även känd som lame) och kontrollera att "
+#~ "/usr/lib/libmp3lame.so finns i ditt system </html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx kan inte ladda eller hitta mp3-kodaren lame. <p>kopiera "
+#~ "lame_enc.dll till mappen där du installerat Mixxx </html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx kan inte ladda eller hitta mp3-kodaren lame. <p>Var god "
+#~ "installera libmp3lame (även känd som lame) och kontrollera att "
+#~ "/usr/local/lib/libmp3lame.dylib finns i ditt system </html>"
+
+#~ msgid "BPM Range:"
+#~ msgstr "BPM-intervall"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM-avkänning"

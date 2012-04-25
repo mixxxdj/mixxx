@@ -5,14 +5,14 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation>Auto DJ</translation>
+            <translation>Auto-DJ</translation>
         </message>
     </context>
     <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation>Soitetut</translation>
+            <translation>Soitettu</translation>
         </message>
         <message>
             <source>Artist</source>
@@ -102,7 +102,7 @@
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation>Mixxx kirjasto</translation>
+            <translation>Mixxx-kirjasto</translation>
         </message>
         <message>
             <source>Home</source>
@@ -169,7 +169,7 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Näppäin</translation>
+            <translation>Sävellaji</translation>
         </message>
         <message>
             <source>Type</source>
@@ -185,11 +185,11 @@
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation>Mixxx kirjasto</translation>
+            <translation>Mixxx-kirjasto</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation>Seuraavaa tiedostoa ei voitu ladata koska se on Mixxx:n tai jonkin muun sovelluksen käytössä.</translation>
+            <translation>Seuraavaa tiedostoa ei voitu ladata, koska se on Mixxx:n tai jonkin muun sovelluksen käytössä.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
@@ -197,11 +197,11 @@
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation>Oletko varma että haluat poistaa nämä tiedostot tietokoneeltasi?</translation>
+            <translation>Haluatko varmasti poistaa nämä tiedostot tietokoneeltasi?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation>Seuraavaa tiedostoa ei voitu poistaa koska se on Mixxx:n tai jonkin muun sovelluksen käytössä.</translation>
+            <translation>Seuraavaa tiedostoa ei voitu poistaa, koska se on Mixxx:n tai jonkin muun sovelluksen käytössä.</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
@@ -252,7 +252,8 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Tuntematon virhe luotaessa levylaukkua: </translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Rename Crate</source>
@@ -268,17 +269,16 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soittolistatiedostot (*.m3u, *.m3u8 ja *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>M3u-soittolista (*.m3u);; m3u8-soittolista (*.m3u8);;Pls-soittolista (*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Levylaukun nimi ei voi olla tyhjä.</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
@@ -296,22 +296,18 @@
             <translation>Tietoja Mixxxistä</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Tekijät&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -322,11 +318,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgAutoDJ</name>
         <message>
             <source>Disable Auto DJ</source>
-            <translation>Poista Auto DJ käytöstä</translation>
+            <translation>Poista auto-DJ käytöstä</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
-            <translation>Ota Auto DJ käyttöön</translation>
+            <translation>Ota auto-dj käyttöön</translation>
         </message>
         <message>
             <source>Manage</source>
@@ -404,7 +400,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx Control</source>
-            <translation>Mixxx hallinta</translation>
+            <translation>Mixxx-hallinta</translation>
         </message>
         <message>
             <source>Previous</source>
@@ -412,7 +408,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation>Paina välilyöntiä jatkaaksesi tai ohittaaksesi tämän kohdan</translation>
+            <translation>Jatka tai ohita painamalla välilyöntiä</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
@@ -448,15 +444,15 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefBPMDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation>BPM tunnistuksen asetukset</translation>
+            <translation>BPM-tunnistuksen asetukset</translation>
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation>BPM:n tunnistus</translation>
+            <translation>BPM-tunnistus</translation>
         </message>
         <message>
             <source>Enable BPM Detection</source>
-            <translation>Käytä BPM tunnistusta</translation>
+            <translation>Käytä BPM-tunnistusta</translation>
         </message>
         <message>
             <source>Detect Song BPM on Import</source>
@@ -609,7 +605,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Pitch/Rate slider direction</source>
-            <translation>Pitch-säätimien toiminta</translation>
+            <translation>Pitch-säätimien toimintasuunta</translation>
         </message>
         <message>
             <source>Track load behaviour</source>
@@ -645,11 +641,12 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
-            <translation>Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren oikeaa painiketta</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Temporary Pitch/Rate Buttons</source>
-            <translation>Tilapäisen äänen Korkeuden/Nopeuden säädön painikkeet</translation>
+            <translation>Väliaikaisen äänen korkeuden tai nopeuden säädön painikkeet</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when left clicking</source>
@@ -2656,6 +2653,31 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 Valitse äänikorttisi äänilaitteiden hallinnassa</translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
             <translation>Varmista lopetus</translation>
         </message>
@@ -2848,31 +2870,31 @@ Valitse äänikorttisi äänilaitteiden hallinnassa</translation>
         <name>SamplerBank</name>
         <message>
             <source>Save Sampler Bank</source>
-            <translation>Tallenna näytepankki</translation>
+            <translation>Tallenna samplepankki</translation>
         </message>
         <message>
             <source>Error Saving Sampler Bank</source>
-            <translation>Virhe tallennettaessa näytepankkia</translation>
+            <translation>Virhe tallennettaessa samplepankkia</translation>
         </message>
         <message>
             <source>Could not write the sampler bank to '%1'.</source>
-            <translation>Ei voitu kirjoittaa näytepankkia '%1'</translation>
+            <translation>Ei voitu tallentaa samplepankkia tiedostoon '%1'</translation>
         </message>
         <message>
             <source>Load Sampler Bank</source>
-            <translation>Lataa näytepankki</translation>
+            <translation>Lataa samplepankki</translation>
         </message>
         <message>
             <source>Error Reading Sampler Bank</source>
-            <translation>Virhe ladattaeessa näytepankkia</translation>
+            <translation>Virhe ladattaessa samplepankkia</translation>
         </message>
         <message>
             <source>Could not open the sampler bank file '%1'.</source>
-            <translation>Ei voitu avata näytepankki tiedostoa '%1'</translation>
+            <translation>Ei voitu avata samplepankkitiedostoa '%1'</translation>
         </message>
         <message>
             <source>Could not read the sampler bank file '%1'.</source>
-            <translation>Ei voitu lukea näytepankki tiedostoa '%1'</translation>
+            <translation>Ei voitu lukea samplepankkitiedostoa '%1'</translation>
         </message>
     </context>
     <context>
@@ -3298,7 +3320,7 @@ Valitse OK lopettaaksesi.</translation>
         </message>
         <message>
             <source>Load to Sampler</source>
-            <translation>Lataa näytesoittimeen</translation>
+            <translation>Lataa sampleriin</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -3318,11 +3340,11 @@ Valitse OK lopettaaksesi.</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
-            <translation>Lataa kannelle %1</translation>
+            <translation>Lataa %1. dekkiin</translation>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation>Näytesoitin %1</translation>
+            <translation>Sampleri</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: abuyop <Unknown>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2012-01-27 15:07+0000\n"
+"Last-Translator: Izzuddin Fauzi <Unknown>\n"
 "Language-Team: Malay <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:46+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-28 04:39+0000\n"
+"X-Generator: Launchpad (build 14727)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -87,7 +87,7 @@ msgstr "BPM"
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr ""
+msgstr "Runut #"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
@@ -293,7 +293,7 @@ msgstr "Nama krat:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr ""
+msgstr "Terdapat ralat semasa mecipta krat: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
@@ -301,11 +301,11 @@ msgstr "Namakan Semula Krate"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr ""
+msgstr "Nama krat baru:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Menamakan Semula Krat Gagal"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -319,29 +319,33 @@ msgstr ""
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Nama krat tidak boleh kosong."
 
 #: CrateFeature#18
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Mencipta Krat Gagal"
 
 #: CrateFeature#19
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Krat dengan nama tadi telah wujid."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "Perihal"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr ""
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -350,26 +354,22 @@ msgid ""
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
 
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr ""
-
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Laman sesawang Rasmi</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Matikan Auto DJ"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Aktifkan Auto DJ"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr ""
+msgstr "Urus"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
@@ -377,7 +377,7 @@ msgstr ""
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Tambah trak ke susunan di bawah..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -2751,10 +2751,30 @@ msgid ""
 msgstr ""
 
 #: MixxxApp#105
-msgid "Confirm Exit"
+msgid "Mixxx %1 Development Team"
 msgstr ""
 
 #: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
+msgid "Confirm Exit"
+msgstr ""
+
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 

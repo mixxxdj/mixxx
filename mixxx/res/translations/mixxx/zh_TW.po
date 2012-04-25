@@ -1,0 +1,3395 @@
+# Chinese (Traditional) translation for mixxx
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
+# This file is distributed under the same license as the mixxx package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: mixxx\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2012-03-08 12:22+0000\n"
+"Last-Translator: Eric Hsin <Unknown>\n"
+"Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2012-03-09 04:49+0000\n"
+"X-Generator: Launchpad (build 14914)\n"
+
+#: AutoDJFeature#1
+msgid "Auto DJ"
+msgstr ""
+
+#: BaseSqlTableModel#1
+msgid "Played"
+msgstr ""
+
+#: BaseSqlTableModel#2
+msgctxt "BaseSqlTableModel#2"
+msgid "Artist"
+msgstr ""
+
+#: BaseSqlTableModel#3
+msgctxt "BaseSqlTableModel#3"
+msgid "Title"
+msgstr ""
+
+#: BaseSqlTableModel#4
+msgctxt "BaseSqlTableModel#4"
+msgid "Album"
+msgstr "專輯"
+
+#: BaseSqlTableModel#5
+msgctxt "BaseSqlTableModel#5"
+msgid "Genre"
+msgstr ""
+
+#: BaseSqlTableModel#6
+msgctxt "BaseSqlTableModel#6"
+msgid "Year"
+msgstr ""
+
+#: BaseSqlTableModel#7
+msgctxt "BaseSqlTableModel#7"
+msgid "Type"
+msgstr "類型"
+
+#: BaseSqlTableModel#8
+msgctxt "BaseSqlTableModel#8"
+msgid "Location"
+msgstr ""
+
+#: BaseSqlTableModel#9
+msgctxt "BaseSqlTableModel#9"
+msgid "Comment"
+msgstr ""
+
+#: BaseSqlTableModel#10
+msgctxt "BaseSqlTableModel#10"
+msgid "Duration"
+msgstr ""
+
+#: BaseSqlTableModel#11
+msgid "Rating"
+msgstr ""
+
+#: BaseSqlTableModel#12
+msgctxt "BaseSqlTableModel#12"
+msgid "Bitrate"
+msgstr ""
+
+#: BaseSqlTableModel#13
+msgctxt "BaseSqlTableModel#13"
+msgid "BPM"
+msgstr ""
+
+#: BaseSqlTableModel#14
+msgctxt "BaseSqlTableModel#14"
+msgid "Track #"
+msgstr ""
+
+#: BaseSqlTableModel#15
+msgid "Date Added"
+msgstr ""
+
+#: BaseSqlTableModel#16
+msgid "#"
+msgstr ""
+
+#: BaseSqlTableModel#17
+msgctxt "BaseSqlTableModel#17"
+msgid "Key"
+msgstr ""
+
+#: BaseTrackPlayer#1
+msgid "Couldn't load track."
+msgstr ""
+
+#: BrowseFeature#1
+msgid "Quick Links"
+msgstr ""
+
+#: BrowseFeature#2
+msgid "Devices"
+msgstr ""
+
+#: BrowseFeature#3
+msgid "Removable Devices"
+msgstr ""
+
+#: BrowseFeature#4
+msgctxt "BrowseFeature#4"
+msgid "Mixxx Library"
+msgstr ""
+
+#: BrowseFeature#5
+msgid "Home"
+msgstr ""
+
+#: BrowseFeature#6
+msgid "Music"
+msgstr ""
+
+#: BrowseFeature#7
+msgid "Documents"
+msgstr ""
+
+#: BrowseFeature#8
+msgid "Desktop"
+msgstr ""
+
+#: BrowseFeature#9
+msgid "Browse"
+msgstr ""
+
+#: BrowseTableModel#1
+msgid "Filename"
+msgstr ""
+
+#: BrowseTableModel#2
+msgctxt "BrowseTableModel#2"
+msgid "Artist"
+msgstr ""
+
+#: BrowseTableModel#3
+msgctxt "BrowseTableModel#3"
+msgid "Title"
+msgstr ""
+
+#: BrowseTableModel#4
+msgctxt "BrowseTableModel#4"
+msgid "Album"
+msgstr ""
+
+#: BrowseTableModel#5
+msgctxt "BrowseTableModel#5"
+msgid "Track #"
+msgstr ""
+
+#: BrowseTableModel#6
+msgctxt "BrowseTableModel#6"
+msgid "Year"
+msgstr ""
+
+#: BrowseTableModel#7
+msgctxt "BrowseTableModel#7"
+msgid "Genre"
+msgstr ""
+
+#: BrowseTableModel#8
+msgctxt "BrowseTableModel#8"
+msgid "Comment"
+msgstr ""
+
+#: BrowseTableModel#9
+msgctxt "BrowseTableModel#9"
+msgid "Duration"
+msgstr ""
+
+#: BrowseTableModel#10
+msgctxt "BrowseTableModel#10"
+msgid "BPM"
+msgstr ""
+
+#: BrowseTableModel#11
+msgctxt "BrowseTableModel#11"
+msgid "Key"
+msgstr ""
+
+#: BrowseTableModel#12
+msgctxt "BrowseTableModel#12"
+msgid "Type"
+msgstr ""
+
+#: BrowseTableModel#13
+msgctxt "BrowseTableModel#13"
+msgid "Bitrate"
+msgstr ""
+
+#: BrowseTableModel#14
+msgctxt "BrowseTableModel#14"
+msgid "Location"
+msgstr ""
+
+#: BrowseTableModel#15
+msgctxt "BrowseTableModel#15"
+msgid "Mixxx Library"
+msgstr ""
+
+#: BrowseTableModel#16
+msgid ""
+"Could not load the following file because it is in use by Mixxx or another "
+"application."
+msgstr ""
+
+#: BrowseTableModel#17
+msgid "Warning: This will permanently delete the following files:"
+msgstr ""
+
+#: BrowseTableModel#18
+msgid "Are you sure you want to delete these files from your computer?"
+msgstr ""
+
+#: BrowseTableModel#19
+msgid ""
+"Could not delete the following file because it is in use by Mixxx or another "
+"application:"
+msgstr ""
+
+#: BrowseTableModel#20
+msgid "Could not update file metadata."
+msgstr ""
+
+#: CrateFeature#1
+msgid "New Crate"
+msgstr ""
+
+#: CrateFeature#2
+msgctxt "CrateFeature#2"
+msgid "Remove"
+msgstr ""
+
+#: CrateFeature#3
+msgctxt "CrateFeature#3"
+msgid "Rename"
+msgstr ""
+
+#: CrateFeature#4
+msgctxt "CrateFeature#4"
+msgid "Lock"
+msgstr ""
+
+#: CrateFeature#5
+msgctxt "CrateFeature#5"
+msgid "Import Playlist"
+msgstr ""
+
+#: CrateFeature#6
+msgid "Crates"
+msgstr ""
+
+#: CrateFeature#7
+msgid "Import Crate"
+msgstr ""
+
+#: CrateFeature#8
+msgid "Export Crate"
+msgstr ""
+
+#: CrateFeature#9
+msgctxt "CrateFeature#9"
+msgid "Unlock"
+msgstr ""
+
+#: CrateFeature#10
+msgid "Crate name:"
+msgstr ""
+
+#: CrateFeature#11
+msgid "An unknown error occurred while creating crate: "
+msgstr ""
+
+#: CrateFeature#12
+msgid "Rename Crate"
+msgstr ""
+
+#: CrateFeature#13
+msgid "New crate name:"
+msgstr ""
+
+#: CrateFeature#14
+msgid "Renaming Crate Failed"
+msgstr ""
+
+#: CrateFeature#15
+msgctxt "CrateFeature#15"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+msgstr ""
+
+#: CrateFeature#16
+msgctxt "CrateFeature#16"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
+
+#: CrateFeature#17
+msgid "A crate cannot have a blank name."
+msgstr ""
+
+#: CrateFeature#18
+msgid "Creating Crate Failed"
+msgstr ""
+
+#: CrateFeature#19
+msgid "A crate by that name already exists."
+msgstr ""
+
+#: DlgAboutDlg#1
+msgid "About Mixxx"
+msgstr ""
+
+#: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr ""
+
+#: DlgAboutDlg#3
+msgid ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+msgstr ""
+
+#: DlgAboutDlg#4
+msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
+msgstr ""
+
+#: DlgAutoDJ#1
+msgid "Disable Auto DJ"
+msgstr ""
+
+#: DlgAutoDJ#2
+msgid "Enable Auto DJ"
+msgstr ""
+
+#: DlgAutoDJ#3
+msgctxt "DlgAutoDJ#3"
+msgid "Manage"
+msgstr ""
+
+#: DlgAutoDJ#4
+msgid "Shuffle playlist"
+msgstr ""
+
+#: DlgAutoDJ#5
+msgid "Add tracks to the queue below..."
+msgstr ""
+
+#: DlgBpmSchemeDlg#1
+msgid "BPM Scheme"
+msgstr ""
+
+#: DlgBpmSchemeDlg#2
+msgid "Scheme Name:"
+msgstr ""
+
+#: DlgBpmSchemeDlg#3
+msgid "BPM Range"
+msgstr ""
+
+#: DlgBpmSchemeDlg#4
+msgid "Max"
+msgstr ""
+
+#: DlgBpmSchemeDlg#5
+msgid "Min"
+msgstr ""
+
+#: DlgBpmSchemeDlg#6
+msgid "Analyze Entire Song"
+msgstr ""
+
+#: DlgMidiLearning#1
+msgid "Skip"
+msgstr ""
+
+#: DlgMidiLearning#2
+msgid "Successfully mapped to: "
+msgstr ""
+
+#: DlgMidiLearning#3
+msgid "Next"
+msgstr ""
+
+#: DlgMidiLearning#4
+msgctxt "DlgMidiLearning#4"
+msgid "MIDI Learning Wizard"
+msgstr ""
+
+#: DlgMidiLearning#5
+msgid "Welcome to the MIDI Learning Wizard"
+msgstr ""
+
+#: DlgMidiLearning#6
+msgid ""
+"This wizard allows you to easily map the controls on your MIDI controller to "
+"Mixxx's controls."
+msgstr ""
+
+#: DlgMidiLearning#7
+msgid "Begin"
+msgstr ""
+
+#: DlgMidiLearning#8
+msgid "Please tweak the control for:"
+msgstr ""
+
+#: DlgMidiLearning#9
+msgid "Mixxx Control"
+msgstr ""
+
+#: DlgMidiLearning#10
+msgid "Previous"
+msgstr ""
+
+#: DlgMidiLearning#11
+msgid "Press spacebar to proceed or skip."
+msgstr ""
+
+#: DlgMidiLearning#12
+msgid "MIDI learning complete!"
+msgstr ""
+
+#: DlgMidiLearning#13
+msgid ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This "
+"wizard can be re-run at any time.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
+"go spin some beats!</p></body></html>"
+msgstr ""
+
+#: DlgMidiLearning#14
+msgid "Finito!"
+msgstr ""
+
+#: DlgPluginDownloader#1
+msgid "Missing Audio Plugin Downloader"
+msgstr ""
+
+#: DlgPrefBPMDlg#1
+msgctxt "DlgPrefBPMDlg#1"
+msgid "BPM Detection Settings"
+msgstr ""
+
+#: DlgPrefBPMDlg#2
+msgctxt "DlgPrefBPMDlg#2"
+msgid "BPM Detection"
+msgstr ""
+
+#: DlgPrefBPMDlg#3
+msgid "Enable BPM Detection"
+msgstr ""
+
+#: DlgPrefBPMDlg#4
+msgid "Detect Song BPM on Import"
+msgstr ""
+
+#: DlgPrefBPMDlg#5
+msgid "Write BPM to ID3 Tag"
+msgstr ""
+
+#: DlgPrefBPMDlg#6
+msgid "If BPM can be detected but not within specified range"
+msgstr ""
+
+#: DlgPrefBPMDlg#7
+msgid "Allow BPM above the range"
+msgstr ""
+
+#: DlgPrefBPMDlg#8
+msgid "BPM Schemes"
+msgstr ""
+
+#: DlgPrefBPMDlg#9
+msgctxt "DlgPrefBPMDlg#9"
+msgid "Add"
+msgstr ""
+
+#: DlgPrefBPMDlg#10
+msgctxt "DlgPrefBPMDlg#10"
+msgid "Edit"
+msgstr ""
+
+#: DlgPrefBPMDlg#11
+msgid "Delete"
+msgstr ""
+
+#: DlgPrefBPMDlg#12
+msgid "Default"
+msgstr ""
+
+#: DlgPrefBpm#1
+msgid "Error"
+msgstr ""
+
+#: DlgPrefBpm#2
+msgid "Cannot open file %1"
+msgstr ""
+
+#: DlgPrefControls#1
+msgid "This skin does not support schemes"
+msgstr ""
+
+#: DlgPrefControls#2
+msgid "8% (Technics SL1210)"
+msgstr ""
+
+#: DlgPrefControls#3
+msgid "10%"
+msgstr ""
+
+#: DlgPrefControls#4
+msgid "20%"
+msgstr ""
+
+#: DlgPrefControls#5
+msgid "30%"
+msgstr ""
+
+#: DlgPrefControls#6
+msgid "40%"
+msgstr ""
+
+#: DlgPrefControls#7
+msgid "50%"
+msgstr ""
+
+#: DlgPrefControls#8
+msgid "60%"
+msgstr ""
+
+#: DlgPrefControls#9
+msgid "70%"
+msgstr ""
+
+#: DlgPrefControls#10
+msgid "80%"
+msgstr ""
+
+#: DlgPrefControls#11
+msgid "90%"
+msgstr ""
+
+#: DlgPrefControls#12
+msgid "Up increases speed"
+msgstr ""
+
+#: DlgPrefControls#13
+msgid "Down increases speed (Technics SL1210)"
+msgstr ""
+
+#: DlgPrefControls#14
+msgctxt "DlgPrefControls#14"
+msgid "Information"
+msgstr ""
+
+#: DlgPrefControls#15
+msgid "Mixxx must be restarted before the changes will take effect."
+msgstr ""
+
+#: DlgPrefControlsDlg#1
+msgctxt "DlgPrefControlsDlg#1"
+msgid "Form1"
+msgstr ""
+
+#: DlgPrefControlsDlg#2
+msgid "Skin"
+msgstr ""
+
+#: DlgPrefControlsDlg#3
+msgid "Scheme"
+msgstr ""
+
+#: DlgPrefControlsDlg#4
+msgid "Waveform display"
+msgstr ""
+
+#: DlgPrefControlsDlg#5
+msgid "Position display"
+msgstr ""
+
+#: DlgPrefControlsDlg#6
+msgid "Tool tips"
+msgstr ""
+
+#: DlgPrefControlsDlg#7
+msgctxt "DlgPrefControlsDlg#7"
+msgid "On"
+msgstr ""
+
+#: DlgPrefControlsDlg#8
+msgctxt "DlgPrefControlsDlg#8"
+msgid "Off"
+msgstr ""
+
+#: DlgPrefControlsDlg#9
+msgid "Pitch/Rate slider range"
+msgstr ""
+
+#: DlgPrefControlsDlg#10
+msgid "Pitch/Rate slider direction"
+msgstr ""
+
+#: DlgPrefControlsDlg#11
+msgid "Track load behaviour"
+msgstr ""
+
+#: DlgPrefControlsDlg#12
+msgid "Cue behaviour"
+msgstr ""
+
+#: DlgPrefControlsDlg#13
+msgid "Auto Recall Cue"
+msgstr ""
+
+#: DlgPrefControlsDlg#14
+msgid "Permanent Pitch/Rate Buttons"
+msgstr ""
+
+#: DlgPrefControlsDlg#15
+msgid "Left click"
+msgstr ""
+
+#: DlgPrefControlsDlg#16
+msgid "Right click"
+msgstr ""
+
+#: DlgPrefControlsDlg#17
+msgid "Permanent rate change (between 1 and 8000) when left clicking"
+msgstr ""
+
+#: DlgPrefControlsDlg#18
+msgid "%"
+msgstr ""
+
+#: DlgPrefControlsDlg#19
+msgid "Permanent rate change (between 1 and 8000) when right clicking"
+msgstr ""
+
+#: DlgPrefControlsDlg#20
+msgid "Temporary Pitch/Rate Buttons"
+msgstr ""
+
+#: DlgPrefControlsDlg#21
+msgid "Temporary rate change (between 1 and 8000) when left clicking"
+msgstr ""
+
+#: DlgPrefControlsDlg#22
+msgid "Temporary rate change (between 1 and 8000) when right clicking"
+msgstr ""
+
+#: DlgPrefControlsDlg#23
+msgid "Ramping Pitchbend"
+msgstr ""
+
+#: DlgPrefControlsDlg#24
+msgid "Pitchbend sensitivity"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#1
+msgctxt "DlgPrefCrossfaderDlg#1"
+msgid "Form1"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#2
+msgid "Crossfader Curve"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#3
+msgid "Slow fade"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#4
+msgid "Fast cut"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#5
+msgid "Constant power"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#6
+msgid "Mixing"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#7
+msgid "Scratching"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#8
+msgid "Linear"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#9
+msgid "Logarithmic"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#10
+msgctxt "DlgPrefCrossfaderDlg#10"
+msgid "Reset"
+msgstr ""
+
+#: DlgPrefEQDlg#1
+msgctxt "DlgPrefEQDlg#1"
+msgid "Form1"
+msgstr ""
+
+#: DlgPrefEQDlg#2
+msgid "Static EQs (for slower CPUs)"
+msgstr ""
+
+#: DlgPrefEQDlg#3
+msgid "High Shelf EQ"
+msgstr ""
+
+#: DlgPrefEQDlg#4
+msgid "textLabel1"
+msgstr ""
+
+#: DlgPrefEQDlg#5
+msgid "16 Hz"
+msgstr ""
+
+#: DlgPrefEQDlg#6
+msgid "1.014 kHz"
+msgstr ""
+
+#: DlgPrefEQDlg#7
+msgid "20.05 kHz"
+msgstr ""
+
+#: DlgPrefEQDlg#8
+msgid "Low Shelf EQ"
+msgstr ""
+
+#: DlgPrefEQDlg#9
+msgid "textLabel2"
+msgstr ""
+
+#: DlgPrefEQDlg#10
+msgctxt "DlgPrefEQDlg#10"
+msgid "Reset"
+msgstr ""
+
+#: DlgPrefMidiBindings#1
+msgctxt "DlgPrefMidiBindings#1"
+msgid "None"
+msgstr ""
+
+#: DlgPrefMidiBindings#2
+msgid "Apply MIDI device settings?"
+msgstr ""
+
+#: DlgPrefMidiBindings#3
+msgid ""
+"Your settings must be applied before starting the MIDI learning wizard.\n"
+"Apply settings and continue?"
+msgstr ""
+
+#: DlgPrefMidiBindings#4
+msgid "Overwrite existing mapping?"
+msgstr ""
+
+#: DlgPrefMidiBindings#5
+msgid ""
+"Are you sure you'd like to load the %1 mapping?\n"
+"This will overwrite your existing MIDI mapping."
+msgstr ""
+
+#: DlgPrefMidiBindings#6
+msgid "Export Mixxx MIDI Bindings"
+msgstr ""
+
+#: DlgPrefMidiBindings#7
+msgid "Preset Files (*.midi.xml)"
+msgstr ""
+
+#: DlgPrefMidiBindings#8
+msgid "Select Control Group"
+msgstr ""
+
+#: DlgPrefMidiBindings#9
+msgid "Select Control"
+msgstr ""
+
+#: DlgPrefMidiBindings#10
+msgid "Clear Input Bindings"
+msgstr ""
+
+#: DlgPrefMidiBindings#11
+msgid "Are you sure you want to clear all bindings?"
+msgstr ""
+
+#: DlgPrefMidiBindings#12
+msgid "Clear Output Bindings"
+msgstr ""
+
+#: DlgPrefMidiBindings#13
+msgid "Are you sure you want to clear all output bindings?"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#1
+msgctxt "DlgPrefMidiBindingsDlg#1"
+msgid "Dialog"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#2
+msgid "Your Device Name"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#3
+msgid "Load Preset:"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#4
+msgid "Export"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#5
+msgid "Output:"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#6
+msgid "Enabled"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#7
+msgid "Controls"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#8
+msgctxt "DlgPrefMidiBindingsDlg#8"
+msgid "Add"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#9
+msgctxt "DlgPrefMidiBindingsDlg#9"
+msgid "Remove"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#10
+msgctxt "DlgPrefMidiBindingsDlg#10"
+msgid "MIDI Learning Wizard"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#11
+msgid "Clear All"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#12
+msgid ""
+"<a "
+"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
+"roubleshooting</a>"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#13
+msgid "MIDI Input"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#14
+msgid "Outputs"
+msgstr ""
+
+#: DlgPrefMidiBindingsDlg#15
+msgid "MIDI Output"
+msgstr ""
+
+#: DlgPrefNoMidiDlg#1
+msgctxt "DlgPrefNoMidiDlg#1"
+msgid "Form3"
+msgstr ""
+
+#: DlgPrefNoMidiDlg#2
+msgid "No MIDI devices available"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#1
+msgctxt "DlgPrefNoVinylDlg#1"
+msgid "Form1"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#2
+msgctxt "DlgPrefNoVinylDlg#2"
+msgid "Input"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#3
+msgctxt "DlgPrefNoVinylDlg#3"
+msgid ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
+"pane.</span></p></body></html>"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#4
+msgctxt "DlgPrefNoVinylDlg#4"
+msgid ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+"ubleshooting</a>"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#5
+msgctxt "DlgPrefNoVinylDlg#5"
+msgid "Turntable Preamp"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#6
+msgctxt "DlgPrefNoVinylDlg#6"
+msgid "1 (Off)"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#7
+msgctxt "DlgPrefNoVinylDlg#7"
+msgid "150"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#8
+msgctxt "DlgPrefNoVinylDlg#8"
+msgid "Vinyl Configuration"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#9
+msgctxt "DlgPrefNoVinylDlg#9"
+msgid "Deck 1 Vinyl Type"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#10
+msgctxt "DlgPrefNoVinylDlg#10"
+msgid "Deck 2 Vinyl Type"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#11
+msgctxt "DlgPrefNoVinylDlg#11"
+msgid "Lead-in time"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#12
+msgctxt "DlgPrefNoVinylDlg#12"
+msgid "seconds"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#13
+msgctxt "DlgPrefNoVinylDlg#13"
+msgid "Show Signal Quality in Skin"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#14
+msgctxt "DlgPrefNoVinylDlg#14"
+msgid "Control Mode"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#15
+msgctxt "DlgPrefNoVinylDlg#15"
+msgid "Absolute Mode"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#16
+msgctxt "DlgPrefNoVinylDlg#16"
+msgid "Relative Mode"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#17
+msgctxt "DlgPrefNoVinylDlg#17"
+msgid "Enable Needle Skip Prevention"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#18
+msgctxt "DlgPrefNoVinylDlg#18"
+msgid "Signal Quality"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#19
+msgctxt "DlgPrefNoVinylDlg#19"
+msgid "http://www.xwax.co.uk"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#20
+msgctxt "DlgPrefNoVinylDlg#20"
+msgid "Powered by xwax"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#21
+msgid ""
+"<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
+"visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
+msgstr ""
+
+#: DlgPrefPlaylist#1
+msgctxt "DlgPrefPlaylist#1"
+msgid "Choose music library directory"
+msgstr ""
+
+#: DlgPrefPlaylist#2
+msgid "Multiple iPods Detected"
+msgstr ""
+
+#: DlgPrefPlaylist#3
+msgid ""
+"Mixxx has detected another iPod. \n"
+"\n"
+msgstr ""
+
+#: DlgPrefPlaylist#4
+msgid "Choose Yes to use the newly found iPod @ "
+msgstr ""
+
+#: DlgPrefPlaylist#5
+msgid " or to continue to search for other iPods. \n"
+msgstr ""
+
+#: DlgPrefPlaylist#6
+msgid "Choose No to use the existing iPod @ "
+msgstr ""
+
+#: DlgPrefPlaylist#7
+msgid " and end detection. \n"
+msgstr ""
+
+#: DlgPrefPlaylist#8
+msgid "Choose iPod mount point"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#1
+msgctxt "DlgPrefPlaylistDlg#1"
+msgid "Form3"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#2
+msgid "Audio File Formats"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#3
+msgid "Additional Format Plugins:"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#4
+msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#5
+msgid "Loaded Plugins:"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#6
+msgctxt "DlgPrefPlaylistDlg#6"
+msgid "None"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#7
+msgctxt "DlgPrefPlaylistDlg#7"
+msgid "Miscellaneous"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#8
+msgid "Synchronize ID3 tags on track modifications"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#9
+msgid "Rescan library on start-up"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#10
+msgid "Use relative paths for playlist export if possible"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#11
+msgid "iPod"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#12
+msgid "iPod mountpoint"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#13
+msgid "Browse..."
+msgstr ""
+
+#: DlgPrefPlaylistDlg#14
+msgid "Detect"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#15
+msgctxt "DlgPrefPlaylistDlg#15"
+msgid "Library"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#16
+msgid "Music Directory:"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#17
+msgid "Built-in"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#18
+msgid "Available Online..."
+msgstr ""
+
+#: DlgPrefPlaylistDlg#19
+msgid "Bundled Songs"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#20
+msgid ""
+"Support Mixxx by counting and sharing bundled songs\n"
+"playback and outbound link statistics"
+msgstr ""
+
+#: DlgPrefRecord#1
+msgid "kbps"
+msgstr ""
+
+#: DlgPrefRecordDlg#1
+msgctxt "DlgPrefRecordDlg#1"
+msgid "Form3"
+msgstr ""
+
+#: DlgPrefRecordDlg#2
+msgctxt "DlgPrefRecordDlg#2"
+msgid "Encoding"
+msgstr ""
+
+#: DlgPrefRecordDlg#3
+msgid "Quality"
+msgstr ""
+
+#: DlgPrefRecordDlg#4
+msgid "High"
+msgstr ""
+
+#: DlgPrefRecordDlg#5
+msgid "Low"
+msgstr ""
+
+#: DlgPrefRecordDlg#6
+msgid "Tags"
+msgstr ""
+
+#: DlgPrefRecordDlg#7
+msgctxt "DlgPrefRecordDlg#7"
+msgid "Title"
+msgstr ""
+
+#: DlgPrefRecordDlg#8
+msgid "Author"
+msgstr ""
+
+#: DlgPrefRecordDlg#9
+msgctxt "DlgPrefRecordDlg#9"
+msgid "Album"
+msgstr ""
+
+#: DlgPrefRecordDlg#10
+msgctxt "DlgPrefRecordDlg#10"
+msgid "Miscellaneous"
+msgstr ""
+
+#: DlgPrefRecordDlg#11
+msgid "Create a CUE file"
+msgstr ""
+
+#: DlgPrefRecordDlg#12
+msgid "File Splitting"
+msgstr ""
+
+#: DlgPrefRecordDlg#13
+msgid "Split recordings at"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#1
+msgctxt "DlgPrefReplayGainDlg#1"
+msgid "BPM Detection Settings"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#2
+msgid "ReplayGain Normalization"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#3
+msgid "Apply volume normalization to loaded songs."
+msgstr ""
+
+#: DlgPrefReplayGainDlg#4
+msgid "Enable Replay Gain"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#5
+msgid ""
+"Calculate ReplayGain normalization for songs which are missing ReplayGain "
+"metadata."
+msgstr ""
+
+#: DlgPrefReplayGainDlg#6
+msgid "Enable Replay Gain Analysis"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#7
+msgid ""
+"On older computers, it may take a few seconds before volume normalization is "
+"applied to a new song. You may wish to wait before adjusting the pregain and "
+"volume."
+msgstr ""
+
+#: DlgPrefReplayGainDlg#8
+msgid "Initial Boost"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#9
+msgid "Initial Gain Boost"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#10
+msgid "dB"
+msgstr ""
+
+#: DlgPrefReplayGainDlg#11
+msgctxt "DlgPrefReplayGainDlg#11"
+msgid "Reset"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#1
+msgctxt "DlgPrefShoutcastDlg#1"
+msgid "Form3"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#2
+msgctxt "DlgPrefShoutcastDlg#2"
+msgid "Enable live broadcasting"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#3
+msgid "Server connection"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#4
+msgctxt "DlgPrefShoutcastDlg#4"
+msgid "Type"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#5
+msgid "Icecast 2"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#6
+msgid "Shoutcast"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#7
+msgid "Icecast 1"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#8
+msgid "Mount"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#9
+msgid "/mixxx.ogg"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#10
+msgid "Host"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#11
+msgid "192.168.123.8"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#12
+msgid "Port"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#13
+msgid "8000"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#14
+msgid "Login"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#15
+msgid "source"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#16
+msgid "Password"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#17
+msgid "test1234"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#18
+msgid "Stream settings"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#19
+msgid "Stream name"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#20
+msgid "Mixxx Icecast Testing"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#21
+msgid "Website"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#22
+msgid "http://www.mixxx.org"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
+msgid "Description"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#24
+msgid ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
+"line for testing purposes!</span></p></body></html>"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#25
+msgctxt "DlgPrefShoutcastDlg#25"
+msgid "Genre"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#26
+msgid "Live mix"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#27
+msgid "Public stream"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#28
+msgctxt "DlgPrefShoutcastDlg#28"
+msgid "Encoding"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#29
+msgctxt "DlgPrefShoutcastDlg#29"
+msgid "Bitrate"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#30
+msgid "320 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#31
+msgid "256 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#32
+msgid "224 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#33
+msgid "192 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#34
+msgid "160 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#35
+msgid "128 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#36
+msgid "112 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#37
+msgid "96 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#38
+msgid "80 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#39
+msgid "64 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#40
+msgid "48 kbps"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#41
+msgid "Format"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#42
+msgid "Ogg Vorbis"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#43
+msgid "MP3"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#44
+msgid "Channels"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#45
+msgid "Stereo"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#46
+msgid "Custom metadata"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#47
+msgid "Enable custom metadata"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#48
+msgctxt "DlgPrefShoutcastDlg#48"
+msgid "Artist"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#49
+msgid "%mainartist"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#50
+msgctxt "DlgPrefShoutcastDlg#50"
+msgid "Title"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#51
+msgid "%maintitle"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#52
+msgid ""
+"Please note that for technical reasons changing any shoutcast settings will "
+"cause an established connection to disconnect and reconnect. "
+msgstr ""
+
+#: DlgPrefSound#1
+msgctxt "DlgPrefSound#1"
+msgid "None"
+msgstr ""
+
+#: DlgPrefSound#2
+msgid "%1 Hz"
+msgstr ""
+
+#: DlgPrefSound#3
+msgid "a device"
+msgstr ""
+
+#: DlgPrefSound#4
+msgid "An unknown error occurred"
+msgstr ""
+
+#: DlgPrefSound#5
+msgid "sound device \"%1\""
+msgstr ""
+
+#: DlgPrefSound#6
+msgid "Two outputs cannot share channels on %1"
+msgstr ""
+
+#: DlgPrefSound#7
+msgid ""
+"Error opening %1\n"
+"%2"
+msgstr ""
+
+#: DlgPrefSound#8
+msgid "%1 ms"
+msgstr ""
+
+#: DlgPrefSound#9
+msgid "Configuration error"
+msgstr ""
+
+#: DlgPrefSoundDlg#1
+msgid "Sound API"
+msgstr ""
+
+#: DlgPrefSoundDlg#2
+msgid "Sample Rate"
+msgstr ""
+
+#: DlgPrefSoundDlg#3
+msgid "Latency Tips"
+msgstr ""
+
+#: DlgPrefSoundDlg#4
+msgid ""
+"<ul>\n"
+"<li>Increase your latency if you hear pops during playback</li>\n"
+"<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
+"</ul>"
+msgstr ""
+
+#: DlgPrefSoundDlg#5
+msgid "Output"
+msgstr ""
+
+#: DlgPrefSoundDlg#6
+msgctxt "DlgPrefSoundDlg#6"
+msgid "Input"
+msgstr ""
+
+#: DlgPrefSoundDlg#7
+msgid "Query Devices"
+msgstr ""
+
+#: DlgPrefSoundDlg#8
+msgid "Reset to Defaults"
+msgstr ""
+
+#: DlgPrefSoundDlg#9
+msgctxt "DlgPrefSoundDlg#9"
+msgid "Apply"
+msgstr ""
+
+#: DlgPrefSoundDlg#10
+msgid "Latency"
+msgstr ""
+
+#: DlgPrefSoundItem#1
+msgctxt "DlgPrefSoundItem#1"
+msgid "None"
+msgstr ""
+
+#: DlgPrefSoundItem#2
+msgid "Channel %1"
+msgstr ""
+
+#: DlgPrefSoundItem#3
+msgid "Channels %1 - %2"
+msgstr ""
+
+#: DlgPrefSoundItem#4
+msgid "Form"
+msgstr ""
+
+#: DlgPrefSoundItem#5
+msgid "Type (#)"
+msgstr ""
+
+#: DlgPrefVinylDlg#1
+msgctxt "DlgPrefVinylDlg#1"
+msgid "Form1"
+msgstr ""
+
+#: DlgPrefVinylDlg#2
+msgctxt "DlgPrefVinylDlg#2"
+msgid "Input"
+msgstr ""
+
+#: DlgPrefVinylDlg#3
+msgctxt "DlgPrefVinylDlg#3"
+msgid ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
+"pane.</span></p></body></html>"
+msgstr ""
+
+#: DlgPrefVinylDlg#4
+msgctxt "DlgPrefVinylDlg#4"
+msgid ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+"ubleshooting</a>"
+msgstr ""
+
+#: DlgPrefVinylDlg#5
+msgctxt "DlgPrefVinylDlg#5"
+msgid "Turntable Preamp"
+msgstr ""
+
+#: DlgPrefVinylDlg#6
+msgctxt "DlgPrefVinylDlg#6"
+msgid "1 (Off)"
+msgstr ""
+
+#: DlgPrefVinylDlg#7
+msgctxt "DlgPrefVinylDlg#7"
+msgid "150"
+msgstr ""
+
+#: DlgPrefVinylDlg#8
+msgctxt "DlgPrefVinylDlg#8"
+msgid "Vinyl Configuration"
+msgstr ""
+
+#: DlgPrefVinylDlg#9
+msgctxt "DlgPrefVinylDlg#9"
+msgid "Deck 1 Vinyl Type"
+msgstr ""
+
+#: DlgPrefVinylDlg#10
+msgctxt "DlgPrefVinylDlg#10"
+msgid "Deck 2 Vinyl Type"
+msgstr ""
+
+#: DlgPrefVinylDlg#11
+msgctxt "DlgPrefVinylDlg#11"
+msgid "Show Signal Quality in Skin"
+msgstr ""
+
+#: DlgPrefVinylDlg#12
+msgctxt "DlgPrefVinylDlg#12"
+msgid "Apply"
+msgstr ""
+
+#: DlgPrefVinylDlg#13
+msgctxt "DlgPrefVinylDlg#13"
+msgid "Lead-in time"
+msgstr ""
+
+#: DlgPrefVinylDlg#14
+msgctxt "DlgPrefVinylDlg#14"
+msgid "seconds"
+msgstr ""
+
+#: DlgPrefVinylDlg#15
+msgctxt "DlgPrefVinylDlg#15"
+msgid "Control Mode"
+msgstr ""
+
+#: DlgPrefVinylDlg#16
+msgctxt "DlgPrefVinylDlg#16"
+msgid "Absolute Mode"
+msgstr ""
+
+#: DlgPrefVinylDlg#17
+msgctxt "DlgPrefVinylDlg#17"
+msgid "Relative Mode"
+msgstr ""
+
+#: DlgPrefVinylDlg#18
+msgctxt "DlgPrefVinylDlg#18"
+msgid "Enable Needle Skip Prevention"
+msgstr ""
+
+#: DlgPrefVinylDlg#19
+msgctxt "DlgPrefVinylDlg#19"
+msgid "Signal Quality"
+msgstr ""
+
+#: DlgPrefVinylDlg#20
+msgctxt "DlgPrefVinylDlg#20"
+msgid "http://www.xwax.co.uk"
+msgstr ""
+
+#: DlgPrefVinylDlg#21
+msgctxt "DlgPrefVinylDlg#21"
+msgid "Powered by xwax"
+msgstr ""
+
+#: DlgPreferences#1
+msgid "Sound Hardware"
+msgstr ""
+
+#: DlgPreferences#2
+msgid "MIDI Controllers"
+msgstr ""
+
+#: DlgPreferences#3
+msgctxt "DlgPreferences#3"
+msgid "Library"
+msgstr ""
+
+#: DlgPreferences#4
+msgid "Interface"
+msgstr ""
+
+#: DlgPreferences#5
+msgid "Equalizers"
+msgstr ""
+
+#: DlgPreferences#6
+msgctxt "DlgPreferences#6"
+msgid "Crossfader"
+msgstr ""
+
+#: DlgPreferences#7
+msgctxt "DlgPreferences#7"
+msgid "Recording"
+msgstr ""
+
+#: DlgPreferences#8
+msgctxt "DlgPreferences#8"
+msgid "BPM Detection"
+msgstr ""
+
+#: DlgPreferences#9
+msgid "Normalization"
+msgstr ""
+
+#: DlgPreferences#10
+msgctxt "DlgPreferences#10"
+msgid "Vinyl Control"
+msgstr ""
+
+#: DlgPreferences#11
+msgid "Live Broadcasting"
+msgstr ""
+
+#: DlgPreferencesDlg#1
+msgctxt "DlgPreferencesDlg#1"
+msgid "Dialog"
+msgstr ""
+
+#: DlgPreferencesDlg#2
+msgid "1"
+msgstr ""
+
+#: DlgPrepare#1
+msgctxt "DlgPrepare#1"
+msgid "Manage"
+msgstr ""
+
+#: DlgPrepare#2
+msgid "New"
+msgstr ""
+
+#: DlgPrepare#3
+msgid "All"
+msgstr ""
+
+#: DlgPrepare#4
+msgid "Progress"
+msgstr ""
+
+#: DlgPrepare#5
+msgid "Select All"
+msgstr ""
+
+#: DlgPrepare#6
+msgctxt "DlgPrepare#6"
+msgid "Analyze"
+msgstr ""
+
+#: DlgPrepare#7
+msgid "Stop Analysis"
+msgstr ""
+
+#: DlgPrepare#8
+msgid "Analyzing %1%"
+msgstr ""
+
+#: DlgRecording#1
+msgctxt "DlgRecording#1"
+msgid "Manage"
+msgstr ""
+
+#: DlgRecording#2
+msgid "Status:"
+msgstr ""
+
+#: DlgRecording#3
+msgid "Start Recording"
+msgstr ""
+
+#: DlgRecording#4
+msgid "Start recording here ..."
+msgstr ""
+
+#: DlgRecording#5
+msgid "Stop Recording"
+msgstr ""
+
+#: DlgTrackInfo#1
+msgid "Track Editor"
+msgstr ""
+
+#: DlgTrackInfo#2
+msgid "Song:"
+msgstr ""
+
+#: DlgTrackInfo#3
+msgid "Title:"
+msgstr ""
+
+#: DlgTrackInfo#4
+msgid "Artist:"
+msgstr ""
+
+#: DlgTrackInfo#5
+msgid "Album:"
+msgstr ""
+
+#: DlgTrackInfo#6
+msgid "Date:"
+msgstr ""
+
+#: DlgTrackInfo#7
+msgid "Track #:"
+msgstr ""
+
+#: DlgTrackInfo#8
+msgid "Genre:"
+msgstr ""
+
+#: DlgTrackInfo#9
+msgid "Filename:"
+msgstr ""
+
+#: DlgTrackInfo#10
+msgid "Duration:"
+msgstr ""
+
+#: DlgTrackInfo#11
+msgid "3:00"
+msgstr ""
+
+#: DlgTrackInfo#12
+msgid "File Type:"
+msgstr ""
+
+#: DlgTrackInfo#13
+msgid "77"
+msgstr ""
+
+#: DlgTrackInfo#14
+msgid "Comments:"
+msgstr ""
+
+#: DlgTrackInfo#15
+msgid "Reload track metadata from file."
+msgstr ""
+
+#: DlgTrackInfo#16
+msgid "Track Information (Click to Expand)"
+msgstr ""
+
+#: DlgTrackInfo#17
+msgid "Track BPM: "
+msgstr ""
+
+#: DlgTrackInfo#18
+msgid "x2"
+msgstr ""
+
+#: DlgTrackInfo#19
+msgid "/2"
+msgstr ""
+
+#: DlgTrackInfo#20
+msgid "Tap to Beat"
+msgstr ""
+
+#: DlgTrackInfo#21
+msgid "Hint: Use the Library Analyze view to run BPM detection."
+msgstr ""
+
+#: DlgTrackInfo#22
+msgid "Track BPM"
+msgstr ""
+
+#: DlgTrackInfo#23
+msgid "Cue Id"
+msgstr ""
+
+#: DlgTrackInfo#24
+msgctxt "DlgTrackInfo#24"
+msgid "Position"
+msgstr ""
+
+#: DlgTrackInfo#25
+msgid "Hotcue"
+msgstr ""
+
+#: DlgTrackInfo#26
+msgid "Label"
+msgstr ""
+
+#: DlgTrackInfo#27
+msgid "Activate Cue"
+msgstr ""
+
+#: DlgTrackInfo#28
+msgid "Delete Cue"
+msgstr ""
+
+#: DlgTrackInfo#29
+msgid "Track Cuepoints"
+msgstr ""
+
+#: DlgTrackInfo#30
+msgid "<< &Prev"
+msgstr ""
+
+#: DlgTrackInfo#31
+msgid "&Apply"
+msgstr ""
+
+#: DlgTrackInfo#32
+msgid "&Cancel"
+msgstr ""
+
+#: DlgTrackInfo#33
+msgid "Alt+O"
+msgstr ""
+
+#: DlgTrackInfo#34
+msgid "&Next >>"
+msgstr ""
+
+#: EncoderMp3#1
+msgid "Encoder"
+msgstr ""
+
+#: EncoderMp3#2
+msgid ""
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> for more information. </html>"
+msgstr ""
+
+#: EncoderMp3#3
+msgid ""
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> for more information. </html>"
+msgstr ""
+
+#: EncoderMp3#4
+msgid ""
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> for more information. </html>"
+msgstr ""
+
+#: EncoderMp3#5
+msgid ""
+"<html>Mixxx has detected that you use a modified version of libmp3lame. See "
+"<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a> for more information.</html>"
+msgstr ""
+
+#: EngineRecord#1
+msgctxt "EngineRecord#1"
+msgid "Recording"
+msgstr ""
+
+#: EngineRecord#2
+msgid ""
+"<html>Could not create audio file for recording!<p><br>Maybe you do not have "
+"enough free disk space or file permissions.</html>"
+msgstr ""
+
+#: EngineShoutcast#1
+msgid "Mixxx encountered a problem"
+msgstr ""
+
+#: EngineShoutcast#2
+msgid "Could not allocate shout_t"
+msgstr ""
+
+#: EngineShoutcast#3
+msgid "Could not allocate shout_metadata_t"
+msgstr ""
+
+#: EngineShoutcast#4
+msgid "Error setting non-blocking mode:"
+msgstr ""
+
+#: EngineShoutcast#5
+msgid "Lost connection to streaming server"
+msgstr ""
+
+#: EngineShoutcast#6
+msgid ""
+"Please check your connection to the Internet and verify that your username "
+"and password are correct."
+msgstr ""
+
+#: EngineShoutcast#7
+msgid "Live broadcasting"
+msgstr ""
+
+#: EngineShoutcast#8
+msgid "Mixxx has successfully connected to the shoutcast server"
+msgstr ""
+
+#: EngineShoutcast#9
+msgid "Mixxx could not connect to streaming server"
+msgstr ""
+
+#: EngineShoutcast#10
+msgid "Mixxx has successfully disconnected to the shoutcast server"
+msgstr ""
+
+#: ErrorDialogHandler#1
+msgid "Fatal error"
+msgstr ""
+
+#: ErrorDialogHandler#2
+msgid "Critical error"
+msgstr ""
+
+#: ErrorDialogHandler#3
+msgid "Warning"
+msgstr ""
+
+#: ErrorDialogHandler#4
+msgctxt "ErrorDialogHandler#4"
+msgid "Information"
+msgstr ""
+
+#: ErrorDialogHandler#5
+msgid "Question"
+msgstr ""
+
+#: ITunesFeature#1
+msgid "iTunes"
+msgstr ""
+
+#: ITunesFeature#2
+msgid "Select your iTunes library"
+msgstr ""
+
+#: ITunesFeature#3
+msgid "(loading) iTunes"
+msgstr ""
+
+#: ITunesFeature#4
+msgid "Use Default Library"
+msgstr ""
+
+#: ITunesFeature#5
+msgid "Choose Library..."
+msgstr ""
+
+#: ITunesFeature#6
+msgid "Error Loading iTunes Library"
+msgstr ""
+
+#: ITunesFeature#7
+msgid ""
+"There was an error loading your iTunes library. Some of your iTunes tracks "
+"or playlists may not have loaded."
+msgstr ""
+
+#: LADSPAPresetSlot#1
+msgid "Drag a preset from the list & drop it here"
+msgstr ""
+
+#: LibraryScannerDlg#1
+msgid "Library Scanner"
+msgstr ""
+
+#: LibraryScannerDlg#2
+msgid "It's taking Mixxx a minute to scan your music library, please wait..."
+msgstr ""
+
+#: LibraryScannerDlg#3
+msgid "Cancel"
+msgstr ""
+
+#: MidiInputMappingTableModel#1
+msgid "Midi Status Type"
+msgstr ""
+
+#: MidiInputMappingTableModel#2
+msgctxt "MidiInputMappingTableModel#2"
+msgid "Midi Note"
+msgstr ""
+
+#: MidiInputMappingTableModel#3
+msgctxt "MidiInputMappingTableModel#3"
+msgid "Midi Channel"
+msgstr ""
+
+#: MidiInputMappingTableModel#4
+msgctxt "MidiInputMappingTableModel#4"
+msgid "Control Group"
+msgstr ""
+
+#: MidiInputMappingTableModel#5
+msgctxt "MidiInputMappingTableModel#5"
+msgid "Control Value"
+msgstr ""
+
+#: MidiInputMappingTableModel#6
+msgctxt "MidiInputMappingTableModel#6"
+msgid "Description"
+msgstr ""
+
+#: MidiMapping#1
+msgid "MIDI script function not found"
+msgstr ""
+
+#: MidiMapping#2
+msgid "The MIDI script function '%1' was not found in loaded scripts."
+msgstr ""
+
+#: MidiMapping#3
+msgid ""
+"The MIDI message %1 %2 will not be bound.\n"
+"(Click Show Details for hints.)"
+msgstr ""
+
+#: MidiMapping#4
+msgid ""
+"* Check to see that the function name is spelled correctly in the mapping "
+"file (.xml) and script file (.js)\n"
+msgstr ""
+
+#: MidiMapping#5
+msgid ""
+"* Check to see that the script file name (.js) is spelled correctly in the "
+"mapping file (.xml)"
+msgstr ""
+
+#: MidiOutputMappingTableModel#1
+msgid "Midi Status"
+msgstr ""
+
+#: MidiOutputMappingTableModel#2
+msgctxt "MidiOutputMappingTableModel#2"
+msgid "Midi Note"
+msgstr ""
+
+#: MidiOutputMappingTableModel#3
+msgctxt "MidiOutputMappingTableModel#3"
+msgid "Midi Channel"
+msgstr ""
+
+#: MidiOutputMappingTableModel#4
+msgctxt "MidiOutputMappingTableModel#4"
+msgid "Control Group"
+msgstr ""
+
+#: MidiOutputMappingTableModel#5
+msgctxt "MidiOutputMappingTableModel#5"
+msgid "Control Value"
+msgstr ""
+
+#: MidiOutputMappingTableModel#6
+msgctxt "MidiOutputMappingTableModel#6"
+msgid "Description"
+msgstr ""
+
+#: MidiOutputMappingTableModel#7
+msgid "Threshold Min"
+msgstr ""
+
+#: MidiOutputMappingTableModel#8
+msgid "Threshold Max"
+msgstr ""
+
+#: MidiScriptEngine#1
+msgid "Uncaught exception at line %1 in file %2: %3"
+msgstr ""
+
+#: MidiScriptEngine#2
+msgid "Uncaught exception at line %1 in passed code: %2"
+msgstr ""
+
+#: MidiScriptEngine#3
+msgid "MIDI script error"
+msgstr ""
+
+#: MidiScriptEngine#4
+msgid "A MIDI control you just used is not working properly."
+msgstr ""
+
+#: MidiScriptEngine#5
+msgid ""
+"<html>(The MIDI script code needs to be fixed.)<br>For now, you "
+"can:<ul><li>Ignore this error for this session but you may experience "
+"erratic behavior</li><li>Try to recover by resetting your "
+"controller</li></ul></html>"
+msgstr ""
+
+#: MidiStatusDelegate#1
+msgid "Unknown"
+msgstr ""
+
+#: MixxxApp#1
+msgid "Mixxx "
+msgstr ""
+
+#: MixxxApp#2
+msgid "Mixxx"
+msgstr ""
+
+#: MixxxApp#3
+msgid ""
+"Mixxx's development is driven by community feedback.  At your discretion, "
+"Mixxx can automatically send data on your user experience back to the "
+"developers. Would you like to help us make Mixxx better by enabling this "
+"feature?"
+msgstr ""
+
+#: MixxxApp#4
+msgid "Yes"
+msgstr ""
+
+#: MixxxApp#5
+msgid "No"
+msgstr ""
+
+#: MixxxApp#6
+msgid "Privacy Policy"
+msgstr ""
+
+#: MixxxApp#7
+msgid "Mixxx: Privacy Policy"
+msgstr ""
+
+#: MixxxApp#8
+msgid ""
+"Mixxx's development is driven by community feedback. In order to help "
+"improve future versions Mixxx will with your permission collect information "
+"on your hardware and usage of Mixxx.  This information will primarily be "
+"used to fix bugs, improve features, and determine the system requirements of "
+"later versions.  Additionally this information may be used in aggregate for "
+"statistical purposes.\n"
+"\n"
+"The hardware information will include:\n"
+"\t- CPU model and features\n"
+"\t- Total/Available Amount of RAM\n"
+"\t- Available disk space\n"
+"\t- OS version\n"
+"\n"
+"Your usage information will include:\n"
+"\t- Settings/Preferences\n"
+"\t- Internal errors\n"
+"\t- Internal debugging messages\n"
+"\t- Performance statistics (average latency, CPU usage)\n"
+"\n"
+"This information will not be used to personally identify you, contact you, "
+"advertise to you, or otherwise bother you in any way.\n"
+msgstr ""
+
+#: MixxxApp#9
+msgctxt "MixxxApp#9"
+msgid "Choose music library directory"
+msgstr ""
+
+#: MixxxApp#10
+msgid "Sound Device Busy"
+msgstr ""
+
+#: MixxxApp#11
+msgid "Get <b>Help</b> from the Mixxx Wiki."
+msgstr ""
+
+#: MixxxApp#12
+msgid ""
+"Mixxx was unable to access all the configured sound devices. Another "
+"application is using a sound device Mixxx is configured to use or a device "
+"is not plugged in."
+msgstr ""
+
+#: MixxxApp#13
+msgid ""
+"<b>Retry</b> after closing the other application or reconnecting a sound "
+"device"
+msgstr ""
+
+#: MixxxApp#14
+msgid "<b>Reconfigure</b> Mixxx's sound device settings."
+msgstr ""
+
+#: MixxxApp#15
+msgid "<b>Exit</b> Mixxx."
+msgstr ""
+
+#: MixxxApp#16
+msgid "Retry"
+msgstr ""
+
+#: MixxxApp#17
+msgid "Reconfigure"
+msgstr ""
+
+#: MixxxApp#18
+msgid "Help"
+msgstr ""
+
+#: MixxxApp#19
+msgid "Exit"
+msgstr ""
+
+#: MixxxApp#20
+msgid "Continue"
+msgstr ""
+
+#: MixxxApp#21
+msgid "&Load Song (Player 1)..."
+msgstr ""
+
+#: MixxxApp#22
+msgid "Ctrl+O"
+msgstr ""
+
+#: MixxxApp#23
+msgid "&Load Song (Player 2)..."
+msgstr ""
+
+#: MixxxApp#24
+msgid "Ctrl+Shift+O"
+msgstr ""
+
+#: MixxxApp#25
+msgid "&Exit"
+msgstr ""
+
+#: MixxxApp#26
+msgid "Ctrl+Q"
+msgstr ""
+
+#: MixxxApp#27
+msgid "&Rescan Library"
+msgstr ""
+
+#: MixxxApp#28
+msgid "Add &new playlist"
+msgstr ""
+
+#: MixxxApp#29
+msgid "Ctrl+N"
+msgstr ""
+
+#: MixxxApp#30
+msgid "Add new &crate"
+msgstr ""
+
+#: MixxxApp#31
+msgid "Ctrl+C"
+msgstr ""
+
+#: MixxxApp#32
+msgid "&Import playlist"
+msgstr ""
+
+#: MixxxApp#33
+msgid "Ctrl+I"
+msgstr ""
+
+#: MixxxApp#34
+msgid "&Audio Beat Marks"
+msgstr ""
+
+#: MixxxApp#35
+msgid "&Full Screen"
+msgstr ""
+
+#: MixxxApp#36
+msgid "Ctrl+F"
+msgstr ""
+
+#: MixxxApp#37
+msgid "F11"
+msgstr ""
+
+#: MixxxApp#38
+msgid "&Preferences"
+msgstr ""
+
+#: MixxxApp#39
+msgid "Ctrl+P"
+msgstr ""
+
+#: MixxxApp#40
+msgid "&About"
+msgstr ""
+
+#: MixxxApp#41
+msgid "&Community Support"
+msgstr ""
+
+#: MixxxApp#42
+msgid "&User Manual"
+msgstr ""
+
+#: MixxxApp#43
+msgid "Send Us &Feedback"
+msgstr ""
+
+#: MixxxApp#44
+msgid "&Translate this application"
+msgstr ""
+
+#: MixxxApp#45
+msgid "Enable &Vinyl Control 1"
+msgstr ""
+
+#: MixxxApp#46
+msgid "Ctrl+Y"
+msgstr ""
+
+#: MixxxApp#47
+msgid "Enable &Vinyl Control 2"
+msgstr ""
+
+#: MixxxApp#48
+msgid "Ctrl+U"
+msgstr ""
+
+#: MixxxApp#49
+msgctxt "MixxxApp#49"
+msgid "Enable live broadcasting"
+msgstr ""
+
+#: MixxxApp#50
+msgid "Ctrl+L"
+msgstr ""
+
+#: MixxxApp#51
+msgid "&Record Mix"
+msgstr ""
+
+#: MixxxApp#52
+msgid "Ctrl+R"
+msgstr ""
+
+#: MixxxApp#53
+msgid "Show Studio"
+msgstr ""
+
+#: MixxxApp#54
+msgid "Opens a song in player 1"
+msgstr ""
+
+#: MixxxApp#55
+msgid ""
+"Open\n"
+"\n"
+"Opens a song in player 1"
+msgstr ""
+
+#: MixxxApp#56
+msgid "Opens a song in player 2"
+msgstr ""
+
+#: MixxxApp#57
+msgid ""
+"Open\n"
+"\n"
+"Opens a song in player 2"
+msgstr ""
+
+#: MixxxApp#58
+msgid "Quits the application"
+msgstr ""
+
+#: MixxxApp#59
+msgid ""
+"Exit\n"
+"\n"
+"Quits the application"
+msgstr ""
+
+#: MixxxApp#60
+msgid "Rescans the song library"
+msgstr ""
+
+#: MixxxApp#61
+msgid ""
+"Rescan library\n"
+"\n"
+"Rescans the song library"
+msgstr ""
+
+#: MixxxApp#62
+msgid "Create a new playlist"
+msgstr ""
+
+#: MixxxApp#63
+msgid ""
+"New playlist\n"
+"\n"
+"Create a new playlist"
+msgstr ""
+
+#: MixxxApp#64
+msgid "Create a new crate"
+msgstr ""
+
+#: MixxxApp#65
+msgid ""
+"New crate\n"
+"\n"
+"Create a new crate."
+msgstr ""
+
+#: MixxxApp#66
+msgid "Import playlist"
+msgstr ""
+
+#: MixxxApp#67
+msgid "Audio Beat Marks"
+msgstr ""
+
+#: MixxxApp#68
+msgid ""
+"Audio Beat Marks\n"
+"Mark beats by audio clicks"
+msgstr ""
+
+#: MixxxApp#69
+msgid "Activate Vinyl Control"
+msgstr ""
+
+#: MixxxApp#70
+msgid "Use timecoded vinyls on external turntables to control Mixxx"
+msgstr ""
+
+#: MixxxApp#71
+msgid "Activate live broadcasting"
+msgstr ""
+
+#: MixxxApp#72
+msgid "Stream your mixes to a shoutcast or icecast server"
+msgstr ""
+
+#: MixxxApp#73
+msgid "Start Recording your Mix"
+msgstr ""
+
+#: MixxxApp#74
+msgid "Record your mix to a file"
+msgstr ""
+
+#: MixxxApp#75
+msgid "Full Screen"
+msgstr ""
+
+#: MixxxApp#76
+msgid "Display Mixxx using the full screen"
+msgstr ""
+
+#: MixxxApp#77
+msgctxt "MixxxApp#77"
+msgid "Preferences"
+msgstr ""
+
+#: MixxxApp#78
+msgid ""
+"Preferences\n"
+"Playback and MIDI preferences"
+msgstr ""
+
+#: MixxxApp#79
+msgid "Support..."
+msgstr ""
+
+#: MixxxApp#80
+msgid ""
+"Support\n"
+"\n"
+"Get help with Mixxx"
+msgstr ""
+
+#: MixxxApp#81
+msgid "Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#82
+msgid ""
+"Support\n"
+"\n"
+"Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#83
+msgid "Send feedback to the Mixxx team."
+msgstr ""
+
+#: MixxxApp#84
+msgid ""
+"Support\n"
+"\n"
+"Send feedback to the Mixxx team."
+msgstr ""
+
+#: MixxxApp#85
+msgid "Help translate this application into your language."
+msgstr ""
+
+#: MixxxApp#86
+msgid ""
+"Support\n"
+"\n"
+"Help translate this application into your language."
+msgstr ""
+
+#: MixxxApp#87
+msgid "About the application"
+msgstr ""
+
+#: MixxxApp#88
+msgid ""
+"About\n"
+"\n"
+"About the application"
+msgstr ""
+
+#: MixxxApp#89
+msgid "Shows the macro studio window"
+msgstr ""
+
+#: MixxxApp#90
+msgid ""
+"Show Studio\n"
+"\n"
+"Makes the macro studio visible"
+msgstr ""
+
+#: MixxxApp#91
+msgid "&File"
+msgstr ""
+
+#: MixxxApp#92
+msgid "&Options"
+msgstr ""
+
+#: MixxxApp#93
+msgid "&Library"
+msgstr ""
+
+#: MixxxApp#94
+msgid "&View"
+msgstr ""
+
+#: MixxxApp#95
+msgid "&Help"
+msgstr ""
+
+#: MixxxApp#96
+msgid "&Macro"
+msgstr ""
+
+#: MixxxApp#97
+msgid "&Vinyl Control"
+msgstr ""
+
+#: MixxxApp#98
+msgid "Quit..."
+msgstr ""
+
+#: MixxxApp#99
+msgid "Do your really want to quit?"
+msgstr ""
+
+#: MixxxApp#100
+msgid ""
+"Player 1 is currently playing a song.\n"
+"Are you sure you want to load a new song?"
+msgstr ""
+
+#: MixxxApp#101
+msgid "Load Song into Player 1"
+msgstr ""
+
+#: MixxxApp#102
+msgid ""
+"Player 2 is currently playing a song.\n"
+"Are you sure you want to load a new song?"
+msgstr ""
+
+#: MixxxApp#103
+msgid "Load Song into Player 2"
+msgstr ""
+
+#: MixxxApp#104
+msgid ""
+"No input device(s) select.\n"
+"Please select your soundcard(s) in the sound hardware preferences."
+msgstr ""
+
+#: MixxxApp#105
+msgid "Mixxx %1 Development Team"
+msgstr ""
+
+#: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
+msgid "Confirm Exit"
+msgstr ""
+
+#: MixxxApp#111
+msgid "A deck is currently playing. Exit Mixxx?"
+msgstr ""
+
+#: MixxxLibraryFeature#1
+msgctxt "MixxxLibraryFeature#1"
+msgid "Library"
+msgstr ""
+
+#: ParserM3u#1
+msgctxt "ParserM3u#1"
+msgid "Playlist Export Failed"
+msgstr ""
+
+#: ParserM3u#2
+msgid "File path contains characters, not allowed in m3u playlists.\n"
+msgstr ""
+
+#: ParserM3u#3
+msgid "Export a m3u8 playlist instead!\n"
+msgstr ""
+
+#: ParserM3u#4
+msgctxt "ParserM3u#4"
+msgid "Could not create file"
+msgstr ""
+
+#: ParserPls#1
+msgctxt "ParserPls#1"
+msgid "Playlist Export Failed"
+msgstr ""
+
+#: ParserPls#2
+msgctxt "ParserPls#2"
+msgid "Could not create file"
+msgstr ""
+
+#: PlaylistFeature#1
+msgid "New Playlist"
+msgstr ""
+
+#: PlaylistFeature#2
+msgid "Add to Auto-DJ Queue"
+msgstr ""
+
+#: PlaylistFeature#3
+msgctxt "PlaylistFeature#3"
+msgid "Remove"
+msgstr ""
+
+#: PlaylistFeature#4
+msgctxt "PlaylistFeature#4"
+msgid "Rename"
+msgstr ""
+
+#: PlaylistFeature#5
+msgctxt "PlaylistFeature#5"
+msgid "Lock"
+msgstr ""
+
+#: PlaylistFeature#6
+msgctxt "PlaylistFeature#6"
+msgid "Import Playlist"
+msgstr ""
+
+#: PlaylistFeature#7
+msgid "Export Playlist"
+msgstr ""
+
+#: PlaylistFeature#8
+msgid "Playlists"
+msgstr ""
+
+#: PlaylistFeature#9
+msgctxt "PlaylistFeature#9"
+msgid "Unlock"
+msgstr ""
+
+#: PlaylistFeature#10
+msgid "Playlist name:"
+msgstr ""
+
+#: PlaylistFeature#11
+msgid "Playlist Creation Failed"
+msgstr ""
+
+#: PlaylistFeature#12
+msgid "A playlist cannot have a blank name."
+msgstr ""
+
+#: PlaylistFeature#13
+msgid "An unknown error occurred while creating playlist: "
+msgstr ""
+
+#: PlaylistFeature#14
+msgid "Rename Playlist"
+msgstr ""
+
+#: PlaylistFeature#15
+msgid "New playlist name:"
+msgstr ""
+
+#: PlaylistFeature#16
+msgid "Renaming Playlist Failed"
+msgstr ""
+
+#: PlaylistFeature#17
+msgctxt "PlaylistFeature#17"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+msgstr ""
+
+#: PlaylistFeature#18
+msgctxt "PlaylistFeature#18"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
+
+#: PlaylistFeature#19
+msgid "A playlist by that name already exists."
+msgstr ""
+
+#: PrepareFeature#1
+msgctxt "PrepareFeature#1"
+msgid "Analyze"
+msgstr ""
+
+#: QObject#1
+msgid "Invalid"
+msgstr ""
+
+#: QObject#2
+msgid "Master"
+msgstr ""
+
+#: QObject#3
+msgid "Headphones"
+msgstr ""
+
+#: QObject#4
+msgid "Deck"
+msgstr ""
+
+#: QObject#5
+msgctxt "QObject#5"
+msgid "Vinyl Control"
+msgstr ""
+
+#: QObject#6
+msgid "Microphone"
+msgstr ""
+
+#: QObject#7
+msgid "Passthrough"
+msgstr ""
+
+#: QObject#8
+msgid "Unknown path type %1"
+msgstr ""
+
+#: RecordingFeature#1
+msgid "Recordings"
+msgstr ""
+
+#: RhythmboxFeature#1
+msgid "Rhythmbox"
+msgstr ""
+
+#: SamplerBank#1
+msgid "Save Sampler Bank"
+msgstr ""
+
+#: SamplerBank#2
+msgid "Error Saving Sampler Bank"
+msgstr ""
+
+#: SamplerBank#3
+msgid "Could not write the sampler bank to '%1'."
+msgstr ""
+
+#: SamplerBank#4
+msgid "Load Sampler Bank"
+msgstr ""
+
+#: SamplerBank#5
+msgid "Error Reading Sampler Bank"
+msgstr ""
+
+#: SamplerBank#6
+msgid "Could not open the sampler bank file '%1'."
+msgstr ""
+
+#: SamplerBank#7
+msgid "Could not read the sampler bank file '%1'."
+msgstr ""
+
+#: ScriptStudio#1
+msgid "Mixxx Script Studio"
+msgstr ""
+
+#: ScriptStudio#2
+msgid "File"
+msgstr ""
+
+#: ScriptStudio#3
+msgctxt "ScriptStudio#3"
+msgid "Edit"
+msgstr ""
+
+#: ScriptStudio#4
+msgid "Run"
+msgstr ""
+
+#: ScriptStudio#5
+msgid "Close"
+msgstr ""
+
+#: ScriptStudio#6
+msgid "Import..."
+msgstr ""
+
+#: ScriptStudio#7
+msgid "Export..."
+msgstr ""
+
+#: ScriptStudio#8
+msgid "Delete Macro"
+msgstr ""
+
+#: ScriptStudio#9
+msgid "New Macro..."
+msgstr ""
+
+#: ScriptStudio#10
+msgid "Run Macro"
+msgstr ""
+
+#: TrackCollection#1
+msgid "Cannot open database"
+msgstr ""
+
+#: TrackCollection#2
+msgid ""
+"Unable to establish a database connection.\n"
+"Mixxx requires QT with SQLite support. Please read the Qt SQL driver "
+"documentation for information on how to build it.\n"
+"\n"
+"Click OK to exit."
+msgstr ""
+
+#: TrackCollection#3
+msgid "Cannot upgrade database schema"
+msgstr ""
+
+#: TrackCollection#4
+msgid ""
+"Unable to upgrade your database schema to version %1.\n"
+"Your mixxx.db file may be corrupt.\n"
+"Try renaming it and restarting Mixxx.\n"
+"\n"
+"Click OK to exit."
+msgstr ""
+
+#: TraktorFeature#1
+msgid "Traktor"
+msgstr ""
+
+#: TraktorFeature#2
+msgid "(loading) Traktor"
+msgstr ""
+
+#: TraktorFeature#3
+msgid "Error Loading Traktor Library"
+msgstr ""
+
+#: TraktorFeature#4
+msgid ""
+"There was an error loading your Traktor library. Some of your Traktor tracks "
+"or playlists may not have loaded."
+msgstr ""
+
+#: Ui#1
+msgctxt "Ui#1"
+msgid "Position"
+msgstr ""
+
+#: Ui#2
+msgid "Remaining"
+msgstr ""
+
+#: Ui#3
+msgctxt "Ui#3"
+msgid "On"
+msgstr ""
+
+#: Ui#4
+msgctxt "Ui#4"
+msgid "Off"
+msgstr ""
+
+#: Ui#5
+msgid "Don't load tracks into a playing deck"
+msgstr ""
+
+#: Ui#6
+msgid "Load tracks into playing decks"
+msgstr ""
+
+#: Ui#7
+msgid "CDJ Mode"
+msgstr ""
+
+#: Ui#8
+msgid "Simple"
+msgstr ""
+
+#: Ui#9
+msgid "Mixxx Detected a WVGA Screen"
+msgstr ""
+
+#: Ui#10
+msgid "Mixxx has detected that your screen has a resolution of "
+msgstr ""
+
+#: Ui#11
+msgid ""
+"The only skin compatiable with this size display is Outline800x480-WVGA.  "
+"Would you like to use that skin?"
+msgstr ""
+
+#: Ui#12
+msgctxt "Ui#12"
+msgid "Preferences"
+msgstr ""
+
+#: Ui#13
+msgctxt "Ui#13"
+msgid "Crossfader"
+msgstr ""
+
+#: Ui#14
+msgid "Master volume"
+msgstr ""
+
+#: Ui#15
+msgid "Master balance"
+msgstr ""
+
+#: Ui#16
+msgid "Headphones volume"
+msgstr ""
+
+#: Ui#17
+msgid "Headphones mix (pre/main)"
+msgstr ""
+
+#: Ui#18
+msgid "Cue button for Player %1"
+msgstr ""
+
+#: Ui#19
+msgid "Play button for Player %1"
+msgstr ""
+
+#: Ui#20
+msgid "Fast rewind button for Player %1"
+msgstr ""
+
+#: Ui#21
+msgid "Fast forward button for Player %1"
+msgstr ""
+
+#: Ui#22
+msgid "Play reverse button for Player %1"
+msgstr ""
+
+#: Ui#23
+msgid "Headphone listen button for Player %1"
+msgstr ""
+
+#: Ui#24
+msgid "Beat sync button for Player %1"
+msgstr ""
+
+#: Ui#25
+msgid "BPM tap button for Player %1"
+msgstr ""
+
+#: Ui#26
+msgid "Keylock button for Player %1"
+msgstr ""
+
+#: Ui#27
+msgid "Pitch control slider for Player %1"
+msgstr ""
+
+#: Ui#28
+msgid "Flanger effect button for Player %1"
+msgstr ""
+
+#: Ui#29
+msgid "Channel %1 volume fader"
+msgstr ""
+
+#: Ui#30
+msgid "Gain knob for Channel %1"
+msgstr ""
+
+#: Ui#31
+msgid "High EQ knob for Channel %1"
+msgstr ""
+
+#: Ui#32
+msgid "Mid EQ knob for Channel %1"
+msgstr ""
+
+#: Ui#33
+msgid "Low EQ knob for Channel %1"
+msgstr ""
+
+#: Ui#34
+msgid "Loop In button for Player %1"
+msgstr ""
+
+#: Ui#35
+msgid "Loop Out button for Player %1"
+msgstr ""
+
+#: Ui#36
+msgid "Reloop / Exit button for Player %1"
+msgstr ""
+
+#: Ui#37
+msgid "Setup a loop over 4 beats for Player %1"
+msgstr ""
+
+#: Ui#38
+msgid "Halves the current loop's length for Player %1"
+msgstr ""
+
+#: Ui#39
+msgid "Doubles the current loop's length for Player %1"
+msgstr ""
+
+#: Ui#40
+msgid "Hotcue 1 button for Player %1"
+msgstr ""
+
+#: Ui#41
+msgid "Hotcue 2 button for Player %1"
+msgstr ""
+
+#: Ui#42
+msgid "Hotcue 3 button for Player %1"
+msgstr ""
+
+#: Ui#43
+msgid "Hotcue 4 button for Player %1"
+msgstr ""
+
+#: Ui#44
+msgid "Hotcue 1 delete button for Player %1"
+msgstr ""
+
+#: Ui#45
+msgid "Hotcue 2 delete button for Player %1"
+msgstr ""
+
+#: Ui#46
+msgid "Hotcue 3 delete button for Player %1"
+msgstr ""
+
+#: Ui#47
+msgid "Hotcue 4 delete button for Player %1"
+msgstr ""
+
+#: Ui#48
+msgid "Play button for Sampler %1"
+msgstr ""
+
+#: Ui#49
+msgid "Gain knob for Sampler %1"
+msgstr ""
+
+#: Ui#50
+msgid "Headphone listen button for Sampler %1"
+msgstr ""
+
+#: Ui#51
+msgid "BPM tap button for Sampler %1"
+msgstr ""
+
+#: Ui#52
+msgid "Keylock button for Sampler %1"
+msgstr ""
+
+#: Ui#53
+msgid "Pitch control slider for Sampler %1"
+msgstr ""
+
+#: Ui#54
+msgid "Hotcue 1 button for Sampler %1"
+msgstr ""
+
+#: Ui#55
+msgid "Hotcue 2 button for Sampler %1"
+msgstr ""
+
+#: Ui#56
+msgid "Hotcue 3 button for Sampler %1"
+msgstr ""
+
+#: Ui#57
+msgid "Hotcue 4 button for Sampler %1"
+msgstr ""
+
+#: Ui#58
+msgid "Hotcue 1 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#59
+msgid "Hotcue 2 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#60
+msgid "Hotcue 3 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#61
+msgid "Hotcue 4 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#62
+msgid "Switch to the next view (library, playlist..)"
+msgstr ""
+
+#: Ui#63
+msgid "Switch to the previous view (library, playlist..)"
+msgstr ""
+
+#: Ui#64
+msgid "Scroll to next track in library/playlist"
+msgstr ""
+
+#: Ui#65
+msgid "Scroll to previous track in library/playlist"
+msgstr ""
+
+#: Ui#66
+msgid "Load selected track into first stopped player"
+msgstr ""
+
+#: Ui#67
+msgid "Load selected track into Player %1"
+msgstr ""
+
+#: Ui#68
+msgid "Adjusts the wavelength of the flange effect"
+msgstr ""
+
+#: Ui#69
+msgid "Adjusts the intensity of the flange effect"
+msgstr ""
+
+#: Ui#70
+msgid "Adjusts the phase delay of the flange effect"
+msgstr ""
+
+#: Ui#71
+msgid "Microphone on/off"
+msgstr ""
+
+#: Ui#72
+msgid "Microphone volume"
+msgstr ""
+
+#: WSearchLineEdit#1
+msgid "Search..."
+msgstr ""
+
+#: WTrackTableView#1
+msgid "Add to Playlist"
+msgstr ""
+
+#: WTrackTableView#2
+msgid "Add to Crate"
+msgstr ""
+
+#: WTrackTableView#3
+msgid "Load to Sampler"
+msgstr ""
+
+#: WTrackTableView#4
+msgctxt "WTrackTableView#4"
+msgid "Remove"
+msgstr ""
+
+#: WTrackTableView#5
+msgid "Properties..."
+msgstr ""
+
+#: WTrackTableView#6
+msgid "Add to Auto DJ Queue"
+msgstr ""
+
+#: WTrackTableView#7
+msgid "Reload Track Metadata"
+msgstr ""
+
+#: WTrackTableView#8
+msgid "Load to Deck %1"
+msgstr ""
+
+#: WTrackTableView#9
+msgid "Sampler %1"
+msgstr ""
+
+#: WTrackTableView#10
+msgid ""
+"Reloading track metadata on a loaded track may cause abrupt volume changes. "
+"Are you sure?"
+msgstr ""
+
+#: WTrackTableViewHeader#1
+msgid "Show or hide columns."
+msgstr ""

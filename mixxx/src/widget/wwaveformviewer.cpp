@@ -8,15 +8,16 @@
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "mixxx.h"
 #include "trackinfoobject.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) :
-    QWidget(parent) {
-    m_pGroup = group;
+
+WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent, Qt::WFlags f) :
+    QWidget(parent),
+    m_pGroup(group),
+    m_pConfig(pConfig) {
 
     setAcceptDrops(true);
 
@@ -162,10 +163,12 @@ void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
             event->mimeData()->urls().size() > 0) {
         ControlObject *pPlayCO = ControlObject::getControl(
                     ConfigKey(m_pGroup, "play"));
-        if (pPlayCO && pPlayCO->get()) {
-            event->ignore();
-        } else {
+        // Accept if the Deck isn't playing or the settings allow to interupt a playing deck
+        if (pPlayCO && (!pPlayCO->get() ||
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
             event->acceptProposedAction();
+        } else {
+            event->ignore();
         }
     }
 }
