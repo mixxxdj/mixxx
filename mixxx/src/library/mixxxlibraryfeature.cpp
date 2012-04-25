@@ -12,11 +12,10 @@
 #include "library/trackcollection.h"
 #include "treeitem.h"
 
-const QString MixxxLibraryFeature::kMissingTitle = tr("Missing Tracks");
-
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
-        : LibraryFeature(parent) {
+        : LibraryFeature(parent),
+          kMissingTitle(tr("Missing Tracks")) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
