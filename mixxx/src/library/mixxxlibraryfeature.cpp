@@ -12,7 +12,7 @@
 #include "library/trackcollection.h"
 #include "treeitem.h"
 
-const QString MixxxLibraryFeature::kMissingTitle = QObject::tr("Missing Tracks");
+const QString MixxxLibraryFeature::kMissingTitle = tr("Missing Tracks");
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
