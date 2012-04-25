@@ -1,7 +1,7 @@
 	<!--
 	Outline, Skin for Mixxx 1.10.x
 	www.mixxx.org
-	Copyright (C) 2010-2011 Mixxx
+	Copyright (C) 2010-2012 Mixxx
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@
 	along with this program.  If not, see http://www.gnu.org/licenses
 
 	CHANGELOG
+	v1.10.0.10	(25/04/2012)
+	* Update: Tooltips for waveform (Pitch bend on right click)
+
 	v1.10.0.09	(22/12/2011)
 	* Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800
 
@@ -218,7 +221,7 @@
 	**********************************************
 	-->
 	<Visual>
-		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-cLick: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<Channel>1</Channel>
 		<Pos>80,18</Pos>
@@ -521,7 +524,7 @@
 		</Mark>
 	</Visual>
 	<Visual>
-		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-cLick: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<Channel>2</Channel>
 		<Pos>80,63</Pos>
