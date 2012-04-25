@@ -124,6 +124,7 @@ void ControllerEngine::gracefulShutdown() {
     }
 
     delete m_pBaClass;
+    m_pBaClass = NULL;
 }
 
 bool ControllerEngine::isReady() {
