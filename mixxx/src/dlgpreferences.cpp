@@ -15,6 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QTabWidget>
+#include <QTabBar>
+#include <QDialog>
+#include <QtGui>
+#include <QEvent>
+#include <QScrollArea>
 
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"
@@ -30,6 +36,7 @@
 #else
     #include "dlgprefbpm.h"
 #endif
+
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "dlgprefmidibindings.h"
@@ -44,20 +51,13 @@
 #include "midi/mididevicemanager.h"
 #include "midi/mididevice.h"
 #include "skin/skinloader.h"
-#include <QTabWidget>
-
-#include <QTabBar>
-#include <QDialog>
-#include <QtGui>
-#include <QEvent>
-#include <QScrollArea>
+#include "library/library.h"
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                MidiDeviceManager * midi, VinylControlManager *pVCManager,
                                ConfigObject<ConfigValue> * _config)
         :  QDialog(), Ui::DlgPreferencesDlg() {
-    m_pMixxx = mixxx;
     m_pMidiDeviceManager = midi;
 
     setupUi(this);
@@ -393,8 +393,6 @@ void DlgPreferences::slotHide() {
 
 
 void DlgPreferences::slotShow() {
-    //m_pMixxx->releaseKeyboard();
-
     QSize optimumSize;
     QSize deltaSize;
     QSize pagesSize;
@@ -486,7 +484,6 @@ void DlgPreferences::setupMidiWidgets()
 void DlgPreferences::slotApply()
 {
     m_pMidiDeviceManager->saveMappings();
-    //m_pMixxx->grabKeyboard();
 }
 
 void DlgPreferences::slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled)

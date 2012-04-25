@@ -7,23 +7,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: Max Huttunen <Unknown>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2012-01-20 23:37+0000\n"
+"Last-Translator: Heikki Ketoharju <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:45+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-22 05:20+0000\n"
+"X-Generator: Launchpad (build 14700)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Auto DJ"
+msgstr "Auto-DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Soitetut"
+msgstr "Soitettu"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -121,7 +121,7 @@ msgstr "Irrotettavat laitteet"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Mixxx kirjasto"
+msgstr "Mixxx-kirjasto"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -195,7 +195,7 @@ msgstr "BPM"
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr "Näppäin"
+msgstr "Sävellaji"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -215,14 +215,14 @@ msgstr "Sijainti"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr "Mixxx kirjasto"
+msgstr "Mixxx-kirjasto"
 
 #: BrowseTableModel#16
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Seuraavaa tiedostoa ei voitu ladata koska se on Mixxx:n tai jonkin muun "
+"Seuraavaa tiedostoa ei voitu ladata, koska se on Mixxx:n tai jonkin muun "
 "sovelluksen käytössä."
 
 #: BrowseTableModel#17
@@ -231,14 +231,14 @@ msgstr "Varoitus: tämä poistaa lopullisesti seuraavat tiedostot:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Oletko varma että haluat poistaa nämä tiedostot tietokoneeltasi?"
+msgstr "Haluatko varmasti poistaa nämä tiedostot tietokoneeltasi?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Seuraavaa tiedostoa ei voitu poistaa koska se on Mixxx:n tai jonkin muun "
+"Seuraavaa tiedostoa ei voitu poistaa, koska se on Mixxx:n tai jonkin muun "
 "sovelluksen käytössä."
 
 #: BrowseTableModel#20
@@ -292,7 +292,7 @@ msgstr "Levylaukun nimi:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Tuntematon virhe luotaessa levylaukkua: "
+msgstr ""
 
 #: CrateFeature#12
 msgid "Rename Crate"
@@ -309,16 +309,17 @@ msgstr "Levylaukun nimeäminen epäonnistui"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Soittolistatiedostot (*.m3u, *.m3u8 ja *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"M3u-soittolista (*.m3u);; m3u8-soittolista (*.m3u8);;Pls-soittolista (*.pls)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
-msgstr "Levylaukun nimi ei voi olla tyhjä."
+msgstr ""
 
 #: CrateFeature#18
 msgid "Creating Crate Failed"
@@ -333,14 +334,18 @@ msgid "About Mixxx"
 msgstr "Tietoja Mixxxistä"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -348,23 +353,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Tekijät</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -372,11 +360,11 @@ msgstr "<a href=\"http://mixxx.org/\">Mixxxin verkkosivut</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "Poista Auto DJ käytöstä"
+msgstr "Poista auto-DJ käytöstä"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr "Ota Auto DJ käyttöön"
+msgstr "Ota auto-dj käyttöön"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
@@ -454,7 +442,7 @@ msgstr "Valitse säätimen toiminto:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr "Mixxx hallinta"
+msgstr "Mixxx-hallinta"
 
 #: DlgMidiLearning#10
 msgid "Previous"
@@ -462,7 +450,7 @@ msgstr "Edellinen"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr "Paina välilyöntiä jatkaaksesi tai ohittaaksesi tämän kohdan"
+msgstr "Jatka tai ohita painamalla välilyöntiä"
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
@@ -509,16 +497,16 @@ msgstr "Äänen lisäosien lataaja puuttuu"
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr "BPM tunnistuksen asetukset"
+msgstr "BPM-tunnistuksen asetukset"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr "BPM:n tunnistus"
+msgstr "BPM-tunnistus"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr "Käytä BPM tunnistusta"
+msgstr "Käytä BPM-tunnistusta"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
@@ -670,7 +658,7 @@ msgstr "Pitch-säätimien skaala"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr "Pitch-säätimien toiminta"
+msgstr "Pitch-säätimien toimintasuunta"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
@@ -709,12 +697,10 @@ msgstr "%"
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
 msgstr ""
-"Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren oikeaa "
-"painiketta"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Tilapäisen äänen Korkeuden/Nopeuden säädön painikkeet"
+msgstr "Väliaikaisen äänen korkeuden tai nopeuden säädön painikkeet"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
@@ -2969,10 +2955,30 @@ msgstr ""
 "Valitse äänikorttisi äänilaitteiden hallinnassa"
 
 #: MixxxApp#105
+msgid "Mixxx %1 Development Team"
+msgstr ""
+
+#: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Varmista lopetus"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Kanavaa toistetaan parhaillaan. Suljetaanko Mixxx?"
 
@@ -3140,31 +3146,31 @@ msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr "Tallenna näytepankki"
+msgstr "Tallenna samplepankki"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr "Virhe tallennettaessa näytepankkia"
+msgstr "Virhe tallennettaessa samplepankkia"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr "Ei voitu kirjoittaa näytepankkia '%1'"
+msgstr "Ei voitu tallentaa samplepankkia tiedostoon '%1'"
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr "Lataa näytepankki"
+msgstr "Lataa samplepankki"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr "Virhe ladattaeessa näytepankkia"
+msgstr "Virhe ladattaessa samplepankkia"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr "Ei voitu avata näytepankki tiedostoa '%1'"
+msgstr "Ei voitu avata samplepankkitiedostoa '%1'"
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr "Ei voitu lukea näytepankki tiedostoa '%1'"
+msgstr "Ei voitu lukea samplepankkitiedostoa '%1'"
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
@@ -3574,7 +3580,7 @@ msgstr "Lisää levylaukkuun"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr "Lataa näytesoittimeen"
+msgstr "Lataa sampleriin"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
@@ -3595,11 +3601,11 @@ msgstr "Lataa kappaleen metadata uudelleen"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"
-msgstr "Lataa kannelle %1"
+msgstr "Lataa %1. dekkiin"
 
 #: WTrackTableView#9
 msgid "Sampler %1"
-msgstr "Näytesoitin %1"
+msgstr "Sampleri"
 
 #: WTrackTableView#10
 msgid ""
@@ -3611,51 +3617,405 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr "Näytä tai piilota sarakkeita."
 
+#~ msgid "You don't have permission to view this folder."
+#~ msgstr "Sinulla ei ole oikeuksia tarkastella tätä hakemistoa."
+
+#~ msgid "Permission Denied"
+#~ msgstr "Pääsy evätty"
+
+#~ msgid "Crate Creation Failed"
+#~ msgstr "Levylaukun luonti epäonnistui"
+
+#~ msgctxt "DlgPrefControls#4"
+#~ msgid "Information"
+#~ msgstr "Tietoja"
+
+#~ msgctxt "DlgPrefRecordDlg#9"
+#~ msgid "Title"
+#~ msgstr "Nimi"
+
+#~ msgctxt "DlgPrefRecordDlg#3"
+#~ msgid "Browse..."
+#~ msgstr "Selaa..."
+
+#~ msgctxt "DlgPrefRecordDlg#11"
+#~ msgid "Album"
+#~ msgstr "Julkaisu"
+
+#~ msgid "Description"
+#~ msgstr "Kuvaus"
+
+#~ msgid "OK"
+#~ msgstr "Hyväksy"
+
+#~ msgctxt "Ui#10"
+#~ msgid "Preferences"
+#~ msgstr "Asetukset"
+
+#~ msgid "150"
+#~ msgstr "150"
+
+#~ msgid "Turntable Preamp"
+#~ msgstr "Esivahvistus"
+
+#~ msgid "1 (Off)"
+#~ msgstr "1 (Ei käytössä)"
+
+#~ msgid "seconds"
+#~ msgstr "sekuntia"
+
+#~ msgid "Vinyl Type"
+#~ msgstr "Aikakoodilevyn tyyppi"
+
 #~ msgid "Recently Added"
 #~ msgstr "Äskettäin lisätyt"
 
 #~ msgid "All Songs"
 #~ msgstr "Kaikki kappaleet"
 
+#~ msgctxt "PlaylistFeature#2"
+#~ msgid "Remove"
+#~ msgstr "Poista"
+
+#~ msgctxt "MixxxLibraryFeature#2"
+#~ msgid "Library"
+#~ msgstr "Kokoelma"
+
+#~ msgctxt "RhythmboxPlaylistModel#1"
+#~ msgid "Artist"
+#~ msgstr "Artisti"
+
+#~ msgctxt "RhythmboxPlaylistModel#6"
+#~ msgid "Location"
+#~ msgstr "Sijanti"
+
+#~ msgctxt "RhythmboxPlaylistModel#5"
+#~ msgid "Genre"
+#~ msgstr "Tyylilaji"
+
+#~ msgctxt "RhythmboxPlaylistModel#4"
+#~ msgid "Year"
+#~ msgstr "Vuosi"
+
+#~ msgctxt "RhythmboxPlaylistModel#3"
+#~ msgid "Album"
+#~ msgstr "Julkaisu"
+
+#~ msgctxt "RhythmboxTrackModel#5"
+#~ msgid "Genre"
+#~ msgstr "Tyylilaji"
+
+#~ msgctxt "RhythmboxTrackModel#6"
+#~ msgid "Location"
+#~ msgstr "Sijanti"
+
+#~ msgctxt "RhythmboxTrackModel#1"
+#~ msgid "Artist"
+#~ msgstr "Artisti"
+
+#~ msgctxt "RhythmboxTrackModel#3"
+#~ msgid "Album"
+#~ msgstr "Julkaisu"
+
 #~ msgid "2.045 kHz"
 #~ msgstr "2,045 kHz"
 
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Vie soittolista"
+#~ msgctxt "DlgPrefRecordDlg#4"
+#~ msgid "Encoding"
+#~ msgstr "Tiedostomuoto"
 
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U soittolista (*.m3u);;PLS soittolista (*.pls)"
+#~ msgctxt "DlgPrefRecord#1"
+#~ msgid "Save Recording As..."
+#~ msgstr "Tallenna äänitys nimellä..."
 
-#~ msgctxt "ParserM3u#2"
-#~ msgid "Could not create file"
-#~ msgstr "Tiedostoa ei voitu luoda"
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+#~ "ubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Via"
+#~ "nmääritys (engl.)</a>"
 
-#~ msgctxt "PlaylistFeature#18"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U soittolista (*.m3u);;PLS soittolista (*.pls)"
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
 
-#~ msgctxt "PlaylistFeature#17"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Soittolista tiedostot (*.m3u *.pls)"
+#~ msgid "Signal Quality"
+#~ msgstr "Signaalin laatu"
 
-#~ msgctxt "PlaylistFeature#7"
-#~ msgid "Export Playlist"
-#~ msgstr "Vie soittolista"
+#~ msgid "Load iTunes Library?"
+#~ msgstr "Ladataanko iTunes-kokoelma?"
 
-#~ msgctxt "DlgPrefNoVinylDlg#21"
-#~ msgid "Apply"
-#~ msgstr "Hyväksy"
+#~ msgctxt "MidiStatusDelegate#1"
+#~ msgid "Unknown"
+#~ msgstr "Tuntematon"
 
-#~ msgctxt "MixxxApp#48"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Salli suoratoistolähetys"
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Tekijät</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
-#~ msgctxt "MixxxApp#76"
-#~ msgid "Preferences"
-#~ msgstr "Asetukset"
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
+#~ "line for testing purposes!</span></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Tämä suoratoisto "
+#~ "on testikäyttöä varten.</span></p></body></html>"
 
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Soittolistatiedostot (*.m3u *.pls)"
+#~ msgid "Scratch Mode"
+#~ msgstr "Scratch"
+
+#~ msgid "Vinyl Configuration"
+#~ msgstr "Ohjainlevyn asetukset"
+
+#~ msgid "Control Mode"
+#~ msgstr "Toimintatila"
+
+#~ msgid "Absolute Mode"
+#~ msgstr "Absoluuttinen"
+
+#~ msgid "Relative Mode"
+#~ msgstr "Suhteellinen"
+
+#~ msgid "Would you like to load your iTunes library?"
+#~ msgstr "Ladataanko iTunes-kokoelma?"
+
+#~ msgid "Enable &Vinyl Control"
+#~ msgstr "Vinyyliohjaus"
+
+#~ msgid "&About..."
+#~ msgstr "Tietoja..."
+
+#~ msgid "Missing Songs"
+#~ msgstr "Puuttuvat kappaleet"
+
+#~ msgctxt "RhythmboxPlaylistModel#2"
+#~ msgid "Title"
+#~ msgstr "Kappale"
+
+#~ msgid "Load Rhythmbox Library?"
+#~ msgstr "Ladataanko Rhythmboxin kokoelma?"
+
+#~ msgctxt "RhythmboxPlaylistModel#7"
+#~ msgid "Duration"
+#~ msgstr "Kesto"
+
+#~ msgctxt "RhythmboxTrackModel#7"
+#~ msgid "Duration"
+#~ msgstr "Kesto"
+
+#~ msgctxt "RhythmboxTrackModel#2"
+#~ msgid "Title"
+#~ msgstr "Kappale"
+
+#~ msgctxt "RhythmboxPlaylistModel#8"
+#~ msgid "Unknown"
+#~ msgstr "Tuntematon"
+
+#~ msgid "Next >>"
+#~ msgstr "Seuraava >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Edellinen"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Kappale:"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Raitaeditori"
+
+#~ msgid "&Close"
+#~ msgstr "Sulje"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analysoi koko kappale"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "BPM muokkaus (Klikkaa avataksesi)"
+
+#~ msgid "to"
+#~ msgstr "–"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "BPM teema:"
+
+#~ msgid "&Go"
+#~ msgstr "&Mene"
+
+#~ msgid "BPM Range:"
+#~ msgstr "BPM alue:"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM:n tunnistus"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Raidan tiedot (Klikkaa avataksesi)"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Esittäjä:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Nimi:"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Tiedostonnimi:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Kommentit:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Soittoaika:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Tiedoston tyyppi:"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analysoi koko kappale"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "&Paina vaihtaaksesi tempoa"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Artisti:"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Kappale:"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Raitaeditori"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Otsikko:"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Kommentit:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Raidan tiedot (Klikkaa avataksesi)"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Tiedoston nimi:"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Tiedoston tyyppi:"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx ei löydä MP3 pakkaajaa. <p>Asenna libmp3lame (tunnetaan myös "
+#~ "nimellä lame) ja tarkista että se löytyy /usr/lib/libmp3lame.so</html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx ei löydä MP3 pakkaajaa. <p>Kopioi lame_enc.dll samaan "
+#~ "hakemistoon kuin Mixxx</html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx ei löydä MP3 pakkaajaa <p>Asenna libmp3lame (tunnetaan myös "
+#~ "nimellä lame) ja tarkista että se löytyy "
+#~ "/usr/local/lib/libmp3lame.dylib</html>"
+
+#~ msgid "&Community Support..."
+#~ msgstr "&Yhteisötuki"

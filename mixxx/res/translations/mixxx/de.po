@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-23 16:44+0000\n"
-"Last-Translator: Daniel Winzen <Unknown>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2011-11-12 18:44+0000\n"
+"Last-Translator: Henrik Graßhoff <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-24 06:23+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-08 04:49+0000\n"
+"X-Generator: Launchpad (build 14640)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -331,14 +331,18 @@ msgid "About Mixxx"
 msgstr "Über Mixxx"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -346,23 +350,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Danksagung</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -744,7 +731,7 @@ msgstr "Crossfader-Kurve"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr "Langsames ausblenden"
+msgstr "Langsames Ausblenden"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
@@ -2660,7 +2647,7 @@ msgstr "&Vinyl-Steuerung 2 aktivieren"
 
 #: MixxxApp#48
 msgid "Ctrl+U"
-msgstr "Ctrl+U"
+msgstr "Strg+U"
 
 #: MixxxApp#49
 msgctxt "MixxxApp#49"
@@ -2983,10 +2970,30 @@ msgstr ""
 "Hardware-Einstellungen aus."
 
 #: MixxxApp#105
+msgid "Mixxx %1 Development Team"
+msgstr "Mixxx %1 Entwicklerteam"
+
+#: MixxxApp#106
+msgid "With contributions from:"
+msgstr "Mit Beiträgen von:"
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr "Und besonderen Dank an:"
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr "Frühere Entwickler"
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr "Frühere Mitwirkende"
+
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Beenden bestätigen"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Ein Deck spielt derzeit. Mixxx beenden?"
 
@@ -3007,7 +3014,7 @@ msgstr ""
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "Exportiere eine m3u8 Wiedergabeliste stattdessen!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
@@ -3630,51 +3637,529 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr "Spalten zeigen oder verbergen."
 
+#~ msgid "Permission Denied"
+#~ msgstr "Zugriff verweigert"
+
+#~ msgctxt "DlgPrefControls#4"
+#~ msgid "Information"
+#~ msgstr "Information"
+
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kHz"
+
+#~ msgctxt "DlgPrefRecordDlg#4"
+#~ msgid "Encoding"
+#~ msgstr "Kodierung"
+
+#~ msgctxt "DlgPrefRecordDlg#9"
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgctxt "DlgPrefRecordDlg#11"
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
+#~ "line for testing purposes!</span></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Dieser Stream ist "
+#~ "nur zu Testzwecken online!</span></p></body></html>"
+
+#~ msgid "Description"
+#~ msgstr "Beschreibung"
+
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+#~ "ubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Feh"
+#~ "lerbehebung</a>"
+
+#~ msgid "150"
+#~ msgstr "150"
+
+#~ msgid "Vinyl Configuration"
+#~ msgstr "Vinyl Konfiguration"
+
+#~ msgid "1 (Off)"
+#~ msgstr "1 (Aus)"
+
+#~ msgid "Enable Needle Skip Prevention"
+#~ msgstr "Needle Skip Prävention aktivieren"
+
+#~ msgid "Scratch Mode"
+#~ msgstr "Scratch Modus"
+
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
+
+#~ msgid "seconds"
+#~ msgstr "Sekunden"
+
+#~ msgid "Absolute Mode"
+#~ msgstr "Absoluter Modus"
+
+#~ msgid "Relative Mode"
+#~ msgstr "Relativer Modus"
+
+#~ msgid "Powered by xwax"
+#~ msgstr "Powered by xwax"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx kann den Lame MP3 Encoder nicht finden oder nicht laden. "
+#~ "<p>Bitte libmp3lame installieren (auch bekannt als Lame) und überprüfen ob "
+#~ "/usr/lib/libmp3lame.so auf diesem System existiert</html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx kann den Lame MP3 Encoder nicht finden oder nicht laden. "
+#~ "<p>Bitte lame_enc.dll in das Installationsverzeichnis von Mixxx kopieren "
+#~ "</html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx kann den Lame MP3 Encoder nicht finden oder nicht laden. "
+#~ "<p>Bitte libmp3lame installieren (auch bekannt als Lame) und überprüfen ob "
+#~ "/usr/local/lib/libmp3lame.dylib auf diesem System existiert</html>"
+
+#~ msgid "Would you like to load your iTunes library?"
+#~ msgstr "Wollen Sie Ihre iTunes Bibliothek laden?"
+
+#~ msgctxt "MidiStatusDelegate#1"
+#~ msgid "Unknown"
+#~ msgstr "Unbekannt"
+
+#~ msgid "&Community Support..."
+#~ msgstr "&Community Unterstützung..."
+
+#~ msgid "&About..."
+#~ msgstr "&Über..."
+
+#~ msgid ""
+#~ "The file %1 already exists. Would you like to overwrite it?\n"
+#~ "Selecting \"No\" will abort the recording."
+#~ msgstr ""
+#~ "Die Datei %1 existiert bereits. Möchten Sie diese Datei überschreiben?\n"
+#~ "\"Nein\" beendet die Aufnahme."
+
+#~ msgctxt "MixxxLibraryFeature#2"
+#~ msgid "Library"
+#~ msgstr "Bibliothek"
+
+#~ msgctxt "PlaylistFeature#2"
+#~ msgid "Remove"
+#~ msgstr "Entfernen"
+
+#~ msgctxt "RhythmboxPlaylistModel#1"
+#~ msgid "Artist"
+#~ msgstr "Interpret"
+
+#~ msgid "Would you like to load your Rhythmbox library?"
+#~ msgstr "Wollen Sie Ihre Rhythmbox Bibliothek laden?"
+
+#~ msgctxt "RhythmboxPlaylistModel#4"
+#~ msgid "Year"
+#~ msgstr "Jahr"
+
+#~ msgctxt "RhythmboxPlaylistModel#3"
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgctxt "RhythmboxTrackModel#7"
+#~ msgid "Duration"
+#~ msgstr "Dauer"
+
+#~ msgctxt "RhythmboxTrackModel#1"
+#~ msgid "Artist"
+#~ msgstr "Interpret"
+
+#~ msgctxt "RhythmboxPlaylistModel#8"
+#~ msgid "Unknown"
+#~ msgstr "Unbekannt"
+
+#~ msgctxt "RhythmboxPlaylistModel#7"
+#~ msgid "Duration"
+#~ msgstr "Dauer"
+
+#~ msgctxt "RhythmboxPlaylistModel#6"
+#~ msgid "Location"
+#~ msgstr "Ort"
+
+#~ msgctxt "RhythmboxTrackModel#3"
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgctxt "RhythmboxTrackModel#6"
+#~ msgid "Location"
+#~ msgstr "Ort"
+
+#~ msgid "OK"
+#~ msgstr "OK"
+
+#~ msgctxt "Ui#10"
+#~ msgid "Preferences"
+#~ msgstr "Einstellungen"
 
 #~ msgid "All Songs"
 #~ msgstr "Alle Titel"
 
+#~ msgid "Missing Songs"
+#~ msgstr "Fehlende Titel"
+
+#~ msgid "You don't have permission to view this folder."
+#~ msgstr "Sie haben keine Berechtigung diesen Ordner zu öffnen."
+
+#~ msgid "Vinyl Type"
+#~ msgstr "Vinyl Typ"
+
+#~ msgid "Lead-in time"
+#~ msgstr "Lead-In (Vorlaufzeit)"
+
+#~ msgid "Signal Quality"
+#~ msgstr "Signal Qualität"
+
+#~ msgid "Load Rhythmbox Library?"
+#~ msgstr "Die Rhythmbox Bibliothek laden?"
+
+#~ msgctxt "RhythmboxPlaylistModel#2"
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgctxt "RhythmboxTrackModel#2"
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Danksagung</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+
+#~ msgid "Crate Creation Failed"
+#~ msgstr "Erstellung der Kiste fehlgeschlagen"
+
+#~ msgctxt "DlgPrefRecord#1"
+#~ msgid "Save Recording As..."
+#~ msgstr "Aufnahme speichern als..."
+
+#~ msgctxt "DlgPrefRecordDlg#3"
+#~ msgid "Browse..."
+#~ msgstr "Durchsuchen..."
+
+#~ msgid "Turntable Preamp"
+#~ msgstr "Plattenspieler Vorverstärker"
+
 #~ msgid "Recently Added"
 #~ msgstr "Zuletzt hinzugefügt"
 
-#~ msgctxt "ParserM3u#2"
-#~ msgid "Could not create file"
-#~ msgstr "Datei konnte nicht erstellt werden"
+#~ msgid "Load iTunes Library?"
+#~ msgstr "iTunes Bibliothek laden?"
 
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Wiedergabeliste exportieren"
+#~ msgctxt "MixxxApp#95"
+#~ msgid "Save Recording As..."
+#~ msgstr "Aufnahme speichern als..."
 
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U Wiedergabeliste (*.m3u);;PLS Wiedergabeliste (*.pls)"
+#~ msgid "Mixxx Recording"
+#~ msgstr "Mixxx-Aufnahme"
 
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Wiedergabelisten (*.m3u *.pls)"
+#~ msgctxt "RhythmboxPlaylistModel#5"
+#~ msgid "Genre"
+#~ msgstr "Musikrichtung"
 
-#~ msgctxt "PlaylistFeature#18"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U Wiedergabeliste (*.m3u);;PLS Wiedergabeliste (*.pls)"
+#~ msgctxt "RhythmboxTrackModel#5"
+#~ msgid "Genre"
+#~ msgstr "Musikrichtung"
 
-#~ msgctxt "PlaylistFeature#17"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Wiedergabelisten (*.m3u *.pls)"
+#~ msgid "Control Mode"
+#~ msgstr "Kontrollmodus"
 
-#~ msgctxt "PlaylistFeature#7"
-#~ msgid "Export Playlist"
-#~ msgstr "Wiedergabeliste exportieren"
+#~ msgid "BPM Scheme:"
+#~ msgstr "BPM-Schema"
 
-#~ msgctxt "MixxxApp#48"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Live-Übertragung aktivieren"
+#~ msgid "BPM Range:"
+#~ msgstr "BPM-Bereich"
 
-#~ msgctxt "MixxxApp#76"
+#~ msgid "Next >>"
+#~ msgstr "Weiter >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Zurück"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM-Erkennung"
+
+#~ msgctxt "DlgPrefPlaylistDlg#14"
+#~ msgid "Library"
+#~ msgstr "Bibliothek"
+
+#~ msgctxt "DlgPrefPlaylistDlg#12"
+#~ msgid "Browse..."
+#~ msgstr "Durchsuchen..."
+
+#~ msgctxt "DlgPrefRecordDlg#2"
+#~ msgid "File"
+#~ msgstr "Datei"
+
+#~ msgid "Apply"
+#~ msgstr "Anwenden"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Interpret:"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Interpret:"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Gesamten Titel analysieren"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Gesamten Titel analysieren"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Titel-Information (Zum Vergrößern anklicken)"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Titel-Information (Zum Vergrößern anklicken)"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Titel-Editor"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Titel-Editor"
+
+#~ msgctxt "Ui#11"
+#~ msgid "Crossfader"
+#~ msgstr "Crossfader"
+
+#~ msgctxt "ScriptStudio#2"
+#~ msgid "File"
+#~ msgstr "Datei"
+
+#~ msgctxt "MixxxApp#72"
 #~ msgid "Preferences"
 #~ msgstr "Einstellungen"
 
-#~ msgctxt "DlgPrefNoVinylDlg#21"
-#~ msgid "Apply"
-#~ msgstr "Anwenden"
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "BPM-Editor (Zum Vergrößern anklicken)"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Kommentare:"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Dateiname:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgid "Miscellaneous"
+#~ msgstr "Diverses"
+
+#~ msgid "Mixxx Error"
+#~ msgstr "Mixxx Fehler"
+
+#~ msgid ""
+#~ "FinalScratch records currently only work properly with a 44100 Hz sample "
+#~ "rate.\n"
+#~ "The sample rate has been reset to 44100 Hz."
+#~ msgstr ""
+#~ "FinalScratch Vinyls arbeiteten derzeit nur zuverlässig mit einer Samplerate "
+#~ "von 44100 Hz.\n"
+#~ "Die Samplerate wurde auf 44100 Hz zurückgesetzt."
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Dateiname:"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Kommentare:"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgid "Low EQ knob for Channel 2"
+#~ msgstr "Low EQ-Knopf für Kanal 2"
+
+#~ msgid "Mid EQ knob for Channel 2"
+#~ msgstr "Mid EQ-Knopf für Kanal 2"
+
+#~ msgid "High EQ knob for Channel 2"
+#~ msgstr "High EQ-Knopf für Kanal 2"
+
+#~ msgid "Gain knob for Channel 2"
+#~ msgstr "Gain-Knopf für Kanal 2"
+
+#~ msgid "Channel 2 volume fader"
+#~ msgstr "Kanal 2 Lautstärke-Fader"
+
+#~ msgid ""
+#~ "No input device(s) selected.\n"
+#~ "Please select your soundcard(s) in the sound hardware preferences."
+#~ msgstr ""
+#~ "Kein(e) Eingabegerät(e) ausgewählt.\n"
+#~ "Bitte wählen Sie die Soundkarte(n) in den Sound Hardware-Einstellungen."
+
+#~ msgid "&Close"
+#~ msgstr "&Schließen"
+
+#~ msgctxt "MixxxApp#44"
+#~ msgid "Enable live broadcasting"
+#~ msgstr "Liveübertragung aktivieren"
+
+#~ msgid "Enable &Vinyl Control"
+#~ msgstr "&Vinyl-Steuerung aktivieren"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
+#~ "pane.</span></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound "
+#~ "Hardware-Einstellungen aus.</span></p></body></html>"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Typ:"
+
+#~ msgid "to"
+#~ msgstr "bis"
+
+#~ msgid "&Go"
+#~ msgstr "&Start"
+
+#~ msgid "Play Time:"
+#~ msgstr "Abspieldauer:"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "&Drücken um die Geschwindigkeit einzustellen"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Dateityp"
+
+#~ msgid "Mixxx has detected th"
+#~ msgstr "Mixxx hat th erkannt"

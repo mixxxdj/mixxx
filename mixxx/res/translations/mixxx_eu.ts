@@ -5,16 +5,14 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
     </context>
     <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jotakoak</translation>
         </message>
         <message>
             <source>Artist</source>
@@ -70,7 +68,7 @@
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Gehitutako data</translation>
+            <translation>Gehitze-data:</translation>
         </message>
         <message>
             <source>#</source>
@@ -78,8 +76,7 @@
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tonalitatea</translation>
         </message>
     </context>
     <context>
@@ -93,8 +90,7 @@
         <name>BrowseFeature</name>
         <message>
             <source>Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esteka azkarrak</translation>
         </message>
         <message>
             <source>Devices</source>
@@ -102,13 +98,11 @@
         </message>
         <message>
             <source>Removable Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gailu aldagarriak</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx liburutegia</translation>
         </message>
         <message>
             <source>Home</source>
@@ -175,28 +169,23 @@
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tonalitatea</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mota</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bit-maiztasuna</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kokapena</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx liburutegia</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -205,13 +194,11 @@
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontuz: Honek behin betiko ezabatuko ditu ondorengo fitxategiak:</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seguru zaude fitxategi hauek zure ordenagailutik ezabatu nahi dituzula?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
@@ -220,61 +207,50 @@
         </message>
         <message>
             <source>Could not update file metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan dira fitxategiaren metadatuak eguneratu.</translation>
         </message>
     </context>
     <context>
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxa Berria</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezabatu</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrizendatu</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Blokeatu</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inportatu erreprodukzio-zerrenda</translation>
         </message>
         <message>
             <source>Crates</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxak</translation>
         </message>
         <message>
             <source>Import Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inportatu kaxa</translation>
         </message>
         <message>
             <source>Export Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esportatu kaxa</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desblokeatu</translation>
         </message>
         <message>
             <source>Crate name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxaren izena:</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
@@ -283,23 +259,19 @@
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrizendatu kaxa</translation>
         </message>
         <message>
             <source>New crate name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxaren Izan Berria:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akatsa Kaxa Berrizendatzean</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-zerrenda fitxategiak (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
@@ -308,64 +280,59 @@
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxa batek ezin du izen hutsik izqn</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akatsa Kaxa Sortzerakoan</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Izen hori duen beste kaxa bat bada</translation>
         </message>
     </context>
     <context>
         <name>DlgAboutDlg</name>
         <message>
             <source>About Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx-i buruz</translation>
+        </message>
+        <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Webgune ofiziala&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
         <name>DlgAutoDJ</name>
         <message>
             <source>Disable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezgaitu Auto DJ</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gaitu Auto DJ</translation>
         </message>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kudeatu</translation>
         </message>
         <message>
             <source>Shuffle playlist</source>
@@ -382,13 +349,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgBpmSchemeDlg</name>
         <message>
             <source>BPM Scheme</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM Eskema</translation>
         </message>
         <message>
             <source>Scheme Name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eskemaren izena:</translation>
         </message>
         <message>
             <source>BPM Range</source>
@@ -397,26 +362,22 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Max</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Max</translation>
         </message>
         <message>
             <source>Min</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Min</translation>
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanta osoa aztertu</translation>
         </message>
     </context>
     <context>
         <name>DlgMidiLearning</name>
         <message>
             <source>Skip</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jauzi</translation>
         </message>
         <message>
             <source>Successfully mapped to: </source>
@@ -425,8 +386,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Next</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hurrengoa</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
@@ -445,8 +405,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Begin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hasi</translation>
         </message>
         <message>
             <source>Please tweak the control for:</source>
@@ -455,18 +414,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx Kontrola</translation>
         </message>
         <message>
             <source>Previous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aurrekoa</translation>
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sakatu space ekin edo salto egiteko</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
@@ -480,13 +436,16 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Finito!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Finito!</translation>
         </message>
     </context>
     <context>
@@ -501,28 +460,23 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefBPMDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM detekzioaren ezaugarriak</translation>
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPMen detekzioa</translation>
         </message>
         <message>
             <source>Enable BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gaitu BPM Detekzioa</translation>
         </message>
         <message>
             <source>Detect Song BPM on Import</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Detektatu BPMak inportatzerakoan</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPMak idatzi ID3 etiketara</translation>
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
@@ -536,41 +490,34 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Schemes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM Eskemak</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Editatu</translation>
         </message>
         <message>
             <source>Delete</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezabatu</translation>
         </message>
         <message>
             <source>Default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lehenetsia</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefBpm</name>
         <message>
             <source>Error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akatsa</translation>
         </message>
         <message>
             <source>Cannot open file %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da %1 fitxategia ireki</translation>
         </message>
     </context>
     <context>
@@ -582,58 +529,47 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>8% (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%8 (Technics SL1210)</translation>
         </message>
         <message>
             <source>10%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%10</translation>
         </message>
         <message>
             <source>20%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%20</translation>
         </message>
         <message>
             <source>30%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%30</translation>
         </message>
         <message>
             <source>40%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%40</translation>
         </message>
         <message>
             <source>50%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%50</translation>
         </message>
         <message>
             <source>60%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%60</translation>
         </message>
         <message>
             <source>70%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%70</translation>
         </message>
         <message>
             <source>80%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%80</translation>
         </message>
         <message>
             <source>90%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%90</translation>
         </message>
         <message>
             <source>Up increases speed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gora-k abiadurahanditzen du</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
@@ -642,8 +578,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Informazioa</translation>
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
@@ -655,43 +590,35 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefControlsDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Itxura</translation>
         </message>
         <message>
             <source>Scheme</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eskema</translation>
         </message>
         <message>
             <source>Waveform display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uhin-forma ikuspegia</translation>
         </message>
         <message>
             <source>Position display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Posizio ikuspegia</translation>
         </message>
         <message>
             <source>Tool tips</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tresnen gomendioak</translation>
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktibatu</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desaktibatu</translation>
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
@@ -725,13 +652,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Left click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezker klik</translation>
         </message>
         <message>
             <source>Right click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eskuin klik</translation>
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when left clicking</source>
@@ -740,8 +665,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%</translation>
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
@@ -778,23 +702,19 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefCrossfaderDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Crossfader Curve</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader-aren kurba</translation>
         </message>
         <message>
             <source>Slow fade</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fade motela</translation>
         </message>
         <message>
             <source>Fast cut</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mozketa azkarra</translation>
         </message>
         <message>
             <source>Constant power</source>
@@ -803,41 +723,34 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixing</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nahasketa</translation>
         </message>
         <message>
             <source>Scratching</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Scratching</translation>
         </message>
         <message>
             <source>Linear</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lineala</translation>
         </message>
         <message>
             <source>Logarithmic</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Logaritmikoa</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrezarri</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefEQDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Static EQs (for slower CPUs)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ Estatikoak ( CPU motelentzat)</translation>
         </message>
         <message>
             <source>High Shelf EQ</source>
@@ -846,23 +759,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>testuEtiketa1</translation>
         </message>
         <message>
             <source>16 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>16 Hz</translation>
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>20.05 kHz</translation>
         </message>
         <message>
             <source>Low Shelf EQ</source>
@@ -871,21 +780,18 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>testuEtiketa2</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrezarri</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefMidiBindings</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bat ere ez</translation>
         </message>
         <message>
             <source>Apply MIDI device settings?</source>
@@ -916,18 +822,15 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Preset Files (*.midi.xml)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Preset Fitxategiak (*.midi.xml)</translation>
         </message>
         <message>
             <source>Select Control Group</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu Kontrol Taldea</translation>
         </message>
         <message>
             <source>Select Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu Kontrola</translation>
         </message>
         <message>
             <source>Clear Input Bindings</source>
@@ -954,8 +857,7 @@ This will overwrite your existing MIDI mapping.</source>
         <name>DlgPrefMidiBindingsDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Elkarrizketa</translation>
         </message>
         <message>
             <source>Your Device Name</source>
@@ -964,38 +866,31 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Load Preset:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kargatu Preset-a:</translation>
         </message>
         <message>
             <source>Export</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esportatu</translation>
         </message>
         <message>
             <source>Output:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irteera:</translation>
         </message>
         <message>
             <source>Enabled</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gaitua</translation>
         </message>
         <message>
             <source>Controls</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrolak</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezabatu</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
@@ -1004,36 +899,30 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Clear All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Garbitu dena</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</translation>
         </message>
         <message>
             <source>MIDI Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI Sarrera</translation>
         </message>
         <message>
             <source>Outputs</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irteerak</translation>
         </message>
         <message>
             <source>MIDI Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI Irteera</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefNoMidiDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>No MIDI devices available</source>
@@ -1045,13 +934,11 @@ This will overwrite your existing MIDI mapping.</source>
         <name>DlgPrefNoVinylDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sarrera</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1059,13 +946,15 @@ This will overwrite your existing MIDI mapping.</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</translation>
         </message>
         <message>
             <source>Turntable Preamp</source>
@@ -1074,18 +963,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1 (Off)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1 (Off)</translation>
         </message>
         <message>
             <source>150</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>150</translation>
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Biniloen konfigurazioa</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
@@ -1104,8 +990,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>segundoak</translation>
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
@@ -1114,51 +999,42 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol Modua</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Modu Absolutua</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mofu Erlatiboa</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Orratzaren Salto-ekiditzea Gaitu</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seinale kalitatea</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Xwax-ek indartua</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt; Mixxx-en bertsio honek ez du binilo-kontrola onartzenl.&lt;/b&gt; &lt;br&gt; Jo mesedez&lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org-era&lt;/a&gt; informazio gehiagorako.</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu musika liburutegiaren direktorioa</translation>
         </message>
         <message>
             <source>Multiple iPods Detected</source>
@@ -1203,13 +1079,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylistDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>Audio File Formats</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Audio Fitxategi Formatuak</translation>
         </message>
         <message>
             <source>Additional Format Plugins:</source>
@@ -1218,23 +1092,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</translation>
         </message>
         <message>
             <source>Loaded Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kargatutako Plugin-ak</translation>
         </message>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bat ere ez</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bestelakoak</translation>
         </message>
         <message>
             <source>Synchronize ID3 tags on track modifications</source>
@@ -1243,8 +1113,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Rescan library on start-up</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hasterakoan, liburutegia berreskaneatu</translation>
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
@@ -1253,43 +1122,35 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>iPod</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod</translation>
         </message>
         <message>
             <source>iPod mountpoint</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod mountpoint</translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bilatu...</translation>
         </message>
         <message>
             <source>Detect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Detektatu</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegia</translation>
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Musika Direktorioa</translation>
         </message>
         <message>
             <source>Built-in</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Integratuta</translation>
         </message>
         <message>
             <source>Available Online...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Online eskuragarri</translation>
         </message>
         <message>
             <source>Bundled Songs</source>
@@ -1307,66 +1168,54 @@ playback and outbound link statistics</source>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>kb/s</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefRecordDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kodeketa</translation>
         </message>
         <message>
             <source>Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kalitatea</translation>
         </message>
         <message>
             <source>High</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Agudoa</translation>
         </message>
         <message>
             <source>Low</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabea</translation>
         </message>
         <message>
             <source>Tags</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Etiketak</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Titulua</translation>
         </message>
         <message>
             <source>Author</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Egilea</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Albuma</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bestelakoak</translation>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>CUE Fitxategia sortu</translation>
         </message>
         <message>
             <source>File Splitting</source>
@@ -1383,8 +1232,7 @@ playback and outbound link statistics</source>
         <name>DlgPrefReplayGainDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM detekzioaren ezarpenak</translation>
         </message>
         <message>
             <source>ReplayGain Normalization</source>
@@ -1428,21 +1276,18 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>dB</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>dB</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrezarri</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefShoutcastDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -1451,38 +1296,31 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Server connection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Konekzioa Zerbitzariarekin</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mota</translation>
         </message>
         <message>
             <source>Icecast 2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Icecast 2</translation>
         </message>
         <message>
             <source>Shoutcast</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Shoutcast</translation>
         </message>
         <message>
             <source>Icecast 1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Icecast 1</translation>
         </message>
         <message>
             <source>Mount</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Muntatu</translation>
         </message>
         <message>
             <source>/mixxx.ogg</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>/mixxx.ogg</translation>
         </message>
         <message>
             <source>Host</source>
@@ -1491,8 +1329,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>192.168.123.8</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192.168.123.8</translation>
         </message>
         <message>
             <source>Port</source>
@@ -1501,28 +1338,23 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>8000</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>8000</translation>
         </message>
         <message>
             <source>Login</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Saioa hasi</translation>
         </message>
         <message>
             <source>source</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iturburua</translation>
         </message>
         <message>
             <source>Password</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pasahitza</translation>
         </message>
         <message>
             <source>test1234</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>test1234</translation>
         </message>
         <message>
             <source>Stream settings</source>
@@ -1531,8 +1363,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Stream name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stream-aren izena</translation>
         </message>
         <message>
             <source>Mixxx Icecast Testing</source>
@@ -1541,18 +1372,15 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Website</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Webgunea</translation>
         </message>
         <message>
             <source>http://www.mixxx.org</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.mixxx.org</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deskribapena</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1560,143 +1388,119 @@ playback and outbound link statistics</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;&quot;&gt;This stream is on line for testing purposes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;&quot;&gt;This stream is on line for testing purposes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Generoa</translation>
         </message>
         <message>
             <source>Live mix</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zuzeneo nahasketa</translation>
         </message>
         <message>
             <source>Public stream</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stream publikoa</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kodeketa</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bit-maiztasuna</translation>
         </message>
         <message>
             <source>320 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>320 kbps</translation>
         </message>
         <message>
             <source>256 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>256 kbps</translation>
         </message>
         <message>
             <source>224 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>224 kbps</translation>
         </message>
         <message>
             <source>192 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192 kbps</translation>
         </message>
         <message>
             <source>160 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>160 kbps</translation>
         </message>
         <message>
             <source>128 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>128 kbps</translation>
         </message>
         <message>
             <source>112 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>112 kbps</translation>
         </message>
         <message>
             <source>96 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>96 kbps</translation>
         </message>
         <message>
             <source>80 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80 kbps</translation>
         </message>
         <message>
             <source>64 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>64 kbps</translation>
         </message>
         <message>
             <source>48 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>48 kbps</translation>
         </message>
         <message>
             <source>Format</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Formatua</translation>
         </message>
         <message>
             <source>Ogg Vorbis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ogg Vorbis</translation>
         </message>
         <message>
             <source>MP3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3</translation>
         </message>
         <message>
             <source>Channels</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanalak</translation>
         </message>
         <message>
             <source>Stereo</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Estereo</translation>
         </message>
         <message>
             <source>Custom metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Metadatu pertsonalizatuak</translation>
         </message>
         <message>
             <source>Enable custom metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Metadatu pertsonalizatuak gaitu</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artista</translation>
         </message>
         <message>
             <source>%mainartist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%mainartist</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Titulua</translation>
         </message>
         <message>
             <source>%maintitle</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%maintitle</translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
@@ -1708,13 +1512,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefSound</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bat ere ez</translation>
         </message>
         <message>
             <source>%1 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 Hz</translation>
         </message>
         <message>
             <source>a device</source>
@@ -1723,13 +1525,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>An unknown error occurred</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errore ezezaguna gertatu da</translation>
         </message>
         <message>
             <source>sound device &quot;%1&quot;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>sound device &quot;%1&quot;</translation>
         </message>
         <message>
             <source>Two outputs cannot share channels on %1</source>
@@ -1744,13 +1544,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>%1 ms</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 ms</translation>
         </message>
         <message>
             <source>Configuration error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Konfigurazio-errorea</translation>
         </message>
     </context>
     <context>
@@ -1762,13 +1560,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Sample Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lagintze-maiztasuna</translation>
         </message>
         <message>
             <source>Latency Tips</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Latentzia gomendioak</translation>
         </message>
         <message>
             <source>&lt;ul&gt;
@@ -1780,13 +1576,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irteera</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sarrera</translation>
         </message>
         <message>
             <source>Query Devices</source>
@@ -1795,31 +1589,26 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lehenetsietara berrezarri</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezarri</translation>
         </message>
         <message>
             <source>Latency</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Latentzia</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefSoundItem</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bat ere ez</translation>
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 kanala</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
@@ -1828,26 +1617,22 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Form</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form</translation>
         </message>
         <message>
             <source>Type (#)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mota (#)</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefVinylDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sarrera</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1855,13 +1640,15 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</translation>
         </message>
         <message>
             <source>Turntable Preamp</source>
@@ -1870,18 +1657,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1 (Off)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1 (Off)</translation>
         </message>
         <message>
             <source>150</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>150</translation>
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Biniloen konfigurazioa</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
@@ -1900,8 +1684,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezarri</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1910,96 +1693,78 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>segundoak</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol Modua</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Modu Absolutua</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Modu Erlatiboa</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Orratzaren Salto-ekiditzea Gaitu</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seinale kalitatea</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Xwax-ek indartua</translation>
         </message>
     </context>
     <context>
         <name>DlgPreferences</name>
         <message>
             <source>Sound Hardware</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soinu Hardware-a</translation>
         </message>
         <message>
             <source>MIDI Controllers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI kontroladoreak</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegia</translation>
         </message>
         <message>
             <source>Interface</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Interfazea</translation>
         </message>
         <message>
             <source>Equalizers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ekualizadoreak</translation>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader-a</translation>
         </message>
         <message>
             <source>Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabaketa</translation>
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPMen detekzioa</translation>
         </message>
         <message>
             <source>Normalization</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Normalizatu</translation>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Binilo kontrola</translation>
         </message>
         <message>
             <source>Live Broadcasting</source>
@@ -2011,157 +1776,128 @@ p, li { white-space: pre-wrap; }
         <name>DlgPreferencesDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Elkarrizketa</translation>
         </message>
         <message>
             <source>1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1</translation>
         </message>
     </context>
     <context>
         <name>DlgPrepare</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kudeatu</translation>
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berria</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Guztiak</translation>
         </message>
         <message>
             <source>Progress</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aurrerapena</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hautatu Denak</translation>
         </message>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analizatu</translation>
         </message>
         <message>
             <source>Stop Analysis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analisia gelditu</translation>
         </message>
         <message>
             <source>Analyzing %1%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aztertzen %1%</translation>
         </message>
     </context>
     <context>
         <name>DlgRecording</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kudeatu</translation>
         </message>
         <message>
             <source>Status:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Egoera:</translation>
         </message>
         <message>
             <source>Start Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabatzen hasi</translation>
         </message>
         <message>
             <source>Start recording here ...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabaketa hemen hasi...</translation>
         </message>
         <message>
             <source>Stop Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabaketa gelditu</translation>
         </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pistaren editorea</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanta:</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Izenburua:</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artista:</translation>
         </message>
         <message>
             <source>Album:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Albuma:</translation>
         </message>
         <message>
             <source>Date:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Data:</translation>
         </message>
         <message>
             <source>Track #:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pista zbk:</translation>
         </message>
         <message>
             <source>Genre:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Generoa:</translation>
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fitxategi-izena:</translation>
         </message>
         <message>
             <source>Duration:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Iraupena:</translation>
         </message>
         <message>
             <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>3:00</translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fitxategi mota:</translation>
         </message>
         <message>
             <source>77</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Iruzkinak:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -2170,23 +1906,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pistaren informazioa (Klik egin zabaltzeko)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pistaren BPM: </translation>
         </message>
         <message>
             <source>x2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>x2</translation>
         </message>
         <message>
             <source>/2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>/2</translation>
         </message>
         <message>
             <source>Tap to Beat</source>
@@ -2200,76 +1932,62 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pistaren Bpm</translation>
         </message>
         <message>
             <source>Cue Id</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cue Id</translation>
         </message>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Posizioa</translation>
         </message>
         <message>
             <source>Hotcue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue</translation>
         </message>
         <message>
             <source>Label</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Etiketa</translation>
         </message>
         <message>
             <source>Activate Cue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cue Aktibatu</translation>
         </message>
         <message>
             <source>Delete Cue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cue Ezabatu</translation>
         </message>
         <message>
             <source>Track Cuepoints</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pistaren Cue-puntuak</translation>
         </message>
         <message>
             <source>&lt;&lt; &amp;Prev</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;&lt; &amp;Prev</translation>
         </message>
         <message>
             <source>&amp;Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Aplikatu</translation>
         </message>
         <message>
             <source>&amp;Cancel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Ezeztatu</translation>
         </message>
         <message>
             <source>Alt+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alt+O</translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Hurrengoa &gt;&gt;</translation>
         </message>
     </context>
     <context>
         <name>EncoderMp3</name>
         <message>
             <source>Encoder</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kodetzailea</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
@@ -2296,8 +2014,7 @@ p, li { white-space: pre-wrap; }
         <name>EngineRecord</name>
         <message>
             <source>Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabaketa</translation>
         </message>
         <message>
             <source>&lt;html&gt;Could not create audio file for recording!&lt;p&gt;&lt;br&gt;Maybe you do not have enough free disk space or file permissions.&lt;/html&gt;</source>
@@ -2309,8 +2026,7 @@ p, li { white-space: pre-wrap; }
         <name>EngineShoutcast</name>
         <message>
             <source>Mixxx encountered a problem</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx-el arazo bat Dauka</translation>
         </message>
         <message>
             <source>Could not allocate shout_t</source>
@@ -2329,8 +2045,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Lost connection to streaming server</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Streaming zerbitzariarekin lotura galdu da</translation>
         </message>
         <message>
             <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
@@ -2339,8 +2054,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zuzeneko Broadcasting-a</translation>
         </message>
         <message>
             <source>Mixxx has successfully connected to the shoutcast server</source>
@@ -2349,8 +2063,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx could not connect to streaming server</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx ezin da streaming zerbitzariarekin konektatu</translation>
         </message>
         <message>
             <source>Mixxx has successfully disconnected to the shoutcast server</source>
@@ -2362,61 +2075,50 @@ p, li { white-space: pre-wrap; }
         <name>ErrorDialogHandler</name>
         <message>
             <source>Fatal error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errore larria</translation>
         </message>
         <message>
             <source>Critical error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akats larria</translation>
         </message>
         <message>
             <source>Warning</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontuz</translation>
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Informazioa</translation>
         </message>
         <message>
             <source>Question</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Galdera</translation>
         </message>
     </context>
     <context>
         <name>ITunesFeature</name>
         <message>
             <source>iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iTunes</translation>
         </message>
         <message>
             <source>Select your iTunes library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu zure iTunes liburutegia</translation>
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(kargatzen) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lehenetsitako liburutegia erabili</translation>
         </message>
         <message>
             <source>Choose Library...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegia aukeratu</translation>
         </message>
         <message>
             <source>Error Loading iTunes Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akatsa iTunes Liburutegia kargatzerakoan</translation>
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
@@ -2436,8 +2138,7 @@ p, li { white-space: pre-wrap; }
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegi Scanner-a</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
@@ -2446,8 +2147,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Cancel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezeztatu</translation>
         </message>
     </context>
     <context>
@@ -2459,36 +2159,30 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI nota</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI Kanala</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol taldea</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Konteol bala</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deskribapena</translation>
         </message>
     </context>
     <context>
         <name>MidiMapping</name>
         <message>
             <source>MIDI script function not found</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ez da MIDI script funtzioa aurkitu</translation>
         </message>
         <message>
             <source>The MIDI script function '%1' was not found in loaded scripts.</source>
@@ -2517,33 +2211,27 @@ p, li { white-space: pre-wrap; }
         <name>MidiOutputMappingTableModel</name>
         <message>
             <source>Midi Status</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI Egoera</translation>
         </message>
         <message>
             <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI nota</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI Kanala</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol taldea</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol balioa</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deskribapena</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2570,13 +2258,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MIDI script error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI Scropt akatsa</translation>
         </message>
         <message>
             <source>A MIDI control you just used is not working properly.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Oraintxe erabilitako MIDI kontrolak ez dabil era egokian</translation>
         </message>
         <message>
             <source>&lt;html&gt;(The MIDI script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
@@ -2588,21 +2274,18 @@ p, li { white-space: pre-wrap; }
         <name>MidiStatusDelegate</name>
         <message>
             <source>Unknown</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezezaguna</translation>
         </message>
     </context>
     <context>
         <name>MixxxApp</name>
         <message>
             <source>Mixxx </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx </translation>
         </message>
         <message>
             <source>Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx</translation>
         </message>
         <message>
             <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
@@ -2611,23 +2294,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Yes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bai</translation>
         </message>
         <message>
             <source>No</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ez</translation>
         </message>
         <message>
             <source>Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pribatutasun Politika</translation>
         </message>
         <message>
             <source>Mixxx: Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx: Pribatutasun Politika</translation>
         </message>
         <message>
             <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
@@ -2648,8 +2327,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu musika liburutegiaren direktorioa</translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
@@ -2658,8 +2336,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Laguntza&lt;b&gt;Eskuratu&lt;/b&gt; Mixxx wikitik.</translation>
         </message>
         <message>
             <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
@@ -2678,98 +2355,79 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt;atera&lt;/b&gt; Mixxx-etik.</translation>
         </message>
         <message>
             <source>Retry</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berriz saiatu</translation>
         </message>
         <message>
             <source>Reconfigure</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Birkonfiguratu</translation>
         </message>
         <message>
             <source>Help</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Laguntza</translation>
         </message>
         <message>
             <source>Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irten</translation>
         </message>
         <message>
             <source>Continue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jarraitu</translation>
         </message>
         <message>
             <source>&amp;Load Song (Player 1)...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Kargatu Kanta (1 Erreproduktorea)</translation>
         </message>
         <message>
             <source>Ctrl+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+O</translation>
         </message>
         <message>
             <source>&amp;Load Song (Player 2)...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kargatu Kanta (2 Erreproduktorea)</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Shift+O</translation>
         </message>
         <message>
             <source>&amp;Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;irten</translation>
         </message>
         <message>
             <source>Ctrl+Q</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Liburutegia Berreskaneatu</translation>
         </message>
         <message>
             <source>Add &amp;new playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu &amp;Erreprodukzio-Zerrenda berria</translation>
         </message>
         <message>
             <source>Ctrl+N</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+N</translation>
         </message>
         <message>
             <source>Add new &amp;crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu &amp;Kaxa berria</translation>
         </message>
         <message>
             <source>Ctrl+C</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+C</translation>
         </message>
         <message>
             <source>&amp;Import playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Inportatu Erreprodukzio-Zerrenda</translation>
         </message>
         <message>
             <source>Ctrl+I</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+I</translation>
         </message>
         <message>
             <source>&amp;Audio Beat Marks</source>
@@ -2778,43 +2436,35 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>&amp;Full Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Pantaila osoa</translation>
         </message>
         <message>
             <source>Ctrl+F</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>F11</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>F11</translation>
         </message>
         <message>
             <source>&amp;Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Hobespenak</translation>
         </message>
         <message>
             <source>Ctrl+P</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+P</translation>
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Honi buruz</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Komunitatearen Laguntza</translation>
         </message>
         <message>
             <source>&amp;User Manual</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Erabiltzaile Liburua</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
@@ -2828,23 +2478,19 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gaitu &amp;Binilo Kontrola 1</translation>
         </message>
         <message>
             <source>Ctrl+Y</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Y</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gaitu &amp;Binilo Kontrola 2</translation>
         </message>
         <message>
             <source>Ctrl+U</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+U</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -2853,23 +2499,19 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+L</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+L</translation>
         </message>
         <message>
             <source>&amp;Record Mix</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Nahasketa Grabatu</translation>
         </message>
         <message>
             <source>Ctrl+R</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+R</translation>
         </message>
         <message>
             <source>Show Studio</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erakutsi Estudioa</translation>
         </message>
         <message>
             <source>Opens a song in player 1</source>
@@ -2895,52 +2537,47 @@ Opens a song in player 2</source>
         </message>
         <message>
             <source>Quits the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aplikazioa ixten du</translation>
         </message>
         <message>
             <source>Exit
 Quits the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irten
+Aplikazioa ixten du</translation>
         </message>
         <message>
             <source>Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanta Liburutegia berraztertzen du</translation>
         </message>
         <message>
             <source>Rescan library
 Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegia Berraztertu
+Kanta Liburutegia berraztertzen du</translation>
         </message>
         <message>
             <source>Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sortu erreprodukzio-zerrenda berria</translation>
         </message>
         <message>
             <source>New playlist
 Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-Zerrenda berria
+Erreprodukzio-zerrenda berria sortu</translation>
         </message>
         <message>
             <source>Create a new crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxa berria sortu</translation>
         </message>
         <message>
             <source>New crate
 Create a new crate.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxa berria
+Kaxa berria sortu</translation>
         </message>
         <message>
             <source>Import playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inportatu zerrenda</translation>
         </message>
         <message>
             <source>Audio Beat Marks</source>
@@ -2955,8 +2592,7 @@ Mark beats by audio clicks</source>
         </message>
         <message>
             <source>Activate Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Binilo Kontrola Gaitu</translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
@@ -2975,28 +2611,23 @@ Mark beats by audio clicks</source>
         </message>
         <message>
             <source>Start Recording your Mix</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zure Nahasketa Grabatzen Hasi</translation>
         </message>
         <message>
             <source>Record your mix to a file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zure Nahasketa Fitxategi Batean Gorde</translation>
         </message>
         <message>
             <source>Full Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pantaila Osoa</translation>
         </message>
         <message>
             <source>Display Mixxx using the full screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erakutsi Mixxx pantaila osoa erabiliz</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hobespenak</translation>
         </message>
         <message>
             <source>Preferences
@@ -3006,8 +2637,7 @@ Playback and MIDI preferences</source>
         </message>
         <message>
             <source>Support...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Laguntza...</translation>
         </message>
         <message>
             <source>Support
@@ -3017,8 +2647,7 @@ Get help with Mixxx</source>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx-en erabiltzaile liburua irakurri</translation>
         </message>
         <message>
             <source>Support
@@ -3039,8 +2668,7 @@ Send feedback to the Mixxx team.</source>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lagundu aplikazio hau zure hizkuntzara itzultzen</translation>
         </message>
         <message>
             <source>Support
@@ -3050,19 +2678,17 @@ Help translate this application into your language.</source>
         </message>
         <message>
             <source>About the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aplikazioari buruz</translation>
         </message>
         <message>
             <source>About
 About the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Honi Buruz
+Aplikazioari buruz</translation>
         </message>
         <message>
             <source>Shows the macro studio window</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Macro Studio leihoa erakusten du</translation>
         </message>
         <message>
             <source>Show Studio
@@ -3072,48 +2698,39 @@ Makes the macro studio visible</source>
         </message>
         <message>
             <source>&amp;File</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Fitxategia</translation>
         </message>
         <message>
             <source>&amp;Options</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Aukerak</translation>
         </message>
         <message>
             <source>&amp;Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Liburutegia</translation>
         </message>
         <message>
             <source>&amp;View</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Ikusi</translation>
         </message>
         <message>
             <source>&amp;Help</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Laguntza</translation>
         </message>
         <message>
             <source>&amp;Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Macro</translation>
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Binilo Kontrola</translation>
         </message>
         <message>
             <source>Quit...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irten...</translation>
         </message>
         <message>
             <source>Do your really want to quit?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Benetan irten nahi duzu?</translation>
         </message>
         <message>
             <source>Player 1 is currently playing a song.
@@ -3123,8 +2740,7 @@ Are you sure you want to load a new song?</source>
         </message>
         <message>
             <source>Load Song into Player 1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanta kargatu 1 Erreproduktorean</translation>
         </message>
         <message>
             <source>Player 2 is currently playing a song.
@@ -3134,8 +2750,7 @@ Are you sure you want to load a new song?</source>
         </message>
         <message>
             <source>Load Song into Player 2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanta kargatu 2 Erreproduktorean</translation>
         </message>
         <message>
             <source>No input device(s) select.
@@ -3144,9 +2759,28 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation>Mixxx %1 Garapen Taldea</translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation>Ondorengoen laguntzarekin:</translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation>Eta Eskerrik Asko hauei:</translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation>Lehengo Garatzaileak</translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation>Lehengo</translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irtetzea konfirmatu</translation>
         </message>
         <message>
             <source>A deck is currently playing. Exit Mixxx?</source>
@@ -3158,16 +2792,14 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>MixxxLibraryFeature</name>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegia</translation>
         </message>
     </context>
     <context>
         <name>ParserM3u</name>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da Erreprodukzio-Zerrenda Esportatu</translation>
         </message>
         <message>
             <source>File path contains characters, not allowed in m3u playlists.
@@ -3178,89 +2810,74 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <message>
             <source>Export a m3u8 playlist instead!
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esportatu m3u8 erreprodukzio-zerrenda bat horren ordez!
+</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da fitxategia sortu</translation>
         </message>
     </context>
     <context>
         <name>ParserPls</name>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da Erreprodukzio-Zerrenda Esportatu</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da fitxategia sortu</translation>
         </message>
     </context>
     <context>
         <name>PlaylistFeature</name>
         <message>
             <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-zerrenda berria</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ zerrendara gehitu</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezabatu</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrizendatu</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Blokeatu</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inportatu erreprodukzio-zerrenda</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esportatu erreprodukzio-zerrenda</translation>
         </message>
         <message>
             <source>Playlists</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-zerrendak</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desblokeatu</translation>
         </message>
         <message>
             <source>Playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-zerrendaren izena:</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da erreprodukzio-zerrenda sortu</translation>
         </message>
         <message>
             <source>A playlist cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-Zerrenda batek ezin du izen hutsik izan</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
@@ -3269,23 +2886,19 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-zerrenda berrizendatu</translation>
         </message>
         <message>
             <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreproiukzio-Zerrendaren Ien Berria</translation>
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan zaio Erreprodukzi-Zerrendari izena aldatu</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreprodukzio-zerrenda fitxategiak (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
@@ -3302,26 +2915,22 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>PrepareFeature</name>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analizatu</translation>
         </message>
     </context>
     <context>
         <name>QObject</name>
         <message>
             <source>Invalid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Baliogabea</translation>
         </message>
         <message>
             <source>Master</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nagusia</translation>
         </message>
         <message>
             <source>Headphones</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aurikularrak</translation>
         </message>
         <message>
             <source>Deck</source>
@@ -3330,13 +2939,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Binilo kontrola</translation>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofonoa</translation>
         </message>
         <message>
             <source>Passthrough</source>
@@ -3353,29 +2960,25 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>RecordingFeature</name>
         <message>
             <source>Recordings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabazioak</translation>
         </message>
     </context>
     <context>
         <name>RhythmboxFeature</name>
         <message>
             <source>Rhythmbox</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rhythmbox</translation>
         </message>
     </context>
     <context>
         <name>SamplerBank</name>
         <message>
             <source>Save Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sampler Bankua Gorde</translation>
         </message>
         <message>
             <source>Error Saving Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akatsa Sampler Bankua Goretzerakoan</translation>
         </message>
         <message>
             <source>Could not write the sampler bank to '%1'.</source>
@@ -3384,84 +2987,69 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Load Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kargatu Sampler Bankua</translation>
         </message>
         <message>
             <source>Error Reading Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akatsa Sampler Bankua Irakurtzerakoan</translation>
         </message>
         <message>
             <source>Could not open the sampler bank file '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da '%1' Sampler Bankua Ireki</translation>
         </message>
         <message>
             <source>Could not read the sampler bank file '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da '%1' Sampler Bankua Irakurri</translation>
         </message>
     </context>
     <context>
         <name>ScriptStudio</name>
         <message>
             <source>Mixxx Script Studio</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx Script Studio</translation>
         </message>
         <message>
             <source>File</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fitxategia</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Editatu</translation>
         </message>
         <message>
             <source>Run</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exekutatu</translation>
         </message>
         <message>
             <source>Close</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Itxi</translation>
         </message>
         <message>
             <source>Import...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inportatu...</translation>
         </message>
         <message>
             <source>Export...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esportatu...</translation>
         </message>
         <message>
             <source>Delete Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Macro-a ezabatu</translation>
         </message>
         <message>
             <source>New Macro...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Macro berria...</translation>
         </message>
         <message>
             <source>Run Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Macro-aexekutatu</translation>
         </message>
     </context>
     <context>
         <name>TrackCollection</name>
         <message>
             <source>Cannot open database</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin da datu-basea ireki</translation>
         </message>
         <message>
             <source>Unable to establish a database connection.
@@ -3488,18 +3076,15 @@ Click OK to exit.</source>
         <name>TraktorFeature</name>
         <message>
             <source>Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Traktor</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(kargatzen) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Akatsa Traktor Liburutegia Kargatzerakoan</translation>
         </message>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
@@ -3511,23 +3096,19 @@ Click OK to exit.</source>
         <name>Ui</name>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Posizioa</translation>
         </message>
         <message>
             <source>Remaining</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Faltan</translation>
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktibatu</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desaktibatu</translation>
         </message>
         <message>
             <source>Don't load tracks into a playing deck</source>
@@ -3541,18 +3122,15 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>CDJ Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>CDJ amodua</translation>
         </message>
         <message>
             <source>Simple</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sinplea</translation>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx-ek WVGA Pantaila Aurkitu du</translation>
         </message>
         <message>
             <source>Mixxx has detected that your screen has a resolution of </source>
@@ -3566,33 +3144,27 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hobespenak</translation>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader-a</translation>
         </message>
         <message>
             <source>Master volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bolumen nagusia</translation>
         </message>
         <message>
             <source>Master balance</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Balance nagusia</translation>
         </message>
         <message>
             <source>Headphones volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aurikularren bolumena</translation>
         </message>
         <message>
             <source>Headphones mix (pre/main)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aurikularren nahasketa (pre/nagusia)</translation>
         </message>
         <message>
             <source>Cue button for Player %1</source>
@@ -3671,13 +3243,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Low EQ knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabeak EQ knob-a %1 Kanalerako</translation>
         </message>
         <message>
             <source>Loop In button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loop HAsiera botoia %1 Erreproduktorean</translation>
         </message>
         <message>
             <source>Loop Out button for Player %1</source>
@@ -3751,8 +3321,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gain Knob-a %1 Sampler-arentzat</translation>
         </message>
         <message>
             <source>Headphone listen button for Sampler %1</source>
@@ -3816,13 +3385,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hurrengo Ikuspegira aldatu (liburutegia, erreprodukzio-zerrenda...)</translation>
         </message>
         <message>
             <source>Switch to the previous view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aurreko Ikuspegira aldatu (liburutegia, erreprodukzio-zerrenda...)</translation>
         </message>
         <message>
             <source>Scroll to next track in library/playlist</source>
@@ -3851,8 +3418,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Flange Efektuaren intentsitatea kontrolatzen du</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect</source>
@@ -3861,49 +3427,41 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofonoa on/off</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofonoaren bolumena</translation>
         </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>
         <message>
             <source>Search...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bilatu...</translation>
         </message>
     </context>
     <context>
         <name>WTrackTableView</name>
         <message>
             <source>Add to Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu erreprodukzio-zerrendara</translation>
         </message>
         <message>
             <source>Add to Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu Kaxara</translation>
         </message>
         <message>
             <source>Load to Sampler</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sampler-ean Kargatu</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezabatu</translation>
         </message>
         <message>
             <source>Properties...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Propietateak...</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>
@@ -3922,8 +3480,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sampler %1</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
@@ -3935,8 +3492,7 @@ Click OK to exit.</source>
         <name>WTrackTableViewHeader</name>
         <message>
             <source>Show or hide columns.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erakutsi ala ezkutatu Zutabeak</translation>
         </message>
     </context>
 </TS>

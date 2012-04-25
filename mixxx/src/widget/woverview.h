@@ -37,7 +37,7 @@ class WOverview : public WWidget
 {
     Q_OBJECT
 public:
-    WOverview(const char* pGroup, QWidget *parent=NULL);
+    WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
 
@@ -85,6 +85,7 @@ private:
 
 private:
     const char* m_pGroup;
+    ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectThreadMain* m_totalGainControl;
     double m_totalGain;
     ControlObjectThreadMain* m_endOfTrackControl;

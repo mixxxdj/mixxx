@@ -18,9 +18,8 @@ class ControlPotmeter;
 
 class WWaveformViewer : public QWidget {
     Q_OBJECT
-
-public:
-    WWaveformViewer(const char *group, QWidget *parent=0, Qt::WFlags f = 0);
+  public:
+    WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0, Qt::WFlags f = 0);
     virtual ~WWaveformViewer();
 
     const char* getGroup() const { return m_pGroup;}
@@ -62,6 +61,7 @@ private:
 
 private:
     const char* m_pGroup;
+    ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
     ControlObjectThreadMain* m_pZoom;
     ControlObjectThreadMain* m_pScratchEnable;
