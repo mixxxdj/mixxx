@@ -38,8 +38,6 @@
 #include "engine/bpmcontrol.h"
 #include "engine/quantizecontrol.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
-
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
 #endif
@@ -228,19 +226,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
-    //NOTE: (vRince) this control os not related to the audio but need to be
-    //created before any skin is parsed
-    //Waveform control
-    m_pWaveformZoom = new ControlPotmeter(ConfigKey(group, "waveform_zoom"),
-                                          WaveformWidgetRenderer::s_waveformMinZoom,
-                                          WaveformWidgetRenderer::s_waveformMaxZoom);
-    m_pWaveformZoom->set(1.0);
-    m_pWaveformZoom->setStep(1.0);
-    m_pWaveformZoom->setSmallStep(1.0);
-
-    m_pEndOfTrack = new ControlObject(ConfigKey(group,"end_of_track"));
-    m_pEndOfTrack->set(0.);
-
     //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
@@ -281,9 +266,6 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pScaleLinear;
     delete m_pScaleST;
-
-    delete m_pWaveformZoom;
-    delete m_pEndOfTrack;
 
     delete m_pKeylock;
     delete m_pEject;
