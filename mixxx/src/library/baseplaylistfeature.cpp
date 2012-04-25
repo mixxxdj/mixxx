@@ -143,7 +143,6 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     } while (!validNameGiven);
 
     m_playlistDao.renamePlaylist(playlistId, newName);
-    emit(featureUpdated());
 }
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
@@ -195,8 +194,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     int playlistId = m_playlistDao.createPlaylist(name);
 
     if (playlistId != -1) {
-        emit(featureUpdated());
-            emit(showTrackModel(m_pPlaylistTableModel));
+        emit(showTrackModel(m_pPlaylistTableModel));
     }
     else {
         QMessageBox::warning(NULL,
@@ -220,7 +218,6 @@ void BasePlaylistFeature::slotDeletePlaylist() {
         Q_ASSERT(playlistId >= 0);
 
         m_playlistDao.deletePlaylist(playlistId);
-        emit(featureUpdated());
         activate();
     }
 }
@@ -362,7 +359,6 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
             m_playlistDao.addToAutoDJQueue(playlistId, bTop);
         }
     }
-    emit(featureUpdated());
 }
 
 void BasePlaylistFeature::onLazyChildExpandation(const QModelIndex &index){
@@ -392,24 +388,3 @@ void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0,m_playlistTableModel.rowCount());
 }
 
-void BasePlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    if (!m_pPlaylistTableModel) {
-        return;
-    }
-
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-    PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_playlistTableModel.select();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
-
-        if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
-            m_pPlaylistTableModel->setPlaylist(playlistId);
-            // Update selection
-            emit(featureSelect(this, m_lastRightClickedIndex));
-        }
-    }
-}

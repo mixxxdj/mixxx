@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2011-10-07 14:28+0000\n"
 "Last-Translator: RJ Ryan <Unknown>\n"
 "Language-Team: Icelandic <is@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:46+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-08 04:50+0000\n"
+"X-Generator: Launchpad (build 14640)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -329,14 +329,18 @@ msgid "About Mixxx"
 msgstr "Um Mixxx"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -344,23 +348,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -2772,10 +2759,30 @@ msgid ""
 msgstr ""
 
 #: MixxxApp#105
-msgid "Confirm Exit"
+msgid "Mixxx %1 Development Team"
 msgstr ""
 
 #: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
+msgid "Confirm Exit"
+msgstr ""
+
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
@@ -3400,11 +3407,271 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr ""
 
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+
+#~ msgid "Next >>"
+#~ msgstr "Næsta >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Fyrra"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Lag:"
+
+#~ msgid "&Close"
+#~ msgstr "&Loka"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Grandskoða allt lagið"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM skynjun"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Upplýsingar um lag (Smelltu til að útvíkka)"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgid "to"
+#~ msgstr "til"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Grandskoða allt lagið"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Flytjandi:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Heiti:"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Skráarnafn:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Athugasemdir:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Spilunartími:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Skráartegund:"
+
+#~ msgctxt "DlgPrefControls#4"
+#~ msgid "Information"
+#~ msgstr "Upplýsingar"
+
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kílórið"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "BPM skema:"
+
+#~ msgid "BPM Range:"
+#~ msgstr "BPM svið:"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Sýsla með lag"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "Sýsla með BPM (Smelltu til að útvíkka)"
+
+#~ msgid "&Go"
+#~ msgstr "Á&fram"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "Ý&ttu til að setja tempo"
+
+#~ msgid "Miscellaneous"
+#~ msgstr "Ýmislegt"
+
+#~ msgctxt "DlgPrefPlaylistDlg#14"
+#~ msgid "Library"
+#~ msgstr "Safn"
+
+#~ msgctxt "DlgPrefPlaylistDlg#12"
+#~ msgid "Browse..."
+#~ msgstr "Vafra..."
+
+#~ msgctxt "DlgPrefRecordDlg#3"
+#~ msgid "Browse..."
+#~ msgstr "Vafra..."
+
+#~ msgctxt "DlgPrefRecordDlg#2"
+#~ msgid "File"
+#~ msgstr "Skrá"
+
+#~ msgctxt "DlgPrefRecord#1"
+#~ msgid "Save Recording As..."
+#~ msgstr "Vista upptöku sem..."
+
+#~ msgctxt "DlgPrefRecordDlg#9"
+#~ msgid "Title"
+#~ msgstr "Heiti"
+
+#~ msgctxt "DlgPrefRecordDlg#4"
+#~ msgid "Encoding"
+#~ msgstr "Kóðun"
+
+#~ msgctxt "DlgPrefRecordDlg#11"
+#~ msgid "Album"
+#~ msgstr "Plata"
+
+#~ msgid "Description"
+#~ msgstr "Lýsing"
+
+#~ msgid "Mixxx Error"
+#~ msgstr "Mixxx villa"
+
+#~ msgid "Apply"
+#~ msgstr "Nota"
+
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+#~ "ubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Vil"
+#~ "luhjálp</a>"
+
+#~ msgid "150"
+#~ msgstr "150"
+
+#~ msgid "Vinyl Configuration"
+#~ msgstr "Vínilstillingar"
+
+#~ msgid "1 (Off)"
+#~ msgstr "1 (Óvirkur)"
+
+#~ msgid "seconds"
+#~ msgstr "sekúndur"
+
+#~ msgid "Control Mode"
+#~ msgstr "Stjórnunarhamur"
+
+#~ msgid "Vinyl Type"
+#~ msgstr "Víniltegund"
+
+#~ msgid "Enable Needle Skip Prevention"
+#~ msgstr "Virkja nálarhopps-vörn"
+
+#~ msgid "Scratch Mode"
+#~ msgstr "Skankhamur"
+
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
+
+#~ msgid "Signal Quality"
+#~ msgstr "Gæði merkis"
+
+#~ msgid "Powered by xwax"
+#~ msgstr "Knúið af xwax"
+
+#~ msgid "Absolute Mode"
+#~ msgstr "Alger hamur"
+
+#~ msgid "Relative Mode"
+#~ msgstr "Hlutfallshamur"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Lag:"
 
 #~ msgid "Recently Added"
 #~ msgstr "Nýlega bætt við"
 
 #~ msgid "All Songs"
 #~ msgstr "Öll lög"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Skráarnafn:"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Flytjandi:"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Heiti:"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Skráartegund:"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Athugasemdir:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Upplýsingar um lag (Smelltu til að útvíkka)"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"

@@ -395,7 +395,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WOverview* overviewWidget = new WOverview(pSafeChannelStr, m_pParent);
+    WOverview* overviewWidget = new WOverview(pSafeChannelStr, m_pConfig, m_pParent);
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
@@ -426,7 +426,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pParent);
+    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     WaveformWidgetFactory::instance()->setWaveformWidget(viewer);
 

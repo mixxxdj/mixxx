@@ -6,6 +6,7 @@
 #include <QThread>
 
 #include "libraryhashdao.h"
+#include "library/queryutil.h"
 
 LibraryHashDAO::LibraryHashDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -83,18 +84,25 @@ void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_d
     //qDebug() << getDirectoryHash(dirPath);
 }
 
-void LibraryHashDAO::updateDirectoryStatus(QString dirPath, bool deleted, bool verified) {
+void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, bool deleted, bool verified) {
     //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
+    FieldEscaper escaper(m_database);
+    QMutableStringListIterator it(dirPaths);
+    while (it.hasNext()) {
+        it.setValue(escaper.escapeString(it.next()));
+    }
+
     QSqlQuery query(m_database);
-    query.prepare("UPDATE LibraryHashes "
-                  "SET directory_deleted=:directory_deleted, "
-                  "needs_verification=:needs_verification "
-                  "WHERE directory_path=:directory_path");
-    query.bindValue(":directory_deleted", deleted);
-    query.bindValue(":needs_verification", !verified);
-    query.bindValue(":directory_path", dirPath);
+    query.prepare(
+        QString("UPDATE LibraryHashes "
+                "SET directory_deleted=:directory_deleted, "
+                "needs_verification=:needs_verification "
+                "WHERE directory_path IN (%1)")
+        .arg(dirPaths.join(",")));
+    query.bindValue(":directory_deleted", deleted ? 1 : 0);
+    query.bindValue(":needs_verification", !verified ? 1 : 0);
     if (!query.exec()) {
-        qDebug() << "Updating directory status failed: " << query.lastError();
+        LOG_FAILED_QUERY(query) << "Updating directory status failed.";
     }
 }
 

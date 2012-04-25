@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: colobot <engelbertmercelis@gmail.com>\n"
+"POT-Creation-Date: 2011-12-26 09:32+0200\n"
+"PO-Revision-Date: 2012-03-18 10:33+0000\n"
+"Last-Translator: computergeoffrey <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:45+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-03-19 04:37+0000\n"
+"X-Generator: Launchpad (build 14969)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -306,12 +306,14 @@ msgstr "Hernoemen van de krat is mislukt"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Afspeellijstbestanden (*.m3u *.m3u8 *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"M3U-afspeellijst (*.m3u);;M3U8-afspeellijst (*.m3u8);;PLS-afspeellijst "
+"(*.pls)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -330,14 +332,18 @@ msgid "About Mixxx"
 msgstr "Over Mixxx"
 
 #: DlgAboutDlg#2
+msgid "1.x.x"
+msgstr "1.x.x"
+
+#: DlgAboutDlg#3
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
@@ -345,24 +351,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Credits go here (Credits komen "
-"hier)</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#3
-msgid "1.x.x"
-msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -790,7 +778,7 @@ msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
-msgstr ""
+msgstr "1.014 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -1883,7 +1871,7 @@ msgstr "Beheren"
 
 #: DlgPrepare#2
 msgid "New"
-msgstr ""
+msgstr "Nieuw"
 
 #: DlgPrepare#3
 msgid "All"
@@ -2517,7 +2505,7 @@ msgstr "<b>Sluit</b> Mixxx."
 
 #: MixxxApp#16
 msgid "Retry"
-msgstr "Probeer opnieuw"
+msgstr "Opnieuw proberen"
 
 #: MixxxApp#17
 msgid "Reconfigure"
@@ -2621,7 +2609,7 @@ msgstr "&Community Ondersteuning"
 
 #: MixxxApp#42
 msgid "&User Manual"
-msgstr ""
+msgstr "&Gebruikers Handleiding"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
@@ -2650,7 +2638,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#49
 msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Schakel live uitzenden in"
 
 #: MixxxApp#50
 msgid "Ctrl+L"
@@ -2804,7 +2792,7 @@ msgstr "Geef Mixxx weer in volledig scherm"
 #: MixxxApp#77
 msgctxt "MixxxApp#77"
 msgid "Preferences"
-msgstr ""
+msgstr "Voorkeuren"
 
 #: MixxxApp#78
 msgid ""
@@ -2830,7 +2818,7 @@ msgstr ""
 
 #: MixxxApp#81
 msgid "Read the Mixxx user manual."
-msgstr ""
+msgstr "Lees de Mixxx gebruikers handleiding"
 
 #: MixxxApp#82
 msgid ""
@@ -2838,6 +2826,9 @@ msgid ""
 "\n"
 "Read the Mixxx user manual."
 msgstr ""
+"Ondersteuning\n"
+"\n"
+"Lees de Mixxx gebruikers handleiding."
 
 #: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
@@ -2964,10 +2955,30 @@ msgstr ""
 "Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren."
 
 #: MixxxApp#105
+msgid "Mixxx %1 Development Team"
+msgstr ""
+
+#: MixxxApp#106
+msgid "With contributions from:"
+msgstr ""
+
+#: MixxxApp#107
+msgid "And special thanks to:"
+msgstr ""
+
+#: MixxxApp#108
+msgid "Past Developers"
+msgstr ""
+
+#: MixxxApp#109
+msgid "Past Contributors"
+msgstr ""
+
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Afsluiten bevestigen"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Een deck speelt momenteel. Mixxx Afsluiten?"
 
@@ -2984,15 +2995,16 @@ msgstr "Afspeellijst Exporteren Mislukt"
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
 msgstr ""
+"Bestandspad bevat karakters die niet toegelaten zijn in m3u-afspeellijsten.\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "Exporteer in plaats daarvan een m3u8-afspeellijst!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
 msgid "Could not create file"
-msgstr ""
+msgstr "Kon bestand niet maken"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -3034,7 +3046,7 @@ msgstr "Afspeellijst importeren"
 
 #: PlaylistFeature#7
 msgid "Export Playlist"
-msgstr ""
+msgstr "Afspeellijst exporteren"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3076,12 +3088,14 @@ msgstr "Afspeellijst Hernoemen Mislukt"
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Afspeellijstbestanden (*.m3u *.m3u8 *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"M3U-afspeellijst (*.m3u);;M3U8-afspeellijst (*.m3u8);;PLS-afspeellijst "
+"(*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3413,15 +3427,15 @@ msgstr "Reloop / Sluit knop voor Speler %1"
 
 #: Ui#37
 msgid "Setup a loop over 4 beats for Player %1"
-msgstr ""
+msgstr "Maak een lus met 4 beats voor speler %1"
 
 #: Ui#38
 msgid "Halves the current loop's length for Player %1"
-msgstr ""
+msgstr "Halveert de huidige luslengte voor speler %1"
 
 #: Ui#39
 msgid "Doubles the current loop's length for Player %1"
-msgstr ""
+msgstr "Verdubbelt de huidige luslengte voor speler %1"
 
 #: Ui#40
 msgid "Hotcue 1 button for Player %1"
@@ -3457,15 +3471,15 @@ msgstr "Hotcue 4 verwijder knop voor Speler %1"
 
 #: Ui#48
 msgid "Play button for Sampler %1"
-msgstr ""
+msgstr "Afspeelknop voor sampler %1"
 
 #: Ui#49
 msgid "Gain knob for Sampler %1"
-msgstr ""
+msgstr "Gainknop voor sampler %1"
 
 #: Ui#50
 msgid "Headphone listen button for Sampler %1"
-msgstr ""
+msgstr "Luister via hoofdtelefoon-knop voor sampler %1"
 
 #: Ui#51
 msgid "BPM tap button for Sampler %1"
@@ -3505,7 +3519,7 @@ msgstr ""
 
 #: Ui#60
 msgid "Hotcue 3 delete button for Sampler %1"
-msgstr ""
+msgstr "Hotcue 3-verwijderknop voor sampler %1"
 
 #: Ui#61
 msgid "Hotcue 4 delete button for Sampler %1"
@@ -3550,11 +3564,11 @@ msgstr ""
 
 #: Ui#71
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Microfoon aan/uit"
 
 #: Ui#72
 msgid "Microphone volume"
-msgstr ""
+msgstr "Microfoon volume"
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3607,51 +3621,225 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr "Kolommen weergeven of verbergen."
 
-#~ msgctxt "CrateFeature#16"
-#~ msgid "Export Playlist"
-#~ msgstr "Afspeellijst exporteren"
+#~ msgid "Permission Denied"
+#~ msgstr "Toegang geweigerd"
 
-#~ msgctxt "CrateFeature#17"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U Afspeellijst (*.m3u);;PLS Afspeellijst (*.pls)"
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Nummer-editor"
 
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Afspeellijst bestanden (*.m3u *.pls)"
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analyseer gehele nummer"
+
+#~ msgid "to"
+#~ msgstr "tot"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "BPM Schema"
+
+#~ msgid "BPM Range:"
+#~ msgstr "BPM bereik"
+
+#~ msgid "Next >>"
+#~ msgstr "Volgende >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Vorige"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgid "&Close"
+#~ msgstr "&Sluiten"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "BPM  Editor (Klik om te vergroten)"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgid "&Go"
+#~ msgstr "&Ga"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analyseer gehele nummer"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Artiest:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Opmerkingen:"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Nummer informatie (Klik om te vergroten)"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Bestandsnaam:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Speeltijd:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Bestandstype:"
+
+#~ msgid "Mixxx has detected th"
+#~ msgstr "Mixxx heeft th gededecteerd"
+
+#~ msgctxt "DlgPrefControls#4"
+#~ msgid "Information"
+#~ msgstr "Informatie"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+#~ "size:8.25pt; font-weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here (Credits komen "
+#~ "hier)</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Nummer:"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "&Druk om het tempo te versnellen"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM Detectie"
 
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kHz"
 
+#~ msgid "Description"
+#~ msgstr "Beschrijving"
+
 #~ msgid "Recently Added"
 #~ msgstr "Recentelijk toegevoegd"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Nummer:"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Nummer-editor"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Bestandsnaam:"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Artiest:"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Titel:"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Opmerkingen:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Nummer informatie (Klik om te vergroten)"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Bestandstype:"
 
 #~ msgid "All Songs"
 #~ msgstr "Alle Nummers"
 
-#~ msgctxt "ParserM3u#2"
-#~ msgid "Could not create file"
-#~ msgstr "Kon bestand niet maken"
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
 
-#~ msgctxt "PlaylistFeature#7"
-#~ msgid "Export Playlist"
-#~ msgstr "Afspeellijst exporteren"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx is niet in staat de MP3 encoder lame te laden of kan het niet "
+#~ "vinden. <p>Gelieve de libmp3lame (ook wel bekend als lame) installeren en "
+#~ "controleer of /usr/lib/libmp3lame.so bestaat op jouw systeem </html>"
 
-#~ msgctxt "PlaylistFeature#17"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Afspeellijst bestanden (*.m3u *.pls)"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx is niet in staat de MP3 encoder lame te laden of kan het niet "
+#~ "vinden. <p>Gelieve de lame_enc.dll te verplaatsen naar de map waar je Mixxx "
+#~ "hebt geinstalleerd </html>"
 
-#~ msgctxt "PlaylistFeature#18"
-#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-#~ msgstr "M3U Afspeellijst (*.m3u);;PLS Afspeellijst (*.pls)"
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx is niet in staat de MP3 encoder lame te laden of kan het niet "
+#~ "vinden. <p>Gelieve de libmp3lame (ook wel bekend als lame) installeren en "
+#~ "controleer of /usr/local/lib/libmp3lame.dylib bestaat op jouw systeem </html>"
 
-#~ msgctxt "MixxxApp#48"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Schakel live uitzenden in"
+#~ msgid "&Community Support..."
+#~ msgstr "&Community Ondersteuning..."
 
-#~ msgctxt "DlgPrefNoVinylDlg#21"
-#~ msgid "Apply"
-#~ msgstr "Toepassen"
-
-#~ msgctxt "MixxxApp#76"
-#~ msgid "Preferences"
-#~ msgstr "Voorkeuren"
+#~ msgid "&About..."
+#~ msgstr "&Over..."

@@ -65,8 +65,7 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Runut #</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -255,8 +254,7 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Terdapat ralat semasa mecipta krat: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
@@ -264,13 +262,11 @@
         </message>
         <message>
             <source>New crate name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nama krat baru:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Menamakan Semula Krat Gagal</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
@@ -284,34 +280,25 @@
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nama krat tidak boleh kosong.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mencipta Krat Gagal</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Krat dengan nama tadi telah wujid.</translation>
         </message>
     </context>
     <context>
         <name>DlgAboutDlg</name>
         <message>
             <source>About Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Perihal</translation>
         </message>
         <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+            <source>1.x.x</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -321,27 +308,33 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
+            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Laman sesawang Rasmi&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
         <name>DlgAutoDJ</name>
         <message>
             <source>Disable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Matikan Auto DJ</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktifkan Auto DJ</translation>
         </message>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Urus</translation>
         </message>
         <message>
             <source>Shuffle playlist</source>
@@ -350,8 +343,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Add tracks to the queue below...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambah trak ke susunan di bawah...</translation>
         </message>
     </context>
     <context>
@@ -3116,6 +3108,31 @@ Are you sure you want to load a new song?</source>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
             <translation type="unfinished">
             </translation>
         </message>

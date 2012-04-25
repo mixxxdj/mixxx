@@ -36,6 +36,7 @@ class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
 class DlgPrefBpm;
+class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
@@ -87,6 +88,7 @@ private:
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
     DlgPrefBpm* m_wbpm;
+    DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;
     DlgPrefShoutcast* m_wshoutcast;
@@ -114,6 +116,7 @@ private:
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBPMdetectButton;
+    QTreeWidgetItem* m_pAnalysersButton;
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
@@ -123,7 +126,6 @@ private:
     QSize m_pageSizeHint;
 
     ConfigObject<ConfigValue>* config;
-    MixxxApp* m_pMixxx;
     ControllerManager* m_pControllerManager;
 };
 

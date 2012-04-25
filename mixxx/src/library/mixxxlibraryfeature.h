@@ -38,6 +38,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     void refreshLibraryModels();
 
   private:
+    const QString kMissingTitle;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     MissingTableModel* m_pMissingTableModel;
