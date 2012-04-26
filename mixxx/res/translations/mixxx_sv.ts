@@ -212,8 +212,7 @@
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Låda</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -261,13 +260,11 @@
         </message>
         <message>
             <source>New crate name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Namn på ny låda:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omdöpning av låda misslyckades</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
@@ -281,18 +278,15 @@
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>En låda kan inte ha ett tomt namn.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skapande av låda misslyckades</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>En låda med det namnet finns redan.</translation>
         </message>
     </context>
     <context>
@@ -302,18 +296,18 @@
             <translation>Om Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -367,8 +361,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analysera hela låten</translation>
         </message>
     </context>
     <context>
@@ -656,8 +649,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Permanent hastighetsändring (mellan 1 och 8000) vid högerklick</translation>
         </message>
         <message>
             <source>Temporary Pitch/Rate Buttons</source>
@@ -666,13 +658,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when left clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tillfällig hastighetsändring (mellan 1 och 8000) vid vänsterklick</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when right clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tillfällig hastighetsändring (mellan 1 och 8000) vid högerklick</translation>
         </message>
         <message>
             <source>Ramping Pitchbend</source>
@@ -795,8 +785,7 @@ Vill du använda inställningarna och fortsätta?</translation>
         </message>
         <message>
             <source>Overwrite existing mapping?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vill du skriva över existerande kopplingar?</translation>
         </message>
         <message>
             <source>Are you sure you'd like to load the %1 mapping?
@@ -819,8 +808,7 @@ Existerande MIDI-kopplingar kommer skrivas över.</translation>
         </message>
         <message>
             <source>Select Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Välj kontroll</translation>
         </message>
         <message>
             <source>Clear Input Bindings</source>
@@ -833,13 +821,11 @@ Existerande MIDI-kopplingar kommer skrivas över.</translation>
         </message>
         <message>
             <source>Clear Output Bindings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rensa utmatningsbindningar</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all output bindings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Är du säker på att du vill rensa alla utmatningsbindningar?</translation>
         </message>
     </context>
     <context>
@@ -850,8 +836,7 @@ Existerande MIDI-kopplingar kommer skrivas över.</translation>
         </message>
         <message>
             <source>Your Device Name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Namn på enhet</translation>
         </message>
         <message>
             <source>Load Preset:</source>
@@ -933,18 +918,19 @@ Existerande MIDI-kopplingar kommer skrivas över.</translation>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Välj ljudenhet för vinylkontrol i panelen för ljudhårdvara&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Problemlösning (på engelska)&lt;/a&gt;</translation>
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Förförstärkare skivspelare</translation>
         </message>
         <message>
             <source>1 (Off)</source>
@@ -1028,8 +1014,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Multiple iPods Detected</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Flera iPoddar upptäcktes</translation>
         </message>
         <message>
             <source>Mixxx has detected another iPod. 
@@ -1074,8 +1059,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Additional Format Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Extra plugins för format:</translation>
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
@@ -1231,13 +1215,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Calculate ReplayGain normalization for songs which are missing ReplayGain metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beräkna normalisering av uppspelningsförstärkning för låtar som saknar metadata för uppspelningsförstärkning.</translation>
         </message>
         <message>
             <source>Enable Replay Gain Analysis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktivera uppspelningsförstärkningsanalys</translation>
         </message>
         <message>
             <source>On older computers, it may take a few seconds before volume normalization is applied to a new song. You may wish to wait before adjusting the pregain and volume.</source>
@@ -1336,13 +1318,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Stream settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inställningar för strömning</translation>
         </message>
         <message>
             <source>Stream name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Namn på strömning</translation>
         </message>
         <message>
             <source>Mixxx Icecast Testing</source>
@@ -1537,16 +1517,17 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Latency Tips</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Latenstips</translation>
         </message>
         <message>
             <source>&lt;ul&gt;
 &lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;ul&gt;
+&lt;li&gt;Öka latensen om du hör missljud vid uppspelning&lt;/li&gt;
+&lt;li&gt;Minska latensen för att öka Mixxx:s responsivitet&lt;/li&gt;
+&lt;/ul&gt;</translation>
         </message>
         <message>
             <source>Output</source>
@@ -1558,8 +1539,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Query Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fråga enheter</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
@@ -1567,7 +1547,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation>Verktställ</translation>
+            <translation>Verkställ</translation>
         </message>
         <message>
             <source>Latency</source>
@@ -2853,6 +2833,31 @@ Are you sure you want to load a new song?</source>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
             <translation type="unfinished">
             </translation>
         </message>

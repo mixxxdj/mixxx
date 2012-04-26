@@ -33,6 +33,8 @@
 #include "skin/legacyskinparser.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "playermanager.h"
+#include "controlobject.h"
+#include "mixxx.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,

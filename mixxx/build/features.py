@@ -44,11 +44,54 @@ class HSS1394(Feature):
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):
-        sources = SCons.Split("""midi/mididevicehss1394.cpp
-                            midi/hss1394enumerator.cpp
-                            """)
-        return sources
+        return ['controllers/midi/hss1394controller.cpp',
+                'controllers/midi/hss1394enumerator.cpp']
 
+class HID(Feature):
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.7.0'
+    def description(self):
+        return "HID controller support"
+
+    def enabled(self, build):
+        build.flags['hid'] = util.get_flags(build.env, 'hid', 1)
+        if int(build.flags['hid']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('hid', 'Set to 1 to enable HID controller support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if build.platform_is_linux and (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or not conf.CheckHeader('libusb-1.0/libusb.h')):
+            raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
+            return
+        elif build.platform_is_windows:
+            if not conf.CheckLib(['hidapi', 'libhidapi']):
+                raise Exception('Did not find HIDAPI development library, exiting!')
+                return
+
+        build.env.Append(CPPDEFINES = '__HID__')
+
+    def sources(self, build):
+        build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
+        sources = ['controllers/hid/hidcontroller.cpp',
+                   'controllers/hid/hidenumerator.cpp',
+                   'controllers/hid/hidcontrollerpresetfilehandler.cpp']
+
+        if build.platform_is_windows:
+            # This doesn't work. You need to build it in MSVS like all the other dependencies
+            # sources.append("#lib/hidapi-0.7.0/windows/hid.c")
+            return sources
+        elif build.platform_is_linux:
+            build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+            sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
+        elif build.platform_is_osx:
+            build.env.Append(LINKFLAGS='-framework IOKit')
+            build.env.Append(LINKFLAGS='-framework CoreFoundation')
+            sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
+        return sources
 
 class Mad(Feature):
     def description(self):
@@ -137,35 +180,6 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
         return
-
-class MIDIScript(Feature):
-    def description(self):
-        return "MIDI Scripting"
-
-    def enabled(self, build):
-        build.flags['midiscript'] = util.get_flags(build.env, 'midiscript', 0)
-        if int(build.flags['midiscript']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        if build.platform_is_windows:
-            build.env.Append(LIBS = 'QtScript4')
-        elif build.platform_is_linux:
-                build.env.Append(LIBS = 'QtScript')
-        elif build.platform_is_osx:
-                # TODO(XXX) put in logic here to add a -framework QtScript
-                pass
-        build.env.Append(CPPPATH = '$QTDIR/include/QtScript')
-        build.env.Append(CPPDEFINES = '__MIDISCRIPT__')
-
-    def sources(self, build):
-        return ["midi/midiscriptengine.cpp"]
 
 class LADSPA(Feature):
 
@@ -360,6 +374,60 @@ class Tonal(Feature):
                    'tonal/tonalanalyser.cpp',
                    'tonal/ConstantQTransform.cxx',
                    'tonal/ConstantQFolder.cxx']
+        return sources
+
+class Vamp(Feature):
+    INTERNAL_LINK = False
+    INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+    def description(self):
+        return "Vamp Analysers support"
+
+    def enabled(self, build):
+        build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
+        if int(build.flags['vamp']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('vamp', 'Set to 1 to enable vamp analysers', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        # If there is no system vamp-hostdk installed, then we'll directly link
+        # the vamp-hostsdk.
+        if not conf.CheckLib(['vamp-hostsdk']):
+            # For header includes
+            build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
+            self.INTERNAL_LINK = True
+
+        build.env.Append(CPPDEFINES = '__VAMP__')
+
+        # FFTW3 support
+        have_fftw3_h = conf.CheckHeader('fftw3.h')
+        have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
+        if(have_fftw3_h and have_fftw3 and build.platform_is_linux):
+             build.env.Append(CPPDEFINES = 'HAVE_FFTW3')
+             build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
+
+    def sources(self, build):
+        sources = ['vamp/vampanalyser.cpp',
+                   'vamp/vamppluginloader.cpp',
+                   'analyserbeats.cpp',
+                   'analysergainvamp.cpp',
+                   'dlgprefbeats.cpp']
+        if self.INTERNAL_LINK:
+            hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
+            sources.extend(path % hostsdk_src_path for path in
+                           ['%s/PluginBufferingAdapter.cpp',
+                            '%s/PluginChannelAdapter.cpp',
+                            '%s/PluginHostAdapter.cpp',
+                            '%s/PluginInputDomainAdapter.cpp',
+                            '%s/PluginLoader.cpp',
+                            '%s/PluginSummarisingAdapter.cpp',
+                            '%s/PluginWrapper.cpp',
+                            '%s/RealTime.cpp'])
         return sources
 
 class FAAD(Feature):

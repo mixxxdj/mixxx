@@ -179,8 +179,7 @@ void LibraryScanner::run()
     QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
-    if (!upgradefile.exists())
-    {
+    if (!upgradefile.exists()) {
         LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
         connect(&libImport, SIGNAL(progress(QString)),
                 m_pProgress, SLOT(slotUpdate(QString)),
@@ -189,7 +188,6 @@ void LibraryScanner::run()
         libImport.import();
         m_database.commit();
         qDebug("Legacy importer took %d ms", t2.elapsed());
-
     }
 
     //Refresh the name filters in case we loaded new
@@ -259,19 +257,11 @@ void LibraryScanner::run()
     //algorithm starts by marking all tracks and dirs as unverified, so a
     //cancelled scan might leave half of your library as unverified. Don't
     //want to mark those tracks/dirs as deleted in that case) :)
-    if (bScanFinishedCleanly)
-    {
-
-
+    if (bScanFinishedCleanly) {
         qDebug() << "Marking unchanged directories and tracks as verified";
-        QListIterator<QString> it(verifiedDirectories);
-        while (it.hasNext()) {
-            QString dirPath = it.next();
-            m_libraryHashDao.updateDirectoryStatus(dirPath, false, true);
-            m_trackDao.markTracksInDirectoryAsVerified(dirPath);
-            emit(progressHashing(dirPath));
-        }
-        
+        m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
+        m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
+
         qDebug() << "Marking unverified tracks as deleted.";
         m_trackDao.markUnverifiedTracksAsDeleted();
         qDebug() << "Marking unverified directories as deleted.";
@@ -390,42 +380,39 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
     prevHashExists = (prevHash == -1) ? false : true;
 
     //Compare the hashes, and if they don't match, rescan the files in that directory!
-    if (prevHash != newHash)
-    {
+    if (prevHash != newHash) {
         //If we didn't know about this directory before...
         if (!prevHashExists) {
             m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
-        }
-        else //Contents of a known directory have changed.
-             //Just need to update the old hash in the database and then rescan it.
-        {
+        } else {
+            // Contents of a known directory have changed. Just need to update
+            // the old hash in the database and then rescan it.
             qDebug() << "old hash was" << prevHash << "and new hash is" << newHash;
             m_libraryHashDao.updateDirectoryHash(dirPath, newHash, 0);
         }
 
         //Rescan that mofo!
         bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao, tracksToAdd);
-    }
-    else //prevHash == newHash
-    {
+    } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified
+        emit(progressHashing(dirPath));
         verifiedDirectories.append(dirPath);
     }
 
-    //Let us break out of library directory hashing (the actual file scanning
-    //stuff is in TrackCollection::importDirectory)
+    // Let us break out of library directory hashing (the actual file scanning
+    // stuff is in TrackCollection::importDirectory)
     m_libraryScanMutex.lock();
     bool cancel = m_bCancelLibraryScan;
     m_libraryScanMutex.unlock();
-    if (cancel)
+    if (cancel) {
         return false;
+    }
 
 
-    //Look at all the subdirectories and scan them recursively...
+    // Look at all the subdirectories and scan them recursively...
     QDirIterator dirIt(dirPath, QDir::Dirs | QDir::NoDotAndDotDot);
-    while (dirIt.hasNext() && bScanFinishedCleanly)
-    {
+    while (dirIt.hasNext() && bScanFinishedCleanly) {
         QString nextPath = dirIt.next();
 
         // Skip the iTunes Album Art Folder since it is probably a waste of

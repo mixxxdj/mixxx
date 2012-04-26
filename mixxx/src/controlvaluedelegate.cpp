@@ -10,7 +10,7 @@
 #include "configobject.h"
 #include "controlgroupdelegate.h" //Need to get CONTROLGROUP_CHANNEL1_STRING, etc.
 #include "controlvaluedelegate.h"
-#include "midi/midiinputmappingtablemodel.h" //Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP
+#include "controllers/midi/midiinputmappingtablemodel.h" //Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP
 
 //Static var declarations
 QStringList ControlValueDelegate::m_channelControlValues;

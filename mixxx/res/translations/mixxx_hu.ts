@@ -153,53 +153,43 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Műfaj</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Megjegyzés</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Időtartam</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Billentyű</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Típus</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitráta</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hely</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx Könyvtár</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A fájlt nem lehet betölteni, mert használatban van, vagy a Mixxx, vagy egy másik program által.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
@@ -208,13 +198,11 @@
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Biztos vagy benne hogy törölni szeretnéd ezeket a fájlokat a számítógépedről.</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A fájlt nem lehet törölni, mert használatban van, vagy a Mixxx, vagy egy másik program által.</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
@@ -239,13 +227,11 @@
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zárolás</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lejátszólista importálása</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -253,18 +239,15 @@
         </message>
         <message>
             <source>Import Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rekesz importálása</translation>
         </message>
         <message>
             <source>Export Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rekesz exportálása</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Feloldás</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -272,18 +255,15 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Egy ismeretlen hiba lépett fel a rekesz készítése közben: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rekesz átnevezése</translation>
         </message>
         <message>
             <source>New crate name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Új rekesz neve:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
@@ -320,22 +300,18 @@
             <translation>Mixxx Névjegye</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -2941,6 +2917,31 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Confirm Exit</source>
             <translation type="unfinished">
             </translation>
@@ -3639,8 +3640,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofon be/ki</translation>
         </message>
         <message>
             <source>Microphone volume</source>
@@ -3673,8 +3673,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eltávolítás</translation>
         </message>
         <message>
             <source>Properties...</source>

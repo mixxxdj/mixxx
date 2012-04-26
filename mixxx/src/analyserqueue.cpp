@@ -11,6 +11,11 @@
 #include "analyserwaveform.h"
 #include "analyserbpm.h"
 #include "analyserrg.h"
+#ifdef __VAMP__
+#include "analyserbeats.h"
+#include "analysergainvamp.h";
+#include "vamp/vampanalyser.h"
+#endif
 
 #include <typeinfo>
 
@@ -212,18 +217,32 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 #endif
 
     ret->addAnalyser(new AnalyserWaveform());
+
+#ifdef __VAMP__
+    VampAnalyser::initializePluginPaths();
+    ret->addAnalyser(new AnalyserGainVamp(_config));
+    ret->addAnalyser(new AnalyserBeats(_config));
+    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+#else
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-
-    ret->start(QThread::LowPriority);
+#endif
+    ret->start(QThread::IdlePriority);
     return ret;
 }
 
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
     AnalyserQueue* ret = new AnalyserQueue();
+#ifdef __VAMP__
+    VampAnalyser::initializePluginPaths();
+    ret->addAnalyser(new AnalyserGainVamp(_config));
+    ret->addAnalyser(new AnalyserBeats(_config));
+    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+#else
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-    ret->start(QThread::LowPriority);
+#endif
+    ret->start(QThread::IdlePriority);
     return ret;
 }
 

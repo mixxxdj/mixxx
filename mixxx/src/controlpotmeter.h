@@ -72,7 +72,7 @@ public slots:
     void toggleMinusValue(double);
 
 protected:
-    void setValueFromMidi(MidiCategory c, double v);
+    void setValueFromMidi(MidiOpCode o, double v);
 
     double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
 };

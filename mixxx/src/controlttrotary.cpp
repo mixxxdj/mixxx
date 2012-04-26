@@ -41,8 +41,9 @@ double ControlTTRotary::getValueToWidget(double dValue)
     return dValue*200.+64.;
 }
 
-void ControlTTRotary::setValueFromMidi(MidiCategory, double v)
+void ControlTTRotary::setValueFromMidi(MidiOpCode o, double v)
 {
+    Q_UNUSED(o);
     m_dValue = v;
     emit(valueChanged(m_dValue));
 }

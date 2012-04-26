@@ -189,36 +189,30 @@
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Impossible de cargar lo fichièr seguent perque es utilizat per Mixxx o una autra aplicacion.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Atencion : aquò suprimirà definitivament los fichièrs seguents :</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sètz segur que volètz suprimir aquestes fichièrs de vòstre ordenador ?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Impossible de suprimir lo fichièr seguent perque es utilizat per Mixxx o una autra aplicacion :</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Impossible de metre a jorn las metadonadas del fichièr</translation>
         </message>
     </context>
     <context>
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nauc novèl</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -258,8 +252,7 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Una error desconeguda s'es producha al moment de la creacion del contenidor : </translation>
         </message>
         <message>
             <source>Rename Crate</source>
@@ -271,18 +264,15 @@
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fracàs al moment del cambiament de nom del contenidor</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fichièrs de la lista de lectura (*. m3u *. m3u8 *. pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lista de lectura M3U (*.m3u);; Lista de lectura M3U8 (*.m3u8);; Lista de lectura PLS (*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -290,13 +280,11 @@
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>La creacion del nauc a fracassat</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Un nauc amb aqueste nom existís ja.</translation>
         </message>
     </context>
     <context>
@@ -306,22 +294,18 @@
             <translation>A prepaus de Mixxx</translation>
         </message>
         <message>
+            <source>1.x.x</source>
+            <translation>1.x.x</translation>
+        </message>
+        <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Los crèdits aicí&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -344,13 +328,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Shuffle playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lista de lectura aleatòria</translation>
         </message>
         <message>
             <source>Add tracks to the queue below...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Apondètz de pistas a la fila d'espèra çaijós ...</translation>
         </message>
     </context>
     <context>
@@ -377,8 +359,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analisar lo tròç en entièr</translation>
         </message>
     </context>
     <context>
@@ -389,8 +370,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Successfully mapped to: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Associat amb succès a : </translation>
         </message>
         <message>
             <source>Next</source>
@@ -398,13 +378,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Assistent de configuracion MIDI</translation>
         </message>
         <message>
             <source>Welcome to the MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Benvenguda dins l'assistent MIDI</translation>
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
@@ -417,8 +395,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please tweak the control for:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ajustar lo contraròtle per :</translation>
         </message>
         <message>
             <source>Mixxx Control</source>
@@ -430,13 +407,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quichatz sus la barra d'espaci per contunhar o sautar aquesta etapa.</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aprendissatge Midi acabat</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -461,8 +436,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPluginDownloader</name>
         <message>
             <source>Missing Audio Plugin Downloader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Telecargador de plugin àudio mancant</translation>
         </message>
     </context>
     <context>
@@ -477,28 +451,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar la deteccion BPM</translation>
         </message>
         <message>
             <source>Detect Song BPM on Import</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deteccion BPM automatica al moment de l'impòrt</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Escriure lo BPM dins lo Tag ID3</translation>
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Se lo BPM pòt èsser detectat mas pas dins la gamma indicada</translation>
         </message>
         <message>
             <source>Allow BPM above the range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Autorizar un BPM en dessús de la gamma</translation>
         </message>
         <message>
             <source>BPM Schemes</source>
@@ -529,16 +498,14 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Cannot open file %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Impossible de dobrir lo fichièr %1</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefControls</name>
         <message>
             <source>This skin does not support schemes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aqueste tèma accèpta pas los modèls</translation>
         </message>
         <message>
             <source>8% (Technics SL1210)</source>
@@ -582,13 +549,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Up increases speed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Augmenta la velocitat</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Demesís la velocitat (Technics SL1210)</translation>
         </message>
         <message>
             <source>Information</source>
@@ -621,8 +586,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Position display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Posicion de l'afichatge</translation>
         </message>
         <message>
             <source>Tool tips</source>
@@ -638,38 +602,31 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taus del cursor de velocitat</translation>
         </message>
         <message>
             <source>Pitch/Rate slider direction</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Direccion del cursor de velocitat</translation>
         </message>
         <message>
             <source>Track load behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Compòrtament al cargament de pista</translation>
         </message>
         <message>
             <source>Cue behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Compòrtament del Cue</translation>
         </message>
         <message>
             <source>Auto Recall Cue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rapèl automatic de la coa</translation>
         </message>
         <message>
             <source>Permanent Pitch/Rate Buttons</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botons de velocitat permanents</translation>
         </message>
         <message>
             <source>Left click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Clic esquèrra</translation>
         </message>
         <message>
             <source>Right click</source>
@@ -710,8 +667,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Pitchbend sensitivity</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sensibilitat del pitchbend</translation>
         </message>
     </context>
     <context>
@@ -734,8 +690,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Constant power</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Poténcia constanta</translation>
         </message>
         <message>
             <source>Mixing</source>
@@ -785,8 +740,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -835,13 +789,11 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Export Mixxx MIDI Bindings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exportar las connexions MIDI de Mixxx</translation>
         </message>
         <message>
             <source>Preset Files (*.midi.xml)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fichièrs Preset (*.midi.xml)</translation>
         </message>
         <message>
             <source>Select Control Group</source>
@@ -2964,6 +2916,31 @@ Are you sure you want to load a new song?</source>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
             <translation type="unfinished">
             </translation>
         </message>

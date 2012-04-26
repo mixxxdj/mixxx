@@ -70,12 +70,6 @@ TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const {
         pTrack->setYear(year);
         pTrack->setGenre(genre);
         pTrack->setBpm(bpm);
-
-        // If the track has a BPM, then give it a static beatgrid.
-        if (bpm > 0) {
-            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
-            pTrack->setBeats(pBeats);
-        }
     }
     return pTrack;
 }

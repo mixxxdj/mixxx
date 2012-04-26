@@ -35,6 +35,8 @@ public:
     static QVector<char> *selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode);
 	static QVector<char> *selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode);
     static QList<long> *selectNodeLongList(const QDomNode &nodeHeader, const QString sNode);
+    /** Open an XML file */
+    static QDomElement openXMLFile(QString path, QString name);
     /** Add a node. Used to write xml document */
     static QDomElement addElement(QDomDocument &, QDomElement &, QString, QString);
     /** Add a binary node, long ints encoded as chars. Used to write xml document */
