@@ -3521,7 +3521,12 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 <context>
     <name>MixxxLibraryFeature</name>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="98"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="18"/>
+        <source>Missing Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="97"/>
         <source>Library</source>
         <translation type="unfinished"></translation>
     </message>

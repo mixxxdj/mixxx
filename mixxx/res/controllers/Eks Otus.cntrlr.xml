@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1">
+    <info>
+        <name>EKS Otus</name>
+        <author>Sean M. Pappalardo</author>
+        <description>Native high-resolution HID script for the EKS Otus controller.</description>
+    </info>
+    <controller id="EKS Otus">
+        <scriptfiles>
+            <file filename="EKS Otus.js" functionprefix="EksOtus"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

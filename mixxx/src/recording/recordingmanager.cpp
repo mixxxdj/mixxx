@@ -3,6 +3,7 @@
  */
 #include <QMutex>
 #include <QDir>
+#include <QDebug>
 #include "recordingmanager.h"
 #include "recording/defs_recording.h"
 #include "controlpushbutton.h"
