@@ -18,14 +18,14 @@ class QTimer;
 class QTime;
 
 class WaveformWidgetAbstractHandle {
-public:
+  public:
     WaveformWidgetAbstractHandle();
 
     WaveformWidgetType::Type getType() const { return m_type;}
     QString getDisplayName() const { return m_displayString;}
     bool isActive() const { return m_active;}
 
-private:
+  private:
     bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
@@ -35,15 +35,12 @@ private:
 
 class WaveformWidgetHolder {
 private:
-    WaveformWidgetHolder( WaveformWidgetAbstract* waveformWidget,
-                          WWaveformViewer* waveformViewer,
-                          const QDomNode& visualNodeCache);
+    WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
+                         WWaveformViewer* waveformViewer,
+                         const QDomNode& visualNodeCache);
 
     WaveformWidgetAbstract* m_waveformWidget;
     WWaveformViewer* m_waveformViewer;
-
-    //NOTE: (vRince) used to be able to recreat wavfeom widget without
-    //re-building entire skin ... but it does not work for the moment
     QDomNode m_visualNodeCache;
 
     friend class WaveformWidgetFactory;
@@ -53,12 +50,10 @@ private:
 
 class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
-
-public:
+  public:
     //TODO merge this enum woth the waveform analyser one
     enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
 
-public:
     bool setConfig(ConfigObject<ConfigValue>* config);
 
     //creates the waveform widget and bind it to the viewer
@@ -92,34 +87,33 @@ public:
 
     void addTimerListener(QWidget* pWidget);
 
-public slots:
+  public slots:
     void start();
     void stop();
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
-signals:
+  signals:
     void waveformUpdateTick();
 
-protected:
+  protected:
     void timerEvent(QTimerEvent *timerEvent);
 
-protected:
+  protected:
     WaveformWidgetFactory();
     virtual ~WaveformWidgetFactory();
 
     friend class Singleton<WaveformWidgetFactory>;
 
-private slots:
+  private slots:
     void refresh();
 
-private:
+  private:
     WaveformWidgetType::Type autoChooseWidgetType() const;
     void evaluateWidgets();
     WaveformWidgetAbstract* createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf( WWaveformViewer* viewer) const;
 
-private:
     //All type of available widgets
     std::vector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
 
