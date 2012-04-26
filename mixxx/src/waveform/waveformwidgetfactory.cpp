@@ -1,43 +1,38 @@
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/waveformwidgetabstract.h"
-
-#include "widget/wwaveformviewer.h"
-
-//WaveformWidgets
-#include "waveform/widgets/emptywaveformwidget.h"
-#include "waveform/widgets/softwarewaveformwidget.h"
-#include "waveform/widgets/glwaveformwidget.h"
-#include "waveform/widgets/glslwaveformwidget.h"
-#include "waveform/widgets/glsimplewaveformwidget.h"
-
-#include "controlpotmeter.h"
-#include "defs.h"
-
+#include <QStringList>
+#include <QTime>
 #include <QTimer>
 #include <QWidget>
-#include <QTime>
-#include <QStringList>
-
+#include <QtDebug>
 #include <QtOpenGL/QGLFormat>
 #include <QtOpenGL/QGLShaderProgram>
 
-#include <QDebug>
+#include "waveform/waveformwidgetfactory.h"
+
+#include "controlpotmeter.h"
+#include "defs.h"
+#include "waveform/widgets/emptywaveformwidget.h"
+#include "waveform/widgets/glsimplewaveformwidget.h"
+#include "waveform/widgets/glslwaveformwidget.h"
+#include "waveform/widgets/glwaveformwidget.h"
+#include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wwaveformviewer.h"
 
 ///////////////////////////////////////////
 
-WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle() {
-    m_active = true;
-    m_type = WaveformWidgetType::Count_WaveformwidgetType;
+WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
+        : m_active(true),
+          m_type(WaveformWidgetType::Count_WaveformwidgetType) {
 }
 
 ///////////////////////////////////////////
 
-WaveformWidgetHolder::WaveformWidgetHolder( WaveformWidgetAbstract* waveformWidget,
-                                            WWaveformViewer* waveformViewer,
-                                            const QDomNode& visualNodeCache)
-    : m_waveformWidget(waveformWidget)
-    , m_waveformViewer(waveformViewer){
-    m_visualNodeCache = visualNodeCache.cloneNode();
+WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
+                                           WWaveformViewer* waveformViewer,
+                                           const QDomNode& visualNodeCache)
+        : m_waveformWidget(waveformWidget),
+          m_waveformViewer(waveformViewer),
+          m_visualNodeCache(visualNodeCache.cloneNode()) {
 }
 
 ///////////////////////////////////////////
@@ -101,9 +96,10 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
             minorVersion = 1;
         }
 
-        if( majorVersion != 0 && minorVersion != 0)
+        if (majorVersion != 0) {
             m_openGLVersion = QString::number(majorVersion) + "." +
                     QString::number(minorVersion);
+        }
         m_openGLAvailable = true;
         {
             QGLWidget glWidget;
@@ -123,51 +119,48 @@ WaveformWidgetFactory::~WaveformWidgetFactory() {
 
 bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
     m_config = config;
-    if( !m_config)
+    if (!m_config)
         return false;
 
-    QString framRate = m_config->getValueString(ConfigKey("[Waveform]","FrameRate"));
-    if( !framRate.isEmpty()) {
-        int frameRate = framRate.toInt();
+    bool ok = false;
+
+    int frameRate = m_config->getValueString(ConfigKey("[Waveform]","FrameRate")).toInt(&ok);
+    if (ok) {
         setFrameRate(frameRate);
     } else {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
 
-    QString defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom"));
-    if( !defaultZoom.isEmpty()) {
-        int zoom = defaultZoom.toInt();
-        setDefaultZoom(zoom);
+    int defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toInt(&ok);
+    if (ok) {
+        setDefaultZoom(defaultZoom);
     } else{
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    QString allVisualGainString = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization"));
-    if( !allVisualGainString.isEmpty()) {
-        bool sync = allVisualGainString.toInt();
-        setZoomSync(sync);
+
+    int zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization")).toInt(&ok);
+    if (ok) {
+        setZoomSync(static_cast<bool>(zoomSync));
     } else {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
-    QString typeString = m_config->getValueString(ConfigKey("[Waveform]","WaveformType"));
-    if( !typeString.isEmpty()) {
-        WaveformWidgetType::Type type = (WaveformWidgetType::Type)(typeString.toInt());
-        if( !setWidgetType(type)){
-            setWidgetType(autoChooseWidgetType());
-        }
-    } else {
+    WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
+        m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
+    if (!ok || !setWidgetType(type)) {
         setWidgetType(autoChooseWidgetType());
     }
 
-    for( int i = 0; i < FilterCount; i++) {
-        QString visualGainString = m_config->getValueString(
-                    ConfigKey("[Waveform]","VisualGain_" + QString::number(i)));
-        if( !visualGainString.isEmpty()) {
-            double gain = visualGainString.toDouble();
-            setVisualGain( FilterIndex(i), gain);
+    for (int i = 0; i < FilterCount; i++) {
+        double visualGain = m_config->getValueString(
+            ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
+
+        if (ok) {
+            setVisualGain(FilterIndex(i), visualGain);
         } else {
-            m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(i)), QString::number(m_visualGain[i]));
+            m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(i)),
+                          QString::number(m_visualGain[i]));
         }
     }
 
@@ -186,14 +179,17 @@ void WaveformWidgetFactory::stop() {
 }
 
 void WaveformWidgetFactory::timerEvent(QTimerEvent *timerEvent) {
-    if( timerEvent->timerId() == m_mainTimerId) {
+    if (timerEvent->timerId() == m_mainTimerId) {
         refresh();
     }
 }
 
 void WaveformWidgetFactory::destroyWidgets() {
-    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
-        delete m_waveformWidgetHolders[i].m_waveformWidget;
+    for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        WaveformWidgetAbstract* pWidget = m_waveformWidgetHolders[i].m_waveformWidget;;
+        m_waveformWidgetHolders[i].m_waveformWidget = NULL;
+        delete pWidget;
+    }
     m_waveformWidgetHolders.clear();
 }
 
@@ -205,7 +201,7 @@ void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDomElement& node) {
     int index = findIndexOf(viewer);
-    if( index != -1) {
+    if (index != -1) {
         qDebug() << "WaveformWidgetFactory::setWaveformWidget - "\
                     "viewer already have a waveform widget but it's not found by the factory !";
         delete viewer->getWaveformWidget();
@@ -217,11 +213,12 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDo
     viewer->setWaveformWidget(waveformWidget);
     viewer->setup(node);
 
-    if( index == -1) {    //create new holder
-        m_waveformWidgetHolders.push_back( WaveformWidgetHolder( waveformWidget, viewer, node));
+    // create new holder
+    if (index == -1) {
+        m_waveformWidgetHolders.push_back(WaveformWidgetHolder(waveformWidget, viewer, node));
         index = m_waveformWidgetHolders.size()-1;
     } else { //update holder
-        m_waveformWidgetHolders[index] = WaveformWidgetHolder( waveformWidget, viewer, node);
+        m_waveformWidgetHolders[index] = WaveformWidgetHolder(waveformWidget, viewer, node);
     }
 
     viewer->setZoom(m_defaultZoom);
@@ -232,43 +229,42 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDo
 }
 
 void WaveformWidgetFactory::setFrameRate(int frameRate) {
-    m_frameRate = math_min(60, math_max( 10, frameRate));
-    if( m_config)
+    m_frameRate = math_min(60, math_max(10, frameRate));
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
+    }
 }
 
-bool WaveformWidgetFactory::setWidgetType( WaveformWidgetType::Type type) {
-    if( type == m_type)
+bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
+    if (type == m_type)
         return true;
 
-    //check if type is accetable
-    for( unsigned int i = 0; i < m_waveformWidgetHandles.size(); i++) {
+    // check if type is acceptable
+    for (unsigned int i = 0; i < m_waveformWidgetHandles.size(); i++) {
         WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
-        if( handle.m_type == type){
-            //type is acceptable
+        if (handle.m_type == type) {
+            // type is acceptable
             m_type = type;
-
-            if( m_config)
+            if (m_config) {
                 m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
-
+            }
             return true;
         }
     }
 
-    //fallback
+    // fallback
     m_type = WaveformWidgetType::EmptyWaveform;
-
-    if( m_config)
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]","WaveformType"), ConfigValue((int)m_type));
-
+    }
     return false;
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     if (handleIndex < 0 && handleIndex > m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
-        //fallback empty type
-        m_type = WaveformWidgetType::EmptyWaveform;
+        // fallback empty type
+        setWidgetType(WaveformWidgetType::EmptyWaveform);
         return false;
     }
 
@@ -278,11 +274,8 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         return true;
     }
 
-    //change the type
+    // change the type
     setWidgetType(handle.m_type);
-
-    //NOTE: (vRince)
-    //I tried but I can't figure-out what is missing here that append in skin parser
 
     m_skipRender = true;
     qDebug() << "recreate start";
@@ -313,60 +306,67 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     return true;
 }
 
-void WaveformWidgetFactory::setDefaultZoom(int zoom){
+void WaveformWidgetFactory::setDefaultZoom(int zoom) {
     m_defaultZoom = math_max(WaveformWidgetRenderer::s_waveformMinZoom,
-                             math_min(zoom,WaveformWidgetRenderer::s_waveformMaxZoom));
-    if( m_config)
+                             math_min(zoom, WaveformWidgetRenderer::s_waveformMaxZoom));
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
+    }
 
-    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+    for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(m_defaultZoom);
+    }
 }
 
 void WaveformWidgetFactory::setZoomSync(bool sync) {
     m_zoomSync = sync;
-    if( m_config)
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
+    }
 
-    if( m_waveformWidgetHolders.size() == 0)
+    if (m_waveformWidgetHolders.isEmpty()) {
         return;
+    }
 
     int refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
-    for( unsigned int i = 1; i < m_waveformWidgetHolders.size(); i++)
+    for (unsigned int i = 1; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
+    }
 }
 
-void WaveformWidgetFactory::setVisualGain( FilterIndex index, double gain) {
+void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     m_visualGain[index] = gain;
-    if( m_config)
+    if (m_config)
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
 }
 
-double WaveformWidgetFactory::getVisualGain( FilterIndex index) const {
+double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
     return m_visualGain[index];
 }
 
-void WaveformWidgetFactory::notifyZoomChange( WWaveformViewer* viewer) {
-    if( isZoomSync()) {
+void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
+    if (isZoomSync()) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         int refZoom = viewer->getWaveformWidget()->getZoomFactor();
-        for (int i = 0; i < m_waveformWidgetHolders.size(); i++)
-            if( m_waveformWidgetHolders[i].m_waveformViewer != viewer)
+        for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            if (m_waveformWidgetHolders[i].m_waveformViewer != viewer) {
                 m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
+            }
+        }
     }
 }
 
 void WaveformWidgetFactory::refresh() {
-    if( m_skipRender)
+    if (m_skipRender)
        return;
 
-    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+    for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->preRender();
 
-    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+    for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->render();
 
-    for( unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
+    for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->postRender();
 
     // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
@@ -448,9 +448,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidg
     return 0;
 }
 
-int WaveformWidgetFactory::findIndexOf( WWaveformViewer* viewer) const {
+int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++)
-        if( m_waveformWidgetHolders[i].m_waveformViewer == viewer)
+        if (m_waveformWidgetHolders[i].m_waveformViewer == viewer)
             return i;
     return -1;
 }
