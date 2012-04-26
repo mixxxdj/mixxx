@@ -165,8 +165,9 @@ void ControlPotmeter::setValueFromEngine(double dValue)
     emit(valueChangedFromEngine(m_dValue));
 }
 
-void ControlPotmeter::setValueFromMidi(MidiCategory, double v)
+void ControlPotmeter::setValueFromMidi(MidiOpCode o, double v)
 {
+    Q_UNUSED(o);
     double out = (v < 64) ? v / 128. : (v-1) / 126.;
     m_dValue = m_dMinValue + out*m_dValueRange;
     emit(valueChanged(m_dValue));

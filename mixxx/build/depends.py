@@ -29,7 +29,7 @@ class PortMIDI(Dependence):
             raise Exception('Did not find PortMidi or its development headers.')
 
     def sources(self, build):
-        return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
+        return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
 
 class OpenGL(Dependence):
 
@@ -158,6 +158,7 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtSql4')
             build.env.Append(LIBS = 'QtGui4')
             build.env.Append(LIBS = 'QtCore4')
+            build.env.Append(LIBS = 'QtScript4')
             build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4')
@@ -168,6 +169,7 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtGui',
                                       '$QTDIR/include/QtXml',
                                       '$QTDIR/include/QtNetwork',
+                                      '$QTDIR/include/QtScript',
                                       '$QTDIR/include/QtSql',
                                       '$QTDIR/include/QtOpenGL',
                                       '$QTDIR/include/QtWebKit',
@@ -307,9 +309,11 @@ class MixxxCore(Feature):
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
-                   "dlgprefmidibindings.cpp",
+                   "controllers/dlgprefcontroller.cpp",
+                   "controllers/dlgprefmappablecontroller.cpp",
+                   "controllers/dlgcontrollerlearning.cpp",
+                   "controllers/dlgprefnocontrollers.cpp",
                    "dlgprefplaylist.cpp",
-                   "dlgprefnomidi.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
                    "dlgprefreplaygain.cpp",
@@ -318,7 +322,6 @@ class MixxxCore(Feature):
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
                    "dlgprefcrossfader.cpp",
-                   "dlgmidilearning.cpp",
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
@@ -365,24 +368,21 @@ class MixxxCore(Feature):
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
-                   "midi/mididevice.cpp",
-                   "midi/mididevicemanager.cpp",
-                   "midi/midideviceenumerator.cpp",
-                   "midi/midimapping.cpp",
-                   "midi/midiinputmappingtablemodel.cpp",
-                   "midi/midioutputmappingtablemodel.cpp",
-                   "midi/midichanneldelegate.cpp",
-                   "midi/midistatusdelegate.cpp",
-                   "midi/midinodelegate.cpp",
-                   "midi/midioptiondelegate.cpp",
-                   "midi/midimessage.cpp",
-                   "midi/midiledhandler.cpp",
-                   "softtakeover.cpp",
+                   "controllers/controller.cpp",
+                   "controllers/controllerengine.cpp",
+                   "controllers/controllerenumerator.cpp",
+                   "controllers/controllermanager.cpp",
+                   "controllers/controllerpresetfilehandler.cpp",
+                   "controllers/midi/midicontroller.cpp",
+                   "controllers/midi/midicontrollerpresetfilehandler.cpp",
+                   "controllers/midi/midienumerator.cpp",
+                   "controllers/midi/midioutputhandler.cpp",
+                   "controllers/mixxxcontrol.cpp",
+                   "controllers/qtscript-bytearray/bytearrayclass.cpp",
+                   "controllers/qtscript-bytearray/bytearrayprototype.cpp",
+                   "controllers/softtakeover.cpp",
 
                    "main.cpp",
-                   "controlgroupdelegate.cpp",
-                   "controlvaluedelegate.cpp",
-                   "mixxxcontrol.cpp",
                    "mixxx.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
@@ -594,9 +594,13 @@ class MixxxCore(Feature):
         # the code for the QT UI forms
         build.env.Uic4('dlgpreferencesdlg.ui')
         build.env.Uic4('dlgprefsounddlg.ui')
-        build.env.Uic4('dlgprefmidibindingsdlg.ui')
+
+        build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
+        build.env.Uic4('controllers/dlgprefmappablecontrollerdlg.ui')
+        build.env.Uic4('controllers/dlgcontrollerlearning.ui')
+        build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
+
         build.env.Uic4('dlgprefplaylistdlg.ui')
-        build.env.Uic4('dlgprefnomididlg.ui')
         build.env.Uic4('dlgprefcontrolsdlg.ui')
         build.env.Uic4('dlgprefeqdlg.ui')
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
@@ -609,7 +613,6 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
-        build.env.Uic4('dlgmidilearning.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')

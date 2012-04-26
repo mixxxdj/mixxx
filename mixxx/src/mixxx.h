@@ -30,7 +30,7 @@
 class EngineMaster;
 class Library;
 class LibraryScanner;
-class MidiDeviceManager;
+class ControllerManager;
 class MixxxKeyboard;
 class PlayerManager;
 class RecordingManager;
@@ -135,8 +135,7 @@ class MixxxApp : public QMainWindow {
     PlayerManager* m_pPlayerManager;
     // RecordingManager
     RecordingManager* m_pRecordingManager;
-
-    MidiDeviceManager *m_pMidiDeviceManager;
+    ControllerManager *m_pControllerManager;
 
     ConfigObject<ConfigValue> *m_pConfig;
 

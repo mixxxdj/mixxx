@@ -19,7 +19,6 @@
 #define WWIDGET_H
 
 #include <QtGui>
-#include <QtXml>
 
 #include "configobject.h"
 
@@ -48,7 +47,6 @@ public:
 
     /** Given a filename of a pixmap, returns its path */
     static const QString getPath(QString location);
-    static QDomElement openXMLFile(QString path, QString name);
     double getValue();
 public slots:
     virtual void setValue(double fValue);
