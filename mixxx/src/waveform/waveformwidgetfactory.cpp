@@ -324,7 +324,7 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
-    if (m_waveformWidgetHolders.isEmpty()) {
+    if (m_waveformWidgetHolders.size() == 0) {
         return;
     }
 
