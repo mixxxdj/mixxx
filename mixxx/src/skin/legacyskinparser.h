@@ -15,6 +15,7 @@ class Library;
 class MixxxKeyboard;
 class PlayerManager;
 class WAbstractControl;
+class ControllerLearningEventFilter;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
@@ -77,6 +78,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
     QWidget *m_pParent;
+    ControllerLearningEventFilter* m_pControllerLearning;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
 };

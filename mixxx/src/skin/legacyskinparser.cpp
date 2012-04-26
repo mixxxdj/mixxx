@@ -18,6 +18,7 @@
 #include "basetrackplayer.h"
 #include "library/library.h"
 #include "xmlparse.h"
+#include "controllers/controllerlearningeventfilter.h"
 
 #include "skin/legacyskinparser.h"
 #include "skin/colorschemeparser.h"
@@ -61,7 +62,8 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
       m_pPlayerManager(pPlayerManager),
       m_pLibrary(pLibrary),
       m_pVCManager(pVCMan),
-      m_pParent(NULL) {
+      m_pParent(NULL),
+      m_pControllerLearning(new ControllerLearningEventFilter()) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -372,6 +374,7 @@ QWidget* LegacySkinParser::parsePushButton(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     return p;
 }
 
@@ -381,6 +384,7 @@ QWidget* LegacySkinParser::parseSliderComposed(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     setControlDefaults(node, p);
     return p;
 }
@@ -404,6 +408,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     overviewWidget->setup(node);
     setupConnections(node, overviewWidget);
     overviewWidget->installEventFilter(m_pKeyboard);
+    overviewWidget->installEventFilter(m_pControllerLearning);
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -434,6 +439,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
 
     viewer->installEventFilter(m_pKeyboard);
+    viewer->installEventFilter(m_pControllerLearning);
 
     // Hook up the wheel Control Object to the Visual Controller
 
@@ -478,6 +484,7 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
@@ -506,6 +513,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
@@ -526,6 +534,7 @@ QWidget* LegacySkinParser::parseVuMeter(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     return p;
 }
 
@@ -535,6 +544,7 @@ QWidget* LegacySkinParser::parseStatusLight(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     return p;
 }
 
@@ -544,6 +554,7 @@ QWidget* LegacySkinParser::parseDisplay(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     return p;
 }
 
@@ -567,6 +578,7 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     p->setPalette(palette);
 
     return p;
@@ -579,6 +591,7 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
 
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     setupWidget(node, p);
     p->setup(node);
     setupConnections(node, p);
@@ -591,6 +604,7 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     return p;
 }
 
@@ -600,6 +614,7 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     return p;
 }
 
@@ -609,6 +624,7 @@ QWidget* LegacySkinParser::parseTime(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     return p;
 }
 
@@ -618,6 +634,7 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerLearning);
     setControlDefaults(node, p);
     return p;
 }
@@ -635,6 +652,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     spinny->setup(node, pSafeChannelStr);
     setupConnections(node, spinny);
     spinny->installEventFilter(m_pKeyboard);
+    spinny->installEventFilter(m_pControllerLearning);
     return spinny;
 }
 
@@ -663,11 +681,13 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     WLibrary* pLibraryWidget = new WLibrary(pSplitter);
     pLibraryWidget->installEventFilter(m_pKeyboard);
+    pLibraryWidget->installEventFilter(m_pControllerLearning);
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
 
     WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(pLibrarySidebarPage);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
+    pLibrarySidebar->installEventFilter(m_pControllerLearning);
 
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig,
                                                            pLibrarySidebarPage);
@@ -957,7 +977,8 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
         } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
                    XmlParse::selectNodeQString(con, "OnOff")=="true") {
             // Connect control proxy to widget. Parented to pWidget so it is not
-            // leaked.
+            // leaked. OnOff controls do not use the value of the widget at all
+            // so we do not give this control's info to m_pControllerLearning.
             (new ControlObjectThreadWidget(control, pWidget))->setWidgetOnOff(pWidget);
         } else {
             // Default to emit on press
@@ -992,6 +1013,13 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             (new ControlObjectThreadWidget(control, pWidget))->setWidget(
                 pWidget, connectValueFromWidget, connectValueToWidget,
                 emitOption, state);
+
+            // We only add info for controls that this widget affects, not
+            // controls that only affect the widget.
+            if (connectValueFromWidget) {
+                m_pControllerLearning->addWidgetClickInfo(
+                    pWidget, state, control, emitOption);
+            }
 
             // Add keyboard shortcut info to tooltip string
             QString tooltip = pWidget->toolTip();
