@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-23 14:07-0400\n"
-"PO-Revision-Date: 2012-04-24 07:52+0000\n"
-"Last-Translator: Maxime <Unknown>\n"
+"POT-Creation-Date: 2012-04-25 10:54-0400\n"
+"PO-Revision-Date: 2012-04-25 16:04+0000\n"
+"Last-Translator: Maxime Bochon <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-25 04:35+0000\n"
-"X-Generator: Launchpad (build 15139)\n"
+"X-Launchpad-Export-Date: 2012-04-26 04:36+0000\n"
+"X-Generator: Launchpad (build 15149)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -3101,9 +3101,13 @@ msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Un lecteur est actuellement actif.Quitter Mixxx?"
 
 #: MixxxLibraryFeature#1
-msgctxt "MixxxLibraryFeature#1"
+msgid "Missing Tracks"
+msgstr "Morceaux manquants"
+
+#: MixxxLibraryFeature#2
+msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
-msgstr "Bibliothèque"
+msgstr "Librairie"
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
@@ -3256,7 +3260,7 @@ msgstr "Joindre avec les précédents"
 
 #: SetlogFeature#2
 msgid "Set Logs"
-msgstr "Définir les journaux"
+msgstr "Historique"
 
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
@@ -3925,10 +3929,6 @@ msgstr "Montrer ou cacher les colonnes."
 #~ msgid "Missing Songs"
 #~ msgstr "Chanson Manquante"
 
-#~ msgctxt "MixxxLibraryFeature#2"
-#~ msgid "Library"
-#~ msgstr "Librairie"
-
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Retirer"
@@ -4256,6 +4256,10 @@ msgstr "Montrer ou cacher les colonnes."
 #~ msgctxt "MixxxApp#72"
 #~ msgid "Preferences"
 #~ msgstr "Préférences"
+
+#~ msgctxt "MixxxLibraryFeature#1"
+#~ msgid "Library"
+#~ msgstr "Bibliothèque"
 
 #~ msgctxt "PlaylistFeature#5"
 #~ msgid "Lock"

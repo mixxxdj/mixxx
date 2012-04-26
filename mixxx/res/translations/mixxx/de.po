@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-23 14:07-0400\n"
-"PO-Revision-Date: 2012-04-24 07:16+0000\n"
+"POT-Creation-Date: 2012-04-25 10:54-0400\n"
+"PO-Revision-Date: 2012-04-25 15:14+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-25 04:35+0000\n"
-"X-Generator: Launchpad (build 15139)\n"
+"X-Launchpad-Export-Date: 2012-04-26 04:37+0000\n"
+"X-Generator: Launchpad (build 15149)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -2793,7 +2793,7 @@ msgstr "Audio-Gerät beschäftigt"
 
 #: MixxxApp#5
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr "Erhalten SIe <b>Hilfe</b> aus dem Mixxx Wiki."
+msgstr "Erhalten Sie <b>Hilfe</b> aus dem Mixxx Wiki."
 
 #: MixxxApp#6
 msgid ""
@@ -3109,7 +3109,11 @@ msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Ein Deck spielt derzeit. Mixxx beenden?"
 
 #: MixxxLibraryFeature#1
-msgctxt "MixxxLibraryFeature#1"
+msgid "Missing Tracks"
+msgstr "Fehlende Titel"
+
+#: MixxxLibraryFeature#2
+msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
 msgstr "Bibliothek"
 
@@ -3930,10 +3934,6 @@ msgstr "Spalten zeigen oder verbergen."
 #~ "Die Datei %1 existiert bereits. Möchten Sie diese Datei überschreiben?\n"
 #~ "\"Nein\" beendet die Aufnahme."
 
-#~ msgctxt "MixxxLibraryFeature#2"
-#~ msgid "Library"
-#~ msgstr "Bibliothek"
-
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Entfernen"
@@ -4284,6 +4284,10 @@ msgstr "Spalten zeigen oder verbergen."
 
 #~ msgid "Close"
 #~ msgstr "Schließen"
+
+#~ msgctxt "MixxxLibraryFeature#1"
+#~ msgid "Library"
+#~ msgstr "Bibliothek"
 
 #~ msgctxt "PlaylistFeature#3"
 #~ msgid "Remove"

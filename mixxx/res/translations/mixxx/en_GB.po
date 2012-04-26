@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-04-23 14:07-0400\n"
-"PO-Revision-Date: 2011-11-22 13:32+0000\n"
-"Last-Translator: colobot <engelbertmercelis@gmail.com>\n"
+"POT-Creation-Date: 2012-04-25 10:54-0400\n"
+"PO-Revision-Date: 2012-04-25 19:41+0000\n"
+"Last-Translator: Sid Roberts <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-24 04:42+0000\n"
-"X-Generator: Launchpad (build 15135)\n"
+"X-Launchpad-Export-Date: 2012-04-26 04:39+0000\n"
+"X-Generator: Launchpad (build 15149)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -27,31 +27,31 @@ msgstr "New Playlist"
 
 #: BasePlaylistFeature#2
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Add to Auto DJ Queue (bottom)"
 
 #: BasePlaylistFeature#3
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Add to Auto DJ Queue (top)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Remove"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Rename"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Lock"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Import Playlist"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
@@ -133,27 +133,27 @@ msgstr ""
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "Year"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "Location"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "Comment"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "Duration"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -167,12 +167,12 @@ msgstr ""
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "Track #"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -189,11 +189,11 @@ msgstr ""
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr ""
+msgstr "Key"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
-msgstr ""
+msgstr "BPM Lock"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -278,27 +278,27 @@ msgstr ""
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Comment"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Duration"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr ""
+msgstr "Key"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
@@ -308,12 +308,12 @@ msgstr ""
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Location"
 
 #: BrowseTableModel#16
 msgctxt "BrowseTableModel#16"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx Library"
 
 #: BrowseTableModel#17
 msgid ""
@@ -438,11 +438,11 @@ msgstr "<a href=\"http://mixxx.org/\">Official Website</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: DlgAutoDJ#2
 msgid "One player must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "One player must be stopped to enable Auto DJ mode."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -450,7 +450,7 @@ msgstr "Disable Auto DJ"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "Shuffle the content of the Auto DJ playlist."
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
@@ -458,23 +458,23 @@ msgstr ""
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "Skip the next track in the Auto DJ playlist."
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "Skip Track"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Trigger the transition to the next track."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Fade Now"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Determines the duration of the transition."
 
 #: DlgAutoDJ#11
 msgid "Seconds"
@@ -486,7 +486,7 @@ msgstr ""
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Turn Auto DJ on or off."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -499,7 +499,7 @@ msgstr ""
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Beat Detection Settings"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -510,7 +510,7 @@ msgstr ""
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr ""
+msgstr "Enable BPM and Beat Detection"
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
@@ -522,7 +522,7 @@ msgstr ""
 
 #: DlgBeatsDlg#6
 msgid "Choose beween different algorithms to detect beats."
-msgstr ""
+msgstr "Choose beween different algorithms to detect beats."
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
@@ -577,20 +577,20 @@ msgstr ""
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM Range"
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "Min:"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "Max:"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Reset to Defaults"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -603,7 +603,7 @@ msgstr "Scheme Name:"
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM Range"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -749,7 +749,7 @@ msgstr "Add"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Edit"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
@@ -929,11 +929,11 @@ msgstr "Pitchbend sensitivity"
 
 #: DlgPrefControlsDlg#25
 msgid "Waveform Display"
-msgstr ""
+msgstr "Waveform Display"
 
 #: DlgPrefControlsDlg#26
 msgid "Frame Rate"
-msgstr ""
+msgstr "Frame Rate"
 
 #: DlgPrefControlsDlg#27
 msgid "OpenGl status"
@@ -945,27 +945,27 @@ msgstr ""
 
 #: DlgPrefControlsDlg#29
 msgid "Default zoom"
-msgstr ""
+msgstr "Default zoom"
 
 #: DlgPrefControlsDlg#30
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: DlgPrefControlsDlg#31
 msgid "200%"
-msgstr ""
+msgstr "200%"
 
 #: DlgPrefControlsDlg#32
 msgid "300%"
-msgstr ""
+msgstr "300%"
 
 #: DlgPrefControlsDlg#33
 msgid "400%"
-msgstr ""
+msgstr "400%"
 
 #: DlgPrefControlsDlg#34
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronise"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1576,7 +1576,7 @@ msgstr "Form3"
 
 #: DlgPrefShoutcastDlg#2
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Enable live broadcasting"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -1892,7 +1892,7 @@ msgstr "Query Devices"
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Reset to Defaults"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
@@ -2090,12 +2090,12 @@ msgstr "Recording"
 
 #: DlgPreferences#8
 msgid "Beat Detection"
-msgstr ""
+msgstr "Beat Detection"
 
 #: DlgPreferences#9
 msgctxt "DlgPreferences#9"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM Detection"
 
 #: DlgPreferences#10
 msgid "Normalization"
@@ -2104,7 +2104,7 @@ msgstr "Normalization"
 #: DlgPreferences#11
 msgctxt "DlgPreferences#11"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Vinyl Control"
 
 #: DlgPreferences#12
 msgid "Live Broadcasting"
@@ -2420,39 +2420,39 @@ msgstr "Error setting non-blocking mode:"
 
 #: EngineShoutcast#5
 msgid "Error setting hostname!"
-msgstr ""
+msgstr "Error setting hostname!"
 
 #: EngineShoutcast#6
 msgid "Error setting protocol!"
-msgstr ""
+msgstr "Error setting protocol!"
 
 #: EngineShoutcast#7
 msgid "Error setting port!"
-msgstr ""
+msgstr "Error setting port!"
 
 #: EngineShoutcast#8
 msgid "Error setting password!"
-msgstr ""
+msgstr "Error setting password!"
 
 #: EngineShoutcast#9
 msgid "Error setting mount!"
-msgstr ""
+msgstr "Error setting mount!"
 
 #: EngineShoutcast#10
 msgid "Error setting username!"
-msgstr ""
+msgstr "Error setting username!"
 
 #: EngineShoutcast#11
 msgid "Error setting stream name!"
-msgstr ""
+msgstr "Error setting stream name!"
 
 #: EngineShoutcast#12
 msgid "Error setting stream description!"
-msgstr ""
+msgstr "Error setting stream description!"
 
 #: EngineShoutcast#13
 msgid "Error setting stream genre!"
-msgstr ""
+msgstr "Error setting stream genre!"
 
 #: EngineShoutcast#14
 msgid "Error setting stream url!"
@@ -2468,6 +2468,7 @@ msgstr ""
 msgid ""
 "See https://bugs.launchpad.net/mixxx/+bug/686212 for more information."
 msgstr ""
+"See https://bugs.launchpad.net/mixxx/+bug/686212 for more information."
 
 #: EngineShoutcast#17
 msgid "Error setting bitrate"
@@ -2538,7 +2539,7 @@ msgstr ""
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
 msgid "Simple"
-msgstr ""
+msgstr "Simple"
 
 #: GLWaveformWidget#1
 msgctxt "GLWaveformWidget#1"
@@ -2735,7 +2736,7 @@ msgstr "Mixxx"
 #: MixxxApp#3
 msgctxt "MixxxApp#3"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Choose music library directory"
 
 #: MixxxApp#4
 msgid "Sound Device Busy"
@@ -2789,17 +2790,19 @@ msgstr "Exit"
 
 #: MixxxApp#14
 msgid "No Output Devices"
-msgstr ""
+msgstr "No Output Devices"
 
 #: MixxxApp#15
 msgid ""
 "Mixxx was configured without any output sound devices. Audio processing will "
 "be disabled without a configured output device."
 msgstr ""
+"Mixxx was configured without any output sound devices. Audio processing will "
+"be disabled without a configured output device."
 
 #: MixxxApp#16
 msgid "<b>Continue</b> without any outputs."
-msgstr ""
+msgstr "<b>Continue</b> without any outputs."
 
 #: MixxxApp#17
 msgid "Continue"
@@ -2815,7 +2818,7 @@ msgstr ""
 
 #: MixxxApp#20
 msgid "Open"
-msgstr ""
+msgstr "Open"
 
 #: MixxxApp#21
 msgid "Ctrl+O"
@@ -2831,7 +2834,7 @@ msgstr "&Exit"
 
 #: MixxxApp#24
 msgid "Quits Mixxx"
-msgstr ""
+msgstr "Quits Mixxx"
 
 #: MixxxApp#25
 msgid "Ctrl+Q"
@@ -2843,7 +2846,7 @@ msgstr "&Rescan Library"
 
 #: MixxxApp#27
 msgid "Rescans library folders for changes to tracks."
-msgstr ""
+msgstr "Rescans library folders for changes to tracks."
 
 #: MixxxApp#28
 msgid "Add &new playlist"
@@ -2863,11 +2866,11 @@ msgstr "Ctrl+C"
 
 #: MixxxApp#32
 msgid "Deck %1 is currently playing a track."
-msgstr ""
+msgstr "Deck %1 is currently playing a track."
 
 #: MixxxApp#33
 msgid "Are you sure you want to load a new track?"
-msgstr ""
+msgstr "Are you sure you want to load a new track?"
 
 #: MixxxApp#34
 msgid "&Full Screen"
@@ -2899,7 +2902,7 @@ msgstr "&Community Support"
 
 #: MixxxApp#41
 msgid "Get help with Mixxx"
-msgstr ""
+msgstr "Get help with Mixxx"
 
 #: MixxxApp#42
 msgid "&User Manual"
@@ -2991,7 +2994,7 @@ msgstr "About the application"
 
 #: MixxxApp#64
 msgid "A sampler is currently playing. Exit Mixxx?"
-msgstr ""
+msgstr "A sampler is currently playing. Exit Mixxx?"
 
 #: MixxxApp#65
 msgid "&File"
@@ -3054,24 +3057,28 @@ msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "A deck is currently playing. Exit Mixxx?"
 
 #: MixxxLibraryFeature#1
-msgctxt "MixxxLibraryFeature#1"
+msgid "Missing Tracks"
+msgstr "Missing Tracks"
+
+#: MixxxLibraryFeature#2
+msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
 msgstr "Library"
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
 msgid "Location"
-msgstr ""
+msgstr "Location"
 
 #: ParserCsv#2
 msgctxt "ParserCsv#2"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Playlist Export Failed"
 
 #: ParserCsv#3
 msgctxt "ParserCsv#3"
 msgid "Could not create file"
-msgstr ""
+msgstr "Could not create file"
 
 #: ParserCsv#4
 msgid "Readable text Export Failed"
@@ -3108,7 +3115,7 @@ msgstr "Could not create file"
 #: PlaylistFeature#1
 msgctxt "PlaylistFeature#1"
 msgid "Lock"
-msgstr ""
+msgstr "Lock"
 
 #: PlaylistFeature#2
 msgid "Playlists"
@@ -3117,7 +3124,7 @@ msgstr "Playlists"
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Unlock"
-msgstr ""
+msgstr "Unlock"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3212,12 +3219,12 @@ msgstr ""
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
 msgid "Unlock"
-msgstr ""
+msgstr "Unlock"
 
 #: SetlogFeature#4
 msgctxt "SetlogFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Lock"
 
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
@@ -3612,7 +3619,7 @@ msgstr "Properties..."
 
 #: WTrackTableView#6
 msgid "Add to Auto-DJ Queue (bottom)"
-msgstr ""
+msgstr "Add to Auto DJ Queue (bottom)"
 
 #: WTrackTableView#7
 msgid "Add to Auto-DJ Queue (top)"
@@ -3624,11 +3631,11 @@ msgstr "Reload Track Metadata"
 
 #: WTrackTableView#9
 msgid "Lock BPM"
-msgstr ""
+msgstr "Lock BPM"
 
 #: WTrackTableView#10
 msgid "Unlock BPM"
-msgstr ""
+msgstr "Unlock BPM"
 
 #: WTrackTableView#11
 msgid "Clear BPM and Beatgrid"
@@ -4224,6 +4231,10 @@ msgstr "Show or hide columns."
 
 #~ msgid "Load Song into Player 2"
 #~ msgstr "Load Song into Player 2"
+
+#~ msgctxt "MixxxLibraryFeature#1"
+#~ msgid "Library"
+#~ msgstr "Library"
 
 #~ msgctxt "PlaylistFeature#6"
 #~ msgid "Import Playlist"

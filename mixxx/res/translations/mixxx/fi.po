@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-04-23 14:07-0400\n"
+"POT-Creation-Date: 2012-04-25 10:54-0400\n"
 "PO-Revision-Date: 2012-04-22 19:42+0000\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-24 04:40+0000\n"
-"X-Generator: Launchpad (build 15135)\n"
+"X-Launchpad-Export-Date: 2012-04-26 04:36+0000\n"
+"X-Generator: Launchpad (build 15149)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3071,9 +3071,13 @@ msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Kanavaa toistetaan parhaillaan. Suljetaanko Mixxx?"
 
 #: MixxxLibraryFeature#1
-msgctxt "MixxxLibraryFeature#1"
+msgid "Missing Tracks"
+msgstr ""
+
+#: MixxxLibraryFeature#2
+msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
-msgstr "Kirjasto"
+msgstr "Kokoelma"
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
@@ -3748,10 +3752,6 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgid "Remove"
 #~ msgstr "Poista"
 
-#~ msgctxt "MixxxLibraryFeature#2"
-#~ msgid "Library"
-#~ msgstr "Kokoelma"
-
 #~ msgctxt "RhythmboxPlaylistModel#1"
 #~ msgid "Artist"
 #~ msgstr "Artisti"
@@ -4315,6 +4315,10 @@ msgstr "Näytä tai piilota sarakkeita."
 
 #~ msgid "Do your really want to quit?"
 #~ msgstr "Haluatko todella lopettaa?"
+
+#~ msgctxt "MixxxLibraryFeature#1"
+#~ msgid "Library"
+#~ msgstr "Kirjasto"
 
 #~ msgctxt "PlaylistFeature#3"
 #~ msgid "Remove"
