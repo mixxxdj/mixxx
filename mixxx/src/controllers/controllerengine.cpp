@@ -44,7 +44,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
 
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
-        m_dx[i] = NULL;
+        m_dx[i] = 0.0;
         m_pitchFilter[i] = new PitchFilter();
         m_ramp[i] = false;
     }
@@ -1077,7 +1077,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         killTimer(timerId);
         m_scratchTimers.remove(timerId);
 
-        m_dx[deck] = NULL;
+        m_dx[deck] = 0.0;
     }
 }
 
