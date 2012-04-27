@@ -250,6 +250,7 @@ void DlgControllerLearning::showPickControl() {
     emit(listenForClicks());
     populateComboBox();
     labelMappedTo->setText("");
+    labelNextHelp->hide();
     controlToMapMessage->setText("");
     stackedWidget->setCurrentIndex(1);
     m_currentControl = MixxxControl();
@@ -261,6 +262,7 @@ void DlgControllerLearning::loadControl(const MixxxControl& control) {
             .arg(m_currentControl.description());
     controlToMapMessage->setText(message);
     labelMappedTo->setText("");
+    labelNextHelp->hide();
     emit(learn(m_currentControl));
 }
 
@@ -288,7 +290,9 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
 }
 
 void DlgControllerLearning::controlMapped(QString message) {
-    labelMappedTo->setText(tr("Successfully mapped to:") + " " + message);
+    QString mapMessage = tr("Successfully mapped to:") + " " + message;
+    labelMappedTo->setText(mapMessage);
+    labelNextHelp->show();
 }
 
 void DlgControllerLearning::populateComboBox() {
