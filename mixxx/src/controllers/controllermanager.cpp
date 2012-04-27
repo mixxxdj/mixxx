@@ -9,6 +9,7 @@
 
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/controllerlearningeventfilter.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -27,6 +28,10 @@ const int kPollIntervalMillis = 1;
 ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
         QObject(),
         m_pConfig(pConfig),
+        // WARNING: Do not parent m_pControllerLearningEventFilter to
+        // ControllerManager because the CM is moved to its own thread and runs
+        // its own event loop.
+        m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
         m_pollTimer(this) {
 
     // Instantiate all enumerators
@@ -63,6 +68,11 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
 ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
+    delete m_pControllerLearningEventFilter;
+}
+
+ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
+    return m_pControllerLearningEventFilter;
 }
 
 void ControllerManager::slotShutdown() {

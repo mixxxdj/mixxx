@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "dlgprefmappablecontroller.h"
+#include "controllers/controllerlearningeventfilter.h"
+#include "controllers/controllermanager.h"
 
 DlgPrefMappableController::DlgPrefMappableController(QWidget *parent, Controller* controller,
                           ControllerManager* controllerManager,
@@ -81,6 +83,19 @@ void DlgPrefMappableController::slotShowLearnDialog() {
     // Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
     m_pDlgControllerLearning = new DlgControllerLearning(this, getController());
     m_pDlgControllerLearning->show();
+    ControllerLearningEventFilter* pControllerLearning = getControllerManager()->getControllerLearningEventFilter();
+    connect(pControllerLearning, SIGNAL(controlClicked(ControlObject*)),
+            m_pDlgControllerLearning, SLOT(controlClicked(ControlObject*)));
+    connect(m_pDlgControllerLearning, SIGNAL(listenForClicks()),
+            pControllerLearning, SLOT(startListening()));
+    connect(m_pDlgControllerLearning, SIGNAL(stopListeningForClicks()),
+            pControllerLearning, SLOT(stopListening()));
+    connect(m_pDlgControllerLearning, SIGNAL(cancelLearning()),
+            this, SLOT(show()));
+
+    emit(mappingStarted());
+    connect(m_pDlgControllerLearning, SIGNAL(cancelLearning()),
+            this, SIGNAL(mappingEnded()));
 }
 
 void DlgPrefMappableController::slotDeviceState(int state) {

@@ -46,6 +46,9 @@ class DlgPrefController : public QWidget {
     Controller* getController() const {
         return m_pController;
     }
+    ControllerManager* getControllerManager() const {
+        return m_pControllerManager;
+    }
     void addWidgetToLayout(QWidget* pWidget);
     bool isEnabled() const {
         return m_ui.chkEnabledDevice->isChecked();

@@ -25,23 +25,38 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
   signals:
     void cancelLearning();
     void learn(MixxxControl control);
+    void listenForClicks();
+    void stopListeningForClicks();
+
   public slots:
     // Begin the learning process
     void begin();
-    // Ask to map the next control
-    void next();
-    // Ask to map the previous control
-    void prev();
+
+    void pickControlNext();
+    void pickControlDone();
+    void mapControlContinue();
+    void mapControlBack();
+    void controlChosen(int controlIndex);
+    void controlClicked(ControlObject* pControl);
+
     // Gets called when a control has just been mapped successfully
     void controlMapped(QString);
   private:
-    void addControl(QString group, QString control, QString helpText);
-    void addDeckControl(QString control, QString helpText);
-    void addSamplerControl(QString control, QString helpText);
+    void showPickControl();
+    void showMapControl();
+    void populateComboBox();
+    void loadControl(const MixxxControl& control);
+
+    void addControl(QString group, QString control, QString helpText, bool addReset=false);
+    void addDeckAndSamplerControl(QString control, QString helpText, bool addReset=false);
+    void addDeckControl(QString control, QString helpText, bool addReset=false);
+    void addSamplerControl(QString control, QString helpText, bool addReset=false);
+
+    QSet<MixxxControl> m_mappedControls;
     Controller* m_pController;
-    QList<MixxxControl> m_controlsToMap;
-    int iCurrentControl; /** Used to iterate through the controls list */
-    QShortcut* m_pSkipShortcut;
+    QList<MixxxControl> m_controlsAvailable;
+    MixxxControl m_currentControl;
+    QString m_deckStr, m_samplerStr, m_resetStr;
 };
 
 #endif

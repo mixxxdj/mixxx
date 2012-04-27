@@ -33,7 +33,7 @@
 class WSliderComposed : public WAbstractControl  {
     Q_OBJECT
 public:
-    WSliderComposed(QWidget *parent=0, float defaultValue=64.0);
+    WSliderComposed(QWidget *parent=0);
     ~WSliderComposed();
     void setup(QDomNode node);
     void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
