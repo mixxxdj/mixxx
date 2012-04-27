@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-25 10:54-0400\n"
-"PO-Revision-Date: 2012-04-25 16:04+0000\n"
+"PO-Revision-Date: 2012-04-26 23:28+0000\n"
 "Last-Translator: Maxime Bochon <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-26 04:36+0000\n"
+"X-Launchpad-Export-Date: 2012-04-27 04:36+0000\n"
 "X-Generator: Launchpad (build 15149)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -521,7 +521,7 @@ msgstr "Activer la détection du tempo et des temps"
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
-msgstr "Choisir l'analyseur"
+msgstr "Choix de l'analyseur"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
@@ -549,8 +549,8 @@ msgstr ""
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
 msgstr ""
-"Activer l'analyse rapide (pour les ordinateurs lents, peut altérer la "
-"précision)"
+"Activer l'analyse rapide (recommandé pour les ordinateurs lents, mais peut "
+"altérer la précision)"
 
 #: DlgBeatsDlg#10
 msgid ""
@@ -567,7 +567,7 @@ msgstr ""
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
-msgstr "Tempo supposé constant (recommandé)"
+msgstr "Supposer le tempo constant (recommandé)"
 
 #: DlgBeatsDlg#12
 msgid ""
@@ -948,11 +948,11 @@ msgstr "Changement temporaire de taux (entre 1 et 8000) sur clic droit"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
-msgstr "Augmenter Pitchbend"
+msgstr "Variateur de hauteur progressif"
 
 #: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
-msgstr "Sensibilité du pitchbend"
+msgstr "Sensibilité du variateur de hauteur"
 
 #: DlgPrefControlsDlg#25
 msgid "Waveform Display"
@@ -1001,7 +1001,7 @@ msgstr "Form1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
-msgstr "Courbe Crossfader"
+msgstr "Courbe du curseur de mixage"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
@@ -1043,11 +1043,11 @@ msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr "EQs statique (pour processeur lent)"
+msgstr "Égaliseur statique (pour processeurs lents)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
-msgstr "High Shelf EQ"
+msgstr "Égaliseur à plateau des aigus"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
@@ -1067,7 +1067,7 @@ msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
-msgstr "Low Shelf EQ"
+msgstr "Égaliseur à plateau des graves"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
@@ -1284,17 +1284,17 @@ msgstr "150"
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr "Configuration Vinyl"
+msgstr "Configuration Vinyle"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr "Platine1 Type vinyle"
+msgstr "Type de vinyle sur la platine 1"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr "Platine2 Type vinyle"
+msgstr "Type de vinyle sur la platine 2"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
@@ -1535,11 +1535,11 @@ msgstr "Créer un fichier .cue"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr "Fractionnement du fichier"
+msgstr "Découpage du fichier"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr "Morceau enregistrer à"
+msgstr "Taille de la découpe :"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -1548,7 +1548,7 @@ msgstr "Paramètres de détection de BPM"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr "Normalisation ReplayGain"
+msgstr "Normalisation du volume perçu (méthode ReplayGain)"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
@@ -1556,19 +1556,19 @@ msgstr "Appliquer normalisation de volume aux pistes chargées."
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr "Activer Replay Gain"
+msgstr "Activer la normalisation du volume perçu"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
 msgstr ""
-"Calculer normalisation ReplayGain pour les pistes sans métadonnées "
-"ReplayGain."
+"Calculer la valeur de normalisation du volume perçu pour les morceaux sans "
+"métadonnée ReplayGain."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr "Activer analyse Replay Gain"
+msgstr "Activer l'analyse du volume perçu"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1882,15 +1882,15 @@ msgstr "Erreur de configuration"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
-msgstr "Son API"
+msgstr "Pilote audio"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr "Taux d'échantillonnage"
+msgstr "Fréquence d'échantillonnage"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
-msgstr "Conseils pour la latence"
+msgstr "Conseils concernant la latence"
 
 #: DlgPrefSoundDlg#4
 msgid ""
@@ -2020,17 +2020,17 @@ msgstr "150"
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr "Configuration Vinyl"
+msgstr "Configuration Vinyle"
 
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr "Type vinyl Lecteur 1"
+msgstr "Type de vinyle sur la platine 1"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr "Type vinyl Lecteur 2"
+msgstr "Type de vinyle sur la platine 2"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
@@ -2106,12 +2106,12 @@ msgstr "Interface"
 
 #: DlgPreferences#5
 msgid "Equalizers"
-msgstr "Equalizers"
+msgstr "Égaliseurs"
 
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Crossfader"
-msgstr "Crossfader"
+msgstr "Curseur de mixage"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
@@ -2134,7 +2134,7 @@ msgstr "Normalisation"
 #: DlgPreferences#11
 msgctxt "DlgPreferences#11"
 msgid "Vinyl Control"
-msgstr "Contrôle Vinyl"
+msgstr "Contrôle Vinyle"
 
 #: DlgPreferences#12
 msgid "Live Broadcasting"
@@ -2496,9 +2496,9 @@ msgid ""
 "Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try "
 "a different sample-rate or switch to a different encoding."
 msgstr ""
-"La diffusion à 96 Khz avec Ogg Vorbis n'est pas supportée pour le moment. "
-"Veuillez essayer un taux d’échantillonnage différent ou sélectionnez un "
-"encodage différent."
+"La diffusion à 96 kHz avec Ogg Vorbis n'est pas supportée pour le moment. "
+"Veuillez essayer avec une autre fréquence d’échantillonnage ou sélectionner "
+"un encodage différent."
 
 #: EngineShoutcast#16
 msgid ""
@@ -2849,7 +2849,7 @@ msgstr "Continuer"
 
 #: MixxxApp#18
 msgid "Load track to Deck %1"
-msgstr "Charger le morceau sur la platine %1"
+msgstr "Charger un morceau sur la platine %1"
 
 #: MixxxApp#19
 msgid "Loads a track in deck %1"
@@ -2881,7 +2881,7 @@ msgstr "Ctrl+Q"
 
 #: MixxxApp#26
 msgid "&Rescan Library"
-msgstr "&Scanner de nouveau la bibliothèque"
+msgstr "&Réanalyser la bibliothèque"
 
 #: MixxxApp#27
 msgid "Rescans library folders for changes to tracks."
@@ -2891,7 +2891,7 @@ msgstr ""
 
 #: MixxxApp#28
 msgid "Add &new playlist"
-msgstr "Ajouter &nouvelle liste de lecture"
+msgstr "Ajouter une &liste de lecture"
 
 #: MixxxApp#29
 msgid "Ctrl+N"
@@ -2899,7 +2899,7 @@ msgstr "Ctrl+N"
 
 #: MixxxApp#30
 msgid "Add new &crate"
-msgstr "Ajouter un nouveau & container"
+msgstr "Ajouter un &bac"
 
 #: MixxxApp#31
 msgid "Ctrl+C"
@@ -2915,7 +2915,7 @@ msgstr "Êtes-vous certain(e) de vouloir charger un nouveau morceau ?"
 
 #: MixxxApp#34
 msgid "&Full Screen"
-msgstr "&Plein écran"
+msgstr "Plein &écran"
 
 #: MixxxApp#35
 msgid "F11"
@@ -2940,7 +2940,7 @@ msgstr "À &propos"
 
 #: MixxxApp#40
 msgid "&Community Support"
-msgstr "Support &Communautaire"
+msgstr "Support &communautaire"
 
 #: MixxxApp#41
 msgid "Get help with Mixxx"
@@ -2948,7 +2948,7 @@ msgstr "Obtenir de l'aide sur Mixxx"
 
 #: MixxxApp#42
 msgid "&User Manual"
-msgstr "&Manuel de l'utilisateur"
+msgstr "&Manuel utilisateur"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
@@ -3005,7 +3005,7 @@ msgstr "Activer la &diffusion en direct"
 #: MixxxApp#56
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
-"Utiliser des disques vinyl encodés sur une platine externe pour controler "
+"Utiliser des disques vinyl encodés sur une platine externe pour contrôler "
 "Mixxx"
 
 #: MixxxApp#57
@@ -3022,7 +3022,7 @@ msgstr "Afficher Mixxx en plein écran"
 
 #: MixxxApp#60
 msgid "Read the Mixxx user manual."
-msgstr "Lire le manuel de l'utilisateur de Mixxx"
+msgstr "Lire le manuel utilisateur de Mixxx"
 
 #: MixxxApp#61
 msgid "Send feedback to the Mixxx team."
@@ -3062,7 +3062,7 @@ msgstr "&Aide"
 
 #: MixxxApp#70
 msgid "&Vinyl Control"
-msgstr "&Contrôle Vinyl"
+msgstr "&Contrôle Vinyle"
 
 #: MixxxApp#71
 msgid ""
@@ -3107,7 +3107,7 @@ msgstr "Morceaux manquants"
 #: MixxxLibraryFeature#2
 msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
-msgstr "Librairie"
+msgstr "Bibliothèque"
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
@@ -3183,7 +3183,7 @@ msgstr "Non valide"
 
 #: QObject#2
 msgid "Master"
-msgstr "Principal"
+msgstr "Principale"
 
 #: QObject#3
 msgid "Headphones"
@@ -3196,7 +3196,7 @@ msgstr "Platine"
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr "Contrôle Vinyl"
+msgstr "Contrôle Vinyle"
 
 #: QObject#6
 msgid "Microphone"
@@ -3290,10 +3290,11 @@ msgid ""
 "Click OK to exit."
 msgstr ""
 "Impossible d'établir une connexion de base de données.\n"
-"Mixxx exige QT avec l'assistance de SQLITE. S'il vous plaît, lisez la "
-"documentation de Qt pilote SQL pour plus d'informations sur la façon de le "
-"construire.\n"
-"Cliquez sur OK pour sortir."
+"Mixxx nécessite la prise en charge de SQLite par Qt. Merci de vous référer à "
+"la documentation du pilote SQL de Qt pour plus d'informations sur la façon "
+"de le construire.\n"
+"\n"
+"Cliquez sur OK pour quitter."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
@@ -3392,7 +3393,7 @@ msgstr "Préférences"
 #: Ui#13
 msgctxt "Ui#13"
 msgid "Crossfader"
-msgstr "Crossfader"
+msgstr "Curseur de mixage"
 
 #: Ui#14
 msgid "Master volume"
@@ -3468,7 +3469,7 @@ msgstr "Potentiomètre des aigus du Canal %1"
 
 #: Ui#32
 msgid "Mid EQ knob for Channel %1"
-msgstr "Bouton Mid EQ pour le Canal %1"
+msgstr "Potentiomètre des médiums du Canal %1"
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
@@ -3593,16 +3594,17 @@ msgstr "Basculer à la prochaine vue (librairie, playliste...)"
 
 #: Ui#63
 msgid "Switch to the previous view (library, playlist..)"
-msgstr "Basculer à la vue précédente (librairie, liste de lecture...)"
+msgstr "Basculer vers la vue précédente (bibliothèque, liste de lecture...)"
 
 #: Ui#64
 msgid "Scroll to next track in library/playlist"
-msgstr "Défiler vers la piste suivante dans la librairie / liste de lecture"
+msgstr ""
+"Défiler jusqu'au morceau suivant dans la bibliothèque/liste de lecture"
 
 #: Ui#65
 msgid "Scroll to previous track in library/playlist"
 msgstr ""
-"Défiler vers la piste précédente dans la librairie / liste de lecture"
+"Défiler jusqu'au morceau précédent dans la bibliothèque/liste de lecture"
 
 #: Ui#66
 msgid "Load selected track into first stopped player"
