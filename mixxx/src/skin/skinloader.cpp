@@ -8,7 +8,7 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
-
+#include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "playermanager.h"
 
@@ -51,12 +51,13 @@ QString SkinLoader::getConfiguredSkinPath() {
 }
 
 QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
-                                       MixxxKeyboard* pKeyboard,
-                                       PlayerManager* pPlayerManager,
-                                       Library* pLibrary,
-                                       VinylControlManager* pVCMan) {
+                                     MixxxKeyboard* pKeyboard,
+                                     PlayerManager* pPlayerManager,
+                                     ControllerManager* pControllerManager,
+                                     Library* pLibrary,
+                                     VinylControlManager* pVCMan) {
     QString skinPath = getConfiguredSkinPath();
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary, pVCMan);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pControllerManager, pLibrary, pVCMan);
     return legacy.parseSkin(skinPath, pParent);
 }

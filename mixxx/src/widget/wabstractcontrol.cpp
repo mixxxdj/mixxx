@@ -15,25 +15,10 @@
 
 #include "wabstractcontrol.h"
 
-WAbstractControl::WAbstractControl(QWidget *parent, float defaultValue)
-    : WWidget(parent)
-{
-    m_fDefaultValue = defaultValue;
+WAbstractControl::WAbstractControl(QWidget *parent)
+    : WWidget(parent) {
     m_bRightButtonPressed = false;
 }
 
-WAbstractControl::~WAbstractControl()
-{
-}
-
-void WAbstractControl::setDefaultValue(float value)
-{
-    m_fDefaultValue = value;
-}
-
-void WAbstractControl::reset()
-{
-    setValue(m_fDefaultValue);
-    emit(valueChangedLeftUp(m_fValue));
-    emit(valueChangedLeftDown(m_fValue));
+WAbstractControl::~WAbstractControl() {
 }

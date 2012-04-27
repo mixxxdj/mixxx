@@ -37,8 +37,16 @@ class ControllerLearningEventFilter : public QObject {
                             ControlObject* pControl,
                             ControlObjectThreadWidget::EmitOption emitOption);
 
+  public slots:
+    void startListening();
+    void stopListening();
+
+  signals:
+    void controlClicked(ControlObject* pControl);
+
   private:
     QHash<QWidget*, ControlInfo> m_widgetControlInfo;
+    bool m_bListening;
 };
 
 
