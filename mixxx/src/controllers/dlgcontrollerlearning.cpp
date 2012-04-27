@@ -26,12 +26,8 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));
 
-    connect(pushButtonNext, SIGNAL(clicked()), this, SLOT(pickControlNext()));
     connect(pushButtonDone, SIGNAL(clicked()), this, SLOT(pickControlDone()));
     connect(m_controlList, SIGNAL(activated(int)), this, SLOT(controlChosen(int)));
-
-    connect(pushButtonBack, SIGNAL(clicked()), this, SLOT(mapControlBack()));
-    connect(pushButtonContinue, SIGNAL(clicked()), this, SLOT(mapControlContinue()));
 
     connect(m_pController, SIGNAL(learnedMessage(QString)), this, SLOT(controlMapped(QString)));
     connect(pushButtonFinish, SIGNAL(clicked()), this, SLOT(close()));
@@ -245,20 +241,15 @@ void DlgControllerLearning::begin() {
     showPickControl();
 }
 
-void DlgControllerLearning::pickControlNext() {
-    emit(stopListeningForClicks());
-    showMapControl();
-}
-
 void DlgControllerLearning::pickControlDone() {
     emit(stopListeningForClicks());
-    stackedWidget->setCurrentIndex(3);
+    stackedWidget->setCurrentIndex(2);
 }
 
 void DlgControllerLearning::showPickControl() {
     emit(listenForClicks());
     populateComboBox();
-    pushButtonNext->setEnabled(false);
+    labelMappedTo->setText("");
     controlToMapMessage->setText("");
     stackedWidget->setCurrentIndex(1);
     m_currentControl = MixxxControl();
@@ -266,9 +257,11 @@ void DlgControllerLearning::showPickControl() {
 
 void DlgControllerLearning::loadControl(const MixxxControl& control) {
     m_currentControl = control;
-    QString message = tr("Ready to map control: %1.\n Click next to continue.").arg(m_currentControl.description());
+    QString message = tr("Ready to map: %1. Now move a control on your controller.")
+            .arg(m_currentControl.description());
     controlToMapMessage->setText(message);
-    pushButtonNext->setEnabled(true);
+    labelMappedTo->setText("");
+    emit(learn(m_currentControl));
 }
 
 void DlgControllerLearning::controlChosen(int controlIndex) {
@@ -294,31 +287,8 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
     }
 }
 
-
-void DlgControllerLearning::showMapControl() {
-    emit(learn(m_currentControl));
-    labelMixxxControl->setText(m_currentControl.description());
-    pushButtonContinue->setEnabled(false);
-    pushButtonBack->setEnabled(true);
-    labelMappedTo->setText("");
-    stackedWidget->setCurrentIndex(2);
-}
-
 void DlgControllerLearning::controlMapped(QString message) {
-    labelMappedTo->setText(tr("Successfully mapped to: ") + message);
-    pushButtonContinue->setEnabled(true);
-    pushButtonBack->setEnabled(false);
-}
-
-void DlgControllerLearning::mapControlBack() {
-    // TODO(XXX) Make sure this doesn't break anything.
-    emit(learn(MixxxControl()));
-    showPickControl();
-}
-
-void DlgControllerLearning::mapControlContinue() {
-    // Save the mapping? Currently the controller saves it itself.
-    showPickControl();
+    labelMappedTo->setText(tr("Successfully mapped to:") + " " + message);
 }
 
 void DlgControllerLearning::populateComboBox() {

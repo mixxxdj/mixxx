@@ -32,10 +32,7 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
     // Begin the learning process
     void begin();
 
-    void pickControlNext();
     void pickControlDone();
-    void mapControlContinue();
-    void mapControlBack();
     void controlChosen(int controlIndex);
     void controlClicked(ControlObject* pControl);
 
@@ -43,7 +40,6 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
     void controlMapped(QString);
   private:
     void showPickControl();
-    void showMapControl();
     void populateComboBox();
     void loadControl(const MixxxControl& control);
 
