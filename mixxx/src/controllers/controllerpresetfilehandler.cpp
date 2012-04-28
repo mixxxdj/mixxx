@@ -16,47 +16,49 @@ ControllerPreset* ControllerPresetFileHandler::load(const QString path,
     return load(XmlParse::openXMLFile(path, "controller"), deviceName, forceLoad);
 }
 
-void ControllerPresetFileHandler::addScriptFilesToPreset(
-    const QDomElement root,
-    const QString deviceName,
-    const bool forceLoad,
-    ControllerPreset* preset) const {
-    if (root.isNull())
-        return;
+QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
+                                                           const QString deviceName,
+                                                           const bool forceLoad) {
+    if (root.isNull()) {
+        return QDomElement();
+    }
 
-    // For each controller in the DOM
     QDomElement controller = root.firstChildElement("controller");
 
     // For each controller in the preset XML... (Only parse the <controller>
     // block if its id matches our device name, otherwise keep looking at the
     // next controller blocks....)
-    QString device;
     while (!controller.isNull()) {
         // Get deviceid
-        device = controller.attribute("id", "");
+        QString device = controller.attribute("id", "");
         if (device != rootDeviceName(deviceName) && !forceLoad) {
             controller = controller.nextSiblingElement("controller");
         } else {
+            qDebug() << device << "settings found";
             break;
         }
     }
+    return controller;
+}
 
-    if (!controller.isNull()) {
-        qDebug() << device << "settings found";
-        // Build a list of script files to load
-        QDomElement scriptFile = controller.firstChildElement("scriptfiles")
-                .firstChildElement("file");
+void ControllerPresetFileHandler::addScriptFilesToPreset(
+    const QDomElement& controller, ControllerPreset* preset) const {
+    if (controller.isNull())
+        return;
 
-        // Default currently required file
-        preset->addScriptFile(REQUIRED_SCRIPT_FILE, "");
+    // Build a list of script files to load
+    QDomElement scriptFile = controller.firstChildElement("scriptfiles")
+            .firstChildElement("file");
 
-        // Look for additional ones
-        while (!scriptFile.isNull()) {
-            QString functionPrefix = scriptFile.attribute("functionprefix","");
-            QString filename = scriptFile.attribute("filename","");
-            preset->addScriptFile(filename, functionPrefix);
-            scriptFile = scriptFile.nextSiblingElement("file");
-        }
+    // Default currently required file
+    preset->addScriptFile(REQUIRED_SCRIPT_FILE, "");
+
+    // Look for additional ones
+    while (!scriptFile.isNull()) {
+        QString functionPrefix = scriptFile.attribute("functionprefix","");
+        QString filename = scriptFile.attribute("filename","");
+        preset->addScriptFile(filename, functionPrefix);
+        scriptFile = scriptFile.nextSiblingElement("file");
     }
 }
 
