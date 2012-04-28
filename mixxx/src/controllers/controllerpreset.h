@@ -30,11 +30,23 @@ class ControllerPreset {
         scriptFunctionPrefixes.append(functionprefix);
     }
 
+    void setDeviceId(const QString id) {
+        m_deviceId = id;
+    }
+
+    inline QString deviceId() const {
+        return m_deviceId;
+    }
+
     virtual void accept(ControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
     // Data elements
+    // TODO(XXX) make private
     QList<QString> scriptFileNames;
     QList<QString> scriptFunctionPrefixes;
+
+  private:
+    QString m_deviceId;
 };
 #endif
