@@ -7,19 +7,19 @@ bool HidControllerPresetFileHandler::save(const HidControllerPreset& preset,
     return writeDocument(doc, fileName);
 }
 
-ControllerPreset* HidControllerPresetFileHandler::load(const QDomElement root,
-                                                       const QString deviceName,
-                                                       const bool forceLoad) {
-    HidControllerPreset* preset = new HidControllerPreset();
+ControllerPresetPointer HidControllerPresetFileHandler::load(const QDomElement root,
+                                                             const QString deviceName,
+                                                             const bool forceLoad) {
     if (root.isNull()) {
-        return preset;
+        return ControllerPresetPointer();
     }
 
     QDomElement controller = getControllerNode(root, deviceName, forceLoad);
     if (controller.isNull()) {
-        return preset;
+        return ControllerPresetPointer();
     }
 
+    HidControllerPreset* preset = new HidControllerPreset();
     addScriptFilesToPreset(controller, preset);
-    return preset;
+    return ControllerPresetPointer(preset);
 }

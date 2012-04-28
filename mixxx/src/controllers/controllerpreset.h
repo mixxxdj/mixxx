@@ -12,6 +12,7 @@
 #define CONTROLLERPRESET_H
 
 #include <QtCore>
+#include <QSharedPointer>
 
 class ControllerPresetVisitor;
 
@@ -30,12 +31,20 @@ class ControllerPreset {
         scriptFunctionPrefixes.append(functionprefix);
     }
 
-    void setDeviceId(const QString id) {
+    inline void setDeviceId(const QString id) {
         m_deviceId = id;
     }
 
     inline QString deviceId() const {
         return m_deviceId;
+    }
+
+    inline void setFilePath(const QString filePath) {
+        m_filePath = filePath;
+    }
+
+    inline QString filePath() const {
+        return m_filePath;
     }
 
     virtual void accept(ControllerPresetVisitor* visitor) const = 0;
@@ -48,5 +57,9 @@ class ControllerPreset {
 
   private:
     QString m_deviceId;
+    QString m_filePath;
 };
+
+typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;
+
 #endif

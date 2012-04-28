@@ -10,6 +10,7 @@
 
 #include "configobject.h"
 #include "controllers/controllerenumerator.h"
+#include "controllers/controllerpreset.h"
 
 //Forward declaration(s)
 class Controller;
@@ -53,6 +54,8 @@ class ControllerManager : public QObject {
     // preferences dialog on apply, and only open/close changed devices
     int slotSetUpDevices();
     void slotShutdown();
+    bool loadPreset(Controller* pController,
+                    ControllerPresetPointer preset);
     bool loadPreset(Controller* pController, const QString &filename,
                     const bool force);
     // Calls poll() on all devices that have isPolling() true.

@@ -66,6 +66,7 @@ class Controller : public QObject, ControllerPresetVisitor {
 
   signals:
     void learnedMessage(QString message);
+    void presetLoaded(const ControllerPreset* pPreset);
 
   // Making these slots protected/private ensures that other parts of Mixxx can
   // only signal them which allows us to use no locks.

@@ -13,19 +13,19 @@
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
-ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
-                                                        const QString deviceName,
-                                                        const bool forceLoad) {
-    MidiControllerPreset* preset = new MidiControllerPreset();
+ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
+                                                              const QString deviceName,
+                                                              const bool forceLoad) {
     if (root.isNull()) {
-        return preset;
+        return ControllerPresetPointer();
     }
 
     QDomElement controller = getControllerNode(root, deviceName, forceLoad);
     if (controller.isNull()) {
-        return preset;
+        return ControllerPresetPointer();
     }
 
+    MidiControllerPreset* preset = new MidiControllerPreset();
     // Superclass handles script files
     addScriptFilesToPreset(controller, preset);
 
@@ -207,7 +207,7 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
 
     qDebug() << "MidiPresetFileHandler: Output mapping parsing complete.";
 
-    return preset;
+    return ControllerPresetPointer(preset);
 }
 
 bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
