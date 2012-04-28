@@ -11,6 +11,15 @@ ControllerPreset* HidControllerPresetFileHandler::load(const QDomElement root,
                                                        const QString deviceName,
                                                        const bool forceLoad) {
     HidControllerPreset* preset = new HidControllerPreset();
-    addScriptFilesToPreset(root, deviceName, forceLoad, preset);
+    if (root.isNull()) {
+        return preset;
+    }
+
+    QDomElement controller = getControllerNode(root, deviceName, forceLoad);
+    if (controller.isNull()) {
+        return preset;
+    }
+
+    addScriptFilesToPreset(controller, preset);
     return preset;
 }

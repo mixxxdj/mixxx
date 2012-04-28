@@ -24,7 +24,7 @@ class ControllerPresetFileHandler {
      *        specified within matches the name of this Controller.
      */
     ControllerPreset* load(const QString path, const QString deviceName,
-                                   const bool forceLoad);
+                           const bool forceLoad);
 
     // Returns just the name of a given device (everything before the first
     // space)
@@ -33,6 +33,10 @@ class ControllerPresetFileHandler {
     }
 
   protected:
+    QDomElement getControllerNode(const QDomElement& root,
+                                  const QString deviceName,
+                                  const bool forceLoad);
+
     /** addScriptFilesToPreset(QDomElement,QString,bool)
      * Loads script files specified in a QDomElement structure into the supplied
      *   ControllerPreset.
@@ -42,10 +46,8 @@ class ControllerPresetFileHandler {
      *        specified within matches the name of this Controller.
      * @param preset The ControllerPreset into which the scripts should be placed.
      */
-    void addScriptFilesToPreset(const QDomElement root,
-                                 const QString deviceName,
-                                 const bool forceLoad,
-                                 ControllerPreset* preset) const;
+    void addScriptFilesToPreset(const QDomElement& root,
+                                ControllerPreset* preset) const;
 
     // Creates the XML document and includes what script files are currently
     // loaded. Sub-classes need to call this before adding any other items.
