@@ -9,11 +9,16 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/defs_controllers.h"
 
-ControllerPreset* ControllerPresetFileHandler::load(const QString path,
-                                                    const QString deviceName,
-                                                    const bool forceLoad) {
+ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
+                                                          const QString deviceName,
+                                                          const bool forceLoad) {
     qDebug() << "Loading controller preset from" << path;
-    return load(XmlParse::openXMLFile(path, "controller"), deviceName, forceLoad);
+    ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
+                                           deviceName, forceLoad);
+    if (pPreset) {
+        pPreset->setFilePath(path);
+    }
+    return pPreset;
 }
 
 QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,

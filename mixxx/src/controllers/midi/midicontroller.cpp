@@ -34,6 +34,7 @@ QString MidiController::presetExtension() {
 
 void MidiController::visit(const MidiControllerPreset* preset) {
     m_preset = *preset;
+    emit(presetLoaded(&m_preset));
 }
 
 void MidiController::clearInputMappings() {

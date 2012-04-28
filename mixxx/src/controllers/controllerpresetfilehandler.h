@@ -23,8 +23,8 @@ class ControllerPresetFileHandler {
      * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
      *        specified within matches the name of this Controller.
      */
-    ControllerPreset* load(const QString path, const QString deviceName,
-                           const bool forceLoad);
+    ControllerPresetPointer load(const QString path, const QString deviceName,
+                                 const bool forceLoad);
 
     // Returns just the name of a given device (everything before the first
     // space)
@@ -58,8 +58,8 @@ class ControllerPresetFileHandler {
 
   private:
     // Sub-classes implement this.
-    virtual ControllerPreset* load(const QDomElement root, const QString deviceName,
-                                   const bool forceLoad) = 0;
+    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName,
+                                         const bool forceLoad) = 0;
 };
 
 #endif

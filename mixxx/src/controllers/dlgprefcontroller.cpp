@@ -11,6 +11,7 @@
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
+#include "controllers/controllerpreset.h"
 #include "controllers/defs_controllers.h"
 #include "configobject.h"
 
@@ -22,13 +23,20 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
           m_pControllerManager(controllerManager),
           m_pController(controller),
           m_bDirty(false) {
+
+    connect(m_pController, SIGNAL(presetLoaded(const ControllerPreset*)),
+            this, SLOT(slotPresetLoaded(const ControllerPreset*)));
+
     //QWidget * containerWidget = new QWidget();
     //QWidget * containerWidget = new QWidget(this);
     //m_ui.setupUi(containerWidget);
     m_ui.setupUi(this);
     m_pLayout = m_ui.gridLayout_4;
-    m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
+    const ControllerPreset* pPreset = controller->getPreset();
+    m_ui.labelLoadedPreset->setText(pPreset ? pPreset->deviceId() : "");
+
+    //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
 
     //QVBoxLayout* vLayout = new QVBoxLayout(this);
     //vLayout->addWidget(containerWidget);
@@ -57,8 +65,8 @@ DlgPrefController::~DlgPrefController() {
 
 void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
     // Remove the vertical spacer since we're adding stuff
-    m_pLayout->removeItem(m_pVerticalSpacer);
-    m_pLayout->addWidget(pWidget);
+    //m_pLayout->removeItem(m_pVerticalSpacer);
+    //m_pLayout->addWidget(pWidget);
 }
 
 void DlgPrefController::slotDirty() {
@@ -118,6 +126,10 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
         emit(loadPreset(m_pController, name, true));
         // It's applied on prefs close
     }
+}
+
+void DlgPrefController::slotPresetLoaded(const ControllerPreset* preset) {
+    m_ui.labelLoadedPreset->setText(preset->deviceId());
 }
 
 void DlgPrefController::slotDeviceState(int state) {

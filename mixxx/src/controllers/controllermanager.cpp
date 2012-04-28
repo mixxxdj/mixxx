@@ -288,7 +288,6 @@ void ControllerManager::openController(Controller* pController) {
         m_pConfig->set(ConfigKey(
             "[Controller]", presetFilenameFromName(pController->getName())), 1);
     }
-
 }
 
 void ControllerManager::closeController(Controller* pController) {
@@ -301,6 +300,22 @@ void ControllerManager::closeController(Controller* pController) {
     m_pConfig->set(ConfigKey(
         "[Controller]", presetFilenameFromName(pController->getName())), 0);
 }
+
+bool ControllerManager::loadPreset(Controller* pController,
+                                   ControllerPresetPointer preset) {
+    if (!preset) {
+        return false;
+    }
+    pController->setPreset(*preset.data());
+    // Save the file path/name in the config so it can be auto-loaded at
+    // startup next time
+    m_pConfig->set(
+        ConfigKey("[ControllerPreset]",
+                  presetFilenameFromName(pController->getName())),
+        preset->filePath());
+    return true;
+}
+
 
 bool ControllerManager::loadPreset(Controller* pController,
                                    const QString &filename,
@@ -321,26 +336,22 @@ bool ControllerManager::loadPreset(Controller* pController,
                 .append("controllers/") + filenameWithExt;
     }
 
-    if (QFile::exists(filepath)) {
-        ControllerPreset* preset = handler->load(
-            filepath, filename, force);
-        if (preset == NULL) {
-            qWarning() << "Unable to load preset" << filepath;
-        } else {
-            pController->setPreset(*preset);
-            // Save the file path/name in the config so it can be auto-loaded at
-            // startup next time
-            m_pConfig->set(
-                ConfigKey("[ControllerPreset]",
-                          presetFilenameFromName(pController->getName())),
-                filepath);
-            //qDebug() << "Successfully loaded preset" << filepath;
-            return true;
-        }
+    if (!QFile::exists(filepath)) {
+        qWarning() << "Cannot find" << filenameWithExt << "in either res/"
+                   << "or the user's Mixxx directory (~/.mixxx/controllers/)";
+        return false;
     }
-    qWarning() << "Cannot find" << filenameWithExt << "in either res/"
-               << "or the user's Mixxx directory (~/.mixxx/controllers/)";
-    return false;
+
+    ControllerPresetPointer pPreset = handler->load(
+        filepath, filename, force);
+    if (!pPreset) {
+        qWarning() << "Unable to load preset" << filepath;
+        return false;
+    }
+
+    loadPreset(pController, pPreset);
+    //qDebug() << "Successfully loaded preset" << filepath;
+    return true;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {

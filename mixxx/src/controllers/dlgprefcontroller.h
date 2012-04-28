@@ -16,6 +16,7 @@
 // Forward declarations
 class Controller;
 class ControllerManager;
+class ControllerPreset;
 
 class DlgPrefController : public QWidget {
     Q_OBJECT
@@ -53,6 +54,12 @@ class DlgPrefController : public QWidget {
     bool isEnabled() const {
         return m_ui.chkEnabledDevice->isChecked();
     }
+    Ui::DlgPrefControllerDlg& getUi() {
+        return m_ui;
+    }
+
+  private slots:
+    void slotPresetLoaded(const ControllerPreset* preset);
 
   private:
     void savePreset(QString path);
