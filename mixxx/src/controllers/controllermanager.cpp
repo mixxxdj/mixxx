@@ -25,6 +25,18 @@
 // Poll every 1ms (where possible) for good controller response
 const int kPollIntervalMillis = 1;
 
+QString firstAvailableFilename(QSet<QString>& filenames,
+                               const QString originalFilename) {
+    QString filename = originalFilename;
+    int i = 1;
+    while (filenames.contains(filename)) {
+        i++;
+        filename = QString("%1--%2").arg(originalFilename, QString::number(i));
+    }
+    filenames.insert(filename);
+    return filename;
+}
+
 ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
         QObject(),
         m_pConfig(pConfig),
@@ -157,20 +169,16 @@ int ControllerManager::slotSetUpDevices() {
             pController->close();
         }
 
+        // The filename for this device name.
         const QString ofilename = presetFilenameFromName(name);
-        QString filename = ofilename;
-        int i=1;
-        while (filenames.contains(filename)) {
-            i++;
-            filename = QString("%1--%2").arg(ofilename, QString::number(i));
-        }
-        filenames.insert(filename);
+        // The first unique filename for this device (appends numbers at the end
+        // if we have already seen a controller by this name on this run of
+        // Mixxx.
+        QString filename = firstAvailableFilename(filenames, ofilename);
 
         if (!loadPreset(pController, filename, true)) {
             continue;
         }
-
-        //qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", ofilename));
 
         if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
             continue;
@@ -333,19 +341,6 @@ bool ControllerManager::loadPreset(Controller* pController,
     qWarning() << "Cannot find" << filenameWithExt << "in either res/"
                << "or the user's Mixxx directory (~/.mixxx/controllers/)";
     return false;
-}
-
-
-QString firstAvailableFilename(QSet<QString>& filenames,
-                               const QString originalFilename) {
-    QString filename = originalFilename;
-    int i = 1;
-    while (filenames.contains(filename)) {
-        i++;
-        filename = QString("%1--%2").arg(originalFilename, QString::number(i));
-    }
-    filenames.insert(filename);
-    return filename;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {
