@@ -19,6 +19,8 @@ ControllerPreset* ControllerPresetFileHandler::load(const QString path,
 QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
                                                            const QString deviceName,
                                                            const bool forceLoad) {
+    // All callers of this method as of 4/2012 provide forceLoad true so the
+    // deviceId check is not really used.
     if (root.isNull()) {
         return QDomElement();
     }
@@ -45,6 +47,9 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
     const QDomElement& controller, ControllerPreset* preset) const {
     if (controller.isNull())
         return;
+
+    QString deviceId = controller.attribute("id", "");
+    preset->setDeviceId(deviceId);
 
     // Build a list of script files to load
     QDomElement scriptFile = controller.firstChildElement("scriptfiles")
