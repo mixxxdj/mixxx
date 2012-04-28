@@ -11,7 +11,6 @@
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
-#include "controllers/controllerpreset.h"
 #include "controllers/defs_controllers.h"
 #include "configobject.h"
 
@@ -24,15 +23,15 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
           m_pController(controller),
           m_bDirty(false) {
 
-    connect(m_pController, SIGNAL(presetLoaded(const ControllerPreset*)),
-            this, SLOT(slotPresetLoaded(const ControllerPreset*)));
+    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
+            this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
 
     //QWidget * containerWidget = new QWidget();
     //QWidget * containerWidget = new QWidget(this);
     //m_ui.setupUi(containerWidget);
     m_ui.setupUi(this);
     m_pLayout = m_ui.gridLayout_4;
-    const ControllerPreset* pPreset = controller->getPreset();
+    const ControllerPresetPointer pPreset = controller->getPreset();
     m_ui.labelLoadedPreset->setText(pPreset ? pPreset->deviceId() : "");
 
     //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -128,7 +127,7 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
     }
 }
 
-void DlgPrefController::slotPresetLoaded(const ControllerPreset* preset) {
+void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(preset->deviceId());
 }
 
