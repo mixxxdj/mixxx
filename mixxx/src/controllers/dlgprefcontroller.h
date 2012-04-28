@@ -10,13 +10,13 @@
 
 #include <QtGui>
 
+#include "controllers/controllerpreset.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 
 // Forward declarations
 class Controller;
 class ControllerManager;
-class ControllerPreset;
 
 class DlgPrefController : public QWidget {
     Q_OBJECT
@@ -59,7 +59,7 @@ class DlgPrefController : public QWidget {
     }
 
   private slots:
-    void slotPresetLoaded(const ControllerPreset* preset);
+    void slotPresetLoaded(ControllerPresetPointer preset);
 
   private:
     void savePreset(QString path);

@@ -46,6 +46,8 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
         m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
         m_pollTimer(this) {
 
+    qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
+
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__

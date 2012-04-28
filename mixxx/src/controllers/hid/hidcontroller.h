@@ -43,9 +43,10 @@ class HidController : public Controller {
     HidController(const hid_device_info deviceInfo);
     virtual ~HidController();
 
-    virtual const ControllerPreset* getPreset() const {
-        // TODO(XXX) clone the preset
-        return &m_preset;
+    virtual ControllerPresetPointer getPreset() const {
+        HidControllerPreset* pClone = new HidControllerPreset();
+        *pClone = m_preset;
+        return ControllerPresetPointer(pClone);
     }
 
     virtual bool savePreset(const QString fileName) const;
@@ -56,6 +57,10 @@ class HidController : public Controller {
 
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
+
+    virtual bool isMappable() const {
+        return m_preset.isMappable();
+    }
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
@@ -73,6 +78,13 @@ class HidController : public Controller {
     virtual bool isPolling() const {
         return false;
     }
+
+    // Returns a pointer to the currently loaded controller preset. For internal
+    // use only.
+    virtual ControllerPreset* preset() {
+        return &m_preset;
+    }
+
 
     // Local copies of things we need from hid_device_info
     int hid_interface_number;
