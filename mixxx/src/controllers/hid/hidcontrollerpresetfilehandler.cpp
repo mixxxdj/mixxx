@@ -20,6 +20,7 @@ ControllerPresetPointer HidControllerPresetFileHandler::load(const QDomElement r
     }
 
     HidControllerPreset* preset = new HidControllerPreset();
+    parsePresetInfo(root, preset);
     addScriptFilesToPreset(controller, preset);
     return ControllerPresetPointer(preset);
 }

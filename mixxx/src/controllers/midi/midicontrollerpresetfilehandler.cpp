@@ -26,7 +26,9 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
     }
 
     MidiControllerPreset* preset = new MidiControllerPreset();
-    // Superclass handles script files
+
+    // Superclass handles parsing <info> tag and script files
+    parsePresetInfo(root, preset);
     addScriptFilesToPreset(controller, preset);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");

@@ -37,6 +37,9 @@ class ControllerPresetFileHandler {
                                   const QString deviceName,
                                   const bool forceLoad);
 
+    void parsePresetInfo(const QDomElement& root,
+                         ControllerPreset* preset) const;
+
     /** addScriptFilesToPreset(QDomElement,QString,bool)
      * Loads script files specified in a QDomElement structure into the supplied
      *   ControllerPreset.

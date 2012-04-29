@@ -1,4 +1,7 @@
 <MixxxMIDIPreset mixxxVersion="1.8.0+" schemaVersion="1">
+  <info>
+    <name>DJ-Tech i-Mix Reload</name>
+  </info>
   <controller id="DJ-Tech i-Mix Reload">
     <scriptfiles>
       <file filename="DJ-Tech-i-Mix-Reload-scripts.js" functionprefix="DJTechiMixReload"/>

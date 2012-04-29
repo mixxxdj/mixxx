@@ -21,6 +21,29 @@ ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
     return pPreset;
 }
 
+void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
+                                                  ControllerPreset* preset) const {
+    if (root.isNull() || !preset) {
+        return;
+    }
+
+    QDomElement info = root.firstChildElement("info");
+    if (info.isNull()) {
+        return;
+    }
+
+    QString mixxxVersion = root.attribute("mixxxVersion", "");
+    preset->setMixxxVersion(mixxxVersion);
+    QString schemaVersion = root.attribute("schemaVersion", "");
+    preset->setSchemaVersion(schemaVersion);
+    QDomElement name = info.firstChildElement("name");
+    preset->setName(name.isNull() ? "" : name.text());
+    QDomElement author = info.firstChildElement("author");
+    preset->setAuthor(author.isNull() ? "" : author.text());
+    QDomElement description = info.firstChildElement("description");
+    preset->setDescription(description.isNull() ? "" : description.text());
+}
+
 QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
                                                            const QString deviceName,
                                                            const bool forceLoad) {
@@ -97,16 +120,38 @@ bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
     return true;
 }
 
+void addTextTag(QDomDocument& doc, QDomElement& holder,
+                QString tagName, QString tagText) {
+    QDomElement tag = doc.createElement(tagName);
+    QDomText textNode = doc.createTextNode(tagText);
+    tag.appendChild(textNode);
+    holder.appendChild(tag);
+}
+
 QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerPreset& preset,
                                                                const QString deviceName) const {
     QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<MixxxControllerPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\">\n"
+        "<MixxxControllerPreset>\n"
         "</MixxxControllerPreset>\n";
-
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
+    rootNode.setAttribute("schemaVersion", XML_SCHEMA_VERSION);
+    rootNode.setAttribute("mixxxVersion", preset.mixxxVersion());
+
+    QDomElement info = doc.createElement("info");
+    rootNode.appendChild(info);
+    if (preset.name().length() > 0) {
+        addTextTag(doc, info, "name", preset.name());
+    }
+    if (preset.author().length() > 0) {
+        addTextTag(doc, info, "author", preset.author());
+    }
+    if (preset.description().length() > 0) {
+        addTextTag(doc, info, "description", preset.description());
+    }
+
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
     controller.setAttribute("id", rootDeviceName(deviceName));
