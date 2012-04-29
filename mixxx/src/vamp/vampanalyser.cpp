@@ -5,6 +5,7 @@
  *      Author: Vittorio Colao
  */
 
+#include <QDir>
 #include <QtDebug>
 #include <QDesktopServices>
 #include <QCoreApplication>
@@ -38,9 +39,9 @@ void VampAnalyser::initializePluginPaths() {
         QDesktopServices::HomeLocation);
     QString applicationPath = QCoreApplication::applicationDirPath();
 #ifdef __WINDOWS__
-    QDir vampPath(applicationPath);
-    if (vampPath.cd("plugins") && vampPath.cd("vamp")) {
-        pathElements << vampPath.absolutePath().replace("/","\\");
+    QDir winVampPath(applicationPath);
+    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
+        pathElements << winVampPath.absolutePath().replace("/","\\");
     }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
