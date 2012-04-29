@@ -755,8 +755,11 @@ class MixxxCore(Feature):
         # Say where to find resources on Unix. TODO(XXX) replace this with a
         # RESOURCE_PATH that covers Win and OSX too:
         if build.platform_is_linux or build.platform_is_bsd:
-            share_path = os.path.join(SCons.ARGUMENTS.get('prefix', '/usr/local'), 'share/mixxx')
+            prefix = SCons.ARGUMENTS.get('prefix', '/usr/local')
+            share_path = os.path.join(prefix, 'share/mixxx')
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
+            lib_path = os.path.join(prefix, 'lib/mixxx')
+            build.env.Append(CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
