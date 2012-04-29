@@ -409,9 +409,9 @@ void WaveformWidgetFactory::evaluateWidgets() {
         if (widget) {
             QString widgetName = widget->getWaveformWidgetName();
             if (widget->useOpenGLShaders()) {
-                widgetName += " " + WaveformWidgetAbstract::s_openGlShaderFlag;
+                widgetName += " " + tr("(GLSL)");
             } else if (widget->useOpenGl()) {
-                widgetName += " " + WaveformWidgetAbstract::s_openGlFlag;
+                widgetName += " " + tr("(GL)");
             }
 
             // add new handle for each available widget type
