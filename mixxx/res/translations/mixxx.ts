@@ -1438,6 +1438,61 @@
 <context>
     <name>DlgPrefControls</name>
     <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="81"/>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="82"/>
+        <source>Remaining</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="150"/>
+        <source>Don&apos;t load tracks into a playing deck</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="151"/>
+        <source>Load tracks into playing decks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="168"/>
+        <source>CDJ Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="169"/>
+        <source>Simple</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="176"/>
+        <source>On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="177"/>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
+        <source>Mixxx Detected a WVGA Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
+        <source>Mixxx has detected that your screen has a resolution of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="200"/>
+        <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/dlgprefcontrols.cpp" line="277"/>
         <source>This skin does not support schemes</source>
         <translation type="unfinished"></translation>
@@ -1962,57 +2017,13 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DlgPrefPlaylist</name>
     <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="163"/>
+        <location filename="../../src/dlgprefplaylist.cpp" line="153"/>
         <source>Choose music library directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="197"/>
-        <source>Multiple iPods Detected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="198"/>
-        <source>Mixxx has detected another iPod. 
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="199"/>
-        <source>Choose Yes to use the newly found iPod @ </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="200"/>
-        <source> or to continue to search for other iPods. 
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="201"/>
-        <source>Choose No to use the existing iPod @ </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="202"/>
-        <source> and end detection. 
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="220"/>
-        <source>Choose iPod mount point</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DlgPrefPlaylistDlg</name>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="14"/>
-        <source>Form3</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../../src/dlgprefplaylistdlg.ui" line="77"/>
         <source>Audio File Formats</source>
@@ -2059,24 +2070,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="214"/>
-        <source>iPod</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="232"/>
-        <source>iPod mountpoint</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/dlgprefplaylistdlg.ui" line="67"/>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="261"/>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="271"/>
-        <source>Detect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2761,63 +2756,68 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="195"/>
+        <location filename="../../src/dlgpreferences.cpp" line="66"/>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreferences.cpp" line="194"/>
         <source>Sound Hardware</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="201"/>
+        <location filename="../../src/dlgpreferences.cpp" line="200"/>
         <source>Controllers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="207"/>
+        <location filename="../../src/dlgpreferences.cpp" line="206"/>
         <source>Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="213"/>
+        <location filename="../../src/dlgpreferences.cpp" line="212"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="219"/>
+        <location filename="../../src/dlgpreferences.cpp" line="218"/>
         <source>Equalizers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="225"/>
+        <location filename="../../src/dlgpreferences.cpp" line="224"/>
         <source>Crossfader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="231"/>
+        <location filename="../../src/dlgpreferences.cpp" line="230"/>
         <source>Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="239"/>
+        <location filename="../../src/dlgpreferences.cpp" line="238"/>
         <source>Beat Detection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="245"/>
+        <location filename="../../src/dlgpreferences.cpp" line="244"/>
         <source>BPM Detection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="251"/>
+        <location filename="../../src/dlgpreferences.cpp" line="250"/>
         <source>Normalization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="260"/>
-        <location filename="../../src/dlgpreferences.cpp" line="268"/>
+        <location filename="../../src/dlgpreferences.cpp" line="259"/>
+        <location filename="../../src/dlgpreferences.cpp" line="267"/>
         <source>Vinyl Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="276"/>
+        <location filename="../../src/dlgpreferences.cpp" line="275"/>
         <source>Live Broadcasting</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2893,27 +2893,27 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../src/dlgrecording.ui" line="51"/>
-        <location filename="../../src/dlgrecording.cpp" line="165"/>
+        <location filename="../../src/dlgrecording.cpp" line="163"/>
         <source>Start Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="61"/>
+        <location filename="../../src/dlgrecording.cpp" line="59"/>
         <source>Start recording here ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="160"/>
+        <location filename="../../src/dlgrecording.cpp" line="158"/>
         <source>Stop Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="175"/>
+        <location filename="../../src/dlgrecording.cpp" line="173"/>
         <source>Recording to file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="177"/>
+        <location filename="../../src/dlgrecording.cpp" line="175"/>
         <source>MB written</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4130,69 +4130,6 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/library/traktor/traktorfeature.cpp" line="650"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Ui</name>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="81"/>
-        <source>Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="82"/>
-        <source>Remaining</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="176"/>
-        <source>On</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="177"/>
-        <source>Off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="150"/>
-        <source>Don&apos;t load tracks into a playing deck</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="151"/>
-        <source>Load tracks into playing decks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="168"/>
-        <source>CDJ Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="169"/>
-        <source>Simple</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
-        <source>Mixxx Detected a WVGA Screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
-        <source>Mixxx has detected that your screen has a resolution of </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="200"/>
-        <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgpreferences.cpp" line="67"/>
-        <source>Preferences</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
