@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>Midi-Keyboard.midi.xml</name>
+    <name>MIDI Keyboard</name>
     <author>Auto-converted by madjesta's PHP script</author>
     <description>Automatic conversion of the file Midi-Keyboard.midi.xml for Mixxx 1.6.2</description>
   </info>
@@ -24,7 +24,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x24</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>reverse</key>
@@ -36,7 +36,7 @@
         <key>reverse</key>
         <status>0x80</status>
         <midino>0x26</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>back</key>
@@ -60,7 +60,7 @@
         <key>fwd</key>
         <status>0x80</status>
         <midino>0x29</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_down</key>
@@ -72,7 +72,7 @@
         <key>rate_perm_down</key>
         <status>0x80</status>
         <midino>0x2b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_up</key>
@@ -84,7 +84,7 @@
         <key>rate_perm_up</key>
         <status>0x80</status>
         <midino>0x2c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_down</key>
@@ -96,7 +96,7 @@
         <key>rate_temp_down</key>
         <status>0x80</status>
         <midino>0x2d</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
@@ -108,7 +108,7 @@
         <key>rate_temp_up</key>
         <status>0x80</status>
         <midino>0x2e</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_default</key>
@@ -120,7 +120,7 @@
         <key>cue_default</key>
         <status>0x80</status>
         <midino>0x2f</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>flanger</key>
@@ -132,7 +132,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x34</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>play</key>
@@ -144,7 +144,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x3c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>reverse</key>
@@ -156,7 +156,7 @@
         <key>reverse</key>
         <status>0x80</status>
         <midino>0x3e</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>back</key>
@@ -168,7 +168,7 @@
         <key>back</key>
         <status>0x80</status>
         <midino>0x40</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>fwd</key>
@@ -180,7 +180,7 @@
         <key>fwd</key>
         <status>0x80</status>
         <midino>0x41</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_down</key>
@@ -192,7 +192,7 @@
         <key>rate_perm_down</key>
         <status>0x80</status>
         <midino>0x43</midino>
-      </control>     
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_up</key>
@@ -204,7 +204,7 @@
         <key>rate_perm_up</key>
         <status>0x80</status>
         <midino>0x44</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_down</key>
@@ -216,7 +216,7 @@
         <key>rate_temp_down</key>
         <status>0x80</status>
         <midino>0x45</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_up</key>
@@ -228,7 +228,7 @@
         <key>rate_temp_up</key>
         <status>0x80</status>
         <midino>0x46</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_default</key>
@@ -240,7 +240,7 @@
         <key>cue_default</key>
         <status>0x80</status>
         <midino>0x47</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>flanger</key>
@@ -252,7 +252,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x4c</midino>
-      </control>      
+      </control>
     </controls>
   </controller>
 </MixxxMIDIPreset>

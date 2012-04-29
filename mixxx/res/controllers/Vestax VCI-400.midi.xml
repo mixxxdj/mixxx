@@ -1,6 +1,6 @@
 <MixxxMIDIPreset mixxxVersion="1.10.0+" schemaVersion="1">
     <info>
-		<name>Vestax VCI-400.midi.xml</name>
+		<name>Vestax VCI-400</name>
 		<author>Tobias Rafreider</author>
 		<description>Controller mapping for Vestax VCI-400</description>
 	</info>
@@ -93,7 +93,7 @@
                      <Script-Binding />
                 </options>
             </control>
-            
+
 <!-- HOT CUE ACTIVATE BUTTONS -->
             <control>
                 <status>0x92</status>
@@ -217,7 +217,7 @@
                     <normal/>
                 </options>
             </control>
-            <!-- Channel 2-->           
+            <!-- Channel 2-->
             <control>
                 <status>0x93</status>
                 <midino>0x15</midino>
@@ -321,7 +321,7 @@
                     <Script-Binding />
                 </options>
             </control>
-                  
+
              <!-- CUE buttons -->
              <control>
                 <status>0x92</status>
@@ -403,7 +403,7 @@
                 <options>
                     <Script-Binding />
                 </options>
-            </control>        
+            </control>
             <!-- PLATTER MOVE -->
             <control>
                 <status>0xB2</status>
@@ -444,7 +444,7 @@
                 <options>
                     <Script-Binding />
                 </options>
-            </control>               
+            </control>
             <control>
                 <status>0xb3</status>
                 <midino>0xd</midino>
@@ -497,7 +497,7 @@
                 </options>
             </control>
             <!-- END BEAT LOOP -->
-            
+
             <control>
                 <status>0xb3</status>
                 <midino>0xe</midino>
@@ -538,7 +538,7 @@
                     <normal/>
                 </options>
             </control>
-            
+
             <control>
                 <status>0xb2</status>
                 <midino>0xd</midino>

@@ -22,13 +22,20 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
           m_pControllerManager(controllerManager),
           m_pController(controller),
           m_bDirty(false) {
+
+    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
+            this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
+
     //QWidget * containerWidget = new QWidget();
     //QWidget * containerWidget = new QWidget(this);
     //m_ui.setupUi(containerWidget);
     m_ui.setupUi(this);
     m_pLayout = m_ui.gridLayout_4;
-    m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
+    const ControllerPresetPointer pPreset = controller->getPreset();
+    m_ui.labelLoadedPreset->setText(presetShortName(pPreset));
+
+    //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
 
     //QVBoxLayout* vLayout = new QVBoxLayout(this);
     //vLayout->addWidget(containerWidget);
@@ -55,10 +62,26 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
 DlgPrefController::~DlgPrefController() {
 }
 
+QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset) const {
+    QString presetName = tr("None");
+    if (pPreset) {
+        QString name = pPreset->name();
+        QString author = pPreset->author();
+        if (name.length() > 0 && author.length() > 0) {
+            presetName = tr("%1 by %2").arg(pPreset->name(), pPreset->author());
+        } else if (name.length() > 0) {
+            presetName = name;
+        } else if (pPreset->filePath().length() > 0) {
+            presetName = tr("Custom Preset");
+        }
+    }
+    return presetName;
+}
+
 void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
     // Remove the vertical spacer since we're adding stuff
-    m_pLayout->removeItem(m_pVerticalSpacer);
-    m_pLayout->addWidget(pWidget);
+    //m_pLayout->removeItem(m_pVerticalSpacer);
+    //m_pLayout->addWidget(pWidget);
 }
 
 void DlgPrefController::slotDirty() {
@@ -118,6 +141,10 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
         emit(loadPreset(m_pController, name, true));
         // It's applied on prefs close
     }
+}
+
+void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
+    m_ui.labelLoadedPreset->setText(presetShortName(preset));
 }
 
 void DlgPrefController::slotDeviceState(int state) {

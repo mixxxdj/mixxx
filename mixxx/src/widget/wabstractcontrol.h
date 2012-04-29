@@ -22,15 +22,9 @@
 class WAbstractControl : public WWidget {
    Q_OBJECT
 public:
-    WAbstractControl(QWidget *parent=0, float defaultValue=0.);
+    WAbstractControl(QWidget *parent=0);
     ~WAbstractControl();
-    /** Sets the default value to be used when resetting the value */
-    void setDefaultValue(float value);
 protected:
-    /** Resets the widgets value */
-    void reset();
-    /** Default value to be used when resetting the knob */
-    float m_fDefaultValue;
     /** True if right mouse button is pressed */
     bool m_bRightButtonPressed;
 };

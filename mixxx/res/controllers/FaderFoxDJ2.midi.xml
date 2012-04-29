@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>FaderFoxDJ2.midi.xml</name>
+    <name>FaderFox DJ2</name>
     <author>Auto-converted by madjesta's PHP script</author>
     <description>Automatic conversion of the file FaderFoxDJ2.midi.xml for Mixxx 1.6.2</description>
   </info>
@@ -37,7 +37,7 @@
         <status>0xB0</status>
         <midino>0x07</midino>
         <options>
-		
+
 	</options>
       </control>
       <control>
@@ -46,7 +46,7 @@
         <status>0xB0</status>
         <midino>0x1b</midino>
         <options>
-		
+
 	</options>
       </control>
       <control>
@@ -55,7 +55,7 @@
         <status>0xB0</status>
         <midino>0x0e</midino>
         <options>
-		
+
 	</options>
         <sensitivity>700</sensitivity>
       </control>
@@ -70,7 +70,7 @@
         <key>rate_temp_up</key>
         <status>0x80</status>
         <midino>0x1c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_down</key>
@@ -82,7 +82,7 @@
         <key>rate_temp_down</key>
         <status>0x80</status>
         <midino>0x1c</midino>
-      </control>         
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up_small</key>
@@ -94,7 +94,7 @@
         <key>rate_temp_up_small</key>
         <status>0x80</status>
         <midino>0x2b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_down_small</key>
@@ -202,7 +202,7 @@
         <key>reverse</key>
         <status>0x80</status>
         <midino>0x14</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>flanger</key>
@@ -221,7 +221,7 @@
         <status>0xB0</status>
         <midino>0x0a</midino>
         <options>
-		
+
 	</options>
       </control>
       <control>
@@ -230,7 +230,7 @@
         <status>0xB0</status>
         <midino>0x1c</midino>
         <options>
-		
+
 	</options>
       </control>
       <control>
@@ -239,7 +239,7 @@
         <status>0xB0</status>
         <midino>0x0f</midino>
         <options>
-        
+
     </options>
         <sensitivity>700</sensitivity>
       </control>
@@ -254,7 +254,7 @@
         <key>rate_temp_up</key>
         <status>0x80</status>
         <midino>0x3a</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_down</key>
@@ -266,7 +266,7 @@
         <key>rate_temp_down</key>
         <status>0x80</status>
         <midino>0x3b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_up_small</key>
@@ -278,7 +278,7 @@
         <key>rate_temp_up_small</key>
         <status>0x80</status>
         <midino>0x49</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_down_small</key>
@@ -290,7 +290,7 @@
         <key>rate_temp_down_small</key>
         <status>0x80</status>
         <midino>0x4a</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>play</key>
@@ -302,7 +302,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x38</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_set</key>
@@ -314,7 +314,7 @@
         <key>cue_set</key>
         <status>0x80</status>
         <midino>0x3f</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_preview</key>
@@ -326,7 +326,7 @@
         <key>cue_preview</key>
         <status>0x80</status>
         <midino>0x36</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_goto</key>
@@ -338,7 +338,7 @@
         <key>cue_goto</key>
         <status>0x80</status>
         <midino>0x37</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>filterLow</key>

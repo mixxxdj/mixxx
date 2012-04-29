@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>Hercules DJ Console Mac Edition.midi.xml</name>
+    <name>Hercules DJ Console Mac Edition</name>
     <author>Auto-converted by madjesta's PHP script</author>
     <description>Automatic conversion of the file Hercules DJ Console Mac Edition.midi.xml for Mixxx 1.6.2</description>
   </info>
@@ -19,7 +19,7 @@
         <status>0xB1</status>
         <midino>0x2b</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -52,7 +52,7 @@
         <status>0xB1</status>
         <midino>0x2d</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -61,7 +61,7 @@
         <status>0xB1</status>
         <midino>0x08</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -70,7 +70,7 @@
         <status>0xB1</status>
         <midino>0x09</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -79,7 +79,7 @@
         <status>0xB1</status>
         <midino>0x15</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -106,7 +106,7 @@
         <status>0xB1</status>
         <midino>0x13</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -115,7 +115,7 @@
         <status>0xB1</status>
         <midino>0x14</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -124,7 +124,7 @@
         <status>0xB1</status>
         <midino>0x2c</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -157,7 +157,7 @@
         <status>0xB1</status>
         <midino>0x2e</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -166,7 +166,7 @@
         <status>0xB1</status>
         <midino>0x02</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -175,7 +175,7 @@
         <status>0xB1</status>
         <midino>0x03</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -184,7 +184,7 @@
         <status>0xB1</status>
         <midino>0x19</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -211,7 +211,7 @@
         <status>0xB1</status>
         <midino>0x17</midino>
         <options>
-				
+
 			</options>
       </control>
       <control>
@@ -220,7 +220,7 @@
         <status>0xB1</status>
         <midino>0x18</midino>
         <options>
-				
+
 			</options>
       </control>
     </controls>

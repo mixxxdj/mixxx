@@ -12,7 +12,6 @@
 
 Controller::Controller()
         : QObject(),
-          m_pConfig(NULL),
           m_pEngine(NULL),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
@@ -64,22 +63,22 @@ void Controller::stopEngine()
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset() {
+void Controller::applyPreset(QString configPath) {
     qDebug() << "Applying controller preset...";
 
-    const ControllerPreset* preset = getPreset();
+    const ControllerPreset* pPreset = preset();
 
     // Load the script code into the engine
     if (m_pEngine != NULL) {
         const QStringList scriptFunctions = m_pEngine->getScriptFunctions();
-        if (scriptFunctions.isEmpty() && preset->scriptFileNames.isEmpty()) {
+        if (scriptFunctions.isEmpty() && pPreset->scriptFileNames.isEmpty()) {
             qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         } else {
             if (scriptFunctions.isEmpty()) {
-                m_pEngine->loadScriptFiles(m_pConfig->getConfigPath(),
-                                           preset->scriptFileNames);
+                m_pEngine->loadScriptFiles(configPath,
+                                           pPreset->scriptFileNames);
             }
-            m_pEngine->initializeScripts(preset->scriptFunctionPrefixes);
+            m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
         }
     } else {
         qWarning() << "Controller::applyPreset(): No engine exists!";

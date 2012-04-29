@@ -1,4 +1,7 @@
 <MixxxMIDIPreset mixxxVersion="1.10.0-beta1+" schemaVersion="1">
+    <info>
+        <name>American Audio Radius 2000 CH2</name>
+    </info>
     <controller id="Radius 2000 MIDI 1">
         <scriptfiles>
             <file functionprefix="RADIUS2000" filename="American-Audio-RADIUS-2000-scripts.js"/>

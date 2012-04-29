@@ -22,8 +22,8 @@
 #include "dlgprefnovinyl.h"
 
 DlgPrefNoVinyl::DlgPrefNoVinyl(QWidget * parent, SoundManager * soundman,
-                           ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefNoVinylDlg()
-{
+                               ConfigObject<ConfigValue> * _config)
+        : QWidget(parent) {
     setupUi(this);
 }
 

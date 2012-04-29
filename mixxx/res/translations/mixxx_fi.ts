@@ -9,6 +9,82 @@
         </message>
     </context>
     <context>
+        <name>BasePlaylistFeature</name>
+        <message>
+            <source>New Playlist</source>
+            <translation>Uusi soittolista</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation>Lisää auto-dj jonon loppuun</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation>Lisää auto-dj jonon alkuun</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Poista</translation>
+        </message>
+        <message>
+            <source>Rename</source>
+            <translation>Muuta nimeä</translation>
+        </message>
+        <message>
+            <source>Lock</source>
+            <translation>Lukitse</translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>Tuo soittolista</translation>
+        </message>
+        <message>
+            <source>Export Playlist</source>
+            <translation>Vie soittolista</translation>
+        </message>
+        <message>
+            <source>Rename Playlist</source>
+            <translation>Nimeä soittolista uudelleen</translation>
+        </message>
+        <message>
+            <source>New playlist name:</source>
+            <translation>Soittolistan uusi nimi:</translation>
+        </message>
+        <message>
+            <source>Renaming Playlist Failed</source>
+            <translation>Soittolistan uudelleennimeäminen epäonnistui</translation>
+        </message>
+        <message>
+            <source>A playlist by that name already exists.</source>
+            <translation>Samanniminen soittolista on jo olemassa.</translation>
+        </message>
+        <message>
+            <source>A playlist cannot have a blank name.</source>
+            <translation>Nimi ei voi olla tyhjä</translation>
+        </message>
+        <message>
+            <source>Playlist name:</source>
+            <translation>Soittolistan nimi:</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation>Soittolistan luonti epäonnistui</translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation>Tapahtui tuntematon virhe luotaessa soittolistaa: </translation>
+        </message>
+        <message>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation>m3u-soittolista (*.m3u);;m3u8-soittolista (*.m3u8);;pls-soittolista (*.pls);;CSV-tekstitiedosto (*.csv);;Luettava tekstitiedost (*.txt)</translation>
+        </message>
+    </context>
+    <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
@@ -24,11 +100,15 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Levyn nimi</translation>
+            <translation>Levy</translation>
         </message>
         <message>
             <source>Genre</source>
             <translation>Tyylilaji</translation>
+        </message>
+        <message>
+            <source>Composer</source>
+            <translation>Säveltäjä</translation>
         </message>
         <message>
             <source>Year</source>
@@ -44,7 +124,7 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation>Lisätietoja</translation>
+            <translation>Kommentti</translation>
         </message>
         <message>
             <source>Duration</source>
@@ -52,7 +132,7 @@
         </message>
         <message>
             <source>Rating</source>
-            <translation>Luokitus</translation>
+            <translation>Arvostelu</translation>
         </message>
         <message>
             <source>Bitrate</source>
@@ -64,7 +144,7 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation>Raidan #</translation>
+            <translation>Kappalenumero</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -75,15 +155,23 @@
             <translation>#</translation>
         </message>
         <message>
+            <source>Timestamp</source>
+            <translation>Aikaleima</translation>
+        </message>
+        <message>
             <source>Key</source>
-            <translation>Näppäin</translation>
+            <translation>Sävellaji</translation>
+        </message>
+        <message>
+            <source>BPM Lock</source>
+            <translation>BPM-lukitus</translation>
         </message>
     </context>
     <context>
         <name>BaseTrackPlayer</name>
         <message>
             <source>Couldn't load track.</source>
-            <translation>Raitaa ei voitu ladata</translation>
+            <translation>Kappaletta ei voitu ladata.</translation>
         </message>
     </context>
     <context>
@@ -114,7 +202,7 @@
         </message>
         <message>
             <source>Documents</source>
-            <translation>Dokumentit</translation>
+            <translation>Asiakirjat</translation>
         </message>
         <message>
             <source>Desktop</source>
@@ -156,6 +244,10 @@
             <translation>Tyylilaji</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation>Säveltäjä</translation>
+        </message>
+        <message>
             <source>Comment</source>
             <translation>Kommentti</translation>
         </message>
@@ -177,7 +269,7 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Laatu</translation>
+            <translation>Bittinopeus</translation>
         </message>
         <message>
             <source>Location</source>
@@ -252,12 +344,11 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tapahtui tuntematon virhe luotaessa levylaukkua </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation>Vaihda levylaukun nimi</translation>
+            <translation>Muuta levylaukun nimeä</translation>
         </message>
         <message>
             <source>New crate name:</source>
@@ -268,17 +359,16 @@
             <translation>Levylaukun nimeäminen epäonnistui</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation>Soittolistatiedostot (*.m3u, *.m3u8 ja *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>Soittolistatiedostot (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation>M3u-soittolista (*.m3u);; m3u8-soittolista (*.m3u8);;Pls-soittolista (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation>m3u-soittolista (*.m3u);;m3u8-soittolista (*.m3u8);;pls-soittolista (*.pls);;CSV-tekstitiedosto (*.csv);;Luettava tekstitiedosto (*.txt)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Levylaukun nimi ei voi olla tyhjä</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
@@ -296,20 +386,6 @@
             <translation>Tietoja Mixxxistä</translation>
         </message>
         <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
-        </message>
-        <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
             <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Mixxxin verkkosivut&lt;/a&gt;</translation>
         </message>
@@ -317,8 +393,56 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>DlgAutoDJ</name>
         <message>
+            <source>Auto-DJ</source>
+            <translation>Auto-DJ</translation>
+        </message>
+        <message>
+            <source>One player must be stopped to enable Auto-DJ mode.</source>
+            <translation>Yksi soitin täytyy pysäyttää auto-DJ -tilan käynnistämiseksi.</translation>
+        </message>
+        <message>
             <source>Disable Auto DJ</source>
             <translation>Poista auto-DJ käytöstä</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist.</source>
+            <translation>Sekoita auto-DJ -listan kappalejärjestys.</translation>
+        </message>
+        <message>
+            <source>Shuffle</source>
+            <translation>Sekoita</translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist.</source>
+            <translation>Ohita seuraava kappale auto-DJ -listalla</translation>
+        </message>
+        <message>
+            <source>Skip Track</source>
+            <translation>Ohita kappale</translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track.</source>
+            <translation>Käynnistä siirtyminen seuraavaan kappaleeseen.</translation>
+        </message>
+        <message>
+            <source>Fade Now</source>
+            <translation>Ristiinhäivytä heti</translation>
+        </message>
+        <message>
+            <source>Determines the duration of the transition.</source>
+            <translation>Määrittää siirtymän keston.</translation>
+        </message>
+        <message>
+            <source>Seconds</source>
+            <translation>sekuntia</translation>
+        </message>
+        <message>
+            <source>sec.</source>
+            <translation>sek.</translation>
+        </message>
+        <message>
+            <source>Turn Auto DJ on or off.</source>
+            <translation>Määritä onko auto-DJ käytössä.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -328,13 +452,96 @@ p, li { white-space: pre-wrap; }
             <source>Manage</source>
             <translation>Hallitse</translation>
         </message>
+    </context>
+    <context>
+        <name>DlgBeatsDlg</name>
         <message>
-            <source>Shuffle playlist</source>
-            <translation>Sekoita soittolista</translation>
+            <source>Beat Detection Settings</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Add tracks to the queue below...</source>
-            <translation>Lisää raidat alla olevaan jonoon...</translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable BPM and Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose Analyser</source>
+            <translation>Valitse analysaattori</translation>
+        </message>
+        <message>
+            <source>Beat Analyser:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose beween different algorithms to detect beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Analyser Settings</source>
+            <translation>Analysaattorin asetukset</translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Assume constant tempo (Recommended)</source>
+            <translation>Oleta tasainen tempo (suositus)</translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Offset Correction (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beats already present (e.g. from 3rd-party programs or older Mixxx versions)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Range</source>
+            <translation>Tempoalue</translation>
+        </message>
+        <message>
+            <source>Min:</source>
+            <translation>Min:</translation>
+        </message>
+        <message>
+            <source>Max:</source>
+            <translation>Max:</translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation>Palauta oletusarvot</translation>
         </message>
     </context>
     <context>
@@ -349,7 +556,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Range</source>
-            <translation>Tempoalue</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Max</source>
@@ -663,6 +871,56 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Pitchbend sensitivity</source>
             <translation>Nopeuden säädön herkkyys</translation>
+        </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Frame Rate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>OpenGl status</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Display type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Default zoom</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>400%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1223,7 +1481,8 @@ toista ja lähetä linkkitiedot</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Salli suora lähettäminen nettiradioon</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1513,7 +1772,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation>Palauta oletukset</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1673,8 +1933,14 @@ p, li { white-space: pre-wrap; }
             <translation>Äänitys</translation>
         </message>
         <message>
+            <source>Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>BPM Detection</source>
-            <translation>Temponmääritys</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Normalization</source>
@@ -1682,7 +1948,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation>Ohjainlevy</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Live Broadcasting</source>
@@ -1759,6 +2026,16 @@ p, li { white-space: pre-wrap; }
             <source>Stop Recording</source>
             <translation>Lopeta tallennus</translation>
         </message>
+        <message>
+            <source>Recording to file: </source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>MB written</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
@@ -1793,6 +2070,11 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Genre:</source>
             <translation>Tyylilaji:</translation>
+        </message>
+        <message>
+            <source>Composer:</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Filename:</source>
@@ -1856,7 +2138,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Position</source>
-            <translation>Kohta</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Hotcue</source>
@@ -1897,6 +2180,14 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>&amp;Next &gt;&gt;</source>
             <translation>&amp;Seuraava &gt;&gt;</translation>
+        </message>
+    </context>
+    <context>
+        <name>EmptyWaveformWidget</name>
+        <message>
+            <source>Empty</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1952,6 +2243,81 @@ p, li { white-space: pre-wrap; }
             <translation>Virhe asetettaessa ei-esto moodia</translation>
         </message>
         <message>
+            <source>Error setting hostname!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting port!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting password!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting mount!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting username!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream name!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream description!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream genre!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream url!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting bitrate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: unknown server protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: libshout only supports Shoutcast with MP3 format!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Lost connection to streaming server</source>
             <translation>Yhteys lähettävään palvelimeen katkesi</translation>
         </message>
@@ -1997,6 +2363,30 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Question</source>
             <translation>Kysymys</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2183,56 +2573,9 @@ p, li { white-space: pre-wrap; }
             <translation>Mixxx</translation>
         </message>
         <message>
-            <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation>Mixxxin kehitystyö hyötyy käyttäjien palautteesta. Halutessasi Mixxx voi automaattisesti lähettää tietoa käyttökokemuksestasi kehittäjäyhteisölle. Otetaanko tämä toiminto käyttöön?</translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation>Kyllä</translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation>Ei</translation>
-        </message>
-        <message>
-            <source>Privacy Policy</source>
-            <translation>Tietosuojakäytäntö</translation>
-        </message>
-        <message>
-            <source>Mixxx: Privacy Policy</source>
-            <translation>Mixxx: tietosuojakäytäntö</translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
-The hardware information will include:
-	- CPU model and features
-	- Total/Available Amount of RAM
-	- Available disk space
-	- OS version
-Your usage information will include:
-	- Settings/Preferences
-	- Internal errors
-	- Internal debugging messages
-	- Performance statistics (average latency, CPU usage)
-This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
-</source>
-            <translation>Mixxx:n kehitys tapahtuu yhteisön palautteen perusteella. Kehittääksemme Mixxx:iä, luvallasi keräämme tietoa laitteistostasi ja Mixxx:n käytöstä. Tätä tietoa käytetään korjaamaan virheitä, parantamaan ominaisuuksia ja määrittämään järjestelmävaatimuksia myöhempiin versioihin. Lisäksi tietoja voidaan käyttää kasaamaan tilastotietoja.
-Laitteisto tiedot sisältävät:
-	- Prosessorin malli ja ominaisuudet
-	- Kaikki/käytettävissä oleva muisti
-	- Käyetettävissä oleva kiintolevytila
-	- Käyttöjärjestelmän version
-Käyttäjä tiedot sisältävät:
-	- Asetukset
-	- Sisäiset virheet
-	- Sisäiset virheenkorjaus viestit
-	- Suoritustehokkuuden tilastot (keskimääräinen viive, prosessorin käyttö)
-Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaan tai millään muulla tavalla häiritsemään sinua.
-</translation>
-        </message>
-        <message>
             <source>Choose music library directory</source>
-            <translation>Määritä musiikkikokoelman sijainti</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
@@ -2275,20 +2618,42 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
             <translation>Sulje</translation>
         </message>
         <message>
+            <source>No Output Devices</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Continue</source>
             <translation>Jatka</translation>
         </message>
         <message>
-            <source>&amp;Load Song (Player 1)...</source>
-            <translation>Lataa kappale soittimeen 1</translation>
+            <source>Load track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loads a track in deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Open</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+O</source>
             <translation>Ctrl+O</translation>
-        </message>
-        <message>
-            <source>&amp;Load Song (Player 2)...</source>
-            <translation>Lataa kappale soittimeen 2</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2299,12 +2664,22 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
             <translation>Sulje</translation>
         </message>
         <message>
+            <source>Quits Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Ctrl+Q</source>
             <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
             <translation>Lue kokoelma uudelleen</translation>
+        </message>
+        <message>
+            <source>Rescans library folders for changes to tracks.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Add &amp;new playlist</source>
@@ -2323,24 +2698,18 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
             <translation>Ctrl+C</translation>
         </message>
         <message>
-            <source>&amp;Import playlist</source>
-            <translation>Tuo soittolista</translation>
+            <source>Deck %1 is currently playing a track.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Ctrl+I</source>
-            <translation>Ctrl+I</translation>
-        </message>
-        <message>
-            <source>&amp;Audio Beat Marks</source>
-            <translation>&amp;Äänen tahtimerkit</translation>
+            <source>Are you sure you want to load a new track?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Full Screen</source>
             <translation>Kokoruututila</translation>
-        </message>
-        <message>
-            <source>Ctrl+F</source>
-            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>F11</source>
@@ -2349,6 +2718,11 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
         <message>
             <source>&amp;Preferences</source>
             <translation>Asetukset</translation>
+        </message>
+        <message>
+            <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+P</source>
@@ -2361,6 +2735,11 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
         <message>
             <source>&amp;Community Support</source>
             <translation>%Yhteisötuki</translation>
+        </message>
+        <message>
+            <source>Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;User Manual</source>
@@ -2376,25 +2755,12 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
             <translation>&amp;Käännä tätä ohjelmaa kielellesi</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 1</source>
-            <translation>Käytä %Levyohjainta 1</translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 2</source>
-            <translation>Käytä %Levyohjainta 2</translation>
-        </message>
-        <message>
             <source>Ctrl+U</source>
             <translation>Ctrl+U</translation>
-        </message>
-        <message>
-            <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2409,144 +2775,51 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
             <translation>Ctrl+R</translation>
         </message>
         <message>
-            <source>Show Studio</source>
-            <translation>Näytä studio</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 1</source>
-            <translation>Lataa kappaleen soittimeen 1</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 1</source>
-            <translation>Lataa
-Lataa kappaleen soittimeen 1</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 2</source>
-            <translation>Lataa kappaleen soittimeen 2</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 2</source>
-            <translation>Lataa
-Lataa kappaleen soittimeen 2</translation>
-        </message>
-        <message>
-            <source>Quits the application</source>
-            <translation>Sulkee sovelluksen</translation>
-        </message>
-        <message>
-            <source>Exit
-Quits the application</source>
-            <translation>Sulje
-Sulkee sovelluksen</translation>
-        </message>
-        <message>
-            <source>Rescans the song library</source>
-            <translation>Hakee kappale kirjastoa uudelleen</translation>
-        </message>
-        <message>
-            <source>Rescan library
-Rescans the song library</source>
-            <translation>Hae kirjasto uudelleen
-Hakee kappale kirjastoa uudelleen</translation>
-        </message>
-        <message>
             <source>Create a new playlist</source>
             <translation>Luo uusi soittolista</translation>
-        </message>
-        <message>
-            <source>New playlist
-Create a new playlist</source>
-            <translation>Uusi soittolista
-Luo uuden soittolistan.</translation>
         </message>
         <message>
             <source>Create a new crate</source>
             <translation>Luo uusi levylaukku</translation>
         </message>
         <message>
-            <source>New crate
-Create a new crate.</source>
-            <translation>Uusi levylaukku
-Luo uuden levylaukun.</translation>
+            <source>Ctrl+Shift+F</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Import playlist</source>
-            <translation>Tuo soittolista</translation>
+            <source>Enable Vinyl Control &amp;1</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Audio Beat Marks</source>
-            <translation>Äänen tahtimerkit</translation>
+            <source>Enable Vinyl Control &amp;2</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Audio Beat Marks
-Mark beats by audio clicks</source>
-            <translation>Äänen tahtimerkit
-Merkitse tahdit äänen perusteella</translation>
-        </message>
-        <message>
-            <source>Activate Vinyl Control</source>
-            <translation>Vinyyliohjaus</translation>
+            <source>Enable live &amp;broadcasting</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
             <translation>Mixxxin ohjaus aikakoodilevyjen avulla</translation>
         </message>
         <message>
-            <source>Activate live broadcasting</source>
-            <translation>Aktivoi live lähetys</translation>
-        </message>
-        <message>
             <source>Stream your mixes to a shoutcast or icecast server</source>
             <translation>Lähetä miksauksesi shoutcast tai icecast palvelimeen</translation>
-        </message>
-        <message>
-            <source>Start Recording your Mix</source>
-            <translation>Aloita nauhoittamaan miksauksesi</translation>
         </message>
         <message>
             <source>Record your mix to a file</source>
             <translation>Nauhoita miksauksesi tiedostoon</translation>
         </message>
         <message>
-            <source>Full Screen</source>
-            <translation>Kokoruututila</translation>
-        </message>
-        <message>
             <source>Display Mixxx using the full screen</source>
             <translation>Näytä Mixxx kokoruutu tilassa</translation>
         </message>
         <message>
-            <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences
-Playback and MIDI preferences</source>
-            <translation>Asetukset
-Toisto ja MIDI asetukset</translation>
-        </message>
-        <message>
-            <source>Support...</source>
-            <translation>Tuki...</translation>
-        </message>
-        <message>
-            <source>Support
-Get help with Mixxx</source>
-            <translation>Tuki
-Saa apua Mixxx:n käyttöön</translation>
-        </message>
-        <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Read the Mixxx user manual.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2555,40 +2828,17 @@ Read the Mixxx user manual.</source>
             <translation>Lähetä palautetta Mixxx- tiimille</translation>
         </message>
         <message>
-            <source>Support
-Send feedback to the Mixxx team.</source>
-            <translation>Tuki
-Lähetä palautetta Mixxx- tiimille</translation>
-        </message>
-        <message>
             <source>Help translate this application into your language.</source>
             <translation>Auta tämän ohjelman kääntämisessä kielellesi</translation>
-        </message>
-        <message>
-            <source>Support
-Help translate this application into your language.</source>
-            <translation>Tuki
-Auta tämän ohjelman kääntämisessä kielellesi</translation>
         </message>
         <message>
             <source>About the application</source>
             <translation>Tietoja sovelluksesta</translation>
         </message>
         <message>
-            <source>About
-About the application</source>
-            <translation>Tietoja
-Tietoja sovelluksesta</translation>
-        </message>
-        <message>
-            <source>Shows the macro studio window</source>
-            <translation>Näyttää makro studio ikkunan</translation>
-        </message>
-        <message>
-            <source>Show Studio
-Makes the macro studio visible</source>
-            <translation>Näytä studio
-Näyttää makro studio ikkunan</translation>
+            <source>A sampler is currently playing. Exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;File</source>
@@ -2611,40 +2861,8 @@ Näyttää makro studio ikkunan</translation>
             <translation>Ohje</translation>
         </message>
         <message>
-            <source>&amp;Macro</source>
-            <translation>Makro</translation>
-        </message>
-        <message>
             <source>&amp;Vinyl Control</source>
             <translation>&amp;Levyohjain</translation>
-        </message>
-        <message>
-            <source>Quit...</source>
-            <translation>Sulje...</translation>
-        </message>
-        <message>
-            <source>Do your really want to quit?</source>
-            <translation>Haluatko todella lopettaa?</translation>
-        </message>
-        <message>
-            <source>Player 1 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>Soitin 1 soittaa parhaillaan kappaletta.
-Haluatko varmasti ladata uuden kappaleen?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 1</source>
-            <translation>Lataa kappale soittimeen 1</translation>
-        </message>
-        <message>
-            <source>Player 2 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>Soitin 2 soittaa parhaillaan kappaletta.
-Haluatko varmasti ladata uuden kappaleen?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 2</source>
-            <translation>Lataa kappale soittimeen 2</translation>
         </message>
         <message>
             <source>No input device(s) select.
@@ -2689,8 +2907,36 @@ Valitse äänikorttisi äänilaitteiden hallinnassa</translation>
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
+            <source>Missing Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Library</source>
-            <translation>Kirjasto</translation>
+            <translation>Kokoelma</translation>
+        </message>
+    </context>
+    <context>
+        <name>ParserCsv</name>
+        <message>
+            <source>Location</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Playlist Export Failed</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Could not create file</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Readable text Export Failed</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2731,31 +2977,7 @@ Valitse äänikorttisi äänilaitteiden hallinnassa</translation>
     <context>
         <name>PlaylistFeature</name>
         <message>
-            <source>New Playlist</source>
-            <translation>Uusi soittolista</translation>
-        </message>
-        <message>
-            <source>Add to Auto-DJ Queue</source>
-            <translation>Lisää Auto-DJ jonoon</translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation>Poista</translation>
-        </message>
-        <message>
-            <source>Rename</source>
-            <translation>Nimeä uudelleen</translation>
-        </message>
-        <message>
             <source>Lock</source>
-            <translation>Lukitse</translation>
-        </message>
-        <message>
-            <source>Import Playlist</source>
-            <translation>Tuo soittolista</translation>
-        </message>
-        <message>
-            <source>Export Playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2765,49 +2987,8 @@ Valitse äänikorttisi äänilaitteiden hallinnassa</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation>Vapauta</translation>
-        </message>
-        <message>
-            <source>Playlist name:</source>
-            <translation>Soittolistan nimi:</translation>
-        </message>
-        <message>
-            <source>Playlist Creation Failed</source>
-            <translation>Soittolistan luominen epäonnistui</translation>
-        </message>
-        <message>
-            <source>A playlist cannot have a blank name.</source>
-            <translation>Nimi ei voi olla tyhjä</translation>
-        </message>
-        <message>
-            <source>An unknown error occurred while creating playlist: </source>
-            <translation>Tapahtui tuntematon virhe luotaessa soittolistaa: </translation>
-        </message>
-        <message>
-            <source>Rename Playlist</source>
-            <translation>Nimeä soittolista uudelleen</translation>
-        </message>
-        <message>
-            <source>New playlist name:</source>
-            <translation>Soittolistan uusi nimi:</translation>
-        </message>
-        <message>
-            <source>Renaming Playlist Failed</source>
-            <translation>Soittolistan uudelleennimeäminen epäonnistui</translation>
-        </message>
-        <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist by that name already exists.</source>
-            <translation>Samanniminen soittolista on jo olemassa.</translation>
         </message>
     </context>
     <context>
@@ -2850,6 +3031,16 @@ Valitse äänikorttisi äänilaitteiden hallinnassa</translation>
         <message>
             <source>Unknown path type %1</source>
             <translation>Tuntematon polkutyyppi %1</translation>
+        </message>
+        <message>
+            <source>(GL)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(GLSL)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2898,46 +3089,34 @@ Valitse äänikorttisi äänilaitteiden hallinnassa</translation>
         </message>
     </context>
     <context>
-        <name>ScriptStudio</name>
+        <name>SetlogFeature</name>
         <message>
-            <source>Mixxx Script Studio</source>
-            <translation>Mixxx koodi studio</translation>
+            <source>Join with previous</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>File</source>
-            <translation>Tiedosto</translation>
+            <source>Set Logs</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Edit</source>
-            <translation>Muokkaa</translation>
+            <source>Unlock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Run</source>
-            <translation>Suorita</translation>
+            <source>Lock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
+    </context>
+    <context>
+        <name>SoftwareWaveformWidget</name>
         <message>
-            <source>Close</source>
-            <translation>Sulje</translation>
-        </message>
-        <message>
-            <source>Import...</source>
-            <translation>Tuo...</translation>
-        </message>
-        <message>
-            <source>Export...</source>
-            <translation>Vie...</translation>
-        </message>
-        <message>
-            <source>Delete Macro</source>
-            <translation>Poista makro</translation>
-        </message>
-        <message>
-            <source>New Macro...</source>
-            <translation>Uusi makro...</translation>
-        </message>
-        <message>
-            <source>Run Macro</source>
-            <translation>Suorita makro</translation>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3020,7 +3199,8 @@ Valitse OK lopettaaksesi.</translation>
         </message>
         <message>
             <source>Simple</source>
-            <translation>Yksinkertainen</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
@@ -3036,7 +3216,8 @@ Valitse OK lopettaaksesi.</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Asetukset</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -3304,6 +3485,15 @@ Valitse OK lopettaaksesi.</translation>
     <context>
         <name>WSearchLineEdit</name>
         <message>
+            <source>Ctrl+F</source>
+            <translation>Ctrl+F</translation>
+        </message>
+        <message>
+            <source>Esc</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Search...</source>
             <translation>Etsi...</translation>
         </message>
@@ -3331,12 +3521,33 @@ Valitse OK lopettaaksesi.</translation>
             <translation>Ominaisuudet...</translation>
         </message>
         <message>
-            <source>Add to Auto DJ Queue</source>
-            <translation>Lisää Auto-DJ jonoon</translation>
+            <source>Add to Auto-DJ Queue (bottom)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (top)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
             <translation>Lataa kappaleen metadata uudelleen</translation>
+        </message>
+        <message>
+            <source>Lock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unlock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear BPM and Beatgrid</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

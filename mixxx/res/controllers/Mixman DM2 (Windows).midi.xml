@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>Mixman DM2 (Windows).midi.xml</name>
+    <name>Mixman DM2 (Windows)</name>
     <author>Auto-converted by madjesta's PHP script</author>
     <description>Automatic conversion of the file Mixman DM2 (Windows).midi.xml for Mixxx 1.6.2</description>
   </info>
@@ -24,7 +24,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x24</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>reverse</key>
@@ -36,7 +36,7 @@
         <key>reverse</key>
         <status>0x80</status>
         <midino>0x26</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_down</key>
@@ -48,7 +48,7 @@
         <key>rate_perm_down</key>
         <status>0x80</status>
         <midino>0x2b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_up</key>
@@ -60,7 +60,7 @@
         <key>rate_perm_up</key>
         <status>0x80</status>
         <midino>0x2c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_down_small</key>
@@ -72,7 +72,7 @@
         <key>rate_perm_down_small</key>
         <status>0x80</status>
         <midino>0x35</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_perm_up_small</key>
@@ -84,7 +84,7 @@
         <key>rate_perm_up_small</key>
         <status>0x80</status>
         <midino>0x36</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_set</key>
@@ -96,7 +96,7 @@
         <key>cue_set</key>
         <status>0x80</status>
         <midino>0x2f</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_preview</key>
@@ -108,7 +108,7 @@
         <key>cue_preview</key>
         <status>0x80</status>
         <midino>0x30</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_goto</key>
@@ -120,7 +120,7 @@
         <key>cue_goto</key>
         <status>0x80</status>
         <midino>0x32</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>flanger</key>
@@ -132,7 +132,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x34</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>wheel</key>
@@ -150,7 +150,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x3c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>reverse</key>
@@ -162,7 +162,7 @@
         <key>reverse</key>
         <status>0x80</status>
         <midino>0x3e</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_down</key>
@@ -174,7 +174,7 @@
         <key>rate_perm_down</key>
         <status>0x80</status>
         <midino>0x43</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_up</key>
@@ -186,7 +186,7 @@
         <key>rate_perm_up</key>
         <status>0x80</status>
         <midino>0x44</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_down_small</key>
@@ -198,7 +198,7 @@
         <key>rate_perm_down_small</key>
         <status>0x80</status>
         <midino>0x4d</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_perm_up_small</key>
@@ -210,7 +210,7 @@
         <key>rate_perm_up_small</key>
         <status>0x80</status>
         <midino>0x4e</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_set</key>
@@ -222,7 +222,7 @@
         <key>cue_set</key>
         <status>0x80</status>
         <midino>0x47</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_preview</key>
@@ -234,7 +234,7 @@
         <key>cue_preview</key>
         <status>0x80</status>
         <midino>0x48</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_goto</key>
@@ -246,7 +246,7 @@
         <key>cue_goto</key>
         <status>0x80</status>
         <midino>0x4a</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>flanger</key>
@@ -258,7 +258,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x4c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>wheel</key>

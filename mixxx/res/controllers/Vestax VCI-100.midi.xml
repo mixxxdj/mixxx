@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0+">
   <info>
-    <name>Vestax VCI-100.midi.xml</name>
+    <name>Vestax VCI-100</name>
     <author>Anders Gunnarsson</author>
     <description>Preliminary controller mapping for Vestax VCI-100 with scripts</description>
   </info>
@@ -40,7 +40,7 @@
         <status>0xB0</status>
         <midino>0x1f</midino>
       </control>
-      
+
       <!-- Loop & Hotcues -->
       <control>
         <group>[Master]</group>
@@ -96,7 +96,7 @@
            <Script-Binding/>
         </options>
       </control>
-      
+
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI100.loopMode</key>
@@ -169,7 +169,7 @@
            <Script-Binding/>
         </options>
       </control>
-      
+
       <control>
         <group>[Flanger]</group>
         <key>lfoDepth</key>
@@ -277,7 +277,7 @@
         <key>cue_goto</key>
         <status>0x80</status>
         <midino>0x33</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_preview</key>
@@ -289,7 +289,7 @@
         <key>cue_preview</key>
         <status>0x80</status>
         <midino>0x34</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_set</key>
@@ -301,7 +301,7 @@
         <key>cue_set</key>
         <status>0x80</status>
         <midino>0x35</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>pfl</key>
@@ -313,7 +313,7 @@
         <key>pfl</key>
         <status>0x80</status>
         <midino>0x48</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>back</key>
@@ -325,7 +325,7 @@
         <key>back</key>
         <status>0x80</status>
         <midino>0x42</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>fwd</key>
@@ -337,7 +337,7 @@
         <key>fwd</key>
         <status>0x80</status>
         <midino>0x44</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>beatsync</key>
@@ -349,7 +349,7 @@
         <key>beatsync</key>
         <status>0x80</status>
         <midino>0x46</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>flanger</key>
@@ -361,7 +361,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x4a</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>LoadSelectedTrack</key>
@@ -373,7 +373,7 @@
         <key>LoadSelectedTrack</key>
         <status>0x80</status>
         <midino>0x60</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_up</key>
@@ -385,7 +385,7 @@
         <key>rate_temp_up</key>
         <status>0x80</status>
         <midino>0x3a</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>rate_temp_down</key>
@@ -397,7 +397,7 @@
         <key>rate_temp_down</key>
         <status>0x80</status>
         <midino>0x3b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>volume</key>
@@ -475,7 +475,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x36</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_goto</key>
@@ -487,7 +487,7 @@
         <key>cue_goto</key>
         <status>0x80</status>
         <midino>0x37</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_preview</key>
@@ -499,7 +499,7 @@
         <key>cue_preview</key>
         <status>0x80</status>
         <midino>0x38</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_set</key>
@@ -511,7 +511,7 @@
         <key>cue_set</key>
         <status>0x80</status>
         <midino>0x39</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>pfl</key>
@@ -523,7 +523,7 @@
         <key>pfl</key>
         <status>0x80</status>
         <midino>0x49</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>back</key>
@@ -535,7 +535,7 @@
         <key>back</key>
         <status>0x80</status>
         <midino>0x45</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>fwd</key>
@@ -547,13 +547,13 @@
         <key>fwd</key>
         <status>0x80</status>
         <midino>0x43</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>fwd</key>
         <status>0x80</status>
         <midino>0x43</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>beatsync</key>
@@ -565,7 +565,7 @@
         <key>beatsync</key>
         <status>0x80</status>
         <midino>0x47</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>flanger</key>
@@ -577,7 +577,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x4b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>LoadSelectedTrack</key>
@@ -589,7 +589,7 @@
         <key>LoadSelectedTrack</key>
         <status>0x80</status>
         <midino>0x61</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_up</key>
@@ -601,7 +601,7 @@
         <key>rate_temp_up</key>
         <status>0x80</status>
         <midino>0x3c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>rate_temp_down</key>
@@ -613,7 +613,7 @@
         <key>rate_temp_down</key>
         <status>0x80</status>
         <midino>0x3d</midino>
-      </control>      
+      </control>
       <control>
         <group>[Flanger]</group>
         <key>lfoDepth</key>
@@ -643,7 +643,7 @@
         <key>SelectNextTrack</key>
         <status>0x80</status>
         <midino>0x5d</midino>
-      </control>      
+      </control>
       <control>
         <group>[Playlist]</group>
         <key>SelectPrevTrack</key>
@@ -655,7 +655,7 @@
         <key>SelectPrevTrack</key>
         <status>0x80</status>
         <midino>0x5c</midino>
-      </control>      
+      </control>
     </controls>
   </controller>
 </MixxxMIDIPreset>
