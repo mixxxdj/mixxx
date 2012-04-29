@@ -406,6 +406,10 @@ class Vamp(Feature):
 
         build.env.Append(CPPDEFINES = '__VAMP__')
 
+        # Needed on Linux at least. Maybe needed elsewhere?
+        if build.platform_is_linux and not conf.CheckLib(['ld', 'libld']):
+                raise Exception('Could not find libld or the libld development headers.')
+
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
         have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
