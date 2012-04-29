@@ -68,10 +68,11 @@ class HID(Feature):
         # internal one.
         build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
 
-        if build.platform_is_linux and (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or not conf.CheckHeader('libusb-1.0/libusb.h')):
+        if build.platform_is_linux and (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+                                        not conf.CheckHeader('libusb-1.0/libusb.h')):
             raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
-        elif build.platform_is_windows and not conf.CheckLib(['hidapi', 'libhidapi']):
-            raise Exception('Did not find HIDAPI development library, exiting!')
+        elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
+            raise Exception('Did not find the setupapi library, exiting.')
 
         build.env.Append(CPPDEFINES = '__HID__')
 
@@ -81,8 +82,9 @@ class HID(Feature):
                    'controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
         if build.platform_is_windows:
-            # This doesn't work. You need to build it in MSVS like all the other dependencies
-            # sources.append("#lib/hidapi-0.7.0/windows/hid.c")
+            # Requires setupapi.lib which is included by the above check for
+            # setupapi.
+            sources.append("#lib/hidapi-0.7.0/windows/hid.c")
             return sources
         elif build.platform_is_linux:
             build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
