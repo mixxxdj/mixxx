@@ -1,8 +1,11 @@
 <!--Numark MixTrack Mixxx Mapping v0.1 1/11/2010 Matteo matteo@magm3.com -->
 <MixxxMIDIPreset mixxxVersion="1.8.1+" schemaVersion="1">
+  <info>
+    <name>Numark MIXTRACK</name>
+  </info>
     <controller id="Numark Mix Track MIDI 1">
         <scriptfiles>
-            <file functionprefix="NumarkMixTrack" filename="Numark-MixTrack-scripts.js"/> 
+            <file functionprefix="NumarkMixTrack" filename="Numark-MixTrack-scripts.js"/>
         </scriptfiles>
         <controls>
 	 <control>
@@ -40,7 +43,7 @@
                 <options>
                     <invert/>
                 </options>
-            </control>   
+            </control>
             <control>
                 <status>0xb0</status>
                 <midino>0x1a</midino>
@@ -300,7 +303,7 @@
                 </options>
             </control>
 
-      
+
             <control>
                 <status>0x90</status>
                 <midino>0x63</midino>
@@ -505,7 +508,7 @@
                 </options>
             </control>-
 
-      
+
             <control>
                 <status>0x90</status>
                 <midino>0x64</midino>

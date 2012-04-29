@@ -410,8 +410,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Loads the skin as a child of m_pView
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
-        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
-        //
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
         qCritical("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
@@ -1199,6 +1198,7 @@ void MixxxApp::slotHelpAbout() {
 "Akash Shetye<br>"
 "Pascal Bleser<br>"
 "Florian Mahlknecht<br>"
+"Ben Clark<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1359,6 +1359,7 @@ void MixxxApp::rebootMixxxView() {
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                                            m_pKeyboard,
                                                            m_pPlayerManager,
+                                                           m_pControllerManager,
                                                            m_pLibrary,
                                                            m_pVCManager))) {
 

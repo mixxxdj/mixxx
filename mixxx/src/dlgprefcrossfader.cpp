@@ -34,10 +34,9 @@
 #define CONFIG_KEY "[Mixer Profile]"
 
 DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config)
-  : QWidget(parent)
-  , Ui::DlgPrefCrossfaderDlg()
-  , m_COTCurve(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve")))
-  , m_COTCalibration(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration")))
+        : QWidget(parent)
+        , m_COTCurve(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve")))
+        , m_COTCalibration(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration")))
 {
     config = _config;
     m_pxfScene = NULL;
@@ -47,12 +46,12 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
 
     setupUi(this);
 
-	connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
+    connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
 
-	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
+    connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
 
     //Update the crossfader curve graph and other setings when the crossfader mode is changed.
     connect(radioButtonSlowFade,        SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));

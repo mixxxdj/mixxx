@@ -34,6 +34,7 @@ QQueue<ControlObject*> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject() :
     m_dValue(0),
+    m_dDefaultValue(0),
     m_bIgnoreNops(true) {
 }
 

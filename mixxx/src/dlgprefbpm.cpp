@@ -33,8 +33,8 @@
 
 #define CONFIG_KEY "[BPM]"
 
-DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefBPMDlg()
-{
+DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config)
+        : QWidget(parent) {
     config = _config;
 
     setupUi(this);

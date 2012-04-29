@@ -392,6 +392,94 @@
     </message>
 </context>
 <context>
+    <name>ControllerEngine</name>
+    <message>
+        <location filename="../../src/controllers/controllerengine.cpp" line="432"/>
+        <source>Uncaught exception at line %1 in file %2: %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controllerengine.cpp" line="438"/>
+        <source>Uncaught exception at line %1 in passed code: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controllerengine.cpp" line="461"/>
+        <source>Controller script error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controllerengine.cpp" line="462"/>
+        <source>A control you just used is not working properly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controllerengine.cpp" line="463"/>
+        <source>&lt;html&gt;(The script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ControllerMappingDlg</name>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="23"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="62"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="75"/>
+        <source>The below box is under construction and will remain empty in this version of Mixxx.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="88"/>
+        <source>Controls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="100"/>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="199"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="113"/>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="209"/>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="123"/>
+        <source>Learning Wizard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="155"/>
+        <source>Clear all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="174"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="190"/>
+        <source>Outputs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefmappablecontrollerdlg.ui" line="232"/>
+        <source>Clear All</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CrateFeature</name>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="31"/>
@@ -622,7 +710,7 @@
     </message>
     <message>
         <location filename="../../src/dlgprefbeatsdlg.ui" line="70"/>
-        <source>Choose beween different algorithms to detect beats.</source>
+        <source>Choose between different algorithms to detect beats.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -725,83 +813,480 @@
     </message>
 </context>
 <context>
-    <name>DlgMidiLearning</name>
+    <name>DlgControllerLearning</name>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="138"/>
-        <location filename="../../src/dlgmidilearning.cpp" line="169"/>
-        <location filename="../../src/dlgmidilearning.cpp" line="189"/>
-        <source>Skip</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="26"/>
+        <source>Controller Learning Wizard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="118"/>
-        <location filename="../../src/dlgmidilearning.cpp" line="204"/>
-        <source>Successfully mapped to: </source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="45"/>
+        <source>Click any control in the Mixxx interface or choose one from the list. Then move a control on your controller to map it. Repeat this as many times as you wish. When you are finished mapping controls, click Done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="208"/>
-        <source>Next</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="103"/>
+        <source>Done</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="13"/>
-        <source>MIDI Learning Wizard</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="132"/>
+        <source>To map another control click a button or choose from the list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="32"/>
-        <source>Welcome to the MIDI Learning Wizard</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="145"/>
+        <source>Choose Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="42"/>
-        <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx&apos;s controls.</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="37"/>
+        <source>Deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="71"/>
-        <source>Begin</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="38"/>
+        <source>Sampler %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="95"/>
-        <source>Please tweak the control for:</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="39"/>
+        <source>reset to default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="108"/>
-        <source>Mixxx Control</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="42"/>
+        <source>Mixer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="131"/>
-        <source>Previous</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="43"/>
+        <source>Crossfader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="145"/>
-        <source>Press spacebar to proceed or skip.</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="44"/>
+        <source>Master volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="178"/>
-        <source>MIDI learning complete!</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="45"/>
+        <source>Master balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="188"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="46"/>
+        <source>Headphone volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgmidilearning.ui" line="216"/>
-        <source>Finito!</source>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="47"/>
+        <source>Headphone mix (pre/main)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="50"/>
+        <source>Transport</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="51"/>
+        <source>Strip-search through track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="52"/>
+        <source>Play button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="53"/>
+        <source>Volume fader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="54"/>
+        <source>Fast rewind button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="55"/>
+        <source>Fast forward button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="56"/>
+        <source>Jump to start of track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="57"/>
+        <source>Jump to end of track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="58"/>
+        <source>Play reverse button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="59"/>
+        <source>Gain knob</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="60"/>
+        <source>Headphone listen button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="61"/>
+        <source>Toggle repeat mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="62"/>
+        <source>Eject track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="63"/>
+        <source>Mix orientation (e.g. left, right, center)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="66"/>
+        <source>BPM and Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="67"/>
+        <source>BPM tap button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="68"/>
+        <source>Adjust beatgrid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="69"/>
+        <source>Toggle quantize mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="70"/>
+        <source>Beat sync (tempo and phase)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="71"/>
+        <source>Beat sync (tempo only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="72"/>
+        <source>Beat sync (phase only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="75"/>
+        <source>Pitch and Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="76"/>
+        <source>Toggle keylock mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="77"/>
+        <source>Pitch control slider</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="78"/>
+        <source>Adjust rate up (course)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="79"/>
+        <source>Adjust rate up (fine)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="80"/>
+        <source>Adjust rate down (course)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="81"/>
+        <source>Adjust rate down (fine)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="82"/>
+        <source>Pitch-bend rate up (course)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="83"/>
+        <source>Pitch-bend rate up (fine)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="84"/>
+        <source>Pitch-bend rate down (course)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="85"/>
+        <source>Pitch-bend rate down (fine)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="88"/>
+        <source>Equalizers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="89"/>
+        <source>High EQ knob</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="90"/>
+        <source>Mid EQ knob</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="91"/>
+        <source>Low EQ knob</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="92"/>
+        <source>High EQ kill</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="93"/>
+        <source>Mid EQ kill</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="94"/>
+        <source>Low EQ kill</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="97"/>
+        <source>Vinyl Control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="98"/>
+        <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="99"/>
+        <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="102"/>
+        <source>Cues / Hotcues</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="103"/>
+        <source>Cue button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="104"/>
+        <source>Set cue point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="105"/>
+        <source>Go to cue point and stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="109"/>
+        <source>Set or jump to hotcue %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="110"/>
+        <source>Clear hotcue %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="111"/>
+        <source>Jump to hotcue %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="112"/>
+        <source>Jump to hotcue %1 and stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="125"/>
+        <source>Looping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="126"/>
+        <source>Loop In button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="127"/>
+        <source>Loop Out button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="128"/>
+        <source>Reloop / Exit button</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="129"/>
+        <source>Halve the current loop&apos;s length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="130"/>
+        <source>Double the current loop&apos;s length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="133"/>
+        <source>Beat-Looping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="134"/>
+        <source>Create %1-beat loop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="146"/>
+        <source>Library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="147"/>
+        <source>Switch to the next view (library, playlist..)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="149"/>
+        <source>Switch to the previous view (library, playlist..)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="151"/>
+        <source>Scroll to next track in library/playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="153"/>
+        <source>Scroll to previous track in library/playlist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="155"/>
+        <source>Load selected track into first stopped player</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="157"/>
+        <source>Load selected track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="160"/>
+        <source>Effects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="161"/>
+        <source>Toggle flange effect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="162"/>
+        <source>Flange effect: Wavelength/period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="163"/>
+        <source>Flange effect: Intensity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="164"/>
+        <source>Flange effect: Phase delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="167"/>
+        <source>Microphone</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="168"/>
+        <source>Microphone on/off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="169"/>
+        <source>Microphone volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="170"/>
+        <source>Microphone channel orientation (e.g. left, right, center)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="173"/>
+        <source>User Interface</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="174"/>
+        <source>Show/hide the sampler section</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="175"/>
+        <source>Show/hide the microphone section</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="176"/>
+        <source>Show/hide the vinyl control section</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="180"/>
+        <source>Show/hide spinning vinyl widget</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="292"/>
+        <source>Ready to map: %1. Now move a control on your controller.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="323"/>
+        <source>Successfully mapped to:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -890,7 +1375,123 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>DlgPrefController</name>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="66"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="71"/>
+        <source>%1 by %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="75"/>
+        <source>Custom Preset</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DlgPrefControllerDlg</name>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="20"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="36"/>
+        <source>Controller Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="43"/>
+        <source>Enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="50"/>
+        <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="103"/>
+        <source>Load Preset:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="122"/>
+        <source>Loaded Preset:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="151"/>
+        <source>Click to start the Controller Learning wizard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="154"/>
+        <source>Learning Wizard (MIDI Only)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DlgPrefControls</name>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="81"/>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="82"/>
+        <source>Remaining</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="150"/>
+        <source>Don&apos;t load tracks into a playing deck</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="151"/>
+        <source>Load tracks into playing decks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="168"/>
+        <source>CDJ Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="169"/>
+        <source>Simple</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="176"/>
+        <source>On</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="177"/>
+        <source>Off</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
+        <source>Mixxx Detected a WVGA Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
+        <source>Mixxx has detected that your screen has a resolution of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrols.cpp" line="200"/>
+        <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <location filename="../../src/dlgprefcontrols.cpp" line="277"/>
         <source>This skin does not support schemes</source>
@@ -1255,166 +1856,49 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>DlgPrefMidiBindings</name>
+    <name>DlgPrefMappableController</name>
     <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="148"/>
-        <source>None</source>
+        <location filename="../../src/controllers/dlgprefmappablecontroller.cpp" line="73"/>
+        <source>Apply device settings?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="269"/>
-        <source>Apply MIDI device settings?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="270"/>
-        <source>Your settings must be applied before starting the MIDI learning wizard.
+        <location filename="../../src/controllers/dlgprefmappablecontroller.cpp" line="74"/>
+        <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="302"/>
-        <source>Overwrite existing mapping?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="303"/>
-        <source>Are you sure you&apos;d like to load the %1 mapping?
-This will overwrite your existing MIDI mapping.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="330"/>
-        <source>Export Mixxx MIDI Bindings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="331"/>
-        <source>Preset Files (*.midi.xml)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="370"/>
-        <source>Select Control Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="405"/>
-        <source>Select Control</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="450"/>
+        <location filename="../../src/controllers/dlgprefmappablecontroller.cpp" line="119"/>
         <source>Clear Input Bindings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="451"/>
+        <location filename="../../src/controllers/dlgprefmappablecontroller.cpp" line="120"/>
         <source>Are you sure you want to clear all bindings?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="498"/>
+        <location filename="../../src/controllers/dlgprefmappablecontroller.cpp" line="127"/>
         <source>Clear Output Bindings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefmidibindings.cpp" line="499"/>
+        <location filename="../../src/controllers/dlgprefmappablecontroller.cpp" line="128"/>
         <source>Are you sure you want to clear all output bindings?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>DlgPrefMidiBindingsDlg</name>
+    <name>DlgPrefNoControllersDlg</name>
     <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="14"/>
-        <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="296"/>
-        <source>Your Device Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="35"/>
-        <source>Load Preset:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="67"/>
-        <source>Export</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="87"/>
-        <source>Output:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="303"/>
-        <source>Enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="133"/>
-        <source>Controls</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="142"/>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="235"/>
-        <source>Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="152"/>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="242"/>
-        <source>Remove</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="162"/>
-        <source>MIDI Learning Wizard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="194"/>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="262"/>
-        <source>Clear All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="310"/>
-        <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="118"/>
-        <source>MIDI Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="226"/>
-        <source>Outputs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefmidibindingsdlg.ui" line="213"/>
-        <source>MIDI Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DlgPrefNoMidiDlg</name>
-    <message>
-        <location filename="../../src/dlgprefnomididlg.ui" line="13"/>
+        <location filename="../../src/controllers/dlgprefnocontrollersdlg.ui" line="13"/>
         <source>Form3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefnomididlg.ui" line="34"/>
-        <source>No MIDI devices available</source>
+        <location filename="../../src/controllers/dlgprefnocontrollersdlg.ui" line="34"/>
+        <source>No controllers available.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1533,57 +2017,13 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DlgPrefPlaylist</name>
     <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="163"/>
+        <location filename="../../src/dlgprefplaylist.cpp" line="153"/>
         <source>Choose music library directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="197"/>
-        <source>Multiple iPods Detected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="198"/>
-        <source>Mixxx has detected another iPod. 
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="199"/>
-        <source>Choose Yes to use the newly found iPod @ </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="200"/>
-        <source> or to continue to search for other iPods. 
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="201"/>
-        <source>Choose No to use the existing iPod @ </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="202"/>
-        <source> and end detection. 
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="220"/>
-        <source>Choose iPod mount point</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>DlgPrefPlaylistDlg</name>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="14"/>
-        <source>Form3</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../../src/dlgprefplaylistdlg.ui" line="77"/>
         <source>Audio File Formats</source>
@@ -1630,24 +2070,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="214"/>
-        <source>iPod</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="232"/>
-        <source>iPod mountpoint</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/dlgprefplaylistdlg.ui" line="67"/>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="261"/>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="271"/>
-        <source>Detect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2332,63 +2756,68 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="197"/>
+        <location filename="../../src/dlgpreferences.cpp" line="66"/>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreferences.cpp" line="194"/>
         <source>Sound Hardware</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="210"/>
-        <source>MIDI Controllers</source>
+        <location filename="../../src/dlgpreferences.cpp" line="200"/>
+        <source>Controllers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="224"/>
+        <location filename="../../src/dlgpreferences.cpp" line="206"/>
         <source>Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="230"/>
+        <location filename="../../src/dlgpreferences.cpp" line="212"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="236"/>
+        <location filename="../../src/dlgpreferences.cpp" line="218"/>
         <source>Equalizers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="242"/>
+        <location filename="../../src/dlgpreferences.cpp" line="224"/>
         <source>Crossfader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="248"/>
+        <location filename="../../src/dlgpreferences.cpp" line="230"/>
         <source>Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="256"/>
+        <location filename="../../src/dlgpreferences.cpp" line="238"/>
         <source>Beat Detection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="262"/>
+        <location filename="../../src/dlgpreferences.cpp" line="244"/>
         <source>BPM Detection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="268"/>
+        <location filename="../../src/dlgpreferences.cpp" line="250"/>
         <source>Normalization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="277"/>
-        <location filename="../../src/dlgpreferences.cpp" line="285"/>
+        <location filename="../../src/dlgpreferences.cpp" line="259"/>
+        <location filename="../../src/dlgpreferences.cpp" line="267"/>
         <source>Vinyl Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="293"/>
+        <location filename="../../src/dlgpreferences.cpp" line="275"/>
         <source>Live Broadcasting</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2464,27 +2893,27 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../src/dlgrecording.ui" line="51"/>
-        <location filename="../../src/dlgrecording.cpp" line="165"/>
+        <location filename="../../src/dlgrecording.cpp" line="163"/>
         <source>Start Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="61"/>
+        <location filename="../../src/dlgrecording.cpp" line="59"/>
         <source>Start recording here ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="160"/>
+        <location filename="../../src/dlgrecording.cpp" line="158"/>
         <source>Stop Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="175"/>
+        <location filename="../../src/dlgrecording.cpp" line="173"/>
         <source>Recording to file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgrecording.cpp" line="177"/>
+        <location filename="../../src/dlgrecording.cpp" line="175"/>
         <source>MB written</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2971,144 +3400,32 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>MidiInputMappingTableModel</name>
+    <name>MidiController</name>
     <message>
-        <location filename="../../src/midi/midiinputmappingtablemodel.cpp" line="174"/>
-        <source>Midi Status Type</source>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="121"/>
+        <source>MixxxControl not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/midi/midiinputmappingtablemodel.cpp" line="178"/>
-        <source>Midi Note</source>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="122"/>
+        <source>The MixxxControl &apos;%1, %2&apos; specified in the loaded mapping is invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/midi/midiinputmappingtablemodel.cpp" line="182"/>
-        <source>Midi Channel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midiinputmappingtablemodel.cpp" line="186"/>
-        <source>Control Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midiinputmappingtablemodel.cpp" line="190"/>
-        <source>Control Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midiinputmappingtablemodel.cpp" line="200"/>
-        <source>Description</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MidiMapping</name>
-    <message>
-        <location filename="../../src/midi/midimapping.cpp" line="637"/>
-        <source>MIDI script function not found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midimapping.cpp" line="638"/>
-        <source>The MIDI script function &apos;%1&apos; was not found in loaded scripts.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midimapping.cpp" line="641"/>
-        <source>The MIDI message %1 %2 will not be bound.
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="125"/>
+        <source>The MIDI output message 0x%1 0x%2 will not be bound.
 (Click Show Details for hints.)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/midi/midimapping.cpp" line="644"/>
-        <source>* Check to see that the function name is spelled correctly in the mapping file (.xml) and script file (.js)
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="129"/>
+        <source>* Check to see that the MixxxControl name is spelled correctly in the mapping file (.xml)
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/midi/midimapping.cpp" line="647"/>
-        <source>* Check to see that the script file name (.js) is spelled correctly in the mapping file (.xml)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MidiOutputMappingTableModel</name>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="187"/>
-        <source>Midi Status</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="191"/>
-        <source>Midi Note</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="195"/>
-        <source>Midi Channel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="199"/>
-        <source>Control Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="203"/>
-        <source>Control Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="207"/>
-        <source>Description</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="211"/>
-        <source>Threshold Min</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midioutputmappingtablemodel.cpp" line="215"/>
-        <source>Threshold Max</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MidiScriptEngine</name>
-    <message>
-        <location filename="../../src/midi/midiscriptengine.cpp" line="559"/>
-        <source>Uncaught exception at line %1 in file %2: %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midiscriptengine.cpp" line="565"/>
-        <source>Uncaught exception at line %1 in passed code: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midiscriptengine.cpp" line="588"/>
-        <source>MIDI script error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midiscriptengine.cpp" line="589"/>
-        <source>A MIDI control you just used is not working properly.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/midi/midiscriptengine.cpp" line="590"/>
-        <source>&lt;html&gt;(The MIDI script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MidiStatusDelegate</name>
-    <message>
-        <location filename="../../src/midi/midistatusdelegate.cpp" line="46"/>
-        <source>Unknown</source>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="132"/>
+        <source>* Make sure the MixxxControl you&apos;re trying to use actually exists. Visit this wiki page for a complete list:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3123,9 +3440,9 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="101"/>
-        <location filename="../../src/mixxx.cpp" line="946"/>
-        <location filename="../../src/mixxx.cpp" line="1032"/>
-        <location filename="../../src/mixxx.cpp" line="1061"/>
+        <location filename="../../src/mixxx.cpp" line="949"/>
+        <location filename="../../src/mixxx.cpp" line="1035"/>
+        <location filename="../../src/mixxx.cpp" line="1064"/>
         <source>Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3135,385 +3452,385 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="558"/>
+        <location filename="../../src/mixxx.cpp" line="561"/>
         <source>Sound Device Busy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="573"/>
+        <location filename="../../src/mixxx.cpp" line="576"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="561"/>
+        <location filename="../../src/mixxx.cpp" line="564"/>
         <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="566"/>
+        <location filename="../../src/mixxx.cpp" line="569"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="570"/>
-        <location filename="../../src/mixxx.cpp" line="635"/>
+        <location filename="../../src/mixxx.cpp" line="573"/>
+        <location filename="../../src/mixxx.cpp" line="638"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="576"/>
-        <location filename="../../src/mixxx.cpp" line="638"/>
+        <location filename="../../src/mixxx.cpp" line="579"/>
+        <location filename="../../src/mixxx.cpp" line="641"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="581"/>
+        <location filename="../../src/mixxx.cpp" line="584"/>
         <source>Retry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="583"/>
-        <location filename="../../src/mixxx.cpp" line="644"/>
+        <location filename="../../src/mixxx.cpp" line="586"/>
+        <location filename="../../src/mixxx.cpp" line="647"/>
         <source>Reconfigure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="585"/>
+        <location filename="../../src/mixxx.cpp" line="588"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="587"/>
-        <location filename="../../src/mixxx.cpp" line="645"/>
+        <location filename="../../src/mixxx.cpp" line="590"/>
+        <location filename="../../src/mixxx.cpp" line="648"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="627"/>
+        <location filename="../../src/mixxx.cpp" line="630"/>
         <source>No Output Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="628"/>
+        <location filename="../../src/mixxx.cpp" line="631"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="632"/>
+        <location filename="../../src/mixxx.cpp" line="635"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="643"/>
+        <location filename="../../src/mixxx.cpp" line="646"/>
         <source>Continue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="681"/>
-        <location filename="../../src/mixxx.cpp" line="940"/>
+        <location filename="../../src/mixxx.cpp" line="684"/>
+        <location filename="../../src/mixxx.cpp" line="943"/>
         <source>Load track to Deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="682"/>
+        <location filename="../../src/mixxx.cpp" line="685"/>
         <source>Loads a track in deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="683"/>
+        <location filename="../../src/mixxx.cpp" line="686"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="687"/>
+        <location filename="../../src/mixxx.cpp" line="690"/>
         <source>Ctrl+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="697"/>
+        <location filename="../../src/mixxx.cpp" line="700"/>
         <source>Ctrl+Shift+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="705"/>
+        <location filename="../../src/mixxx.cpp" line="708"/>
         <source>&amp;Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="706"/>
+        <location filename="../../src/mixxx.cpp" line="709"/>
         <source>Quits Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="708"/>
+        <location filename="../../src/mixxx.cpp" line="711"/>
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="714"/>
+        <location filename="../../src/mixxx.cpp" line="717"/>
         <source>&amp;Rescan Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="715"/>
+        <location filename="../../src/mixxx.cpp" line="718"/>
         <source>Rescans library folders for changes to tracks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="725"/>
+        <location filename="../../src/mixxx.cpp" line="728"/>
         <source>Add &amp;new playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="728"/>
+        <location filename="../../src/mixxx.cpp" line="731"/>
         <source>Ctrl+N</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="735"/>
+        <location filename="../../src/mixxx.cpp" line="738"/>
         <source>Add new &amp;crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="738"/>
+        <location filename="../../src/mixxx.cpp" line="741"/>
         <source>Ctrl+C</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="941"/>
+        <location filename="../../src/mixxx.cpp" line="944"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="943"/>
+        <location filename="../../src/mixxx.cpp" line="946"/>
         <source>Are you sure you want to load a new track?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="745"/>
+        <location filename="../../src/mixxx.cpp" line="748"/>
         <source>&amp;Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="751"/>
+        <location filename="../../src/mixxx.cpp" line="754"/>
         <source>F11</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="763"/>
+        <location filename="../../src/mixxx.cpp" line="766"/>
         <source>&amp;Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="764"/>
+        <location filename="../../src/mixxx.cpp" line="767"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="766"/>
+        <location filename="../../src/mixxx.cpp" line="769"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="773"/>
+        <location filename="../../src/mixxx.cpp" line="776"/>
         <source>&amp;About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="781"/>
+        <location filename="../../src/mixxx.cpp" line="784"/>
         <source>&amp;Community Support</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="782"/>
+        <location filename="../../src/mixxx.cpp" line="785"/>
         <source>Get help with Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="788"/>
+        <location filename="../../src/mixxx.cpp" line="791"/>
         <source>&amp;User Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="795"/>
+        <location filename="../../src/mixxx.cpp" line="798"/>
         <source>Send Us &amp;Feedback</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="802"/>
+        <location filename="../../src/mixxx.cpp" line="805"/>
         <source>&amp;Translate this application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="815"/>
+        <location filename="../../src/mixxx.cpp" line="818"/>
         <source>Ctrl+Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="831"/>
+        <location filename="../../src/mixxx.cpp" line="834"/>
         <source>Ctrl+U</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="850"/>
+        <location filename="../../src/mixxx.cpp" line="853"/>
         <source>Ctrl+L</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="864"/>
+        <location filename="../../src/mixxx.cpp" line="867"/>
         <source>&amp;Record Mix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="867"/>
+        <location filename="../../src/mixxx.cpp" line="870"/>
         <source>Ctrl+R</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="726"/>
+        <location filename="../../src/mixxx.cpp" line="729"/>
         <source>Create a new playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="736"/>
+        <location filename="../../src/mixxx.cpp" line="739"/>
         <source>Create a new crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="749"/>
+        <location filename="../../src/mixxx.cpp" line="752"/>
         <source>Ctrl+Shift+F</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="811"/>
+        <location filename="../../src/mixxx.cpp" line="814"/>
         <source>Enable Vinyl Control &amp;1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="812"/>
+        <location filename="../../src/mixxx.cpp" line="815"/>
         <source>Enable Vinyl Control &amp;2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="847"/>
+        <location filename="../../src/mixxx.cpp" line="850"/>
         <source>Enable live &amp;broadcasting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="810"/>
+        <location filename="../../src/mixxx.cpp" line="813"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="848"/>
+        <location filename="../../src/mixxx.cpp" line="851"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="865"/>
+        <location filename="../../src/mixxx.cpp" line="868"/>
         <source>Record your mix to a file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="746"/>
+        <location filename="../../src/mixxx.cpp" line="749"/>
         <source>Display Mixxx using the full screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="789"/>
+        <location filename="../../src/mixxx.cpp" line="792"/>
         <source>Read the Mixxx user manual.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="796"/>
+        <location filename="../../src/mixxx.cpp" line="799"/>
         <source>Send feedback to the Mixxx team.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="803"/>
+        <location filename="../../src/mixxx.cpp" line="806"/>
         <source>Help translate this application into your language.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="774"/>
+        <location filename="../../src/mixxx.cpp" line="777"/>
         <source>About the application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1500"/>
+        <location filename="../../src/mixxx.cpp" line="1505"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="879"/>
+        <location filename="../../src/mixxx.cpp" line="882"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="880"/>
+        <location filename="../../src/mixxx.cpp" line="883"/>
         <source>&amp;Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="881"/>
+        <location filename="../../src/mixxx.cpp" line="884"/>
         <source>&amp;Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="882"/>
+        <location filename="../../src/mixxx.cpp" line="885"/>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="883"/>
+        <location filename="../../src/mixxx.cpp" line="886"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="895"/>
+        <location filename="../../src/mixxx.cpp" line="898"/>
         <source>&amp;Vinyl Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1033"/>
-        <location filename="../../src/mixxx.cpp" line="1062"/>
+        <location filename="../../src/mixxx.cpp" line="1036"/>
+        <location filename="../../src/mixxx.cpp" line="1065"/>
         <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1118"/>
+        <location filename="../../src/mixxx.cpp" line="1121"/>
         <source>Mixxx %1 Development Team</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1119"/>
+        <location filename="../../src/mixxx.cpp" line="1122"/>
         <source>With contributions from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1120"/>
+        <location filename="../../src/mixxx.cpp" line="1123"/>
         <source>And special thanks to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1121"/>
+        <location filename="../../src/mixxx.cpp" line="1124"/>
         <source>Past Developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1122"/>
+        <location filename="../../src/mixxx.cpp" line="1125"/>
         <source>Past Contributors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1491"/>
-        <location filename="../../src/mixxx.cpp" line="1499"/>
+        <location filename="../../src/mixxx.cpp" line="1496"/>
+        <location filename="../../src/mixxx.cpp" line="1504"/>
         <source>Confirm Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1492"/>
+        <location filename="../../src/mixxx.cpp" line="1497"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3813,369 +4130,6 @@ Click OK to exit.</source>
     <message>
         <location filename="../../src/library/traktor/traktorfeature.cpp" line="650"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Ui</name>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="81"/>
-        <source>Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="82"/>
-        <source>Remaining</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="176"/>
-        <source>On</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="177"/>
-        <source>Off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="150"/>
-        <source>Don&apos;t load tracks into a playing deck</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="151"/>
-        <source>Load tracks into playing decks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="168"/>
-        <source>CDJ Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="169"/>
-        <source>Simple</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
-        <source>Mixxx Detected a WVGA Screen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="198"/>
-        <source>Mixxx has detected that your screen has a resolution of </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefcontrols.cpp" line="200"/>
-        <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgpreferences.cpp" line="68"/>
-        <source>Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="47"/>
-        <source>Crossfader</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="48"/>
-        <source>Master volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="49"/>
-        <source>Master balance</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="50"/>
-        <source>Headphones volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="51"/>
-        <source>Headphones mix (pre/main)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="54"/>
-        <source>Cue button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="55"/>
-        <source>Play button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="56"/>
-        <source>Fast rewind button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="57"/>
-        <source>Fast forward button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="58"/>
-        <source>Play reverse button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="59"/>
-        <source>Headphone listen button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="60"/>
-        <source>Beat sync button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="61"/>
-        <source>BPM tap button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="62"/>
-        <source>Keylock button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="63"/>
-        <source>Pitch control slider for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="64"/>
-        <source>Flanger effect button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="65"/>
-        <source>Channel %1 volume fader</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="66"/>
-        <source>Gain knob for Channel %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="67"/>
-        <source>High EQ knob for Channel %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="68"/>
-        <source>Mid EQ knob for Channel %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="69"/>
-        <source>Low EQ knob for Channel %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="70"/>
-        <source>Loop In button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="71"/>
-        <source>Loop Out button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="72"/>
-        <source>Reloop / Exit button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="73"/>
-        <source>Setup a loop over 4 beats for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="74"/>
-        <source>Halves the current loop&apos;s length for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="75"/>
-        <source>Doubles the current loop&apos;s length for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="76"/>
-        <source>Hotcue 1 button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="77"/>
-        <source>Hotcue 2 button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="78"/>
-        <source>Hotcue 3 button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="79"/>
-        <source>Hotcue 4 button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="80"/>
-        <source>Hotcue 1 delete button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="81"/>
-        <source>Hotcue 2 delete button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="82"/>
-        <source>Hotcue 3 delete button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="83"/>
-        <source>Hotcue 4 delete button for Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="85"/>
-        <source>Play button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="86"/>
-        <source>Gain knob for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="87"/>
-        <source>Headphone listen button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="88"/>
-        <source>BPM tap button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="89"/>
-        <source>Keylock button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="90"/>
-        <source>Pitch control slider for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="91"/>
-        <source>Hotcue 1 button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="92"/>
-        <source>Hotcue 2 button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="93"/>
-        <source>Hotcue 3 button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="94"/>
-        <source>Hotcue 4 button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="95"/>
-        <source>Hotcue 1 delete button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="96"/>
-        <source>Hotcue 2 delete button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="97"/>
-        <source>Hotcue 3 delete button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="98"/>
-        <source>Hotcue 4 delete button for Sampler %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="101"/>
-        <source>Switch to the next view (library, playlist..)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="102"/>
-        <source>Switch to the previous view (library, playlist..)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="103"/>
-        <source>Scroll to next track in library/playlist</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="104"/>
-        <source>Scroll to previous track in library/playlist</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="105"/>
-        <source>Load selected track into first stopped player</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="106"/>
-        <source>Load selected track into Player %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="109"/>
-        <source>Adjusts the wavelength of the flange effect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="110"/>
-        <source>Adjusts the intensity of the flange effect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="111"/>
-        <source>Adjusts the phase delay of the flange effect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="114"/>
-        <source>Microphone on/off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgmidilearning.cpp" line="115"/>
-        <source>Microphone volume</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

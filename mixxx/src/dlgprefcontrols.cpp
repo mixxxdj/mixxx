@@ -41,7 +41,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
-    :  QWidget(parent), Ui::DlgPrefControlsDlg() {
+        :  QWidget(parent) {
     m_pConfig = pConfig;
     m_timer = -1;
     m_mixxx = mixxx;

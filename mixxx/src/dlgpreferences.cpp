@@ -55,8 +55,7 @@
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue> * _config)
-        :  QDialog(), Ui::DlgPreferencesDlg() {
+                               ConfigObject<ConfigValue> * _config) {
     m_pControllerManager = controllers;
 
     setupUi(this);
@@ -436,6 +435,10 @@ void DlgPreferences::setupControllerWidgets()
             DlgPrefMappableController* controllerDlg =
                 new DlgPrefMappableController(this, currentDevice,
                                               m_pControllerManager, config);
+            connect(controllerDlg, SIGNAL(mappingStarted()),
+                    this, SLOT(hide()));
+            connect(controllerDlg, SIGNAL(mappingEnded()),
+                    this, SLOT(show()));
             m_controllerWindows.append(controllerDlg);
             addPageWidget(controllerDlg);
             connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));

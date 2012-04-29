@@ -9,6 +9,83 @@
         </message>
     </context>
     <context>
+        <name>BasePlaylistFeature</name>
+        <message>
+            <source>New Playlist</source>
+            <translation>New Playlist</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation>Add to Auto DJ Queue (bottom)</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation>Add to Auto DJ Queue (top)</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Remove</translation>
+        </message>
+        <message>
+            <source>Rename</source>
+            <translation>Rename</translation>
+        </message>
+        <message>
+            <source>Lock</source>
+            <translation>Lock</translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>Import Playlist</translation>
+        </message>
+        <message>
+            <source>Export Playlist</source>
+            <translation>Export Playlist</translation>
+        </message>
+        <message>
+            <source>Rename Playlist</source>
+            <translation>Rename Playlist</translation>
+        </message>
+        <message>
+            <source>New playlist name:</source>
+            <translation>New playlist name:</translation>
+        </message>
+        <message>
+            <source>Renaming Playlist Failed</source>
+            <translation>Renaming Playlist Failed</translation>
+        </message>
+        <message>
+            <source>A playlist by that name already exists.</source>
+            <translation>A playlist by that name already exists.</translation>
+        </message>
+        <message>
+            <source>A playlist cannot have a blank name.</source>
+            <translation>A playlist cannot have a blank name.</translation>
+        </message>
+        <message>
+            <source>Playlist name:</source>
+            <translation>Playlist name:</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation>Playlist Creation Failed</translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation>An unknown error occurred while creating playlist: </translation>
+        </message>
+        <message>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
@@ -29,6 +106,11 @@
         <message>
             <source>Genre</source>
             <translation>Genre</translation>
+        </message>
+        <message>
+            <source>Composer</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Year</source>
@@ -56,7 +138,8 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Bitrate</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>BPM</source>
@@ -75,8 +158,17 @@
             <translation>#</translation>
         </message>
         <message>
+            <source>Timestamp</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Key</source>
             <translation>Key</translation>
+        </message>
+        <message>
+            <source>BPM Lock</source>
+            <translation>BPM Lock</translation>
         </message>
     </context>
     <context>
@@ -156,6 +248,11 @@
             <translation>Genre</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Comment</source>
             <translation>Comment</translation>
         </message>
@@ -177,7 +274,8 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Bitrate</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Location</source>
@@ -267,12 +365,12 @@
             <translation>Renaming Crate Failed</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -296,20 +394,6 @@
             <translation>About Mixxx</translation>
         </message>
         <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
-        </message>
-        <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
             <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</translation>
         </message>
@@ -317,8 +401,59 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>DlgAutoDJ</name>
         <message>
+            <source>Auto-DJ</source>
+            <translation>Auto DJ</translation>
+        </message>
+        <message>
+            <source>One player must be stopped to enable Auto-DJ mode.</source>
+            <translation>One player must be stopped to enable Auto DJ mode.</translation>
+        </message>
+        <message>
             <source>Disable Auto DJ</source>
             <translation>Disable Auto DJ</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist.</source>
+            <translation>Shuffle the content of the Auto DJ playlist.</translation>
+        </message>
+        <message>
+            <source>Shuffle</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist.</source>
+            <translation>Skip the next track in the Auto DJ playlist.</translation>
+        </message>
+        <message>
+            <source>Skip Track</source>
+            <translation>Skip Track</translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track.</source>
+            <translation>Trigger the transition to the next track.</translation>
+        </message>
+        <message>
+            <source>Fade Now</source>
+            <translation>Fade Now</translation>
+        </message>
+        <message>
+            <source>Determines the duration of the transition.</source>
+            <translation>Determines the duration of the transition.</translation>
+        </message>
+        <message>
+            <source>Seconds</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>sec.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turn Auto DJ on or off.</source>
+            <translation>Turn Auto DJ on or off.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -326,15 +461,99 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Manage</source>
-            <translation>Manage</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgBeatsDlg</name>
+        <message>
+            <source>Beat Detection Settings</source>
+            <translation>Beat Detection Settings</translation>
         </message>
         <message>
-            <source>Shuffle playlist</source>
-            <translation>Shuffle playlist</translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Add tracks to the queue below...</source>
-            <translation>Add tracks to the queue below...</translation>
+            <source>Enable BPM and Beat Detection</source>
+            <translation>Enable BPM and Beat Detection</translation>
+        </message>
+        <message>
+            <source>Choose Analyser</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beat Analyser:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose beween different algorithms to detect beats.</source>
+            <translation>Choose beween different algorithms to detect beats.</translation>
+        </message>
+        <message>
+            <source>Analyser Settings</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Assume constant tempo (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Offset Correction (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beats already present (e.g. from 3rd-party programs or older Mixxx versions)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Range</source>
+            <translation>BPM Range</translation>
+        </message>
+        <message>
+            <source>Min:</source>
+            <translation>Min:</translation>
+        </message>
+        <message>
+            <source>Max:</source>
+            <translation>Max:</translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation>Reset to Defaults</translation>
         </message>
     </context>
     <context>
@@ -663,6 +882,48 @@ p, li { white-space: pre-wrap; }
             <source>Pitchbend sensitivity</source>
             <translation>Pitchbend sensitivity</translation>
         </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation>Waveform Display</translation>
+        </message>
+        <message>
+            <source>Frame Rate</source>
+            <translation>Frame Rate</translation>
+        </message>
+        <message>
+            <source>OpenGl status</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Display type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Default zoom</source>
+            <translation>Default zoom</translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation>100%</translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation>200%</translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation>300%</translation>
+        </message>
+        <message>
+            <source>400%</source>
+            <translation>400%</translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
+            <translation>Synchronise</translation>
+        </message>
     </context>
     <context>
         <name>DlgPrefCrossfaderDlg</name>
@@ -731,8 +992,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -948,8 +1208,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control Mode</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
@@ -1085,8 +1344,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Music Directory:</translation>
         </message>
         <message>
             <source>Built-in</source>
@@ -1103,8 +1361,8 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Support Mixxx by counting and sharing bundled songs
 playback and outbound link statistics</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Support Mixxx by counting and sharing bundled songs
+playback and outbound link statistics</translation>
         </message>
     </context>
     <context>
@@ -1224,8 +1482,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Enable live broadcasting</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1237,28 +1494,23 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Icecast 2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Icecast 2</translation>
         </message>
         <message>
             <source>Shoutcast</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Shoutcast</translation>
         </message>
         <message>
             <source>Icecast 1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Icecast 1</translation>
         </message>
         <message>
             <source>Mount</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mount</translation>
         </message>
         <message>
             <source>/mixxx.ogg</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>/mixxx.ogg</translation>
         </message>
         <message>
             <source>Host</source>
@@ -1266,8 +1518,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>192.168.123.8</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192.168.123.8</translation>
         </message>
         <message>
             <source>Port</source>
@@ -1291,23 +1542,19 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>test1234</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>test1234</translation>
         </message>
         <message>
             <source>Stream settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stream settings</translation>
         </message>
         <message>
             <source>Stream name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stream name</translation>
         </message>
         <message>
             <source>Mixxx Icecast Testing</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx Icecast Testing</translation>
         </message>
         <message>
             <source>Website</source>
@@ -1339,8 +1586,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Live mix</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Live mix</translation>
         </message>
         <message>
             <source>Public stream</source>
@@ -1686,6 +1932,10 @@ p, li { white-space: pre-wrap; }
             <translation>Recording</translation>
         </message>
         <message>
+            <source>Beat Detection</source>
+            <translation>Beat Detection</translation>
+        </message>
+        <message>
             <source>BPM Detection</source>
             <translation>BPM Detection</translation>
         </message>
@@ -1721,13 +1971,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>New</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>All</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1772,6 +2020,14 @@ p, li { white-space: pre-wrap; }
             <source>Stop Recording</source>
             <translation>Stop Recording</translation>
         </message>
+        <message>
+            <source>Recording to file: </source>
+            <translation>Recording to file: </translation>
+        </message>
+        <message>
+            <source>MB written</source>
+            <translation>MB written</translation>
+        </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
@@ -1808,6 +2064,11 @@ p, li { white-space: pre-wrap; }
             <translation>Genre:</translation>
         </message>
         <message>
+            <source>Composer:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Filename:</source>
             <translation>Filename:</translation>
         </message>
@@ -1837,96 +2098,85 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Track Information (Click to Expand)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Track BPM: </translation>
         </message>
         <message>
             <source>x2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>x2</translation>
         </message>
         <message>
             <source>/2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>/2</translation>
         </message>
         <message>
             <source>Tap to Beat</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tap to Beat</translation>
         </message>
         <message>
             <source>Hint: Use the Library Analyze view to run BPM detection.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hint: Use the Library Analyze view to run BPM detection.</translation>
         </message>
         <message>
             <source>Track BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Track BPM</translation>
         </message>
         <message>
             <source>Cue Id</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cue Id</translation>
         </message>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Position</translation>
         </message>
         <message>
             <source>Hotcue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue</translation>
         </message>
         <message>
             <source>Label</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Label</translation>
         </message>
         <message>
             <source>Activate Cue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activate Cue</translation>
         </message>
         <message>
             <source>Delete Cue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Delete Cue</translation>
         </message>
         <message>
             <source>Track Cuepoints</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Track Cuepoints</translation>
         </message>
         <message>
             <source>&lt;&lt; &amp;Prev</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;&lt; &amp;Prev</translation>
         </message>
         <message>
             <source>&amp;Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Apply</translation>
         </message>
         <message>
             <source>&amp;Cancel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Cancel</translation>
         </message>
         <message>
             <source>Alt+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alt+O</translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
+            <translation>&amp;Next &gt;&gt;</translation>
+        </message>
+    </context>
+    <context>
+        <name>EmptyWaveformWidget</name>
+        <message>
+            <source>Empty</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1935,120 +2185,186 @@ p, li { white-space: pre-wrap; }
         <name>EncoderMp3</name>
         <message>
             <source>Encoder</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Encoder</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</translation>
         </message>
     </context>
     <context>
         <name>EngineRecord</name>
         <message>
             <source>Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recording</translation>
         </message>
         <message>
             <source>&lt;html&gt;Could not create audio file for recording!&lt;p&gt;&lt;br&gt;Maybe you do not have enough free disk space or file permissions.&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Could not create audio file for recording!&lt;p&gt;&lt;br&gt;Maybe you do not have enough free disk space or file permissions.&lt;/html&gt;</translation>
         </message>
     </context>
     <context>
         <name>EngineShoutcast</name>
         <message>
             <source>Mixxx encountered a problem</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx encountered a problem</translation>
         </message>
         <message>
             <source>Could not allocate shout_t</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Could not allocate shout_t</translation>
         </message>
         <message>
             <source>Could not allocate shout_metadata_t</source>
+            <translation>Could not allocate shout_metadata_t</translation>
+        </message>
+        <message>
+            <source>Error setting non-blocking mode:</source>
+            <translation>Error setting non-blocking mode:</translation>
+        </message>
+        <message>
+            <source>Error setting hostname!</source>
+            <translation>Error setting hostname!</translation>
+        </message>
+        <message>
+            <source>Error setting protocol!</source>
+            <translation>Error setting protocol!</translation>
+        </message>
+        <message>
+            <source>Error setting port!</source>
+            <translation>Error setting port!</translation>
+        </message>
+        <message>
+            <source>Error setting password!</source>
+            <translation>Error setting password!</translation>
+        </message>
+        <message>
+            <source>Error setting mount!</source>
+            <translation>Error setting mount!</translation>
+        </message>
+        <message>
+            <source>Error setting username!</source>
+            <translation>Error setting username!</translation>
+        </message>
+        <message>
+            <source>Error setting stream name!</source>
+            <translation>Error setting stream name!</translation>
+        </message>
+        <message>
+            <source>Error setting stream description!</source>
+            <translation>Error setting stream description!</translation>
+        </message>
+        <message>
+            <source>Error setting stream genre!</source>
+            <translation>Error setting stream genre!</translation>
+        </message>
+        <message>
+            <source>Error setting stream url!</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Error setting non-blocking mode:</source>
+            <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+            <translation>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</translation>
+        </message>
+        <message>
+            <source>Error setting bitrate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: unknown server protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: libshout only supports Shoutcast with MP3 format!</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Lost connection to streaming server</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lost connection to streaming server</translation>
         </message>
         <message>
             <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Please check your connection to the Internet and verify that your username and password are correct.</translation>
         </message>
         <message>
             <source>Live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Live broadcasting</translation>
         </message>
         <message>
             <source>Mixxx has successfully connected to the shoutcast server</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx has successfully connected to the shoutcast server</translation>
         </message>
         <message>
             <source>Mixxx could not connect to streaming server</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx could not connect to streaming server</translation>
         </message>
         <message>
             <source>Mixxx has successfully disconnected to the shoutcast server</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx has successfully disconnected to the shoutcast server</translation>
         </message>
     </context>
     <context>
         <name>ErrorDialogHandler</name>
         <message>
             <source>Fatal error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fatal error</translation>
         </message>
         <message>
             <source>Critical error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Critical error</translation>
         </message>
         <message>
             <source>Warning</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Warning</translation>
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Information</translation>
         </message>
         <message>
             <source>Question</source>
+            <translation>Question</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation>Simple</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2057,799 +2373,525 @@ p, li { white-space: pre-wrap; }
         <name>ITunesFeature</name>
         <message>
             <source>iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iTunes</translation>
         </message>
         <message>
             <source>Select your iTunes library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Select your iTunes library</translation>
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(loading) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Use Default Library</translation>
         </message>
         <message>
             <source>Choose Library...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Choose Library...</translation>
         </message>
         <message>
             <source>Error Loading iTunes Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Error Loading iTunes Library</translation>
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</translation>
         </message>
     </context>
     <context>
         <name>LADSPAPresetSlot</name>
         <message>
             <source>Drag a preset from the list &amp; drop it here</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Drag a preset from the list &amp; drop it here</translation>
         </message>
     </context>
     <context>
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Library Scanner</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>It's taking Mixxx a minute to scan your music library, please wait...</translation>
         </message>
         <message>
             <source>Cancel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cancel</translation>
         </message>
     </context>
     <context>
         <name>MidiInputMappingTableModel</name>
         <message>
             <source>Midi Status Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi Status Type</translation>
         </message>
         <message>
             <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi Note</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi Channel</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control Group</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control Value</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Description</translation>
         </message>
     </context>
     <context>
         <name>MidiMapping</name>
         <message>
             <source>MIDI script function not found</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI script function not found</translation>
         </message>
         <message>
             <source>The MIDI script function '%1' was not found in loaded scripts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>The MIDI script function '%1' was not found in loaded scripts.</translation>
         </message>
         <message>
             <source>The MIDI message %1 %2 will not be bound.
 (Click Show Details for hints.)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>The MIDI message %1 %2 will not be bound.
+(Click Show Details for hints.)</translation>
         </message>
         <message>
             <source>* Check to see that the function name is spelled correctly in the mapping file (.xml) and script file (.js)
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>* Check to see that the function name is spelt correctly in the mapping file (.xml) and script file (.js)
+</translation>
         </message>
         <message>
             <source>* Check to see that the script file name (.js) is spelled correctly in the mapping file (.xml)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>* Check to see that the script file name (.js) is spelt correctly in the mapping file (.xml)</translation>
         </message>
     </context>
     <context>
         <name>MidiOutputMappingTableModel</name>
         <message>
             <source>Midi Status</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi Status</translation>
         </message>
         <message>
             <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi Note</translation>
         </message>
         <message>
             <source>Midi Channel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Midi Channel</translation>
         </message>
         <message>
             <source>Control Group</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control Group</translation>
         </message>
         <message>
             <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control Value</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Description</translation>
         </message>
         <message>
             <source>Threshold Min</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Threshold Min</translation>
         </message>
         <message>
             <source>Threshold Max</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Threshold Max</translation>
         </message>
     </context>
     <context>
         <name>MidiScriptEngine</name>
         <message>
             <source>Uncaught exception at line %1 in file %2: %3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uncaught exception at line %1 in file %2: %3</translation>
         </message>
         <message>
             <source>Uncaught exception at line %1 in passed code: %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uncaught exception at line %1 in passed code: %2</translation>
         </message>
         <message>
             <source>MIDI script error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI script error</translation>
         </message>
         <message>
             <source>A MIDI control you just used is not working properly.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A MIDI control you just used is not working properly.</translation>
         </message>
         <message>
             <source>&lt;html&gt;(The MIDI script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;(The MIDI script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</translation>
         </message>
     </context>
     <context>
         <name>MidiStatusDelegate</name>
         <message>
             <source>Unknown</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Unknown</translation>
         </message>
     </context>
     <context>
         <name>MixxxApp</name>
         <message>
             <source>Mixxx </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx </translation>
         </message>
         <message>
             <source>Mixxx</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx: Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
-The hardware information will include:
-	- CPU model and features
-	- Total/Available Amount of RAM
-	- Available disk space
-	- OS version
-Your usage information will include:
-	- Settings/Preferences
-	- Internal errors
-	- Internal debugging messages
-	- Performance statistics (average latency, CPU usage)
-This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
-</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx</translation>
         </message>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Choose music library directory</translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sound Device Busy</translation>
         </message>
         <message>
             <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</translation>
         </message>
         <message>
             <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</translation>
         </message>
         <message>
             <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</translation>
         </message>
         <message>
             <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx's sound device settings.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx's sound device settings.</translation>
         </message>
         <message>
             <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</translation>
         </message>
         <message>
             <source>Retry</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Retry</translation>
         </message>
         <message>
             <source>Reconfigure</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Reconfigure</translation>
         </message>
         <message>
             <source>Help</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Help</translation>
         </message>
         <message>
             <source>Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exit</translation>
+        </message>
+        <message>
+            <source>No Output Devices</source>
+            <translation>No Output Devices</translation>
+        </message>
+        <message>
+            <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
+            <translation>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
+            <translation>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</translation>
         </message>
         <message>
             <source>Continue</source>
+            <translation>Continue</translation>
+        </message>
+        <message>
+            <source>Load track to Deck %1</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&amp;Load Song (Player 1)...</source>
+            <source>Loads a track in deck %1</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Open</source>
+            <translation>Open</translation>
         </message>
         <message>
             <source>Ctrl+O</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>&amp;Load Song (Player 2)...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+O</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Shift+O</translation>
         </message>
         <message>
             <source>&amp;Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Exit</translation>
+        </message>
+        <message>
+            <source>Quits Mixxx</source>
+            <translation>Quits Mixxx</translation>
         </message>
         <message>
             <source>Ctrl+Q</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Rescan Library</translation>
+        </message>
+        <message>
+            <source>Rescans library folders for changes to tracks.</source>
+            <translation>Rescans library folders for changes to tracks.</translation>
         </message>
         <message>
             <source>Add &amp;new playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Add &amp;new playlist</translation>
         </message>
         <message>
             <source>Ctrl+N</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+N</translation>
         </message>
         <message>
             <source>Add new &amp;crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Add new &amp;crate</translation>
         </message>
         <message>
             <source>Ctrl+C</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+C</translation>
         </message>
         <message>
-            <source>&amp;Import playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Deck %1 is currently playing a track.</source>
+            <translation>Deck %1 is currently playing a track.</translation>
         </message>
         <message>
-            <source>Ctrl+I</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>&amp;Audio Beat Marks</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Are you sure you want to load a new track?</source>
+            <translation>Are you sure you want to load a new track?</translation>
         </message>
         <message>
             <source>&amp;Full Screen</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Ctrl+F</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Full Screen</translation>
         </message>
         <message>
             <source>F11</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>F11</translation>
         </message>
         <message>
             <source>&amp;Preferences</source>
+            <translation>&amp;Preferences</translation>
+        </message>
+        <message>
+            <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Ctrl+P</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+P</translation>
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;About</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Community Support</translation>
+        </message>
+        <message>
+            <source>Get help with Mixxx</source>
+            <translation>Get help with Mixxx</translation>
         </message>
         <message>
             <source>&amp;User Manual</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;User Manual</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Send Us &amp;Feedback</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Enable &amp;Vinyl Control 1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Translate this application</translation>
         </message>
         <message>
             <source>Ctrl+Y</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Enable &amp;Vinyl Control 2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Y</translation>
         </message>
         <message>
             <source>Ctrl+U</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+U</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+L</translation>
         </message>
         <message>
             <source>&amp;Record Mix</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Record Mix</translation>
         </message>
         <message>
             <source>Ctrl+R</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Show Studio</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Opens a song in player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Opens a song in player 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Quits the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Exit
-Quits the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rescan library
-Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+R</translation>
         </message>
         <message>
             <source>Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New playlist
-Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Create a new playlist</translation>
         </message>
         <message>
             <source>Create a new crate</source>
+            <translation>Create a new crate</translation>
+        </message>
+        <message>
+            <source>Ctrl+Shift+F</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>New crate
-Create a new crate.</source>
+            <source>Enable Vinyl Control &amp;1</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Import playlist</source>
+            <source>Enable Vinyl Control &amp;2</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Audio Beat Marks</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Audio Beat Marks
-Mark beats by audio clicks</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Activate Vinyl Control</source>
+            <source>Enable live &amp;broadcasting</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Activate live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Use timecoded vinyls on external turntables to control Mixxx</translation>
         </message>
         <message>
             <source>Stream your mixes to a shoutcast or icecast server</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Start Recording your Mix</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stream your mixes to a shoutcast or icecast server</translation>
         </message>
         <message>
             <source>Record your mix to a file</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Full Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Record your mix to a file</translation>
         </message>
         <message>
             <source>Display Mixxx using the full screen</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences
-Playback and MIDI preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Get help with Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Display Mixxx using the full screen</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Read the Mixxx user manual.</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Send feedback to the Mixxx team.</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Help translate this application into your language.</translation>
         </message>
         <message>
             <source>About the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>About the application</translation>
         </message>
         <message>
-            <source>About
-About the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Shows the macro studio window</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Show Studio
-Makes the macro studio visible</source>
-            <translation type="unfinished">
-            </translation>
+            <source>A sampler is currently playing. Exit Mixxx?</source>
+            <translation>A sampler is currently playing. Exit Mixxx?</translation>
         </message>
         <message>
             <source>&amp;File</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;File</translation>
         </message>
         <message>
             <source>&amp;Options</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Options</translation>
         </message>
         <message>
             <source>&amp;Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Library</translation>
         </message>
         <message>
             <source>&amp;View</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;View</translation>
         </message>
         <message>
             <source>&amp;Help</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>&amp;Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Help</translation>
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Quit...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Do your really want to quit?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Player 1 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load Song into Player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Player 2 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load Song into Player 2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Vinyl Control</translation>
         </message>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>No input device(s) select.
+Please select your soundcard(s) in the sound hardware preferences.</translation>
         </message>
         <message>
             <source>Mixxx %1 Development Team</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx %1 Development Team</translation>
         </message>
         <message>
             <source>With contributions from:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>With contributions from:</translation>
         </message>
         <message>
             <source>And special thanks to:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>And special thanks to:</translation>
         </message>
         <message>
             <source>Past Developers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Past Developers</translation>
         </message>
         <message>
             <source>Past Contributors</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Past Contributors</translation>
         </message>
         <message>
             <source>Confirm Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Confirm Exit</translation>
         </message>
         <message>
             <source>A deck is currently playing. Exit Mixxx?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A deck is currently playing. Exit Mixxx?</translation>
         </message>
     </context>
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
+            <source>Missing Tracks</source>
+            <translation>Missing Tracks</translation>
+        </message>
+        <message>
             <source>Library</source>
+            <translation>Library</translation>
+        </message>
+    </context>
+    <context>
+        <name>ParserCsv</name>
+        <message>
+            <source>Location</source>
+            <translation>Location</translation>
+        </message>
+        <message>
+            <source>Playlist Export Failed</source>
+            <translation>Playlist Export Failed</translation>
+        </message>
+        <message>
+            <source>Could not create file</source>
+            <translation>Could not create file</translation>
+        </message>
+        <message>
+            <source>Readable text Export Failed</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2858,185 +2900,99 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>ParserM3u</name>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Playlist Export Failed</translation>
         </message>
         <message>
             <source>File path contains characters, not allowed in m3u playlists.
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>File path contains characters, not allowed in m3u playlists.
+</translation>
         </message>
         <message>
             <source>Export a m3u8 playlist instead!
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Export a m3u8 playlist instead!
+</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Could not create file</translation>
         </message>
     </context>
     <context>
         <name>ParserPls</name>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Playlist Export Failed</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Could not create file</translation>
         </message>
     </context>
     <context>
         <name>PlaylistFeature</name>
         <message>
-            <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Add to Auto-DJ Queue</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lock</translation>
         </message>
         <message>
             <source>Playlists</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Playlists</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Playlist name:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Renaming Playlist Failed</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Unlock</translation>
         </message>
     </context>
     <context>
         <name>PrepareFeature</name>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyze</translation>
         </message>
     </context>
     <context>
         <name>QObject</name>
         <message>
             <source>Invalid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Invalid</translation>
         </message>
         <message>
             <source>Master</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Master</translation>
         </message>
         <message>
             <source>Headphones</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Headphones</translation>
         </message>
         <message>
             <source>Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deck</translation>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyl Control</translation>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microphone</translation>
         </message>
         <message>
             <source>Passthrough</source>
+            <translation>Passthrough</translation>
+        </message>
+        <message>
+            <source>Unknown path type %1</source>
+            <translation>Unknown path type %1</translation>
+        </message>
+        <message>
+            <source>(GL)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Unknown path type %1</source>
+            <source>(GLSL)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3045,105 +3001,72 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>RecordingFeature</name>
         <message>
             <source>Recordings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recordings</translation>
         </message>
     </context>
     <context>
         <name>RhythmboxFeature</name>
         <message>
             <source>Rhythmbox</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rhythmbox</translation>
         </message>
     </context>
     <context>
         <name>SamplerBank</name>
         <message>
             <source>Save Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Save Sampler Bank</translation>
         </message>
         <message>
             <source>Error Saving Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Error Saving Sampler Bank</translation>
         </message>
         <message>
             <source>Could not write the sampler bank to '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Could not write the sampler bank to '%1'.</translation>
         </message>
         <message>
             <source>Load Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Load Sampler Bank</translation>
         </message>
         <message>
             <source>Error Reading Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Error Reading Sampler Bank</translation>
         </message>
         <message>
             <source>Could not open the sampler bank file '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Could not open the sampler bank file '%1'.</translation>
         </message>
         <message>
             <source>Could not read the sampler bank file '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Could not read the sampler bank file '%1'.</translation>
         </message>
     </context>
     <context>
-        <name>ScriptStudio</name>
+        <name>SetlogFeature</name>
         <message>
-            <source>Mixxx Script Studio</source>
+            <source>Join with previous</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>File</source>
+            <source>Set Logs</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Unlock</source>
+            <translation>Unlock</translation>
         </message>
         <message>
-            <source>Run</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Lock</source>
+            <translation>Lock</translation>
         </message>
+    </context>
+    <context>
+        <name>SoftwareWaveformWidget</name>
         <message>
-            <source>Close</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Import...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Export...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Delete Macro</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New Macro...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Run Macro</source>
+            <source>Filtered</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3152,89 +3075,79 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>TrackCollection</name>
         <message>
             <source>Cannot open database</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cannot open database</translation>
         </message>
         <message>
             <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 Click OK to exit.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Unable to establish a database connection.
+Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
+Click OK to exit.</translation>
         </message>
         <message>
             <source>Cannot upgrade database schema</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cannot upgrade database schema</translation>
         </message>
         <message>
             <source>Unable to upgrade your database schema to version %1.
 Your mixxx.db file may be corrupt.
 Try renaming it and restarting Mixxx.
 Click OK to exit.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Unable to upgrade your database schema to version %1.
+Your mixxx.db file may be corrupt.
+Try renaming it and restarting Mixxx.
+Click OK to exit.</translation>
         </message>
     </context>
     <context>
         <name>TraktorFeature</name>
         <message>
             <source>Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Traktor</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(loading) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Error Loading Traktor Library</translation>
         </message>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</translation>
         </message>
     </context>
     <context>
         <name>Ui</name>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Position</translation>
         </message>
         <message>
             <source>Remaining</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Remaining</translation>
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>On</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Off</translation>
         </message>
         <message>
             <source>Don't load tracks into a playing deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Don't load tracks into a playing deck</translation>
         </message>
         <message>
             <source>Load tracks into playing decks</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Load tracks into playing decks</translation>
         </message>
         <message>
             <source>CDJ Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>CDJ Mode</translation>
         </message>
         <message>
             <source>Simple</source>
@@ -3243,18 +3156,15 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx Detected a WVGA Screen</translation>
         </message>
         <message>
             <source>Mixxx has detected that your screen has a resolution of </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx has detected that your screen has a resolution of </translation>
         </message>
         <message>
             <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</translation>
         </message>
         <message>
             <source>Preferences</source>
@@ -3263,372 +3173,327 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader</translation>
         </message>
         <message>
             <source>Master volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Master volume</translation>
         </message>
         <message>
             <source>Master balance</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Master balance</translation>
         </message>
         <message>
             <source>Headphones volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Headphones volume</translation>
         </message>
         <message>
             <source>Headphones mix (pre/main)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Headphones mix (pre/main)</translation>
         </message>
         <message>
             <source>Cue button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cue button for Player %1</translation>
         </message>
         <message>
             <source>Play button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Play button for Player %1</translation>
         </message>
         <message>
             <source>Fast rewind button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fast rewind button for Player %1</translation>
         </message>
         <message>
             <source>Fast forward button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fast forward button for Player %1</translation>
         </message>
         <message>
             <source>Play reverse button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Play reverse button for Player %1</translation>
         </message>
         <message>
             <source>Headphone listen button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Headphone listen button for Player %1</translation>
         </message>
         <message>
             <source>Beat sync button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beat sync button for Player %1</translation>
         </message>
         <message>
             <source>BPM tap button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM tap button for Player %1</translation>
         </message>
         <message>
             <source>Keylock button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Keylock button for Player %1</translation>
         </message>
         <message>
             <source>Pitch control slider for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pitch control slider for Player %1</translation>
         </message>
         <message>
             <source>Flanger effect button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Flanger effect button for Player %1</translation>
         </message>
         <message>
             <source>Channel %1 volume fader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Channel %1 volume fader</translation>
         </message>
         <message>
             <source>Gain knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gain knob for Channel %1</translation>
         </message>
         <message>
             <source>High EQ knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>High EQ knob for Channel %1</translation>
         </message>
         <message>
             <source>Mid EQ knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mid EQ knob for Channel %1</translation>
         </message>
         <message>
             <source>Low EQ knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Low EQ knob for Channel %1</translation>
         </message>
         <message>
             <source>Loop In button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loop In button for Player %1</translation>
         </message>
         <message>
             <source>Loop Out button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loop Out button for Player %1</translation>
         </message>
         <message>
             <source>Reloop / Exit button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Reloop / Exit button for Player %1</translation>
         </message>
         <message>
             <source>Setup a loop over 4 beats for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Setup a loop over 4 beats for Player %1</translation>
         </message>
         <message>
             <source>Halves the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Halves the current loop's length for Player %1</translation>
         </message>
         <message>
             <source>Doubles the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Doubles the current loop's length for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 1 button for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 2 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 2 button for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 3 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 3 button for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 4 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 4 button for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 1 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 1 delete button for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 2 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 2 delete button for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 3 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 3 delete button for Player %1</translation>
         </message>
         <message>
             <source>Hotcue 4 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 4 delete button for Player %1</translation>
         </message>
         <message>
             <source>Play button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Play button for Sampler %1</translation>
         </message>
         <message>
             <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gain knob for Sampler %1</translation>
         </message>
         <message>
             <source>Headphone listen button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Headphone listen button for Sampler %1</translation>
         </message>
         <message>
             <source>BPM tap button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM tap button for Sampler %1</translation>
         </message>
         <message>
             <source>Keylock button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Keylock button for Sampler %1</translation>
         </message>
         <message>
             <source>Pitch control slider for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pitch control slider for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 1 button for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 2 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 2 button for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 3 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 3 button for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 4 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 4 button for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 1 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 1 delete button for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 2 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 2 delete button for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 3 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 3 delete button for Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 4 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue 4 delete button for Sampler %1</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Switch to the next view (library, playlist..)</translation>
         </message>
         <message>
             <source>Switch to the previous view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Switch to the previous view (library, playlist..)</translation>
         </message>
         <message>
             <source>Scroll to next track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Scroll to next track in library/playlist</translation>
         </message>
         <message>
             <source>Scroll to previous track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Scroll to previous track in library/playlist</translation>
         </message>
         <message>
             <source>Load selected track into first stopped player</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Load selected track into first stopped player</translation>
         </message>
         <message>
             <source>Load selected track into Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Load selected track into Player %1</translation>
         </message>
         <message>
             <source>Adjusts the wavelength of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Adjusts the wavelength of the flange effect</translation>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Adjusts the intensity of the flange effect</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Adjusts the phase delay of the flange effect</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microphone on/off</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microphone volume</translation>
         </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>
         <message>
-            <source>Search...</source>
+            <source>Ctrl+F</source>
+            <translation>Ctrl+F</translation>
+        </message>
+        <message>
+            <source>Esc</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Search...</source>
+            <translation>Search...</translation>
         </message>
     </context>
     <context>
         <name>WTrackTableView</name>
         <message>
             <source>Add to Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Add to Playlist</translation>
         </message>
         <message>
             <source>Add to Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Add to Crate</translation>
         </message>
         <message>
             <source>Load to Sampler</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Load to Sampler</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Remove</translation>
         </message>
         <message>
             <source>Properties...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Properties...</translation>
         </message>
         <message>
-            <source>Add to Auto DJ Queue</source>
+            <source>Add to Auto-DJ Queue (bottom)</source>
+            <translation>Add to Auto DJ Queue (bottom)</translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (top)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
+            <translation>Reload Track Metadata</translation>
+        </message>
+        <message>
+            <source>Lock BPM</source>
+            <translation>Lock BPM</translation>
+        </message>
+        <message>
+            <source>Unlock BPM</source>
+            <translation>Unlock BPM</translation>
+        </message>
+        <message>
+            <source>Clear BPM and Beatgrid</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Load to Deck %1</translation>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sampler %1</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</translation>
         </message>
     </context>
     <context>
         <name>WTrackTableViewHeader</name>
         <message>
             <source>Show or hide columns.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Show or hide columns.</translation>
         </message>
     </context>
 </TS>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
     <MixxxMIDIPreset mixxxVersion="1.8.0+" schemaVersion="1" >
 	<info>
-		<name>Ion Discover DJ Preset for Mixxx</name>
+		<name>Ion Discover DJ</name>
 		<author>Rick Prokup</author>
 		<description>This preset provides functionality for the Ion Discover DJ controller for mixxx</description>
 	</info>
@@ -111,7 +111,7 @@
                     </options>
                 </control>
 
- 
+
                 <control>
                     <status>0x80</status>
                     <midino>0x42</midino>
@@ -291,7 +291,7 @@
                     <options>
                         <Script-Binding/>
                     </options>
-                </control>                
+                </control>
                 <control>
                     <status>0x80</status>
                     <midino>0x48</midino>
@@ -300,7 +300,7 @@
                         <Script-Binding/>
                     </options>
                 </control>
-                
+
                 <control>
                     <status>0x90</status>
                     <midino>0x4d</midino>
@@ -363,7 +363,7 @@
                     <options>
                         <Script-Binding/>
                     </options>
-                </control>    
+                </control>
                 <control>
                     <status>0x90</status>
                     <midino>0x4e</midino>
@@ -371,7 +371,7 @@
                     <options>
                         <Script-Binding/>
                     </options>
-                </control>                 
+                </control>
    <control>
                     <status>0x80</status>
                     <midino>0x4d</midino>
@@ -379,7 +379,7 @@
                     <options>
                         <Script-Binding/>
                     </options>
-                </control>    
+                </control>
                 <control>
                     <status>0x80</status>
                     <midino>0x4e</midino>
@@ -387,7 +387,7 @@
                     <options>
                         <Script-Binding/>
                     </options>
-                </control>     -->           
+                </control>     -->
             </controls>
         </controller>
     </MixxxMIDIPreset>
