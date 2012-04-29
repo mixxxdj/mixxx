@@ -64,18 +64,18 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+        # TODO(XXX) allow external hidapi install, but for now we just use our
+        # internal one.
+        build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
+
         if build.platform_is_linux and (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or not conf.CheckHeader('libusb-1.0/libusb.h')):
             raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
-            return
-        elif build.platform_is_windows:
-            if not conf.CheckLib(['hidapi', 'libhidapi']):
-                raise Exception('Did not find HIDAPI development library, exiting!')
-                return
+        elif build.platform_is_windows and not conf.CheckLib(['hidapi', 'libhidapi']):
+            raise Exception('Did not find HIDAPI development library, exiting!')
 
         build.env.Append(CPPDEFINES = '__HID__')
 
     def sources(self, build):
-        build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
         sources = ['controllers/hid/hidcontroller.cpp',
                    'controllers/hid/hidenumerator.cpp',
                    'controllers/hid/hidcontrollerpresetfilehandler.cpp']
