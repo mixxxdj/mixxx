@@ -106,7 +106,7 @@ void DlgPrefMappableController::slotShowLearnDialog() {
 void DlgPrefMappableController::slotDeviceState(int state) {
     DlgPrefController::slotDeviceState(state);
     //m_ui.toolBox->setEnabled(state == Qt::Checked);
-    getUi().pushButtonLearning->setEnabled(getController()->isOpen());
+    getUi().pushButtonLearning->setEnabled(state == Qt::Checked);
 }
 
 void DlgPrefMappableController::slotUpdate() {
