@@ -75,7 +75,11 @@ void ControlObjectThreadWidget::setWidgetOnOff(QWidget * widget)
 
 void ControlObjectThreadWidget::slotReset() {
     double defaultValue = m_pControlObject->defaultValue();
-    slotSet(defaultValue);
+    // defaultValue is a control value. slotSet needs to be set with a widget
+    // value since widget value-changed signals connect to it. setExtern needs
+    // to be called with a control value since it is triggered by control
+    // updates.
+    slotSet(m_pControlObject->getValueToWidget(defaultValue));
     setExtern(defaultValue);
 }
 
