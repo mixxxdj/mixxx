@@ -5,10 +5,11 @@
 
 #include "waveform/widgets/waveformwidgetabstract.h"
 
-//This class can be used as a template file to create new WaveformWidgets
-//it contain minimal set of method to re-implement
+// This class can be used as a template file to create new WaveformWidgets it
+// contain minimal set of method to re-implement
 
-class EmptyWaveformWidget : public WaveformWidgetAbstract, public QWidget {
+class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
+    Q_OBJECT
   public:
     virtual ~EmptyWaveformWidget();
 

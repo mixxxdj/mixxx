@@ -1,9 +1,8 @@
 #ifndef WAVEFORMWIDGETTYPE_H
 #define WAVEFORMWIDGETTYPE_H
 
-class WaveformWidgetType
-{
-public:
+class WaveformWidgetType {
+  public:
     enum Type {
         EmptyWaveform = 0,
         SimpleSoftwareWaveform, //TODO

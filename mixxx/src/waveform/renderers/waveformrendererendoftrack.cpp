@@ -16,21 +16,21 @@
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererAbstract(waveformWidgetRenderer),
-      m_endOfTrackControl(0),
+      m_endOfTrackControl(NULL),
       m_endOfTrackEnabled(false),
-      m_trackSampleRate(0),
-      m_playControl(0),
-      m_loopControl(0),
+      m_trackSampleRate(NULL),
+      m_playControl(NULL),
+      m_loopControl(NULL),
       m_color(200, 25, 20),
       m_blinkingPeriodMillis(1000),
       m_remainingTimeTriggerSeconds(30.0) {
 }
 
 WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
-    if( m_endOfTrackControl) delete m_endOfTrackControl;
-    if( m_trackSampleRate) delete m_trackSampleRate;
-    if( m_playControl) delete m_playControl;
-    if( m_loopControl) delete m_loopControl;
+    delete m_endOfTrackControl;
+    delete m_trackSampleRate;
+    delete m_playControl;
+    delete m_loopControl;
 }
 
 void WaveformRendererEndOfTrack::init() {
@@ -89,7 +89,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
             || m_playControl->get() < 0.5 //not playing
             || m_loopControl->get() > 0.5 //in loop
             ) {
-        if( m_endOfTrackEnabled && m_endOfTrackControl->getControlObject()) {
+        if(m_endOfTrackEnabled && m_endOfTrackControl->getControlObject()) {
             m_endOfTrackControl->getControlObject()->set(0.);
             m_endOfTrackEnabled = false;
         }
