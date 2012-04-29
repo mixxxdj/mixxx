@@ -38,7 +38,8 @@ class Controller : public QObject, ControllerPresetVisitor {
 
     virtual bool savePreset(const QString filename) const = 0;
 
-    virtual const ControllerPreset* getPreset() const = 0;
+    // Returns a clone of the Controller's loaded preset.
+    virtual ControllerPresetPointer getPreset() const = 0;
     virtual ControllerPresetFileHandler* getFileHandler() const = 0;
 
     inline bool isOpen() const {
@@ -56,16 +57,16 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline bool debugging() const {
         return m_bDebug;
     }
-    virtual bool isMappable() const {
-        const ControllerPreset* pPreset = getPreset();
-        return pPreset ? pPreset->isMappable() : false;
-    }
+    virtual bool isMappable() const = 0;
     inline bool isLearning() const {
         return m_bLearning;
     }
 
   signals:
     void learnedMessage(QString message);
+    // Emitted when a new preset is loaded. pPreset is a /clone/ of the loaded
+    // preset, not a pointer to the preset itself.
+    void presetLoaded(ControllerPresetPointer pPreset);
 
   // Making these slots protected/private ensures that other parts of Mixxx can
   // only signal them which allows us to use no locks.
@@ -133,6 +134,9 @@ class Controller : public QObject, ControllerPresetVisitor {
     // its poll() method.
     virtual bool isPolling() const = 0;
 
+    // Returns a pointer to the currently loaded controller preset. For internal
+    // use only.
+    virtual ControllerPreset* preset() = 0;
     ControllerEngine* m_pEngine;
 
     // Verbose and unique device name suitable for display.

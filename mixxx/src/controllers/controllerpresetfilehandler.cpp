@@ -9,54 +9,66 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/defs_controllers.h"
 
-ControllerPreset* ControllerPresetFileHandler::load(const QString path,
-                                                    const QString deviceName,
-                                                    const bool forceLoad) {
+ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
+                                                          const QString deviceName,
+                                                          const bool forceLoad) {
     qDebug() << "Loading controller preset from" << path;
-    return load(XmlParse::openXMLFile(path, "controller"), deviceName, forceLoad);
+    ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
+                                           deviceName, forceLoad);
+    if (pPreset) {
+        pPreset->setFilePath(path);
+    }
+    return pPreset;
 }
 
-void ControllerPresetFileHandler::addScriptFilesToPreset(
-    const QDomElement root,
-    const QString deviceName,
-    const bool forceLoad,
-    ControllerPreset* preset) const {
-    if (root.isNull())
-        return;
+QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
+                                                           const QString deviceName,
+                                                           const bool forceLoad) {
+    // All callers of this method as of 4/2012 provide forceLoad true so the
+    // deviceId check is not really used.
+    if (root.isNull()) {
+        return QDomElement();
+    }
 
-    // For each controller in the DOM
     QDomElement controller = root.firstChildElement("controller");
 
     // For each controller in the preset XML... (Only parse the <controller>
     // block if its id matches our device name, otherwise keep looking at the
     // next controller blocks....)
-    QString device;
     while (!controller.isNull()) {
         // Get deviceid
-        device = controller.attribute("id", "");
+        QString device = controller.attribute("id", "");
         if (device != rootDeviceName(deviceName) && !forceLoad) {
             controller = controller.nextSiblingElement("controller");
         } else {
+            qDebug() << device << "settings found";
             break;
         }
     }
+    return controller;
+}
 
-    if (!controller.isNull()) {
-        qDebug() << device << "settings found";
-        // Build a list of script files to load
-        QDomElement scriptFile = controller.firstChildElement("scriptfiles")
-                .firstChildElement("file");
+void ControllerPresetFileHandler::addScriptFilesToPreset(
+    const QDomElement& controller, ControllerPreset* preset) const {
+    if (controller.isNull())
+        return;
 
-        // Default currently required file
-        preset->addScriptFile(REQUIRED_SCRIPT_FILE, "");
+    QString deviceId = controller.attribute("id", "");
+    preset->setDeviceId(deviceId);
 
-        // Look for additional ones
-        while (!scriptFile.isNull()) {
-            QString functionPrefix = scriptFile.attribute("functionprefix","");
-            QString filename = scriptFile.attribute("filename","");
-            preset->addScriptFile(filename, functionPrefix);
-            scriptFile = scriptFile.nextSiblingElement("file");
-        }
+    // Build a list of script files to load
+    QDomElement scriptFile = controller.firstChildElement("scriptfiles")
+            .firstChildElement("file");
+
+    // Default currently required file
+    preset->addScriptFile(REQUIRED_SCRIPT_FILE, "");
+
+    // Look for additional ones
+    while (!scriptFile.isNull()) {
+        QString functionPrefix = scriptFile.attribute("functionprefix","");
+        QString filename = scriptFile.attribute("filename","");
+        preset->addScriptFile(filename, functionPrefix);
+        scriptFile = scriptFile.nextSiblingElement("file");
     }
 }
 

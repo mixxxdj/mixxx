@@ -12,6 +12,7 @@
 #define CONTROLLERPRESET_H
 
 #include <QtCore>
+#include <QSharedPointer>
 
 class ControllerPresetVisitor;
 
@@ -30,11 +31,35 @@ class ControllerPreset {
         scriptFunctionPrefixes.append(functionprefix);
     }
 
+    inline void setDeviceId(const QString id) {
+        m_deviceId = id;
+    }
+
+    inline QString deviceId() const {
+        return m_deviceId;
+    }
+
+    inline void setFilePath(const QString filePath) {
+        m_filePath = filePath;
+    }
+
+    inline QString filePath() const {
+        return m_filePath;
+    }
+
     virtual void accept(ControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
     // Data elements
+    // TODO(XXX) make private
     QList<QString> scriptFileNames;
     QList<QString> scriptFunctionPrefixes;
+
+  private:
+    QString m_deviceId;
+    QString m_filePath;
 };
+
+typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;
+
 #endif

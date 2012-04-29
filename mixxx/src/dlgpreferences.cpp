@@ -436,6 +436,10 @@ void DlgPreferences::setupControllerWidgets()
             DlgPrefMappableController* controllerDlg =
                 new DlgPrefMappableController(this, currentDevice,
                                               m_pControllerManager, config);
+            connect(controllerDlg, SIGNAL(mappingStarted()),
+                    this, SLOT(hide()));
+            connect(controllerDlg, SIGNAL(mappingEnded()),
+                    this, SLOT(show()));
             m_controllerWindows.append(controllerDlg);
             addPageWidget(controllerDlg);
             connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));

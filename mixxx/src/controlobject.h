@@ -99,6 +99,12 @@ public:
     virtual double getValueToWidget(double dValue);
     /** get value (range 0..127) **/
     virtual double GetMidiValue();
+    virtual void setDefaultValue(double dValue) {
+        m_dDefaultValue = dValue;
+    }
+    virtual double defaultValue() const {
+        return m_dDefaultValue;
+    }
 
 public slots:
     /** Sets the value of the object and updates associated proxy objects. Not thread safe. */
@@ -119,6 +125,7 @@ protected:
 protected:
     /** The actual value of the controller */
     double m_dValue;
+    double m_dDefaultValue;
     /** Key of the object */
     ConfigKey m_Key;
 
