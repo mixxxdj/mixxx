@@ -151,7 +151,7 @@
       <string>Click to start the Controller Learning wizard.</string>
      </property>
      <property name="text">
-      <string>Learning Wizard</string>
+      <string>Learning Wizard (MIDI Only)</string>
      </property>
     </widget>
    </item>
