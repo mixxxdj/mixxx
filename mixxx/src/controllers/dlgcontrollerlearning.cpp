@@ -10,7 +10,7 @@
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
-        : QDialog(parent), Ui::DlgControllerLearning(),
+        : QDialog(parent),
           m_pController(controller),
           m_controlPickerMenu(this) {
     qRegisterMetaType<MixxxControl>("MixxxControl");

@@ -24,8 +24,8 @@
 #include "recording/encoder.h"
 
 
-DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefRecordDlg()
-{
+DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config)
+        : QWidget(parent) {
     config = _config;
     confirmOverwrite = false;
     radioFlac = 0;

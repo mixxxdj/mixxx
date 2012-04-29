@@ -23,8 +23,8 @@
 #include <QtCore>
 #include <QtGui>
 
-DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config) : QWidget(parent), Ui::DlgPrefShoutcastDlg()
-{
+DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config)
+        : QWidget(parent) {
     m_pConfig = _config;
     int tmp_index = 0;  //Used for finding the index of an element by name in a combobox.
     QString tmp_string;

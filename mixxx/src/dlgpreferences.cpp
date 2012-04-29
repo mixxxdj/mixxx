@@ -55,8 +55,7 @@
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue> * _config)
-        :  QDialog(), Ui::DlgPreferencesDlg() {
+                               ConfigObject<ConfigValue> * _config) {
     m_pControllerManager = controllers;
 
     setupUi(this);
