@@ -10,6 +10,7 @@
 
 #include <QtGui>
 
+#include "controllers/controllerpreset.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 
@@ -46,10 +47,19 @@ class DlgPrefController : public QWidget {
     Controller* getController() const {
         return m_pController;
     }
+    ControllerManager* getControllerManager() const {
+        return m_pControllerManager;
+    }
     void addWidgetToLayout(QWidget* pWidget);
     bool isEnabled() const {
         return m_ui.chkEnabledDevice->isChecked();
     }
+    Ui::DlgPrefControllerDlg& getUi() {
+        return m_ui;
+    }
+
+  private slots:
+    void slotPresetLoaded(ControllerPresetPointer preset);
 
   private:
     void savePreset(QString path);

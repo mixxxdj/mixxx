@@ -9,6 +9,8 @@
 #define DLGCONTROLLERLEARNING_H
 
 #include <QtGui>
+#include <QMenu>
+#include <QSignalMapper>
 
 #include "controllers/ui_dlgcontrollerlearning.h"
 #include "controllers/controller.h"
@@ -22,26 +24,43 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
     virtual ~DlgControllerLearning();
+
   signals:
     void cancelLearning();
     void learn(MixxxControl control);
+    void listenForClicks();
+    void stopListeningForClicks();
+
   public slots:
-    // Begin the learning process
-    void begin();
-    // Ask to map the next control
-    void next();
-    // Ask to map the previous control
-    void prev();
+    // Triggered when user selects a control from the menu.
+    void controlChosen(int controlIndex);
+    // Triggered when user clicks a control from the GUI
+    void controlClicked(ControlObject* pControl);
+
     // Gets called when a control has just been mapped successfully
     void controlMapped(QString);
+
+  private slots:
+    void showControlMenu();
+
   private:
-    void addControl(QString group, QString control, QString helpText);
-    void addDeckControl(QString control, QString helpText);
-    void addSamplerControl(QString control, QString helpText);
+    QMenu* addSubmenu(QString title);
+    void loadControl(const MixxxControl& control);
+
+    void addControl(QString group, QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addPlayerControl(QString control, QString helpText, QMenu* pMenu,
+                          bool deckControls, bool samplerControls, bool addReset=false);
+    void addDeckAndSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+
+    QSet<MixxxControl> m_mappedControls;
     Controller* m_pController;
-    QList<MixxxControl> m_controlsToMap;
-    int iCurrentControl; /** Used to iterate through the controls list */
-    QShortcut* m_pSkipShortcut;
+    QSignalMapper m_actionMapper;
+    QMenu m_controlPickerMenu;
+    QList<MixxxControl> m_controlsAvailable;
+    MixxxControl m_currentControl;
+    QString m_deckStr, m_samplerStr, m_resetStr;
 };
 
 #endif

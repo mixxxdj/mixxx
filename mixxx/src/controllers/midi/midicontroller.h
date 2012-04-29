@@ -29,9 +29,10 @@ class MidiController : public Controller {
     virtual QString presetExtension();
     inline QString defaultPreset();
 
-    virtual const ControllerPreset* getPreset() const {
-        // TODO(XXX) clone the preset
-        return &m_preset;
+    virtual ControllerPresetPointer getPreset() const {
+        MidiControllerPreset* pClone = new MidiControllerPreset();
+        *pClone = m_preset;
+        return ControllerPresetPointer(pClone);
     }
 
     virtual bool savePreset(const QString fileName) const;
@@ -42,6 +43,10 @@ class MidiController : public Controller {
 
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
+
+    virtual bool isMappable() const {
+        return m_preset.isMappable();
+    }
 
   protected:
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
@@ -70,6 +75,12 @@ class MidiController : public Controller {
     void createOutputHandlers();
     void updateAllOutputs();
     void destroyOutputHandlers();
+
+    // Returns a pointer to the currently loaded controller preset. For internal
+    // use only.
+    virtual ControllerPreset* preset() {
+        return &m_preset;
+    }
 
     QList<MidiOutputHandler*> m_outputs;
     MidiControllerPreset m_preset;

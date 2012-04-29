@@ -410,7 +410,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Loads the skin as a child of m_pView
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
-        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -1343,6 +1343,7 @@ void MixxxApp::rebootMixxxView() {
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(pNewView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
+                                        m_pControllerManager,
                                         m_pLibrary,
                                         m_pVCManager))) {
         qDebug() << "Could not reload the skin.";

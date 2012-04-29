@@ -34,6 +34,7 @@ QString MidiController::presetExtension() {
 
 void MidiController::visit(const MidiControllerPreset* preset) {
     m_preset = *preset;
+    emit(presetLoaded(getPreset()));
 }
 
 void MidiController::clearInputMappings() {
@@ -266,8 +267,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
             }
             emit(learnedMessage(message));
         }
-        // Don't process MIDI messages when learning
-        return;
     }
 
     // If no control is bound to this MIDI message, return
