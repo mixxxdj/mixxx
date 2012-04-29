@@ -416,7 +416,7 @@ class Vamp(Feature):
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
             # Optionally link libld. Required for some distros.
-            conf.CheckLib(['ld', 'libld']):
+            conf.CheckLib(['ld', 'libld'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
