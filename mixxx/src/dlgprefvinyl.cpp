@@ -30,7 +30,7 @@
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config)
-        : QWidget(parent)
+        : QWidget(parent),
           m_COMode(ControlObject::getControl(ConfigKey("[VinylControl]", "mode"))),
           m_COSpeed1(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_speed_type"))),
           m_COSpeed2(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_speed_type"))) {
