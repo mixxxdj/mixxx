@@ -24,6 +24,7 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
   public:
     DlgControllerLearning(QWidget *parent, Controller *controller);
     virtual ~DlgControllerLearning();
+
   signals:
     void cancelLearning();
     void learn(MixxxControl control);
@@ -31,11 +32,9 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
     void stopListeningForClicks();
 
   public slots:
-    // Begin the learning process
-    void begin();
-
-    void pickControlDone();
+    // Triggered when user selects a control from the menu.
     void controlChosen(int controlIndex);
+    // Triggered when user clicks a control from the GUI
     void controlClicked(ControlObject* pControl);
 
     // Gets called when a control has just been mapped successfully
@@ -46,10 +45,7 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
 
   private:
     QMenu* addSubmenu(QString title);
-    void showPickControl();
     void loadControl(const MixxxControl& control);
-
-
 
     void addControl(QString group, QString control, QString helpText, QMenu* pMenu, bool addReset=false);
     void addPlayerControl(QString control, QString helpText, QMenu* pMenu,

@@ -76,7 +76,7 @@ void Controller::applyPreset(QString configPath) {
         } else {
             if (scriptFunctions.isEmpty()) {
                 m_pEngine->loadScriptFiles(configPath,
-                                           preset->scriptFileNames);
+                                           pPreset->scriptFileNames);
             }
             m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
         }
