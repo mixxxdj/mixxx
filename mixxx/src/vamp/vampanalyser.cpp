@@ -38,7 +38,10 @@ void VampAnalyser::initializePluginPaths() {
         QDesktopServices::HomeLocation);
     QString applicationPath = QCoreApplication::applicationDirPath();
 #ifdef __WINDOWS__
-    pathElements << applicationPath.replace("/","\\"); //Use the path where Mixxx.exe is located
+    QDir vampPath(applicationPath);
+    if (vampPath.cd("plugins") && vampPath.cd("vamp")) {
+        pathElements << vampPath.absolutePath().replace("/","\\");
+    }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
     pathElements << applicationPath +"/../Plugins";

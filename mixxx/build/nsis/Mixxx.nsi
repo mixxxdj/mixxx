@@ -221,6 +221,9 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\plugins\soundsource
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*.dll"
 
+  SetOutPath $INSTDIR\plugins\vamp
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*.dll"
+
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
 
@@ -499,6 +502,8 @@ Section "Uninstall"
   RMDir "$INSTDIR\sqldrivers"
   Delete $INSTDIR\plugins\soundsource\*
   RMDir "$INSTDIR\plugins\soundsource"
+  Delete $INSTDIR\plugins\vamp\*
+  RMDir "$INSTDIR\plugins\vamp"
   Delete $INSTDIR\plugins\*
   RMDir "$INSTDIR\plugins"
   Delete $INSTDIR\translations\*
