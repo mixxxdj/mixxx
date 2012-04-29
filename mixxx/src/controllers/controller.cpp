@@ -12,7 +12,6 @@
 
 Controller::Controller()
         : QObject(),
-          m_pConfig(NULL),
           m_pEngine(NULL),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
@@ -64,7 +63,7 @@ void Controller::stopEngine()
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset() {
+void Controller::applyPreset(QString configPath) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -76,8 +75,8 @@ void Controller::applyPreset() {
             qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         } else {
             if (scriptFunctions.isEmpty()) {
-                m_pEngine->loadScriptFiles(m_pConfig->getConfigPath(),
-                                           pPreset->scriptFileNames);
+                m_pEngine->loadScriptFiles(configPath,
+                                           preset->scriptFileNames);
             }
             m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
         }
