@@ -5,731 +5,608 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation>DJ Uathoibríoch</translation>
+            <translation>Auto DJ</translation>
         </message>
     </context>
     <context>
         <name>BasePlaylistFeature</name>
         <message>
             <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llista de reproducción nueva</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Amestar a la cola Auto DJ (abaxo)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Amestar a la cola Auto DJ (arriba)</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desaniciar</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Renomar</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bloquiar</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importar llista de reproducción</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esportar llista de reproducción</translation>
         </message>
         <message>
             <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Renomar llista de reproducción</translation>
         </message>
         <message>
             <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nome nuevu de la llista de reproducción:</translation>
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Falló renomar la llista de reproducción</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Yá esiste una llista de reproducción con esi nome.</translation>
         </message>
         <message>
             <source>A playlist cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Una llista de reproducción nun pue tener un nome baleru.</translation>
         </message>
         <message>
             <source>Playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nome de la llista de reproducción:</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Falló crear llista de reproducción</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hebo un error desconocíu mentanto se creaba la llista de reproducción: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ficheros de llista de reproducción (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llista M3U (*.m3u);;Llista M3U8 (*.m3u8);;Llista PLS (*.pls);;Testu CSV (*.csv);;Testu lleíble (*.txt)</translation>
         </message>
     </context>
     <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation>Imir</translation>
+            <translation>Reproducíu</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Ceolteoir</translation>
+            <translation>Artista</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation>Teideal</translation>
+            <translation>Títulu</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation>Albam</translation>
+            <translation>Álbum</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation>Seánra</translation>
+            <translation>Xéneru</translation>
         </message>
         <message>
             <source>Composer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Compositor</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Añu</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tipu</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Allugamientu</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Comentariu</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duración</translation>
         </message>
         <message>
             <source>Rating</source>
-            <translation>Meastachán</translation>
+            <translation>Puntuación</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tasa de bits</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>PPM</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pista nᵁ</translation>
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Dáta Curtha Leis</translation>
+            <translation>Data d'adición</translation>
         </message>
         <message>
             <source>#</source>
-            <translation>#</translation>
+            <translation>Nᵁ</translation>
         </message>
         <message>
             <source>Timestamp</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Marca de tiempu</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Clave</translation>
         </message>
         <message>
             <source>BPM Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bloquiar PPM</translation>
         </message>
     </context>
     <context>
         <name>BaseTrackPlayer</name>
         <message>
             <source>Couldn't load track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nun se pudo cargar la pista.</translation>
         </message>
     </context>
     <context>
         <name>BrowseFeature</name>
         <message>
             <source>Quick Links</source>
-            <translation>Nasc Luas</translation>
+            <translation>Enllaces rápidos</translation>
         </message>
         <message>
             <source>Devices</source>
-            <translation>Gléasanna</translation>
+            <translation>Preseos</translation>
         </message>
         <message>
             <source>Removable Devices</source>
-            <translation>Gléasanna Inbhainte</translation>
+            <translation>Preseos estrayibles</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation>Leabharlann Mixxx</translation>
+            <translation>Biblioteca Mixxx</translation>
         </message>
         <message>
             <source>Home</source>
-            <translation>Baile</translation>
+            <translation>Carpeta Personal</translation>
         </message>
         <message>
             <source>Music</source>
-            <translation>Ceol</translation>
+            <translation>Música</translation>
         </message>
         <message>
             <source>Documents</source>
-            <translation>Cáipéisí</translation>
+            <translation>Documentos</translation>
         </message>
         <message>
             <source>Desktop</source>
-            <translation>Deasc</translation>
+            <translation>Escritoriu</translation>
         </message>
         <message>
             <source>Browse</source>
-            <translation>Brabhsáil</translation>
+            <translation>Restolar</translation>
         </message>
     </context>
     <context>
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Ainm Comhaid</translation>
+            <translation>Nome del ficheru</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Ceolteoir</translation>
+            <translation>Artista</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Títulu</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Álbum</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nᵁ pista</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Añu</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Xéneru</translation>
         </message>
         <message>
             <source>Composer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Compositor</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Comentariu</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duración</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>PPM</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Clave</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tipu</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tasa de bits</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Allugamientu</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Biblioteca Mixxx</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nun se pudo cargar el ficheru siguiente porque ta usandolu Mixxx o otra aplicación.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Atención: Esto desaniciará de mou permanente los siguientes ficheros:</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>¿Tas seguru de que quies desaniciar estos ficheros del ordenador?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nun se pudo desaniciar el ficheru siguiente porque ta usandolu Mixxx o otra aplicación:</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nun se pudieron anovar los metadatos del ficheru.</translation>
         </message>
     </context>
     <context>
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Caxa nueva</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desaniciar</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Renomar</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bloquiar</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importar llista de reproducción</translation>
         </message>
         <message>
             <source>Crates</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Caxes</translation>
         </message>
         <message>
             <source>Import Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importar caxa</translation>
         </message>
         <message>
             <source>Export Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esportar caxa</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desbloquiar</translation>
         </message>
         <message>
             <source>Crate name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nome de la caxa:</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hebo un error desconocíu al crear la caxa: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Renomar caxa</translation>
         </message>
         <message>
             <source>New crate name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nome nuevu de la caxa:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Falló renomar la caxa</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ficheros de llista de reproducción (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llista M3U (*.m3u);;Llista M3U8 (*.m3u8);;Llista PLS (*.pls);;Testu CSV (*.csv);;Testu lleíble (*.txt)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Les caxes nun puen tener un nome baleru.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Falló crear caxa</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Yá esiste una caxa con esi nome.</translation>
         </message>
     </context>
     <context>
         <name>DlgAboutDlg</name>
         <message>
             <source>About Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tocante a Mixxx</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Sitiu web oficial&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
         <name>DlgAutoDJ</name>
         <message>
             <source>Auto-DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto-DJ</translation>
         </message>
         <message>
             <source>One player must be stopped to enable Auto-DJ mode.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Un reproductor tien de tar paráu p'activar el mou Auto-DJ.</translation>
         </message>
         <message>
             <source>Disable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desactivar Auto DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cerner el conteníu de la llista de reproducción Auto DJ.</translation>
         </message>
         <message>
             <source>Shuffle</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Al debalu</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Saltar la pista siguiente de la llista Auto DJ.</translation>
         </message>
         <message>
             <source>Skip Track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Saltar pista</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Disparar la transición a la pista siguiente.</translation>
         </message>
         <message>
             <source>Fade Now</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fundir agora</translation>
         </message>
         <message>
             <source>Determines the duration of the transition.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Determina la duración de la transición.</translation>
         </message>
         <message>
             <source>Seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Segundos</translation>
         </message>
         <message>
             <source>sec.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>seg.</translation>
         </message>
         <message>
             <source>Turn Auto DJ on or off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar o desactivar Auto DJ.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar Auto DJ</translation>
         </message>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alministrar</translation>
         </message>
     </context>
     <context>
         <name>DlgBeatsDlg</name>
         <message>
             <source>Beat Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Configuración de detección del ritmu</translation>
         </message>
         <message>
             <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cuando ta activada la detección de ritmu, Mixxx detecta los golpes por minutu y el pulsu de les canciones, amuesa automáticamente una rexa de pulsu pa elles, y te permite sincronizar les pistes usando la información de ritmu.</translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar detección de PPM y pulsu</translation>
         </message>
         <message>
             <source>Choose Analyser</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Escoyer analizador</translation>
         </message>
         <message>
             <source>Beat Analyser:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analizador de pulsu:</translation>
         </message>
         <message>
             <source>Choose beween different algorithms to detect beats.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Escueyi ente diferentes algoritmos pa detectar el pulsu.</translation>
         </message>
         <message>
             <source>Analyser Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Configuración de analizador</translation>
         </message>
         <message>
             <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar detección rápida de ritmu. Si ta activada, Mixxx solo analiza el primer minutu d'una pista pola información de pulsu. Esto pue acelerar la detección de pulsu n'ordenadores lentos, pero pue producir rexes de pulsu de menor calidá.</translation>
         </message>
         <message>
             <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar analís rápidu (Pa equipos lentos, pue ser menos precisu)</translation>
         </message>
         <message>
             <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Convierte'l pulsu detectáu pol analizador nuna rexa de pulsu de ritmu fixu. Usa esti axuste si les tos pistes tienen ritmu constante (p.ex. muncha música electrónica). De vezu da rexes de pulsu de más calidá, pero nun funcionará bien en pistes con variaciones de ritmu.</translation>
         </message>
         <message>
             <source>Assume constant tempo (Recommended)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Asumir ritmu constante (recomendao)</translation>
         </message>
         <message>
             <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Intenta correxir la fase (primer pulsu) de les rexes de pulsu de ritmu fixu analizando los golpes pa descartar los atípicos.</translation>
         </message>
         <message>
             <source>Enable Offset Correction (Recommended)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar correición de desplazamientu (recomendao)</translation>
         </message>
         <message>
             <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Si s'activa, re-analiza les rexes de pulsu cuando camudes les preferencies nesta páxina. Tamién re-analizará les rexes de pulsu xeneraes con programes de terceros o versiones anteriores de Mixxx.</translation>
         </message>
         <message>
             <source>Re-analyse beats when settings change or beats already present (e.g. from 3rd-party programs or older Mixxx versions)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Re-analiza pulsos al camudar les preferencies o pulsos yá presentes (p.ex. de programes de terceros o versiones antigües de Mixxx)</translation>
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rangu de PPM</translation>
         </message>
         <message>
             <source>Min:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mín:</translation>
         </message>
         <message>
             <source>Max:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Máx:</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Volver a predeterminaos</translation>
         </message>
     </context>
     <context>
         <name>DlgBpmSchemeDlg</name>
         <message>
             <source>BPM Scheme</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esquema de PPM</translation>
         </message>
         <message>
             <source>Scheme Name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nome d'esquema:</translation>
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rangu de PPM</translation>
         </message>
         <message>
             <source>Max</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Máx</translation>
         </message>
         <message>
             <source>Min</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mín.</translation>
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analizar la canción ensembre</translation>
         </message>
     </context>
     <context>
         <name>DlgMidiLearning</name>
         <message>
             <source>Skip</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Saltar</translation>
         </message>
         <message>
             <source>Successfully mapped to: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Venceyáu correutamente a: </translation>
         </message>
         <message>
             <source>Next</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Siguiente</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Asistente de deprendimientu MIDI</translation>
         </message>
         <message>
             <source>Welcome to the MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bienveníu al asistente de deprendimientu MIDI</translation>
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esti asistente te permite venceyar de mou fácil los controles de la to controladora MIDI a los controles de Mixxx.</translation>
         </message>
         <message>
             <source>Begin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Principiar</translation>
         </message>
         <message>
             <source>Please tweak the control for:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Por favor toca'l control de:</translation>
         </message>
         <message>
             <source>Mixxx Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control de Mixxx</translation>
         </message>
         <message>
             <source>Previous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Anterior</translation>
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Calca na barra espaciadora pa siguir o saltar.</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>¡Deprendimientu MIDI completu!</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -743,8 +620,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Finito!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Finito!</translation>
         </message>
     </context>
     <context>

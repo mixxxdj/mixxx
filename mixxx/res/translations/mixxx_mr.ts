@@ -5,15 +5,15 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation>DJ Uathoibríoch</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
         <name>BasePlaylistFeature</name>
         <message>
             <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>नवीन वादकयादी</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
@@ -27,18 +27,15 @@
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>काढून टाका</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>पुनःनामांकन करा</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>कुलूपबंद करा</translation>
         </message>
         <message>
             <source>Import Playlist</source>
@@ -105,23 +102,24 @@
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation>Imir</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Ceolteoir</translation>
+            <translation>कलाकार</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation>Teideal</translation>
+            <translation>शिर्षक</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation>Albam</translation>
+            <translation>अल्बम</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation>Seánra</translation>
+            <translation>श्रेणी</translation>
         </message>
         <message>
             <source>Composer</source>
@@ -130,37 +128,31 @@
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>वर्ष</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>प्रकार</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>ठिकाण</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>मतप्रदर्शन</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>कालावधी</translation>
         </message>
         <message>
             <source>Rating</source>
-            <translation>Meastachán</translation>
+            <translation>गुणांकन</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>बीट दर</translation>
         </message>
         <message>
             <source>BPM</source>
@@ -174,21 +166,21 @@
         </message>
         <message>
             <source>Date Added</source>
-            <translation>Dáta Curtha Leis</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>#</source>
-            <translation>#</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Timestamp</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>कालमुद्रा</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>किल्ली</translation>
         </message>
         <message>
             <source>BPM Lock</source>
@@ -208,60 +200,60 @@
         <name>BrowseFeature</name>
         <message>
             <source>Quick Links</source>
-            <translation>Nasc Luas</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Devices</source>
-            <translation>Gléasanna</translation>
+            <translation>उपकरणे</translation>
         </message>
         <message>
             <source>Removable Devices</source>
-            <translation>Gléasanna Inbhainte</translation>
+            <translation>काढता येणारी उपकरणे</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation>Leabharlann Mixxx</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Home</source>
-            <translation>Baile</translation>
+            <translation>मुख्यपृष्ठ</translation>
         </message>
         <message>
             <source>Music</source>
-            <translation>Ceol</translation>
+            <translation>संगीत</translation>
         </message>
         <message>
             <source>Documents</source>
-            <translation>Cáipéisí</translation>
+            <translation>दस्तऐवज</translation>
         </message>
         <message>
             <source>Desktop</source>
-            <translation>Deasc</translation>
+            <translation>कार्यस्थळ</translation>
         </message>
         <message>
             <source>Browse</source>
-            <translation>Brabhsáil</translation>
+            <translation>तपासणी करा</translation>
         </message>
     </context>
     <context>
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Ainm Comhaid</translation>
+            <translation>फाइलचे नाव</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Ceolteoir</translation>
+            <translation>कलाकार</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>शिर्षक</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>अल्बम</translation>
         </message>
         <message>
             <source>Track #</source>
@@ -270,13 +262,11 @@
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>वर्ष</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>श्रेणी</translation>
         </message>
         <message>
             <source>Composer</source>
@@ -285,13 +275,11 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>मतप्रदर्शन</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>कार्यकाळ</translation>
         </message>
         <message>
             <source>BPM</source>
@@ -300,23 +288,19 @@
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>किल्ली</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>प्रकार</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>बीट दर</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>ठिकाण</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
@@ -358,18 +342,15 @@
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>काढून टाका</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>पुनःनामांकन करा</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>कुलूपबंद करा</translation>
         </message>
         <message>
             <source>Import Playlist</source>
@@ -393,8 +374,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>कुलूप उघडा</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -484,8 +464,7 @@
         </message>
         <message>
             <source>Shuffle</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>अदलाबदल करा</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist.</source>

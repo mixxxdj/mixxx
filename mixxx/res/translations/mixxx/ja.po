@@ -7,20 +7,100 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-04-11 08:31+0000\n"
+"POT-Creation-Date: 2012-04-25 10:54-0400\n"
+"PO-Revision-Date: 2012-04-24 12:15+0000\n"
 "Last-Translator: luyikei <luyikei@live.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-12 04:37+0000\n"
-"X-Generator: Launchpad (build 15070)\n"
+"X-Launchpad-Export-Date: 2012-04-26 04:37+0000\n"
+"X-Generator: Launchpad (build 15149)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
 msgstr "Auto DJ"
+
+#: BasePlaylistFeature#1
+msgid "New Playlist"
+msgstr "新しいプレイリスト"
+
+#: BasePlaylistFeature#2
+msgid "Add to Auto DJ Queue (bottom)"
+msgstr ""
+
+#: BasePlaylistFeature#3
+msgid "Add to Auto DJ Queue (top)"
+msgstr ""
+
+#: BasePlaylistFeature#4
+msgctxt "BasePlaylistFeature#4"
+msgid "Remove"
+msgstr "削除"
+
+#: BasePlaylistFeature#5
+msgctxt "BasePlaylistFeature#5"
+msgid "Rename"
+msgstr "名前の変更"
+
+#: BasePlaylistFeature#6
+msgctxt "BasePlaylistFeature#6"
+msgid "Lock"
+msgstr "ロック"
+
+#: BasePlaylistFeature#7
+msgctxt "BasePlaylistFeature#7"
+msgid "Import Playlist"
+msgstr "プレイリストのインポート"
+
+#: BasePlaylistFeature#8
+msgid "Export Playlist"
+msgstr "プレイリストをエクスポート"
+
+#: BasePlaylistFeature#9
+msgid "Rename Playlist"
+msgstr "プレイリストの名前を変更"
+
+#: BasePlaylistFeature#10
+msgid "New playlist name:"
+msgstr "新しいプレイリストの名前："
+
+#: BasePlaylistFeature#11
+msgid "Renaming Playlist Failed"
+msgstr "プレイリストの名前変更に失敗"
+
+#: BasePlaylistFeature#12
+msgid "A playlist by that name already exists."
+msgstr "この名前のプレイリストはすでに存在しています。"
+
+#: BasePlaylistFeature#13
+msgid "A playlist cannot have a blank name."
+msgstr "プレイリストには名前が必要です。"
+
+#: BasePlaylistFeature#14
+msgid "Playlist name:"
+msgstr "プレイリスト名:"
+
+#: BasePlaylistFeature#15
+msgid "Playlist Creation Failed"
+msgstr "プレイリストの作成失敗"
+
+#: BasePlaylistFeature#16
+msgid "An unknown error occurred while creating playlist: "
+msgstr "プレイリストの作成中に不明なエラーが置きました： "
+
+#: BasePlaylistFeature#17
+msgctxt "BasePlaylistFeature#17"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgstr ""
+
+#: BasePlaylistFeature#18
+msgctxt "BasePlaylistFeature#18"
+msgid ""
+"M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
+"(*.csv);;Readable Text (*.txt)"
+msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -48,60 +128,73 @@ msgstr "ジャンル"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
-msgid "Year"
-msgstr "年"
+msgid "Composer"
+msgstr ""
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
-msgid "Type"
-msgstr "ファイル形式"
+msgid "Year"
+msgstr ""
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
-msgid "Location"
-msgstr "ファイルの場所"
+msgid "Type"
+msgstr ""
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
-msgid "Comment"
-msgstr "コメント"
+msgid "Location"
+msgstr ""
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
-msgid "Duration"
-msgstr "長さ"
+msgid "Comment"
+msgstr ""
 
 #: BaseSqlTableModel#11
+msgctxt "BaseSqlTableModel#11"
+msgid "Duration"
+msgstr ""
+
+#: BaseSqlTableModel#12
 msgid "Rating"
 msgstr "評価"
 
-#: BaseSqlTableModel#12
-msgctxt "BaseSqlTableModel#12"
-msgid "Bitrate"
-msgstr "ビットレート"
-
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
-msgid "BPM"
-msgstr "BPM"
+msgid "Bitrate"
+msgstr ""
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
-msgid "Track #"
-msgstr "トラック#"
+msgid "BPM"
+msgstr ""
 
 #: BaseSqlTableModel#15
+msgctxt "BaseSqlTableModel#15"
+msgid "Track #"
+msgstr ""
+
+#: BaseSqlTableModel#16
 msgid "Date Added"
 msgstr "追加日時"
 
-#: BaseSqlTableModel#16
+#: BaseSqlTableModel#17
 msgid "#"
 msgstr "番号"
 
-#: BaseSqlTableModel#17
-msgctxt "BaseSqlTableModel#17"
+#: BaseSqlTableModel#18
+msgid "Timestamp"
+msgstr "タイムスタンプ"
+
+#: BaseSqlTableModel#19
+msgctxt "BaseSqlTableModel#19"
 msgid "Key"
 msgstr "キー"
+
+#: BaseSqlTableModel#20
+msgid "BPM Lock"
+msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -180,65 +273,70 @@ msgstr "ジャンル"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
-msgid "Comment"
-msgstr "コメント"
+msgid "Composer"
+msgstr ""
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
-msgid "Duration"
-msgstr "再生時間"
+msgid "Comment"
+msgstr ""
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
-msgid "BPM"
-msgstr "BPM"
+msgid "Duration"
+msgstr ""
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
-msgid "Key"
-msgstr "キー"
+msgid "BPM"
+msgstr ""
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
-msgid "Type"
-msgstr "ファイル形式"
+msgid "Key"
+msgstr ""
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
-msgid "Bitrate"
-msgstr "ビットレート"
+msgid "Type"
+msgstr ""
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
-msgid "Location"
-msgstr "パス名"
+msgid "Bitrate"
+msgstr ""
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
-msgid "Mixxx Library"
-msgstr "Mixxxライブラリ"
+msgid "Location"
+msgstr ""
 
 #: BrowseTableModel#16
+msgctxt "BrowseTableModel#16"
+msgid "Mixxx Library"
+msgstr ""
+
+#: BrowseTableModel#17
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr "Mixxxもしくは他のアプリケーションで使用中のため、以下のファイルを読み込めませんでした"
 
-#: BrowseTableModel#17
+#: BrowseTableModel#18
 msgid "Warning: This will permanently delete the following files:"
 msgstr "警告：以下のファイルを完全に削除します"
 
-#: BrowseTableModel#18
+#: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
 msgstr "本当にこれらのファイルをコンピュータから削除しますか？"
 
-#: BrowseTableModel#19
+#: BrowseTableModel#20
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr "以下のファイルはMixxか、別のアプリケーションで使用中のため削除できませんでした"
 
-#: BrowseTableModel#20
+#: BrowseTableModel#21
 msgid "Could not update file metadata."
 msgstr "メタデータのアップデートができません"
 
@@ -305,13 +403,15 @@ msgstr "レコードボックスの名前変更に失敗"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr "プレイリストファイル(*.m3u *.m3u8 *.pls)"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgstr ""
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
-msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
-msgstr "M3Uプレイリスト (*.m3u);;M3U8 プレイリスト(*.m3u8);;PLS プレイリスト(*.pls)"
+msgid ""
+"M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
+"(*.csv);;Readable Text (*.txt)"
+msgstr ""
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -330,63 +430,164 @@ msgid "About Mixxx"
 msgstr "Mixxxについて"
 
 #: DlgAboutDlg#2
-msgid "1.x.x"
-msgstr "1.x.x"
-
-#: DlgAboutDlg#3
-msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
-"weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
-"weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
-
-#: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
 msgstr "<a href=\"http://mixxx.org/\">公式Webサイト</a>"
 
 #: DlgAutoDJ#1
+msgid "Auto-DJ"
+msgstr ""
+
+#: DlgAutoDJ#2
+msgid "One player must be stopped to enable Auto-DJ mode."
+msgstr ""
+
+#: DlgAutoDJ#3
 msgid "Disable Auto DJ"
 msgstr "Auto DJを無効"
 
-#: DlgAutoDJ#2
+#: DlgAutoDJ#4
+msgid "Shuffle the content of the Auto DJ playlist."
+msgstr ""
+
+#: DlgAutoDJ#5
+msgid "Shuffle"
+msgstr ""
+
+#: DlgAutoDJ#6
+msgid "Skip the next track in the Auto DJ playlist."
+msgstr ""
+
+#: DlgAutoDJ#7
+msgid "Skip Track"
+msgstr ""
+
+#: DlgAutoDJ#8
+msgid "Trigger the transition to the next track."
+msgstr ""
+
+#: DlgAutoDJ#9
+msgid "Fade Now"
+msgstr ""
+
+#: DlgAutoDJ#10
+msgid "Determines the duration of the transition."
+msgstr ""
+
+#: DlgAutoDJ#11
+msgid "Seconds"
+msgstr ""
+
+#: DlgAutoDJ#12
+msgid "sec."
+msgstr ""
+
+#: DlgAutoDJ#13
+msgid "Turn Auto DJ on or off."
+msgstr ""
+
+#: DlgAutoDJ#14
 msgid "Enable Auto DJ"
 msgstr "Auto DJを有効"
 
-#: DlgAutoDJ#3
-msgctxt "DlgAutoDJ#3"
+#: DlgAutoDJ#15
+msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr "管理"
+msgstr ""
 
-#: DlgAutoDJ#4
-msgid "Shuffle playlist"
-msgstr "プレイリストをシャッフル"
+#: DlgBeatsDlg#1
+msgid "Beat Detection Settings"
+msgstr ""
 
-#: DlgAutoDJ#5
-msgid "Add tracks to the queue below..."
-msgstr "下のキューにトラックを追加してください。"
+#: DlgBeatsDlg#2
+msgid ""
+"When beat detection is enabled, Mixxx detects the beats per minute and beats "
+"of your tracks, automatically shows a beat-grid for them, and allows you to "
+"synchronize tracks using their beat information."
+msgstr ""
+
+#: DlgBeatsDlg#3
+msgid "Enable BPM and Beat Detection"
+msgstr ""
+
+#: DlgBeatsDlg#4
+msgid "Choose Analyser"
+msgstr ""
+
+#: DlgBeatsDlg#5
+msgid "Beat Analyser:"
+msgstr ""
+
+#: DlgBeatsDlg#6
+msgid "Choose beween different algorithms to detect beats."
+msgstr ""
+
+#: DlgBeatsDlg#7
+msgid "Analyser Settings"
+msgstr ""
+
+#: DlgBeatsDlg#8
+msgid ""
+"Enable fast beat detection. If activated Mixxx only analyzes the first "
+"minute of a track for beat information. This can speed up beat detection on "
+"slower computers but may result in lower quality beatgrids."
+msgstr ""
+
+#: DlgBeatsDlg#9
+msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
+msgstr ""
+
+#: DlgBeatsDlg#10
+msgid ""
+"Converts beats detected by the analyser into a fixed-tempo beatgrid. Use "
+"this setting if your tracks have a constant tempo (e.g. most electronic "
+"music). Often results in higher quality beatgrids, but will not do well on "
+"tracks that have tempo shifts."
+msgstr ""
+
+#: DlgBeatsDlg#11
+msgid "Assume constant tempo (Recommended)"
+msgstr ""
+
+#: DlgBeatsDlg#12
+msgid ""
+"Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
+"analyzing the beats to discard outliers."
+msgstr ""
+
+#: DlgBeatsDlg#13
+msgid "Enable Offset Correction (Recommended)"
+msgstr ""
+
+#: DlgBeatsDlg#14
+msgid ""
+"If enabled, re-analyses beatgrids when you change preferences on this page. "
+"If set, this setting will also re-analyse beatgrids generated by 3rd-party "
+"programs or previous versions of Mixxx."
+msgstr ""
+
+#: DlgBeatsDlg#15
+msgid ""
+"Re-analyse beats when settings change or beats already present (e.g. from "
+"3rd-party programs or older Mixxx versions)"
+msgstr ""
+
+#: DlgBeatsDlg#16
+msgctxt "DlgBeatsDlg#16"
+msgid "BPM Range"
+msgstr ""
+
+#: DlgBeatsDlg#17
+msgid "Min:"
+msgstr ""
+
+#: DlgBeatsDlg#18
+msgid "Max:"
+msgstr ""
+
+#: DlgBeatsDlg#19
+msgctxt "DlgBeatsDlg#19"
+msgid "Reset to Defaults"
+msgstr ""
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -397,8 +598,9 @@ msgid "Scheme Name:"
 msgstr "スキーム名:"
 
 #: DlgBpmSchemeDlg#3
+msgctxt "DlgBpmSchemeDlg#3"
 msgid "BPM Range"
-msgstr "BPM 範囲"
+msgstr ""
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -541,9 +743,8 @@ msgid "Add"
 msgstr "追加"
 
 #: DlgPrefBPMDlg#10
-msgctxt "DlgPrefBPMDlg#10"
 msgid "Edit"
-msgstr "編集"
+msgstr ""
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
@@ -720,6 +921,46 @@ msgstr "ピッチベンドを滑らかにする"
 #: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
 msgstr "ピッチベンドの感度"
+
+#: DlgPrefControlsDlg#25
+msgid "Waveform Display"
+msgstr ""
+
+#: DlgPrefControlsDlg#26
+msgid "Frame Rate"
+msgstr ""
+
+#: DlgPrefControlsDlg#27
+msgid "OpenGl status"
+msgstr ""
+
+#: DlgPrefControlsDlg#28
+msgid "Display type"
+msgstr ""
+
+#: DlgPrefControlsDlg#29
+msgid "Default zoom"
+msgstr ""
+
+#: DlgPrefControlsDlg#30
+msgid "100%"
+msgstr ""
+
+#: DlgPrefControlsDlg#31
+msgid "200%"
+msgstr ""
+
+#: DlgPrefControlsDlg#32
+msgid "300%"
+msgstr ""
+
+#: DlgPrefControlsDlg#33
+msgid "400%"
+msgstr ""
+
+#: DlgPrefControlsDlg#34
+msgid "Synchronize"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1326,9 +1567,8 @@ msgid "Form3"
 msgstr "フォーム3"
 
 #: DlgPrefShoutcastDlg#2
-msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr "ライブ放送を有効にする"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -1640,8 +1880,9 @@ msgid "Query Devices"
 msgstr "デバイスを問い合わせる"
 
 #: DlgPrefSoundDlg#8
+msgctxt "DlgPrefSoundDlg#8"
 msgid "Reset to Defaults"
-msgstr "デフォルトに戻す"
+msgstr ""
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
@@ -1838,20 +2079,24 @@ msgid "Recording"
 msgstr "レコーディング"
 
 #: DlgPreferences#8
-msgctxt "DlgPreferences#8"
-msgid "BPM Detection"
-msgstr "BPM検出"
+msgid "Beat Detection"
+msgstr ""
 
 #: DlgPreferences#9
+msgctxt "DlgPreferences#9"
+msgid "BPM Detection"
+msgstr ""
+
+#: DlgPreferences#10
 msgid "Normalization"
 msgstr "ノーマライズ"
 
-#: DlgPreferences#10
-msgctxt "DlgPreferences#10"
-msgid "Vinyl Control"
-msgstr "Vinylコントロール"
-
 #: DlgPreferences#11
+msgctxt "DlgPreferences#11"
+msgid "Vinyl Control"
+msgstr ""
+
+#: DlgPreferences#12
 msgid "Live Broadcasting"
 msgstr "ライブ放送"
 
@@ -1919,6 +2164,14 @@ msgstr "ボタンを押すと録音開始"
 msgid "Stop Recording"
 msgstr "録音停止"
 
+#: DlgRecording#6
+msgid "Recording to file: "
+msgstr ""
+
+#: DlgRecording#7
+msgid "MB written"
+msgstr ""
+
 #: DlgTrackInfo#1
 msgid "Track Editor"
 msgstr "トラックエディター"
@@ -1952,109 +2205,117 @@ msgid "Genre:"
 msgstr "ジャンル:"
 
 #: DlgTrackInfo#9
+msgid "Composer:"
+msgstr ""
+
+#: DlgTrackInfo#10
 msgid "Filename:"
 msgstr "ファイル名:"
 
-#: DlgTrackInfo#10
+#: DlgTrackInfo#11
 msgid "Duration:"
 msgstr "長さ:"
 
-#: DlgTrackInfo#11
+#: DlgTrackInfo#12
 msgid "3:00"
 msgstr "3:00"
 
-#: DlgTrackInfo#12
+#: DlgTrackInfo#13
 msgid "File Type:"
 msgstr "ファイル形式:"
 
-#: DlgTrackInfo#13
+#: DlgTrackInfo#14
 msgid "77"
 msgstr "77"
 
-#: DlgTrackInfo#14
+#: DlgTrackInfo#15
 msgid "Comments:"
 msgstr "コメント:"
 
-#: DlgTrackInfo#15
+#: DlgTrackInfo#16
 msgid "Reload track metadata from file."
 msgstr "トラックのメタデータをファイルから再読み込み"
 
-#: DlgTrackInfo#16
+#: DlgTrackInfo#17
 msgid "Track Information (Click to Expand)"
 msgstr "トラック情報（クリックして表示）"
 
-#: DlgTrackInfo#17
+#: DlgTrackInfo#18
 msgid "Track BPM: "
 msgstr "トラックBPM: "
 
-#: DlgTrackInfo#18
+#: DlgTrackInfo#19
 msgid "x2"
 msgstr "x2"
 
-#: DlgTrackInfo#19
+#: DlgTrackInfo#20
 msgid "/2"
 msgstr "/2"
 
-#: DlgTrackInfo#20
+#: DlgTrackInfo#21
 msgid "Tap to Beat"
 msgstr "タップテンポ"
 
-#: DlgTrackInfo#21
+#: DlgTrackInfo#22
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr "ヒント：BPM検出をさせるにはライブラリの解析画面を使用します。"
 
-#: DlgTrackInfo#22
+#: DlgTrackInfo#23
 msgid "Track BPM"
 msgstr "トラックBPM"
 
-#: DlgTrackInfo#23
+#: DlgTrackInfo#24
 msgid "Cue Id"
 msgstr "キューID"
 
-#: DlgTrackInfo#24
-msgctxt "DlgTrackInfo#24"
-msgid "Position"
-msgstr "経過時間"
-
 #: DlgTrackInfo#25
+msgctxt "DlgTrackInfo#25"
+msgid "Position"
+msgstr ""
+
+#: DlgTrackInfo#26
 msgid "Hotcue"
 msgstr "ホットキュー"
 
-#: DlgTrackInfo#26
+#: DlgTrackInfo#27
 msgid "Label"
 msgstr "ラベル"
 
-#: DlgTrackInfo#27
+#: DlgTrackInfo#28
 msgid "Activate Cue"
 msgstr "キューを有効にする"
 
-#: DlgTrackInfo#28
+#: DlgTrackInfo#29
 msgid "Delete Cue"
 msgstr "キューを削除する"
 
-#: DlgTrackInfo#29
+#: DlgTrackInfo#30
 msgid "Track Cuepoints"
 msgstr "トラックキューポイント"
 
-#: DlgTrackInfo#30
+#: DlgTrackInfo#31
 msgid "<< &Prev"
 msgstr "<< 前(&P)"
 
-#: DlgTrackInfo#31
+#: DlgTrackInfo#32
 msgid "&Apply"
 msgstr "適用(&A)"
 
-#: DlgTrackInfo#32
+#: DlgTrackInfo#33
 msgid "&Cancel"
 msgstr "キャンセル(&C)"
 
-#: DlgTrackInfo#33
+#: DlgTrackInfo#34
 msgid "Alt+O"
 msgstr "Alt+O"
 
-#: DlgTrackInfo#34
+#: DlgTrackInfo#35
 msgid "&Next >>"
 msgstr "次(&N) >>"
+
+#: EmptyWaveformWidget#1
+msgid "Empty"
+msgstr ""
 
 #: EncoderMp3#1
 msgid "Encoder"
@@ -2145,28 +2406,91 @@ msgid "Error setting non-blocking mode:"
 msgstr "non-blockingモードに設定できませんでした。"
 
 #: EngineShoutcast#5
+msgid "Error setting hostname!"
+msgstr ""
+
+#: EngineShoutcast#6
+msgid "Error setting protocol!"
+msgstr ""
+
+#: EngineShoutcast#7
+msgid "Error setting port!"
+msgstr ""
+
+#: EngineShoutcast#8
+msgid "Error setting password!"
+msgstr ""
+
+#: EngineShoutcast#9
+msgid "Error setting mount!"
+msgstr ""
+
+#: EngineShoutcast#10
+msgid "Error setting username!"
+msgstr ""
+
+#: EngineShoutcast#11
+msgid "Error setting stream name!"
+msgstr ""
+
+#: EngineShoutcast#12
+msgid "Error setting stream description!"
+msgstr ""
+
+#: EngineShoutcast#13
+msgid "Error setting stream genre!"
+msgstr ""
+
+#: EngineShoutcast#14
+msgid "Error setting stream url!"
+msgstr ""
+
+#: EngineShoutcast#15
+msgid ""
+"Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try "
+"a different sample-rate or switch to a different encoding."
+msgstr ""
+
+#: EngineShoutcast#16
+msgid ""
+"See https://bugs.launchpad.net/mixxx/+bug/686212 for more information."
+msgstr ""
+
+#: EngineShoutcast#17
+msgid "Error setting bitrate"
+msgstr ""
+
+#: EngineShoutcast#18
+msgid "Error: unknown server protocol!"
+msgstr ""
+
+#: EngineShoutcast#19
+msgid "Error: libshout only supports Shoutcast with MP3 format!"
+msgstr ""
+
+#: EngineShoutcast#20
 msgid "Lost connection to streaming server"
 msgstr "ストリーミングサーバとの接続が切断されました"
 
-#: EngineShoutcast#6
+#: EngineShoutcast#21
 msgid ""
 "Please check your connection to the Internet and verify that your username "
 "and password are correct."
 msgstr "インターネットの接続、ユーザ名とパスワードを確認してください"
 
-#: EngineShoutcast#7
+#: EngineShoutcast#22
 msgid "Live broadcasting"
 msgstr "ライブ放送"
 
-#: EngineShoutcast#8
+#: EngineShoutcast#23
 msgid "Mixxx has successfully connected to the shoutcast server"
 msgstr "shoutcastサーバーへの接続に成功しました。"
 
-#: EngineShoutcast#9
+#: EngineShoutcast#24
 msgid "Mixxx could not connect to streaming server"
 msgstr "Mixxxはストリーミングサーバに接続することができませんでした"
 
-#: EngineShoutcast#10
+#: EngineShoutcast#25
 msgid "Mixxx has successfully disconnected to the shoutcast server"
 msgstr "shoutcastサーバーからの切断に成功しました。"
 
@@ -2190,6 +2514,21 @@ msgstr "通知"
 #: ErrorDialogHandler#5
 msgid "Question"
 msgstr "質問"
+
+#: GLSLWaveformWidget#1
+msgctxt "GLSLWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
+#: GLSimpleWaveformWidget#1
+msgctxt "GLSimpleWaveformWidget#1"
+msgid "Simple"
+msgstr ""
+
+#: GLWaveformWidget#1
+msgctxt "GLWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
 
 #: ITunesFeature#1
 msgid "iTunes"
@@ -2370,86 +2709,19 @@ msgid "Mixxx"
 msgstr "Mixxx"
 
 #: MixxxApp#3
-msgid ""
-"Mixxx's development is driven by community feedback.  At your discretion, "
-"Mixxx can automatically send data on your user experience back to the "
-"developers. Would you like to help us make Mixxx better by enabling this "
-"feature?"
+msgctxt "MixxxApp#3"
+msgid "Choose music library directory"
 msgstr ""
-"Mixxxの開発はコミュニティからのフィードバックを反映して行われています。あなたの裁量のもと、Mixxxは自動的にユーザーエクスペリエンスのデータを開発"
-"者に送ることができます。この機能を有効にしてMixxx改良の手助けをしていただけないでしょうか？"
 
 #: MixxxApp#4
-msgid "Yes"
-msgstr "はい"
-
-#: MixxxApp#5
-msgid "No"
-msgstr "いいえ"
-
-#: MixxxApp#6
-msgid "Privacy Policy"
-msgstr "プライバシーポリシー"
-
-#: MixxxApp#7
-msgid "Mixxx: Privacy Policy"
-msgstr "Mixxx: プライバシーポリシー"
-
-#: MixxxApp#8
-msgid ""
-"Mixxx's development is driven by community feedback. In order to help "
-"improve future versions Mixxx will with your permission collect information "
-"on your hardware and usage of Mixxx.  This information will primarily be "
-"used to fix bugs, improve features, and determine the system requirements of "
-"later versions.  Additionally this information may be used in aggregate for "
-"statistical purposes.\n"
-"\n"
-"The hardware information will include:\n"
-"\t- CPU model and features\n"
-"\t- Total/Available Amount of RAM\n"
-"\t- Available disk space\n"
-"\t- OS version\n"
-"\n"
-"Your usage information will include:\n"
-"\t- Settings/Preferences\n"
-"\t- Internal errors\n"
-"\t- Internal debugging messages\n"
-"\t- Performance statistics (average latency, CPU usage)\n"
-"\n"
-"This information will not be used to personally identify you, contact you, "
-"advertise to you, or otherwise bother you in any way.\n"
-msgstr ""
-"Mixxxの開発はコミュニティからのフィードバックを反映して行われています。次バージョンの改善のため、あなたの了承のもと、ハードウェアとMixxxの使用情"
-"報を収集しています。この情報は主としてバグ修正、機能改善、システム要求の決定のために使用されます。加えてこの情報を統計の目的で集めています。\n"
-"\n"
-"ハードウェアの情報には下記が含まれています。\n"
-"\t- CPUのモデルと機能\n"
-"\t- RAMの総容量と使用量\n"
-"\t- 利用可能なディスクスペース\n"
-"\t- OSのバージョン\n"
-"\n"
-"使用情報には以下が含まれます。\n"
-"\t- 設定\n"
-"\t- 内部エラー\n"
-"\t- 内部デバッグメッセージ\n"
-"\t- パフォーマンスの統計量 (レイテンシ、CPU使用の平均値)\n"
-"\n"
-"この情報は個人の特定、連絡手段、広告といったあなたをわずらわせるいかなる目的にも使用されません。\n"
-
-#: MixxxApp#9
-msgctxt "MixxxApp#9"
-msgid "Choose music library directory"
-msgstr "音楽ライブラリのディレクトリを選択してください。"
-
-#: MixxxApp#10
 msgid "Sound Device Busy"
 msgstr "サウンドデバイスがビジーです。"
 
-#: MixxxApp#11
+#: MixxxApp#5
 msgid "Get <b>Help</b> from the Mixxx Wiki."
 msgstr "Mixxx Wikiで<b>Help</b>を手に入れてください。"
 
-#: MixxxApp#12
+#: MixxxApp#6
 msgid ""
 "Mixxx was unable to access all the configured sound devices. Another "
 "application is using a sound device Mixxx is configured to use or a device "
@@ -2458,51 +2730,69 @@ msgstr ""
 "指定されたサウンドデバイスにMixxxがアクセスできませんでした。他のアプリケーションがこのサウンドデバイスを使用しているか、またはデバイスが接続されてい"
 "ません。"
 
-#: MixxxApp#13
+#: MixxxApp#7
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr "他のアプリケーションを閉じるかデバイスを再接続した後で<b>リトライ</b>してください。"
 
-#: MixxxApp#14
+#: MixxxApp#8
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
 msgstr "Mixxxのサウンドデバイス設定を<b>再設定</b>する。"
 
-#: MixxxApp#15
+#: MixxxApp#9
 msgid "<b>Exit</b> Mixxx."
 msgstr "Mixxxを<b>終了</b>する。"
 
-#: MixxxApp#16
+#: MixxxApp#10
 msgid "Retry"
 msgstr "リトライ"
 
-#: MixxxApp#17
+#: MixxxApp#11
 msgid "Reconfigure"
 msgstr "再設定"
 
-#: MixxxApp#18
+#: MixxxApp#12
 msgid "Help"
 msgstr "ヘルプ"
 
-#: MixxxApp#19
+#: MixxxApp#13
 msgid "Exit"
 msgstr "終了"
 
-#: MixxxApp#20
+#: MixxxApp#14
+msgid "No Output Devices"
+msgstr ""
+
+#: MixxxApp#15
+msgid ""
+"Mixxx was configured without any output sound devices. Audio processing will "
+"be disabled without a configured output device."
+msgstr ""
+
+#: MixxxApp#16
+msgid "<b>Continue</b> without any outputs."
+msgstr ""
+
+#: MixxxApp#17
 msgid "Continue"
 msgstr "続行"
 
-#: MixxxApp#21
-msgid "&Load Song (Player 1)..."
-msgstr "デッキ1へトラックを読み込む(&L)"
+#: MixxxApp#18
+msgid "Load track to Deck %1"
+msgstr ""
+
+#: MixxxApp#19
+msgid "Loads a track in deck %1"
+msgstr ""
+
+#: MixxxApp#20
+msgid "Open"
+msgstr ""
 
 #: MixxxApp#21
 msgid "Ctrl+O"
 msgstr "Ctrl+O"
-
-#: MixxxApp#23
-msgid "&Load Song (Player 2)..."
-msgstr "デッキ2へトラックを読み込む(&L)"
 
 #: MixxxApp#22
 msgid "Ctrl+Shift+O"
@@ -2513,408 +2803,194 @@ msgid "&Exit"
 msgstr "終了(&E)"
 
 #: MixxxApp#24
+msgid "Quits Mixxx"
+msgstr ""
+
+#: MixxxApp#25
 msgid "Ctrl+Q"
 msgstr "Ctrl+Q"
 
-#: MixxxApp#25
+#: MixxxApp#26
 msgid "&Rescan Library"
 msgstr "ライブラリを再スキャン (&R)"
 
-#: MixxxApp#26
+#: MixxxApp#27
+msgid "Rescans library folders for changes to tracks."
+msgstr ""
+
+#: MixxxApp#28
 msgid "Add &new playlist"
 msgstr "新しいプレイリストを追加 (&N)"
 
-#: MixxxApp#27
+#: MixxxApp#29
 msgid "Ctrl+N"
 msgstr "Ctrl+N"
 
-#: MixxxApp#28
+#: MixxxApp#30
 msgid "Add new &crate"
 msgstr "新しいレコードボックスを追加 (&C)"
 
-#: MixxxApp#29
+#: MixxxApp#31
 msgid "Ctrl+C"
 msgstr "Ctrl+C"
 
-#: MixxxApp#30
-msgid "&Import playlist"
-msgstr "プレイリストをインポート (&I)"
-
-#: MixxxApp#31
-msgid "Ctrl+I"
-msgstr "Ctrl+I"
-
 #: MixxxApp#32
-msgid "&Audio Beat Marks"
-msgstr "オーディオビートマーク (&A)"
+msgid "Deck %1 is currently playing a track."
+msgstr ""
 
 #: MixxxApp#33
+msgid "Are you sure you want to load a new track?"
+msgstr ""
+
+#: MixxxApp#34
 msgid "&Full Screen"
 msgstr "全画面表示 (&F)"
 
-#: WSearchLineEdit#1
-msgid "Ctrl+F"
-msgstr "Ctrl+F"
-
-#: MixxxApp#34
+#: MixxxApp#35
 msgid "F11"
 msgstr "F11"
 
-#: MixxxApp#35
+#: MixxxApp#36
 msgid "&Preferences"
 msgstr "設定(&P)"
 
-#: MixxxApp#36
+#: MixxxApp#37
+msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
+msgstr ""
+
+#: MixxxApp#38
 msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
-#: MixxxApp#37
+#: MixxxApp#39
 msgid "&About"
 msgstr "このアプリケーションについて(&A)"
 
-#: MixxxApp#38
+#: MixxxApp#40
 msgid "&Community Support"
 msgstr "コミュニティーのサポート(&C)"
 
-#: MixxxApp#39
+#: MixxxApp#41
+msgid "Get help with Mixxx"
+msgstr ""
+
+#: MixxxApp#42
 msgid "&User Manual"
 msgstr "ユーザーマニュアル(_U)"
 
-#: MixxxApp#40
+#: MixxxApp#43
 msgid "Send Us &Feedback"
 msgstr "開発者にフィードバック(&F)"
 
-#: MixxxApp#41
+#: MixxxApp#44
 msgid "&Translate this application"
 msgstr "このアプリケーションを翻訳する(&T)"
 
 #: MixxxApp#45
-msgid "Enable &Vinyl Control 1"
-msgstr "Vinylコントロール1を有効にする(&V)"
-
-#: MixxxApp#42
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#47
-msgid "Enable &Vinyl Control 2"
-msgstr "Vinylコントロール2を有効にする(&V)"
-
-#: MixxxApp#43
+#: MixxxApp#46
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#49
-msgctxt "MixxxApp#49"
-msgid "Enable live broadcasting"
-msgstr "ライブ放送を有効にする"
-
-#: MixxxApp#50
+#: MixxxApp#47
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#51
+#: MixxxApp#48
 msgid "&Record Mix"
 msgstr "ミックスを録音する (&R)"
 
-#: MixxxApp#52
+#: MixxxApp#49
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#53
-msgid "Show Studio"
-msgstr "Studioを表示する"
-
-#: MixxxApp#54
-msgid "Opens a song in player 1"
-msgstr "トラックをデッキ1で開く"
-
-#: MixxxApp#55
-msgid ""
-"Open\n"
-"\n"
-"Opens a song in player 1"
-msgstr ""
-"開く\n"
-"\n"
-"トラックをデッキ1で開く"
-
-#: MixxxApp#56
-msgid "Opens a song in player 2"
-msgstr "デッキ2で曲を開く"
-
-#: MixxxApp#57
-msgid ""
-"Open\n"
-"\n"
-"Opens a song in player 2"
-msgstr ""
-"開く\n"
-"\n"
-"トラックをデッキ2で開く"
-
-#: MixxxApp#58
-msgid "Quits the application"
-msgstr "アプリケーションを終了する"
-
-#: MixxxApp#59
-msgid ""
-"Exit\n"
-"\n"
-"Quits the application"
-msgstr ""
-"終了\n"
-"\n"
-"アプリケーションを終了する"
-
-#: MixxxApp#60
-msgid "Rescans the song library"
-msgstr "音楽ライブラリを再スキャンする"
-
-#: MixxxApp#61
-msgid ""
-"Rescan library\n"
-"\n"
-"Rescans the song library"
-msgstr ""
-"ライブラリの再スキャン\n"
-"\n"
-"音楽ライブラリを再スキャンします"
-
-#: MixxxApp#62
+#: MixxxApp#50
 msgid "Create a new playlist"
 msgstr "新しいプレイリストを作成"
 
-#: MixxxApp#63
-msgid ""
-"New playlist\n"
-"\n"
-"Create a new playlist"
-msgstr ""
-"新プレイリスト\n"
-"\n"
-"新しいプレイリストを作成します"
-
-#: MixxxApp#64
+#: MixxxApp#51
 msgid "Create a new crate"
 msgstr "新しいレコードボックスを作成"
 
-#: MixxxApp#65
-msgid ""
-"New crate\n"
-"\n"
-"Create a new crate."
+#: MixxxApp#52
+msgid "Ctrl+Shift+F"
 msgstr ""
-"新しいレコードボックス\n"
-"\n"
-"新しいレコードボックスを作成します。"
 
-#: MixxxApp#66
-msgid "Import playlist"
-msgstr "プレイリストのインポート"
-
-#: MixxxApp#67
-msgid "Audio Beat Marks"
-msgstr "オーディオビートマーク"
-
-#: MixxxApp#68
-msgid ""
-"Audio Beat Marks\n"
-"Mark beats by audio clicks"
+#: MixxxApp#53
+msgid "Enable Vinyl Control &1"
 msgstr ""
-"オーディオビートマーク\n"
-"クリック音でビートにしるしをつけます。"
 
-#: MixxxApp#69
-msgid "Activate Vinyl Control"
-msgstr "Vinylコントロールを使用する"
+#: MixxxApp#54
+msgid "Enable Vinyl Control &2"
+msgstr ""
 
-#: MixxxApp#70
+#: MixxxApp#55
+msgid "Enable live &broadcasting"
+msgstr ""
+
+#: MixxxApp#56
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr "ターンテーブルとタイムコードの記録されているレコードを使用してMixxxを操作する"
 
-#: MixxxApp#71
-msgid "Activate live broadcasting"
-msgstr "ライブ放送を有効にする"
-
-#: MixxxApp#72
+#: MixxxApp#57
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr "shoutcastかicecastサーバーを通じてミックスをストリーミング"
 
-#: MixxxApp#73
-msgid "Start Recording your Mix"
-msgstr "録音を開始"
-
-#: MixxxApp#74
+#: MixxxApp#58
 msgid "Record your mix to a file"
 msgstr "ミックスをファイルに録音する"
 
-#: MixxxApp#75
-msgid "Full Screen"
-msgstr "全画面表示"
-
-#: MixxxApp#76
+#: MixxxApp#59
 msgid "Display Mixxx using the full screen"
 msgstr "Mixxxを全画面表示にする。"
 
-#: MixxxApp#77
-msgctxt "MixxxApp#77"
-msgid "Preferences"
-msgstr "設定"
-
-#: MixxxApp#78
-msgid ""
-"Preferences\n"
-"Playback and MIDI preferences"
-msgstr ""
-"設定\n"
-"再生とMIDIの設定"
-
-#: MixxxApp#79
-msgid "Support..."
-msgstr "サポート..."
-
-#: MixxxApp#80
-msgid ""
-"Support\n"
-"\n"
-"Get help with Mixxx"
-msgstr ""
-"サポート\n"
-"\n"
-"Mixxxを助ける"
-
-#: MixxxApp#81
+#: MixxxApp#60
 msgid "Read the Mixxx user manual."
 msgstr "Mixxxユーザーマニュアルを読む"
 
-#: MixxxApp#82
-msgid ""
-"Support\n"
-"\n"
-"Read the Mixxx user manual."
-msgstr ""
-"サポート\n"
-"\n"
-"Mixxxユーザーマニュアルを読む"
-
-#: MixxxApp#83
+#: MixxxApp#61
 msgid "Send feedback to the Mixxx team."
 msgstr "Mixxxチームにフィードバックを送る"
 
-#: MixxxApp#84
-msgid ""
-"Support\n"
-"\n"
-"Send feedback to the Mixxx team."
-msgstr ""
-"サポート\n"
-"\n"
-"Mixxxチームにフィードバックを送る"
-
-#: MixxxApp#85
+#: MixxxApp#62
 msgid "Help translate this application into your language."
 msgstr "あなたの言語でこのアプリケーションを翻訳するのを手伝ってください。"
 
-#: MixxxApp#86
-msgid ""
-"Support\n"
-"\n"
-"Help translate this application into your language."
-msgstr ""
-"サポート\n"
-"\n"
-"あなたの言語でこのアプリケーションを翻訳するのを手伝ってください。"
-
-#: MixxxApp#87
+#: MixxxApp#63
 msgid "About the application"
 msgstr "このアプリケーションについて"
 
-#: MixxxApp#88
-msgid ""
-"About\n"
-"\n"
-"About the application"
+#: MixxxApp#64
+msgid "A sampler is currently playing. Exit Mixxx?"
 msgstr ""
-"Mixxxについて\n"
-"\n"
-"このアプリケーションについて"
 
-#: MixxxApp#89
-msgid "Shows the macro studio window"
-msgstr "マクロスタジオのウィンドウを表示する"
-
-#: MixxxApp#90
-msgid ""
-"Show Studio\n"
-"\n"
-"Makes the macro studio visible"
-msgstr ""
-"スタジオの表示\n"
-"\n"
-"マクロスタジオが表示されるようにします。"
-
-#: MixxxApp#91
+#: MixxxApp#65
 msgid "&File"
 msgstr "ファイル(&F)"
 
-#: MixxxApp#92
+#: MixxxApp#66
 msgid "&Options"
 msgstr "オプション(&O)"
 
-#: MixxxApp#93
+#: MixxxApp#67
 msgid "&Library"
 msgstr "ライブラリ(&L)"
 
-#: MixxxApp#94
+#: MixxxApp#68
 msgid "&View"
 msgstr "表示(&V)"
 
-#: MixxxApp#95
+#: MixxxApp#69
 msgid "&Help"
 msgstr "ヘルプ(&H)"
 
-#: MixxxApp#96
-msgid "&Macro"
-msgstr "マクロ(&M)"
-
-#: MixxxApp#97
+#: MixxxApp#70
 msgid "&Vinyl Control"
 msgstr "Vinylコントロール(&V)"
 
-#: MixxxApp#98
-msgid "Quit..."
-msgstr "終了..."
-
-#: MixxxApp#99
-msgid "Do your really want to quit?"
-msgstr "本当に終了しますか？"
-
-#: MixxxApp#100
-msgid ""
-"Player 1 is currently playing a song.\n"
-"Are you sure you want to load a new song?"
-msgstr ""
-"デッキ1は現在再生中です。\n"
-"本当に新しいトラックを読み込みますか？"
-
-#: MixxxApp#101
-msgid "Load Song into Player 1"
-msgstr "トラックをデッキ1に読み込む"
-
-#: MixxxApp#102
-msgid ""
-"Player 2 is currently playing a song.\n"
-"Are you sure you want to load a new song?"
-msgstr ""
-"デッキ2は現在再生中です。\n"
-"本当に新しいトラックを読み込みますか？"
-
-#: MixxxApp#103
-msgid "Load Song into Player 2"
-msgstr "トラックをデッキ2に読み込む"
-
-#: MixxxApp#104
+#: MixxxApp#71
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -2922,38 +2998,61 @@ msgstr ""
 "入力デバイスが選択されていません。\n"
 "サウンドハードウェアの設定でサウンドカードを選択してください。"
 
-#: MixxxApp#105
+#: MixxxApp#72
 msgid "Mixxx %1 Development Team"
 msgstr "Mixxx %1 開発チーム"
 
-#: MixxxApp#106
+#: MixxxApp#73
 msgid "With contributions from:"
 msgstr "寄付する方法:"
 
-#: MixxxApp#107
+#: MixxxApp#74
 msgid "And special thanks to:"
 msgstr "そしてスペシャルサンクスを:"
 
-#: MixxxApp#108
+#: MixxxApp#75
 msgid "Past Developers"
 msgstr "過去の開発"
 
-#: MixxxApp#109
+#: MixxxApp#76
 msgid "Past Contributors"
 msgstr "過去の開発"
 
-#: MixxxApp#110
+#: MixxxApp#77
 msgid "Confirm Exit"
 msgstr "終了の確認"
 
-#: MixxxApp#111
+#: MixxxApp#78
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "デッキは現在再生中です。Mixxxを終了しますか？"
 
 #: MixxxLibraryFeature#1
-msgctxt "MixxxLibraryFeature#1"
+msgid "Missing Tracks"
+msgstr ""
+
+#: MixxxLibraryFeature#2
+msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
-msgstr "ライブラリ"
+msgstr ""
+
+#: ParserCsv#1
+msgctxt "ParserCsv#1"
+msgid "Location"
+msgstr ""
+
+#: ParserCsv#2
+msgctxt "ParserCsv#2"
+msgid "Playlist Export Failed"
+msgstr ""
+
+#: ParserCsv#3
+msgctxt "ParserCsv#3"
+msgid "Could not create file"
+msgstr ""
+
+#: ParserCsv#4
+msgid "Readable text Export Failed"
+msgstr ""
 
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
@@ -2984,87 +3083,18 @@ msgid "Could not create file"
 msgstr "ファイルを作成できませんでした。"
 
 #: PlaylistFeature#1
-msgid "New Playlist"
-msgstr "新しいプレイリスト"
+msgctxt "PlaylistFeature#1"
+msgid "Lock"
+msgstr ""
 
 #: PlaylistFeature#2
-msgid "Add to Auto-DJ Queue"
-msgstr "Auto DJのキューに追加"
-
-#: PlaylistFeature#3
-msgctxt "PlaylistFeature#3"
-msgid "Remove"
-msgstr "リストから削除"
-
-#: PlaylistFeature#4
-msgctxt "PlaylistFeature#4"
-msgid "Rename"
-msgstr "名前を変更"
-
-#: PlaylistFeature#5
-msgctxt "PlaylistFeature#5"
-msgid "Lock"
-msgstr "ロックをかける"
-
-#: PlaylistFeature#6
-msgctxt "PlaylistFeature#6"
-msgid "Import Playlist"
-msgstr "プレイリストのインポート"
-
-#: PlaylistFeature#7
-msgid "Export Playlist"
-msgstr "プレイリストをエクスポート"
-
-#: PlaylistFeature#8
 msgid "Playlists"
 msgstr "プレイリスト"
 
-#: PlaylistFeature#9
-msgctxt "PlaylistFeature#9"
+#: PlaylistFeature#3
+msgctxt "PlaylistFeature#3"
 msgid "Unlock"
-msgstr "ロックを解除"
-
-#: PlaylistFeature#10
-msgid "Playlist name:"
-msgstr "プレイリスト名:"
-
-#: PlaylistFeature#11
-msgid "Playlist Creation Failed"
-msgstr "プレイリストの作成失敗"
-
-#: PlaylistFeature#12
-msgid "A playlist cannot have a blank name."
-msgstr "プレイリストには名前が必要です。"
-
-#: PlaylistFeature#13
-msgid "An unknown error occurred while creating playlist: "
-msgstr "プレイリストの作成中に不明なエラーが置きました： "
-
-#: PlaylistFeature#14
-msgid "Rename Playlist"
-msgstr "プレイリストの名前を変更"
-
-#: PlaylistFeature#15
-msgid "New playlist name:"
-msgstr "新しいプレイリストの名前："
-
-#: PlaylistFeature#16
-msgid "Renaming Playlist Failed"
-msgstr "プレイリストの名前変更に失敗"
-
-#: PlaylistFeature#17
-msgctxt "PlaylistFeature#17"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr "プレイリストファイル(*.m3u *.m3u8 *.pls)"
-
-#: PlaylistFeature#18
-msgctxt "PlaylistFeature#18"
-msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
-msgstr "M3Uプレイリスト (*.m3u);;M3U8 プレイリスト(*.m3u8);;PLS プレイリスト(*.pls)"
-
-#: PlaylistFeature#19
-msgid "A playlist by that name already exists."
-msgstr "この名前のプレイリストはすでに存在しています。"
+msgstr ""
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3104,6 +3134,14 @@ msgstr "パススルー"
 msgid "Unknown path type %1"
 msgstr "不明なパスタイプ %1"
 
+#: QObject#9
+msgid "(GL)"
+msgstr ""
+
+#: QObject#10
+msgid "(GLSL)"
+msgstr ""
+
 #: RecordingFeature#1
 msgid "Recordings"
 msgstr "録音"
@@ -3140,46 +3178,28 @@ msgstr "サンプラーバンクファイル %1 を開けませんでした。"
 msgid "Could not read the sampler bank file '%1'."
 msgstr "サンプラーバンクファイル %1 を読めませんでした。"
 
-#: ScriptStudio#1
-msgid "Mixxx Script Studio"
-msgstr "Mixxx スクリプトスタジオ"
+#: SetlogFeature#1
+msgid "Join with previous"
+msgstr ""
 
-#: ScriptStudio#2
-msgid "File"
-msgstr "ファイル"
+#: SetlogFeature#2
+msgid "Set Logs"
+msgstr ""
 
-#: ScriptStudio#3
-msgctxt "ScriptStudio#3"
-msgid "Edit"
-msgstr "編集"
+#: SetlogFeature#3
+msgctxt "SetlogFeature#3"
+msgid "Unlock"
+msgstr ""
 
-#: ScriptStudio#4
-msgid "Run"
-msgstr "実行"
+#: SetlogFeature#4
+msgctxt "SetlogFeature#4"
+msgid "Lock"
+msgstr ""
 
-#: ScriptStudio#5
-msgid "Close"
-msgstr "閉じる"
-
-#: ScriptStudio#6
-msgid "Import..."
-msgstr "インポート..."
-
-#: ScriptStudio#7
-msgid "Export..."
-msgstr "エクスポート..."
-
-#: ScriptStudio#8
-msgid "Delete Macro"
-msgstr "マクロを削除"
-
-#: ScriptStudio#9
-msgid "New Macro..."
-msgstr "マクロを新規作成..."
-
-#: ScriptStudio#10
-msgid "Run Macro"
-msgstr "マクロを実行"
+#: SoftwareWaveformWidget#1
+msgctxt "SoftwareWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -3266,8 +3286,9 @@ msgid "CDJ Mode"
 msgstr "CDJモード"
 
 #: Ui#8
+msgctxt "Ui#8"
 msgid "Simple"
-msgstr "シンプル"
+msgstr ""
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
@@ -3284,9 +3305,8 @@ msgid ""
 msgstr "使用しているサイズのディスプレイと互換性があるスキンは800x480-WVGAの大きさのものだけです。このスキンを使いますか？"
 
 #: Ui#12
-msgctxt "Ui#12"
 msgid "Preferences"
-msgstr "設定"
+msgstr ""
 
 #: Ui#13
 msgctxt "Ui#13"
@@ -3529,6 +3549,14 @@ msgstr "マイクのオン/オフ"
 msgid "Microphone volume"
 msgstr "マイク音量"
 
+#: WSearchLineEdit#1
+msgid "Ctrl+F"
+msgstr "Ctrl+F"
+
+#: WSearchLineEdit#2
+msgid "Esc"
+msgstr ""
+
 #: WSearchLineEdit#3
 msgid "Search..."
 msgstr "検索..."
@@ -3555,22 +3583,38 @@ msgid "Properties..."
 msgstr "プロパティ"
 
 #: WTrackTableView#6
-msgid "Add to Auto DJ Queue"
-msgstr "Auto DJのキューに追加"
+msgid "Add to Auto-DJ Queue (bottom)"
+msgstr ""
 
 #: WTrackTableView#7
+msgid "Add to Auto-DJ Queue (top)"
+msgstr ""
+
+#: WTrackTableView#8
 msgid "Reload Track Metadata"
 msgstr "トラックのメタデータを再読み込み"
 
-#: WTrackTableView#8
+#: WTrackTableView#9
+msgid "Lock BPM"
+msgstr ""
+
+#: WTrackTableView#10
+msgid "Unlock BPM"
+msgstr ""
+
+#: WTrackTableView#11
+msgid "Clear BPM and Beatgrid"
+msgstr ""
+
+#: WTrackTableView#12
 msgid "Load to Deck %1"
 msgstr "デッキ %1 に読み込む"
 
-#: WTrackTableView#9
+#: WTrackTableView#13
 msgid "Sampler %1"
 msgstr "サンプラー %1"
 
-#: WTrackTableView#10
+#: WTrackTableView#14
 msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
@@ -3579,6 +3623,45 @@ msgstr "読み込まれたトラックのメタデータをリロードすると
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
 msgstr "列の表示/非表示"
+
+#~ msgctxt "BaseSqlTableModel#9"
+#~ msgid "Comment"
+#~ msgstr "コメント"
+
+#~ msgctxt "BaseSqlTableModel#6"
+#~ msgid "Year"
+#~ msgstr "年"
+
+#~ msgctxt "BaseSqlTableModel#13"
+#~ msgid "BPM"
+#~ msgstr "BPM"
+
+#~ msgctxt "BaseSqlTableModel#12"
+#~ msgid "Bitrate"
+#~ msgstr "ビットレート"
+
+#~ msgctxt "BaseSqlTableModel#10"
+#~ msgid "Duration"
+#~ msgstr "長さ"
+
+#~ msgctxt "BrowseTableModel#8"
+#~ msgid "Comment"
+#~ msgstr "コメント"
+
+#~ msgctxt "BrowseTableModel#10"
+#~ msgid "BPM"
+#~ msgstr "BPM"
+
+#~ msgctxt "BrowseTableModel#13"
+#~ msgid "Bitrate"
+#~ msgstr "ビットレート"
+
+#~ msgctxt "BaseSqlTableModel#14"
+#~ msgid "Track #"
+#~ msgstr "トラック#"
+
+#~ msgid "1.x.x"
+#~ msgstr "1.x.x"
 
 #~ msgctxt "DlgBpmTapDlg#3"
 #~ msgid "Alt+O"
@@ -3651,6 +3734,18 @@ msgstr "列の表示/非表示"
 #~ msgid "Album"
 #~ msgstr "アルバム"
 
+#~ msgctxt "BaseSqlTableModel#17"
+#~ msgid "Key"
+#~ msgstr "キー"
+
+#~ msgctxt "BrowseTableModel#9"
+#~ msgid "Duration"
+#~ msgstr "再生時間"
+
+#~ msgctxt "BrowseTableModel#14"
+#~ msgid "Location"
+#~ msgstr "パス名"
+
 #~ msgid "Next >>"
 #~ msgstr "次 >>"
 
@@ -3665,6 +3760,28 @@ msgstr "列の表示/非表示"
 
 #~ msgid "Play Time:"
 #~ msgstr "再生時間:"
+
+#~ msgctxt "DlgPrefBPMDlg#10"
+#~ msgid "Edit"
+#~ msgstr "編集"
+
+#~ msgctxt "BrowseTableModel#11"
+#~ msgid "Key"
+#~ msgstr "キー"
+
+#~ msgctxt "BrowseTableModel#15"
+#~ msgid "Mixxx Library"
+#~ msgstr "Mixxxライブラリ"
+
+#~ msgctxt "DlgAutoDJ#3"
+#~ msgid "Manage"
+#~ msgstr "管理"
+
+#~ msgid "Shuffle playlist"
+#~ msgstr "プレイリストをシャッフル"
+
+#~ msgid "BPM Range"
+#~ msgstr "BPM 範囲"
 
 #~ msgctxt "DlgBpmSchemeDlg#6"
 #~ msgid "Analyze Entire Song"
@@ -3718,17 +3835,216 @@ msgstr "列の表示/非表示"
 #~ msgid "Track Information (Click to Expand)"
 #~ msgstr "トラック情報（クリックすると開く）"
 
+#~ msgid "Simple"
+#~ msgstr "シンプル"
+
+#~ msgctxt "Ui#12"
+#~ msgid "Preferences"
+#~ msgstr "設定"
+
+#~ msgctxt "ScriptStudio#3"
+#~ msgid "Edit"
+#~ msgstr "編集"
+
+#~ msgid "Run Macro"
+#~ msgstr "マクロを実行"
+
+#~ msgid "Close"
+#~ msgstr "閉じる"
+
+#~ msgid "Delete Macro"
+#~ msgstr "マクロを削除"
+
+#~ msgid "Export..."
+#~ msgstr "エクスポート..."
+
+#~ msgid "Run"
+#~ msgstr "実行"
+
+#~ msgid "Import..."
+#~ msgstr "インポート..."
+
+#~ msgid "New Macro..."
+#~ msgstr "マクロを新規作成..."
+
+#~ msgid "File"
+#~ msgstr "ファイル"
+
+#~ msgid "Mixxx Script Studio"
+#~ msgstr "Mixxx スクリプトスタジオ"
+
 #~ msgid "&Go"
 #~ msgstr "移動(&G)"
 
 #~ msgid "&Close"
 #~ msgstr "閉じる(&C)"
 
+#~ msgctxt "MixxxLibraryFeature#1"
+#~ msgid "Library"
+#~ msgstr "ライブラリ"
+
+#~ msgid "Do your really want to quit?"
+#~ msgstr "本当に終了しますか？"
+
+#~ msgid "Quit..."
+#~ msgstr "終了..."
+
+#~ msgid "&Macro"
+#~ msgstr "マクロ(&M)"
+
+#~ msgctxt "DlgPreferences#10"
+#~ msgid "Vinyl Control"
+#~ msgstr "Vinylコントロール"
+
+#~ msgid "Activate Vinyl Control"
+#~ msgstr "Vinylコントロールを使用する"
+
+#~ msgctxt "PlaylistFeature#5"
+#~ msgid "Lock"
+#~ msgstr "ロックをかける"
+
+#~ msgctxt "PlaylistFeature#3"
+#~ msgid "Remove"
+#~ msgstr "リストから削除"
+
+#~ msgctxt "PlaylistFeature#4"
+#~ msgid "Rename"
+#~ msgstr "名前を変更"
+
+#~ msgid "Shows the macro studio window"
+#~ msgstr "マクロスタジオのウィンドウを表示する"
+
+#~ msgid ""
+#~ "Show Studio\n"
+#~ "\n"
+#~ "Makes the macro studio visible"
+#~ msgstr ""
+#~ "スタジオの表示\n"
+#~ "\n"
+#~ "マクロスタジオが表示されるようにします。"
+
+#~ msgid ""
+#~ "Audio Beat Marks\n"
+#~ "Mark beats by audio clicks"
+#~ msgstr ""
+#~ "オーディオビートマーク\n"
+#~ "クリック音でビートにしるしをつけます。"
+
+#~ msgid "Audio Beat Marks"
+#~ msgstr "オーディオビートマーク"
+
+#~ msgid "Activate live broadcasting"
+#~ msgstr "ライブ放送を有効にする"
+
+#~ msgid ""
+#~ "New playlist\n"
+#~ "\n"
+#~ "Create a new playlist"
+#~ msgstr ""
+#~ "新プレイリスト\n"
+#~ "\n"
+#~ "新しいプレイリストを作成します"
+
+#~ msgid "Quits the application"
+#~ msgstr "アプリケーションを終了する"
+
+#~ msgid "Show Studio"
+#~ msgstr "Studioを表示する"
+
+#~ msgid ""
+#~ "Exit\n"
+#~ "\n"
+#~ "Quits the application"
+#~ msgstr ""
+#~ "終了\n"
+#~ "\n"
+#~ "アプリケーションを終了する"
+
 #~ msgid "&Community Support..."
 #~ msgstr "コミュニティによるサポート (&C)"
 
 #~ msgid "&About..."
 #~ msgstr "Mixxxについて (&A)"
+
+#~ msgid "Ctrl+I"
+#~ msgstr "Ctrl+I"
+
+#~ msgid "&Audio Beat Marks"
+#~ msgstr "オーディオビートマーク (&A)"
+
+#~ msgid "&Import playlist"
+#~ msgstr "プレイリストをインポート (&I)"
+
+#~ msgid "&Load Song (Player 2)..."
+#~ msgstr "デッキ2へトラックを読み込む(&L)"
+
+#~ msgid "&Load Song (Player 1)..."
+#~ msgstr "デッキ1へトラックを読み込む(&L)"
+
+#~ msgid "Mixxx: Privacy Policy"
+#~ msgstr "Mixxx: プライバシーポリシー"
+
+#~ msgid ""
+#~ "Mixxx's development is driven by community feedback. In order to help "
+#~ "improve future versions Mixxx will with your permission collect information "
+#~ "on your hardware and usage of Mixxx.  This information will primarily be "
+#~ "used to fix bugs, improve features, and determine the system requirements of "
+#~ "later versions.  Additionally this information may be used in aggregate for "
+#~ "statistical purposes.\n"
+#~ "\n"
+#~ "The hardware information will include:\n"
+#~ "\t- CPU model and features\n"
+#~ "\t- Total/Available Amount of RAM\n"
+#~ "\t- Available disk space\n"
+#~ "\t- OS version\n"
+#~ "\n"
+#~ "Your usage information will include:\n"
+#~ "\t- Settings/Preferences\n"
+#~ "\t- Internal errors\n"
+#~ "\t- Internal debugging messages\n"
+#~ "\t- Performance statistics (average latency, CPU usage)\n"
+#~ "\n"
+#~ "This information will not be used to personally identify you, contact you, "
+#~ "advertise to you, or otherwise bother you in any way.\n"
+#~ msgstr ""
+#~ "Mixxxの開発はコミュニティからのフィードバックを反映して行われています。次バージョンの改善のため、あなたの了承のもと、ハードウェアとMixxxの使用情"
+#~ "報を収集しています。この情報は主としてバグ修正、機能改善、システム要求の決定のために使用されます。加えてこの情報を統計の目的で集めています。\n"
+#~ "\n"
+#~ "ハードウェアの情報には下記が含まれています。\n"
+#~ "\t- CPUのモデルと機能\n"
+#~ "\t- RAMの総容量と使用量\n"
+#~ "\t- 利用可能なディスクスペース\n"
+#~ "\t- OSのバージョン\n"
+#~ "\n"
+#~ "使用情報には以下が含まれます。\n"
+#~ "\t- 設定\n"
+#~ "\t- 内部エラー\n"
+#~ "\t- 内部デバッグメッセージ\n"
+#~ "\t- パフォーマンスの統計量 (レイテンシ、CPU使用の平均値)\n"
+#~ "\n"
+#~ "この情報は個人の特定、連絡手段、広告といったあなたをわずらわせるいかなる目的にも使用されません。\n"
+
+#~ msgctxt "MixxxApp#9"
+#~ msgid "Choose music library directory"
+#~ msgstr "音楽ライブラリのディレクトリを選択してください。"
+
+#~ msgid "Privacy Policy"
+#~ msgstr "プライバシーポリシー"
+
+#~ msgid "Yes"
+#~ msgstr "はい"
+
+#~ msgid ""
+#~ "Mixxx's development is driven by community feedback.  At your discretion, "
+#~ "Mixxx can automatically send data on your user experience back to the "
+#~ "developers. Would you like to help us make Mixxx better by enabling this "
+#~ "feature?"
+#~ msgstr ""
+#~ "Mixxxの開発はコミュニティからのフィードバックを反映して行われています。あなたの裁量のもと、Mixxxは自動的にユーザーエクスペリエンスのデータを開発"
+#~ "者に送ることができます。この機能を有効にしてMixxx改良の手助けをしていただけないでしょうか？"
+
+#~ msgid "No"
+#~ msgstr "いいえ"
 
 #~ msgctxt "DlgTrackInfo#33"
 #~ msgid "Alt+O"
@@ -3756,6 +4072,37 @@ msgstr "列の表示/非表示"
 #~ msgstr ""
 #~ "<html>lame MP3エンコーダがロードできないか見つかりませんでした。<p>libmp3lame "
 #~ "(またはlame)をインストールし、システムに/usr/local/lib/libmp3lame.dylibがあることを確認してください。</html>"
+
+#~ msgid "Support..."
+#~ msgstr "サポート..."
+
+#~ msgid ""
+#~ "Preferences\n"
+#~ "Playback and MIDI preferences"
+#~ msgstr ""
+#~ "設定\n"
+#~ "再生とMIDIの設定"
+
+#~ msgid "Full Screen"
+#~ msgstr "全画面表示"
+
+#~ msgid ""
+#~ "About\n"
+#~ "\n"
+#~ "About the application"
+#~ msgstr ""
+#~ "Mixxxについて\n"
+#~ "\n"
+#~ "このアプリケーションについて"
+
+#~ msgid ""
+#~ "New crate\n"
+#~ "\n"
+#~ "Create a new crate."
+#~ msgstr ""
+#~ "新しいレコードボックス\n"
+#~ "\n"
+#~ "新しいレコードボックスを作成します。"
 
 #~ msgid ""
 #~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
@@ -3789,11 +4136,202 @@ msgstr "列の表示/非表示"
 #~ msgid "Description"
 #~ msgstr "概要"
 
+#~ msgid "Reset to Defaults"
+#~ msgstr "デフォルトに戻す"
+
 #~ msgid "Recently Added"
 #~ msgstr "最近追加したトラック"
 
 #~ msgid "All Songs"
 #~ msgstr "すべてのトラック"
 
+#~ msgid ""
+#~ "Rescan library\n"
+#~ "\n"
+#~ "Rescans the song library"
+#~ msgstr ""
+#~ "ライブラリの再スキャン\n"
+#~ "\n"
+#~ "音楽ライブラリを再スキャンします"
+
+#~ msgid "Opens a song in player 2"
+#~ msgstr "デッキ2で曲を開く"
+
+#~ msgid ""
+#~ "Open\n"
+#~ "\n"
+#~ "Opens a song in player 2"
+#~ msgstr ""
+#~ "開く\n"
+#~ "\n"
+#~ "トラックをデッキ2で開く"
+
+#~ msgid "Opens a song in player 1"
+#~ msgstr "トラックをデッキ1で開く"
+
+#~ msgid "Rescans the song library"
+#~ msgstr "音楽ライブラリを再スキャンする"
+
+#~ msgid ""
+#~ "Player 1 is currently playing a song.\n"
+#~ "Are you sure you want to load a new song?"
+#~ msgstr ""
+#~ "デッキ1は現在再生中です。\n"
+#~ "本当に新しいトラックを読み込みますか？"
+
+#~ msgid ""
+#~ "Open\n"
+#~ "\n"
+#~ "Opens a song in player 1"
+#~ msgstr ""
+#~ "開く\n"
+#~ "\n"
+#~ "トラックをデッキ1で開く"
+
+#~ msgid "Load Song into Player 2"
+#~ msgstr "トラックをデッキ2に読み込む"
+
+#~ msgid ""
+#~ "Player 2 is currently playing a song.\n"
+#~ "Are you sure you want to load a new song?"
+#~ msgstr ""
+#~ "デッキ2は現在再生中です。\n"
+#~ "本当に新しいトラックを読み込みますか？"
+
+#~ msgid "Load Song into Player 1"
+#~ msgstr "トラックをデッキ1に読み込む"
+
 #~ msgid "to"
 #~ msgstr "から"
+
+#~ msgctxt "DlgPreferences#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM検出"
+
+#~ msgctxt "BrowseTableModel#12"
+#~ msgid "Type"
+#~ msgstr "ファイル形式"
+
+#~ msgctxt "BaseSqlTableModel#7"
+#~ msgid "Type"
+#~ msgstr "ファイル形式"
+
+#~ msgid "Add tracks to the queue below..."
+#~ msgstr "下のキューにトラックを追加してください。"
+
+#~ msgctxt "PlaylistFeature#9"
+#~ msgid "Unlock"
+#~ msgstr "ロックを解除"
+
+#~ msgctxt "DlgTrackInfo#24"
+#~ msgid "Position"
+#~ msgstr "経過時間"
+
+#~ msgid "Start Recording your Mix"
+#~ msgstr "録音を開始"
+
+#~ msgid "Add to Auto DJ Queue"
+#~ msgstr "Auto DJのキューに追加"
+
+#~ msgid "Add to Auto-DJ Queue"
+#~ msgstr "Auto DJのキューに追加"
+
+#~ msgid "Import playlist"
+#~ msgstr "プレイリストのインポート"
+
+#~ msgctxt "PlaylistFeature#6"
+#~ msgid "Import Playlist"
+#~ msgstr "プレイリストのインポート"
+
+#~ msgctxt "DlgPrefShoutcastDlg#2"
+#~ msgid "Enable live broadcasting"
+#~ msgstr "ライブ放送を有効にする"
+
+#~ msgctxt "BaseSqlTableModel#8"
+#~ msgid "Location"
+#~ msgstr "ファイルの場所"
+
+#~ msgctxt "CrateFeature#15"
+#~ msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+#~ msgstr "プレイリストファイル(*.m3u *.m3u8 *.pls)"
+
+#~ msgctxt "CrateFeature#16"
+#~ msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+#~ msgstr "M3Uプレイリスト (*.m3u);;M3U8 プレイリスト(*.m3u8);;PLS プレイリスト(*.pls)"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+#~ "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+#~ "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+#~ "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+
+#~ msgctxt "MixxxApp#77"
+#~ msgid "Preferences"
+#~ msgstr "設定"
+
+#~ msgid ""
+#~ "Support\n"
+#~ "\n"
+#~ "Read the Mixxx user manual."
+#~ msgstr ""
+#~ "サポート\n"
+#~ "\n"
+#~ "Mixxxユーザーマニュアルを読む"
+
+#~ msgid ""
+#~ "Support\n"
+#~ "\n"
+#~ "Get help with Mixxx"
+#~ msgstr ""
+#~ "サポート\n"
+#~ "\n"
+#~ "Mixxxを助ける"
+
+#~ msgid ""
+#~ "Support\n"
+#~ "\n"
+#~ "Send feedback to the Mixxx team."
+#~ msgstr ""
+#~ "サポート\n"
+#~ "\n"
+#~ "Mixxxチームにフィードバックを送る"
+
+#~ msgid ""
+#~ "Support\n"
+#~ "\n"
+#~ "Help translate this application into your language."
+#~ msgstr ""
+#~ "サポート\n"
+#~ "\n"
+#~ "あなたの言語でこのアプリケーションを翻訳するのを手伝ってください。"
+
+#~ msgctxt "PlaylistFeature#17"
+#~ msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+#~ msgstr "プレイリストファイル(*.m3u *.m3u8 *.pls)"
+
+#~ msgctxt "PlaylistFeature#18"
+#~ msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+#~ msgstr "M3Uプレイリスト (*.m3u);;M3U8 プレイリスト(*.m3u8);;PLS プレイリスト(*.pls)"
