@@ -77,7 +77,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual void receive(const QByteArray data);
 
     // Initializes the controller engine
-    virtual void applyPreset();
+    virtual void applyPreset(QString configPath);
 
     void learn(MixxxControl control);
     void cancelLearn();
@@ -108,9 +108,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline void setInputDevice(bool inputDevice) {
         m_bIsInputDevice = inputDevice;
     }
-    inline void setConfig(ConfigObject<ConfigValue>* config) {
-        m_pConfig = config;
-    }
     inline void setOpen(bool open) {
         m_bIsOpen = open;
     }
@@ -140,8 +137,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     virtual ControllerPreset* preset() = 0;
-
-    ConfigObject<ConfigValue>* m_pConfig;
     ControllerEngine* m_pEngine;
 
     // Verbose and unique device name suitable for display.
