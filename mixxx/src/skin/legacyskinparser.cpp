@@ -91,6 +91,7 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
     QDir skinDir(skinPath);
 
     if (!skinDir.exists()) {
+        qDebug() << "LegacySkinParser::openSkin - skin dir do not exist:" << skinPath;
         return QDomElement();
     }
 
@@ -98,12 +99,21 @@ QDomElement LegacySkinParser::openSkin(QString skinPath) {
     QFile skinXmlFile(skinXmlPath);
 
     if (!skinXmlFile.open(QIODevice::ReadOnly)) {
+        qDebug() << "LegacySkinParser::openSkin - can't open file:" << skinXmlPath
+                 << "in directory:" << skinDir.path();
         return QDomElement();
     }
 
     QDomDocument skin("skin");
 
-    if (!skin.setContent(&skinXmlFile)) {
+    QString errorMessage;
+    int errorLine;
+    int errorColumn;
+
+    if (!skin.setContent(&skinXmlFile,&errorMessage,&errorLine,&errorColumn)) {
+        qDebug() << "LegacySkinParser::openSkin - setContent failed see"
+                 << "line:" << errorLine << "column:" << errorColumn;
+        qDebug() << "LegacySkinParser::openSkin - message:" << errorMessage;
         return QDomElement();
     }
 
@@ -178,8 +188,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     QDomElement skinDocument = openSkin(skinPath);
 
     if (skinDocument.isNull()) {
-        // TODO error message
-        qDebug() << "Could not load skin.";
+        qDebug() << "LegacySkinParser::parseSkin - failed for skin:" << skinPath;
         return NULL;
     }
 
@@ -422,10 +431,10 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    WaveformWidgetFactory::instance()->setWaveformWidget(viewer);
+    WaveformWidgetFactory::instance()->setWaveformWidget(viewer, node);
 
-    qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
-    qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
+    //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
+    //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
 
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -434,14 +443,12 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
+                ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
 
-    p->setWidget((QWidget *)viewer, true, true,
+    p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
 
     setupWidget(node, viewer);
-
-    viewer->setup(node);
 
     // connect display with loading/unloading of tracks
     QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -454,7 +461,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    // if any already loaded (skin/waveform type swithing)
+    // if any already loaded
     viewer->onTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
@@ -1000,8 +1007,8 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
             (new ControlObjectThreadWidget(control, pWidget))->setWidget(
-                pWidget, connectValueFromWidget, connectValueToWidget,
-                emitOption, state);
+                        pWidget, connectValueFromWidget, connectValueToWidget,
+                        emitOption, state);
 
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.

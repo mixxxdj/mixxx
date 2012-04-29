@@ -12,41 +12,34 @@
 #include "widget/wwidget.h"
 
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract(waveformWidgetRenderer)
-{
+    WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-void WaveformRenderMark::init()
-{
+void WaveformRenderMark::init() {
 }
 
-void WaveformRenderMark::setup( const QDomNode& node)
-{
+void WaveformRenderMark::setup( const QDomNode& node) {
     m_marks.clear();
-    m_marks.reserve(32);
+    m_marks.reserve(37); //36 hot cues + 1 cue
 
     QDomNode child = node.firstChild();
-    while (!child.isNull())
-    {
-        if (child.nodeName() == "Mark")
-        {
-            m_marks.push_back(Mark());
-            Mark& mark = m_marks.back();
-            setupMark(child,mark);
+    while (!child.isNull()) {
+        if (child.nodeName() == "Mark") {
+            m_marks.push_back(WaveformMark());
+            WaveformMark& mark = m_marks.back();
+            mark.setup( m_waveformRenderer->getGroup(), child);
         }
         child = child.nextSibling();
     }
 }
 
 
-void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
-{
+void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event) {
     painter->save();
 
     /*
     //DEBUG
-    for( int i = 0; i < m_markPoints.size(); i++)
-    {
+    for( int i = 0; i < m_markPoints.size(); i++) {
         if( m_waveformWidget->getTrackSamples())
             painter->drawText(40*i,12+12*(i%3),QString::number(m_markPoints[i]->get() / (double)m_waveformWidget->getTrackSamples()));
     }
@@ -54,11 +47,10 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
 
     painter->setWorldMatrixEnabled(false);
 
-    for( int i = 0; i < m_marks.size(); i++)
-    {
-        Mark& mark = m_marks[i];
+    for( int i = 0; i < m_marks.size(); i++) {
+        WaveformMark& mark = m_marks[i];
 
-        if( !mark.m_point)
+        if( !mark.m_pointControl)
             continue;
 
         //Generate pixmap on first paint can't be done in setup since we need
@@ -66,9 +58,8 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
         if( mark.m_pixmap.isNull())
             generateMarkPixmap(mark);
 
-        int samplePosition = mark.m_point->get();
-        if( samplePosition > 0.0)
-        {
+        int samplePosition = mark.m_pointControl->get();
+        if( samplePosition > 0.0) {
             m_waveformRenderer->regulateVisualSample(samplePosition);
             double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
@@ -85,43 +76,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
     painter->restore();
 }
 
-void WaveformRenderMark::setupMark( const QDomNode& node, Mark& mark)
-{
-    QString item = WWidget::selectNodeQString( node, "Control");
-    mark.m_point = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), item));
-
-    //if there is no control the mark won't be displayed anyway ...
-    if( mark.m_point == 0)
-        return;
-
-    mark.m_color = WWidget::selectNodeQString( node, "Color");
-    if( mark.m_color == "") {
-
-        // As a fallback, grab the mark color from the parent's MarkerColor
-        mark.m_color = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
-        qDebug() << "Didn't get mark Color, using parent's MarkerColor:" << mark.m_color;
-    }
-
-    mark.m_textColor = WWidget::selectNodeQString(node, "TextColor");
-    if( mark.m_textColor == "") {
-        // Read the text color, otherwise use the parent's BgColor.
-        mark.m_textColor = WWidget::selectNodeQString(node.parentNode(), "BgColor");
-        qDebug() << "Didn't get mark TextColor, using parent's BgColor:" << mark.m_textColor;
-    }
-
-    QString markAlign = WWidget::selectNodeQString(node, "Align");
-    if (markAlign.contains("bottom", Qt::CaseInsensitive)) {
-        mark.m_align = Qt::AlignBottom;
-    } else {
-        mark.m_align = Qt::AlignTop; // Default
-    }
-
-    mark.m_text = WWidget::selectNodeQString(node, "Text");
-    mark.m_pixmapPath = WWidget::selectNodeQString(node,"Pixmap");
-}
-
-void WaveformRenderMark::generateMarkPixmap( Mark& mark)
-{
+void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if( mark.m_pixmapPath != "") {
         // TODO(XXX) We could use WPixmapStore here, which would recolor the
@@ -142,8 +97,7 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
     int labelRectHeight = 0;
 
     // If no text is provided, leave m_markPixmap as a null pixmap
-    if( !mark.m_text.isNull())
-    {
+    if( !mark.m_text.isNull()) {
         //QFont font("Bitstream Vera Sans");
         //QFont font("Helvetica");
         QFont font; // Uses the application default

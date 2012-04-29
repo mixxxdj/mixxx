@@ -19,6 +19,7 @@ public:
 protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
+    virtual void postRender();
 
 private:
     GLWaveformWidget() {}

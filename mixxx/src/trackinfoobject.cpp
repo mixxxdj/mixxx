@@ -183,7 +183,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
     XmlParse::addElement( doc, header, "CreateDate", m_dCreateDate.toString() );
     //if (m_pWave) {
-        //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
+    //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
     //}
 
 }
@@ -750,6 +750,9 @@ const Waveform* TrackInfoObject::getWaveform() const {
 
 void TrackInfoObject::setWaveform(Waveform* pWaveform) {
     QMutexLocker lock(&m_qMutex);
+    if (m_waveform) {
+        delete m_waveform;
+    }
     m_waveform = pWaveform;
     lock.unlock();
     emit(waveformUpdated());
@@ -767,6 +770,9 @@ const Waveform* TrackInfoObject::getWaveformSummary() const {
 
 void TrackInfoObject::setWaveformSummary(Waveform* pWaveformSummary) {
     QMutexLocker lock(&m_qMutex);
+    if (m_waveformSummary) {
+        delete m_waveformSummary;
+    }
     m_waveformSummary = pWaveformSummary;
     lock.unlock();
     emit(waveformSummaryUpdated());
@@ -832,7 +838,7 @@ void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
     while (it.hasNext()) {
         Cue* cue = it.next();
         connect(cue, SIGNAL(updated()),
-            this, SLOT(slotCueUpdated()));
+                this, SLOT(slotCueUpdated()));
     }
     setDirty(true);
     lock.unlock();

@@ -1,10 +1,14 @@
-#include "waveform/waveform.h"
 #include <cmath>
 #include <QtDebug>
 
+#include "waveform/waveform.h"
+#include "proto/waveform.pb.h"
+
+using namespace mixxx::track;
+
 Waveform::Waveform(const QByteArray data)
         : m_id(-1),
-          m_actualSize(0.0),
+          m_numChannels(2),
           m_dataSize(0),
           m_audioSamplesPerVisualSample(0),
           m_visualSampleRate(0),
@@ -21,59 +25,117 @@ Waveform::~Waveform() {
     delete m_mutex;
 }
 
-struct SerializedWaveformHeader {
-    double actualSize;
-    double dataSize;
-    double visualSampleRate;
-    double audioVisualRatio;
-};
-
 QByteArray Waveform::toByteArray() const {
-    SerializedWaveformHeader header;
-    header.actualSize = m_actualSize;
-    header.dataSize = m_dataSize;
-    header.visualSampleRate = m_visualSampleRate;
-    header.audioVisualRatio = m_audioVisualRatio;
-    QByteArray data;
-    data.append(reinterpret_cast<const char*>(&header), sizeof(header));
-    data.append(reinterpret_cast<const char*>(&m_data[0]),
-                sizeof(m_data[0])*m_dataSize);
-    return data;
+    io::Waveform waveform;
+    waveform.set_visual_sample_rate(m_visualSampleRate);
+    waveform.set_audio_visual_ratio(m_audioVisualRatio);
+
+    io::Waveform::Signal* all = waveform.mutable_signal_all();
+    io::Waveform::FilteredSignal* filtered = waveform.mutable_signal_filtered();
+    // TODO(rryan) get the actual cutoff values from analyserwaveform.cpp so
+    // that if they change we don't have to remember to update these.
+    filtered->set_low_cutoff_frequency(200);
+    filtered->set_mid_low_cutoff_frequency(200);
+    filtered->set_mid_high_cutoff_frequency(2000);
+    filtered->set_high_cutoff_frequency(2000);
+    io::Waveform::Signal* low = filtered->mutable_low();
+    io::Waveform::Signal* mid = filtered->mutable_mid();
+    io::Waveform::Signal* high = filtered->mutable_high();
+
+    // TODO(vrince) set max/min for each signal
+    all->set_units(io::Waveform::RMS);
+    all->set_channels(m_numChannels);
+    low->set_units(io::Waveform::RMS);
+    low->set_channels(m_numChannels);
+    mid->set_units(io::Waveform::RMS);
+    mid->set_channels(m_numChannels);
+    high->set_units(io::Waveform::RMS);
+    high->set_channels(m_numChannels);
+
+    for (int i = 0; i < m_dataSize; ++i) {
+        const WaveformData& datum = m_data.at(i);
+        all->add_value(datum.filtered.all);
+        low->add_value(datum.filtered.low);
+        mid->add_value(datum.filtered.mid);
+        high->add_value(datum.filtered.high);
+    }
+
+    qDebug() << "Writing waveform from byte array:"
+             << "dataSize" << m_dataSize
+             << "allSignalSize" << all->value_size()
+             << "visualSampleRate" << waveform.visual_sample_rate()
+             << "audioVisualRatio" << waveform.audio_visual_ratio();
+
+    std::string output;
+    waveform.SerializeToString(&output);
+    return QByteArray(output.data(), output.length());
 }
 
 void Waveform::readByteArray(const QByteArray data) {
-    int headerBytes = sizeof(SerializedWaveformHeader);
-    int dataBytes = data.size() - headerBytes;
-    if (dataBytes < 0) {
-        qDebug() << "Error reading waveform, not enough bytes to parse:"
+    io::Waveform waveform;
+
+    if (!waveform.ParseFromArray(data.constData(), data.size())) {
+        qDebug() << "ERROR: Could not parse Waveform from QByteArray of size"
                  << data.size();
         return;
     }
-    const SerializedWaveformHeader* header =
-            reinterpret_cast<const SerializedWaveformHeader*>(data.constData());
 
-    if (int(header->dataSize) * sizeof(WaveformData) != dataBytes) {
-        qDebug() << "Parse failure -- did not get number of bytes expected"
-                 << m_dataSize * sizeof(WaveformData) << "vs" << dataBytes;
+    if (!waveform.has_visual_sample_rate() ||
+        !waveform.has_audio_visual_ratio() ||
+        !waveform.has_signal_all() ||
+        !waveform.has_signal_filtered() ||
+        !waveform.signal_filtered().has_low() ||
+        !waveform.signal_filtered().has_mid() ||
+        !waveform.signal_filtered().has_high()) {
+        qDebug() << "ERROR: Waveform proto is missing key data. Skipping.";
         return;
     }
 
+    const io::Waveform::Signal& all = waveform.signal_all();
+    const io::Waveform::Signal& low = waveform.signal_filtered().low();
+    const io::Waveform::Signal& mid = waveform.signal_filtered().mid();
+    const io::Waveform::Signal& high = waveform.signal_filtered().high();
+
     qDebug() << "Reading waveform from byte array:"
-             << "actualSize" << header->actualSize
-             << "dataSize" << header->dataSize
-             << "visualSampleRate" << header->visualSampleRate
-             << "audioVisualRatio" << header->audioVisualRatio;
-    m_actualSize = header->actualSize;
-    m_dataSize = int(header->dataSize);
-    m_visualSampleRate = header->visualSampleRate;
-    m_audioVisualRatio = header->audioVisualRatio;
-    resize(m_dataSize);
-    memcpy(&m_data[0], data.constData() + headerBytes, m_dataSize * sizeof(m_data[0]));
+             << "allSignalSize" << all.value_size()
+             << "visualSampleRate" << waveform.visual_sample_rate()
+             << "audioVisualRatio" << waveform.audio_visual_ratio();
+
+    resize(all.value_size());
+
+    if (all.value_size() != m_dataSize) {
+        qDebug() << "ERROR: Couldn't resize Waveform to" << all.value_size()
+                 << "while reading.";
+        resize(0);
+        return;
+    }
+
+    m_visualSampleRate = waveform.visual_sample_rate();
+    m_audioVisualRatio = waveform.audio_visual_ratio();
+    if (low.value_size() != m_dataSize ||
+        mid.value_size() != m_dataSize ||
+        high.value_size() != m_dataSize) {
+        qDebug() << "WARNING: Filtered data size does not match all-signal size.";
+    }
+
+    // TODO(XXX) If non-RMS, convert but since we only save RMS today we can add
+    // this later.
+    bool low_valid = low.units() == io::Waveform::RMS;
+    bool mid_valid = mid.units() == io::Waveform::RMS;
+    bool high_valid = high.units() == io::Waveform::RMS;
+    for (int i = 0; i < m_dataSize; ++i) {
+        m_data[i].filtered.all = static_cast<unsigned char>(all.value(i));
+        bool use_low = low_valid && i < low.value_size();
+        bool use_mid = mid_valid && i < mid.value_size();
+        bool use_high = high_valid && i < high.value_size();
+        m_data[i].filtered.low = use_low ? static_cast<unsigned char>(low.value(i)) : 0;
+        m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
+        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
+    }
     m_completion = m_dataSize;
 }
 
 void Waveform::reset() {
-    m_actualSize = 0.0;
     m_dataSize = 0;
     m_textureStride = 1024;
     m_completion = -1;
@@ -92,8 +154,8 @@ void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredV
 }
 
 void Waveform::allocateForAudioSamples(int audioSamples) {
-    m_actualSize = audioSamples / m_audioSamplesPerVisualSample;
-    int numberOfVisualSamples = static_cast<int>(m_actualSize) + 1;
+    double actualSize = audioSamples / m_audioSamplesPerVisualSample;
+    int numberOfVisualSamples = static_cast<int>(actualSize) + 1;
     numberOfVisualSamples += numberOfVisualSamples%2;
     assign(numberOfVisualSamples, 0);
     setCompletion(0);

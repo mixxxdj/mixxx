@@ -6,6 +6,7 @@
 
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
+#include "controlpotmeter.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
@@ -15,6 +16,7 @@
 #include "engine/clockcontrol.h"
 #include "mathstuff.h"
 #include "track/beatgrid.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,
@@ -74,6 +76,17 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
+    // Waveform controls
+    m_pWaveformZoom = new ControlPotmeter(ConfigKey(group, "waveform_zoom"),
+                                          WaveformWidgetRenderer::s_waveformMinZoom,
+                                          WaveformWidgetRenderer::s_waveformMaxZoom);
+    m_pWaveformZoom->set(1.0);
+    m_pWaveformZoom->setStep(1.0);
+    m_pWaveformZoom->setSmallStep(1.0);
+
+    m_pEndOfTrack = new ControlObject(ConfigKey(group,"end_of_track"));
+    m_pEndOfTrack->set(0.);
+
     //BPM of the current song
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "file_bpm")));
@@ -89,6 +102,8 @@ BaseTrackPlayer::~BaseTrackPlayer()
         m_pLoadedTrack.clear();
     }
 
+    delete m_pWaveformZoom;
+    delete m_pEndOfTrack;
     delete m_pCuePoint;
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
