@@ -69,7 +69,6 @@ class HID(Feature):
         build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
 
         if build.platform_is_linux:
-            build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
             if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
                 not conf.CheckHeader('libusb-1.0/libusb.h')):
                 raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
