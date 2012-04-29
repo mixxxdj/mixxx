@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-29 00:48-0400\n"
+"POT-Creation-Date: 2012-04-29 01:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1190,63 +1190,113 @@ msgid "Learning Wizard (MIDI Only)"
 msgstr ""
 
 #: DlgPrefControls#1
-msgid "This skin does not support schemes"
+msgctxt "DlgPrefControls#1"
+msgid "Position"
 msgstr ""
 
 #: DlgPrefControls#2
-msgid "8% (Technics SL1210)"
+msgid "Remaining"
 msgstr ""
 
 #: DlgPrefControls#3
-msgid "10%"
+msgid "Don't load tracks into a playing deck"
 msgstr ""
 
 #: DlgPrefControls#4
-msgid "20%"
+msgid "Load tracks into playing decks"
 msgstr ""
 
 #: DlgPrefControls#5
-msgid "30%"
+msgid "CDJ Mode"
 msgstr ""
 
 #: DlgPrefControls#6
-msgid "40%"
+msgctxt "DlgPrefControls#6"
+msgid "Simple"
 msgstr ""
 
 #: DlgPrefControls#7
-msgid "50%"
+msgctxt "DlgPrefControls#7"
+msgid "On"
 msgstr ""
 
 #: DlgPrefControls#8
-msgid "60%"
+msgctxt "DlgPrefControls#8"
+msgid "Off"
 msgstr ""
 
 #: DlgPrefControls#9
-msgid "70%"
+msgid "Mixxx Detected a WVGA Screen"
 msgstr ""
 
 #: DlgPrefControls#10
-msgid "80%"
+msgid "Mixxx has detected that your screen has a resolution of "
 msgstr ""
 
 #: DlgPrefControls#11
-msgid "90%"
+msgid ""
+"The only skin compatiable with this size display is Outline800x480-WVGA.  "
+"Would you like to use that skin?"
 msgstr ""
 
 #: DlgPrefControls#12
-msgid "Up increases speed"
+msgid "This skin does not support schemes"
 msgstr ""
 
 #: DlgPrefControls#13
-msgid "Down increases speed (Technics SL1210)"
+msgid "8% (Technics SL1210)"
 msgstr ""
 
 #: DlgPrefControls#14
-msgctxt "DlgPrefControls#14"
-msgid "Information"
+msgid "10%"
 msgstr ""
 
 #: DlgPrefControls#15
+msgid "20%"
+msgstr ""
+
+#: DlgPrefControls#16
+msgid "30%"
+msgstr ""
+
+#: DlgPrefControls#17
+msgid "40%"
+msgstr ""
+
+#: DlgPrefControls#18
+msgid "50%"
+msgstr ""
+
+#: DlgPrefControls#19
+msgid "60%"
+msgstr ""
+
+#: DlgPrefControls#20
+msgid "70%"
+msgstr ""
+
+#: DlgPrefControls#21
+msgid "80%"
+msgstr ""
+
+#: DlgPrefControls#22
+msgid "90%"
+msgstr ""
+
+#: DlgPrefControls#23
+msgid "Up increases speed"
+msgstr ""
+
+#: DlgPrefControls#24
+msgid "Down increases speed (Technics SL1210)"
+msgstr ""
+
+#: DlgPrefControls#25
+msgctxt "DlgPrefControls#25"
+msgid "Information"
+msgstr ""
+
+#: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr ""
 
@@ -1631,117 +1681,70 @@ msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
 msgstr ""
 
-#: DlgPrefPlaylist#2
-msgid "Multiple iPods Detected"
-msgstr ""
-
-#: DlgPrefPlaylist#3
-msgid ""
-"Mixxx has detected another iPod. \n"
-"\n"
-msgstr ""
-
-#: DlgPrefPlaylist#4
-msgid "Choose Yes to use the newly found iPod @ "
-msgstr ""
-
-#: DlgPrefPlaylist#5
-msgid " or to continue to search for other iPods. \n"
-msgstr ""
-
-#: DlgPrefPlaylist#6
-msgid "Choose No to use the existing iPod @ "
-msgstr ""
-
-#: DlgPrefPlaylist#7
-msgid " and end detection. \n"
-msgstr ""
-
-#: DlgPrefPlaylist#8
-msgid "Choose iPod mount point"
-msgstr ""
-
 #: DlgPrefPlaylistDlg#1
-msgctxt "DlgPrefPlaylistDlg#1"
-msgid "Form3"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#3
+#: DlgPrefPlaylistDlg#2
 msgid "Additional Format Plugins:"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#4
+#: DlgPrefPlaylistDlg#3
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#5
+#: DlgPrefPlaylistDlg#4
 msgid "Loaded Plugins:"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#5
+msgctxt "DlgPrefPlaylistDlg#5"
+msgid "None"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
-msgid "None"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#7
-msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#8
+#: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#9
+#: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#10
+#: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#11
-msgid "iPod"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#12
-msgid "iPod mountpoint"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#13
+#: DlgPrefPlaylistDlg#10
 msgid "Browse..."
 msgstr ""
 
-#: DlgPrefPlaylistDlg#14
-msgid "Detect"
-msgstr ""
-
-#: DlgPrefPlaylistDlg#15
-msgctxt "DlgPrefPlaylistDlg#15"
+#: DlgPrefPlaylistDlg#11
+msgctxt "DlgPrefPlaylistDlg#11"
 msgid "Library"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#12
 msgid "Music Directory:"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#13
 msgid "Built-in"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#14
 msgid "Available Online..."
 msgstr ""
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#15
 msgid "Bundled Songs"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#20
+#: DlgPrefPlaylistDlg#16
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -2312,56 +2315,60 @@ msgid "Powered by xwax"
 msgstr ""
 
 #: DlgPreferences#1
-msgid "Sound Hardware"
+msgid "Preferences"
 msgstr ""
 
 #: DlgPreferences#2
-msgid "Controllers"
+msgid "Sound Hardware"
 msgstr ""
 
 #: DlgPreferences#3
-msgctxt "DlgPreferences#3"
-msgid "Library"
+msgid "Controllers"
 msgstr ""
 
 #: DlgPreferences#4
-msgid "Interface"
+msgctxt "DlgPreferences#4"
+msgid "Library"
 msgstr ""
 
 #: DlgPreferences#5
-msgctxt "DlgPreferences#5"
-msgid "Equalizers"
+msgid "Interface"
 msgstr ""
 
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
-msgid "Crossfader"
+msgid "Equalizers"
 msgstr ""
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
-msgid "Recording"
+msgid "Crossfader"
 msgstr ""
 
 #: DlgPreferences#8
-msgid "Beat Detection"
+msgctxt "DlgPreferences#8"
+msgid "Recording"
 msgstr ""
 
 #: DlgPreferences#9
-msgctxt "DlgPreferences#9"
-msgid "BPM Detection"
+msgid "Beat Detection"
 msgstr ""
 
 #: DlgPreferences#10
-msgid "Normalization"
+msgctxt "DlgPreferences#10"
+msgid "BPM Detection"
 msgstr ""
 
 #: DlgPreferences#11
-msgctxt "DlgPreferences#11"
-msgid "Vinyl Control"
+msgid "Normalization"
 msgstr ""
 
 #: DlgPreferences#12
+msgctxt "DlgPreferences#12"
+msgid "Vinyl Control"
+msgstr ""
+
+#: DlgPreferences#13
 msgid "Live Broadcasting"
 msgstr ""
 
@@ -3385,60 +3392,6 @@ msgstr ""
 msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
-msgstr ""
-
-#: Ui#1
-msgctxt "Ui#1"
-msgid "Position"
-msgstr ""
-
-#: Ui#2
-msgid "Remaining"
-msgstr ""
-
-#: Ui#3
-msgctxt "Ui#3"
-msgid "On"
-msgstr ""
-
-#: Ui#4
-msgctxt "Ui#4"
-msgid "Off"
-msgstr ""
-
-#: Ui#5
-msgid "Don't load tracks into a playing deck"
-msgstr ""
-
-#: Ui#6
-msgid "Load tracks into playing decks"
-msgstr ""
-
-#: Ui#7
-msgid "CDJ Mode"
-msgstr ""
-
-#: Ui#8
-msgctxt "Ui#8"
-msgid "Simple"
-msgstr ""
-
-#: Ui#9
-msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
-
-#: Ui#10
-msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
-
-#: Ui#11
-msgid ""
-"The only skin compatiable with this size display is Outline800x480-WVGA.  "
-"Would you like to use that skin?"
-msgstr ""
-
-#: Ui#12
-msgid "Preferences"
 msgstr ""
 
 # Search|Focus
