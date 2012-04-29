@@ -104,6 +104,12 @@
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="labelMappingHelp">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>Click any control in the Mixxx interface or choose one from the list. Then move a control on your controller to map it. Repeat this as many times as you wish. When you are finished mapping controls, click Done.</string>
          </property>
@@ -112,18 +118,14 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QComboBox" name="m_controlList">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0" colspan="2">
         <widget class="QLabel" name="controlToMapMessage">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string notr="true">(control ready to map message goes here)</string>
          </property>
@@ -173,6 +175,12 @@
        </item>
        <item row="3" column="0" colspan="2">
         <widget class="QLabel" name="labelMappedTo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string notr="true">(successfully mapped to message goes here)</string>
          </property>
@@ -183,8 +191,27 @@
        </item>
        <item row="4" column="0" colspan="2">
         <widget class="QLabel" name="labelNextHelp">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
           <string>To map another control click a button or choose from the list.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButtonChooseControl">
+         <property name="mouseTracking">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Choose Control</string>
          </property>
         </widget>
        </item>

@@ -9,6 +9,8 @@
 #define DLGCONTROLLERLEARNING_H
 
 #include <QtGui>
+#include <QMenu>
+#include <QSignalMapper>
 
 #include "controllers/ui_dlgcontrollerlearning.h"
 #include "controllers/controller.h"
@@ -38,18 +40,28 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
 
     // Gets called when a control has just been mapped successfully
     void controlMapped(QString);
+
+  private slots:
+    void showControlMenu();
+
   private:
+    QMenu* addSubmenu(QString title);
     void showPickControl();
-    void populateComboBox();
     void loadControl(const MixxxControl& control);
 
-    void addControl(QString group, QString control, QString helpText, bool addReset=false);
-    void addDeckAndSamplerControl(QString control, QString helpText, bool addReset=false);
-    void addDeckControl(QString control, QString helpText, bool addReset=false);
-    void addSamplerControl(QString control, QString helpText, bool addReset=false);
+
+
+    void addControl(QString group, QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addPlayerControl(QString control, QString helpText, QMenu* pMenu,
+                          bool deckControls, bool samplerControls, bool addReset=false);
+    void addDeckAndSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
 
     QSet<MixxxControl> m_mappedControls;
     Controller* m_pController;
+    QSignalMapper m_actionMapper;
+    QMenu m_controlPickerMenu;
     QList<MixxxControl> m_controlsAvailable;
     MixxxControl m_currentControl;
     QString m_deckStr, m_samplerStr, m_resetStr;
