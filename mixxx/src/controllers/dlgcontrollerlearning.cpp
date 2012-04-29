@@ -25,13 +25,12 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
-    connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));
     connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
-    connect(pushButtonDone, SIGNAL(clicked()), this, SLOT(pickControlDone()));
+    connect(pushButtonDone, SIGNAL(clicked()), this, SLOT(close()));
     connect(&m_actionMapper, SIGNAL(mapped(int)), this, SLOT(controlChosen(int)));
 
     connect(m_pController, SIGNAL(learnedMessage(QString)), this, SLOT(controlMapped(QString)));
-    connect(pushButtonFinish, SIGNAL(clicked()), this, SLOT(close()));
+
     connect(this, SIGNAL(cancelLearning()), m_pController, SLOT(cancelLearn()));
     connect(this, SIGNAL(learn(MixxxControl)), m_pController, SLOT(learn(MixxxControl)));
 
@@ -46,9 +45,6 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Master]", "balance", tr("Master balance"), mixerMenu, true);
     addControl("[Master]", "headVolume", tr("Headphone volume"), mixerMenu, true);
     addControl("[Master]", "headMix", tr("Headphone mix (pre/main)"), mixerMenu, true);
-
-    // Sampler & Deck Controls -- we combine them to minimize work for
-    // translators.
 
     // Transport
     QMenu* transportMenu = addSubmenu(tr("Transport"));
@@ -186,11 +182,19 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
         addControl(QString("[Spinny%1]").arg(i), "show_spinny",
                    QString("%1: %2").arg(m_deckStr.arg(i), spinnyText), guiMenu);
     }
+
+    emit(listenForClicks());
+    labelMappedTo->setText("");
+    labelNextHelp->hide();
+    controlToMapMessage->setText("");
+    stackedWidget->setCurrentIndex(0);
+    m_currentControl = MixxxControl();
 }
 
 DlgControllerLearning::~DlgControllerLearning() {
     //If there was any ongoing learning, cancel it (benign if there wasn't).
     emit(cancelLearning());
+    emit(stopListeningForClicks());
 }
 
 void DlgControllerLearning::addControl(QString group, QString control, QString description,
@@ -277,26 +281,6 @@ void DlgControllerLearning::addSamplerControl(QString control, QString controlDe
                                               QMenu* pMenu,
                                               bool addReset) {
     addPlayerControl(control, controlDescription, pMenu, false, true, addReset);
-}
-
-void DlgControllerLearning::begin() {
-    // Switch pages in the stacked widget so that we show the choose-a-control
-    // page.
-    showPickControl();
-}
-
-void DlgControllerLearning::pickControlDone() {
-    emit(stopListeningForClicks());
-    stackedWidget->setCurrentIndex(2);
-}
-
-void DlgControllerLearning::showPickControl() {
-    emit(listenForClicks());
-    labelMappedTo->setText("");
-    labelNextHelp->hide();
-    controlToMapMessage->setText("");
-    stackedWidget->setCurrentIndex(1);
-    m_currentControl = MixxxControl();
 }
 
 void DlgControllerLearning::showControlMenu() {

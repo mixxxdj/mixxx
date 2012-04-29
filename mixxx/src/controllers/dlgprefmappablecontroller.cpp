@@ -88,6 +88,7 @@ void DlgPrefMappableController::slotShowLearnDialog() {
     m_pDlgControllerLearning = new DlgControllerLearning(this, getController());
     m_pDlgControllerLearning->show();
     ControllerLearningEventFilter* pControllerLearning = getControllerManager()->getControllerLearningEventFilter();
+    pControllerLearning->startListening();
     connect(pControllerLearning, SIGNAL(controlClicked(ControlObject*)),
             m_pDlgControllerLearning, SLOT(controlClicked(ControlObject*)));
     connect(m_pDlgControllerLearning, SIGNAL(listenForClicks()),
