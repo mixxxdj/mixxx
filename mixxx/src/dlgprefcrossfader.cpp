@@ -46,12 +46,12 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
 
     setupUi(this);
 
-	connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
+    connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
 
-	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
+    connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
 
     //Update the crossfader curve graph and other setings when the crossfader mode is changed.
     connect(radioButtonSlowFade,        SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
