@@ -47,6 +47,46 @@ class ControllerPreset {
         return m_filePath;
     }
 
+    inline void setName(const QString name) {
+        m_name = name;
+    }
+
+    inline QString name() const {
+        return m_name;
+    }
+
+    inline void setAuthor(const QString author) {
+        m_author = author;
+    }
+
+    inline QString author() const {
+        return m_author;
+    }
+
+    inline void setDescription(const QString description) {
+        m_description = description;
+    }
+
+    inline QString description() const {
+        return m_description;
+    }
+
+    inline void setSchemaVersion(const QString schemaVersion) {
+        m_schemaVersion = schemaVersion;
+    }
+
+    inline QString schemaVersion() const {
+        return m_schemaVersion;
+    }
+
+    inline void setMixxxVersion(const QString mixxxVersion) {
+        m_mixxxVersion = mixxxVersion;
+    }
+
+    inline QString mixxxVersion() const {
+        return m_mixxxVersion;
+    }
+
     virtual void accept(ControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
@@ -58,6 +98,11 @@ class ControllerPreset {
   private:
     QString m_deviceId;
     QString m_filePath;
+    QString m_name;
+    QString m_author;
+    QString m_description;
+    QString m_schemaVersion;
+    QString m_mixxxVersion;
 };
 
 typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;

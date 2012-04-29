@@ -62,6 +62,7 @@ class DlgPrefController : public QWidget {
     void slotPresetLoaded(ControllerPresetPointer preset);
 
   private:
+    QString presetShortName(const ControllerPresetPointer pPreset) const;
     void savePreset(QString path);
     void enumeratePresets();
 

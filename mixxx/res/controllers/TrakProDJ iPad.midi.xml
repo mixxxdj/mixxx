@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset schemaversion="1" mixxxVersion="1.10.0+">
   <info>
-    <name>TrakProDJ iPad.midi.xml</name>
+    <name>TrakProDJ iPad</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
     <description>TrakProDJ iPad application midi mapping</description>
   </info>

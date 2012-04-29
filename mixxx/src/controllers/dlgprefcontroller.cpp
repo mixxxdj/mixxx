@@ -32,7 +32,7 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     m_ui.setupUi(this);
     m_pLayout = m_ui.gridLayout_4;
     const ControllerPresetPointer pPreset = controller->getPreset();
-    m_ui.labelLoadedPreset->setText(pPreset ? pPreset->deviceId() : "");
+    m_ui.labelLoadedPreset->setText(presetShortName(pPreset));
 
     //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
@@ -60,6 +60,22 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
 }
 
 DlgPrefController::~DlgPrefController() {
+}
+
+QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset) const {
+    QString presetName = tr("None");
+    if (pPreset) {
+        QString name = pPreset->name();
+        QString author = pPreset->author();
+        if (name.length() > 0 && author.length() > 0) {
+            presetName = tr("%1 by %2").arg(pPreset->name(), pPreset->author());
+        } else if (name.length() > 0) {
+            presetName = name;
+        } else if (pPreset->filePath().length() > 0) {
+            presetName = tr("Custom Preset");
+        }
+    }
+    return presetName;
 }
 
 void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
@@ -128,7 +144,7 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
 }
 
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
-    m_ui.labelLoadedPreset->setText(preset->deviceId());
+    m_ui.labelLoadedPreset->setText(presetShortName(preset));
 }
 
 void DlgPrefController::slotDeviceState(int state) {

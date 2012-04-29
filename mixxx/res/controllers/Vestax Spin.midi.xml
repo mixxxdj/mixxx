@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0+">
   <info>
-    <name>VestaxSpin.midi.xml</name>
+    <name>Vestax Spin</name>
     <author>Bill Good, based on the work of Anders Gunnarsson</author>
     <description>Bill's controller mapping for Vestax Spin + script</description>
   </info>
@@ -413,7 +413,7 @@
         <status>0xB2</status>
         <midino>0x08</midino>
       </control>
-      
+
       <control>
         <group>[Channel1]</group>
         <key>flanger</key>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>Evolution_Xsession.midi.xml</name>
+    <name>Evolution X-Session</name>
     <author>Auto-converted by madjesta's PHP script</author>
     <description>Automatic conversion of the file Evolution_Xsession.midi.xml for Mixxx 1.6.2</description>
   </info>
@@ -108,7 +108,7 @@
         <key>cue_default</key>
         <status>0x80</status>
         <midino>0x3a</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>filterLow</key>
