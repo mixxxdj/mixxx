@@ -33,8 +33,9 @@ public:
     void hold();
     void release();
 
-    //void prepare();
+    virtual void preRender();
     virtual void render();
+    virtual void postRender() {}
 
     virtual void resize( int width, int height);
 

@@ -14,10 +14,10 @@
 
 class ControlObjectThreadMain;
 class WaveformWidgetAbstract;
+class ControlPotmeter;
 
 class WWaveformViewer : public QWidget {
     Q_OBJECT
-
   public:
     WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0, Qt::WFlags f = 0);
     virtual ~WWaveformViewer();
@@ -32,31 +32,38 @@ class WWaveformViewer : public QWidget {
     void mouseMoveEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
 
-  signals:
+signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
 
-  public slots:
+public slots:
     void onTrackLoaded( TrackPointer track);
     void onTrackUnloaded( TrackPointer track);
 
-  protected:
+protected:
     virtual void resizeEvent(QResizeEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
 
-  private:
-    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
-        m_waveformWidget = waveformWidget;
+private slots:
+    void onZoomChange(double zoom);
+    void slotWidgetDead() {
+        m_waveformWidget = NULL;
     }
+
+private:
+    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
     WaveformWidgetAbstract* getWaveformWidget() {
         return m_waveformWidget;
     }
+    //direct access to let factory sync/set default zoom
+    void setZoom(int zoom);
 
+private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
-
+    ControlObjectThreadMain* m_pZoom;
     ControlObjectThreadMain* m_pScratchEnable;
     ControlObjectThreadMain* m_pScratch;
     ControlObjectThreadMain* m_pTrackSamples;

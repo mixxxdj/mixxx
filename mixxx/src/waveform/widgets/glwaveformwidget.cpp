@@ -18,10 +18,10 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
-    addRenderer<WaveformRenderMarkRange>();
-    addRenderer<WaveformRenderMark>();
-    addRenderer<GLWaveformRendererFilteredSignal>();
     addRenderer<WaveformRendererPreroll>();
+    addRenderer<WaveformRenderMarkRange>();
+    addRenderer<GLWaveformRendererFilteredSignal>();
+    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
 
     setAttribute(Qt::WA_NoSystemBackground);
@@ -48,5 +48,8 @@ void GLWaveformWidget::paintEvent( QPaintEvent* event) {
     }
     QPainter painter(this);
     draw(&painter, event);
+}
+
+void GLWaveformWidget::postRender() {
     QGLWidget::swapBuffers();
 }

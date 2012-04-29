@@ -32,6 +32,7 @@
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "playermanager.h"
 #include "controlobject.h"
 #include "mixxx.h"
@@ -71,7 +72,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ControlObject::getControl(ConfigKey(group, "rate_dir"))));
         m_cueControls.push_back(new ControlObjectThreadMain(
             ControlObject::getControl(ConfigKey(group, "cue_mode"))));
-
     }
 
     // Position display configuration
@@ -500,11 +500,10 @@ void DlgPrefControls::slotSetFrameRate(int frameRate) {
 }
 
 void DlgPrefControls::slotSetWaveformType(int index) {
-     if (WaveformWidgetFactory::instance()->setWidgetType(index))
-     {
-         //it actually change to a valid type
-         m_mixxx->rebootMixxxView();
-     }
+    if (WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index)) {
+        // It was changed to a valid type. Previously we rebooted the Mixxx GUI
+        // here but now we can update the waveforms on the fly.
+    }
 }
 
 void DlgPrefControls::slotSetDefaultZoom(int index) {
@@ -515,6 +514,21 @@ void DlgPrefControls::slotSetZoomSynchronization(bool checked) {
     WaveformWidgetFactory::instance()->setZoomSync(checked);
 }
 
+void DlgPrefControls::slotSetVisualGainAll(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,gain);
+}
+
+void DlgPrefControls::slotSetVisualGainLow(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,gain);
+}
+
+void DlgPrefControls::slotSetVisualGainMid(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,gain);
+}
+
+void DlgPrefControls::slotSetVisualGainHigh(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
+}
 
 void DlgPrefControls::onShow() {
     m_timer = startTimer(100); //refresh actual frame rate every 100 ms
@@ -526,10 +540,10 @@ void DlgPrefControls::onHide() {
     }
 }
 
-void DlgPrefControls::timerEvent(QTimerEvent * /*event*/)
-{
+void DlgPrefControls::timerEvent(QTimerEvent * /*event*/) {
     //Just to refresh actual framrate any time the controller is modified
-    frameRateAverage->setText(QString::number(WaveformWidgetFactory::instance()->getActualFrameRate()));
+    frameRateAverage->setText(QString::number(
+        WaveformWidgetFactory::instance()->getActualFrameRate()));
 }
 
 void DlgPrefControls::initWaveformControl()
@@ -545,10 +559,9 @@ void DlgPrefControls::initWaveformControl()
     WaveformWidgetType::Type currentType = factory->getType();
     int currentIndex = -1;
 
-    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for( int i = 0; i < handles.size(); i++)
-    {
-        waveformTypeComboBox->addItem( handles[i].getDisplayName());
+    std::vector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
+    for (unsigned int i = 0; i < handles.size(); i++) {
+        waveformTypeComboBox->addItem(handles[i].getDisplayName());
         if (handles[i].getType() == currentType)
             currentIndex = i;
     }
@@ -557,8 +570,19 @@ void DlgPrefControls::initWaveformControl()
         waveformTypeComboBox->setCurrentIndex(currentIndex);
 
     frameRateSpinBox->setValue(factory->getFrameRate());
-    defaultZoomComboBox->setCurrentIndex( factory->getDefaultZoom() - 1);
+
     synchronizeZoomCheckBox->setChecked( factory->isZoomSync());
+    allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
+    lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
+    midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
+    highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
+
+    for( int i = WaveformWidgetRenderer::s_waveformMinZoom;
+         i <= WaveformWidgetRenderer::s_waveformMaxZoom;
+         i++) {
+        defaultZoomComboBox->addItem(QString::number( 100/double(i),'f',1) + " %");
+    }
+    defaultZoomComboBox->setCurrentIndex( factory->getDefaultZoom() - 1);
 
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetFrameRate(int)));
@@ -568,4 +592,13 @@ void DlgPrefControls::initWaveformControl()
             this, SLOT(slotSetDefaultZoom(int)));
     connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
             this, SLOT(slotSetZoomSynchronization(bool)));
+    connect(allVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainAll(double)));
+    connect(lowVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainLow(double)));
+    connect(midVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainMid(double)));
+    connect(highVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainHigh(double)));
+
 }

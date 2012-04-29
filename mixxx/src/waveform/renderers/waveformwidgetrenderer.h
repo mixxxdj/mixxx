@@ -10,17 +10,25 @@
 #include "util.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
+//#define WAVEFORMWIDGETRENDERER_DEBUG
+
 class TrackInfoObject;
 class ControlObjectThreadMain;
 
 class WaveformWidgetRenderer {
-  public:
+public:
+    static const int s_waveformMinZoom;
+    static const int s_waveformMaxZoom;
+
+public:
     explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
     void init();
+    virtual void onInit() {}
+
     void setup(const QDomNode& node);
-    void preRender();
+    void onPreRender();
     void draw(QPainter* painter, QPaintEvent* event);
 
     const char* getGroup() const { return m_group;}
@@ -30,8 +38,6 @@ class WaveformWidgetRenderer {
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
 
     void setZoom(int zoom);
-    void zoomIn();
-    void zoomOut();
 
     virtual void updateVisualSamplingPerPixel();
     virtual void updateAudioSamplingPerPixel();
@@ -69,7 +75,7 @@ class WaveformWidgetRenderer {
 
     void setTrack(TrackPointer track);
 
-  protected:
+protected:
     const char* m_group;
     TrackPointer m_trackInfoObject;
     QVector<WaveformRendererAbstract*> m_rendererStack;
@@ -81,36 +87,38 @@ class WaveformWidgetRenderer {
     double m_rendererTransformationOffset;
     double m_rendererTransformationGain;
 
-    double m_rateAdjust;
     double m_zoomFactor;
+    double m_rateAdjust;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
 
-    //TODO vRince create some class to manage control/value
+    //TODO: vRince create some class to manage control/value
     //ControlConnection
-    ControlObject* m_playPosControlObject;
+    ControlObjectThreadMain* m_playPosControlObject;
     double m_playPos;
-    ControlObject* m_rateControlObject;
+    ControlObjectThreadMain* m_rateControlObject;
     double m_rate;
-    ControlObject* m_rateRangeControlObject;
+    ControlObjectThreadMain* m_rateRangeControlObject;
     double m_rateRange;
-    ControlObject* m_rateDirControlObject;
+    ControlObjectThreadMain* m_rateDirControlObject;
     double m_rateDir;
-    ControlObject* m_gainControlObject;
+    ControlObjectThreadMain* m_gainControlObject;
     double m_gain;
-    ControlObject* m_trackSamplesControlObject;
+    ControlObjectThreadMain* m_trackSamplesControlObject;
     int m_trackSamples;
 
-    //Debug
+
+#ifdef WAVEFORMWIDGETRENDERER_DEBUG
     QTime* m_timer;
     int m_lastFrameTime;
     int m_lastFramesTime[100];
     int m_lastSystemFrameTime;
     int m_lastSystemFramesTime[100];
     int currentFrame;
+#endif
 
     WaveformWidgetRenderer();
-  private:
+private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
 };
