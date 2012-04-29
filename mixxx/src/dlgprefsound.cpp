@@ -28,13 +28,13 @@
  */
 DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
                            PlayerManager* pPlayerManager, ConfigObject<ConfigValue> *pConfig)
-    : QWidget(pParent)
-    , m_pSoundManager(pSoundManager)
-    , m_pPlayerManager(pPlayerManager)
-    , m_pConfig(pConfig)
-    , m_settingsModified(false)
-    , m_loading(false)
-    , m_forceApply(false)
+        : QWidget(pParent)
+        , m_pSoundManager(pSoundManager)
+        , m_pPlayerManager(pPlayerManager)
+        , m_pConfig(pConfig)
+        , m_settingsModified(false)
+        , m_loading(false)
+        , m_forceApply(false)
 {
     setupUi(this);
 

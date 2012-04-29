@@ -29,13 +29,13 @@
 DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
         QList<SoundDevice*> &devices, bool isInput,
         unsigned int index /* = 0 */)
-    : QWidget(parent)
-    , m_type(type)
-    , m_index(index)
-    , m_devices(devices)
-    , m_isInput(isInput)
-    , m_savedDevice("")
-    , m_savedChannel(0) {
+        : QWidget(parent)
+        , m_type(type)
+        , m_index(index)
+        , m_devices(devices)
+        , m_isInput(isInput)
+        , m_savedDevice("")
+        , m_savedChannel(0) {
     setupUi(this);
     if (AudioPath::isIndexed(type)) {
         typeLabel->setText(

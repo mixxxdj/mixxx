@@ -15,7 +15,7 @@
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
-        : QWidget(parent)
+        : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_browseModel(this, m_pTrackCollection, pRecordingManager),

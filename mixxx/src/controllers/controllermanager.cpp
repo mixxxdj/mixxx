@@ -179,6 +179,7 @@ int ControllerManager::slotSetUpDevices() {
         QString filename = firstAvailableFilename(filenames, ofilename);
 
         if (!loadPreset(pController, filename, true)) {
+            // TODO(XXX) : auto load midi preset here.
             continue;
         }
 
