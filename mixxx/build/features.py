@@ -724,7 +724,7 @@ class Shoutcast(Feature):
         # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
         # libogg are included from build.py so don't add here.
         if not build.platform_is_windows or build.toolchain_is_gnu:
-            vorbisenc_found = conf.CheckLib(['vorbisenc'])
+            vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
 
