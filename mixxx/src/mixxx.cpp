@@ -1199,6 +1199,7 @@ void MixxxApp::slotHelpAbout() {
 "Pascal Bleser<br>"
 "Florian Mahlknecht<br>"
 "Ben Clark<br>"
+"Ilkka Tuohela<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
