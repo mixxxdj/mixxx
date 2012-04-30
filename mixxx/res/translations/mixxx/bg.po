@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-04-25 10:54-0400\n"
+"POT-Creation-Date: 2012-04-29 01:43-0400\n"
 "PO-Revision-Date: 2012-04-23 15:07+0000\n"
 "Last-Translator: Ve4ernik <ve4ernik@gmail.com>\n"
 "Language-Team: Bulgarian <bg@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-26 04:36+0000\n"
-"X-Generator: Launchpad (build 15149)\n"
+"X-Launchpad-Export-Date: 2012-04-30 04:36+0000\n"
+"X-Generator: Launchpad (build 15171)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -347,6 +347,81 @@ msgstr ""
 msgid "Could not update file metadata."
 msgstr "Метаданните на файла не могат да бъдат обновени."
 
+#: ControllerEngine#1
+msgid "Uncaught exception at line %1 in file %2: %3"
+msgstr "Неочаквана грешка на ред %1 във файл %2: %3"
+
+#: ControllerEngine#2
+msgid "Uncaught exception at line %1 in passed code: %2"
+msgstr "Неочаквана грешка на ред %1 в този код: %2"
+
+#: ControllerEngine#3
+msgid "Controller script error"
+msgstr ""
+
+#: ControllerEngine#4
+msgid "A control you just used is not working properly."
+msgstr ""
+
+#: ControllerEngine#5
+msgid ""
+"<html>(The script code needs to be fixed.)<br>For now, you "
+"can:<ul><li>Ignore this error for this session but you may experience "
+"erratic behavior</li><li>Try to recover by resetting your "
+"controller</li></ul></html>"
+msgstr ""
+
+#: ControllerMappingDlg#1
+msgctxt "ControllerMappingDlg#1"
+msgid "Dialog"
+msgstr ""
+
+#: ControllerMappingDlg#2
+msgctxt "ControllerMappingDlg#2"
+msgid "Input"
+msgstr ""
+
+#: ControllerMappingDlg#3
+msgid ""
+"The below box is under construction and will remain empty in this version of "
+"Mixxx."
+msgstr ""
+
+#: ControllerMappingDlg#4
+msgid "Controls"
+msgstr "Функции"
+
+#: ControllerMappingDlg#5
+msgctxt "ControllerMappingDlg#5"
+msgid "Add"
+msgstr ""
+
+#: ControllerMappingDlg#6
+msgctxt "ControllerMappingDlg#6"
+msgid "Remove"
+msgstr ""
+
+#: ControllerMappingDlg#7
+msgid "Learning Wizard"
+msgstr ""
+
+#: ControllerMappingDlg#8
+msgid "Clear all"
+msgstr ""
+
+#: ControllerMappingDlg#9
+msgctxt "ControllerMappingDlg#9"
+msgid "Output"
+msgstr ""
+
+#: ControllerMappingDlg#10
+msgid "Outputs"
+msgstr "Изходи"
+
+#: ControllerMappingDlg#11
+msgid "Clear All"
+msgstr "Изчистване на всичко"
+
 #: CrateFeature#1
 msgid "New Crate"
 msgstr "Нова колекция"
@@ -527,7 +602,7 @@ msgid "Beat Analyser:"
 msgstr ""
 
 #: DlgBeatsDlg#6
-msgid "Choose beween different algorithms to detect beats."
+msgid "Choose between different algorithms to detect beats."
 msgstr ""
 
 #: DlgBeatsDlg#7
@@ -623,92 +698,394 @@ msgstr "до"
 msgid "Analyze Entire Song"
 msgstr "Цялостен анализ на песни"
 
-#: DlgMidiLearning#1
-msgid "Skip"
-msgstr "Пропускане"
-
-#: DlgMidiLearning#2
-msgid "Successfully mapped to: "
-msgstr "Успешно насочване към: "
-
-#: DlgMidiLearning#3
-msgid "Next"
-msgstr "Следваща"
-
-#: DlgMidiLearning#4
-msgctxt "DlgMidiLearning#4"
-msgid "MIDI Learning Wizard"
-msgstr "Помощник за научаване на MIDI"
-
-#: DlgMidiLearning#5
-msgid "Welcome to the MIDI Learning Wizard"
-msgstr "Добре дошли в помощника за научаване на MIDI"
-
-#: DlgMidiLearning#6
-msgid ""
-"This wizard allows you to easily map the controls on your MIDI controller to "
-"Mixxx's controls."
+#: DlgControllerLearning#1
+msgid "Controller Learning Wizard"
 msgstr ""
-"Помощникът позволява насочване на копчетата на MIDI регулатор към бутоните "
-"на Mixxx."
 
-#: DlgMidiLearning#7
-msgid "Begin"
-msgstr "Начало"
-
-#: DlgMidiLearning#8
-msgid "Please tweak the control for:"
-msgstr "Моля използвайте копчето за:"
-
-#: DlgMidiLearning#9
-msgid "Mixxx Control"
-msgstr "Mixxx функция"
-
-#: DlgMidiLearning#10
-msgid "Previous"
-msgstr "Предишна"
-
-#: DlgMidiLearning#11
-msgid "Press spacebar to proceed or skip."
-msgstr "Натиснете интервала за продължаване или пропускане."
-
-#: DlgMidiLearning#12
-msgid "MIDI learning complete!"
-msgstr "Научаването на MIDI приключи!"
-
-#: DlgMidiLearning#13
+#: DlgControllerLearning#2
 msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
-"font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This "
-"wizard can be re-run at any time.</p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
-"go spin some beats!</p></body></html>"
+"Click any control in the Mixxx interface or choose one from the list. Then "
+"move a control on your controller to map it. Repeat this as many times as "
+"you wish. When you are finished mapping controls, click Done."
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
-"font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-"
-"indent:0px;\">Помощникът може да бъде пуснат отново по всяко време.</p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />А "
-"сега можете да пускате с вашето MIDI устройство!</p></body></html>"
 
-#: DlgMidiLearning#14
-msgid "Finito!"
-msgstr "Готово!"
+#: DlgControllerLearning#3
+msgid "Done"
+msgstr ""
+
+#: DlgControllerLearning#4
+msgid "To map another control click a button or choose from the list."
+msgstr ""
+
+#: DlgControllerLearning#5
+msgid "Choose Control"
+msgstr ""
+
+#: DlgControllerLearning#6
+msgid "Deck %1"
+msgstr ""
+
+#: DlgControllerLearning#7
+msgctxt "DlgControllerLearning#7"
+msgid "Sampler %1"
+msgstr ""
+
+#: DlgControllerLearning#8
+msgid "reset to default"
+msgstr ""
+
+#: DlgControllerLearning#9
+msgid "Mixer"
+msgstr ""
+
+#: DlgControllerLearning#10
+msgctxt "DlgControllerLearning#10"
+msgid "Crossfader"
+msgstr ""
+
+#: DlgControllerLearning#11
+msgid "Master volume"
+msgstr "Сила на звука"
+
+#: DlgControllerLearning#12
+msgid "Master balance"
+msgstr "Баланс"
+
+#: DlgControllerLearning#13
+msgid "Headphone volume"
+msgstr ""
+
+#: DlgControllerLearning#14
+msgid "Headphone mix (pre/main)"
+msgstr ""
+
+#: DlgControllerLearning#15
+msgid "Transport"
+msgstr ""
+
+#: DlgControllerLearning#16
+msgid "Strip-search through track"
+msgstr ""
+
+#: DlgControllerLearning#17
+msgid "Play button"
+msgstr ""
+
+#: DlgControllerLearning#18
+msgid "Volume fader"
+msgstr ""
+
+#: DlgControllerLearning#19
+msgid "Fast rewind button"
+msgstr ""
+
+#: DlgControllerLearning#20
+msgid "Fast forward button"
+msgstr ""
+
+#: DlgControllerLearning#21
+msgid "Jump to start of track"
+msgstr ""
+
+#: DlgControllerLearning#22
+msgid "Jump to end of track"
+msgstr ""
+
+#: DlgControllerLearning#23
+msgid "Play reverse button"
+msgstr ""
+
+#: DlgControllerLearning#24
+msgid "Gain knob"
+msgstr ""
+
+#: DlgControllerLearning#25
+msgid "Headphone listen button"
+msgstr ""
+
+#: DlgControllerLearning#26
+msgid "Toggle repeat mode"
+msgstr ""
+
+#: DlgControllerLearning#27
+msgid "Eject track"
+msgstr ""
+
+#: DlgControllerLearning#28
+msgid "Mix orientation (e.g. left, right, center)"
+msgstr ""
+
+#: DlgControllerLearning#29
+msgid "BPM and Sync"
+msgstr ""
+
+#: DlgControllerLearning#30
+msgid "BPM tap button"
+msgstr ""
+
+#: DlgControllerLearning#31
+msgid "Adjust beatgrid"
+msgstr ""
+
+#: DlgControllerLearning#32
+msgid "Toggle quantize mode"
+msgstr ""
+
+#: DlgControllerLearning#33
+msgid "Beat sync (tempo and phase)"
+msgstr ""
+
+#: DlgControllerLearning#34
+msgid "Beat sync (tempo only)"
+msgstr ""
+
+#: DlgControllerLearning#35
+msgid "Beat sync (phase only)"
+msgstr ""
+
+#: DlgControllerLearning#36
+msgid "Pitch and Rate"
+msgstr ""
+
+#: DlgControllerLearning#37
+msgid "Toggle keylock mode"
+msgstr ""
+
+#: DlgControllerLearning#38
+msgid "Pitch control slider"
+msgstr ""
+
+#: DlgControllerLearning#39
+msgid "Adjust rate up (course)"
+msgstr ""
+
+#: DlgControllerLearning#40
+msgid "Adjust rate up (fine)"
+msgstr ""
+
+#: DlgControllerLearning#41
+msgid "Adjust rate down (course)"
+msgstr ""
+
+#: DlgControllerLearning#42
+msgid "Adjust rate down (fine)"
+msgstr ""
+
+#: DlgControllerLearning#43
+msgid "Pitch-bend rate up (course)"
+msgstr ""
+
+#: DlgControllerLearning#44
+msgid "Pitch-bend rate up (fine)"
+msgstr ""
+
+#: DlgControllerLearning#45
+msgid "Pitch-bend rate down (course)"
+msgstr ""
+
+#: DlgControllerLearning#46
+msgid "Pitch-bend rate down (fine)"
+msgstr ""
+
+#: DlgControllerLearning#47
+msgctxt "DlgControllerLearning#47"
+msgid "Equalizers"
+msgstr ""
+
+#: DlgControllerLearning#48
+msgid "High EQ knob"
+msgstr ""
+
+#: DlgControllerLearning#49
+msgid "Mid EQ knob"
+msgstr ""
+
+#: DlgControllerLearning#50
+msgid "Low EQ knob"
+msgstr ""
+
+#: DlgControllerLearning#51
+msgid "High EQ kill"
+msgstr ""
+
+#: DlgControllerLearning#52
+msgid "Mid EQ kill"
+msgstr ""
+
+#: DlgControllerLearning#53
+msgid "Low EQ kill"
+msgstr ""
+
+#: DlgControllerLearning#54
+msgctxt "DlgControllerLearning#54"
+msgid "Vinyl Control"
+msgstr ""
+
+#: DlgControllerLearning#55
+msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
+msgstr ""
+
+#: DlgControllerLearning#56
+msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
+msgstr ""
+
+#: DlgControllerLearning#57
+msgid "Cues / Hotcues"
+msgstr ""
+
+#: DlgControllerLearning#58
+msgid "Cue button"
+msgstr ""
+
+#: DlgControllerLearning#59
+msgid "Set cue point"
+msgstr ""
+
+#: DlgControllerLearning#60
+msgid "Go to cue point and stop"
+msgstr ""
+
+#: DlgControllerLearning#61
+msgid "Set or jump to hotcue %1"
+msgstr ""
+
+#: DlgControllerLearning#62
+msgid "Clear hotcue %1"
+msgstr ""
+
+#: DlgControllerLearning#63
+msgid "Jump to hotcue %1"
+msgstr ""
+
+#: DlgControllerLearning#64
+msgid "Jump to hotcue %1 and stop"
+msgstr ""
+
+#: DlgControllerLearning#65
+msgid "Looping"
+msgstr ""
+
+#: DlgControllerLearning#66
+msgid "Loop In button"
+msgstr ""
+
+#: DlgControllerLearning#67
+msgid "Loop Out button"
+msgstr ""
+
+#: DlgControllerLearning#68
+msgid "Reloop / Exit button"
+msgstr ""
+
+#: DlgControllerLearning#69
+msgid "Halve the current loop's length"
+msgstr ""
+
+#: DlgControllerLearning#70
+msgid "Double the current loop's length"
+msgstr ""
+
+#: DlgControllerLearning#71
+msgid "Beat-Looping"
+msgstr ""
+
+#: DlgControllerLearning#72
+msgid "Create %1-beat loop"
+msgstr ""
+
+#: DlgControllerLearning#73
+msgctxt "DlgControllerLearning#73"
+msgid "Library"
+msgstr ""
+
+#: DlgControllerLearning#74
+msgid "Switch to the next view (library, playlist..)"
+msgstr "Към следващия изглед (библиотека, списък...)"
+
+#: DlgControllerLearning#75
+msgid "Switch to the previous view (library, playlist..)"
+msgstr "Към предишния изглед (библиотека, списък...)"
+
+#: DlgControllerLearning#76
+msgid "Scroll to next track in library/playlist"
+msgstr "Маркиране на следващата песен в списъка"
+
+#: DlgControllerLearning#77
+msgid "Scroll to previous track in library/playlist"
+msgstr "Маркиране на предишната песен в списъка"
+
+#: DlgControllerLearning#78
+msgid "Load selected track into first stopped player"
+msgstr "Зареждане на избраната песен в първия спрян плеър"
+
+#: DlgControllerLearning#79
+msgid "Load selected track"
+msgstr ""
+
+#: DlgControllerLearning#80
+msgid "Effects"
+msgstr ""
+
+#: DlgControllerLearning#81
+msgid "Toggle flange effect"
+msgstr ""
+
+#: DlgControllerLearning#82
+msgid "Flange effect: Wavelength/period"
+msgstr ""
+
+#: DlgControllerLearning#83
+msgid "Flange effect: Intensity"
+msgstr ""
+
+#: DlgControllerLearning#84
+msgid "Flange effect: Phase delay"
+msgstr ""
+
+#: DlgControllerLearning#85
+msgctxt "DlgControllerLearning#85"
+msgid "Microphone"
+msgstr ""
+
+#: DlgControllerLearning#86
+msgid "Microphone on/off"
+msgstr "Вкл./изкл. микрофон"
+
+#: DlgControllerLearning#87
+msgid "Microphone volume"
+msgstr "Сила на звука на микрофона"
+
+#: DlgControllerLearning#88
+msgid "Microphone channel orientation (e.g. left, right, center)"
+msgstr ""
+
+#: DlgControllerLearning#89
+msgid "User Interface"
+msgstr ""
+
+#: DlgControllerLearning#90
+msgid "Show/hide the sampler section"
+msgstr ""
+
+#: DlgControllerLearning#91
+msgid "Show/hide the microphone section"
+msgstr ""
+
+#: DlgControllerLearning#92
+msgid "Show/hide the vinyl control section"
+msgstr ""
+
+#: DlgControllerLearning#93
+msgid "Show/hide spinning vinyl widget"
+msgstr ""
+
+#: DlgControllerLearning#94
+msgid "Ready to map: %1. Now move a control on your controller."
+msgstr ""
+
+#: DlgControllerLearning#95
+msgid "Successfully mapped to:"
+msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -773,64 +1150,163 @@ msgstr "Грешка"
 msgid "Cannot open file %1"
 msgstr "Файлът %1 не може да бъде отворен"
 
+#: DlgPrefController#1
+msgctxt "DlgPrefController#1"
+msgid "None"
+msgstr ""
+
+#: DlgPrefController#2
+msgid "%1 by %2"
+msgstr ""
+
+#: DlgPrefController#3
+msgid "Custom Preset"
+msgstr ""
+
+#: DlgPrefControllerDlg#1
+msgctxt "DlgPrefControllerDlg#1"
+msgid "Dialog"
+msgstr ""
+
+#: DlgPrefControllerDlg#2
+msgid "Controller Name"
+msgstr ""
+
+#: DlgPrefControllerDlg#3
+msgid "Enabled"
+msgstr "Включено"
+
+#: DlgPrefControllerDlg#4
+msgid ""
+"<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
+msgstr ""
+
+#: DlgPrefControllerDlg#5
+msgid "Load Preset:"
+msgstr "Зареждане на шаблон:"
+
+#: DlgPrefControllerDlg#6
+msgid "Loaded Preset:"
+msgstr ""
+
+#: DlgPrefControllerDlg#7
+msgid "Click to start the Controller Learning wizard."
+msgstr ""
+
+#: DlgPrefControllerDlg#8
+msgid "Learning Wizard (MIDI Only)"
+msgstr ""
+
 #: DlgPrefControls#1
+msgctxt "DlgPrefControls#1"
+msgid "Position"
+msgstr ""
+
+#: DlgPrefControls#2
+msgid "Remaining"
+msgstr "Остава"
+
+#: DlgPrefControls#3
+msgid "Don't load tracks into a playing deck"
+msgstr "Да не се зареждат песни в свирещ дек"
+
+#: DlgPrefControls#4
+msgid "Load tracks into playing decks"
+msgstr "Зареждане на песни в свирещ дек"
+
+#: DlgPrefControls#5
+msgid "CDJ Mode"
+msgstr "Режим CD плеър"
+
+#: DlgPrefControls#6
+msgctxt "DlgPrefControls#6"
+msgid "Simple"
+msgstr ""
+
+#: DlgPrefControls#7
+msgctxt "DlgPrefControls#7"
+msgid "On"
+msgstr ""
+
+#: DlgPrefControls#8
+msgctxt "DlgPrefControls#8"
+msgid "Off"
+msgstr ""
+
+#: DlgPrefControls#9
+msgid "Mixxx Detected a WVGA Screen"
+msgstr "Mixxx разпозна WVGA екран"
+
+#: DlgPrefControls#10
+msgid "Mixxx has detected that your screen has a resolution of "
+msgstr "Mixxx засече, че екранът ви има разделителна способност от "
+
+#: DlgPrefControls#11
+msgid ""
+"The only skin compatiable with this size display is Outline800x480-WVGA.  "
+"Would you like to use that skin?"
+msgstr ""
+"Единствената кожа съвместима с този размер на дисплея е Outline800x480-WVGA. "
+"Бихте ли искали да я използвате?"
+
+#: DlgPrefControls#12
 msgid "This skin does not support schemes"
 msgstr "Тази кожа не поддържа схеми"
 
-#: DlgPrefControls#2
+#: DlgPrefControls#13
 msgid "8% (Technics SL1210)"
 msgstr "8% (Technics SL1210)"
 
-#: DlgPrefControls#3
+#: DlgPrefControls#14
 msgid "10%"
 msgstr "10%"
 
-#: DlgPrefControls#4
+#: DlgPrefControls#15
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#5
+#: DlgPrefControls#16
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#6
+#: DlgPrefControls#17
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#7
+#: DlgPrefControls#18
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#8
+#: DlgPrefControls#19
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#9
+#: DlgPrefControls#20
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#10
+#: DlgPrefControls#21
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#11
+#: DlgPrefControls#22
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#12
+#: DlgPrefControls#23
 msgid "Up increases speed"
 msgstr "Нагоре"
 
-#: DlgPrefControls#13
+#: DlgPrefControls#24
 msgid "Down increases speed (Technics SL1210)"
 msgstr "Надолу (Technics SL1210)"
 
-#: DlgPrefControls#14
-msgctxt "DlgPrefControls#14"
+#: DlgPrefControls#25
+msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr "Информация"
+msgstr ""
 
-#: DlgPrefControls#15
+#: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr "Mixxx тряба да се рестартира преди промените да влязат в сила."
 
@@ -1057,146 +1533,40 @@ msgctxt "DlgPrefEQDlg#10"
 msgid "Reset"
 msgstr "Връщане в изходно положение"
 
-#: DlgPrefMidiBindings#1
-msgctxt "DlgPrefMidiBindings#1"
-msgid "None"
-msgstr "Без"
+#: DlgPrefMappableController#1
+msgid "Apply device settings?"
+msgstr ""
 
-#: DlgPrefMidiBindings#2
-msgid "Apply MIDI device settings?"
-msgstr "Да се приложат ли настройките за MIDI устройството?"
-
-#: DlgPrefMidiBindings#3
+#: DlgPrefMappableController#2
 msgid ""
-"Your settings must be applied before starting the MIDI learning wizard.\n"
+"Your settings must be applied before starting the learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
-"Настройките Ви трябва да бъдат приложени преди да се пусне помощника за "
-"научаване на MIDI.\n"
-"Прилагане на настройките и продължаване?"
 
-#: DlgPrefMidiBindings#4
-msgid "Overwrite existing mapping?"
-msgstr "Презаписване на съществуващата подредба?"
-
-#: DlgPrefMidiBindings#5
-msgid ""
-"Are you sure you'd like to load the %1 mapping?\n"
-"This will overwrite your existing MIDI mapping."
-msgstr ""
-"Сигурни ли сте, че желаете да заредите подредбата %1?\n"
-"Тя ще презапише текущата подредба на MIDI."
-
-#: DlgPrefMidiBindings#6
-msgid "Export Mixxx MIDI Bindings"
-msgstr "Изнасяне на MIDI настройки"
-
-#: DlgPrefMidiBindings#7
-msgid "Preset Files (*.midi.xml)"
-msgstr "Файлове за подредба (*.midi.xml)"
-
-#: DlgPrefMidiBindings#8
-msgid "Select Control Group"
-msgstr "Изберете категория на желаната функция"
-
-#: DlgPrefMidiBindings#9
-msgid "Select Control"
-msgstr "Изберете функция"
-
-#: DlgPrefMidiBindings#10
+#: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
 msgstr "Изчистване на входни насочвания"
 
-#: DlgPrefMidiBindings#11
+#: DlgPrefMappableController#4
 msgid "Are you sure you want to clear all bindings?"
 msgstr "Сигурни ли сте, че искате да изчистите всички насочвания?"
 
-#: DlgPrefMidiBindings#12
+#: DlgPrefMappableController#5
 msgid "Clear Output Bindings"
 msgstr "Изчистване на изходни насочвания"
 
-#: DlgPrefMidiBindings#13
+#: DlgPrefMappableController#6
 msgid "Are you sure you want to clear all output bindings?"
 msgstr "Сигурни ли сте, че искате да изчистите всички изходни насочвания?"
 
-#: DlgPrefMidiBindingsDlg#1
-msgctxt "DlgPrefMidiBindingsDlg#1"
-msgid "Dialog"
-msgstr "Диалогов прозорец"
-
-#: DlgPrefMidiBindingsDlg#2
-msgid "Your Device Name"
-msgstr "Името на Вашето устройство"
-
-#: DlgPrefMidiBindingsDlg#3
-msgid "Load Preset:"
-msgstr "Зареждане на шаблон:"
-
-#: DlgPrefMidiBindingsDlg#4
-msgid "Export"
-msgstr "Изнасяне"
-
-#: DlgPrefMidiBindingsDlg#5
-msgid "Output:"
-msgstr "Изходни сигнали:"
-
-#: DlgPrefMidiBindingsDlg#6
-msgid "Enabled"
-msgstr "Включено"
-
-#: DlgPrefMidiBindingsDlg#7
-msgid "Controls"
-msgstr "Функции"
-
-#: DlgPrefMidiBindingsDlg#8
-msgctxt "DlgPrefMidiBindingsDlg#8"
-msgid "Add"
-msgstr "Добавяне"
-
-#: DlgPrefMidiBindingsDlg#9
-msgctxt "DlgPrefMidiBindingsDlg#9"
-msgid "Remove"
-msgstr "Премахване"
-
-#: DlgPrefMidiBindingsDlg#10
-msgctxt "DlgPrefMidiBindingsDlg#10"
-msgid "MIDI Learning Wizard"
-msgstr "Помощник за научаване на MIDI"
-
-#: DlgPrefMidiBindingsDlg#11
-msgid "Clear All"
-msgstr "Изчистване на всичко"
-
-#: DlgPrefMidiBindingsDlg#12
-msgid ""
-"<a "
-"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
-"roubleshooting</a>"
-msgstr ""
-"<a "
-"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">О"
-"тстраняване на проблеми</a>"
-
-#: DlgPrefMidiBindingsDlg#13
-msgid "MIDI Input"
-msgstr "MIDI вход"
-
-#: DlgPrefMidiBindingsDlg#14
-msgid "Outputs"
-msgstr "Изходи"
-
-#: DlgPrefMidiBindingsDlg#15
-msgid "MIDI Output"
-msgstr "MIDI изход"
-
-#: DlgPrefNoMidiDlg#1
-msgctxt "DlgPrefNoMidiDlg#1"
+#: DlgPrefNoControllersDlg#1
+msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
-msgstr "Form3"
+msgstr ""
 
-#: DlgPrefNoMidiDlg#2
-msgid "No MIDI devices available"
-msgstr "Няма налични MIDI устройства"
+#: DlgPrefNoControllersDlg#2
+msgid "No controllers available."
+msgstr ""
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
@@ -1340,121 +1710,72 @@ msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
 msgstr "Изберете папка за музикалната библиотека"
 
-#: DlgPrefPlaylist#2
-msgid "Multiple iPods Detected"
-msgstr "Намерени са няколко iPod-а"
-
-#: DlgPrefPlaylist#3
-msgid ""
-"Mixxx has detected another iPod. \n"
-"\n"
-msgstr ""
-"Mixxx намери още един iPod. \n"
-"\n"
-
-#: DlgPrefPlaylist#4
-msgid "Choose Yes to use the newly found iPod @ "
-msgstr "Изберете Да, за да изберете новооткрития iPod @ "
-
-#: DlgPrefPlaylist#5
-msgid " or to continue to search for other iPods. \n"
-msgstr " или да продължине да търсите за други iPod-и. \n"
-
-#: DlgPrefPlaylist#6
-msgid "Choose No to use the existing iPod @ "
-msgstr "Изберете Не, за да използвате съществуващия iPod @ "
-
-#: DlgPrefPlaylist#7
-msgid " and end detection. \n"
-msgstr " и да приключите засичането. \n"
-
-#: DlgPrefPlaylist#8
-msgid "Choose iPod mount point"
-msgstr "Изберете точка за монтиране на iPod-а"
-
 #: DlgPrefPlaylistDlg#1
-msgctxt "DlgPrefPlaylistDlg#1"
-msgid "Form3"
-msgstr "Form3"
-
-#: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
 msgstr "Аудио формати"
 
-#: DlgPrefPlaylistDlg#3
+#: DlgPrefPlaylistDlg#2
 msgid "Additional Format Plugins:"
 msgstr "Допълнителни приставки за формати:"
 
-#: DlgPrefPlaylistDlg#4
+#: DlgPrefPlaylistDlg#3
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
-#: DlgPrefPlaylistDlg#5
+#: DlgPrefPlaylistDlg#4
 msgid "Loaded Plugins:"
 msgstr "Заредени приставки:"
 
+#: DlgPrefPlaylistDlg#5
+msgctxt "DlgPrefPlaylistDlg#5"
+msgid "None"
+msgstr ""
+
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
-msgid "None"
-msgstr "Без"
+msgid "Miscellaneous"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#7
-msgctxt "DlgPrefPlaylistDlg#7"
-msgid "Miscellaneous"
-msgstr "Разни"
-
-#: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
 msgstr "Синхронизиране на ID3 тагове при промяна на песни"
 
-#: DlgPrefPlaylistDlg#9
+#: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
 msgstr "Повторно сканиране на библиотеката при пускане"
 
-#: DlgPrefPlaylistDlg#10
+#: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
 msgstr ""
 "Използване на относителни файлови местоположения при изнасяне на списъци с "
 "песни (ако е възможно)"
 
-#: DlgPrefPlaylistDlg#11
-msgid "iPod"
-msgstr "iPod"
-
-#: DlgPrefPlaylistDlg#12
-msgid "iPod mountpoint"
-msgstr "Точка за монтиране на iPod"
-
-#: DlgPrefPlaylistDlg#13
+#: DlgPrefPlaylistDlg#10
 msgid "Browse..."
 msgstr "Избор..."
 
-#: DlgPrefPlaylistDlg#14
-msgid "Detect"
-msgstr "Откриване"
-
-#: DlgPrefPlaylistDlg#15
-msgctxt "DlgPrefPlaylistDlg#15"
+#: DlgPrefPlaylistDlg#11
+msgctxt "DlgPrefPlaylistDlg#11"
 msgid "Library"
-msgstr "Библиотека"
+msgstr ""
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#12
 msgid "Music Directory:"
 msgstr "Папка с музика:"
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#13
 msgid "Built-in"
 msgstr "Вградени"
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#14
 msgid "Available Online..."
 msgstr "Налични онлайн..."
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#15
 msgid "Bundled Songs"
 msgstr "Включени песни"
 
-#: DlgPrefPlaylistDlg#20
+#: DlgPrefPlaylistDlg#16
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -1670,7 +1991,6 @@ msgid "http://www.mixxx.org"
 msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
-msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
 msgstr "Описание"
 
@@ -1888,8 +2208,9 @@ msgstr ""
 "</ul>"
 
 #: DlgPrefSoundDlg#5
+msgctxt "DlgPrefSoundDlg#5"
 msgid "Output"
-msgstr "Изход"
+msgstr ""
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
@@ -2069,55 +2390,60 @@ msgid "Powered by xwax"
 msgstr "с помощта на xwax"
 
 #: DlgPreferences#1
+msgid "Preferences"
+msgstr ""
+
+#: DlgPreferences#2
 msgid "Sound Hardware"
 msgstr "Звуков хардуер"
 
-#: DlgPreferences#2
-msgid "MIDI Controllers"
-msgstr "MIDI устройства"
-
 #: DlgPreferences#3
-msgctxt "DlgPreferences#3"
-msgid "Library"
-msgstr "Библиотека"
+msgid "Controllers"
+msgstr ""
 
 #: DlgPreferences#4
+msgctxt "DlgPreferences#4"
+msgid "Library"
+msgstr ""
+
+#: DlgPreferences#5
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: DlgPreferences#5
-msgid "Equalizers"
-msgstr "Тонкоректори (EQ)"
-
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
-msgid "Crossfader"
-msgstr "Плъзгач за смесване"
+msgid "Equalizers"
+msgstr ""
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
-msgid "Recording"
-msgstr "Записване"
+msgid "Crossfader"
+msgstr ""
 
 #: DlgPreferences#8
-msgid "Beat Detection"
+msgctxt "DlgPreferences#8"
+msgid "Recording"
 msgstr ""
 
 #: DlgPreferences#9
-msgctxt "DlgPreferences#9"
-msgid "BPM Detection"
-msgstr "Засичане на темпото"
+msgid "Beat Detection"
+msgstr ""
 
 #: DlgPreferences#10
+msgctxt "DlgPreferences#10"
+msgid "BPM Detection"
+msgstr ""
+
+#: DlgPreferences#11
 msgid "Normalization"
 msgstr "Нормализация"
 
-#: DlgPreferences#11
-msgctxt "DlgPreferences#11"
-msgid "Vinyl Control"
-msgstr "Контрол с грамофони"
-
 #: DlgPreferences#12
+msgctxt "DlgPreferences#12"
+msgid "Vinyl Control"
+msgstr ""
+
+#: DlgPreferences#13
 msgid "Live Broadcasting"
 msgstr "Живо излъчване"
 
@@ -2605,135 +2931,31 @@ msgstr ""
 msgid "Cancel"
 msgstr "Отказ"
 
-#: MidiInputMappingTableModel#1
-msgid "Midi Status Type"
-msgstr "Вид MIDI съобщение"
+#: MidiController#1
+msgid "MixxxControl not found"
+msgstr ""
 
-#: MidiInputMappingTableModel#2
-msgctxt "MidiInputMappingTableModel#2"
-msgid "Midi Note"
-msgstr "MIDI нота"
+#: MidiController#2
+msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
+msgstr ""
 
-#: MidiInputMappingTableModel#3
-msgctxt "MidiInputMappingTableModel#3"
-msgid "Midi Channel"
-msgstr "MIDI канал"
-
-#: MidiInputMappingTableModel#4
-msgctxt "MidiInputMappingTableModel#4"
-msgid "Control Group"
-msgstr "Група"
-
-#: MidiInputMappingTableModel#5
-msgctxt "MidiInputMappingTableModel#5"
-msgid "Control Value"
-msgstr "Функция"
-
-#: MidiInputMappingTableModel#6
-msgctxt "MidiInputMappingTableModel#6"
-msgid "Description"
-msgstr "Описание"
-
-#: MidiMapping#1
-msgid "MIDI script function not found"
-msgstr "MIDI скрипт функцията не бе намерена."
-
-#: MidiMapping#2
-msgid "The MIDI script function '%1' was not found in loaded scripts."
-msgstr "MIDI функцията '%1' не бе намерена в заредените скриптове."
-
-#: MidiMapping#3
+#: MidiController#3
 msgid ""
-"The MIDI message %1 %2 will not be bound.\n"
+"The MIDI output message 0x%1 0x%2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
-"MIDI съобщението %1 %2 няма да бъде насочено.\n"
-"(Натиснете по-долу за повече информация.)"
 
-#: MidiMapping#4
+#: MidiController#4
 msgid ""
-"* Check to see that the function name is spelled correctly in the mapping "
-"file (.xml) and script file (.js)\n"
+"* Check to see that the MixxxControl name is spelled correctly in the "
+"mapping file (.xml)\n"
 msgstr ""
-"* Уверете се, че името на функцията е написано правилно във файла с "
-"подредбата (.xml) и скриптовия файл (.js)\n"
 
-#: MidiMapping#5
+#: MidiController#5
 msgid ""
-"* Check to see that the script file name (.js) is spelled correctly in the "
-"mapping file (.xml)"
+"* Make sure the MixxxControl you're trying to use actually exists. Visit "
+"this wiki page for a complete list:"
 msgstr ""
-"* Уверете се, че името на скриптовия файл (.js) е написано правилно във "
-"файла с подредбата (.xml)"
-
-#: MidiOutputMappingTableModel#1
-msgid "Midi Status"
-msgstr "MIDI статус"
-
-#: MidiOutputMappingTableModel#2
-msgctxt "MidiOutputMappingTableModel#2"
-msgid "Midi Note"
-msgstr "MIDI нота"
-
-#: MidiOutputMappingTableModel#3
-msgctxt "MidiOutputMappingTableModel#3"
-msgid "Midi Channel"
-msgstr "MIDI канал"
-
-#: MidiOutputMappingTableModel#4
-msgctxt "MidiOutputMappingTableModel#4"
-msgid "Control Group"
-msgstr "Група"
-
-#: MidiOutputMappingTableModel#5
-msgctxt "MidiOutputMappingTableModel#5"
-msgid "Control Value"
-msgstr "Функция"
-
-#: MidiOutputMappingTableModel#6
-msgctxt "MidiOutputMappingTableModel#6"
-msgid "Description"
-msgstr "Описание"
-
-#: MidiOutputMappingTableModel#7
-msgid "Threshold Min"
-msgstr "Минимален праг"
-
-#: MidiOutputMappingTableModel#8
-msgid "Threshold Max"
-msgstr "Максимален праг"
-
-#: MidiScriptEngine#1
-msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr "Неочаквана грешка на ред %1 във файл %2: %3"
-
-#: MidiScriptEngine#2
-msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr "Неочаквана грешка на ред %1 в този код: %2"
-
-#: MidiScriptEngine#3
-msgid "MIDI script error"
-msgstr "Грешка в MIDI скрипт"
-
-#: MidiScriptEngine#4
-msgid "A MIDI control you just used is not working properly."
-msgstr "MIDI копче, което току що използвахте не работи правилно."
-
-#: MidiScriptEngine#5
-msgid ""
-"<html>(The MIDI script code needs to be fixed.)<br>For now, you "
-"can:<ul><li>Ignore this error for this session but you may experience "
-"erratic behavior</li><li>Try to recover by resetting your "
-"controller</li></ul></html>"
-msgstr ""
-"<html>(MIDI скрипт кодът трябва да се поправи.)<br>Можете "
-"да:<ul><li>игнорирате тази грешка приемайки възможността за неправилно "
-"поведение или</li><li>да се опитате да поправите грешката като рестартирате "
-"Вашето MIDI устройство</li></ul></html>"
-
-#: MidiStatusDelegate#1
-msgid "Unknown"
-msgstr "Неизвестно"
 
 #: MixxxApp#1
 msgid "Mixxx "
@@ -3164,8 +3386,9 @@ msgid "Vinyl Control"
 msgstr "Контрол с грамофони"
 
 #: QObject#6
+msgctxt "QObject#6"
 msgid "Microphone"
-msgstr "Микрофон"
+msgstr ""
 
 #: QObject#7
 msgid "Passthrough"
@@ -3298,303 +3521,6 @@ msgstr ""
 "Грешка при зареждането на Traktor библиотеката. Някои от вашите Traktor "
 "песни или плейлисти може да не са заредени."
 
-#: Ui#1
-msgctxt "Ui#1"
-msgid "Position"
-msgstr "Позиция"
-
-#: Ui#2
-msgid "Remaining"
-msgstr "Остава"
-
-#: Ui#3
-msgctxt "Ui#3"
-msgid "On"
-msgstr "Вкл."
-
-#: Ui#4
-msgctxt "Ui#4"
-msgid "Off"
-msgstr "Изкл."
-
-#: Ui#5
-msgid "Don't load tracks into a playing deck"
-msgstr "Да не се зареждат песни в свирещ дек"
-
-#: Ui#6
-msgid "Load tracks into playing decks"
-msgstr "Зареждане на песни в свирещ дек"
-
-#: Ui#7
-msgid "CDJ Mode"
-msgstr "Режим CD плеър"
-
-#: Ui#8
-msgctxt "Ui#8"
-msgid "Simple"
-msgstr ""
-
-#: Ui#9
-msgid "Mixxx Detected a WVGA Screen"
-msgstr "Mixxx разпозна WVGA екран"
-
-#: Ui#10
-msgid "Mixxx has detected that your screen has a resolution of "
-msgstr "Mixxx засече, че екранът ви има разделителна способност от "
-
-#: Ui#11
-msgid ""
-"The only skin compatiable with this size display is Outline800x480-WVGA.  "
-"Would you like to use that skin?"
-msgstr ""
-"Единствената кожа съвместима с този размер на дисплея е Outline800x480-WVGA. "
-"Бихте ли искали да я използвате?"
-
-#: Ui#12
-msgid "Preferences"
-msgstr ""
-
-#: Ui#13
-msgctxt "Ui#13"
-msgid "Crossfader"
-msgstr "Кросфейдър"
-
-#: Ui#14
-msgid "Master volume"
-msgstr "Сила на звука"
-
-#: Ui#15
-msgid "Master balance"
-msgstr "Баланс"
-
-#: Ui#16
-msgid "Headphones volume"
-msgstr "Сила на звука на слушалките"
-
-#: Ui#17
-msgid "Headphones mix (pre/main)"
-msgstr "Смесване в слушалките"
-
-#: Ui#18
-msgid "Cue button for Player %1"
-msgstr "CUE бутон за плеър %1"
-
-#: Ui#19
-msgid "Play button for Player %1"
-msgstr "PLAY бутон за плеър %1"
-
-#: Ui#20
-msgid "Fast rewind button for Player %1"
-msgstr "Бутон за превъртане назад в плеър %1"
-
-#: Ui#21
-msgid "Fast forward button for Player %1"
-msgstr "Бутон за превъртане напред в плеър %1"
-
-#: Ui#22
-msgid "Play reverse button for Player %1"
-msgstr "Бутон за сменяне на посоката на плеър %1"
-
-#: Ui#23
-msgid "Headphone listen button for Player %1"
-msgstr "Бутон за преслушване на плеър %1"
-
-#: Ui#24
-msgid "Beat sync button for Player %1"
-msgstr "Бутон за тактово синхронизиране на плеър %1"
-
-#: Ui#25
-msgid "BPM tap button for Player %1"
-msgstr "Бутон за щракане в такт за плеър %1"
-
-#: Ui#26
-msgid "Keylock button for Player %1"
-msgstr "Бутон за заключване на тоналността на плеър %1"
-
-#: Ui#27
-msgid "Pitch control slider for Player %1"
-msgstr "Плъзгач за контрол на тон/скорост на плеър %1"
-
-#: Ui#28
-msgid "Flanger effect button for Player %1"
-msgstr "Бутон за включване на флейнджър в плеър %1"
-
-#: Ui#29
-msgid "Channel %1 volume fader"
-msgstr "Плъзгач за сила на звука в канал %1"
-
-#: Ui#30
-msgid "Gain knob for Channel %1"
-msgstr "Плъзгач за усилване в канал %1"
-
-#: Ui#31
-msgid "High EQ knob for Channel %1"
-msgstr "Копче за високи тонове на канал %1"
-
-#: Ui#32
-msgid "Mid EQ knob for Channel %1"
-msgstr "Копче за средни тонове на канал %1"
-
-#: Ui#33
-msgid "Low EQ knob for Channel %1"
-msgstr "Копче за баси на канал %1"
-
-#: Ui#34
-msgid "Loop In button for Player %1"
-msgstr "Бутон за начална точка на лууп в плеър %1"
-
-#: Ui#35
-msgid "Loop Out button for Player %1"
-msgstr "Бутон за крайна точка на лууп в плеър %1"
-
-#: Ui#36
-msgid "Reloop / Exit button for Player %1"
-msgstr "Бутон за повторение/изход от лууп в плеър %1"
-
-#: Ui#37
-msgid "Setup a loop over 4 beats for Player %1"
-msgstr "Включване на 4-тактов лууп в плеър %1"
-
-#: Ui#38
-msgid "Halves the current loop's length for Player %1"
-msgstr "Намаляне с 1/2 дължината на лууп в плеър %1"
-
-#: Ui#39
-msgid "Doubles the current loop's length for Player %1"
-msgstr "Удвояване дължината на лууп в плеър %1"
-
-#: Ui#40
-msgid "Hotcue 1 button for Player %1"
-msgstr "Бутон за 1-ва позиция на плеър %1"
-
-#: Ui#41
-msgid "Hotcue 2 button for Player %1"
-msgstr "Бутон за 2-ра позиция на плеър %1"
-
-#: Ui#42
-msgid "Hotcue 3 button for Player %1"
-msgstr "Бутон за 3-та позиция на плеър %1"
-
-#: Ui#43
-msgid "Hotcue 4 button for Player %1"
-msgstr "Бутон за 4-та позиция на плеър %1"
-
-#: Ui#44
-msgid "Hotcue 1 delete button for Player %1"
-msgstr "Бутон за премахване на 1-ва позиция на плеър %1"
-
-#: Ui#45
-msgid "Hotcue 2 delete button for Player %1"
-msgstr "Бутон за премахване на 2-ра позиция на плеър %1"
-
-#: Ui#46
-msgid "Hotcue 3 delete button for Player %1"
-msgstr "Бутон за премахване на 3-та позиция на плеър %1"
-
-#: Ui#47
-msgid "Hotcue 4 delete button for Player %1"
-msgstr "Бутон за премахване на 4-та позиция на плеър %1"
-
-#: Ui#48
-msgid "Play button for Sampler %1"
-msgstr "PLAY бутон за семплер %1"
-
-#: Ui#49
-msgid "Gain knob for Sampler %1"
-msgstr "Копче за усилване на семплер %1"
-
-#: Ui#50
-msgid "Headphone listen button for Sampler %1"
-msgstr "Бутон за преслушване на семплер %1"
-
-#: Ui#51
-msgid "BPM tap button for Sampler %1"
-msgstr "Бутон за щракване в такт за семплер %1"
-
-#: Ui#52
-msgid "Keylock button for Sampler %1"
-msgstr "Бутон за заключване на тон в семплер %1"
-
-#: Ui#53
-msgid "Pitch control slider for Sampler %1"
-msgstr "Плъзгач за контрол на тон/скорост в семплер %1"
-
-#: Ui#54
-msgid "Hotcue 1 button for Sampler %1"
-msgstr "Бутон за 1-ва позиция в семплер %1"
-
-#: Ui#55
-msgid "Hotcue 2 button for Sampler %1"
-msgstr "Бутон за 2-ра позиция в семплер %1"
-
-#: Ui#56
-msgid "Hotcue 3 button for Sampler %1"
-msgstr "Бутон за 3-та позиция в семплер %1"
-
-#: Ui#57
-msgid "Hotcue 4 button for Sampler %1"
-msgstr "Бутон за 4-та позиция в семплер %1"
-
-#: Ui#58
-msgid "Hotcue 1 delete button for Sampler %1"
-msgstr "Бутон за премахване на 1-ва позиция в семплер %1"
-
-#: Ui#59
-msgid "Hotcue 2 delete button for Sampler %1"
-msgstr "Бутон за премахване на 2-ра позиция в семплер %1"
-
-#: Ui#60
-msgid "Hotcue 3 delete button for Sampler %1"
-msgstr "Бутон за премахване на 3-та позиция в семплер %1"
-
-#: Ui#61
-msgid "Hotcue 4 delete button for Sampler %1"
-msgstr "Бутон за премахване на 4-та позиция в семплер %1"
-
-#: Ui#62
-msgid "Switch to the next view (library, playlist..)"
-msgstr "Към следващия изглед (библиотека, списък...)"
-
-#: Ui#63
-msgid "Switch to the previous view (library, playlist..)"
-msgstr "Към предишния изглед (библиотека, списък...)"
-
-#: Ui#64
-msgid "Scroll to next track in library/playlist"
-msgstr "Маркиране на следващата песен в списъка"
-
-#: Ui#65
-msgid "Scroll to previous track in library/playlist"
-msgstr "Маркиране на предишната песен в списъка"
-
-#: Ui#66
-msgid "Load selected track into first stopped player"
-msgstr "Зареждане на избраната песен в първия спрян плеър"
-
-#: Ui#67
-msgid "Load selected track into Player %1"
-msgstr "Зареждане на избраната песен в плеър %1"
-
-#: Ui#68
-msgid "Adjusts the wavelength of the flange effect"
-msgstr "Регулира дължината на вълната за флейнджър ефекта"
-
-#: Ui#69
-msgid "Adjusts the intensity of the flange effect"
-msgstr "Регулира интензивността на флейнджър ефекта"
-
-#: Ui#70
-msgid "Adjusts the phase delay of the flange effect"
-msgstr "Регулира фазовото забавяне на флейнджър ефекта"
-
-#: Ui#71
-msgid "Microphone on/off"
-msgstr "Вкл./изкл. микрофон"
-
-#: Ui#72
-msgid "Microphone volume"
-msgstr "Сила на звука на микрофона"
-
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
 msgstr "Ctrl+F"
@@ -3657,8 +3583,9 @@ msgid "Load to Deck %1"
 msgstr "Зареждане в плеър %1"
 
 #: WTrackTableView#13
+msgctxt "WTrackTableView#13"
 msgid "Sampler %1"
-msgstr "Семплер %1"
+msgstr ""
 
 #: WTrackTableView#14
 msgid ""
@@ -3774,6 +3701,9 @@ msgstr "Показване или скриване на колони."
 #~ msgid "Alt+P"
 #~ msgstr "Alt+P"
 
+#~ msgid "Skip"
+#~ msgstr "Пропускане"
+
 #~ msgctxt "DlgBpmTapDlg#20"
 #~ msgid "Artist:"
 #~ msgstr "Изпълнител:"
@@ -3802,15 +3732,85 @@ msgstr "Показване или скриване на колони."
 #~ msgid "File Type:"
 #~ msgstr "Вид на файла:"
 
+#~ msgid "Begin"
+#~ msgstr "Начало"
+
+#~ msgid "Next"
+#~ msgstr "Следваща"
+
+#~ msgid "Previous"
+#~ msgstr "Предишна"
+
+#~ msgid "Finito!"
+#~ msgstr "Готово!"
+
 #~ msgctxt "DlgPrefBPMDlg#10"
 #~ msgid "Edit"
 #~ msgstr "Редактиране"
 
+#~ msgctxt "DlgPrefControls#14"
+#~ msgid "Information"
+#~ msgstr "Информация"
+
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kHz"
 
-#~ msgid "Description"
-#~ msgstr "Описание"
+#~ msgctxt "DlgPrefMidiBindings#1"
+#~ msgid "None"
+#~ msgstr "Без"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#1"
+#~ msgid "Dialog"
+#~ msgstr "Диалогов прозорец"
+
+#~ msgid "Export"
+#~ msgstr "Изнасяне"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#8"
+#~ msgid "Add"
+#~ msgstr "Добавяне"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#9"
+#~ msgid "Remove"
+#~ msgstr "Премахване"
+
+#~ msgctxt "DlgPrefNoMidiDlg#1"
+#~ msgid "Form3"
+#~ msgstr "Form3"
+
+#~ msgctxt "DlgPrefPlaylistDlg#1"
+#~ msgid "Form3"
+#~ msgstr "Form3"
+
+#~ msgid "Choose iPod mount point"
+#~ msgstr "Изберете точка за монтиране на iPod-а"
+
+#~ msgid " and end detection. \n"
+#~ msgstr " и да приключите засичането. \n"
+
+#~ msgid " or to continue to search for other iPods. \n"
+#~ msgstr " или да продължине да търсите за други iPod-и. \n"
+
+#~ msgid "Choose Yes to use the newly found iPod @ "
+#~ msgstr "Изберете Да, за да изберете новооткрития iPod @ "
+
+#~ msgctxt "DlgPrefPlaylistDlg#6"
+#~ msgid "None"
+#~ msgstr "Без"
+
+#~ msgid "iPod"
+#~ msgstr "iPod"
+
+#~ msgctxt "DlgPrefPlaylistDlg#7"
+#~ msgid "Miscellaneous"
+#~ msgstr "Разни"
+
+#~ msgid "Detect"
+#~ msgstr "Откриване"
+
+#~ msgctxt "DlgPrefPlaylistDlg#15"
+#~ msgid "Library"
+#~ msgstr "Библиотека"
 
 #~ msgid "BPM Editor (Click to Expand)"
 #~ msgstr "Редактор на темпото (Натиснете за разгъване)"
@@ -3825,15 +3825,68 @@ msgstr "Показване или скриване на колони."
 #~ msgid "BPM Range:"
 #~ msgstr "Обхват на темпото:"
 
+#~ msgctxt "DlgMidiLearning#4"
+#~ msgid "MIDI Learning Wizard"
+#~ msgstr "Помощник за научаване на MIDI"
+
+#~ msgid "Welcome to the MIDI Learning Wizard"
+#~ msgstr "Добре дошли в помощника за научаване на MIDI"
+
 #~ msgid "Play Time:"
 #~ msgstr "Време на възпроизвеждане:"
+
+#~ msgid "MIDI learning complete!"
+#~ msgstr "Научаването на MIDI приключи!"
+
+#~ msgid ""
+#~ "Are you sure you'd like to load the %1 mapping?\n"
+#~ "This will overwrite your existing MIDI mapping."
+#~ msgstr ""
+#~ "Сигурни ли сте, че желаете да заредите подредбата %1?\n"
+#~ "Тя ще презапише текущата подредба на MIDI."
+
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
+#~ "roubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">О"
+#~ "тстраняване на проблеми</a>"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#10"
+#~ msgid "MIDI Learning Wizard"
+#~ msgstr "Помощник за научаване на MIDI"
+
+#~ msgid "MIDI Input"
+#~ msgstr "MIDI вход"
+
+#~ msgid "No MIDI devices available"
+#~ msgstr "Няма налични MIDI устройства"
+
+#~ msgid "MIDI Output"
+#~ msgstr "MIDI изход"
+
+#~ msgid "iPod mountpoint"
+#~ msgstr "Точка за монтиране на iPod"
+
+#~ msgid "Output"
+#~ msgstr "Изход"
 
 #~ msgid "Reset to Defaults"
 #~ msgstr "Възстановяване на стандартните настройки"
 
+#~ msgctxt "DlgPreferences#7"
+#~ msgid "Recording"
+#~ msgstr "Записване"
+
 #~ msgctxt "DlgPreferences#8"
 #~ msgid "BPM Detection"
 #~ msgstr "Засичане на темпото"
+
+#~ msgctxt "DlgPreferences#3"
+#~ msgid "Library"
+#~ msgstr "Библиотека"
 
 #~ msgid "Recently Added"
 #~ msgstr "Последно добавени"
@@ -3904,6 +3957,9 @@ msgstr "Показване или скриване на колони."
 
 #~ msgid "Mixxx: Privacy Policy"
 #~ msgstr "Mixxx: Политика на поверителността"
+
+#~ msgid "Unknown"
+#~ msgstr "Неизвестно"
 
 #~ msgctxt "MixxxApp#9"
 #~ msgid "Choose music library directory"
@@ -4064,6 +4120,9 @@ msgstr "Показване или скриване на колони."
 #~ msgid "Unlock"
 #~ msgstr "Отключване"
 
+#~ msgid "Microphone"
+#~ msgstr "Микрофон"
+
 #~ msgctxt "ScriptStudio#3"
 #~ msgid "Edit"
 #~ msgstr "Редактиране"
@@ -4091,6 +4150,22 @@ msgstr "Показване или скриване на колони."
 
 #~ msgid "New Macro..."
 #~ msgstr "Нов макрос..."
+
+#~ msgctxt "Ui#1"
+#~ msgid "Position"
+#~ msgstr "Позиция"
+
+#~ msgctxt "Ui#3"
+#~ msgid "On"
+#~ msgstr "Вкл."
+
+#~ msgctxt "Ui#4"
+#~ msgid "Off"
+#~ msgstr "Изкл."
+
+#~ msgctxt "Ui#13"
+#~ msgid "Crossfader"
+#~ msgstr "Кросфейдър"
 
 #~ msgctxt "Ui#12"
 #~ msgid "Preferences"
@@ -4120,6 +4195,12 @@ msgstr "Показване или скриване на колони."
 #~ "<html>Mixxx не можа да зареди или намери lame MP3 енкодер. <p>Моля, "
 #~ "инсталирайте libmp3lame (известен също като lame) и проверете дали "
 #~ "/usr/local/lib/libmp3lame.dylib съществува на вашата система </html>"
+
+#~ msgid "Threshold Min"
+#~ msgstr "Минимален праг"
+
+#~ msgid "Threshold Max"
+#~ msgstr "Максимален праг"
 
 #~ msgctxt "BaseSqlTableModel#17"
 #~ msgid "Key"
@@ -4181,13 +4262,207 @@ msgstr "Показване или скриване на колони."
 #~ msgid "BPM Range"
 #~ msgstr "Диапазон (BPM)"
 
+#~ msgid "Successfully mapped to: "
+#~ msgstr "Успешно насочване към: "
+
+#~ msgid "Please tweak the control for:"
+#~ msgstr "Моля използвайте копчето за:"
+
+#~ msgid ""
+#~ "This wizard allows you to easily map the controls on your MIDI controller to "
+#~ "Mixxx's controls."
+#~ msgstr ""
+#~ "Помощникът позволява насочване на копчетата на MIDI регулатор към бутоните "
+#~ "на Mixxx."
+
+#~ msgid "Mixxx Control"
+#~ msgstr "Mixxx функция"
+
+#~ msgid "Press spacebar to proceed or skip."
+#~ msgstr "Натиснете интервала за продължаване или пропускане."
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+#~ "font-weight:400; font-style:normal;\">\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This "
+#~ "wizard can be re-run at any time.</p>\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
+#~ "go spin some beats!</p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+#~ "font-weight:400; font-style:normal;\">\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-"
+#~ "indent:0px;\">Помощникът може да бъде пуснат отново по всяко време.</p>\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />А "
+#~ "сега можете да пускате с вашето MIDI устройство!</p></body></html>"
+
+#~ msgid "Select Control Group"
+#~ msgstr "Изберете категория на желаната функция"
+
+#~ msgid "Select Control"
+#~ msgstr "Изберете функция"
+
+#~ msgid "Preset Files (*.midi.xml)"
+#~ msgstr "Файлове за подредба (*.midi.xml)"
+
+#~ msgid "Export Mixxx MIDI Bindings"
+#~ msgstr "Изнасяне на MIDI настройки"
+
+#~ msgid ""
+#~ "Your settings must be applied before starting the MIDI learning wizard.\n"
+#~ "Apply settings and continue?"
+#~ msgstr ""
+#~ "Настройките Ви трябва да бъдат приложени преди да се пусне помощника за "
+#~ "научаване на MIDI.\n"
+#~ "Прилагане на настройките и продължаване?"
+
+#~ msgid "Overwrite existing mapping?"
+#~ msgstr "Презаписване на съществуващата подредба?"
+
+#~ msgid "Your Device Name"
+#~ msgstr "Името на Вашето устройство"
+
+#~ msgid "Output:"
+#~ msgstr "Изходни сигнали:"
+
+#~ msgid "Choose No to use the existing iPod @ "
+#~ msgstr "Изберете Не, за да използвате съществуващия iPod @ "
+
+#~ msgid ""
+#~ "Mixxx has detected another iPod. \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mixxx намери още един iPod. \n"
+#~ "\n"
+
+#~ msgid "Multiple iPods Detected"
+#~ msgstr "Намерени са няколко iPod-а"
+
 #~ msgctxt "DlgPrefShoutcastDlg#2"
 #~ msgid "Enable live broadcasting"
 #~ msgstr "Включване на предаване на живо"
 
+#~ msgctxt "DlgPrefShoutcastDlg#23"
+#~ msgid "Description"
+#~ msgstr "Описание"
+
+#~ msgctxt "DlgPreferences#6"
+#~ msgid "Crossfader"
+#~ msgstr "Плъзгач за смесване"
+
+#~ msgid "MIDI Controllers"
+#~ msgstr "MIDI устройства"
+
+#~ msgid "Equalizers"
+#~ msgstr "Тонкоректори (EQ)"
+
 #~ msgctxt "DlgPreferences#10"
 #~ msgid "Vinyl Control"
 #~ msgstr "Контрол с грамофони"
+
+#~ msgctxt "MidiInputMappingTableModel#6"
+#~ msgid "Description"
+#~ msgstr "Описание"
+
+#~ msgctxt "MidiInputMappingTableModel#4"
+#~ msgid "Control Group"
+#~ msgstr "Група"
+
+#~ msgctxt "MidiInputMappingTableModel#2"
+#~ msgid "Midi Note"
+#~ msgstr "MIDI нота"
+
+#~ msgid "Midi Status Type"
+#~ msgstr "Вид MIDI съобщение"
+
+#~ msgctxt "MidiInputMappingTableModel#3"
+#~ msgid "Midi Channel"
+#~ msgstr "MIDI канал"
+
+#~ msgctxt "MidiInputMappingTableModel#5"
+#~ msgid "Control Value"
+#~ msgstr "Функция"
+
+#~ msgctxt "MidiOutputMappingTableModel#4"
+#~ msgid "Control Group"
+#~ msgstr "Група"
+
+#~ msgctxt "MidiOutputMappingTableModel#3"
+#~ msgid "Midi Channel"
+#~ msgstr "MIDI канал"
+
+#~ msgid "Midi Status"
+#~ msgstr "MIDI статус"
+
+#~ msgid ""
+#~ "* Check to see that the function name is spelled correctly in the mapping "
+#~ "file (.xml) and script file (.js)\n"
+#~ msgstr ""
+#~ "* Уверете се, че името на функцията е написано правилно във файла с "
+#~ "подредбата (.xml) и скриптовия файл (.js)\n"
+
+#~ msgid ""
+#~ "* Check to see that the script file name (.js) is spelled correctly in the "
+#~ "mapping file (.xml)"
+#~ msgstr ""
+#~ "* Уверете се, че името на скриптовия файл (.js) е написано правилно във "
+#~ "файла с подредбата (.xml)"
+
+#~ msgid "The MIDI script function '%1' was not found in loaded scripts."
+#~ msgstr "MIDI функцията '%1' не бе намерена в заредените скриптове."
+
+#~ msgid ""
+#~ "The MIDI message %1 %2 will not be bound.\n"
+#~ "(Click Show Details for hints.)"
+#~ msgstr ""
+#~ "MIDI съобщението %1 %2 няма да бъде насочено.\n"
+#~ "(Натиснете по-долу за повече информация.)"
+
+#~ msgctxt "MidiOutputMappingTableModel#2"
+#~ msgid "Midi Note"
+#~ msgstr "MIDI нота"
+
+#~ msgctxt "MidiOutputMappingTableModel#5"
+#~ msgid "Control Value"
+#~ msgstr "Функция"
+
+#~ msgid "MIDI script function not found"
+#~ msgstr "MIDI скрипт функцията не бе намерена."
+
+#~ msgctxt "MidiOutputMappingTableModel#6"
+#~ msgid "Description"
+#~ msgstr "Описание"
+
+#~ msgid ""
+#~ "<html>(The MIDI script code needs to be fixed.)<br>For now, you "
+#~ "can:<ul><li>Ignore this error for this session but you may experience "
+#~ "erratic behavior</li><li>Try to recover by resetting your "
+#~ "controller</li></ul></html>"
+#~ msgstr ""
+#~ "<html>(MIDI скрипт кодът трябва да се поправи.)<br>Можете "
+#~ "да:<ul><li>игнорирате тази грешка приемайки възможността за неправилно "
+#~ "поведение или</li><li>да се опитате да поправите грешката като рестартирате "
+#~ "Вашето MIDI устройство</li></ul></html>"
+
+#~ msgid "A MIDI control you just used is not working properly."
+#~ msgstr "MIDI копче, което току що използвахте не работи правилно."
+
+#~ msgid "MIDI script error"
+#~ msgstr "Грешка в MIDI скрипт"
 
 #~ msgid ""
 #~ "Mixxx's development is driven by community feedback.  At your discretion, "
@@ -4347,5 +4622,161 @@ msgstr "Показване или скриване на колони."
 #~ msgid "Simple"
 #~ msgstr "Опростен"
 
+#~ msgid "Headphones mix (pre/main)"
+#~ msgstr "Смесване в слушалките"
+
+#~ msgid "Headphones volume"
+#~ msgstr "Сила на звука на слушалките"
+
+#~ msgid "Cue button for Player %1"
+#~ msgstr "CUE бутон за плеър %1"
+
+#~ msgid "Flanger effect button for Player %1"
+#~ msgstr "Бутон за включване на флейнджър в плеър %1"
+
+#~ msgid "Keylock button for Player %1"
+#~ msgstr "Бутон за заключване на тоналността на плеър %1"
+
+#~ msgid "Pitch control slider for Player %1"
+#~ msgstr "Плъзгач за контрол на тон/скорост на плеър %1"
+
+#~ msgid "Fast rewind button for Player %1"
+#~ msgstr "Бутон за превъртане назад в плеър %1"
+
+#~ msgid "Fast forward button for Player %1"
+#~ msgstr "Бутон за превъртане напред в плеър %1"
+
+#~ msgid "Play button for Player %1"
+#~ msgstr "PLAY бутон за плеър %1"
+
+#~ msgid "Beat sync button for Player %1"
+#~ msgstr "Бутон за тактово синхронизиране на плеър %1"
+
+#~ msgid "BPM tap button for Player %1"
+#~ msgstr "Бутон за щракане в такт за плеър %1"
+
+#~ msgid "Play reverse button for Player %1"
+#~ msgstr "Бутон за сменяне на посоката на плеър %1"
+
+#~ msgid "Headphone listen button for Player %1"
+#~ msgstr "Бутон за преслушване на плеър %1"
+
+#~ msgid "Reloop / Exit button for Player %1"
+#~ msgstr "Бутон за повторение/изход от лууп в плеър %1"
+
+#~ msgid "Loop Out button for Player %1"
+#~ msgstr "Бутон за крайна точка на лууп в плеър %1"
+
+#~ msgid "Loop In button for Player %1"
+#~ msgstr "Бутон за начална точка на лууп в плеър %1"
+
+#~ msgid "Low EQ knob for Channel %1"
+#~ msgstr "Копче за баси на канал %1"
+
+#~ msgid "Mid EQ knob for Channel %1"
+#~ msgstr "Копче за средни тонове на канал %1"
+
+#~ msgid "Channel %1 volume fader"
+#~ msgstr "Плъзгач за сила на звука в канал %1"
+
+#~ msgid "Gain knob for Channel %1"
+#~ msgstr "Плъзгач за усилване в канал %1"
+
+#~ msgid "High EQ knob for Channel %1"
+#~ msgstr "Копче за високи тонове на канал %1"
+
+#~ msgid "Setup a loop over 4 beats for Player %1"
+#~ msgstr "Включване на 4-тактов лууп в плеър %1"
+
+#~ msgid "Halves the current loop's length for Player %1"
+#~ msgstr "Намаляне с 1/2 дължината на лууп в плеър %1"
+
+#~ msgid "Doubles the current loop's length for Player %1"
+#~ msgstr "Удвояване дължината на лууп в плеър %1"
+
+#~ msgid "Play button for Sampler %1"
+#~ msgstr "PLAY бутон за семплер %1"
+
+#~ msgid "Pitch control slider for Sampler %1"
+#~ msgstr "Плъзгач за контрол на тон/скорост в семплер %1"
+
+#~ msgid "BPM tap button for Sampler %1"
+#~ msgstr "Бутон за щракване в такт за семплер %1"
+
+#~ msgid "Keylock button for Sampler %1"
+#~ msgstr "Бутон за заключване на тон в семплер %1"
+
+#~ msgid "Gain knob for Sampler %1"
+#~ msgstr "Копче за усилване на семплер %1"
+
+#~ msgid "Headphone listen button for Sampler %1"
+#~ msgstr "Бутон за преслушване на семплер %1"
+
+#~ msgid "Load selected track into Player %1"
+#~ msgstr "Зареждане на избраната песен в плеър %1"
+
+#~ msgid "Adjusts the wavelength of the flange effect"
+#~ msgstr "Регулира дължината на вълната за флейнджър ефекта"
+
+#~ msgid "Adjusts the intensity of the flange effect"
+#~ msgstr "Регулира интензивността на флейнджър ефекта"
+
+#~ msgid "Adjusts the phase delay of the flange effect"
+#~ msgstr "Регулира фазовото забавяне на флейнджър ефекта"
+
+#~ msgid "Sampler %1"
+#~ msgstr "Семплер %1"
+
 #~ msgid "Add to Auto DJ Queue"
 #~ msgstr "Добавяне към опашката на Авто DJ"
+
+#~ msgid "Hotcue 1 button for Player %1"
+#~ msgstr "Бутон за 1-ва позиция на плеър %1"
+
+#~ msgid "Apply MIDI device settings?"
+#~ msgstr "Да се приложат ли настройките за MIDI устройството?"
+
+#~ msgid "Hotcue 2 button for Player %1"
+#~ msgstr "Бутон за 2-ра позиция на плеър %1"
+
+#~ msgid "Hotcue 3 button for Player %1"
+#~ msgstr "Бутон за 3-та позиция на плеър %1"
+
+#~ msgid "Hotcue 4 button for Player %1"
+#~ msgstr "Бутон за 4-та позиция на плеър %1"
+
+#~ msgid "Hotcue 3 button for Sampler %1"
+#~ msgstr "Бутон за 3-та позиция в семплер %1"
+
+#~ msgid "Hotcue 2 button for Sampler %1"
+#~ msgstr "Бутон за 2-ра позиция в семплер %1"
+
+#~ msgid "Hotcue 1 button for Sampler %1"
+#~ msgstr "Бутон за 1-ва позиция в семплер %1"
+
+#~ msgid "Hotcue 2 delete button for Sampler %1"
+#~ msgstr "Бутон за премахване на 2-ра позиция в семплер %1"
+
+#~ msgid "Hotcue 1 delete button for Sampler %1"
+#~ msgstr "Бутон за премахване на 1-ва позиция в семплер %1"
+
+#~ msgid "Hotcue 4 button for Sampler %1"
+#~ msgstr "Бутон за 4-та позиция в семплер %1"
+
+#~ msgid "Hotcue 2 delete button for Player %1"
+#~ msgstr "Бутон за премахване на 2-ра позиция на плеър %1"
+
+#~ msgid "Hotcue 3 delete button for Player %1"
+#~ msgstr "Бутон за премахване на 3-та позиция на плеър %1"
+
+#~ msgid "Hotcue 4 delete button for Player %1"
+#~ msgstr "Бутон за премахване на 4-та позиция на плеър %1"
+
+#~ msgid "Hotcue 1 delete button for Player %1"
+#~ msgstr "Бутон за премахване на 1-ва позиция на плеър %1"
+
+#~ msgid "Hotcue 4 delete button for Sampler %1"
+#~ msgstr "Бутон за премахване на 4-та позиция в семплер %1"
+
+#~ msgid "Hotcue 3 delete button for Sampler %1"
+#~ msgstr "Бутон за премахване на 3-та позиция в семплер %1"

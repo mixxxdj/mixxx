@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-04-25 10:54-0400\n"
+"POT-Creation-Date: 2012-04-29 01:43-0400\n"
 "PO-Revision-Date: 2012-02-23 19:31+0000\n"
 "Last-Translator: Rikard Edgren <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-04-26 04:38+0000\n"
-"X-Generator: Launchpad (build 15149)\n"
+"X-Launchpad-Export-Date: 2012-04-30 04:38+0000\n"
+"X-Generator: Launchpad (build 15171)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -343,6 +343,81 @@ msgstr ""
 msgid "Could not update file metadata."
 msgstr "Uppdatering av metadatan misslyckades"
 
+#: ControllerEngine#1
+msgid "Uncaught exception at line %1 in file %2: %3"
+msgstr ""
+
+#: ControllerEngine#2
+msgid "Uncaught exception at line %1 in passed code: %2"
+msgstr ""
+
+#: ControllerEngine#3
+msgid "Controller script error"
+msgstr ""
+
+#: ControllerEngine#4
+msgid "A control you just used is not working properly."
+msgstr ""
+
+#: ControllerEngine#5
+msgid ""
+"<html>(The script code needs to be fixed.)<br>For now, you "
+"can:<ul><li>Ignore this error for this session but you may experience "
+"erratic behavior</li><li>Try to recover by resetting your "
+"controller</li></ul></html>"
+msgstr ""
+
+#: ControllerMappingDlg#1
+msgctxt "ControllerMappingDlg#1"
+msgid "Dialog"
+msgstr ""
+
+#: ControllerMappingDlg#2
+msgctxt "ControllerMappingDlg#2"
+msgid "Input"
+msgstr ""
+
+#: ControllerMappingDlg#3
+msgid ""
+"The below box is under construction and will remain empty in this version of "
+"Mixxx."
+msgstr ""
+
+#: ControllerMappingDlg#4
+msgid "Controls"
+msgstr "Kontroller"
+
+#: ControllerMappingDlg#5
+msgctxt "ControllerMappingDlg#5"
+msgid "Add"
+msgstr ""
+
+#: ControllerMappingDlg#6
+msgctxt "ControllerMappingDlg#6"
+msgid "Remove"
+msgstr ""
+
+#: ControllerMappingDlg#7
+msgid "Learning Wizard"
+msgstr ""
+
+#: ControllerMappingDlg#8
+msgid "Clear all"
+msgstr ""
+
+#: ControllerMappingDlg#9
+msgctxt "ControllerMappingDlg#9"
+msgid "Output"
+msgstr ""
+
+#: ControllerMappingDlg#10
+msgid "Outputs"
+msgstr "Utgångar"
+
+#: ControllerMappingDlg#11
+msgid "Clear All"
+msgstr "Rensa allt"
+
 #: CrateFeature#1
 msgid "New Crate"
 msgstr "Låda"
@@ -521,7 +596,7 @@ msgid "Beat Analyser:"
 msgstr ""
 
 #: DlgBeatsDlg#6
-msgid "Choose beween different algorithms to detect beats."
+msgid "Choose between different algorithms to detect beats."
 msgstr ""
 
 #: DlgBeatsDlg#7
@@ -617,92 +692,394 @@ msgstr "Min"
 msgid "Analyze Entire Song"
 msgstr "Analysera hela låten"
 
-#: DlgMidiLearning#1
-msgid "Skip"
-msgstr "Hoppa över"
-
-#: DlgMidiLearning#2
-msgid "Successfully mapped to: "
+#: DlgControllerLearning#1
+msgid "Controller Learning Wizard"
 msgstr ""
 
-#: DlgMidiLearning#3
-msgid "Next"
-msgstr "Nästa"
-
-#: DlgMidiLearning#4
-msgctxt "DlgMidiLearning#4"
-msgid "MIDI Learning Wizard"
-msgstr "Inlärningsguide för MIDI"
-
-#: DlgMidiLearning#5
-msgid "Welcome to the MIDI Learning Wizard"
-msgstr "Välkommen till inlärningsguiden för MIDI"
-
-#: DlgMidiLearning#6
+#: DlgControllerLearning#2
 msgid ""
-"This wizard allows you to easily map the controls on your MIDI controller to "
-"Mixxx's controls."
+"Click any control in the Mixxx interface or choose one from the list. Then "
+"move a control on your controller to map it. Repeat this as many times as "
+"you wish. When you are finished mapping controls, click Done."
 msgstr ""
-"Den här inlärningsguiden hjälper dig att enkelt koppla din MIDI-kontroller "
-"till Mixxx:s funktioner."
 
-#: DlgMidiLearning#7
-msgid "Begin"
-msgstr "Börja"
-
-#: DlgMidiLearning#8
-msgid "Please tweak the control for:"
-msgstr "Ställ in kontrollen för:"
-
-#: DlgMidiLearning#9
-msgid "Mixxx Control"
-msgstr "Mixxx-kontroll"
-
-#: DlgMidiLearning#10
-msgid "Previous"
-msgstr "Bakåt"
-
-#: DlgMidiLearning#11
-msgid "Press spacebar to proceed or skip."
-msgstr "Tryck mellanslag för att fortsätta eller hoppa över."
-
-#: DlgMidiLearning#12
-msgid "MIDI learning complete!"
-msgstr "MIDI-inlärningen är klar!"
-
-#: DlgMidiLearning#13
-msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
-"font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This "
-"wizard can be re-run at any time.</p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
-"go spin some beats!</p></body></html>"
+#: DlgControllerLearning#3
+msgid "Done"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
-"font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Du kan "
-"köra den här guiden igen när du vill.</p>\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
-"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Nu "
-"är det bara att sätta igång och spela!</p></body></html>"
 
-#: DlgMidiLearning#14
-msgid "Finito!"
-msgstr "Klart!"
+#: DlgControllerLearning#4
+msgid "To map another control click a button or choose from the list."
+msgstr ""
+
+#: DlgControllerLearning#5
+msgid "Choose Control"
+msgstr ""
+
+#: DlgControllerLearning#6
+msgid "Deck %1"
+msgstr ""
+
+#: DlgControllerLearning#7
+msgctxt "DlgControllerLearning#7"
+msgid "Sampler %1"
+msgstr ""
+
+#: DlgControllerLearning#8
+msgid "reset to default"
+msgstr ""
+
+#: DlgControllerLearning#9
+msgid "Mixer"
+msgstr ""
+
+#: DlgControllerLearning#10
+msgctxt "DlgControllerLearning#10"
+msgid "Crossfader"
+msgstr ""
+
+#: DlgControllerLearning#11
+msgid "Master volume"
+msgstr ""
+
+#: DlgControllerLearning#12
+msgid "Master balance"
+msgstr ""
+
+#: DlgControllerLearning#13
+msgid "Headphone volume"
+msgstr ""
+
+#: DlgControllerLearning#14
+msgid "Headphone mix (pre/main)"
+msgstr ""
+
+#: DlgControllerLearning#15
+msgid "Transport"
+msgstr ""
+
+#: DlgControllerLearning#16
+msgid "Strip-search through track"
+msgstr ""
+
+#: DlgControllerLearning#17
+msgid "Play button"
+msgstr ""
+
+#: DlgControllerLearning#18
+msgid "Volume fader"
+msgstr ""
+
+#: DlgControllerLearning#19
+msgid "Fast rewind button"
+msgstr ""
+
+#: DlgControllerLearning#20
+msgid "Fast forward button"
+msgstr ""
+
+#: DlgControllerLearning#21
+msgid "Jump to start of track"
+msgstr ""
+
+#: DlgControllerLearning#22
+msgid "Jump to end of track"
+msgstr ""
+
+#: DlgControllerLearning#23
+msgid "Play reverse button"
+msgstr ""
+
+#: DlgControllerLearning#24
+msgid "Gain knob"
+msgstr ""
+
+#: DlgControllerLearning#25
+msgid "Headphone listen button"
+msgstr ""
+
+#: DlgControllerLearning#26
+msgid "Toggle repeat mode"
+msgstr ""
+
+#: DlgControllerLearning#27
+msgid "Eject track"
+msgstr ""
+
+#: DlgControllerLearning#28
+msgid "Mix orientation (e.g. left, right, center)"
+msgstr ""
+
+#: DlgControllerLearning#29
+msgid "BPM and Sync"
+msgstr ""
+
+#: DlgControllerLearning#30
+msgid "BPM tap button"
+msgstr ""
+
+#: DlgControllerLearning#31
+msgid "Adjust beatgrid"
+msgstr ""
+
+#: DlgControllerLearning#32
+msgid "Toggle quantize mode"
+msgstr ""
+
+#: DlgControllerLearning#33
+msgid "Beat sync (tempo and phase)"
+msgstr ""
+
+#: DlgControllerLearning#34
+msgid "Beat sync (tempo only)"
+msgstr ""
+
+#: DlgControllerLearning#35
+msgid "Beat sync (phase only)"
+msgstr ""
+
+#: DlgControllerLearning#36
+msgid "Pitch and Rate"
+msgstr ""
+
+#: DlgControllerLearning#37
+msgid "Toggle keylock mode"
+msgstr ""
+
+#: DlgControllerLearning#38
+msgid "Pitch control slider"
+msgstr ""
+
+#: DlgControllerLearning#39
+msgid "Adjust rate up (course)"
+msgstr ""
+
+#: DlgControllerLearning#40
+msgid "Adjust rate up (fine)"
+msgstr ""
+
+#: DlgControllerLearning#41
+msgid "Adjust rate down (course)"
+msgstr ""
+
+#: DlgControllerLearning#42
+msgid "Adjust rate down (fine)"
+msgstr ""
+
+#: DlgControllerLearning#43
+msgid "Pitch-bend rate up (course)"
+msgstr ""
+
+#: DlgControllerLearning#44
+msgid "Pitch-bend rate up (fine)"
+msgstr ""
+
+#: DlgControllerLearning#45
+msgid "Pitch-bend rate down (course)"
+msgstr ""
+
+#: DlgControllerLearning#46
+msgid "Pitch-bend rate down (fine)"
+msgstr ""
+
+#: DlgControllerLearning#47
+msgctxt "DlgControllerLearning#47"
+msgid "Equalizers"
+msgstr ""
+
+#: DlgControllerLearning#48
+msgid "High EQ knob"
+msgstr ""
+
+#: DlgControllerLearning#49
+msgid "Mid EQ knob"
+msgstr ""
+
+#: DlgControllerLearning#50
+msgid "Low EQ knob"
+msgstr ""
+
+#: DlgControllerLearning#51
+msgid "High EQ kill"
+msgstr ""
+
+#: DlgControllerLearning#52
+msgid "Mid EQ kill"
+msgstr ""
+
+#: DlgControllerLearning#53
+msgid "Low EQ kill"
+msgstr ""
+
+#: DlgControllerLearning#54
+msgctxt "DlgControllerLearning#54"
+msgid "Vinyl Control"
+msgstr ""
+
+#: DlgControllerLearning#55
+msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
+msgstr ""
+
+#: DlgControllerLearning#56
+msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
+msgstr ""
+
+#: DlgControllerLearning#57
+msgid "Cues / Hotcues"
+msgstr ""
+
+#: DlgControllerLearning#58
+msgid "Cue button"
+msgstr ""
+
+#: DlgControllerLearning#59
+msgid "Set cue point"
+msgstr ""
+
+#: DlgControllerLearning#60
+msgid "Go to cue point and stop"
+msgstr ""
+
+#: DlgControllerLearning#61
+msgid "Set or jump to hotcue %1"
+msgstr ""
+
+#: DlgControllerLearning#62
+msgid "Clear hotcue %1"
+msgstr ""
+
+#: DlgControllerLearning#63
+msgid "Jump to hotcue %1"
+msgstr ""
+
+#: DlgControllerLearning#64
+msgid "Jump to hotcue %1 and stop"
+msgstr ""
+
+#: DlgControllerLearning#65
+msgid "Looping"
+msgstr ""
+
+#: DlgControllerLearning#66
+msgid "Loop In button"
+msgstr ""
+
+#: DlgControllerLearning#67
+msgid "Loop Out button"
+msgstr ""
+
+#: DlgControllerLearning#68
+msgid "Reloop / Exit button"
+msgstr ""
+
+#: DlgControllerLearning#69
+msgid "Halve the current loop's length"
+msgstr ""
+
+#: DlgControllerLearning#70
+msgid "Double the current loop's length"
+msgstr ""
+
+#: DlgControllerLearning#71
+msgid "Beat-Looping"
+msgstr ""
+
+#: DlgControllerLearning#72
+msgid "Create %1-beat loop"
+msgstr ""
+
+#: DlgControllerLearning#73
+msgctxt "DlgControllerLearning#73"
+msgid "Library"
+msgstr ""
+
+#: DlgControllerLearning#74
+msgid "Switch to the next view (library, playlist..)"
+msgstr ""
+
+#: DlgControllerLearning#75
+msgid "Switch to the previous view (library, playlist..)"
+msgstr ""
+
+#: DlgControllerLearning#76
+msgid "Scroll to next track in library/playlist"
+msgstr ""
+
+#: DlgControllerLearning#77
+msgid "Scroll to previous track in library/playlist"
+msgstr ""
+
+#: DlgControllerLearning#78
+msgid "Load selected track into first stopped player"
+msgstr ""
+
+#: DlgControllerLearning#79
+msgid "Load selected track"
+msgstr ""
+
+#: DlgControllerLearning#80
+msgid "Effects"
+msgstr ""
+
+#: DlgControllerLearning#81
+msgid "Toggle flange effect"
+msgstr ""
+
+#: DlgControllerLearning#82
+msgid "Flange effect: Wavelength/period"
+msgstr ""
+
+#: DlgControllerLearning#83
+msgid "Flange effect: Intensity"
+msgstr ""
+
+#: DlgControllerLearning#84
+msgid "Flange effect: Phase delay"
+msgstr ""
+
+#: DlgControllerLearning#85
+msgctxt "DlgControllerLearning#85"
+msgid "Microphone"
+msgstr ""
+
+#: DlgControllerLearning#86
+msgid "Microphone on/off"
+msgstr ""
+
+#: DlgControllerLearning#87
+msgid "Microphone volume"
+msgstr ""
+
+#: DlgControllerLearning#88
+msgid "Microphone channel orientation (e.g. left, right, center)"
+msgstr ""
+
+#: DlgControllerLearning#89
+msgid "User Interface"
+msgstr ""
+
+#: DlgControllerLearning#90
+msgid "Show/hide the sampler section"
+msgstr ""
+
+#: DlgControllerLearning#91
+msgid "Show/hide the microphone section"
+msgstr ""
+
+#: DlgControllerLearning#92
+msgid "Show/hide the vinyl control section"
+msgstr ""
+
+#: DlgControllerLearning#93
+msgid "Show/hide spinning vinyl widget"
+msgstr ""
+
+#: DlgControllerLearning#94
+msgid "Ready to map: %1. Now move a control on your controller."
+msgstr ""
+
+#: DlgControllerLearning#95
+msgid "Successfully mapped to:"
+msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -767,64 +1144,161 @@ msgstr "Felmeddelande"
 msgid "Cannot open file %1"
 msgstr "Kan inte öppna filen %1"
 
+#: DlgPrefController#1
+msgctxt "DlgPrefController#1"
+msgid "None"
+msgstr ""
+
+#: DlgPrefController#2
+msgid "%1 by %2"
+msgstr ""
+
+#: DlgPrefController#3
+msgid "Custom Preset"
+msgstr ""
+
+#: DlgPrefControllerDlg#1
+msgctxt "DlgPrefControllerDlg#1"
+msgid "Dialog"
+msgstr ""
+
+#: DlgPrefControllerDlg#2
+msgid "Controller Name"
+msgstr ""
+
+#: DlgPrefControllerDlg#3
+msgid "Enabled"
+msgstr "Aktiverad"
+
+#: DlgPrefControllerDlg#4
+msgid ""
+"<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
+msgstr ""
+
+#: DlgPrefControllerDlg#5
+msgid "Load Preset:"
+msgstr "Ladda in förinställning"
+
+#: DlgPrefControllerDlg#6
+msgid "Loaded Preset:"
+msgstr ""
+
+#: DlgPrefControllerDlg#7
+msgid "Click to start the Controller Learning wizard."
+msgstr ""
+
+#: DlgPrefControllerDlg#8
+msgid "Learning Wizard (MIDI Only)"
+msgstr ""
+
 #: DlgPrefControls#1
+msgctxt "DlgPrefControls#1"
+msgid "Position"
+msgstr ""
+
+#: DlgPrefControls#2
+msgid "Remaining"
+msgstr ""
+
+#: DlgPrefControls#3
+msgid "Don't load tracks into a playing deck"
+msgstr ""
+
+#: DlgPrefControls#4
+msgid "Load tracks into playing decks"
+msgstr ""
+
+#: DlgPrefControls#5
+msgid "CDJ Mode"
+msgstr ""
+
+#: DlgPrefControls#6
+msgctxt "DlgPrefControls#6"
+msgid "Simple"
+msgstr ""
+
+#: DlgPrefControls#7
+msgctxt "DlgPrefControls#7"
+msgid "On"
+msgstr ""
+
+#: DlgPrefControls#8
+msgctxt "DlgPrefControls#8"
+msgid "Off"
+msgstr ""
+
+#: DlgPrefControls#9
+msgid "Mixxx Detected a WVGA Screen"
+msgstr ""
+
+#: DlgPrefControls#10
+msgid "Mixxx has detected that your screen has a resolution of "
+msgstr ""
+
+#: DlgPrefControls#11
+msgid ""
+"The only skin compatiable with this size display is Outline800x480-WVGA.  "
+"Would you like to use that skin?"
+msgstr ""
+
+#: DlgPrefControls#12
 msgid "This skin does not support schemes"
 msgstr "Det här skalet har inte support för scheman"
 
-#: DlgPrefControls#2
+#: DlgPrefControls#13
 msgid "8% (Technics SL1210)"
 msgstr "8% (Technics SL1210)"
 
-#: DlgPrefControls#3
+#: DlgPrefControls#14
 msgid "10%"
 msgstr "10%"
 
-#: DlgPrefControls#4
+#: DlgPrefControls#15
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#5
+#: DlgPrefControls#16
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#6
+#: DlgPrefControls#17
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#7
+#: DlgPrefControls#18
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#8
+#: DlgPrefControls#19
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#9
+#: DlgPrefControls#20
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#10
+#: DlgPrefControls#21
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#11
+#: DlgPrefControls#22
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#12
+#: DlgPrefControls#23
 msgid "Up increases speed"
 msgstr "Upp ökar hastigheten"
 
-#: DlgPrefControls#13
+#: DlgPrefControls#24
 msgid "Down increases speed (Technics SL1210)"
 msgstr "Ner ökar hastigheten (Technics SL1210)"
 
-#: DlgPrefControls#14
-msgctxt "DlgPrefControls#14"
+#: DlgPrefControls#25
+msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr "Information"
+msgstr ""
 
-#: DlgPrefControls#15
+#: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr "Starta om Mixxx för att ändringarna ska gälla."
 
@@ -1051,146 +1525,40 @@ msgctxt "DlgPrefEQDlg#10"
 msgid "Reset"
 msgstr "Återställ"
 
-#: DlgPrefMidiBindings#1
-msgctxt "DlgPrefMidiBindings#1"
-msgid "None"
-msgstr "Ingen"
+#: DlgPrefMappableController#1
+msgid "Apply device settings?"
+msgstr ""
 
-#: DlgPrefMidiBindings#2
-msgid "Apply MIDI device settings?"
-msgstr "Använd inställningar för MIDI-enhet?"
-
-#: DlgPrefMidiBindings#3
+#: DlgPrefMappableController#2
 msgid ""
-"Your settings must be applied before starting the MIDI learning wizard.\n"
+"Your settings must be applied before starting the learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
-"Inställningarna måste bekräftas innan du startar inställningsguiden för "
-"MIDI. \n"
-"Vill du använda inställningarna och fortsätta?"
 
-#: DlgPrefMidiBindings#4
-msgid "Overwrite existing mapping?"
-msgstr "Vill du skriva över existerande kopplingar?"
-
-#: DlgPrefMidiBindings#5
-msgid ""
-"Are you sure you'd like to load the %1 mapping?\n"
-"This will overwrite your existing MIDI mapping."
-msgstr ""
-"Är du säker på att du vill ladda MIDI-kopplingen %1 ?\n"
-"Existerande MIDI-kopplingar kommer skrivas över."
-
-#: DlgPrefMidiBindings#6
-msgid "Export Mixxx MIDI Bindings"
-msgstr "Exportera Mixxx:s MIDI-bindningar"
-
-#: DlgPrefMidiBindings#7
-msgid "Preset Files (*.midi.xml)"
-msgstr ""
-
-#: DlgPrefMidiBindings#8
-msgid "Select Control Group"
-msgstr "Välj kontrollgrupp"
-
-#: DlgPrefMidiBindings#9
-msgid "Select Control"
-msgstr "Välj kontroll"
-
-#: DlgPrefMidiBindings#10
+#: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
 msgstr ""
 
-#: DlgPrefMidiBindings#11
+#: DlgPrefMappableController#4
 msgid "Are you sure you want to clear all bindings?"
 msgstr "Är du säker på att du vill rensa alla bindningar?"
 
-#: DlgPrefMidiBindings#12
+#: DlgPrefMappableController#5
 msgid "Clear Output Bindings"
 msgstr "Rensa utmatningsbindningar"
 
-#: DlgPrefMidiBindings#13
+#: DlgPrefMappableController#6
 msgid "Are you sure you want to clear all output bindings?"
 msgstr "Är du säker på att du vill rensa alla utmatningsbindningar?"
 
-#: DlgPrefMidiBindingsDlg#1
-msgctxt "DlgPrefMidiBindingsDlg#1"
-msgid "Dialog"
-msgstr "Dialog"
-
-#: DlgPrefMidiBindingsDlg#2
-msgid "Your Device Name"
-msgstr "Namn på enhet"
-
-#: DlgPrefMidiBindingsDlg#3
-msgid "Load Preset:"
-msgstr "Ladda in förinställning"
-
-#: DlgPrefMidiBindingsDlg#4
-msgid "Export"
-msgstr "Exportera"
-
-#: DlgPrefMidiBindingsDlg#5
-msgid "Output:"
-msgstr "Utmatning:"
-
-#: DlgPrefMidiBindingsDlg#6
-msgid "Enabled"
-msgstr "Aktiverad"
-
-#: DlgPrefMidiBindingsDlg#7
-msgid "Controls"
-msgstr "Kontroller"
-
-#: DlgPrefMidiBindingsDlg#8
-msgctxt "DlgPrefMidiBindingsDlg#8"
-msgid "Add"
-msgstr "Lägg till"
-
-#: DlgPrefMidiBindingsDlg#9
-msgctxt "DlgPrefMidiBindingsDlg#9"
-msgid "Remove"
-msgstr "Ta bort"
-
-#: DlgPrefMidiBindingsDlg#10
-msgctxt "DlgPrefMidiBindingsDlg#10"
-msgid "MIDI Learning Wizard"
-msgstr "Inlärningsguide för MIDI"
-
-#: DlgPrefMidiBindingsDlg#11
-msgid "Clear All"
-msgstr "Rensa allt"
-
-#: DlgPrefMidiBindingsDlg#12
-msgid ""
-"<a "
-"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
-"roubleshooting</a>"
-msgstr ""
-"<a "
-"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">P"
-"roblemlösning (på engelska)</a>"
-
-#: DlgPrefMidiBindingsDlg#13
-msgid "MIDI Input"
-msgstr "MIDI-Ingång"
-
-#: DlgPrefMidiBindingsDlg#14
-msgid "Outputs"
-msgstr "Utgångar"
-
-#: DlgPrefMidiBindingsDlg#15
-msgid "MIDI Output"
-msgstr "MIDI-utgång"
-
-#: DlgPrefNoMidiDlg#1
-msgctxt "DlgPrefNoMidiDlg#1"
+#: DlgPrefNoControllersDlg#1
+msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
-msgstr "Formulär3"
+msgstr ""
 
-#: DlgPrefNoMidiDlg#2
-msgid "No MIDI devices available"
-msgstr "Inga MIDI-enheter finns tillgängliga"
+#: DlgPrefNoControllersDlg#2
+msgid "No controllers available."
+msgstr ""
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
@@ -1333,119 +1701,70 @@ msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
 msgstr "Välj mapp för musikbibliotek"
 
-#: DlgPrefPlaylist#2
-msgid "Multiple iPods Detected"
-msgstr "Flera iPoddar upptäcktes"
-
-#: DlgPrefPlaylist#3
-msgid ""
-"Mixxx has detected another iPod. \n"
-"\n"
-msgstr ""
-"Mixxx har hittat en annan iPod. \n"
-"\n"
-
-#: DlgPrefPlaylist#4
-msgid "Choose Yes to use the newly found iPod @ "
-msgstr "Välj Ja för att använda den nyligen hittade iPoden @ "
-
-#: DlgPrefPlaylist#5
-msgid " or to continue to search for other iPods. \n"
-msgstr " eller fortsätt att leta efter fler iPoddar. \n"
-
-#: DlgPrefPlaylist#6
-msgid "Choose No to use the existing iPod @ "
-msgstr "Välj Nej för att använda den existerande iPoden @ "
-
-#: DlgPrefPlaylist#7
-msgid " and end detection. \n"
-msgstr " och avsluta letandet. \n"
-
-#: DlgPrefPlaylist#8
-msgid "Choose iPod mount point"
-msgstr "Välj monteringspunkt för iPod"
-
 #: DlgPrefPlaylistDlg#1
-msgctxt "DlgPrefPlaylistDlg#1"
-msgid "Form3"
-msgstr "Formulär3"
-
-#: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
 msgstr "Filformat för audio"
 
-#: DlgPrefPlaylistDlg#3
+#: DlgPrefPlaylistDlg#2
 msgid "Additional Format Plugins:"
 msgstr "Extra plugins för format:"
 
-#: DlgPrefPlaylistDlg#4
+#: DlgPrefPlaylistDlg#3
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
-#: DlgPrefPlaylistDlg#5
+#: DlgPrefPlaylistDlg#4
 msgid "Loaded Plugins:"
 msgstr "Inlästa plugins:"
 
+#: DlgPrefPlaylistDlg#5
+msgctxt "DlgPrefPlaylistDlg#5"
+msgid "None"
+msgstr ""
+
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
-msgid "None"
-msgstr "Ingen"
+msgid "Miscellaneous"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#7
-msgctxt "DlgPrefPlaylistDlg#7"
-msgid "Miscellaneous"
-msgstr "Diverse"
-
-#: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
 msgstr "Synkronisera ID3-taggar vid modifiering av spår"
 
-#: DlgPrefPlaylistDlg#9
+#: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
 msgstr "Skanna om biblioteket vi uppstart"
 
-#: DlgPrefPlaylistDlg#10
+#: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
 msgstr "Använd om möjligt relativa sökvägar vid export av spellista"
 
-#: DlgPrefPlaylistDlg#11
-msgid "iPod"
-msgstr "iPod"
-
-#: DlgPrefPlaylistDlg#12
-msgid "iPod mountpoint"
-msgstr "Monteringspunkt för iPod"
-
-#: DlgPrefPlaylistDlg#13
+#: DlgPrefPlaylistDlg#10
 msgid "Browse..."
 msgstr "Bläddra..."
 
-#: DlgPrefPlaylistDlg#14
-msgid "Detect"
-msgstr "Identifiera"
-
-#: DlgPrefPlaylistDlg#15
-msgctxt "DlgPrefPlaylistDlg#15"
+#: DlgPrefPlaylistDlg#11
+msgctxt "DlgPrefPlaylistDlg#11"
 msgid "Library"
-msgstr "Bibliotek"
+msgstr ""
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#12
 msgid "Music Directory:"
 msgstr "Musikkatalog"
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#13
 msgid "Built-in"
 msgstr "Inbyggd"
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#14
 msgid "Available Online..."
 msgstr "Tillgänglig online..."
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#15
 msgid "Bundled Songs"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#20
+#: DlgPrefPlaylistDlg#16
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -1656,9 +1975,8 @@ msgid "http://www.mixxx.org"
 msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
-msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr ""
+msgstr "Beskrivning"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1862,8 +2180,9 @@ msgstr ""
 "</ul>"
 
 #: DlgPrefSoundDlg#5
+msgctxt "DlgPrefSoundDlg#5"
 msgid "Output"
-msgstr "Utgång"
+msgstr ""
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
@@ -2029,55 +2348,60 @@ msgid "Powered by xwax"
 msgstr ""
 
 #: DlgPreferences#1
+msgid "Preferences"
+msgstr ""
+
+#: DlgPreferences#2
 msgid "Sound Hardware"
 msgstr "Ljudhårdvara"
 
-#: DlgPreferences#2
-msgid "MIDI Controllers"
-msgstr "Midi-kontroller"
-
 #: DlgPreferences#3
-msgctxt "DlgPreferences#3"
-msgid "Library"
-msgstr "Bibliotek"
+msgid "Controllers"
+msgstr ""
 
 #: DlgPreferences#4
+msgctxt "DlgPreferences#4"
+msgid "Library"
+msgstr ""
+
+#: DlgPreferences#5
 msgid "Interface"
 msgstr "Gränssnitt"
 
-#: DlgPreferences#5
-msgid "Equalizers"
-msgstr "Equalizers"
-
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
-msgid "Crossfader"
-msgstr "Crossfader"
+msgid "Equalizers"
+msgstr ""
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
-msgid "Recording"
-msgstr "Inspelning"
+msgid "Crossfader"
+msgstr ""
 
 #: DlgPreferences#8
-msgid "Beat Detection"
+msgctxt "DlgPreferences#8"
+msgid "Recording"
 msgstr ""
 
 #: DlgPreferences#9
-msgctxt "DlgPreferences#9"
-msgid "BPM Detection"
+msgid "Beat Detection"
 msgstr ""
 
 #: DlgPreferences#10
+msgctxt "DlgPreferences#10"
+msgid "BPM Detection"
+msgstr ""
+
+#: DlgPreferences#11
 msgid "Normalization"
 msgstr "Normalisering"
 
-#: DlgPreferences#11
-msgctxt "DlgPreferences#11"
+#: DlgPreferences#12
+msgctxt "DlgPreferences#12"
 msgid "Vinyl Control"
 msgstr ""
 
-#: DlgPreferences#12
+#: DlgPreferences#13
 msgid "Live Broadcasting"
 msgstr ""
 
@@ -2545,124 +2869,30 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: MidiInputMappingTableModel#1
-msgid "Midi Status Type"
+#: MidiController#1
+msgid "MixxxControl not found"
 msgstr ""
 
-#: MidiInputMappingTableModel#2
-msgctxt "MidiInputMappingTableModel#2"
-msgid "Midi Note"
+#: MidiController#2
+msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
 msgstr ""
 
-#: MidiInputMappingTableModel#3
-msgctxt "MidiInputMappingTableModel#3"
-msgid "Midi Channel"
-msgstr ""
-
-#: MidiInputMappingTableModel#4
-msgctxt "MidiInputMappingTableModel#4"
-msgid "Control Group"
-msgstr ""
-
-#: MidiInputMappingTableModel#5
-msgctxt "MidiInputMappingTableModel#5"
-msgid "Control Value"
-msgstr ""
-
-#: MidiInputMappingTableModel#6
-msgctxt "MidiInputMappingTableModel#6"
-msgid "Description"
-msgstr ""
-
-#: MidiMapping#1
-msgid "MIDI script function not found"
-msgstr ""
-
-#: MidiMapping#2
-msgid "The MIDI script function '%1' was not found in loaded scripts."
-msgstr ""
-
-#: MidiMapping#3
+#: MidiController#3
 msgid ""
-"The MIDI message %1 %2 will not be bound.\n"
+"The MIDI output message 0x%1 0x%2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
 
-#: MidiMapping#4
+#: MidiController#4
 msgid ""
-"* Check to see that the function name is spelled correctly in the mapping "
-"file (.xml) and script file (.js)\n"
+"* Check to see that the MixxxControl name is spelled correctly in the "
+"mapping file (.xml)\n"
 msgstr ""
 
-#: MidiMapping#5
+#: MidiController#5
 msgid ""
-"* Check to see that the script file name (.js) is spelled correctly in the "
-"mapping file (.xml)"
-msgstr ""
-
-#: MidiOutputMappingTableModel#1
-msgid "Midi Status"
-msgstr ""
-
-#: MidiOutputMappingTableModel#2
-msgctxt "MidiOutputMappingTableModel#2"
-msgid "Midi Note"
-msgstr ""
-
-#: MidiOutputMappingTableModel#3
-msgctxt "MidiOutputMappingTableModel#3"
-msgid "Midi Channel"
-msgstr ""
-
-#: MidiOutputMappingTableModel#4
-msgctxt "MidiOutputMappingTableModel#4"
-msgid "Control Group"
-msgstr ""
-
-#: MidiOutputMappingTableModel#5
-msgctxt "MidiOutputMappingTableModel#5"
-msgid "Control Value"
-msgstr ""
-
-#: MidiOutputMappingTableModel#6
-msgctxt "MidiOutputMappingTableModel#6"
-msgid "Description"
-msgstr ""
-
-#: MidiOutputMappingTableModel#7
-msgid "Threshold Min"
-msgstr ""
-
-#: MidiOutputMappingTableModel#8
-msgid "Threshold Max"
-msgstr ""
-
-#: MidiScriptEngine#1
-msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
-
-#: MidiScriptEngine#2
-msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
-
-#: MidiScriptEngine#3
-msgid "MIDI script error"
-msgstr ""
-
-#: MidiScriptEngine#4
-msgid "A MIDI control you just used is not working properly."
-msgstr ""
-
-#: MidiScriptEngine#5
-msgid ""
-"<html>(The MIDI script code needs to be fixed.)<br>For now, you "
-"can:<ul><li>Ignore this error for this session but you may experience "
-"erratic behavior</li><li>Try to recover by resetting your "
-"controller</li></ul></html>"
-msgstr ""
-
-#: MidiStatusDelegate#1
-msgid "Unknown"
+"* Make sure the MixxxControl you're trying to use actually exists. Visit "
+"this wiki page for a complete list:"
 msgstr ""
 
 #: MixxxApp#1
@@ -3084,6 +3314,7 @@ msgid "Vinyl Control"
 msgstr ""
 
 #: QObject#6
+msgctxt "QObject#6"
 msgid "Microphone"
 msgstr ""
 
@@ -3206,301 +3437,6 @@ msgid ""
 "or playlists may not have loaded."
 msgstr ""
 
-#: Ui#1
-msgctxt "Ui#1"
-msgid "Position"
-msgstr ""
-
-#: Ui#2
-msgid "Remaining"
-msgstr ""
-
-#: Ui#3
-msgctxt "Ui#3"
-msgid "On"
-msgstr ""
-
-#: Ui#4
-msgctxt "Ui#4"
-msgid "Off"
-msgstr ""
-
-#: Ui#5
-msgid "Don't load tracks into a playing deck"
-msgstr ""
-
-#: Ui#6
-msgid "Load tracks into playing decks"
-msgstr ""
-
-#: Ui#7
-msgid "CDJ Mode"
-msgstr ""
-
-#: Ui#8
-msgctxt "Ui#8"
-msgid "Simple"
-msgstr ""
-
-#: Ui#9
-msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
-
-#: Ui#10
-msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
-
-#: Ui#11
-msgid ""
-"The only skin compatiable with this size display is Outline800x480-WVGA.  "
-"Would you like to use that skin?"
-msgstr ""
-
-#: Ui#12
-msgid "Preferences"
-msgstr ""
-
-#: Ui#13
-msgctxt "Ui#13"
-msgid "Crossfader"
-msgstr ""
-
-#: Ui#14
-msgid "Master volume"
-msgstr ""
-
-#: Ui#15
-msgid "Master balance"
-msgstr ""
-
-#: Ui#16
-msgid "Headphones volume"
-msgstr ""
-
-#: Ui#17
-msgid "Headphones mix (pre/main)"
-msgstr ""
-
-#: Ui#18
-msgid "Cue button for Player %1"
-msgstr ""
-
-#: Ui#19
-msgid "Play button for Player %1"
-msgstr ""
-
-#: Ui#20
-msgid "Fast rewind button for Player %1"
-msgstr ""
-
-#: Ui#21
-msgid "Fast forward button for Player %1"
-msgstr ""
-
-#: Ui#22
-msgid "Play reverse button for Player %1"
-msgstr ""
-
-#: Ui#23
-msgid "Headphone listen button for Player %1"
-msgstr ""
-
-#: Ui#24
-msgid "Beat sync button for Player %1"
-msgstr ""
-
-#: Ui#25
-msgid "BPM tap button for Player %1"
-msgstr ""
-
-#: Ui#26
-msgid "Keylock button for Player %1"
-msgstr ""
-
-#: Ui#27
-msgid "Pitch control slider for Player %1"
-msgstr ""
-
-#: Ui#28
-msgid "Flanger effect button for Player %1"
-msgstr ""
-
-#: Ui#29
-msgid "Channel %1 volume fader"
-msgstr ""
-
-#: Ui#30
-msgid "Gain knob for Channel %1"
-msgstr ""
-
-#: Ui#31
-msgid "High EQ knob for Channel %1"
-msgstr ""
-
-#: Ui#32
-msgid "Mid EQ knob for Channel %1"
-msgstr ""
-
-#: Ui#33
-msgid "Low EQ knob for Channel %1"
-msgstr ""
-
-#: Ui#34
-msgid "Loop In button for Player %1"
-msgstr ""
-
-#: Ui#35
-msgid "Loop Out button for Player %1"
-msgstr ""
-
-#: Ui#36
-msgid "Reloop / Exit button for Player %1"
-msgstr ""
-
-#: Ui#37
-msgid "Setup a loop over 4 beats for Player %1"
-msgstr ""
-
-#: Ui#38
-msgid "Halves the current loop's length for Player %1"
-msgstr ""
-
-#: Ui#39
-msgid "Doubles the current loop's length for Player %1"
-msgstr ""
-
-#: Ui#40
-msgid "Hotcue 1 button for Player %1"
-msgstr ""
-
-#: Ui#41
-msgid "Hotcue 2 button for Player %1"
-msgstr ""
-
-#: Ui#42
-msgid "Hotcue 3 button for Player %1"
-msgstr ""
-
-#: Ui#43
-msgid "Hotcue 4 button for Player %1"
-msgstr ""
-
-#: Ui#44
-msgid "Hotcue 1 delete button for Player %1"
-msgstr ""
-
-#: Ui#45
-msgid "Hotcue 2 delete button for Player %1"
-msgstr ""
-
-#: Ui#46
-msgid "Hotcue 3 delete button for Player %1"
-msgstr ""
-
-#: Ui#47
-msgid "Hotcue 4 delete button for Player %1"
-msgstr ""
-
-#: Ui#48
-msgid "Play button for Sampler %1"
-msgstr ""
-
-#: Ui#49
-msgid "Gain knob for Sampler %1"
-msgstr ""
-
-#: Ui#50
-msgid "Headphone listen button for Sampler %1"
-msgstr ""
-
-#: Ui#51
-msgid "BPM tap button for Sampler %1"
-msgstr ""
-
-#: Ui#52
-msgid "Keylock button for Sampler %1"
-msgstr ""
-
-#: Ui#53
-msgid "Pitch control slider for Sampler %1"
-msgstr ""
-
-#: Ui#54
-msgid "Hotcue 1 button for Sampler %1"
-msgstr ""
-
-#: Ui#55
-msgid "Hotcue 2 button for Sampler %1"
-msgstr ""
-
-#: Ui#56
-msgid "Hotcue 3 button for Sampler %1"
-msgstr ""
-
-#: Ui#57
-msgid "Hotcue 4 button for Sampler %1"
-msgstr ""
-
-#: Ui#58
-msgid "Hotcue 1 delete button for Sampler %1"
-msgstr ""
-
-#: Ui#59
-msgid "Hotcue 2 delete button for Sampler %1"
-msgstr ""
-
-#: Ui#60
-msgid "Hotcue 3 delete button for Sampler %1"
-msgstr ""
-
-#: Ui#61
-msgid "Hotcue 4 delete button for Sampler %1"
-msgstr ""
-
-#: Ui#62
-msgid "Switch to the next view (library, playlist..)"
-msgstr ""
-
-#: Ui#63
-msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
-
-#: Ui#64
-msgid "Scroll to next track in library/playlist"
-msgstr ""
-
-#: Ui#65
-msgid "Scroll to previous track in library/playlist"
-msgstr ""
-
-#: Ui#66
-msgid "Load selected track into first stopped player"
-msgstr ""
-
-#: Ui#67
-msgid "Load selected track into Player %1"
-msgstr ""
-
-#: Ui#68
-msgid "Adjusts the wavelength of the flange effect"
-msgstr ""
-
-#: Ui#69
-msgid "Adjusts the intensity of the flange effect"
-msgstr ""
-
-#: Ui#70
-msgid "Adjusts the phase delay of the flange effect"
-msgstr ""
-
-#: Ui#71
-msgid "Microphone on/off"
-msgstr ""
-
-#: Ui#72
-msgid "Microphone volume"
-msgstr ""
-
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
 msgstr ""
@@ -3563,6 +3499,7 @@ msgid "Load to Deck %1"
 msgstr ""
 
 #: WTrackTableView#13
+msgctxt "WTrackTableView#13"
 msgid "Sampler %1"
 msgstr ""
 
@@ -3695,6 +3632,9 @@ msgstr ""
 #~ msgid "Track Information (Click to Expand)"
 #~ msgstr "Spårinformation (Klicka för att expandera)"
 
+#~ msgid "Skip"
+#~ msgstr "Hoppa över"
+
 #~ msgctxt "DlgBpmTapDlg#20"
 #~ msgid "Artist:"
 #~ msgstr "Artist:"
@@ -3726,22 +3666,204 @@ msgstr ""
 #~ msgid "File Type:"
 #~ msgstr "Filtyp:"
 
+#~ msgctxt "DlgMidiLearning#4"
+#~ msgid "MIDI Learning Wizard"
+#~ msgstr "Inlärningsguide för MIDI"
+
+#~ msgid "Welcome to the MIDI Learning Wizard"
+#~ msgstr "Välkommen till inlärningsguiden för MIDI"
+
+#~ msgid "Next"
+#~ msgstr "Nästa"
+
+#~ msgid ""
+#~ "This wizard allows you to easily map the controls on your MIDI controller to "
+#~ "Mixxx's controls."
+#~ msgstr ""
+#~ "Den här inlärningsguiden hjälper dig att enkelt koppla din MIDI-kontroller "
+#~ "till Mixxx:s funktioner."
+
+#~ msgid "Begin"
+#~ msgstr "Börja"
+
+#~ msgid "Previous"
+#~ msgstr "Bakåt"
+
+#~ msgid "Please tweak the control for:"
+#~ msgstr "Ställ in kontrollen för:"
+
+#~ msgid "Press spacebar to proceed or skip."
+#~ msgstr "Tryck mellanslag för att fortsätta eller hoppa över."
+
+#~ msgid "Mixxx Control"
+#~ msgstr "Mixxx-kontroll"
+
+#~ msgid "MIDI learning complete!"
+#~ msgstr "MIDI-inlärningen är klar!"
+
+#~ msgid "Finito!"
+#~ msgstr "Klart!"
+
 #~ msgctxt "DlgPrefBPMDlg#10"
 #~ msgid "Edit"
 #~ msgstr "Redigera"
 
+#~ msgctxt "DlgPrefControls#14"
+#~ msgid "Information"
+#~ msgstr "Information"
+
+#~ msgid ""
+#~ "Your settings must be applied before starting the MIDI learning wizard.\n"
+#~ "Apply settings and continue?"
+#~ msgstr ""
+#~ "Inställningarna måste bekräftas innan du startar inställningsguiden för "
+#~ "MIDI. \n"
+#~ "Vill du använda inställningarna och fortsätta?"
+
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kHz"
 
-#~ msgid "Description"
-#~ msgstr "Beskrivning"
+#~ msgctxt "DlgPrefMidiBindings#1"
+#~ msgid "None"
+#~ msgstr "Ingen"
+
+#~ msgid "Apply MIDI device settings?"
+#~ msgstr "Använd inställningar för MIDI-enhet?"
+
+#~ msgid "Select Control Group"
+#~ msgstr "Välj kontrollgrupp"
+
+#~ msgid "Select Control"
+#~ msgstr "Välj kontroll"
+
+#~ msgid "Export Mixxx MIDI Bindings"
+#~ msgstr "Exportera Mixxx:s MIDI-bindningar"
+
+#~ msgid ""
+#~ "Are you sure you'd like to load the %1 mapping?\n"
+#~ "This will overwrite your existing MIDI mapping."
+#~ msgstr ""
+#~ "Är du säker på att du vill ladda MIDI-kopplingen %1 ?\n"
+#~ "Existerande MIDI-kopplingar kommer skrivas över."
+
+#~ msgid "Overwrite existing mapping?"
+#~ msgstr "Vill du skriva över existerande kopplingar?"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#1"
+#~ msgid "Dialog"
+#~ msgstr "Dialog"
+
+#~ msgid "Your Device Name"
+#~ msgstr "Namn på enhet"
+
+#~ msgid "Output:"
+#~ msgstr "Utmatning:"
+
+#~ msgid "Export"
+#~ msgstr "Exportera"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#8"
+#~ msgid "Add"
+#~ msgstr "Lägg till"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#9"
+#~ msgid "Remove"
+#~ msgstr "Ta bort"
+
+#~ msgctxt "DlgPrefMidiBindingsDlg#10"
+#~ msgid "MIDI Learning Wizard"
+#~ msgstr "Inlärningsguide för MIDI"
+
+#~ msgid "No MIDI devices available"
+#~ msgstr "Inga MIDI-enheter finns tillgängliga"
+
+#~ msgid "MIDI Input"
+#~ msgstr "MIDI-Ingång"
+
+#~ msgid "MIDI Output"
+#~ msgstr "MIDI-utgång"
+
+#~ msgctxt "DlgPrefNoMidiDlg#1"
+#~ msgid "Form3"
+#~ msgstr "Formulär3"
+
+#~ msgid "Multiple iPods Detected"
+#~ msgstr "Flera iPoddar upptäcktes"
+
+#~ msgctxt "DlgPrefPlaylistDlg#1"
+#~ msgid "Form3"
+#~ msgstr "Formulär3"
+
+#~ msgid "Choose iPod mount point"
+#~ msgstr "Välj monteringspunkt för iPod"
+
+#~ msgid " and end detection. \n"
+#~ msgstr " och avsluta letandet. \n"
+
+#~ msgid "Choose No to use the existing iPod @ "
+#~ msgstr "Välj Nej för att använda den existerande iPoden @ "
+
+#~ msgid " or to continue to search for other iPods. \n"
+#~ msgstr " eller fortsätt att leta efter fler iPoddar. \n"
+
+#~ msgid "Choose Yes to use the newly found iPod @ "
+#~ msgstr "Välj Ja för att använda den nyligen hittade iPoden @ "
+
+#~ msgid ""
+#~ "Mixxx has detected another iPod. \n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mixxx har hittat en annan iPod. \n"
+#~ "\n"
+
+#~ msgctxt "DlgPrefPlaylistDlg#6"
+#~ msgid "None"
+#~ msgstr "Ingen"
+
+#~ msgid "iPod mountpoint"
+#~ msgstr "Monteringspunkt för iPod"
+
+#~ msgid "iPod"
+#~ msgstr "iPod"
+
+#~ msgctxt "DlgPrefPlaylistDlg#7"
+#~ msgid "Miscellaneous"
+#~ msgstr "Diverse"
+
+#~ msgid "Detect"
+#~ msgstr "Identifiera"
+
+#~ msgctxt "DlgPrefPlaylistDlg#15"
+#~ msgid "Library"
+#~ msgstr "Bibliotek"
 
 #~ msgid "Reset to Defaults"
 #~ msgstr "Återställ till standardvärden"
 
+#~ msgid "Output"
+#~ msgstr "Utgång"
+
+#~ msgctxt "DlgPreferences#3"
+#~ msgid "Library"
+#~ msgstr "Bibliotek"
+
+#~ msgid "MIDI Controllers"
+#~ msgstr "Midi-kontroller"
+
 #~ msgctxt "DlgPreferences#10"
 #~ msgid "Vinyl Control"
 #~ msgstr "Vinylkontroll"
+
+#~ msgctxt "DlgPreferences#6"
+#~ msgid "Crossfader"
+#~ msgstr "Crossfader"
+
+#~ msgid "Equalizers"
+#~ msgstr "Equalizers"
+
+#~ msgctxt "DlgPreferences#7"
+#~ msgid "Recording"
+#~ msgstr "Inspelning"
 
 #~ msgid "Recently Added"
 #~ msgstr "Nyligen tillagda"
@@ -3844,3 +3966,41 @@ msgstr ""
 #~ msgctxt "DlgBpmTapDlg#8"
 #~ msgid "BPM Detection"
 #~ msgstr "BPM-avkänning"
+
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+#~ "font-weight:400; font-style:normal;\">\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This "
+#~ "wizard can be re-run at any time.</p>\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
+#~ "go spin some beats!</p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+#~ "font-weight:400; font-style:normal;\">\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Du kan "
+#~ "köra den här guiden igen när du vill.</p>\n"
+#~ "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+#~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Nu "
+#~ "är det bara att sätta igång och spela!</p></body></html>"
+
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
+#~ "roubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">P"
+#~ "roblemlösning (på engelska)</a>"
