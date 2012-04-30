@@ -152,7 +152,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                libraryMenu);
     addControl("[Playlist]", "SelectPrevTrack", tr("Scroll to previous track in library/playlist"),
                libraryMenu);
-    addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped player"),
+    addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped deck"),
                libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack", tr("Load selected track"), libraryMenu);
 
