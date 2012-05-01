@@ -18,6 +18,15 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.11.0.01	(01/05/2012)
+	* Feature: Support <EndOfTrackColor> notification withing the last seconds of a track in waveform & waveform overview, lp:661443
+			   Note that this feature currently only works for regular decks [Channel$] but not for sampler decks [Sampler$]
+	* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
+	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
+	* Update: Tooltips for EQ kill & microphone buttons
+	* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
+	* Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualisation in waveform overview , obsolete in Mixxx 1.11+
+
 	v1.10.0.18	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
 	* Change: Use global QToolTip style declaration instead of one per node
@@ -319,8 +328,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#E4E4E4</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -796,8 +803,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#E4E4E4</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1273,8 +1278,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#E4E4E4</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1750,8 +1753,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#E4E4E4</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -2550,7 +2551,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2560,18 +2561,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>11,120</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterHighKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2581,18 +2582,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>11,149</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterMidKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2602,19 +2603,19 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>11,178</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterLowKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2624,18 +2625,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>229,120</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterHighKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2645,18 +2646,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>229,149</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterMidKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2666,13 +2667,13 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>229,178</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterLowKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
@@ -3062,12 +3063,12 @@
 								<!--<Size>415,119</Size>-->
 								<BgColor>#3F4249</BgColor>
 								<!--<BgPixmap>style/style_bg_waveform.png</BgPixmap>-->
-								<HfcColor>#E4E4E4</HfcColor>
 								<SignalColor>#E4E4E4</SignalColor>
 								<BeatColor>#565E6B</BeatColor>
 								<BeatHighlightColor>#565E6B</BeatHighlightColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<CueColor>#FFFF00</CueColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<MarkRange>
 									<StartControl>loop_start_position</StartControl>
 									<EndControl>loop_end_position</EndControl>
@@ -3524,8 +3525,7 @@
 						-->
 						<SignalColor>#E4E4E4</SignalColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<ProgressColor>#E4E4E4</ProgressColor>
-						<ProgressAlpha>80</ProgressAlpha>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<Connection>
 							<ConfigKey>[Channel1],playposition</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
@@ -4547,12 +4547,12 @@
 								<!--<Size>415,119</Size>-->
 								<BgColor>#3F4249</BgColor>
 								<!--<BgPixmap>style/style_bg_waveform.png</BgPixmap>-->
-								<HfcColor>#E4E4E4</HfcColor>
 								<SignalColor>#E4E4E4</SignalColor>
 								<BeatColor>#565E6B</BeatColor>
 								<BeatHighlightColor>#565E6B</BeatHighlightColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<CueColor>#FFFF00</CueColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<MarkRange>
 									<StartControl>loop_start_position</StartControl>
 									<EndControl>loop_end_position</EndControl>
@@ -5009,8 +5009,7 @@
 						-->
 						<SignalColor>#E4E4E4</SignalColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<ProgressColor>#E4E4E4</ProgressColor>
-						<ProgressAlpha>80</ProgressAlpha>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<Connection>
 							<ConfigKey>[Channel2],playposition</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
@@ -6032,13 +6031,18 @@
 			****************************************
 			-->
 			<PushButton>
-				<Tooltip>Talkover&#10;Hold-to-talk and mix microphone input into the master output.&#10;</Tooltip>
+				<Tooltip>Microphone talkover&#10;Hold-to-talk or short click for latching to&#10;mix microphone input into the master output.&#10;</Tooltip>
 				<Style></Style>
-				<NumberStates>1</NumberStates>
+				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
 					<Pressed>btn_microphone_talkover_over.png</Pressed>
 					<Unpressed>btn_microphone_talkover.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_microphone_talkover_over.png</Pressed>
+					<Unpressed>btn_microphone_talkover_over.png</Unpressed>
 				</State>
 				<Pos>4,27</Pos>
 				<Connection>
