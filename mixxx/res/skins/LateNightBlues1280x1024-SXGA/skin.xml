@@ -168,10 +168,10 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>216,3</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
 
@@ -672,10 +672,10 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>216,3</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
 
@@ -1176,10 +1176,10 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>216,3</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
 
@@ -1680,10 +1680,10 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>216,3</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
 
@@ -4526,10 +4526,10 @@
 					<Pressed>btn_tap1_over.png</Pressed>
 					<Unpressed>btn_tap1.png</Unpressed>
 				</State>
-					<Pos>375,0</Pos>
+				<Pos>375,0</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],bpm_tap</ConfigKey>
-						<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 				</Connection>
 			</PushButton>
 
@@ -5444,10 +5444,10 @@
 					<Pressed>btn_tap2_over.png</Pressed>
 					<Unpressed>btn_tap2.png</Unpressed>
 				</State>
-					<Pos>375,0</Pos>
+				<Pos>375,0</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],bpm_tap</ConfigKey>
-						<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 				</Connection>
 			</PushButton>
 
