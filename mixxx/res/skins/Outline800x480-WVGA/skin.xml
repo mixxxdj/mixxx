@@ -16,11 +16,34 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see http://www.gnu.org/licenses
 
-	See CHANGELOG.txt for latest changes
+	See CHANGELOG.txt for the list of changes.
 	-->
 
 <!DOCTYPE skin>
 <skin>
+	<!--
+	############################################################################################
+	############################################################################################
+	Mixxx skin documentation:
+	http://mixxx.org/wiki/doku.php/creating_skins
+
+	List of controls:
+	http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names
+
+	Qt Style Sheets documentation:
+	http://doc.qt.nokia.com/latest/stylesheet.html
+
+	Debugging:
+	To outline WidgetGroups change all occurrences (exept this one ;-) of
+	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
+
+	Parent WidgedGroups are outlined one pixel solid red;
+		Child WidgedGroups are outlined one pixel solid yellow;
+			Grandchild WidgedGroups are outlined one pixel solid green;
+	############################################################################################
+	############################################################################################
+	-->
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -1943,9 +1966,8 @@
 	Button- BPM Tap
 	**********************************************
 	-->
-
 	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -1956,15 +1978,11 @@
 		<Pos>80,125</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -1975,11 +1993,7 @@
 		<Pos>458,125</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 

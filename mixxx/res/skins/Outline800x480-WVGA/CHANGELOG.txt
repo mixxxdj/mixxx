@@ -24,6 +24,7 @@ v1.11.0.01	(01/05/2012)
 * Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
 * Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
 * Update: Tooltips for EQ kill & microphone buttons
+* Update: Tooltips & use of EmitOnPressAndRelease for bpm_tab
 * Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
 * Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualization in waveform overview , obsolete in Mixxx 1.11+
 
