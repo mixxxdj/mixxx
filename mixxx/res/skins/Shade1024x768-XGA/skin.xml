@@ -22,6 +22,7 @@
 	* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
 	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
 	* Update: Tooltips for EQ kill & microphone buttons
+	* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
 
 	v1.10.0.18	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
@@ -3067,7 +3068,6 @@
 								<!--<Size>415,119</Size>-->
 								<BgColor>#8D98A3</BgColor>
 								<!--<BgPixmap>style/style_bg_waveform.png</BgPixmap>-->
-								<HfcColor>#E4E4E4</HfcColor>
 								<SignalColor>#191F24</SignalColor>
 								<BeatColor>#626F87</BeatColor>
 								<BeatHighlightColor>#626F87</BeatHighlightColor>
@@ -4552,7 +4552,6 @@
 								<!--<Size>415,119</Size>-->
 								<BgColor>#8D98A3</BgColor>
 								<!--<BgPixmap>style/style_bg_waveform.png</BgPixmap>-->
-								<HfcColor>#E4E4E4</HfcColor>
 								<SignalColor>#191F24</SignalColor>
 								<BeatColor>#626F87</BeatColor>
 								<BeatHighlightColor>#626F87</BeatHighlightColor>
