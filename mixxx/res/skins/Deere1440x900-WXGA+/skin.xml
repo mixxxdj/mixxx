@@ -2458,12 +2458,12 @@
 					<Pressed>btn_microphone_talkover_over.png</Pressed>
 					<Unpressed>btn_microphone_talkover.png</Unpressed>
 				</State>
-				<Pos>25,15</Pos>
 				<State>
 					<Number>1</Number>
 					<Pressed>btn_microphone_talkover_over.png</Pressed>
 					<Unpressed>btn_microphone_talkover_over.png</Unpressed>
 				</State>
+				<Pos>25,15</Pos>
 				<Connection>
 					<ConfigKey>[Microphone],talkover</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -3971,6 +3971,48 @@
 				<SignalColor>#0099FF</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
+				<MarkRange>
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#00FF00</Color>
+					<DisabledColor>#FFFFFF</DisabledColor>
+				</MarkRange>
+				<Mark>
+					<Control>cue_point</Control>
+					<Text>C</Text>
+					<Align>top</Align>
+					<Color>#FF001C</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_1_position</Control>
+					<Text>1</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_2_position</Control>
+					<Text>2</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_3_position</Control>
+					<Text>3</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_4_position</Control>
+					<Text>4</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
 				<Connection>
 					<ConfigKey>[Channel1],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
@@ -5176,6 +5218,48 @@
 				<SignalColor>#E17800</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
+				<MarkRange>
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#00FF00</Color>
+					<DisabledColor>#FFFFFF</DisabledColor>
+				</MarkRange>
+				<Mark>
+					<Control>cue_point</Control>
+					<Text>C</Text>
+					<Align>top</Align>
+					<Color>#FF001C</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_1_position</Control>
+					<Text>1</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_2_position</Control>
+					<Text>2</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_3_position</Control>
+					<Text>3</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_4_position</Control>
+					<Text>4</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
 				<Connection>
 					<ConfigKey>[Channel2],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>

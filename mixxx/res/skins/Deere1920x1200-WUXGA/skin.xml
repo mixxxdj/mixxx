@@ -2702,7 +2702,7 @@
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
-						 <Connection>
+						<Connection>
 							<ConfigKey>[Channel1],beatsync_tempo</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>RightButton</ButtonState>
