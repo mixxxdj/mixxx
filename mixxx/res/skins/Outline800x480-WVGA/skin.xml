@@ -1978,7 +1978,7 @@
 		<Pos>80,125</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
-				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 	<PushButton>

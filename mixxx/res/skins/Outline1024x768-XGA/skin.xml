@@ -2807,10 +2807,10 @@
 			<Pressed>btn_tap1_over.png</Pressed>
 			<Unpressed>btn_tap1.png</Unpressed>
 		</State>
-			<Pos>55,190</Pos>
+		<Pos>55,190</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
-				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -2825,7 +2825,7 @@
 			<Pos>963,190</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
-				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 
