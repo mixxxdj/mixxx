@@ -1993,7 +1993,7 @@
 		<Pos>458,125</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
-				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 
