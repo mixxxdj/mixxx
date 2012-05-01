@@ -18,6 +18,11 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.11.0.01	(01/05/2012)
+	* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
+	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
+	* Update: Tooltips for EQ kill & microphone buttons
+
 	v1.10.0.18	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
 	* Change: Use global QToolTip style declaration instead of one per node
@@ -2476,13 +2481,18 @@
 			****************************************
 			-->
 			<PushButton>
-				<Tooltip>Talkover&#10;Hold-to-talk and mix microphone input into the master output.&#10;</Tooltip>
+				<Tooltip>Microphone talkover&#10;Hold-to-talk or short click for latching to&#10;mix microphone input into the master output.&#10;</Tooltip>
 				<Style></Style>
-				<NumberStates>1</NumberStates>
+				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
 					<Pressed>btn_microphone_talkover_over.png</Pressed>
 					<Unpressed>btn_microphone_talkover.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_microphone_talkover_over.png</Pressed>
+					<Unpressed>btn_microphone_talkover_over.png</Unpressed>
 				</State>
 				<Pos>25,15</Pos>
 				<Connection>
@@ -3137,7 +3147,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3147,18 +3157,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>73,159</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterHighKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3168,18 +3178,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>73,198</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterMidKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3189,19 +3199,19 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>73,236</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterLowKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3211,18 +3221,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>358,159</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterHighKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3232,18 +3242,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>358,198</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterMidKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3253,13 +3263,13 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>358,236</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterLowKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
