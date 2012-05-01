@@ -58,7 +58,7 @@ EngineFlanger::EngineFlanger(const char * group)
 
     // Create an enable key on a per-deck basis.
     flangerEnable = new ControlPushButton(ConfigKey(group, "flanger"));
-    flangerEnable->setToggleButton(true);
+    flangerEnable->setButtonMode(ControlPushButton::TOGGLE);
 
     // Fixed values of controls:
     LFOamplitude = 240;

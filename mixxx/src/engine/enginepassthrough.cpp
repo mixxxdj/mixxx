@@ -19,7 +19,7 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
-    m_pPassing->setToggleButton(true);
+    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
 }
 
 EnginePassthrough::~EnginePassthrough() {
