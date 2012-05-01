@@ -22,6 +22,7 @@
 	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
 	* Update: Tooltips for EQ kill & microphone buttons
 	* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
+	* Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualisation in waveform overview , obsolete in Mixxx 1.11+
 
 	v1.10.0.11	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
@@ -485,8 +486,6 @@
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#0032FF</MarkerColor>
-		<ProgressColor>#00ff00</ProgressColor>
-		<ProgressAlpha>80</ProgressAlpha>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -501,8 +500,6 @@
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#ff0000</MarkerColor>
-		<ProgressColor>#00ff00</ProgressColor>
-		<ProgressAlpha>80</ProgressAlpha>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
