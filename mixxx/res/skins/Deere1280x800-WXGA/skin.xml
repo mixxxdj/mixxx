@@ -23,6 +23,7 @@
 	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
 	* Update: Tooltips for EQ kill & microphone buttons
 	* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
+	* Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualisation in waveform overview , obsolete in Mixxx 1.11+
 
 	v1.10.0.18	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
@@ -324,8 +325,6 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -802,8 +801,6 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1280,8 +1277,6 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1758,8 +1753,6 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -4001,8 +3994,6 @@
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
 				<SignalColor>#0099FF</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
-				<ProgressColor>#0099FF</ProgressColor>
-				<ProgressAlpha>80</ProgressAlpha>
 				<Connection>
 					<ConfigKey>[Channel1],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
@@ -5206,8 +5197,6 @@
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
 				<SignalColor>#E17800</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
-				<ProgressColor>#E17800</ProgressColor>
-				<ProgressAlpha>80</ProgressAlpha>
 				<Connection>
 					<ConfigKey>[Channel2],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>

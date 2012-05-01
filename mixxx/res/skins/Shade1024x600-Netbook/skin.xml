@@ -23,6 +23,7 @@
 	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
 	* Update: Tooltips for EQ kill & microphone buttons
 	* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
+	* Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualisation in waveform overview , obsolete in Mixxx 1.11+
 
 	v1.10.0.18	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
@@ -325,8 +326,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#191F24</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#191F24</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -802,8 +801,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#191F24</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#191F24</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1279,8 +1276,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#191F24</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#191F24</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1756,8 +1751,6 @@
 								<Size>170,35</Size>
 								<SignalColor>#191F24</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#191F24</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -3529,8 +3522,6 @@
 						-->
 						<SignalColor>#191F24</SignalColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<ProgressColor>#191F24</ProgressColor>
-						<ProgressAlpha>80</ProgressAlpha>
 						<Connection>
 							<ConfigKey>[Channel1],playposition</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
@@ -5013,8 +5004,6 @@
 						-->
 						<SignalColor>#191F24</SignalColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<ProgressColor>#191F24</ProgressColor>
-						<ProgressAlpha>80</ProgressAlpha>
 						<Connection>
 							<ConfigKey>[Channel2],playposition</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
