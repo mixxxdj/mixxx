@@ -18,6 +18,8 @@
 
 	CHANGELOG
 	v1.11.0.01	(01/05/2012)
+	* Feature: Support <EndOfTrackColor> notification withing the last seconds of a track in waveform & waveform overview, lp:661443
+			   Note that this feature currently only works for regular decks [Channel$] but not for sampler decks [Sampler$]
 	* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
 	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
 	* Update: Tooltips for EQ kill & microphone buttons
@@ -249,6 +251,7 @@
 		<BeatHighlightColor>#000000</BeatHighlightColor>
 		<MarkerColor>#0033FF</MarkerColor>
 		<CueColor>#00FF00</CueColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<MarkRange>
 			<StartControl>loop_start_position</StartControl>
 			<EndControl>loop_end_position</EndControl>
@@ -551,6 +554,7 @@
 		<BeatHighlightColor>#000000</BeatHighlightColor>
 		<MarkerColor>#FF0000</MarkerColor>
 		<CueColor>#000000</CueColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<MarkRange>
 			<StartControl>loop_start_position</StartControl>
 			<EndControl>loop_end_position</EndControl>
@@ -856,6 +860,8 @@
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#0032FF</MarkerColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
