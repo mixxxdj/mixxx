@@ -1,4 +1,4 @@
-Deere , Skin for Mixxx 1.10.x
+Deere , Skin for Mixxx 1.11.x
 www.mixxx.org
 Copyright (C) 2010-2012 jus ; jus@justmail.de
 This file is part of the "Deere" Skin for Mixxx
