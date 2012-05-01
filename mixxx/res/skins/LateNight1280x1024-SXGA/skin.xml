@@ -19,6 +19,8 @@
 
 	CHANGELOG
 	v1.11.0.01	(01/05/2012)
+	* Feature: Support <Mark> (Hot)Cue and <MarkRange> Loop marker in waveform <Overview>, lp:507215
+			   Note that only Hotcues 1-4 are currently customizable for [Channel$] & [Samplers$]
 	* Feature: Support <EndOfTrackColor> notification withing the last seconds of a track in waveform & waveform overview, lp:661443
 			   Note that this feature currently only works for regular decks [Channel$] but not for sampler decks [Sampler$]
 	* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
@@ -327,6 +329,34 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -803,6 +833,34 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1279,6 +1337,34 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1755,6 +1841,34 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<Mark>
+									<Control>hotcue_1_position</Control>
+									<Text>1</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_2_position</Control>
+									<Text>2</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_3_position</Control>
+									<Text>3</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
+								<Mark>
+									<Control>hotcue_4_position</Control>
+									<Text>4</Text>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -4377,6 +4491,48 @@
 				<SignalColor>#0099FF</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
+				<MarkRange>
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#00FF00</Color>
+					<DisabledColor>#FFFFFF</DisabledColor>
+				</MarkRange>
+				<Mark>
+					<Control>cue_point</Control>
+					<Text>C</Text>
+					<Align>top</Align>
+					<Color>#FF001C</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_1_position</Control>
+					<Text>1</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_2_position</Control>
+					<Text>2</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_3_position</Control>
+					<Text>3</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_4_position</Control>
+					<Text>4</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
 				<Connection>
 					<ConfigKey>[Channel1],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
@@ -5253,6 +5409,48 @@
 				<SignalColor>#E17800</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
+				<MarkRange>
+					<StartControl>loop_start_position</StartControl>
+					<EndControl>loop_end_position</EndControl>
+					<EnabledControl>loop_enabled</EnabledControl>
+					<Color>#00FF00</Color>
+					<DisabledColor>#FFFFFF</DisabledColor>
+				</MarkRange>
+				<Mark>
+					<Control>cue_point</Control>
+					<Text>C</Text>
+					<Align>top</Align>
+					<Color>#FF001C</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_1_position</Control>
+					<Text>1</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_2_position</Control>
+					<Text>2</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_3_position</Control>
+					<Text>3</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
+				<Mark>
+					<Control>hotcue_4_position</Control>
+					<Text>4</Text>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+				</Mark>
 				<Connection>
 					<ConfigKey>[Channel2],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
