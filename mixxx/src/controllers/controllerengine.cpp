@@ -168,9 +168,8 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
     // scriptPaths holds the paths to search in when we're looking for scripts
     QList<QString> scriptPaths;
-//     scriptPaths.append(configPath.append("presets/"));
-//     scriptPaths.append(configPath.append("midi/"));
-    scriptPaths.append(USER_PRESETS_PATH.append("controllers/"));
+    scriptPaths.append(USER_PRESETS_PATH);
+    scriptPaths.append(LOCAL_PRESETS_PATH);
     scriptPaths.append(configPath.append("controllers/"));
 
     foreach (QString curScriptFileName, scriptFileNames) {
