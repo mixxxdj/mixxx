@@ -61,6 +61,21 @@ extern "C" void crashDlg()
 }
 
 
+bool loadTranslations(const QLocale& systemLocale, QString userLocale,
+                      QString translation, QString prefix,
+                      QString translationPath, QTranslator* pTranslator) {
+
+    if (userLocale.size() == 0) {
+#if QT_VERSION >= 0x040800
+        return pTranslator->load(systemLocale, translation, prefix, translationPath);
+#else
+        userLocale = systemLocale.name();
+#endif  // QT_VERSION
+    }
+    return pTranslator->load(translation + prefix + userLocale, translationPath);
+}
+
+
 MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 {
     m_pApp = a;
@@ -124,16 +139,15 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     QString translationsFolder = qConfigPath + "translations/";
 
     // Load Qt base translations
-    QString locale = args.locale;
-    if (locale == "") {
-        locale = QLocale::system().name();
-    }
+    QString userLocale = args.locale;
+    QLocale systemLocale = QLocale::system();
 
     // Load Qt translations for this locale from the system translation
     // path. This is the lowest precedence QTranslator.
     QTranslator* qtTranslator = new QTranslator(a);
-    if (qtTranslator->load("qt_" + locale,
-                          QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+    if (loadTranslations(systemLocale, userLocale, "qt", "_",
+                         QLibraryInfo::location(QLibraryInfo::TranslationsPath),
+                         qtTranslator)) {
         a->installTranslator(qtTranslator);
     } else {
         delete qtTranslator;
@@ -142,7 +156,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Load Qt translations for this locale from the Mixxx translations
     // folder.
     QTranslator* mixxxQtTranslator = new QTranslator(a);
-    if (mixxxQtTranslator->load("qt_" + locale, translationsFolder)) {
+    if (loadTranslations(systemLocale, userLocale, "qt", "_",
+                         translationsFolder,
+                         mixxxQtTranslator)) {
         a->installTranslator(mixxxQtTranslator);
     } else {
         delete mixxxQtTranslator;
@@ -151,9 +167,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Load Mixxx specific translations for this locale from the Mixxx
     // translations folder.
     QTranslator* mixxxTranslator = new QTranslator(a);
-    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale,
-                                             translationsFolder);
-    qDebug() << "Loading translations for locale" << locale
+    bool mixxxLoaded = loadTranslations(systemLocale, userLocale, "mixxx", "_",
+                                        translationsFolder, mixxxTranslator);
+    qDebug() << "Loading translations for locale"
+             << (userLocale.size() > 0 ? userLocale : systemLocale.name())
              << "from translations folder" << translationsFolder << ":"
              << (mixxxLoaded ? "success" : "fail");
     if (mixxxLoaded) {
