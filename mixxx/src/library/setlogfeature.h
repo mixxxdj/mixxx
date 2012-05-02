@@ -43,6 +43,8 @@ public:
 
 
   private:
+    virtual QString getRootViewHtml() const;
+
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
 };
