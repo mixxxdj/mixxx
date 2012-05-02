@@ -1,8 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>html/crates.html</file>
-        <file>html/playlists.html</file>
-        <file>html/setlogs.html</file>
         <file>images/mixxx-icon.png</file>
         <file>images/ic_mixxx_window.png</file>
         <file>images/templates/logo_mixxx.png</file>

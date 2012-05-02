@@ -14,7 +14,7 @@
 BasePlaylistFeature::BasePlaylistFeature(
     QObject* parent, ConfigObject<ConfigValue>* pConfig,
     TrackCollection* pTrackCollection,
-    QString rootViewName, QString rootViewUrl)
+    QString rootViewName)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
@@ -22,8 +22,7 @@ BasePlaylistFeature::BasePlaylistFeature(
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
           m_playlistTableModel(this, pTrackCollection->getDatabase()),
-          m_rootViewName(rootViewName),
-          m_rootViewUrl(rootViewUrl) {
+          m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -82,7 +81,6 @@ BasePlaylistFeature::~BasePlaylistFeature() {
 }
 
 void BasePlaylistFeature::activate() {
-    emit(showPage(QUrl(m_rootViewUrl)));
     emit(switchToView(m_rootViewName));
 }
 
@@ -376,8 +374,7 @@ void BasePlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     Q_UNUSED(sidebarWidget);
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    connect(this, SIGNAL(showPage(const QUrl&)),
-            edit, SLOT(setSource(const QUrl&)));
+    edit->setHtml(getRootViewHtml());
     libraryWidget->registerView(m_rootViewName, edit);
 }
 

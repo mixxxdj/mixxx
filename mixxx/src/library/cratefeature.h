@@ -32,8 +32,6 @@ class CrateFeature : public LibraryFeature {
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
-  signals:
-    void showPage(const QUrl& page);
 
   public slots:
     void activate();
@@ -51,6 +49,7 @@ class CrateFeature : public LibraryFeature {
     void slotCrateTableChanged(int playlistId);
 
   private:
+    QString getRootViewHtml() const;
     QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
 
