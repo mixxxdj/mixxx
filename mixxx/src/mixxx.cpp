@@ -165,21 +165,26 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
 
+    // Set the default value in settings file
+    if (m_pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
+        m_pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
     QString userKeyboard =
         QDir::homePath().append("/").append(SETTINGS_PATH)
             .append("Custom.kbd.cfg");
 
-    ConfigObject<ConfigValueKbd>* pKbdConfig = NULL;
+    //Empty keyboard configuration
+    m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
 
     if (QFile::exists(userKeyboard)) {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
-        pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
+        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
     }
     else
         // Otherwise use the default
-        pKbdConfig =
+        m_pKbdConfig =
                 new ConfigObject<ConfigValueKbd>(
                     QString(qConfigPath)
                     .append("keyboard/").append("Standard.kbd.cfg"));
@@ -187,7 +192,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
     // initialization into MixxxKeyboard
     // Workaround for today: MixxxKeyboard calls delete
-    m_pKeyboard = new MixxxKeyboard(pKbdConfig);
+    bool keyboardShortcutsEnabled = m_pConfig->getValueString(
+        ConfigKey("[Keyboard]", "Enabled")) == "1";
+    m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 
     //create RecordingManager
     m_pRecordingManager = new RecordingManager(m_pConfig);
@@ -771,6 +778,20 @@ void MixxxApp::initActions()
     connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsFullScreen(bool)));
 
+    QString keyboardShortcutTitle = tr("Enable &keyboard shortcuts");
+    QString keyboardShortcutText = tr("Toggles keyboard shortcuts on or off");
+    bool keyboardShortcutsEnabled = m_pConfig->getValueString(
+        ConfigKey("[Keyboard]", "Enabled")) == "1";
+    m_pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);
+    m_pOptionsKeyboard->setShortcut(tr("Ctrl+`"));
+    m_pOptionsKeyboard->setShortcutContext(Qt::ApplicationShortcut);
+    m_pOptionsKeyboard->setCheckable(true);
+    m_pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
+    m_pOptionsKeyboard->setStatusTip(keyboardShortcutText);
+    m_pOptionsKeyboard->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
+    connect(m_pOptionsKeyboard, SIGNAL(toggled(bool)),
+            this, SLOT(slotOptionsKeyboard(bool)));
+
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     m_pOptionsPreferences = new QAction(preferencesTitle, this);
@@ -912,6 +933,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SHOUTCAST__
     m_pOptionsMenu->addAction(m_pOptionsShoutcast);
 #endif
+    m_pOptionsMenu->addAction(m_pOptionsKeyboard);
     m_pOptionsMenu->addAction(m_pOptionsFullScreen);
     m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsPreferences);
@@ -991,6 +1013,18 @@ void MixxxApp::slotFileQuit()
     }
     hide();
     qApp->quit();
+}
+
+void MixxxApp::slotOptionsKeyboard(bool toggle) {
+    if (toggle) {
+        //qDebug() << "Enable keyboard shortcuts/mappings";
+        m_pKeyboard->setKeyboardConfig(m_pKbdConfig);
+        m_pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+    } else {
+        //qDebug() << "Disable keyboard shortcuts/mappings";
+        m_pKeyboard->setKeyboardConfig(m_pKbdConfigEmpty);
+        m_pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(0));
+    }
 }
 
 void MixxxApp::slotOptionsFullScreen(bool toggle)

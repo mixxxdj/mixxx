@@ -82,6 +82,8 @@ class MixxxApp : public QMainWindow {
     void slotCheckboxVinylControl2(bool toggle);
     /** toggle recording - Don't #ifdef this because MOC is dumb**/
     void slotOptionsRecord(bool toggle);
+    /** toogle keyboard on-off */
+    void slotOptionsKeyboard(bool toggle);
     /** toogle full screen mode */
     void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
@@ -172,6 +174,7 @@ class MixxxApp : public QMainWindow {
     QAction *m_pOptionsVinylControl2;
 #endif
     QAction *m_pOptionsRecord;
+    QAction *m_pOptionsKeyboard;
     QAction *m_pOptionsFullScreen;
     QAction *m_pOptionsPreferences;
 #ifdef __SHOUTCAST__
@@ -193,6 +196,9 @@ class MixxxApp : public QMainWindow {
     // Fullscreen patch
     QPoint m_winpos;
     bool m_NativeMenuBarSupport;
+
+    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
+    ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 };
 
 //A structure to store the parsed command-line arguments

@@ -40,6 +40,7 @@ public:
     /** Event filter */
     bool eventFilter(QObject *obj, QEvent *e);
 
+    void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
 private:
