@@ -26,6 +26,13 @@ BpmControl::BpmControl(const char* _group,
         m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval) {
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
+    connect(m_pPlayButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlPlay(double)),
+            Qt::DirectConnection);
+            
+    m_pQuantize = ControlObject::getControl(ConfigKey(_group, "quantize"));
+
+    
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged(double)),
@@ -168,6 +175,18 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     m_pFileBpm->set(averageBpm);
     m_dFileBpm = averageBpm;
     slotFileBpmChanged(averageBpm);
+}
+
+void BpmControl::slotControlPlay(double v)
+{
+    if (v > 0.0)
+    {
+        if (m_pQuantize->get() > 0.0) 
+        {
+            qDebug() << "we are quantizing so sync phase on play";
+            syncPhase();
+        }
+    }
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
@@ -432,8 +451,8 @@ double BpmControl::getSyncAdjustment()
 {
     if (m_iSyncState != SYNC_SLAVE)
         return 0.0;
-    if (m_dSyncAdjustment != 0)
-        qDebug() << "sync value" << m_dSyncAdjustment;
+    //if (m_dSyncAdjustment != 0)
+      //  qDebug() << "sync value" << m_dSyncAdjustment;
     return m_dSyncAdjustment;
 }
 
@@ -453,16 +472,38 @@ double BpmControl::getBeatDistance()
     //return dThisPosition - dPrevBeat;
 }
 
-bool BpmControl::syncPhase() {
+bool BpmControl::syncPhase()
+{
+    double dThisPosition = getCurrentSample();
+    double offset = getPhaseOffset();
+    if (offset == 0.0)
+        return false;
+        
+    double dNewPlaypos = dThisPosition + offset;
+    emit(seekAbs(dNewPlaypos));
+    return true;
+}
+
+double BpmControl::getPhaseOffset()
+{
+    double dThisPosition = getCurrentSample();
+    return getPhaseOffset(dThisPosition);
+}
+
+//when enginebuffer is seeking it wants the offset from the new position,
+//not the current position
+double BpmControl::getPhaseOffset(double reference_position)
+{
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
     if (pOtherEngineBuffer == NULL)
-        return false;
+        return 0;
+        
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
     BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 
     // If either track does not have beats, then we can't adjust the phase.
     if (!m_pBeats || !otherBeats) {
-        return false;
+        return 0;
     }
     
     // Get the file BPM of each song.
@@ -471,7 +512,7 @@ bool BpmControl::syncPhase() {
     //ConfigKey(pOtherEngineBuffer->getGroup(), "file_bpm"))->get();
 
     // Get the current position of both decks
-    double dThisPosition = getCurrentSample();
+    double dThisPosition = reference_position;
     double dOtherLength = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
     double dOtherPosition = dOtherLength * ControlObject::getControl(
@@ -481,7 +522,7 @@ bool BpmControl::syncPhase() {
     double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
 
     if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
-        return false;
+        return 0;
     }
 
     // Protect against the case where we are sitting exactly on the beat.
@@ -493,7 +534,7 @@ bool BpmControl::syncPhase() {
     double dOtherNextBeat = otherBeats->findNextBeat(dOtherPosition);
 
     if (dOtherPrevBeat == -1 || dOtherNextBeat == -1) {
-        return false;
+        return 0;
     }
 
     // Protect against the case where we are sitting exactly on the beat.
@@ -535,8 +576,9 @@ bool BpmControl::syncPhase() {
         dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
     }
 
-    emit(seekAbs(dNewPlaypos));
-    return true;
+    return dNewPlaypos - dThisPosition;
+    //emit(seekAbs(dNewPlaypos));
+    //return true;
 }
 
 void BpmControl::slotRateChanged(double) {

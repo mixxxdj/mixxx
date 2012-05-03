@@ -516,7 +516,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
         m_pTrueRate->set(rate);
         //return rate * baserate;
-        qDebug() << m_dSyncedRate << rate;
+        //qDebug() << m_dSyncedRate << rate;
         return rate * baserate;
     }
 

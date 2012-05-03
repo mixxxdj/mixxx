@@ -24,6 +24,8 @@ class BpmControl : public EngineControl {
     double getBeatDistance();
     double getSyncAdjustment();
     void userTweakingSync(bool tweakActive);
+    double getPhaseOffset();
+    double getPhaseOffset(double reference_position);
 
   public slots:
 
@@ -33,6 +35,7 @@ class BpmControl : public EngineControl {
   private slots:
     void slotSetEngineBpm(double);
     void slotFileBpmChanged(double);
+    void slotControlPlay(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
@@ -50,6 +53,7 @@ class BpmControl : public EngineControl {
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
+    ControlObject* m_pQuantize;
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;

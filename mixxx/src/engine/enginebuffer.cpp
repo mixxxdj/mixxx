@@ -184,7 +184,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
     addControl(new QuantizeControl(_group, _config));
-
+    m_pQuantize = ControlObject::getControl(ConfigKey(_group, "quantize"));
+    
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
@@ -426,6 +427,14 @@ void EngineBuffer::slotControlSeek(double change)
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
         new_playpos--;
+        
+    if (m_pQuantize->get() > 0.0) {
+        int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
+        qDebug() << "syncing phase on seek" << offset;
+        if (!even(offset))
+            offset--;
+        new_playpos += offset;
+    }
 
     setNewPlaypos(new_playpos);
 }
