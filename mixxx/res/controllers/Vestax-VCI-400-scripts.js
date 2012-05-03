@@ -68,6 +68,7 @@ VestaxVCI400.addButton = function(buttonName, button, eventHandler) {
  */
 
 VestaxVCI400.ButtonState = {"released":0x00, "pressed":0x7F};
+VestaxVCI400.ScratchTimeOut = 20; //time in ms, see finishScratch()
 /*
  * The button object
  */
@@ -116,6 +117,8 @@ VestaxVCI400.Deck = function (deckNumber, group, active) {
    this.isActive = active; //if this deck is currently controlled by the VCI-400 
    this.Buttons = []; //the buttons
    this.deckNumber = group.substring(8,9);// [Channel1]
+   this.scratchTimer = -1;
+   this.lastScratchTick = -1;
 }
 /*
  * Each deck has a disjunct set of buttons
@@ -198,16 +201,37 @@ VestaxVCI400.Deck.prototype.onVinyl = function(value) {
 };
 // Turn scratch mode on or off depending on wheel touch
 VestaxVCI400.Deck.prototype.onWheelTouch = function(value) {
+    
+   if(this.vinylMode == false)
+       return;
    
-    if(value == VestaxVCI400.ButtonState.pressed){
-        engine.scratchEnable(this.deckNumber, 1024, 33.3333, 0.125, 0.125/32);
-        this.isScratching = true;
+   if(value == VestaxVCI400.ButtonState.pressed){
+       engine.scratchEnable(this.deckNumber, 4096, 33.3333, 0.125, 0.125/32);
+       this.isScratching = true;  
     }
     else{
-       engine.scratchDisable(this.deckNumber);
-        this.isScratching = false;
- 
+        /*
+         * Note: When releasing the wheel you might have done a backspin scratch
+         * Hence, we must not call 'scratchDisable()' here.
+         * Let's set up a timer which check post delayed if the wheel has moved
+         */
+         if(this.scratchTimer == -1)
+            this.scratchTimer = engine.beginTimer(VestaxVCI400.ScratchTimeOut, "VestaxVCI400.Decks."+this.deckIdentifier + ".finishScratch()");
     }
+};
+
+VestaxVCI400.Deck.prototype.finishScratch = function(){
+    var currentTime = new Date().getTime();
+    //print("finishScratch() called");
+    if(currentTime - this.lastScratchTick >= VestaxVCI400.ScratchTimeOut)
+    {
+        engine.stopTimer(this.scratchTimer);
+        this.scratchTimer = -1;
+        engine.scratchDisable(this.deckNumber);
+        this.isScratching = false;
+        //print("Disable Scratch");
+    }
+
 };
 //=========HOT CUE Buttons=========================
 VestaxVCI400.Deck.prototype.onHotCue1Activate = function(value){
@@ -240,13 +264,15 @@ VestaxVCI400.Deck.prototype.onHotCUEButtonPressed = function(hotCueButton, hotCu
 
 VestaxVCI400.Deck.prototype.onWheelMove = function(value) {
      var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
+          
+     //wheel os touched and scratch mode is active
      if(this.isScratching){
-        
         engine.scratchTick(this.deckNumber, jogValue);
+        this.lastScratchTick = new Date().getTime(); 
      }
      else{
         //pitch bend via jog wheel, jogValue has been adjusted to be more soft
-        engine.setValue(this.group,"jog",jogValue/4.0);    
+        engine.setValue(this.group,"jog",jogValue/50);    
      }
 };
 VestaxVCI400.Deck.prototype.onPfl = function(value) {

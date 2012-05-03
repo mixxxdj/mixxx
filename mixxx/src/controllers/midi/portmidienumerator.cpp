@@ -5,21 +5,13 @@
 * @brief This class handles discovery and enumeration of DJ controller devices that appear under the PortMIDI cross-platform API.
 */
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include <portmidi.h>
 
-#include "portmidicontroller.h"
-#include "portmidienumerator.h"
-#include "portmidi.h"
+#include "controllers/midi/portmidienumerator.h"
+
+#include "controllers/midi/portmidicontroller.h"
 
 PortMidiEnumerator::PortMidiEnumerator() : MidiEnumerator() {
-
 }
 
 PortMidiEnumerator::~PortMidiEnumerator() {
@@ -30,7 +22,7 @@ PortMidiEnumerator::~PortMidiEnumerator() {
     }
 }
 
-/** Enumerate the MIDI devices 
+/** Enumerate the MIDI devices
   * This method needs a bit of intelligence because PortMidi (and the underlying MIDI APIs) like to split
   * output and input into separate devices. Eg. PortMidi would tell us the Hercules is two half-duplex devices.
   * To help simplify a lot of code, we're going to aggregate these two streams into a single full-duplex device.
@@ -39,18 +31,18 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
     qDebug() << "Scanning PortMIDI devices:";
 
     int iNumDevices = Pm_CountDevices();
-    
+
     QListIterator<Controller*> dev_it(m_devices);
     while (dev_it.hasNext()) {
         delete dev_it.next();
     }
-    
+
     m_devices.clear();
-    
+
     const PmDeviceInfo *deviceInfo, *inputDeviceInfo, *outputDeviceInfo;
     int inputDevIndex, outputDevIndex;
     QMap<int,QString> unassignedOutputDevices;
-    
+
     // Build a complete list of output devices for later pairing
     for (int i = 0; i < iNumDevices; i++)
     {
@@ -110,24 +102,24 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
                 }
             }
 
-            //So at this point, we either have an input-only MIDI device (outputDeviceInfo == NULL)
-            //or we've found a matching output MIDI device (outputDeviceInfo != NULL).
-            
-            //.... so create our (aggregate) MIDI device!            
-            PortMidiController *currentDevice = new PortMidiController(inputDeviceInfo,
-                                                                       outputDeviceInfo,
-                                                                       inputDevIndex,
-                                                                       outputDevIndex);
-            currentDevice->setPolling(needPolling());
-            m_devices.push_back((Controller*)currentDevice);
+            // So at this point, we either have an input-only MIDI device
+            // (outputDeviceInfo == NULL) or we've found a matching output MIDI
+            // device (outputDeviceInfo != NULL).
+
+            //.... so create our (aggregate) MIDI device!
+            PortMidiController *currentDevice = new PortMidiController(
+                inputDeviceInfo, outputDeviceInfo,
+                inputDevIndex, outputDevIndex);
+            m_devices.push_back(currentDevice);
         }
 
-        // Is there a use-case for output-only devices (such as message displays?)
-        //  If so, handle them here.
-//         else if (deviceInfo->output) {
-//             PortMidiController *currentDevice = new PortMidiController(deviceInfo, i);
-//             m_devices.push_back((MidiController*)currentDevice);
-//         }
+        // Is there a use-case for output-only devices (such as message
+        // displays?) If so, handle them here.
+
+        //else if (deviceInfo->output) {
+        //    PortMidiController *currentDevice = new PortMidiController(deviceInfo, i);
+        //    m_devices.push_back((MidiController*)currentDevice);
+        //}
     }
     return m_devices;
 }

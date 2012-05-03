@@ -9,6 +9,81 @@
         </message>
     </context>
     <context>
+        <name>BasePlaylistFeature</name>
+        <message>
+            <source>New Playlist</source>
+            <translation>新建播放列表</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation>添加到自动 DJ 队列(底部)</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation>添加到自动 DJ 队列(顶部)</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>移除</translation>
+        </message>
+        <message>
+            <source>Rename</source>
+            <translation>重命名</translation>
+        </message>
+        <message>
+            <source>Lock</source>
+            <translation>锁定</translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>导入播放列表</translation>
+        </message>
+        <message>
+            <source>Export Playlist</source>
+            <translation>导出播放列表</translation>
+        </message>
+        <message>
+            <source>Rename Playlist</source>
+            <translation>重命名播放列表</translation>
+        </message>
+        <message>
+            <source>New playlist name:</source>
+            <translation>新建播放列表名称：</translation>
+        </message>
+        <message>
+            <source>Renaming Playlist Failed</source>
+            <translation>c重命名播放列表失败</translation>
+        </message>
+        <message>
+            <source>A playlist by that name already exists.</source>
+            <translation>使用该名称的播放列表已存在。</translation>
+        </message>
+        <message>
+            <source>A playlist cannot have a blank name.</source>
+            <translation>播放列表名称不能为空。</translation>
+        </message>
+        <message>
+            <source>Playlist name:</source>
+            <translation>播放列表名称：</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation>播放列表创建失败</translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation>创建播放列表时发生未知错误： </translation>
+        </message>
+        <message>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>播放列表文件(*.m3u *.m3u8 *.pls *.csv)</translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation>M3U 播放列表(*.m3u);;M3U8 播放列表(*.m3u8);;PLS 播放列表(*.pls);;文本 CSV (*.csv);;可读文本(*.txt)</translation>
+        </message>
+    </context>
+    <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
@@ -16,11 +91,11 @@
         </message>
         <message>
             <source>Artist</source>
-            <translation>艺人</translation>
+            <translation>歌手</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation>歌曲标题</translation>
+            <translation>标题</translation>
         </message>
         <message>
             <source>Album</source>
@@ -28,19 +103,23 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation>曲风</translation>
+            <translation>流派</translation>
+        </message>
+        <message>
+            <source>Composer</source>
+            <translation>作曲家</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation>年</translation>
+            <translation>年份</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation>文件格式</translation>
+            <translation>类型</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation>路径</translation>
+            <translation>位置</translation>
         </message>
         <message>
             <source>Comment</source>
@@ -48,7 +127,7 @@
         </message>
         <message>
             <source>Duration</source>
-            <translation>时长</translation>
+            <translation>持续时间</translation>
         </message>
         <message>
             <source>Rating</source>
@@ -64,7 +143,7 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation>曲号</translation>
+            <translation>音轨 #</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -75,8 +154,17 @@
             <translation>#</translation>
         </message>
         <message>
+            <source>Timestamp</source>
+            <translation>时间戳</translation>
+        </message>
+        <message>
             <source>Key</source>
-            <translation>调</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Lock</source>
+            <translation>BPM 锁定</translation>
         </message>
     </context>
     <context>
@@ -156,36 +244,49 @@
             <translation>音乐类型</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Comment</source>
-            <translation>评论</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation>歌长</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation>BPM</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Key</source>
-            <translation>调</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Type</source>
-            <translation>类型：</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>比特率</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Location</source>
-            <translation>路径</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation>Mixxx 音乐库</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -267,12 +368,12 @@
             <translation>重命名分类列表失败</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -296,20 +397,6 @@
             <translation>关于 Mixxx</translation>
         </message>
         <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
-        </message>
-        <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
             <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;官方网站&lt;/a&gt;</translation>
         </message>
@@ -317,8 +404,65 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>DlgAutoDJ</name>
         <message>
+            <source>Auto-DJ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>One player must be stopped to enable Auto-DJ mode.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Disable Auto DJ</source>
             <translation>关闭自动切换曲目</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shuffle</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip Track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fade Now</source>
+            <translation>现在淡出</translation>
+        </message>
+        <message>
+            <source>Determines the duration of the transition.</source>
+            <translation>决定转换持续时长。</translation>
+        </message>
+        <message>
+            <source>Seconds</source>
+            <translation>秒</translation>
+        </message>
+        <message>
+            <source>sec.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turn Auto DJ on or off.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -326,15 +470,104 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Manage</source>
-            <translation>管理</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgBeatsDlg</name>
+        <message>
+            <source>Beat Detection Settings</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Shuffle playlist</source>
-            <translation>随机播放列表</translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Add tracks to the queue below...</source>
-            <translation>添加歌曲到队列</translation>
+            <source>Enable BPM and Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose Analyser</source>
+            <translation>选择分析器</translation>
+        </message>
+        <message>
+            <source>Beat Analyser:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose beween different algorithms to detect beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Analyser Settings</source>
+            <translation>分析器设置</translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Assume constant tempo (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Offset Correction (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beats already present (e.g. from 3rd-party programs or older Mixxx versions)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Range</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Min:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Max:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -350,7 +583,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Range</source>
-            <translation>BPM 范围</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Max</source>
@@ -362,8 +596,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>分析整首歌曲</translation>
         </message>
     </context>
     <context>
@@ -414,8 +647,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>按空格键继续或跳过。</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
@@ -468,8 +700,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>如果 BPM  可以被检测但不在指定范围</translation>
         </message>
         <message>
             <source>Allow BPM above the range</source>
@@ -477,8 +708,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Schemes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM 模式</translation>
         </message>
         <message>
             <source>Add</source>
@@ -486,7 +716,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Edit</source>
-            <translation>编辑</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Delete</source>
@@ -556,13 +787,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Up increases speed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>向上速度增加</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>向下速度增加 (Technics SL1210)</translation>
         </message>
         <message>
             <source>Information</source>
@@ -661,8 +890,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Temporary Pitch/Rate Buttons</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>临时音高/速率按钮</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when left clicking</source>
@@ -684,6 +912,56 @@ p, li { white-space: pre-wrap; }
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Frame Rate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>OpenGl status</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Display type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Default zoom</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>400%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>DlgPrefCrossfaderDlg</name>
@@ -698,8 +976,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Slow fade</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>缓慢过渡</translation>
         </message>
         <message>
             <source>Fast cut</source>
@@ -708,8 +985,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Constant power</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>恒定输出功率</translation>
         </message>
         <message>
             <source>Mixing</source>
@@ -753,13 +1029,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>文本标签1</translation>
         </message>
         <message>
             <source>16 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>16 Hz</translation>
         </message>
         <message>
             <source>1.014 kHz</source>
@@ -783,21 +1057,18 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>重设</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefMidiBindings</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>无</translation>
         </message>
         <message>
             <source>Apply MIDI device settings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>运用MIDI设备的设置？</translation>
         </message>
         <message>
             <source>Your settings must be applied before starting the MIDI learning wizard.
@@ -807,8 +1078,7 @@ Apply settings and continue?</source>
         </message>
         <message>
             <source>Overwrite existing mapping?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>覆盖现存映射？</translation>
         </message>
         <message>
             <source>Are you sure you'd like to load the %1 mapping?
@@ -823,8 +1093,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Preset Files (*.midi.xml)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>预设文件（*.midi, xml）</translation>
         </message>
         <message>
             <source>Select Control Group</source>
@@ -861,8 +1130,7 @@ This will overwrite your existing MIDI mapping.</source>
         <name>DlgPrefMidiBindingsDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>对话框</translation>
         </message>
         <message>
             <source>Your Device Name</source>
@@ -871,8 +1139,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Load Preset:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>导入预设</translation>
         </message>
         <message>
             <source>Export</source>
@@ -880,28 +1147,23 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Output:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输出：</translation>
         </message>
         <message>
             <source>Enabled</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>已启用</translation>
         </message>
         <message>
             <source>Controls</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>控制</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>添加</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>移除</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
@@ -920,8 +1182,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>MIDI Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI输入</translation>
         </message>
         <message>
             <source>Outputs</source>
@@ -1065,30 +1326,27 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Multiple iPods Detected</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>检测到多个iPod，选择否</translation>
         </message>
         <message>
             <source>Mixxx has detected another iPod. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx检测到另一个iPod 
+</translation>
         </message>
         <message>
             <source>Choose Yes to use the newly found iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>使用用新找到的iPod，选择是@ </translation>
         </message>
         <message>
             <source> or to continue to search for other iPods. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation> 或者继续搜索其他iPods 
+</translation>
         </message>
         <message>
             <source>Choose No to use the existing iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>使用现有的iPod </translation>
         </message>
         <message>
             <source> and end detection. 
@@ -1098,8 +1356,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Choose iPod mount point</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>选择iPod的挂载点</translation>
         </message>
     </context>
     <context>
@@ -1111,13 +1368,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Audio File Formats</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音频文件格式</translation>
         </message>
         <message>
             <source>Additional Format Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>更多格式插件</translation>
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
@@ -1125,8 +1380,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Loaded Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>已加载插件</translation>
         </message>
         <message>
             <source>None</source>
@@ -1135,8 +1389,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>杂项</translation>
         </message>
         <message>
             <source>Synchronize ID3 tags on track modifications</source>
@@ -1149,8 +1402,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>请尽量使用相对路径来导出播放列表</translation>
         </message>
         <message>
             <source>iPod</source>
@@ -1158,18 +1410,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>iPod mountpoint</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod挂载点</translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>浏览...</translation>
         </message>
         <message>
             <source>Detect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>检测</translation>
         </message>
         <message>
             <source>Library</source>
@@ -1177,8 +1426,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音乐目录:</translation>
         </message>
         <message>
             <source>Built-in</source>
@@ -1217,38 +1465,31 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>编码</translation>
         </message>
         <message>
             <source>Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>品质</translation>
         </message>
         <message>
             <source>High</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>高</translation>
         </message>
         <message>
             <source>Low</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>低</translation>
         </message>
         <message>
             <source>Tags</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>标签</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>标题</translation>
         </message>
         <message>
             <source>Author</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>作者</translation>
         </message>
         <message>
             <source>Album</source>
@@ -1261,8 +1502,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>创建一个CUE文件</translation>
         </message>
         <message>
             <source>File Splitting</source>
@@ -1328,16 +1568,14 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>重设</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefShoutcastDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>表单3</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -1367,8 +1605,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Mount</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>挂载</translation>
         </message>
         <message>
             <source>/mixxx.ogg</source>
@@ -1385,8 +1622,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Port</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>端口</translation>
         </message>
         <message>
             <source>8000</source>
@@ -1429,8 +1665,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Website</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>主页</translation>
         </message>
         <message>
             <source>http://www.mixxx.org</source>
@@ -1438,8 +1673,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>描述</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1532,13 +1766,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Channels</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>通道</translation>
         </message>
         <message>
             <source>Stereo</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>立体声</translation>
         </message>
         <message>
             <source>Custom metadata</source>
@@ -1588,8 +1820,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>a device</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>一个设备</translation>
         </message>
         <message>
             <source>An unknown error occurred</source>
@@ -1619,21 +1850,18 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Configuration error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>配置错误</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefSoundDlg</name>
         <message>
             <source>Sound API</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>声音API</translation>
         </message>
         <message>
             <source>Sample Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>采样率</translation>
         </message>
         <message>
             <source>Latency Tips</source>
@@ -1650,13 +1878,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输出</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输入</translation>
         </message>
         <message>
             <source>Query Devices</source>
@@ -1670,8 +1896,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>应用</translation>
         </message>
         <message>
             <source>Latency</source>
@@ -1716,8 +1941,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>输入</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1769,8 +1993,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>应用</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1779,8 +2002,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>秒</translation>
         </message>
         <message>
             <source>Control Mode</source>
@@ -1822,13 +2044,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPreferences</name>
         <message>
             <source>Sound Hardware</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>声音硬件</translation>
         </message>
         <message>
             <source>MIDI Controllers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI控制器</translation>
         </message>
         <message>
             <source>Library</source>
@@ -1836,8 +2056,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Interface</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>接口</translation>
         </message>
         <message>
             <source>Equalizers</source>
@@ -1855,8 +2074,14 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>BPM Detection</source>
-            <translation>BPM 探测</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Normalization</source>
@@ -1895,33 +2120,27 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>新建</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>全部</translation>
         </message>
         <message>
             <source>Progress</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>进度</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>全部选中</translation>
         </message>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>分析</translation>
         </message>
         <message>
             <source>Stop Analysis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>停止分析</translation>
         </message>
         <message>
             <source>Analyzing %1%</source>
@@ -1938,13 +2157,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Status:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>状态:</translation>
         </message>
         <message>
             <source>Start Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>开始录制</translation>
         </message>
         <message>
             <source>Start recording here ...</source>
@@ -1953,6 +2170,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Stop Recording</source>
+            <translation>停止录制</translation>
+        </message>
+        <message>
+            <source>Recording to file: </source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>MB written</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1961,28 +2187,23 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音轨编辑器</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>曲目：</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>标题：</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>艺术家：</translation>
         </message>
         <message>
             <source>Album:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>专辑：</translation>
         </message>
         <message>
             <source>Date:</source>
@@ -1995,18 +2216,20 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre:</source>
+            <translation>流派：</translation>
+        </message>
+        <message>
+            <source>Composer:</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>文件名：</translation>
         </message>
         <message>
             <source>Duration:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>持续时间：</translation>
         </message>
         <message>
             <source>3:00</source>
@@ -2015,8 +2238,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>文件类型：</translation>
         </message>
         <message>
             <source>77</source>
@@ -2035,8 +2257,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>音轨信息（点击展开）</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -2127,6 +2348,14 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>EmptyWaveformWidget</name>
+        <message>
+            <source>Empty</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>EncoderMp3</name>
         <message>
             <source>Encoder</source>
@@ -2171,8 +2400,7 @@ p, li { white-space: pre-wrap; }
         <name>EngineShoutcast</name>
         <message>
             <source>Mixxx encountered a problem</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx遇到一个问题</translation>
         </message>
         <message>
             <source>Could not allocate shout_t</source>
@@ -2186,6 +2414,81 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Error setting non-blocking mode:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting hostname!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting port!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting password!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting mount!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting username!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream name!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream description!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream genre!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream url!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting bitrate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: unknown server protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: libshout only supports Shoutcast with MP3 format!</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2224,8 +2527,7 @@ p, li { white-space: pre-wrap; }
         <name>ErrorDialogHandler</name>
         <message>
             <source>Fatal error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>致命错误</translation>
         </message>
         <message>
             <source>Critical error</source>
@@ -2234,8 +2536,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Warning</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>警示</translation>
         </message>
         <message>
             <source>Information</source>
@@ -2244,6 +2545,29 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Question</source>
+            <translation>问题</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2260,8 +2584,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>（加载）iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2339,8 +2662,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>描述</translation>
         </message>
     </context>
     <context>
@@ -2463,48 +2785,6 @@ p, li { white-space: pre-wrap; }
             <translation>Mixxx</translation>
         </message>
         <message>
-            <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx: Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
-The hardware information will include:
-	- CPU model and features
-	- Total/Available Amount of RAM
-	- Available disk space
-	- OS version
-Your usage information will include:
-	- Settings/Preferences
-	- Internal errors
-	- Internal debugging messages
-	- Performance statistics (average latency, CPU usage)
-This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
-</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Choose music library directory</source>
             <translation type="unfinished">
             </translation>
@@ -2559,23 +2839,43 @@ This information will not be used to personally identify you, contact you, adver
             <translation>退出</translation>
         </message>
         <message>
+            <source>No Output Devices</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Continue</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&amp;Load Song (Player 1)...</source>
+            <source>Load track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loads a track in deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Open</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Ctrl+O</source>
             <translation>Ctrl+O</translation>
-        </message>
-        <message>
-            <source>&amp;Load Song (Player 2)...</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2587,11 +2887,21 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
+            <source>Quits Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Ctrl+Q</source>
             <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Rescans library folders for changes to tracks.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2614,16 +2924,12 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ctrl+C</translation>
         </message>
         <message>
-            <source>&amp;Import playlist</source>
+            <source>Deck %1 is currently playing a track.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Ctrl+I</source>
-            <translation>Ctrl+I</translation>
-        </message>
-        <message>
-            <source>&amp;Audio Beat Marks</source>
+            <source>Are you sure you want to load a new track?</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2633,15 +2939,16 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
-            <source>Ctrl+F</source>
-            <translation>Ctrl+F</translation>
-        </message>
-        <message>
             <source>F11</source>
             <translation>F11</translation>
         </message>
         <message>
             <source>&amp;Preferences</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2656,6 +2963,11 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>&amp;Community Support</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Get help with Mixxx</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2675,27 +2987,12 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+U</source>
             <translation>Ctrl+U</translation>
-        </message>
-        <message>
-            <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2711,62 +3008,7 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ctrl+R</translation>
         </message>
         <message>
-            <source>Show Studio</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Opens a song in player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Opens a song in player 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Quits the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Exit
-Quits the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rescan library
-Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New playlist
-Create a new playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2776,29 +3018,22 @@ Create a new playlist</source>
             </translation>
         </message>
         <message>
-            <source>New crate
-Create a new crate.</source>
+            <source>Ctrl+Shift+F</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Import playlist</source>
+            <source>Enable Vinyl Control &amp;1</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Audio Beat Marks</source>
+            <source>Enable Vinyl Control &amp;2</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Audio Beat Marks
-Mark beats by audio clicks</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Activate Vinyl Control</source>
+            <source>Enable live &amp;broadcasting</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2808,17 +3043,7 @@ Mark beats by audio clicks</source>
             </translation>
         </message>
         <message>
-            <source>Activate live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Stream your mixes to a shoutcast or icecast server</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Start Recording your Mix</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2828,34 +3053,7 @@ Mark beats by audio clicks</source>
             </translation>
         </message>
         <message>
-            <source>Full Screen</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Display Mixxx using the full screen</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences
-Playback and MIDI preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Get help with Mixxx</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2865,19 +3063,7 @@ Get help with Mixxx</source>
             </translation>
         </message>
         <message>
-            <source>Support
-Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Send feedback to the Mixxx team.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2887,30 +3073,12 @@ Send feedback to the Mixxx team.</source>
             </translation>
         </message>
         <message>
-            <source>Support
-Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>About the application</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>About
-About the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Shows the macro studio window</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Show Studio
-Makes the macro studio visible</source>
+            <source>A sampler is currently playing. Exit Mixxx?</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2937,50 +3105,38 @@ Makes the macro studio visible</source>
             <translation>帮助(&amp;H)</translation>
         </message>
         <message>
-            <source>&amp;Macro</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>&amp;Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Quit...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Do your really want to quit?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Player 1 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load Song into Player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Player 2 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load Song into Player 2</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2998,7 +3154,35 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
+            <source>Missing Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>ParserCsv</name>
+        <message>
+            <source>Location</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Playlist Export Failed</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Could not create file</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Readable text Export Failed</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3044,36 +3228,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <context>
         <name>PlaylistFeature</name>
         <message>
-            <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Add to Auto-DJ Queue</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Import Playlist</source>
-            <translation>导入播放列表</translation>
-        </message>
-        <message>
-            <source>Export Playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3084,55 +3239,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Playlist name:</source>
-            <translation>播放列表名称：</translation>
-        </message>
-        <message>
-            <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Renaming Playlist Failed</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist by that name already exists.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3183,6 +3289,16 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Unknown path type %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(GL)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(GLSL)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3241,51 +3357,32 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
     </context>
     <context>
-        <name>ScriptStudio</name>
+        <name>SetlogFeature</name>
         <message>
-            <source>Mixxx Script Studio</source>
+            <source>Join with previous</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>File</source>
-            <translation>文件</translation>
-        </message>
-        <message>
-            <source>Edit</source>
+            <source>Set Logs</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Run</source>
+            <source>Unlock</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Close</source>
+            <source>Lock</source>
             <translation type="unfinished">
             </translation>
         </message>
+    </context>
+    <context>
+        <name>SoftwareWaveformWidget</name>
         <message>
-            <source>Import...</source>
-            <translation>导入...</translation>
-        </message>
-        <message>
-            <source>Export...</source>
-            <translation>导出...</translation>
-        </message>
-        <message>
-            <source>Delete Macro</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New Macro...</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Run Macro</source>
+            <source>Filtered</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3706,6 +3803,15 @@ Click OK to exit.</source>
     <context>
         <name>WSearchLineEdit</name>
         <message>
+            <source>Ctrl+F</source>
+            <translation>Ctrl+F</translation>
+        </message>
+        <message>
+            <source>Esc</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Search...</source>
             <translation type="unfinished">
             </translation>
@@ -3739,12 +3845,32 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
-            <source>Add to Auto DJ Queue</source>
+            <source>Add to Auto-DJ Queue (bottom)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (top)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Lock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unlock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear BPM and Beatgrid</source>
             <translation type="unfinished">
             </translation>
         </message>

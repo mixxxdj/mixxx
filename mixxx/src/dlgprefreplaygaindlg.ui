@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>DlgPrefReplayGainDlg</class>
- <widget class="QWidget" name="DlgPrefReplayGainDlg" >
-  <property name="geometry" >
+ <widget class="QWidget" name="DlgPrefReplayGainDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,42 +10,42 @@
     <height>447</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>BPM Detection Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
       <string>ReplayGain Normalization</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2" >
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QCheckBox" name="EnableGain" >
-        <property name="toolTip" >
-         <string>Apply volume normalization to loaded songs.</string>
+       <widget class="QCheckBox" name="EnableGain">
+        <property name="toolTip">
+         <string>Apply volume normalization to loaded tracks.</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>Enable Replay Gain</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="Line" name="line1" >
-        <property name="frameShape" >
+       <widget class="Line" name="line1">
+        <property name="frameShape">
          <enum>QFrame::HLine</enum>
         </property>
-        <property name="frameShadow" >
+        <property name="frameShadow">
          <enum>QFrame::Sunken</enum>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="EnableAnalyser" >
-        <property name="toolTip" >
-         <string>Calculate ReplayGain normalization for songs which are missing ReplayGain metadata.</string>
+       <widget class="QCheckBox" name="EnableAnalyser">
+        <property name="toolTip">
+         <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>Enable Replay Gain Analysis</string>
         </property>
        </widget>
@@ -53,14 +54,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="bigfatwarning" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+    <widget class="QLabel" name="bigfatwarning">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="font" >
+     <property name="font">
       <font>
        <weight>50</weight>
        <italic>true</italic>
@@ -68,20 +69,20 @@
        <strikeout>false</strikeout>
       </font>
      </property>
-     <property name="text" >
-      <string>On older computers, it may take a few seconds before volume normalization is applied to a new song. You may wish to wait before adjusting the pregain and volume.</string>
+     <property name="text">
+      <string>On older computers, it may take a few seconds before volume normalization is applied to a new track. You may wish to wait before adjusting the pregain and volume.</string>
      </property>
-     <property name="wordWrap" >
+     <property name="wordWrap">
       <bool>true</bool>
      </property>
     </widget>
    </item>
    <item>
-    <spacer name="verticalSpacer" >
-     <property name="orientation" >
+    <spacer name="verticalSpacer">
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeHint" stdset="0" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
        <height>40</height>
@@ -90,23 +91,23 @@
     </spacer>
    </item>
    <item>
-    <widget class="QGroupBox" name="grpRP" >
-     <property name="minimumSize" >
+    <widget class="QGroupBox" name="grpRP">
+     <property name="minimumSize">
       <size>
        <width>409</width>
        <height>200</height>
       </size>
      </property>
-     <property name="title" >
+     <property name="title">
       <string/>
      </property>
-     <layout class="QGridLayout" >
-      <item row="1" column="0" >
+     <layout class="QGridLayout">
+      <item row="1" column="0">
        <spacer>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeHint" stdset="0" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
           <height>40</height>
@@ -114,26 +115,26 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="0" >
-       <layout class="QVBoxLayout" name="_2" >
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="_2">
         <item>
-         <layout class="QHBoxLayout" name="_3" >
+         <layout class="QHBoxLayout" name="_3">
           <item>
-           <widget class="QLabel" name="label_boost" >
-            <property name="text" >
+           <widget class="QLabel" name="label_boost">
+            <property name="text">
              <string>Initial Boost</string>
             </property>
-            <property name="buddy" >
+            <property name="buddy">
              <cstring>SliderBoost</cstring>
             </property>
            </widget>
           </item>
           <item>
            <spacer>
-            <property name="orientation" >
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>40</width>
               <height>20</height>
@@ -142,8 +143,8 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="label" >
-            <property name="text" >
+           <widget class="QLabel" name="label">
+            <property name="text">
              <string/>
             </property>
            </widget>
@@ -151,44 +152,44 @@
          </layout>
         </item>
         <item>
-         <widget class="QSlider" name="SliderBoost" >
-          <property name="toolTip" >
+         <widget class="QSlider" name="SliderBoost">
+          <property name="toolTip">
            <string>Initial Gain Boost</string>
           </property>
-          <property name="locale" >
-           <locale country="AnyCountry" language="C" />
+          <property name="locale">
+           <locale language="C" country="AnyCountry"/>
           </property>
-          <property name="minimum" >
+          <property name="minimum">
            <number>0</number>
           </property>
-          <property name="maximum" >
+          <property name="maximum">
            <number>15</number>
           </property>
-          <property name="singleStep" >
+          <property name="singleStep">
            <number>1</number>
           </property>
-          <property name="pageStep" >
+          <property name="pageStep">
            <number>1</number>
           </property>
-          <property name="value" >
+          <property name="value">
            <number>6</number>
           </property>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="tickInterval" >
+          <property name="tickInterval">
            <number>5</number>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="_4" >
+         <layout class="QHBoxLayout" name="_4">
           <item>
            <spacer>
-            <property name="orientation" >
+            <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" stdset="0" >
+            <property name="sizeHint" stdset="0">
              <size>
               <width>40</width>
               <height>20</height>
@@ -197,24 +198,24 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLCDNumber" name="lcddB" >
-            <property name="locale" >
-             <locale country="AnyCountry" language="C" />
+           <widget class="QLCDNumber" name="lcddB">
+            <property name="locale">
+             <locale language="C" country="AnyCountry"/>
             </property>
-            <property name="numDigits" >
+            <property name="numDigits">
              <number>2</number>
             </property>
-            <property name="segmentStyle" >
+            <property name="digitCount">
+             <number>2</number>
+            </property>
+            <property name="segmentStyle">
              <enum>QLCDNumber::Flat</enum>
-            </property>
-            <property name="digitCount" stdset="0" >
-             <number>2</number>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_2" >
-            <property name="text" >
+           <widget class="QLabel" name="label_2">
+            <property name="text">
              <string>dB</string>
             </property>
            </widget>
@@ -223,14 +224,14 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="0" >
-       <layout class="QHBoxLayout" name="_5" >
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="_5">
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" stdset="0" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
             <height>20</height>
@@ -239,8 +240,8 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="PushButtonReset" >
-          <property name="text" >
+         <widget class="QPushButton" name="PushButtonReset">
+          <property name="text">
            <string>Reset</string>
           </property>
          </widget>
@@ -252,7 +253,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections>
   <connection>
@@ -261,11 +262,11 @@
    <receiver>lcddB</receiver>
    <slot>display(int)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>220</x>
      <y>298</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>355</x>
      <y>331</y>
     </hint>

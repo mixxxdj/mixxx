@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.8.0">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0">
     <info>
         <name>Hercules DJ Control Steel</name>
         <author>Stephane List, from the work of Anders Gunnarsson</author>

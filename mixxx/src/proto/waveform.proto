@@ -1,0 +1,30 @@
+package mixxx.track.io;
+
+option optimize_for = LITE_RUNTIME;
+
+message Waveform {
+  enum Units {
+    RMS = 0;
+    AMPLITUDE = 1;
+  }
+  message Signal {
+    repeated int32 value = 1;
+    optional int32 channels = 2 [ default = 2 ];
+    optional Units units = 3 [ default = RMS ];
+    optional int32 max_value = 4;
+    optional int32 min_value = 5;
+  }
+  message FilteredSignal {
+    optional Signal low = 1;
+    optional Signal mid = 2;
+    optional Signal high = 3;
+    optional double low_cutoff_frequency = 4;
+    optional double mid_low_cutoff_frequency = 5;
+    optional double mid_high_cutoff_frequency = 6;
+    optional double high_cutoff_frequency = 7;
+  }
+  optional double visual_sample_rate = 1;
+  optional double audio_visual_ratio = 2;
+  optional Signal signal_all = 3;
+  optional FilteredSignal signal_filtered = 4;
+}

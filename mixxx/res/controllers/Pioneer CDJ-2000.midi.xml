@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset schemaversion="1" mixxxVersion="1.10.0+">
   <info>
-    <name>Pioneer CDJ-2000.midi.xml</name>
+    <name>Pioneer CDJ-2000</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
     <description>Pioneer CDJ-2000 configuration for 2 decks on midi channels 1 and 2</description>
   </info>

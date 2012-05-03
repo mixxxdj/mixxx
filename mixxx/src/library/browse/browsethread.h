@@ -42,14 +42,14 @@ class BrowseThread : public QThread {
 
     QMutex m_mutex;
     QWaitCondition m_locationUpdated;
-    QList<int> m_searchColumns;
-    QString m_path;
     volatile bool m_bStopThread;
 
-
-    static BrowseThread* m_instance;
+    // You must hold m_path_mutex to touch m_path or m_model_observer
+    QMutex m_path_mutex;
+    QString m_path;
     BrowseTableModel* m_model_observer;
 
+    static BrowseThread* m_instance;
 };
 
 #endif // BROWSETHREAD_H

@@ -1,4 +1,7 @@
 <MixxxMIDIPreset mixxxVersion="1.7.0-beta1+" schemaVersion="1" >
+  <info>
+    <name>Mixman DM2 (OS X)</name>
+  </info>
 	<controller id="Mixman DM2" >
 		<scriptfiles>
 			<file functionprefix="DM2" filename="Mixman DM2 (OS X).js" />
@@ -345,7 +348,7 @@
 					<Script-Binding/>
 				</options>
 			</control>
-			
+
 <!-- rate_perm_up_small -->
 			<control>
 				<status>0x80</status>
@@ -388,8 +391,8 @@
 
 
 <!-- TODO -->
-	
-			
+
+
 			<control>
 				<status>0x0</status>
 				<midino>0x0</midino>

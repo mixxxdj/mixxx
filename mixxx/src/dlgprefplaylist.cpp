@@ -24,8 +24,8 @@
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
-{
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config)
+        :  QWidget(parent) {
     config = _config;
     setupUi(this);
     slotUpdate();
@@ -39,10 +39,10 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
 
     //Disable M4A Button after download completes successfully.
     connect(m_pPluginDownloader, SIGNAL(downloadFinished()),
-            this, SLOT(slotM4ADownloadFinished())); 
-    
+            this, SLOT(slotM4ADownloadFinished()));
+
     connect(m_pPluginDownloader, SIGNAL(downloadProgress(qint64, qint64)),
-            this, SLOT(slotM4ADownloadProgress(qint64, qint64))); 
+            this, SLOT(slotM4ADownloadProgress(qint64, qint64)));
     */
 
     // Connection
@@ -50,14 +50,6 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
     connect(pushButtonExtraPlugins, SIGNAL(clicked()), this, SLOT(slotExtraPlugins()));
-
-#ifdef __IPOD__
-    // iPod related stuff
-    connect(PushButtonDetectiPodMountPoint, SIGNAL(clicked()),  this,      SLOT(slotDetectiPodMountPoint()));
-    connect(PushButtonBrowseiPodMountPoint, SIGNAL(clicked()), this,      SLOT(slotBrowseiPodMountPoint()));
-    connect(LineEditiPodMountPoint,   SIGNAL(returnPressed()), this,      SLOT(slotApply()));
-    groupBoxiPod->setVisible(true);
-#endif
 
     if (!PromoTracksFeature::isSupported(config))
     {
@@ -147,8 +139,6 @@ void DlgPrefPlaylist::slotUpdate()
 {
     // Song path
     LineEditSongfiles->setText(config->getValueString(ConfigKey("[Playlist]","Directory")));
-    // iPod mount point
-    LineEditiPodMountPoint->setText(config->getValueString(ConfigKey("[iPod]","MountPoint")));
     //Bundled songs stat tracking
     checkBoxPromoStats->setChecked((bool)config->getValueString(ConfigKey("[Promo]","StatTracking")).toInt());
     checkBox_library_scan->setChecked((bool)config->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt());
@@ -160,7 +150,7 @@ void DlgPrefPlaylist::slotUpdate()
 
 void DlgPrefPlaylist::slotBrowseDir()
 {
-    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose music library directory"), 
+    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose music library directory"),
                                                    config->getValueString(ConfigKey("[Playlist]","Directory")));
     if (fd != "")
     {
@@ -168,75 +158,16 @@ void DlgPrefPlaylist::slotBrowseDir()
     }
 }
 
-void DlgPrefPlaylist::slotDetectiPodMountPoint()
-{
-QString iPodMountPoint;
-QFileInfoList mountpoints;
-#ifdef __WINDOWS__
-  // Windows iPod Detection
-  mountpoints = QDir::drives();
-#elif __LINUX__
-  // Linux
-  mountpoints = QDir("/media").entryInfoList();
-  mountpoints += QDir("/mnt").entryInfoList();
-#elif __OSX__
-  // Mac OSX
-  mountpoints = QDir("/Volumes").entryInfoList();
-#endif
-
-QListIterator<QFileInfo> i(mountpoints);
-QFileInfo mp;
-while (i.hasNext()) {
-    mp = (QFileInfo) i.next();
-    qDebug() << "mp:" << mp.filePath();
-    if (QDir( QString(mp.filePath() + "/iPod_Control") ).exists() ) {
-       qDebug() << "iPod found at" << mp.filePath(); 
-
-       // Multiple iPods
-       if (!iPodMountPoint.isEmpty()) {
-         int ret = QMessageBox::warning(this, tr("Multiple iPods Detected"), 
-                   tr("Mixxx has detected another iPod. \n\n")+
-                   tr("Choose Yes to use the newly found iPod @ ")+ mp.filePath()+ 
-                   tr(" or to continue to search for other iPods. \n")+
-                   tr("Choose No to use the existing iPod @ ")+ iPodMountPoint+ 
-                   tr( " and end detection. \n"),
-                   QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-         if (ret == QMessageBox::No) {
-           break;
-         }
-       }
-
-       iPodMountPoint = mp.filePath() + "/";
-    }
-}
-if (!iPodMountPoint.isEmpty()) {
-  LineEditiPodMountPoint->setText(iPodMountPoint);
-}
-}
-
-void DlgPrefPlaylist::slotBrowseiPodMountPoint()
-{
-    
-    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose iPod mount point"), 
-                                                   config->getValueString(ConfigKey("[iPod]","MountPoint")));
-    if (fd != "")
-    {
-        LineEditiPodMountPoint->setText(fd);
-    }
-}
-
-
-
 void DlgPrefPlaylist::slotApply()
 {
 
-    config->set(ConfigKey("[Promo]","StatTracking"), 
+    config->set(ConfigKey("[Promo]","StatTracking"),
                    ConfigValue((int)checkBoxPromoStats->isChecked()));
 
-    config->set(ConfigKey("[Library]","RescanOnStartup"), 
+    config->set(ConfigKey("[Library]","RescanOnStartup"),
                    ConfigValue((int)checkBox_library_scan->isChecked()));
-    
-    config->set(ConfigKey("[Library]","WriteAudioTags"), 
+
+    config->set(ConfigKey("[Library]","WriteAudioTags"),
                    ConfigValue((int)checkbox_ID3_sync->isChecked()));
 
     config->set(ConfigKey("[Library]","UseRelativePathOnExport"),
@@ -255,14 +186,6 @@ void DlgPrefPlaylist::slotApply()
         // Save preferences
         config->Save();
 
-        // Emit apply signal
-        emit(apply());
-    }
-    if (LineEditiPodMountPoint->text() != config->getValueString(ConfigKey("[iPod]","MountPoint")))
-    {
-        config->set(ConfigKey("[iPod]","MountPoint"), LineEditiPodMountPoint->text());
-        // Save preferences
-        config->Save();
         // Emit apply signal
         emit(apply());
     }

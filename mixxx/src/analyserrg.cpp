@@ -38,9 +38,6 @@ void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
     m_iStepControl = InitGainAnalysis( (long)sampleRate );
 }
 
-
-
-
 void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
     if(m_iStepControl != 1)
         return;
@@ -61,11 +58,7 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
                                     halfLength, 2);
 }
 
-
-
-
 void AnalyserGain::finalise(TrackPointer tio) {
-
     if(m_iStepControl!=1) return;
 
     //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.

@@ -46,6 +46,7 @@ const QString LIBRARYTABLE_TIMESPLAYED = "timesplayed";
 const QString LIBRARYTABLE_PLAYED = "played";
 const QString LIBRARYTABLE_RATING = "rating";
 const QString LIBRARYTABLE_KEY = "key";
+const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";
@@ -83,7 +84,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
-    void markTracksInDirectoryAsVerified(QString directory);
+    void markTracksInDirectoriesAsVerified(QStringList directories);
     void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);

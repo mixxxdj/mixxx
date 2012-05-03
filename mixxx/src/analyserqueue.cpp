@@ -9,15 +9,21 @@
 #endif
 
 #include "analyserwaveform.h"
-#include "analyserwavesummary.h"
 #include "analyserbpm.h"
 #include "analyserrg.h"
+#ifdef __VAMP__
+#include "analyserbeats.h"
+#include "analysergainvamp.h";
+#include "vamp/vampanalyser.h"
+#endif
+
+#include <typeinfo>
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
-                                 m_tioq(),
-                                 m_qm(),
-                                 m_qwait(),
-                                 m_exit(false)
+    m_tioq(),
+    m_qm(),
+    m_qwait(),
+    m_exit(false)
 {
 
 }
@@ -184,8 +190,10 @@ void AnalyserQueue::run() {
 
 void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
     m_qm.lock();
-    m_tioq.enqueue(tio);
-    m_qwait.wakeAll();
+    if( !m_tioq.contains(tio)){
+        m_tioq.enqueue(tio);
+        m_qwait.wakeAll();
+    }
     m_qm.unlock();
 }
 
@@ -208,20 +216,32 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     ret->addAnalyser(new TonalAnalyser());
 #endif
 
-    ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserWaveform());
+
+#ifdef __VAMP__
+    VampAnalyser::initializePluginPaths();
+    ret->addAnalyser(new AnalyserGainVamp(_config));
+    ret->addAnalyser(new AnalyserBeats(_config));
+    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+#else
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-
+#endif
     ret->start(QThread::IdlePriority);
     return ret;
 }
 
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
     AnalyserQueue* ret = new AnalyserQueue();
-    ret->addAnalyser(new AnalyserWavesummary());
+#ifdef __VAMP__
+    VampAnalyser::initializePluginPaths();
+    ret->addAnalyser(new AnalyserGainVamp(_config));
+    ret->addAnalyser(new AnalyserBeats(_config));
+    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+#else
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
+#endif
     ret->start(QThread::IdlePriority);
     return ret;
 }

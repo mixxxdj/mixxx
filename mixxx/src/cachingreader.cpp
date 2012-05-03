@@ -605,12 +605,12 @@ void CachingReader::loadTrack(TrackPointer pTrack) {
     }
 
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
-    bool open(m_pCurrentSoundSource->open() == OK); //Open the song for reading
+    bool openSucceeded = (m_pCurrentSoundSource->open() == OK); //Open the song for reading
     m_iTrackSampleRate = m_pCurrentSoundSource->getSampleRate();
     m_iTrackNumSamples = status.trackNumSamples =
             m_pCurrentSoundSource->length();
 
-    if (!open || m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
+    if (!openSucceeded || m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_pGroup << "CachingReader::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";

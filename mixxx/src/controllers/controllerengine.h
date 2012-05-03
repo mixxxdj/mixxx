@@ -5,26 +5,19 @@
 * @brief The script engine for use by a Controller.
 */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 #ifndef CONTROLLERENGINE_H
 #define CONTROLLERENGINE_H
 
 #include <QEvent>
 #include <QtScript>
 #include <QMessageBox>
+
 #include "configobject.h"
-#include "pitchfilter.h"
-#include "softtakeover.h"
+#include "controllers/pitchfilter.h"
+#include "controllers/softtakeover.h"
 #include "qtscript-bytearray/bytearrayclass.h"
 
-//Forward declaration(s)
+// Forward declaration(s)
 class Controller;
 class ControlObjectThread;
 class ControllerEngine;
@@ -64,10 +57,7 @@ inline bool operator==(const ControllerEngineConnection &c1, const ControllerEng
 }
 
 class ControllerEngine : public QObject {
-Q_OBJECT
-
-//   friend class Controller;    // so our timerEvent() can remain protected
-
+    Q_OBJECT
   public:
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
@@ -104,20 +94,17 @@ Q_OBJECT
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
-    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
+    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm,
+                                   float alpha, float beta, bool ramp = true);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-
-    // Below is protected so MidiControllerEngine can access them
-    bool checkException();
-
-    QScriptEngine *m_pEngine;
 
   public slots:
     void slotValueChanged(double value);
     // Evaluate a script file
     bool evaluate(QString filepath);
+
     // Execute a particular function
     bool execute(QString function);
     // Execute a particular function with a list of arguments
@@ -126,10 +113,14 @@ Q_OBJECT
     // Execute a particular function with a data string (e.g. a device ID)
     bool execute(QString function, QString data);
     // Execute a particular function with a list of arguments
-    bool execute(QString function, const unsigned char *data, unsigned int len);
-    bool execute(QScriptValue function, const unsigned char *data, unsigned int len);
-    void loadScriptFiles(QList<QString> scriptFileNames);
-    void initializeScripts(QList<QString> scriptFunctionPrefixes);
+    bool execute(QString function, const QByteArray data);
+    bool execute(QScriptValue function, const QByteArray data);
+    // Execute a particular function with a data buffer
+    //TODO: redo this one
+    //bool execute(QString function, const QByteArray data);
+    void loadScriptFiles(QString configPath,
+                         QList<QString> scriptFileNames);
+    void initializeScripts(const QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown();
 
   signals:
@@ -151,8 +142,13 @@ Q_OBJECT
     void stopAllTimers();
 
     void callFunctionOnObjects(QList<QString>, QString, QScriptValueList args = QScriptValueList());
+    bool checkException();
+    QScriptEngine *m_pEngine;
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
+
+    // Scratching functions & variables
+    void scratchProcess(int timerId);
 
     Controller* m_pController;
     bool m_bDebug;
@@ -168,18 +164,13 @@ Q_OBJECT
     };
     QHash<int, TimerInfo> m_timers;
     SoftTakeover m_st;
-
     ByteArrayClass *m_pBaClass;
-
-    // Scratching functions & variables
-    void scratchProcess(int timerId);
-
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
-    QVarLengthArray <int> m_intervalAccumulator;
-    QVarLengthArray <float> m_dx, m_rampTo;
-    QVarLengthArray <bool> m_ramp;
-    QVarLengthArray <PitchFilter*> m_pitchFilter;
+    QVarLengthArray<int> m_intervalAccumulator;
+    QVarLengthArray<float> m_dx, m_rampTo;
+    QVarLengthArray<bool> m_ramp;
+    QVarLengthArray<PitchFilter*> m_pitchFilter;
     QHash<int, int> m_scratchTimers;
 };
 

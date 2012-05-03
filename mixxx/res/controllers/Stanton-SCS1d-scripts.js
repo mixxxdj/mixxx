@@ -150,7 +150,8 @@ StantonSCS1d.padSignals = [    [],    // Bank 0 (non-existent)
 
 // ----------   Functions   ----------
 
-StantonSCS1d.init = function (id) {    // called when the MIDI device is opened & set up
+StantonSCS1d.init = function (id,debug) {
+    StantonSCS1d.debug = debug;
 
     // Welcome message
     var message = "Welcome";

@@ -5,305 +5,391 @@
   * @brief Manages creation/enumeration/deletion of hardware controllers.
   */
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include <QSet>
 
-// #include <QtCore>
-#include "controllermanager.h"
-#include "defs_controllers.h"
+#include "controllers/controllermanager.h"
+#include "controllers/defs_controllers.h"
+#include "controllers/controllerlearningeventfilter.h"
+
+#include "controllers/midi/portmidienumerator.h"
+#ifdef __HSS1394__
+    #include "controllers/midi/hss1394enumerator.h"
+#endif
+
+#ifdef __HID__
+    #include "controllers/hid/hidenumerator.h"
+#endif
 
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
-ControllerProcessor::ControllerProcessor(ControllerManager * pManager) : QObject(pManager) {
-    m_pManager = pManager;
-    m_pollingTimerId = 0;
-}
+// Poll every 1ms (where possible) for good controller response
+const int kPollIntervalMillis = 1;
 
-ControllerProcessor::~ControllerProcessor() {
-}
-
-void ControllerProcessor::startPolling() {
-    // Set up polling timer
-
-    // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
-    // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
-
-    // Poll every 1ms (where possible) for good controller response
-    if (m_pollingTimerId == 0) {
-        qDebug() << "Starting controller polling";
-        m_pollingTimerId = startTimer(1);
-        if (m_pollingTimerId == 0) qWarning() << "Could not start polling timer!";
+QString firstAvailableFilename(QSet<QString>& filenames,
+                               const QString originalFilename) {
+    QString filename = originalFilename;
+    int i = 1;
+    while (filenames.contains(filename)) {
+        i++;
+        filename = QString("%1--%2").arg(originalFilename, QString::number(i));
     }
-//     else qWarning() << "Polling timer already running!";
+    filenames.insert(filename);
+    return filename;
 }
 
-void ControllerProcessor::stopPolling() {
-    if (m_pollingTimerId == 0) return;
+ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
+        QObject(),
+        m_pConfig(pConfig),
+        // WARNING: Do not parent m_pControllerLearningEventFilter to
+        // ControllerManager because the CM is moved to its own thread and runs
+        // its own event loop.
+        m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
+        m_pollTimer(this) {
 
-    // Stop the timer
-    killTimer(m_pollingTimerId);
-    m_pollingTimerId = 0;
-    qDebug() << "Controller polling stopped";
-}
+    qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
 
-void ControllerProcessor::timerEvent(QTimerEvent *event) {
-    bool poll = false;
-    // See if this is the polling timer
-    if (event->timerId() == m_pollingTimerId) poll=true;
-
-    // Pass it on to the active controllers in any case
-    QListIterator<Controller*> dev_it(m_pManager->getControllers());
-    while (dev_it.hasNext())
-    {
-        Controller *device = dev_it.next();
-        if (device->isOpen()) device->timerEvent(event,poll);
+    // Create controller mapping paths in the user's home directory.
+    if (!QDir(USER_PRESETS_PATH).exists()) {
+        qDebug() << "Creating user controller presets directory:" << USER_PRESETS_PATH;
+        QDir().mkpath(USER_PRESETS_PATH);
     }
-}
-
-// ------ ControllerManager ------
-
-ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) : QObject() {
-    m_pConfig = pConfig;
-//     m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
+    if (!QDir(LOCAL_PRESETS_PATH).exists()) {
+        qDebug() << "Creating local controller presets directory:" << LOCAL_PRESETS_PATH;
+        QDir().mkpath(LOCAL_PRESETS_PATH);
+    }
 
     // Instantiate all enumerators
-    m_pPMEnumerator = new PortMidiEnumerator();
+    m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
-    m_pHSSEnumerator = new Hss1394Enumerator();
+    m_enumerators.append(new Hss1394Enumerator());
 #endif
 #ifdef __HID__
-    m_pHIDEnumerator = new HidEnumerator();
+    m_enumerators.append(new HidEnumerator());
 #endif
-#ifdef __OSC__
-    m_pOSCEnumerator = new OscEnumerator();
-#endif
+
+    m_pollTimer.setInterval(kPollIntervalMillis);
+    connect(&m_pollTimer, SIGNAL(timeout()),
+            this, SLOT(pollDevices()));
 
     m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
 
-    m_pProcessor = new ControllerProcessor(this);
+    // Moves all children (including the poll timer) to m_pThread
+    moveToThread(m_pThread);
 
-    this->moveToThread(m_pThread); // implies m_pProcessor->moveToThread(m_pThread);
-    
-    // Controller processing needs to be prioritized since it can affect the audio
-    //  directly, like when scratching
+    // Controller processing needs to be prioritized since it can affect the
+    // audio directly, like when scratching
     m_pThread->start(QThread::HighPriority);
-    
-    connect(this, SIGNAL(requestSetUpDevices()), this, SLOT(slotSetUpDevices()));
-    connect(this, SIGNAL(requestShutdown()), this, SLOT(slotShutdown()));
-    connect(this, SIGNAL(requestSave(bool)), this, SLOT(slotSavePresets(bool)));
+
+    connect(this, SIGNAL(requestSetUpDevices()),
+            this, SLOT(slotSetUpDevices()));
+    connect(this, SIGNAL(requestShutdown()),
+            this, SLOT(slotShutdown()));
+    connect(this, SIGNAL(requestSave(bool)),
+            this, SLOT(slotSavePresets(bool)));
 }
 
 ControllerManager::~ControllerManager() {
     m_pThread->wait();
-    delete m_pProcessor;
     delete m_pThread;
+    delete m_pControllerLearningEventFilter;
+}
+
+ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
+    return m_pControllerLearningEventFilter;
 }
 
 void ControllerManager::slotShutdown() {
-    m_pProcessor->stopPolling();
-    
-    //Delete enumerators and they'll delete their Devices
-    delete m_pPMEnumerator;
-#ifdef __HSS1394__
-    delete m_pHSSEnumerator;
-#endif
-#ifdef __HID__
-    delete m_pHIDEnumerator;
-#endif
-#ifdef __OSC__
-    delete m_pOSCEnumerator;
-#endif
+    stopPolling();
+
+    // Clear m_enumerators before deleting the enumerators to prevent other code
+    // paths from accessing them.
+    QMutexLocker locker(&m_mutex);
+    QList<ControllerEnumerator*> enumerators = m_enumerators;
+    m_enumerators.clear();
+    m_mutex.unlock();
+
+    // Delete enumerators and they'll delete their Devices
+    foreach (ControllerEnumerator* pEnumerator, enumerators) {
+        delete pEnumerator;
+    }
+
     // Stop the processor after the enumerators since the engines live in it
     m_pThread->quit();
 }
 
 void ControllerManager::updateControllerList() {
-    
-    QList<Controller*> newDeviceList;
-    newDeviceList.append(m_pPMEnumerator->queryDevices());
-#ifdef __HSS1394__
-    newDeviceList.append(m_pHSSEnumerator->queryDevices());
-#endif
-#ifdef __HID__
-    newDeviceList.append(m_pHIDEnumerator->queryDevices());
-#endif
-#ifdef __OSC__
-    newDeviceList.append(m_pOSCEnumerator->queryDevices());
-#endif
+    QMutexLocker locker(&m_mutex);
+    if (m_enumerators.isEmpty()) {
+        qWarning() << "updateControllerList called but no enumerators have been added!";
+        return;
+    }
+    QList<ControllerEnumerator*> enumerators = m_enumerators;
+    locker.unlock();
 
-    m_mControllerList.lock();
+    QList<Controller*> newDeviceList;
+    foreach (ControllerEnumerator* pEnumerator, enumerators) {
+        newDeviceList.append(pEnumerator->queryDevices());
+    }
+
+    locker.relock();
     if (newDeviceList != m_controllers) {
         m_controllers = newDeviceList;
-        m_mControllerList.unlock();
+        locker.unlock();
         emit(devicesChanged());
     }
-    else m_mControllerList.unlock();
+}
+
+QList<Controller*> ControllerManager::getControllers() const {
+    QMutexLocker locker(&m_mutex);
+    return m_controllers;
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
-    
-    bool bMatchedCriteria = false;   //Whether or not the current device matched the filtering criteria
 
-    //Create a list of controllers filtered to match the given input/output options.
-    QList<Controller*> filteredDeviceList;
-    
-    m_mControllerList.lock();
+    QMutexLocker locker(&m_mutex);
     QList<Controller*> controllers = m_controllers;
-    m_mControllerList.unlock();
-    
-    QListIterator<Controller*> dev_it(controllers);
-    while (dev_it.hasNext())
-    {
-        bMatchedCriteria = false;                //Reset this for the next device.
-        Controller *device = dev_it.next();
+    locker.unlock();
 
+    // Create a list of controllers filtered to match the given input/output
+    // options.
+    QList<Controller*> filteredDeviceList;
+
+    foreach (Controller* device, controllers) {
         if ((bOutputDevices == device->isOutputDevice()) ||
             (bInputDevices == device->isInputDevice())) {
-            bMatchedCriteria = true;
-        }
-
-        if (bMatchedCriteria)
             filteredDeviceList.push_back(device);
+        }
     }
     return filteredDeviceList;
 }
 
-/** Open whatever controllers are selected in the preferences. */
-// This currently only runs on start-up but maybe should instead be signaled by
-//  the preferences dialog on apply, and only open/close changed devices
 int ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
     QList<Controller*> deviceList = getControllerList(false, true);
-    QListIterator<Controller*> it(deviceList);
 
-    QList<QString> filenames;
+    QSet<QString> filenames;
     int error = 0;
 
-    bool polling = false;
+    foreach (Controller* pController, deviceList) {
+        QString name = pController->getName();
 
-    while (it.hasNext())
-    {
-        Controller *cur= it.next();
-        QString name = cur->getName();
-
-        if (cur->isOpen()) cur->close();
-
-        QString ofilename = name.replace(" ", "_");
-
-        QString filename = ofilename;
-
-        int i=1;
-        while (filenames.contains(filename)) {
-            i++;
-            filename = QString("%1--%2").arg(ofilename, QString::number(i));
+        if (pController->isOpen()) {
+            pController->close();
         }
 
-        filenames.append(filename);
-        m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
-        qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
-        cur->loadPreset(PRESETS_PATH.append(filename + cur->presetExtension()),true);
+        // The filename for this device name.
+        const QString ofilename = presetFilenameFromName(name);
+        // The first unique filename for this device (appends numbers at the end
+        // if we have already seen a controller by this name on this run of
+        // Mixxx.
+        QString filename = firstAvailableFilename(filenames, ofilename);
 
-        if ( m_pConfig->getValueString(ConfigKey("[Controller]", name.replace(" ", "_"))) != "1" )
+        if (!loadPreset(pController, filename, true)) {
+            // TODO(XXX) : auto load midi preset here.
             continue;
+        }
+
+        if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
+            continue;
+        }
 
         qDebug() << "Opening controller:" << name;
-        
-        int value = cur->open();
+
+        int value = pController->open();
         if (value != 0) {
-            qWarning() << "  There was a problem opening" << name;
-            if (error==0) error=value;
+            qWarning() << "There was a problem opening" << name;
+            if (error == 0) {
+                error = value;
+            }
             continue;
         }
-        cur->applyPreset();
-
-        // Only enable polling when open controllers actually need it
-        if (!polling && cur->needPolling()) polling = true;
+        pController->applyPreset(m_pConfig->getConfigPath());
     }
 
-    // Start polling of applicable controller APIs
-    enablePolling(polling);
-    
+    maybeStartOrStopPolling();
     return error;
 }
 
-void ControllerManager::enablePolling(bool enable) {
-    if (enable) m_pProcessor->startPolling();
-    else {
-        // This controller doesn't need it, but check to make sure others don't
-        //  before disabling it
-        QListIterator<Controller*> it(m_controllers);
-        while (it.hasNext()) {
-            Controller *cur = it.next();
-            // (re-using enable here)
-            if (cur->isOpen() && cur->needPolling()) enable = true;
+void ControllerManager::maybeStartOrStopPolling() {
+    QMutexLocker locker(&m_mutex);
+    QList<Controller*> controllers = m_controllers;
+    locker.unlock();
+
+    bool shouldPoll = false;
+    foreach (Controller* pController, controllers) {
+        if (pController->isOpen() && pController->isPolling()) {
+            shouldPoll = true;
         }
-        if (!enable) m_pProcessor->stopPolling();
+    }
+    if (shouldPoll) {
+        startPolling();
+    } else {
+        stopPolling();
     }
 }
 
-QList<QString> ControllerManager::getPresetList(QString extension)
-{
-    QList<QString> presets;
-    // Make sure list is empty
-    presets.clear();
-    
+void ControllerManager::startPolling() {
+    // Start the polling timer.
+    if (!m_pollTimer.isActive()) {
+        m_pollTimer.start();
+        qDebug() << "Controller polling started.";
+    }
+}
+
+void ControllerManager::stopPolling() {
+    m_pollTimer.stop();
+    qDebug() << "Controller polling stopped.";
+}
+
+void ControllerManager::pollDevices() {
+    foreach (Controller* pDevice, m_controllers) {
+        if (pDevice->isOpen() && pDevice->isPolling()) {
+            pDevice->poll();
+        }
+    }
+}
+
+QList<QString> ControllerManager::getPresetList(QString extension) {
     // Paths to search for controller presets
     QList<QString> controllerDirPaths;
-    controllerDirPaths.append(LPRESETS_PATH);
-    controllerDirPaths.append(m_pConfig->getConfigPath().append("controllers/"));
-    
-    QListIterator<QString> itpth(controllerDirPaths);
-    while (itpth.hasNext()) {
-        QDirIterator it(itpth.next());
-        while (it.hasNext())
-        {
-            it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
-            QString curMapping = it.fileName();
-            if (curMapping.endsWith(extension))
-            {
-                curMapping.chop(QString(extension).length()); //chop off the extension
-                presets.append(curMapping);
+    QString configPath = m_pConfig->getConfigPath();
+    controllerDirPaths.append(configPath.append("controllers/"));
+    controllerDirPaths.append(LOCAL_PRESETS_PATH);
+
+    // Should we also show the presets from USER_PRESETS_PATH? That could be
+    // confusing.
+
+    QList<QString> presets;
+    foreach (QString dirPath, controllerDirPaths) {
+        QDirIterator it(dirPath);
+        while (it.hasNext()) {
+            // Advance iterator. We get the filename from the next line. (It's a
+            // bit weird.)
+            it.next();
+
+            QString curPreset = it.fileName();
+            if (curPreset.endsWith(extension)) {
+                curPreset.chop(QString(extension).length()); //chop off the extension
+                presets.append(curPreset);
             }
         }
     }
-    
+    qSort(presets);
     return presets;
 }
 
+void ControllerManager::openController(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+    if (pController->isOpen()) {
+        pController->close();
+    }
+    int result = pController->open();
+    maybeStartOrStopPolling();
+
+    // If successfully opened the device, apply the preset and save the
+    // preference setting.
+    if (result == 0) {
+        pController->applyPreset(m_pConfig->getConfigPath());
+
+        // Update configuration to reflect controller is enabled.
+        m_pConfig->set(ConfigKey(
+            "[Controller]", presetFilenameFromName(pController->getName())), 1);
+    }
+}
+
+void ControllerManager::closeController(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+    pController->close();
+    maybeStartOrStopPolling();
+    // Update configuration to reflect controller is disabled.
+    m_pConfig->set(ConfigKey(
+        "[Controller]", presetFilenameFromName(pController->getName())), 0);
+}
+
+bool ControllerManager::loadPreset(Controller* pController,
+                                   ControllerPresetPointer preset) {
+    if (!preset) {
+        return false;
+    }
+    pController->setPreset(*preset.data());
+    // Save the file path/name in the config so it can be auto-loaded at
+    // startup next time
+    m_pConfig->set(
+        ConfigKey("[ControllerPreset]",
+                  presetFilenameFromName(pController->getName())),
+        preset->filePath());
+    return true;
+}
+
+
+bool ControllerManager::loadPreset(Controller* pController,
+                                   const QString &filename,
+                                   const bool force) {
+    QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
+    if (!handler) {
+        qWarning() << "Failed to get a file handler for" << pController->getName()
+                   << " Unable to load preset.";
+        return false;
+    }
+
+    QString filenameWithExt = filename + pController->presetExtension();
+    QString filepath = USER_PRESETS_PATH + filenameWithExt;
+
+    // If the file isn't present in the user's directory, check the local
+    // presets path.
+    if (!QFile::exists(filepath)) {
+        filepath = LOCAL_PRESETS_PATH.append(filenameWithExt);
+    }
+
+    // If the file isn't present in the user's directory, check res/
+    if (!QFile::exists(filepath)) {
+        filepath = m_pConfig->getConfigPath()
+                .append("controllers/") + filenameWithExt;
+    }
+
+    if (!QFile::exists(filepath)) {
+        qWarning() << "Cannot find" << filenameWithExt << "in either res/"
+                   << "or the user's Mixxx directories (" + LOCAL_PRESETS_PATH
+                   << USER_PRESETS_PATH + ")";
+        return false;
+    }
+
+    ControllerPresetPointer pPreset = handler->load(
+        filepath, filename, force);
+    if (!pPreset) {
+        qWarning() << "Unable to load preset" << filepath;
+        return false;
+    }
+
+    loadPreset(pController, pPreset);
+    //qDebug() << "Successfully loaded preset" << filepath;
+    return true;
+}
+
 void ControllerManager::slotSavePresets(bool onlyActive) {
-    
     QList<Controller*> deviceList = getControllerList(false, true);
-    QListIterator<Controller*> it(deviceList);
-    
-    QList<QString> filenames;
-    
-    while (it.hasNext())
-    {
-        Controller *cur= it.next();
-        if (onlyActive && !cur->isOpen()) continue;
-        QString name = cur->getName();
-        
-        QString ofilename = name.replace(" ", "_");
-        
-        QString filename = ofilename;
-        
-        int i=1;
-        while (filenames.contains(filename)) {
-            i++;
-            filename = QString("%1--%2").arg(ofilename, QString::number(i));
+    QSet<QString> filenames;
+
+    foreach (Controller* pController, deviceList) {
+        if (onlyActive && !pController->isOpen()) {
+            continue;
         }
-        
-        filenames.append(filename);
-        cur->savePreset(PRESETS_PATH.append(filename + cur->presetExtension()));
+        QString name = pController->getName();
+        QString filename = firstAvailableFilename(
+            filenames, presetFilenameFromName(name));
+        QString presetPath = USER_PRESETS_PATH + filename
+                + pController->presetExtension();
+        if (!pController->savePreset(presetPath)) {
+            qWarning() << "Failed to write preset for device"
+                       << name << "to" << presetPath;
+        }
     }
 }

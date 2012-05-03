@@ -40,7 +40,8 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
 
     QStringList columns;
     columns << PLAYLISTTRACKSTABLE_TRACKID
-            << PLAYLISTTRACKSTABLE_POSITION;
+            << PLAYLISTTRACKSTABLE_POSITION
+            << PLAYLISTTRACKSTABLE_DATETIMEADDED;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -324,6 +325,7 @@ bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
@@ -332,6 +334,9 @@ bool PlaylistTableModel::isColumnInternal(int column) {
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
+    }
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+       return true;
     }
     return false;
 }
@@ -350,7 +355,9 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_REMOVE;
+            | TRACKMODELCAPS_REMOVE
+            | TRACKMODELCAPS_BPMLOCK
+            | TRACKMODELCAPS_CLEAR_BEATS;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {

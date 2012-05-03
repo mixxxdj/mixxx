@@ -28,17 +28,15 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
             this, SLOT(slotBpmHalve()));
-    connect(bpmTap, SIGNAL(pressed()),
-            this, SLOT(slotBpmTap()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
     connect(btnCueDelete, SIGNAL(clicked()),
             this, SLOT(cueDelete()));
-
+    connect(bpmTap, SIGNAL(pressed()),
+            this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
-
     m_bpmTapTimer.start();
     for (int i = 0; i < filterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
@@ -114,6 +112,14 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtFilepath->setText(pTrack->getFilename());
     txtFilepath->setCursorPosition(0);
     txtType->setText(pTrack->getType());
+
+    BeatsPointer pBeats = pTrack->getBeats();
+    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
+    bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
+    spinBpm->setEnabled(enableBpmEditing);
+    bpmTap->setEnabled(enableBpmEditing);
+    bpmDouble->setEnabled(enableBpmEditing);
+    bpmHalve->setEnabled(enableBpmEditing);
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -202,8 +208,11 @@ void DlgTrackInfo::unloadTrack(bool save) {
         m_pLoadedTrack->setComposer(txtComposer->text());
         m_pLoadedTrack->setYear(txtYear->text());
         m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
-        m_pLoadedTrack->setBpm(spinBpm->value());
         m_pLoadedTrack->setComment(txtComment->toPlainText());
+
+        if (!m_pLoadedTrack->hasBpmLock()) {
+            m_pLoadedTrack->setBpm(spinBpm->value());
+        }
 
         QHash<int, Cue*> cueMap;
         for (int row = 0; row < cueTable->rowCount(); ++row) {

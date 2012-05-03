@@ -23,6 +23,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled")));
     wantenabled         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_wantenabled")));
     cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_cueing")));
+    scratching          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_scratching")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
