@@ -361,7 +361,7 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     }
     
     const double MAGIC_FUZZ = 0.01;
-    const double MAGIC_FACTOR = 0.1; //the higher this is, the more we influence sync
+    const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
     
     double dThisPosition = getCurrentSample();
     
@@ -377,9 +377,9 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     
     // my_distance is our percentage distance through the beat
     double my_distance = (dThisPosition - dPrevBeat) / beat_length;
-    double user_offset_percent = m_dUserOffset / beat_length;
+    //double user_offset_percent = m_dUserOffset / beat_length;
     
-    if (my_distance - user_offset_percent < 0)
+    if (my_distance - m_dUserOffset < 0)
     {
         my_distance += 1.0;
     }
@@ -388,11 +388,11 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     // if we're at .99% and the master is 0.1%, we are *not* 98% off!
     
     //XXX doublecheck math for applying the user offset here (almost certainly wrong)
-    if (my_distance - user_offset_percent > 0.9 && master_distance < 0.1)
+    if (my_distance - m_dUserOffset > 0.9 && master_distance < 0.1)
     {
         master_distance += 1.0;
     }
-    else if (my_distance - user_offset_percent < 0.1 && master_distance > 0.9)
+    else if (my_distance - m_dUserOffset < 0.1 && master_distance > 0.9)
     {
         my_distance += 1.0;
     }
@@ -408,27 +408,27 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     
     m_dSyncAdjustment = 0.0;
     
-/*    if (user_offset_percent != 0)
-        qDebug() << m_sGroup << "tweak necessary?" << fabs(percent_offset - user_offset_percent) << "offset val:" << user_offset_percent << "cur offset" << percent_offset;
+/*    if (m_dUserOffset != 0)
+        qDebug() << m_sGroup << "tweak necessary?" << fabs(percent_offset - m_dUserOffset) << "offset val:" << m_dUserOffset << "cur offset" << percent_offset;
     else
-        qDebug() << m_sGroup << "nouser tweak necessary?" << fabs(percent_offset - user_offset_percent);*/
+        qDebug() << m_sGroup << "nouser tweak necessary?" << fabs(percent_offset - m_dUserOffset);*/
     
     if (m_bUserTweakingSync)
     {
         //qDebug() << "user is tweaking sync, let's use their value" << sample_offset;
-        m_dUserOffset = sample_offset;
+        m_dUserOffset = percent_offset;
         
         //don't do anything else, leave it
     } 
     else
     {
-        if (fabs(percent_offset - user_offset_percent) > MAGIC_FUZZ)
+        if (fabs(percent_offset - m_dUserOffset) > MAGIC_FUZZ)
         {
-            double error = percent_offset - user_offset_percent;
+            double error = percent_offset - m_dUserOffset;
             //qDebug() << "tweak to get back in sync" << percent_offset << m_dUserOffset << MAGIC_FUZZ;
             //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << percent_offset;
             m_dSyncAdjustment = (0 - error) * MAGIC_FACTOR;
-            //qDebug() << m_sGroup << "how about...." << m_dSyncAdjustment;
+            //qDebug() << m_sGroup << "tweaking...." << m_dSyncAdjustment;
             m_dSyncAdjustment = math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
             //qDebug() << "clamped" << m_dSyncAdjustment;
         }
@@ -535,7 +535,7 @@ double BpmControl::getPhaseOffset(double reference_position)
     
     // Get the current position of both decks
     //qDebug() << m_sGroup << "starting with reference" << reference_position << "and adjusting" << m_dUserOffset;
-    double dThisPosition = reference_position - m_dUserOffset;
+    double dThisPosition = reference_position;
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
 
@@ -574,12 +574,12 @@ double BpmControl::getPhaseOffset(double reference_position)
     // works will be wrong then.
 
     if (this_near_next == other_near_next) {
-        dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
+        dNewPlaypos = dThisPrevBeat + (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
     } else if (this_near_next && !other_near_next) {
-        dNewPlaypos = dThisNextBeat + dOtherBeatFraction * dThisBeatLength;
+        dNewPlaypos = dThisNextBeat + (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
     } else {  //!this_near_next && other_near_next
         dThisPrevBeat = m_pBeats->findNthBeat(dThisPosition, -2);
-        dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
+        dNewPlaypos = dThisPrevBeat + (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
     }
 
     return dNewPlaypos - dThisPosition;
