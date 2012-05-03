@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-29 01:43-0400\n"
-"PO-Revision-Date: 2012-05-01 05:40+0000\n"
+"POT-Creation-Date: 2012-05-02 10:19-0400\n"
+"PO-Revision-Date: 2012-05-02 19:27+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-02 05:16+0000\n"
-"X-Generator: Launchpad (build 15177)\n"
+"X-Launchpad-Export-Date: 2012-05-03 05:14+0000\n"
+"X-Generator: Launchpad (build 15185)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -500,14 +500,35 @@ msgstr ""
 "Wiedergabeliste (*.pls);;Text CSV (*.csv);;Lesbarer Text (*.txt)"
 
 #: CrateFeature#17
+msgid ""
+"Crates are a great way to help organize the music you want to DJ with."
+msgstr ""
+"Plattenkisten sind eine gute Möglichkeit die Musik zu organisieren die Sie "
+"auflegen wollen."
+
+#: CrateFeature#18
+msgid ""
+"Make a crate for your next gig, for your favorite electrohouse tracks, or "
+"for your most requested songs."
+msgstr ""
+"Legen Sie eine Plattenkiste an für Ihren nächsten Auftritt, für Ihre "
+"liebsten Electro-House Titel oder für Ihre am häufigsten nachgefragten "
+"Lieder."
+
+#: CrateFeature#19
+msgid "Crates let you organize your music however you'd like!"
+msgstr ""
+"Plattenkisten ermöglichen es Ihre Musik so zu organisieren wie Sie möchten!"
+
+#: CrateFeature#20
 msgid "A crate cannot have a blank name."
 msgstr "Der Name einer Plattenkiste darf nicht leer sein."
 
-#: CrateFeature#18
+#: CrateFeature#21
 msgid "Creating Crate Failed"
 msgstr "Erstellung der Plattenkiste fehlgeschlagen"
 
-#: CrateFeature#19
+#: CrateFeature#22
 msgid "A crate by that name already exists."
 msgstr "Eine Plattenkiste mit diesem Namen existiert bereits."
 
@@ -524,7 +545,7 @@ msgid "Auto-DJ"
 msgstr "Auto-DJ"
 
 #: DlgAutoDJ#2
-msgid "One player must be stopped to enable Auto-DJ mode."
+msgid "One deck must be stopped to enable Auto-DJ mode."
 msgstr "Ein Deck muss angehalten sein um den Auto-DJ Modus zu aktivieren."
 
 #: DlgAutoDJ#3
@@ -672,12 +693,12 @@ msgstr ""
 
 #: DlgBeatsDlg#15
 msgid ""
-"Re-analyse beats when settings change or beats already present (e.g. from "
-"3rd-party programs or older Mixxx versions)"
+"Re-analyse beats when settings change or beats already present\n"
+"(e.g. from 3rd-party programs or older Mixxx versions)"
 msgstr ""
 "Beats erneut analysieren wenn sich Einstellungen ändern oder Beats bereits "
-"vorhanden sind (z.B. von Programmen von Drittanbietern oder älteren Mixxx-"
-"Versionen)"
+"vorhanden sind\n"
+"(z.B. von Programmen von Drittanbietern oder älteren Mixxx-Versionen)"
 
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
@@ -719,7 +740,7 @@ msgid "Min"
 msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
-msgid "Analyze Entire Song"
+msgid "Analyze Entire Track"
 msgstr "Gesamten Titel analysieren"
 
 #: DlgControllerLearning#1
@@ -1045,8 +1066,8 @@ msgid "Scroll to previous track in library/playlist"
 msgstr "Zum vorherigen Titel in der Bibliothek/Wiedergabeliste blättern"
 
 #: DlgControllerLearning#78
-msgid "Load selected track into first stopped player"
-msgstr "Ausgewählten Titel in den ersten gestoppten Player laden"
+msgid "Load selected track into first stopped deck"
+msgstr "Ausgewählten Titel in das erste gestoppte Deck laden"
 
 #: DlgControllerLearning#79
 msgid "Load selected track"
@@ -1138,7 +1159,7 @@ msgid "Enable BPM Detection"
 msgstr "BPM-Erkennung aktivieren"
 
 #: DlgPrefBPMDlg#4
-msgid "Detect Song BPM on Import"
+msgid "Detect Tracks BPM on Import"
 msgstr "BPM eines Titels beim Import erkennen"
 
 #: DlgPrefBPMDlg#5
@@ -1287,59 +1308,63 @@ msgid "This skin does not support schemes"
 msgstr "Dieses Skin unterstützt keine Farbschemen"
 
 #: DlgPrefControls#13
-msgid "8% (Technics SL1210)"
-msgstr "8% (Technics SL1210)"
+msgid "6%"
+msgstr "6%"
 
 #: DlgPrefControls#14
+msgid "8% (Technics SL-1210)"
+msgstr "8% (Technics SL-1210)"
+
+#: DlgPrefControls#15
+msgid "Down increases speed (Technics SL-1210)"
+msgstr "Runter erhöht Geschwindigkeit (Technics SL-1210)"
+
+#: DlgPrefControls#16
 msgid "10%"
 msgstr "10%"
 
-#: DlgPrefControls#15
+#: DlgPrefControls#17
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#16
+#: DlgPrefControls#18
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#17
+#: DlgPrefControls#19
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#18
+#: DlgPrefControls#20
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#19
+#: DlgPrefControls#21
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#20
+#: DlgPrefControls#22
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#21
+#: DlgPrefControls#23
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#22
+#: DlgPrefControls#24
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#23
+#: DlgPrefControls#25
 msgid "Up increases speed"
 msgstr "Hoch erhöht Geschwindigkeit"
 
-#: DlgPrefControls#24
-msgid "Down increases speed (Technics SL1210)"
-msgstr "Runter erhöht Geschwindigkeit (Technics SL1210)"
-
-#: DlgPrefControls#25
-msgctxt "DlgPrefControls#25"
+#: DlgPrefControls#26
+msgctxt "DlgPrefControls#26"
 msgid "Information"
 msgstr "Information"
 
-#: DlgPrefControls#26
+#: DlgPrefControls#27
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr ""
 "Mixxx muss neu gestartet werden, damit die Änderungen wirksam werden."
@@ -1358,134 +1383,134 @@ msgid "Scheme"
 msgstr "Farbschema"
 
 #: DlgPrefControlsDlg#4
-msgid "Waveform display"
-msgstr "Wellenformanzeige"
-
-#: DlgPrefControlsDlg#5
 msgid "Position display"
 msgstr "Positionsanzeige"
 
-#: DlgPrefControlsDlg#6
+#: DlgPrefControlsDlg#5
 msgid "Tool tips"
 msgstr "Kurzhilfen"
 
-#: DlgPrefControlsDlg#7
-msgctxt "DlgPrefControlsDlg#7"
+#: DlgPrefControlsDlg#6
+msgctxt "DlgPrefControlsDlg#6"
 msgid "On"
 msgstr "An"
 
-#: DlgPrefControlsDlg#8
-msgctxt "DlgPrefControlsDlg#8"
+#: DlgPrefControlsDlg#7
+msgctxt "DlgPrefControlsDlg#7"
 msgid "Off"
 msgstr "Aus"
 
-#: DlgPrefControlsDlg#9
+#: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
 msgstr "Regler für Tonhöhen-/Geschwindigkeitsbereich"
 
-#: DlgPrefControlsDlg#10
+#: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider direction"
 msgstr "Richtungsregler für Tonhöhen-/Geschwindigkeitsbereich"
 
-#: DlgPrefControlsDlg#11
+#: DlgPrefControlsDlg#10
 msgid "Track load behaviour"
 msgstr "Verhalten beim Laden von Titeln"
 
-#: DlgPrefControlsDlg#12
+#: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
 msgstr "Cue-Modus"
 
-#: DlgPrefControlsDlg#13
+#: DlgPrefControlsDlg#12
 msgid "Auto Recall Cue"
 msgstr "Cue automatisch abrufen"
 
-#: DlgPrefControlsDlg#14
+#: DlgPrefControlsDlg#13
 msgid "Permanent Pitch/Rate Buttons"
 msgstr "Knopf für permanente Tonhöhe/Geschwindigkeit"
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#14
 msgid "Left click"
 msgstr "Linksklick"
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#15
 msgid "Right click"
 msgstr "Rechtsklick"
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#16
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
 msgstr ""
 "Dauerhafte Veränderung der Geschwindigkeit (zwischen 1 und 8000) beim "
 "Linksklick"
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#17
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#19
+#: DlgPrefControlsDlg#18
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
 msgstr ""
 "Dauerhafte Veränderung der Geschwindigkeit (zwischen 1 und 8000) beim "
 "Rechtsklick"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#19
 msgid "Temporary Pitch/Rate Buttons"
 msgstr "Knopf für vorübergehende Tonhöhe/Geschwindigkeit"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#20
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
 msgstr ""
 "Vorübergehende Veränderung der Geschwindigkeit (zwischen 1 und 8000) beim "
 "Linksklick"
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
 msgstr ""
 "Vorübergehende Veränderung der Geschwindigkeit (zwischen 1 und 8000) beim "
 "Rechtsklick"
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#22
 msgid "Ramping Pitchbend"
 msgstr "Weiche Tonhöhenveränderung"
 
-#: DlgPrefControlsDlg#24
+#: DlgPrefControlsDlg#23
 msgid "Pitchbend sensitivity"
 msgstr "Feinheit der Tonhöhenveränderung"
 
-#: DlgPrefControlsDlg#25
+#: DlgPrefControlsDlg#24
 msgid "Waveform Display"
 msgstr "Wellenformanzeige"
 
-#: DlgPrefControlsDlg#26
+#: DlgPrefControlsDlg#25
 msgid "Frame Rate"
 msgstr "Bildwiederholrate"
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#26
 msgid "OpenGl status"
 msgstr "OpenGl-Status"
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#27
 msgid "Display type"
 msgstr "Anzeige-Art"
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#28
 msgid "Default zoom"
 msgstr "Standard-Vergrößerung"
 
+#: DlgPrefControlsDlg#29
+msgid "Visual gain"
+msgstr ""
+
 #: DlgPrefControlsDlg#30
-msgid "100%"
-msgstr "100%"
+msgid "<html><head/><body><p>Global visual gain</p></body></html>"
+msgstr ""
 
 #: DlgPrefControlsDlg#31
-msgid "200%"
-msgstr "200%"
+msgid "<html><head/><body><p>Low visual gain</p></body></html>"
+msgstr ""
 
 #: DlgPrefControlsDlg#32
-msgid "300%"
-msgstr "300%"
+msgid "<html><head/><body><p>Medium visual gain</p></body></html>"
+msgstr ""
 
 #: DlgPrefControlsDlg#33
-msgid "400%"
-msgstr "400%"
+msgid "<html><head/><body><p>High visual gain</p></body></html>"
+msgstr ""
 
 #: DlgPrefControlsDlg#34
 msgid "Synchronize"
@@ -1795,6 +1820,7 @@ msgstr ""
 "Wenn möglich, relative Pfade für den Export von Wiedergabelisten verwenden"
 
 #: DlgPrefPlaylistDlg#10
+msgctxt "DlgPrefPlaylistDlg#10"
 msgid "Browse..."
 msgstr "Durchsuchen..."
 
@@ -1832,60 +1858,77 @@ msgstr ""
 msgid "kbps"
 msgstr "kbps"
 
+#: DlgPrefRecord#2
+msgid "Choose recordings direcory"
+msgstr "Aufnahmen-Verzeichnis auswählen"
+
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
 msgstr "Form3"
 
 #: DlgPrefRecordDlg#2
-msgctxt "DlgPrefRecordDlg#2"
+msgid "Recordings Directory"
+msgstr "Aufnahmen-Verzeichnis"
+
+#: DlgPrefRecordDlg#3
+msgid "Recordings Directory:"
+msgstr "Aufnahmen-Verzeichnis:"
+
+#: DlgPrefRecordDlg#4
+msgctxt "DlgPrefRecordDlg#4"
+msgid "Browse..."
+msgstr "Durchsuchen..."
+
+#: DlgPrefRecordDlg#5
+msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
 msgstr "Kodierung"
 
-#: DlgPrefRecordDlg#3
+#: DlgPrefRecordDlg#6
 msgid "Quality"
 msgstr "Qualität"
 
-#: DlgPrefRecordDlg#4
+#: DlgPrefRecordDlg#7
 msgid "High"
 msgstr "Hoch"
 
-#: DlgPrefRecordDlg#5
+#: DlgPrefRecordDlg#8
 msgid "Low"
 msgstr "Niedrig"
 
-#: DlgPrefRecordDlg#6
+#: DlgPrefRecordDlg#9
 msgid "Tags"
 msgstr "Tags"
 
-#: DlgPrefRecordDlg#7
-msgctxt "DlgPrefRecordDlg#7"
+#: DlgPrefRecordDlg#10
+msgctxt "DlgPrefRecordDlg#10"
 msgid "Title"
 msgstr "Titel"
 
-#: DlgPrefRecordDlg#8
+#: DlgPrefRecordDlg#11
 msgid "Author"
 msgstr "Autor"
 
-#: DlgPrefRecordDlg#9
-msgctxt "DlgPrefRecordDlg#9"
+#: DlgPrefRecordDlg#12
+msgctxt "DlgPrefRecordDlg#12"
 msgid "Album"
 msgstr "Album"
 
-#: DlgPrefRecordDlg#10
-msgctxt "DlgPrefRecordDlg#10"
+#: DlgPrefRecordDlg#13
+msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr "Verschiedenes"
+msgstr "Diverses"
 
-#: DlgPrefRecordDlg#11
+#: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
 msgstr "Neue Cue-Datei erstellen"
 
-#: DlgPrefRecordDlg#12
+#: DlgPrefRecordDlg#15
 msgid "File Splitting"
 msgstr "Datei-Aufteilung"
 
-#: DlgPrefRecordDlg#13
+#: DlgPrefRecordDlg#16
 msgid "Split recordings at"
 msgstr "Aufnahmen aufteilen bei"
 
@@ -1899,30 +1942,30 @@ msgid "ReplayGain Normalization"
 msgstr "ReplayGain-Normalisierung"
 
 #: DlgPrefReplayGainDlg#3
-msgid "Apply volume normalization to loaded songs."
-msgstr "Normalisierung der Lautstärke auf geladene Titel anwenden."
-
-#: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
 msgstr "ReplayGain aktivieren"
 
+#: DlgPrefReplayGainDlg#4
+msgid "Enable Replay Gain Analysis"
+msgstr "ReplayGain-Analyse aktivieren"
+
 #: DlgPrefReplayGainDlg#5
+msgid "Apply volume normalization to loaded tracks."
+msgstr "Normalisierung der Lautstärke auf geladene Titel anwenden."
+
+#: DlgPrefReplayGainDlg#6
 msgid ""
-"Calculate ReplayGain normalization for songs which are missing ReplayGain "
+"Calculate ReplayGain normalization for tracks which are missing ReplayGain "
 "metadata."
 msgstr ""
 "ReplayGain-Normalisierung für Titel berechnen, welche keine ReplayGain-"
 "Metadaten haben."
 
-#: DlgPrefReplayGainDlg#6
-msgid "Enable Replay Gain Analysis"
-msgstr "ReplayGain-Analyse aktivieren"
-
 #: DlgPrefReplayGainDlg#7
 msgid ""
 "On older computers, it may take a few seconds before volume normalization is "
-"applied to a new song. You may wish to wait before adjusting the pregain and "
-"volume."
+"applied to a new track. You may wish to wait before adjusting the pregain "
+"and volume."
 msgstr ""
 "Auf älteren Computern dauert es vielleicht etwas, bis die Normalisierung der "
 "Lautstärke auf neue Titel angewandt ist. Sie sollten warten, bevor Sie die "
@@ -2571,94 +2614,94 @@ msgid "Track Editor"
 msgstr "Titel-Editor"
 
 #: DlgTrackInfo#2
-msgid "Song:"
-msgstr "Titel:"
-
-#: DlgTrackInfo#3
 msgid "Title:"
 msgstr "Titel:"
 
-#: DlgTrackInfo#4
+#: DlgTrackInfo#3
 msgid "Artist:"
 msgstr "Interpret:"
 
-#: DlgTrackInfo#5
+#: DlgTrackInfo#4
 msgid "Album:"
 msgstr "Album:"
 
-#: DlgTrackInfo#6
+#: DlgTrackInfo#5
 msgid "Date:"
 msgstr "Datum:"
 
-#: DlgTrackInfo#7
+#: DlgTrackInfo#6
 msgid "Track #:"
 msgstr "Titelnummer:"
 
-#: DlgTrackInfo#8
+#: DlgTrackInfo#7
 msgid "Genre:"
 msgstr "Genre:"
 
-#: DlgTrackInfo#9
+#: DlgTrackInfo#8
 msgid "Composer:"
 msgstr "Komponist:"
 
-#: DlgTrackInfo#10
+#: DlgTrackInfo#9
 msgid "Filename:"
 msgstr "Dateiname:"
 
-#: DlgTrackInfo#11
+#: DlgTrackInfo#10
 msgid "Duration:"
 msgstr "Dauer:"
 
-#: DlgTrackInfo#12
+#: DlgTrackInfo#11
 msgid "3:00"
 msgstr "3:00"
 
-#: DlgTrackInfo#13
+#: DlgTrackInfo#12
 msgid "File Type:"
 msgstr "Dateityp:"
 
-#: DlgTrackInfo#14
+#: DlgTrackInfo#13
 msgid "77"
 msgstr "77"
 
-#: DlgTrackInfo#15
+#: DlgTrackInfo#14
 msgid "Comments:"
 msgstr "Kommentare:"
 
-#: DlgTrackInfo#16
+#: DlgTrackInfo#15
 msgid "Reload track metadata from file."
 msgstr "Metadaten aus der Datei neu laden."
 
-#: DlgTrackInfo#17
+#: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
 msgstr "Titel-Information (Zum Ausklappen anklicken)"
 
-#: DlgTrackInfo#18
+#: DlgTrackInfo#17
 msgid "Track BPM: "
 msgstr "Titel BPM: "
 
-#: DlgTrackInfo#19
+#: DlgTrackInfo#18
 msgid "x2"
 msgstr "x2"
 
-#: DlgTrackInfo#20
+#: DlgTrackInfo#19
 msgid "/2"
 msgstr "/2"
 
-#: DlgTrackInfo#21
+#: DlgTrackInfo#20
 msgid "Tap to Beat"
 msgstr "Zum Beat tippen"
 
-#: DlgTrackInfo#22
+#: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
 "Hinweis: Nutzen Sie die Analysieren-Ansicht in der Bibliothek für die BPM-"
 "Erkennung."
 
-#: DlgTrackInfo#23
+#: DlgTrackInfo#22
 msgid "Track BPM"
 msgstr "Titel BPM"
+
+#: DlgTrackInfo#23
+msgid "Track:"
+msgstr "Titel:"
 
 #: DlgTrackInfo#24
 msgid "Cue Id"
@@ -2924,9 +2967,8 @@ msgid "Question"
 msgstr "Frage"
 
 #: GLSLWaveformWidget#1
-msgctxt "GLSLWaveformWidget#1"
-msgid "Filtered"
-msgstr "Gefiltert"
+msgid "Filtered (experimental)"
+msgstr "Gefiltert (experimental)"
 
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
@@ -3350,10 +3392,42 @@ msgid "Past Contributors"
 msgstr "Frühere Mitwirkende"
 
 #: MixxxApp#77
+msgid "Error in skin file"
+msgstr "Fehler in Skin-Datei"
+
+#: MixxxApp#78
+msgid "The selected skin cannot be loaded."
+msgstr "Das gewählte Skin kann nicht geladen werden."
+
+#: MixxxApp#79
+msgid "OpenGL Direct Rendering"
+msgstr "Direktes Rendern mit OpenGL"
+
+#: MixxxApp#80
+msgid ""
+"Direct rendering is not enabled on your machine.<br><br>This means that the "
+"waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
+"Either update your<br>configuration to enable direct rendering, or "
+"disable<br>the waveform displays in the Mixxx preferences by "
+"selecting<br>\"Empty\" as the waveform display in the 'Interface' "
+"section.<br><br>NOTE: If you use NVIDIA hardware,<br>direct rendering may "
+"not be present, but you should<br>not experience degraded performance."
+msgstr ""
+"Direktes Rendern ist auf Ihrem System nicht aktiviert.<br><br>Dies bedeutet, "
+"dass die Wellenform-Anzeige sehr langsam seien wird <br><b>und "
+"möglicherweise Ihre CPU stark belast</b>. Entweder aktualisieren Sie "
+"Ihre<br>Konfiguration um direktes Rendern zu aktivieren oder "
+"deaktivieren<br>die Wellenform-Anzeige in den Mixxx Einstellungen durch die "
+"Auswahl von<br>\"Leer\" als Wellenform-Anzeige im 'Oberfläche' "
+"Bereich.<br><br>Hinweis: Wenn Sie NVIDIA-Hardware verwenden<br>ist direktes "
+"Renden möglicherweise nicht vorhanden, Sie sollen<br>aber keine verminderte "
+"Leistung erleben."
+
+#: MixxxApp#81
 msgid "Confirm Exit"
 msgstr "Beenden bestätigen"
 
-#: MixxxApp#78
+#: MixxxApp#82
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Ein Deck spielt derzeit. Mixxx beenden?"
 
@@ -3428,6 +3502,38 @@ msgctxt "PlaylistFeature#3"
 msgid "Unlock"
 msgstr "Entsprerren"
 
+#: PlaylistFeature#4
+msgid ""
+"Playlists are ordered lists of songs that allow you to plan your DJ sets."
+msgstr ""
+"Wiedergabelisten sind geordnete Listen Ihrer Titel die es ermöglichen Ihre "
+"DJ-Sets zu planen."
+
+#: PlaylistFeature#5
+msgid ""
+"Some DJs construct playlists before they perform live, but others prefer to "
+"build them on-the-fly."
+msgstr ""
+"Einige DJs stellen Wiedergabelisten zusammen bevor sie live auftreten, "
+"während andere es bevorzugen sie nebenbei zu erstellen."
+
+#: PlaylistFeature#6
+msgid ""
+"When using a playlist during a live DJ set, remember to always pay close "
+"attention to how your audience reacts to the music you've chosen to play."
+msgstr ""
+"Achten Sie bei der Verwendung einer Wiedergabeliste während einer Live-DJ-"
+"Set immer darauf wie das Publikum auf die von Ihnen gespielte Musik reagiert."
+
+#: PlaylistFeature#7
+msgid ""
+"It may be necessary to skip some songs in your prepared playlist or add some "
+"different songs in order to maintain the energy of your audience."
+msgstr ""
+"Es kann notwendig sein bestimmte Titel aus der vorbereiteten Wiedergabeliste "
+"zu überspingen oder einige neue Titel hinzuzufügen um die Energie des "
+"Publikums aufrecht zu erhalten."
+
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
@@ -3467,14 +3573,6 @@ msgstr "Weiterleiten"
 msgid "Unknown path type %1"
 msgstr "Unbekannter Pfad-Typ %1"
 
-#: QObject#9
-msgid "(GL)"
-msgstr "(GL)"
-
-#: QObject#10
-msgid "(GLSL)"
-msgstr "(GLSL)"
-
 #: RecordingFeature#1
 msgid "Recordings"
 msgstr "Aufnahmen"
@@ -3513,11 +3611,11 @@ msgstr "Die Sampler-Bank '%1' konnte nicht gelesen werden."
 
 #: SetlogFeature#1
 msgid "Join with previous"
-msgstr "An der vorherigen anfügen"
+msgstr "Mit vorherigem verbinden"
 
 #: SetlogFeature#2
-msgid "Set Logs"
-msgstr "Set Logs"
+msgid "History"
+msgstr "Verlauf"
 
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
@@ -3528,6 +3626,41 @@ msgstr "Entsprerren"
 msgctxt "SetlogFeature#4"
 msgid "Lock"
 msgstr "Sperren"
+
+#: SetlogFeature#5
+msgid ""
+"The history section automatically keeps a list of tracks you play in your DJ "
+"sets."
+msgstr ""
+"Der Verlauf führt automatisch eine Liste der Titel welche Sie in Ihrem DJ-"
+"Set spielen."
+
+#: SetlogFeature#6
+msgid ""
+"This is handy for remembering what worked in your DJ sets, posting set-"
+"lists, or reporting your plays to licensing organizations."
+msgstr ""
+"Das ist praktisch um sich zu erinnern was in Ihren DJ-Sets funktionierte, um "
+"Set-Listen zu veröffentlichen oder um Ihre Wiedergaben an "
+"Lizensierungsorganisation zu melden."
+
+#: SetlogFeature#7
+msgid ""
+"Every time you start Mixxx, a new history section is created. You can export "
+"it as an m3u playlist or play it again with Auto DJ."
+msgstr ""
+"Bei jedem Start von Mixxx wird ein neuer Ordner im Verlauf erstellt. Diesen "
+"können Sie als Wiedergabeliste exportieren oder erneut mit dem Auto-DJ "
+"wiedergeben."
+
+#: SetlogFeature#8
+msgid ""
+"You can join the current history session with a previous one by right-"
+"clicking and selecting \"Join with previous\"."
+msgstr ""
+"Durch Recht-Klick und Auswahl von \"Mit vorherigem verbinden\" können Sie "
+"den Verlaufsordner der aktuellen Sitzung mit einem früheren Ordner "
+"zusammenführen."
 
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
@@ -3668,6 +3801,14 @@ msgstr ""
 msgid "Show or hide columns."
 msgstr "Spalten zeigen oder verbergen."
 
+#: WaveformWidgetFactory#1
+msgid "(GLSL)"
+msgstr "(GLSL)"
+
+#: WaveformWidgetFactory#2
+msgid "(GL)"
+msgstr "(GL)"
+
 #~ msgid "Permission Denied"
 #~ msgstr "Zugriff verweigert"
 
@@ -3716,9 +3857,20 @@ msgstr "Spalten zeigen oder verbergen."
 #~ "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Und "
 #~ "nun los!</p></body></html>"
 
+#~ msgid "Down increases speed (Technics SL1210)"
+#~ msgstr "Runter erhöht Geschwindigkeit (Technics SL1210)"
+
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Information"
+
+#~ msgctxt "DlgPrefControlsDlg#7"
+#~ msgid "On"
+#~ msgstr "An"
+
+#~ msgctxt "DlgPrefControlsDlg#8"
+#~ msgid "Off"
+#~ msgstr "Aus"
 
 #~ msgid "Overwrite existing mapping?"
 #~ msgstr "Existierendes Mapping überschreiben?"
@@ -4089,6 +4241,9 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "You don't have permission to view this folder."
 #~ msgstr "Sie haben keine Berechtigung diesen Ordner zu öffnen."
 
+#~ msgid "Detect Song BPM on Import"
+#~ msgstr "BPM eines Titels beim Import erkennen"
+
 #~ msgid "Vinyl Type"
 #~ msgstr "Vinyl Typ"
 
@@ -4374,6 +4529,9 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Load selected track into Player %1"
 #~ msgstr "Ausgewählten Titel in Player %1 laden"
 
+#~ msgid "Load selected track into first stopped player"
+#~ msgstr "Ausgewählten Titel in den ersten gestoppten Player laden"
+
 #~ msgctxt "DlgBpmTapDlg#18"
 #~ msgid "Track Information (Click to Expand)"
 #~ msgstr "Titel-Information (Zum Vergrößern anklicken)"
@@ -4628,9 +4786,27 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Shuffle playlist"
 #~ msgstr "Wiedergabeliste mischen"
 
+#~ msgid "8% (Technics SL1210)"
+#~ msgstr "8% (Technics SL1210)"
+
 #~ msgctxt "DlgPrefPlaylistDlg#15"
 #~ msgid "Library"
 #~ msgstr "Bibliothek"
+
+#~ msgid "Browse..."
+#~ msgstr "Durchsuchen..."
+
+#~ msgctxt "DlgPrefRecordDlg#7"
+#~ msgid "Title"
+#~ msgstr "Titel"
+
+#~ msgctxt "DlgPrefRecordDlg#2"
+#~ msgid "Encoding"
+#~ msgstr "Kodierung"
+
+#~ msgctxt "DlgPrefRecordDlg#9"
+#~ msgid "Album"
+#~ msgstr "Album"
 
 #~ msgctxt "Ui#13"
 #~ msgid "Crossfader"
@@ -4672,6 +4848,9 @@ msgstr "Spalten zeigen oder verbergen."
 
 #~ msgid "MIDI Output"
 #~ msgstr "MIDI-Ausgang"
+
+#~ msgid "Apply volume normalization to loaded songs."
+#~ msgstr "Normalisierung der Lautstärke auf geladene Titel anwenden."
 
 #~ msgid "&Audio Beat Marks"
 #~ msgstr "&Audioschlag-Markierung"
@@ -4796,6 +4975,12 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Duration"
 #~ msgstr "Länge"
 
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Gesamten Titel analysieren"
+
+#~ msgid "Song:"
+#~ msgstr "Titel:"
+
 #~ msgctxt "MidiInputMappingTableModel#6"
 #~ msgid "Description"
 #~ msgstr "Beschreibung"
@@ -4814,6 +4999,22 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgctxt "DlgPreferences#8"
 #~ msgid "BPM Detection"
 #~ msgstr "BPM-Erkennung"
+
+#~ msgid ""
+#~ "Calculate ReplayGain normalization for songs which are missing ReplayGain "
+#~ "metadata."
+#~ msgstr ""
+#~ "ReplayGain-Normalisierung für Titel berechnen, welche keine ReplayGain-"
+#~ "Metadaten haben."
+
+#~ msgid ""
+#~ "On older computers, it may take a few seconds before volume normalization is "
+#~ "applied to a new song. You may wish to wait before adjusting the pregain and "
+#~ "volume."
+#~ msgstr ""
+#~ "Auf älteren Computern dauert es vielleicht etwas, bis die Normalisierung der "
+#~ "Lautstärke auf neue Titel angewandt ist. Sie sollten warten, bevor Sie die "
+#~ "Vorverstärkung und Lautstärke anpassen."
 
 #~ msgctxt "DlgPreferences#10"
 #~ msgid "Vinyl Control"
@@ -4840,6 +5041,9 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgctxt "DlgPrefControls#14"
 #~ msgid "Information"
 #~ msgstr "Informationen"
+
+#~ msgid "Waveform display"
+#~ msgstr "Wellenformanzeige"
 
 #~ msgid "Hotcue 4 button for Sampler %1"
 #~ msgstr "Hotcue 4-Knopf für Sampler %1"
@@ -5208,3 +5412,7 @@ msgstr "Spalten zeigen oder verbergen."
 
 #~ msgid "Load Song (Player &2)..."
 #~ msgstr "Titel laden (Player &2)..."
+
+#~ msgctxt "DlgPrefRecordDlg#10"
+#~ msgid "Miscellaneous"
+#~ msgstr "Verschiedenes"
