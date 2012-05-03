@@ -4,6 +4,7 @@
 #include "library/basetrackcache.h"
 
 #include "library/trackcollection.h"
+#include "library/searchqueryparser.h"
 
 namespace {
 
@@ -35,7 +36,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_bIsCaching(isCaching),
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
-          m_database(m_pTrackCollection->getDatabase()) {
+          m_database(m_pTrackCollection->getDatabase()),
+          m_pQueryParser(new SearchQueryParser(m_pTrackCollection->getDatabase())) {
     m_searchColumns << "artist"
                     << "album"
                     << "location"
@@ -52,6 +54,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
 }
 
 BaseTrackCache::~BaseTrackCache() {
+    delete m_pQueryParser;
 }
 
 const QStringList BaseTrackCache::columns() const {
@@ -262,6 +265,8 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
         return pTrack->getRating();
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         return pTrack->getKey();
+    } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
+        return QVariant(pTrack->hasBpmLock());
     }
     return QVariant();
 }
@@ -476,7 +481,6 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 QString BaseTrackCache::filterClause(QString query, QString extraFilter,
                                      QStringList idStrings) const {
     QStringList queryFragments;
-
     if (!extraFilter.isNull() && extraFilter != "") {
         queryFragments << QString("(%1)").arg(extraFilter);
     }
@@ -486,29 +490,8 @@ QString BaseTrackCache::filterClause(QString query, QString extraFilter,
                 .arg(m_idColumn, idStrings.join(","));
     }
 
-    if (!query.isNull() && query != "") {
-        QStringList tokens = query.split(" ");
-        QSqlField search("search", QVariant::String);
-
-        QStringList tokenFragments;
-        foreach (QString token, tokens) {
-            token = token.trimmed();
-            search.setValue("%" + token + "%");
-            QString escapedToken = m_database.driver()->formatValue(search);
-
-            QStringList columnFragments;
-            foreach (QString column, m_searchColumns) {
-                columnFragments << QString("%1 LIKE %2").arg(column, escapedToken);
-            }
-            tokenFragments << QString("(%1)").arg(columnFragments.join(" OR "));
-        }
-        queryFragments << QString("(%1)").arg(tokenFragments.join(" AND "));
-    }
-
-    if (queryFragments.size() > 0) {
-        return "WHERE " + queryFragments.join(" AND ");
-    }
-    return "";
+    return m_pQueryParser->parseQuery(query, m_searchColumns,
+                                      queryFragments.join(" AND "));
 }
 
 QString BaseTrackCache::orderByClause(int sortColumn,

@@ -23,7 +23,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
                                  ConfigObject<ConfigValue>* pConfig)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "PLAYLISTHOME", "qrc:/html/playlists.html") {
+                              "PLAYLISTHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
     // Setup the sidebar playlist model
@@ -174,3 +174,43 @@ QModelIndex PlaylistFeature::constructChildModel(int selected_id)
 }
 
 
+void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (   type == PlaylistDAO::PLHT_NOT_HIDDEN
+        || type == PlaylistDAO::PLHT_UNKNOWN      // In case of a deleted Playlist
+    ){
+        clearChildModel();
+        m_playlistTableModel.select();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
+
+        if(type != PlaylistDAO::PLHT_UNKNOWN) {
+            // Switch the view to the playlist.
+            m_pPlaylistTableModel->setPlaylist(playlistId);
+            // Update selection
+            emit(featureSelect(this, m_lastRightClickedIndex));
+        }
+    }
+}
+
+QString PlaylistFeature::getRootViewHtml() const {
+    QString playlistsTitle = tr("Playlists");
+    QString playlistsSummary = tr("Playlists are ordered lists of songs that allow you to plan your DJ sets.");
+    QString playlistsSummary2 = tr("Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.");
+    QString playlistsSummary3 = tr("When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.");
+    QString playlistsSummary4 = tr("It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.");
+
+    QString html;
+    html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
+    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
+    html.append(QString("<p>%1</p>").arg(playlistsSummary));
+    html.append(QString("<p>%1</p>").arg(playlistsSummary2));
+    html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
+                                            playlistsSummary4));
+    html.append("</td></tr></table>");
+    return html;
+}

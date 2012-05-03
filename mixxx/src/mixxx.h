@@ -18,49 +18,28 @@
 #ifndef MIXXX_H
 #define MIXXX_H
 
-// include files for QT
-#include <qaction.h>
-#include <qdom.h>
-#include <qmenubar.h>
-#include <qtoolbutton.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qpixmap.h>
-#include <qprinter.h>
-#include <qpainter.h>
-#include <qpoint.h>
-#include <qapplication.h>
+#include <QAction>
 #include <QList>
-//Added by qt3to4:
-#include <QFrame>
-#include <qstringlist.h>
+#include <QMainWindow>
+#include <QString>
 
-// application specific includes
-#include "defs.h"
-#include "trackinfoobject.h"
-#include "engine/enginemaster.h"
-#include "controlobject.h"
-#include "dlgpreferences.h"
-//#include "trackplaylist.h"
-#include "recording/recordingmanager.h"
+// REMOVE ME
+#include <QtDebug>
+#include <QResizeEvent>
 
 class EngineMaster;
-class PlayerManager;
-class TrackInfoObject;
-class PlayerProxy;
-class BpmDetector;
-class QSplashScreen;
-class ScriptEngine;
-class Player;
-class LibraryScanner;
-class AnalyserQueue;
 class Library;
+class LibraryScanner;
 class ControllerManager;
-// class MidiDeviceManager;
 class MixxxKeyboard;
+class PlayerManager;
+class RecordingManager;
 class SkinLoader;
-
 class VinylControlManager;
+class DlgPreferences;
+class SoundManager;
+
+#include "configobject.h"
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -68,27 +47,27 @@ class VinylControlManager;
   * For the main view, an instance of class MixxxView is
   * created which creates your view.
   */
-class MixxxApp : public QMainWindow
-{
+class MixxxApp : public QMainWindow {
     Q_OBJECT
 
   public:
     /** Construtor. files is a list of command line arguments */
     MixxxApp(QApplication *app, struct CmdlineArgs args);
-    /** destructor */
     virtual ~MixxxApp();
+
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
     void initMenuBar();
-    /** overloaded for Message box on last window exit */
-    bool queryExit();
+
+    void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
 
     void rebootMixxxView();
 
   public slots:
 
     //void slotQuitFullScreen();
+    void slotFileLoadSongPlayer(int deck);
     /** Opens a file in player 1 */
     void slotFileLoadSongPlayer1();
     /** Opens a file in player 2 */
@@ -96,8 +75,6 @@ class MixxxApp : public QMainWindow
     /** exits the application */
     void slotFileQuit();
 
-    /** toggle audio beat marks */
-    void slotOptionsBeatMark(bool toggle);
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
     void slotControlVinylControl(double toggle);
     void slotCheckboxVinylControl(bool toggle);
@@ -105,6 +82,8 @@ class MixxxApp : public QMainWindow
     void slotCheckboxVinylControl2(bool toggle);
     /** toggle recording - Don't #ifdef this because MOC is dumb**/
     void slotOptionsRecord(bool toggle);
+    /** toogle keyboard on-off */
+    void slotOptionsKeyboard(bool toggle);
     /** toogle full screen mode */
     void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
@@ -119,10 +98,6 @@ class MixxxApp : public QMainWindow
     void slotHelpManual();
     // Visits translation interface on launchpad.net
     void slotHelpTranslation();
-    /** Change of file to play */
-    //void slotChangePlay(int,int,int, const QPoint &);
-
-    void slotlibraryMenuAboutToShow();
     /** Scan or rescan the music library directory */
     void slotScanLibrary();
     /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
@@ -132,14 +107,12 @@ class MixxxApp : public QMainWindow
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
 
-
+    void slotToCenterOfPrimaryScreen();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
     void closeEvent(QCloseEvent *event);
-
-
 
   private:
     void checkDirectRendering();
@@ -165,7 +138,6 @@ class MixxxApp : public QMainWindow
     // RecordingManager
     RecordingManager* m_pRecordingManager;
     ControllerManager *m_pControllerManager;
-//     MidiDeviceManager *m_pMidiDeviceManager;
 
     ConfigObject<ConfigValue> *m_pConfig;
 
@@ -193,30 +165,21 @@ class MixxxApp : public QMainWindow
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
     QAction *m_pFileQuit;
-
     QAction *m_pPlaylistsNew;
     QAction *m_pCratesNew;
-    QAction *m_pPlaylistsImport;
-    QAction **m_pPlaylistsList;
-
-    QAction *m_pBatchBpmDetect;
-
     QAction *m_pLibraryRescan;
-
-    QAction *m_pOptionsBeatMark;
-
 #ifdef __VINYLCONTROL__
     QMenu *m_pVinylControlMenu;
     QAction *m_pOptionsVinylControl;
     QAction *m_pOptionsVinylControl2;
 #endif
     QAction *m_pOptionsRecord;
+    QAction *m_pOptionsKeyboard;
     QAction *m_pOptionsFullScreen;
     QAction *m_pOptionsPreferences;
 #ifdef __SHOUTCAST__
     QAction *m_pOptionsShoutcast;
 #endif
-
     QAction *m_pHelpAboutApp;
     QAction *m_pHelpSupport;
     QAction *m_pHelpFeedback;
@@ -233,6 +196,9 @@ class MixxxApp : public QMainWindow
     // Fullscreen patch
     QPoint m_winpos;
     bool m_NativeMenuBarSupport;
+
+    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
+    ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 };
 
 //A structure to store the parsed command-line arguments

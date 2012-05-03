@@ -31,14 +31,19 @@
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "playermanager.h"
+#include "controlobject.h"
+#include "mixxx.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
-        :  QWidget(parent), Ui::DlgPrefControlsDlg() {
+        :  QWidget(parent) {
     m_pConfig = pConfig;
+    m_timer = -1;
     m_mixxx = mixxx;
     m_pSkinLoader = pSkinLoader;
     m_pPlayerManager = pPlayerManager;
@@ -67,7 +72,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ControlObject::getControl(ConfigKey(group, "rate_dir"))));
         m_cueControls.push_back(new ControlObjectThreadMain(
             ControlObject::getControl(ConfigKey(group, "cue_mode"))));
-
     }
 
     // Position display configuration
@@ -99,7 +103,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     // Set default range as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(1));
+        m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(2));
 
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
     connect(ComboBoxRateRange, SIGNAL(activated(int)), this, SLOT(slotSetRateRange(int)));
@@ -130,21 +134,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     SliderRateRampSensitivity->setEnabled(true);
     SpinBoxRateRampSensitivity->setEnabled(true);
-
-    //
-    // Visuals
-    //
-
-    // Set default value in config file, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
-
-    // Update combo box
-    ComboBoxVisuals->addItem(tr("On"));
-    ComboBoxVisuals->addItem(tr("Off"));
-    ComboBoxVisuals->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
-
-    connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
 
     //
     // Skin configurations
@@ -202,21 +191,21 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ++j;
         }
     }
-// #endif
+    // #endif
 
-   // Detect small display and prompt user to use small skin.
-   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
-      int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
-                   QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
-                   tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
-                   QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-      if (ret == QMessageBox::Yes) {
-         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
-         pConfig->Save();
-         ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
-         qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
-         slotSetSkin(1);
-      }
+    // Detect small display and prompt user to use small skin.
+    if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
+        int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
+                                       QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
+                                       tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
+                                       QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        if (ret == QMessageBox::Yes) {
+            pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
+            pConfig->Save();
+            ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
+            qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
+            slotSetSkin(1);
+        }
     }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
@@ -242,19 +231,21 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Set Ramp Rate On or Off
     connect(groupBoxRateRamp, SIGNAL(toggled(bool)), this, SLOT(slotSetRateRamp(bool)));
     groupBoxRateRamp->setChecked((bool)
-            m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
-    );
+                                 m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
+                                 );
 
     // Update Ramp Rate Sensitivity
     connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateRampSensitivity(int)));
     SliderRateRampSensitivity->setValue(
-        m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
-    );
+                m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
+                );
 
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
     slotUpdateSchemes();
     slotUpdate();
+
+    initWaveformControl();
 }
 
 DlgPrefControls::~DlgPrefControls()
@@ -277,7 +268,7 @@ void DlgPrefControls::slotUpdateSchemes()
 {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
-        m_pSkinLoader->getConfiguredSkinPath());
+                m_pSkinLoader->getConfiguredSkinPath());
 
     ComboBoxSchemeconf->clear();
 
@@ -300,7 +291,8 @@ void DlgPrefControls::slotUpdateSchemes()
 void DlgPrefControls::slotUpdate()
 {
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(tr("8% (Technics SL1210)"));
+    ComboBoxRateRange->addItem(tr("6%"));
+    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"));
     ComboBoxRateRange->addItem(tr("10%"));
     ComboBoxRateRange->addItem(tr("20%"));
     ComboBoxRateRange->addItem(tr("30%"));
@@ -314,15 +306,17 @@ void DlgPrefControls::slotUpdate()
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    float idx = 10. * deck1RateRange;
-    if (deck1RateRange == 0.08)
+    float idx = (10. * deck1RateRange) + 1;
+    if (deck1RateRange == 0.06)
         idx = 0.;
+    if (deck1RateRange == 0.08)
+        idx = 1.;
 
     ComboBoxRateRange->setCurrentIndex((int)idx);
 
     ComboBoxRateDir->clear();
     ComboBoxRateDir->addItem(tr("Up increases speed"));
-    ComboBoxRateDir->addItem(tr("Down increases speed (Technics SL1210)"));
+    ComboBoxRateDir->addItem(tr("Down increases speed (Technics SL-1210)"));
 
     if (deck1RateDir == 1)
         ComboBoxRateDir->setCurrentIndex(0);
@@ -332,8 +326,10 @@ void DlgPrefControls::slotUpdate()
 
 void DlgPrefControls::slotSetRateRange(int pos)
 {
-    float range = (float)(pos)/10.;
+    float range = (float)(pos-1)/10.;
     if (pos==0)
+        range = 0.06f;
+    if (pos==1)
         range = 0.08f;
 
     // Set rate range for every group
@@ -357,12 +353,6 @@ void DlgPrefControls::slotSetRateDir(int index)
     foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
-}
-
-void DlgPrefControls::slotSetVisuals(int)
-{
-    m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
-    m_mixxx->rebootMixxxView();
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int)
@@ -397,8 +387,7 @@ void DlgPrefControls::slotSetTooltips(int)
 
 
     QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
-    //textLabel->setText(
-      tr("Mixxx must be restarted before the changes will take effect."));
+                             tr("Mixxx must be restarted before the changes will take effect."));
 }
 
 void DlgPrefControls::slotSetScheme(int)
@@ -468,14 +457,14 @@ void DlgPrefControls::slotSetRatePermRight(double v)
 void DlgPrefControls::slotSetRateRampSensitivity(int sense)
 {
     m_pConfig->set(ConfigKey("[Controls]","RateRampSensitivity"),
-                        ConfigValue(SliderRateRampSensitivity->value()));
+                   ConfigValue(SliderRateRampSensitivity->value()));
     RateControl::setRateRampSensitivity(sense);
 }
 
 void DlgPrefControls::slotSetRateRamp(bool mode)
 {
     m_pConfig->set(ConfigKey("[Controls]", "RateRamp"),
-                        ConfigValue(groupBoxRateRamp->isChecked()));
+                   ConfigValue(groupBoxRateRamp->isChecked()));
     RateControl::setRateRamp(mode);
 
     /*
@@ -510,3 +499,111 @@ void DlgPrefControls::slotApply()
 
 }
 
+void DlgPrefControls::slotSetFrameRate(int frameRate) {
+    WaveformWidgetFactory::instance()->setFrameRate(frameRate);
+    WaveformWidgetFactory::instance()->start();
+}
+
+void DlgPrefControls::slotSetWaveformType(int index) {
+    if (WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index)) {
+        // It was changed to a valid type. Previously we rebooted the Mixxx GUI
+        // here but now we can update the waveforms on the fly.
+    }
+}
+
+void DlgPrefControls::slotSetDefaultZoom(int index) {
+    WaveformWidgetFactory::instance()->setDefaultZoom( index + 1);
+}
+
+void DlgPrefControls::slotSetZoomSynchronization(bool checked) {
+    WaveformWidgetFactory::instance()->setZoomSync(checked);
+}
+
+void DlgPrefControls::slotSetVisualGainAll(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,gain);
+}
+
+void DlgPrefControls::slotSetVisualGainLow(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,gain);
+}
+
+void DlgPrefControls::slotSetVisualGainMid(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,gain);
+}
+
+void DlgPrefControls::slotSetVisualGainHigh(double gain) {
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
+}
+
+void DlgPrefControls::onShow() {
+    m_timer = startTimer(100); //refresh actual frame rate every 100 ms
+}
+
+void DlgPrefControls::onHide() {
+    if (m_timer != -1) {
+        killTimer(m_timer);
+    }
+}
+
+void DlgPrefControls::timerEvent(QTimerEvent * /*event*/) {
+    //Just to refresh actual framrate any time the controller is modified
+    frameRateAverage->setText(QString::number(
+        WaveformWidgetFactory::instance()->getActualFrameRate()));
+}
+
+void DlgPrefControls::initWaveformControl()
+{
+    waveformTypeComboBox->clear();
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+
+    if (factory->isOpenGLAvailable())
+        openGlSatatusIcon->setText(factory->getOpenGLVersion());
+    else
+        openGlSatatusIcon->setText("X");
+
+    WaveformWidgetType::Type currentType = factory->getType();
+    int currentIndex = -1;
+
+    std::vector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
+    for (unsigned int i = 0; i < handles.size(); i++) {
+        waveformTypeComboBox->addItem(handles[i].getDisplayName());
+        if (handles[i].getType() == currentType)
+            currentIndex = i;
+    }
+
+    if (currentIndex != -1)
+        waveformTypeComboBox->setCurrentIndex(currentIndex);
+
+    frameRateSpinBox->setValue(factory->getFrameRate());
+
+    synchronizeZoomCheckBox->setChecked( factory->isZoomSync());
+    allVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::All));
+    lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
+    midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
+    highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
+
+    for( int i = WaveformWidgetRenderer::s_waveformMinZoom;
+         i <= WaveformWidgetRenderer::s_waveformMaxZoom;
+         i++) {
+        defaultZoomComboBox->addItem(QString::number( 100/double(i),'f',1) + " %");
+    }
+    defaultZoomComboBox->setCurrentIndex( factory->getDefaultZoom() - 1);
+
+    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetFrameRate(int)));
+    connect(waveformTypeComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(slotSetWaveformType(int)));
+    connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(slotSetDefaultZoom(int)));
+    connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
+            this, SLOT(slotSetZoomSynchronization(bool)));
+    connect(allVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainAll(double)));
+    connect(lowVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainLow(double)));
+    connect(midVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainMid(double)));
+    connect(highVisualGain,SIGNAL(valueChanged(double)),
+            this,SLOT(slotSetVisualGainHigh(double)));
+
+}

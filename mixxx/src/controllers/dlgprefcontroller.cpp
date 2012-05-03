@@ -3,166 +3,164 @@
 * @author Sean M. Pappalardo  spappalardo@mixxx.org
 * @date Mon May 2 2011
 * @brief Configuration dialog for a DJ controller
-*
 */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
 #include <QtGui>
 #include <QDebug>
-#include "dlgprefcontroller.h"
-#include "controller.h"
-#include "controllermanager.h"
+
+#include "controllers/dlgprefcontroller.h"
+#include "controllers/controller.h"
+#include "controllers/controllermanager.h"
+#include "controllers/defs_controllers.h"
 #include "configobject.h"
-#include "defs_controllers.h"
 
 DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
-                                         ControllerManager* controllerManager,
-                                         ConfigObject<ConfigValue> *pConfig)
-    : QWidget(parent), Ui::DlgPrefControllerDlg()
-{
-    setupUi(this);
-    m_pConfig = pConfig;
-    m_pController = controller;
-    m_pControllerManager = controllerManager;
-    
-    m_bDirty = false;
+                                     ControllerManager* controllerManager,
+                                     ConfigObject<ConfigValue> *pConfig)
+        : QWidget(parent),
+          m_pConfig(pConfig),
+          m_pControllerManager(controllerManager),
+          m_pController(controller),
+          m_bDirty(false) {
 
-    labelDeviceName->setText(m_pController->getName());
+    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
+            this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
 
-    connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadPreset(const QString&)));
-    connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
+    //QWidget * containerWidget = new QWidget();
+    //QWidget * containerWidget = new QWidget(this);
+    //m_ui.setupUi(containerWidget);
+    m_ui.setupUi(this);
+    m_pLayout = m_ui.gridLayout_4;
+    const ControllerPresetPointer pPreset = controller->getPreset();
+    m_ui.labelLoadedPreset->setText(presetShortName(pPreset));
 
-    connect(this, SIGNAL(openController(bool)), m_pController, SLOT(open()));
-    connect(this, SIGNAL(openController(bool)), m_pControllerManager, SLOT(enablePolling(bool)));
-    connect(this, SIGNAL(closeController(bool)), m_pController, SLOT(close()));
-    connect(this, SIGNAL(closeController(bool)), m_pControllerManager, SLOT(enablePolling(bool)));
-    connect(this, SIGNAL(loadPreset(QString,bool)), m_pController, SLOT(loadPreset(QString,bool)));
-    connect(this, SIGNAL(applyPreset()), m_pController, SLOT(applyPreset()));
-    
-    //Load the list of presets into the presets combobox.
+    //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
+
+    //QVBoxLayout* vLayout = new QVBoxLayout(this);
+    //vLayout->addWidget(containerWidget);
+    //setLayout(vLayout);
+
+    m_ui.labelDeviceName->setText(m_pController->getName());
+
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
+            this, SLOT(slotLoadPreset(const QString&)));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
+            this, SLOT(slotDirty()));
+
+    connect(this, SIGNAL(openController(Controller*)),
+            m_pControllerManager, SLOT(openController(Controller*)));
+    connect(this, SIGNAL(closeController(Controller*)),
+            m_pControllerManager, SLOT(closeController(Controller*)));
+    connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
+            m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
+
+    // Load the list of presets into the presets combobox.
     enumeratePresets();
 }
 
 DlgPrefController::~DlgPrefController() {
 }
 
-void DlgPrefController::slotDirty ()
-{
+QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset) const {
+    QString presetName = tr("None");
+    if (pPreset) {
+        QString name = pPreset->name();
+        QString author = pPreset->author();
+        if (name.length() > 0 && author.length() > 0) {
+            presetName = tr("%1 by %2").arg(pPreset->name(), pPreset->author());
+        } else if (name.length() > 0) {
+            presetName = name;
+        } else if (pPreset->filePath().length() > 0) {
+            presetName = tr("Custom Preset");
+        }
+    }
+    return presetName;
+}
+
+void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
+    // Remove the vertical spacer since we're adding stuff
+    //m_pLayout->removeItem(m_pVerticalSpacer);
+    //m_pLayout->addWidget(pWidget);
+}
+
+void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
-void DlgPrefController::enumeratePresets()
-{
-    comboBoxPreset->clear();
+void DlgPrefController::enumeratePresets() {
+    m_ui.comboBoxPreset->clear();
 
     //Insert a dummy "..." item at the top to try to make it less confusing.
     //(We don't want the first found file showing up as the default item
     // when a user has their controller plugged in)
-    comboBoxPreset->addItem("...");
-    
+    m_ui.comboBoxPreset->addItem("...");
+
     // Ask the controller manager for a list of applicable presets
     QList<QString> presetsList =
         m_pControllerManager->getPresetList(m_pController->presetExtension());
-    
+
     //Sort in alphabetical order
     qSort(presetsList);
-    comboBoxPreset->addItems(presetsList);
+    m_ui.comboBoxPreset->addItems(presetsList);
 }
 
-/* slotUpdate()
- * Called when the dialog is displayed.
- */
 void DlgPrefController::slotUpdate() {
-
-    //Check if the device that this dialog is for is already enabled...
-    if (m_pController->isOpen())
-    {
-        chkEnabledDevice->setCheckState(Qt::Checked); //Check the "Enabled" box
-//         toolBox->setEnabled(true); //Enable MIDI in/out toolbox.
-        groupBoxPresets->setEnabled(true); //Enable presets group box.
-    }
-    else {
-        chkEnabledDevice->setCheckState(Qt::Unchecked); //Uncheck the "Enabled" box
-//         toolBox->setEnabled(false); //Disable MIDI in/out toolbox.
-        groupBoxPresets->setEnabled(false); //Disable presets group box.
-    }
-
-    //Connect the "Enabled" checkbox after the checkbox state is set
-    connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
-    connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDirty()));
+    // Check if the device that this dialog is for is already enabled...
+    bool deviceOpen = m_pController->isOpen();
+    // Check/uncheck the "Enabled" box
+    m_ui.chkEnabledDevice->setCheckState(deviceOpen ? Qt::Checked : Qt::Unchecked);
+    // Enable/disable presets group box.
+    m_ui.groupBoxPresets->setEnabled(deviceOpen);
+    // Connect the "Enabled" checkbox after the checkbox state is set
+    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)),
+            this, SLOT(slotDeviceState(int)));
+    connect(m_ui.chkEnabledDevice, SIGNAL(stateChanged(int)),
+            this, SLOT(slotDirty()));
 }
 
-/* slotApply()
- * Called when the OK button is pressed.
- */
 void DlgPrefController::slotApply() {
     /* User has pressed OK, so if anything has been changed, enable or disable
      * the device, write the controls to the DOM, and reload the presets.
      */
-    if (m_bDirty)
-    {
-        if (chkEnabledDevice->isChecked()) {
-            //Enable the device.
+    if (m_bDirty) {
+        if (m_ui.chkEnabledDevice->isChecked()) {
             enableDevice();
-            emit(applyPreset());
+        } else {
+            disableDevice();
         }
-        else disableDevice();
 
         //Select the "..." item again in the combobox.
-        comboBoxPreset->setCurrentIndex(0);
+        m_ui.comboBoxPreset->setCurrentIndex(0);
     }
     m_bDirty = false;
 }
 
-/* slotLoadPreset()
-* Loads the specified XML preset.
-*/
 void DlgPrefController::slotLoadPreset(const QString &name) {
-    
-    if (name == "...")
-        return;
-    
-    QString filename = LPRESETS_PATH + name + m_pController->presetExtension();
-    QFile ftest(filename);
-    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("controllers/") + name + m_pController->presetExtension();
-    
-    if (!filename.isNull()) emit(loadPreset(filename, true));    // It's applied on prefs close
+    if (name != "...") {
+        emit(loadPreset(m_pController, name, true));
+        // It's applied on prefs close
+    }
+}
 
-    // Save the file path/name in the config so it can be auto-loaded at startup next time
-    m_pConfig->set(ConfigKey("[ControllerPreset]", m_pController->getName().replace(" ", "_")), filename);
+void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
+    m_ui.labelLoadedPreset->setText(presetShortName(preset));
 }
 
 void DlgPrefController::slotDeviceState(int state) {
-  if (state == Qt::Checked) {
-      groupBoxPresets->setEnabled(true);    //Enable presets group box.
-      emit deviceStateChanged(this,true);  // Set tree item text to bold
-  }
-  else {
-      groupBoxPresets->setEnabled(false);   //Disable presets group box.
-      emit deviceStateChanged(this,false);  // Set tree item text to not bold
-  }
+    bool checked = state == Qt::Checked;
+    // Enable/disable presets group box.
+    m_ui.groupBoxPresets->setEnabled(checked);
+    // Set tree item text to normal/bold
+    emit(deviceStateChanged(this, checked));
 }
 
-void DlgPrefController::enableDevice()
-{
-    emit(closeController(false));
-    emit(openController(m_pController->needPolling()));
-    m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 1);
-
+void DlgPrefController::enableDevice() {
+    emit(openController(m_pController));
     //TODO: Should probably check if open() actually succeeded.
 }
 
-void DlgPrefController::disableDevice()
-{
-    emit(closeController(false));
-    m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 0);
-
+void DlgPrefController::disableDevice() {
+    emit(closeController(m_pController));
     //TODO: Should probably check if close() actually succeeded.
 }

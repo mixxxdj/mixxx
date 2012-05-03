@@ -85,10 +85,10 @@ VMS4.shutdown = function () {
 VMS4.Button = Button;
 
 VMS4.Button.prototype.setLed = function(ledState) {
-   if(ledState == MidiLedState.on) {
-      midi.sendShortMsg(0x90,this.controlId,MidiLedState.on);
+   if(ledState == LedState.on) {
+      midi.sendShortMsg(0x90,this.controlId,LedState.on);
    } else {
-      midi.sendShortMsg(0x80,this.controlId,MidiLedState.off);
+      midi.sendShortMsg(0x80,this.controlId,LedState.off);
    }
 }
 
@@ -106,8 +106,8 @@ VMS4.Deck.effectSelect = -1;
 VMS4.Deck.sampleSelect = -1;
 
 VMS4.Deck.prototype.rateRangeHandler = function(value) {
-    if(value == MidiButtonState.pressed) {
-        this.Buttons.RateRange.setLed(MidiLedState.on);
+    if(value == ButtonState.pressed) {
+        this.Buttons.RateRange.setLed(LedState.on);
         // Round to two decimals to avoid double-precision comparison issues
         var currentRange = Math.round(engine.getValue(this.group, "rateRange")*100)/100;
         switch (true) {
@@ -130,12 +130,12 @@ VMS4.Deck.prototype.rateRangeHandler = function(value) {
         // Update the screen display
         engine.trigger(this.group,"rate");
     }
-    else this.Buttons.RateRange.setLed(MidiLedState.off);
+    else this.Buttons.RateRange.setLed(LedState.off);
 }
 
 VMS4.Deck.prototype.pitchCenterHandler = function(value) {
     // Reset pitch only on entrance to center position
-    if(value == MidiButtonState.pressed) {
+    if(value == ButtonState.pressed) {
         this.pitchLock=true;
         engine.setValue(this.group, "rate", 0);
     }
@@ -145,7 +145,7 @@ VMS4.Deck.prototype.pitchCenterHandler = function(value) {
 }
 
 VMS4.Deck.prototype.playHandler = function(value) {
-    if(value == MidiButtonState.pressed) {
+    if(value == ButtonState.pressed) {
         var currentlyPlaying = engine.getValue(this.group,"play");
         // Only do stutter play when currently playing and not previewing
         if (currentlyPlaying && !this.cueButton && !this.hotCuePressed) {
@@ -161,7 +161,7 @@ VMS4.Deck.prototype.pauseHandler = function(value) {
 }
 
 VMS4.Deck.prototype.cueHandler = function(value) {
-    if(value == MidiButtonState.pressed) {
+    if(value == ButtonState.pressed) {
         this.cueButton=true;
         if (this.vinylButton) {
             // Toggle scratch & cue mode
@@ -200,11 +200,11 @@ VMS4.Deck.prototype.effectSelectHandler = function(value) {
 
 VMS4.Deck.prototype.effectSelectPressHandler = function(value) {
     // Reset the effect only on press
-    if(value == MidiButtonState.pressed) engine.setValue("[Flanger]","lfoPeriod",1025000)
+    if(value == ButtonState.pressed) engine.setValue("[Flanger]","lfoPeriod",1025000)
 }
 
 VMS4.Deck.prototype.jogTouchHandler = function(value) {
-   if(value == MidiButtonState.pressed) {
+   if(value == ButtonState.pressed) {
       engine.scratchEnable(this.deckNumber, 3000, 45, 1.0/8, (1.0/8)/32);
       this.scratchMode = true;
       // Recall the cue point if in "scratch & cue" mode only when playing
@@ -240,7 +240,7 @@ VMS4.Deck.prototype.jogMove = function(lsbValue) {
 }
 
 VMS4.Deck.prototype.vinylButtonHandler = function(value) {
-    if(value == MidiButtonState.pressed) this.vinylButton=true;
+    if(value == ButtonState.pressed) this.vinylButton=true;
     else {
         this.vinylButton=false;
         // Force keylock up too since they're they same physical button
@@ -250,7 +250,7 @@ VMS4.Deck.prototype.vinylButtonHandler = function(value) {
 }
 
 VMS4.Deck.prototype.keyLockButtonHandler = function(value) {
-    if(value == MidiButtonState.pressed) {
+    if(value == ButtonState.pressed) {
         this.keylockButton=true;
         this.hotCueDeleted=false;
     }
@@ -394,7 +394,7 @@ VMS4.keylock = function(channel, control, value, status, group) {
 VMS4.hotCue = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
     var hotCue = VMS4.hotCues[control];
-    if(value == MidiButtonState.pressed) {
+    if(value == ButtonState.pressed) {
         deck.hotCuePressed=true;
         if (deck.vinylButton || deck.keylockButton) {
 //             print("vinyl="+deck.vinylButton+" keylock="+deck.keylockButton+" so clear hotcue"+hotCue);

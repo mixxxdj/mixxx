@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.9.0">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.9.0">
    <info>
       <name>American Audio VMS4</name>
       <author>Anders Gunnarsson &amp; Sean M. Pappalardo</author>
@@ -141,6 +141,9 @@
             <key>lfoDepth</key>
             <status>0xB0</status>
             <midino>0x25</midino>
+            <options>
+                <soft-takeover/>
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
@@ -626,7 +629,7 @@
             <status>0xB0</status>
             <midino>0x28</midino>
          </control>
-         
+
          <!-- Deck B -->
          <control>
             <group>[Channel2]</group>
@@ -758,6 +761,9 @@
             <key>lfoDepth</key>
             <status>0xB0</status>
             <midino>0x2A</midino>
+            <options>
+                <soft-takeover/>
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
@@ -994,7 +1000,7 @@
                <Script-Binding />
             </options>
          </control>
-         
+
          <control><!-- on -->
             <group>[Channel2]</group>
             <key>loop_in</key>
@@ -1244,7 +1250,7 @@
             <status>0xB0</status>
             <midino>0x2D</midino>
          </control>
-         
+
          <!-- Mixer main-->
          <control>
             <group>[Master]</group>
@@ -1252,7 +1258,8 @@
             <status>0xB0</status>
             <midino>0x1F</midino>
             <options>
-               <invert />
+               <invert/>
+               <soft-takeover/>
             </options>
          </control>
          <control>
@@ -1261,7 +1268,7 @@
             <status>0xB0</status>
             <midino>0x22</midino>
             <options>
-                <soft-takeover />
+                <soft-takeover/>
             </options>
          </control>
          <control>
@@ -1291,7 +1298,7 @@
                 <soft-takeover />
             </options>
          </control>
-         
+
          <!-- Mixer channel 1 -->
          <control>
             <group>[Channel1]</group>
@@ -1356,7 +1363,7 @@
                <Spread64 />
             </options>
          </control>
-         
+
          <!-- Mixer channel 2 -->
          <control>
             <group>[Channel2]</group>

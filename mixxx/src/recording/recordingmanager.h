@@ -23,6 +23,7 @@
  * Note: The RecordingManager lives in the GUI thread
  */
 
+class ControlPushButton;
 class ControlObjectThreadMain;
 
 class RecordingManager : public QObject
@@ -42,6 +43,7 @@ class RecordingManager : public QObject
     void startRecording(bool generateFileName=true);
     void stopRecording();
     bool isRecordingActive();
+    void setRecordingDir();
     QString& getRecordingDir();
     // Returns the currently recording file
     QString& getRecordingFile();
@@ -56,11 +58,15 @@ class RecordingManager : public QObject
     void slotIsRecording(bool);
     void slotBytesRecorded(int);
 
+  private slots:
+    void slotToggleRecording(double v);
+
   private:
     QString formatDateTimeForFilename(QDateTime dateTime) const;
     ControlObjectThread* m_recReady;
     ControlObject* m_recReadyCO;
-
+    ControlPushButton* m_pToggleRecording;
+    
     long getFileSplitSize();
 
     ConfigObject<ConfigValue>* m_pConfig;

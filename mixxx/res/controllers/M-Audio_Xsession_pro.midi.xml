@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>M-Audio_Xsession_pro.midi.xml</name>
+    <name>M-Audio X-Session Pro</name>
     <author>Auto-converted by madjesta's PHP script</author>
     <description>Automatic conversion of the file M-Audio_Xsession_pro.midi.xml for Mixxx 1.6.2</description>
   </info>
@@ -48,7 +48,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x46</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>back</key>
@@ -60,7 +60,7 @@
         <key>back</key>
         <status>0x80</status>
         <midino>0x2e</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>fwd</key>
@@ -72,7 +72,7 @@
         <key>fwd</key>
         <status>0x80</status>
         <midino>0x2b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>volume</key>
@@ -96,7 +96,7 @@
         <key>pfl</key>
         <status>0x80</status>
         <midino>0x2c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_default</key>
@@ -108,7 +108,7 @@
         <key>cue_default</key>
         <status>0x80</status>
         <midino>0x3a</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>filterLow</key>
@@ -144,7 +144,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x45</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>back</key>
@@ -156,7 +156,7 @@
         <key>back</key>
         <status>0x80</status>
         <midino>0x38</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>fwd</key>
@@ -168,7 +168,7 @@
         <key>fwd</key>
         <status>0x80</status>
         <midino>0x39</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>volume</key>
@@ -192,7 +192,7 @@
         <key>pfl</key>
         <status>0x80</status>
         <midino>0x2d</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_default</key>
@@ -204,7 +204,7 @@
         <key>cue_default</key>
         <status>0x80</status>
         <midino>0x3b</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>filterLow</key>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>499</width>
-    <height>489</height>
+    <width>519</width>
+    <height>680</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
-       <property name="buddy" >
+       <property name="buddy">
         <cstring>ComboBoxSkinconf</cstring>
        </property>
       </widget>
@@ -62,7 +62,7 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
-       <property name="buddy" >
+       <property name="buddy">
         <cstring>ComboBoxSchemeconf</cstring>
        </property>
       </widget>
@@ -81,38 +81,6 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2_2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Waveform display</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy" >
-        <cstring>ComboBoxVisuals</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxVisuals">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
       <widget class="QLabel" name="TextLabel6_2_2_3">
        <property name="enabled">
         <bool>true</bool>
@@ -126,12 +94,12 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
-       <property name="buddy" >
+       <property name="buddy">
         <cstring>ComboBoxPosition</cstring>
        </property>
       </widget>
      </item>
-     <item row="3" column="1" colspan="2">
+     <item row="2" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxPosition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -144,7 +112,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="TextLabel6_2_2_3_2">
        <property name="enabled">
         <bool>true</bool>
@@ -158,12 +126,12 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
-       <property name="buddy" >
+       <property name="buddy">
         <cstring>ComboBoxTooltips</cstring>
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="2">
+     <item row="4" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxTooltips">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -186,7 +154,7 @@
        </item>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="TextLabel6">
        <property name="enabled">
         <bool>true</bool>
@@ -200,12 +168,12 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
-       <property name="buddy" >
+       <property name="buddy">
         <cstring>ComboBoxRateRange</cstring>
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
+     <item row="5" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -218,7 +186,7 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="TextLabel6_2">
        <property name="enabled">
         <bool>true</bool>
@@ -232,12 +200,12 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
-       <property name="buddy" >
+       <property name="buddy">
         <cstring>ComboBoxRateDir</cstring>
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="2">
+     <item row="6" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateDir">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -250,48 +218,48 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
-         <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
-             <property name="text">
-                 <string>Track load behaviour</string>
-             </property>
-       <property name="buddy" >
-        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
-       </property>
-         </widget>
-     </item>
-     <item row="11" column="1" colspan="2">
-         <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
-     </item>
      <item row="10" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
-        <string>Cue behaviour</string>
+        <string>Track load behaviour</string>
        </property>
-       <property name="buddy" >
-        <cstring>ComboBoxCueDefault</cstring>
+       <property name="buddy">
+        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
        </property>
       </widget>
      </item>
      <item row="10" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxCueDefault"/>
+      <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
      </item>
      <item row="9" column="0">
-      <widget class="QLabel" name="textLabelCueRecall">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Auto Recall Cue</string>
+        <string>Cue behaviour</string>
        </property>
-       <property name="buddy" >
-        <cstring>ComboBoxCueRecall</cstring>
+       <property name="buddy">
+        <cstring>ComboBoxCueDefault</cstring>
        </property>
       </widget>
      </item>
      <item row="9" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxCueDefault"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="textLabelCueRecall">
+       <property name="text">
+        <string>Auto Recall Cue</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxCueRecall</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueRecall"/>
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -321,7 +289,7 @@
             <property name="wordWrap">
              <bool>false</bool>
             </property>
-            <property name="buddy" >
+            <property name="buddy">
              <cstring>spinBoxPermRateLeft</cstring>
             </property>
            </widget>
@@ -343,7 +311,7 @@
             <property name="wordWrap">
              <bool>false</bool>
             </property>
-            <property name="buddy" >
+            <property name="buddy">
              <cstring>spinBoxPermRateRight</cstring>
             </property>
            </widget>
@@ -363,13 +331,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -388,13 +356,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -424,7 +392,7 @@
             <property name="wordWrap">
              <bool>false</bool>
             </property>
-            <property name="buddy" >
+            <property name="buddy">
              <cstring>spinBoxTempRateLeft</cstring>
             </property>
            </widget>
@@ -446,7 +414,7 @@
             <property name="wordWrap">
              <bool>false</bool>
             </property>
-            <property name="buddy" >
+            <property name="buddy">
              <cstring>spinBoxTempRateRight</cstring>
             </property>
            </widget>
@@ -466,13 +434,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -491,13 +459,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -508,7 +476,7 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QGroupBox" name="groupBoxRateRamp">
      <property name="enabled">
       <bool>true</bool>
@@ -528,7 +496,7 @@
         <property name="text">
          <string>Pitchbend sensitivity</string>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>SliderRateRampSensitivity</cstring>
         </property>
        </widget>
@@ -577,6 +545,248 @@
      </layout>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="waveformDisplayGroupBox">
+     <property name="title">
+      <string>Waveform Display</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item row="1" column="2">
+       <widget class="QLabel" name="frameRateLabel">
+        <property name="text">
+         <string>Frame Rate</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="openGlStatusLabel">
+        <property name="text">
+         <string>OpenGl status</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QSpinBox" name="frameRateSpinBox">
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="value">
+         <number>30</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QSlider" name="frameRateSlider">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>60</number>
+        </property>
+        <property name="value">
+         <number>30</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" colspan="3">
+       <widget class="QComboBox" name="waveformTypeComboBox"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="openGlSatatusIcon">
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="waveformTypeLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Display type</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="frameRateAverage">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="defaultZoomLabel">
+        <property name="text">
+         <string>Default zoom</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QComboBox" name="defaultZoomComboBox"/>
+      </item>
+      <item row="3" column="4" colspan="2">
+       <widget class="QCheckBox" name="synchronizeZoomCheckBox">
+        <property name="text">
+         <string>Synchronize</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Visual gain</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3" colspan="3">
+       <widget class="QWidget" name="widget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QDoubleSpinBox" name="allVisualGain">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Global visual gain&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>5.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="lowVisualGain">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Low visual gain&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>5.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="midVisualGain">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Medium visual gain&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>5.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="highVisualGain">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;High visual gain&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>5.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -589,12 +799,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>347</x>
-     <y>382</y>
+     <x>418</x>
+     <y>468</y>
     </hint>
     <hint type="destinationlabel">
-     <x>550</x>
-     <y>382</y>
+     <x>480</x>
+     <y>466</y>
     </hint>
    </hints>
   </connection>
@@ -605,12 +815,44 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>382</y>
+     <x>480</x>
+     <y>466</y>
     </hint>
     <hint type="destinationlabel">
-     <x>347</x>
-     <y>382</y>
+     <x>418</x>
+     <y>468</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameRateSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>frameRateSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>292</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>419</x>
+     <y>293</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameRateSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>frameRateSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>432</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>352</x>
+     <y>298</y>
     </hint>
    </hints>
   </connection>

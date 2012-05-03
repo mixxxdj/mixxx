@@ -5,6 +5,7 @@
 #include "trackinfoobject.h"
 #include "track/beatgrid.h"
 #include "track/beatfactory.h"
+#include "track/beatutils.h"
 #include "analyserbpm.h"
 
 
@@ -43,19 +44,6 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
     m_pDetector->inputSamples(pIn, iLen/2);
 }
 
-float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
-    //qDebug() << "BPM range is" << min << "to" << max;
-    if ( BPM == 0 ) return BPM;
-
-    if (aboveRange == 0) {
-        if( BPM*2 < max ) BPM *= 2;
-        while ( BPM > max ) BPM /= 2;
-    }
-    while ( BPM < min ) BPM *= 2;
-
-    return BPM;
-}
-
 void AnalyserBPM::finalise(TrackPointer tio) {
     // Check if BPM detection is enabled
     if(m_pDetector == NULL) {
@@ -63,17 +51,17 @@ void AnalyserBPM::finalise(TrackPointer tio) {
     }
 
     float bpm = m_pDetector->getBpm();
-    if(bpm != 0) {
+    if (bpm != 0) {
         // Shift it by 2's until it is in the desired range
-        float newbpm = correctBPM(bpm, m_iMinBpm, m_iMaxBpm, m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt());
-
-        tio->setBpm(newbpm);
-        tio->setBpmConfirm();
+        float newbpm = BeatUtils::constrainBpm(
+            bpm, m_iMinBpm, m_iMaxBpm,
+            static_cast<bool>(m_pConfig->getValueString(
+                ConfigKey("[BPM]", "BPMAboveRangeEnabled")).toInt()));
 
         // Currently, the BPM is only analyzed if the track has no BPM. This
         // means we don't have to worry that the track already has an existing
         // BeatGrid.
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, newbpm, 0.0f);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio.data(), newbpm, 0.0f);
         tio->setBeats(pBeats);
 
         //if(pBpmReceiver) {
