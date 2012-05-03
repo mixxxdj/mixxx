@@ -512,7 +512,7 @@ double BpmControl::getPhaseOffset(double reference_position)
     //ConfigKey(pOtherEngineBuffer->getGroup(), "file_bpm"))->get();
 
     // Get the current position of both decks
-    double dThisPosition = reference_position;
+    double dThisPosition = reference_position + m_dUserOffset;
     double dOtherLength = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
     double dOtherPosition = dOtherLength * ControlObject::getControl(
