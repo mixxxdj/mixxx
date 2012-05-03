@@ -11,10 +11,11 @@
 #include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "waveform/waveformwidgetfactory.h"
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
-    WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererAbstract(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer)
+    : WaveformRendererAbstract(waveformWidgetRenderer) {
     m_lowFilterControlObject = NULL;
     m_midFilterControlObject = NULL;
     m_highFilterControlObject = NULL;
@@ -156,6 +157,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
 
     const double offset = firstVisualIndex;
 
+
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
             (double)m_waveformRenderer->getWidth();
@@ -173,6 +175,12 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
         midGain = m_midFilterControlObject->get();
         highGain = m_highFilterControlObject->get();
     }
+
+    //apply separate visual gain
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
+    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
+    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
 
     //NOTE(vrince) Please help me find a better name for "channelSeparation"
     //this variable stand for merged channel ... 1 = merged & 2 = separated
@@ -314,15 +322,19 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     painter->setRenderHint(QPainter::Antialiasing);
     painter->resetTransform();
 
+    //visual gain
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
+
     if (m_alignment == Qt::AlignTop) {
         painter->translate(0.0,0.0);
-        painter->scale(1.0,m_waveformRenderer->getGain()*4.0*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else if (m_alignment == Qt::AlignBottom) {
         painter->translate(0.0,m_waveformRenderer->getHeight());
-        painter->scale(1.0,m_waveformRenderer->getGain()*4.0*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else {
         painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
-        painter->scale(1.0,m_waveformRenderer->getGain()*2.0*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,1.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     }
 
     int numberOfPoints = buildPolygon();

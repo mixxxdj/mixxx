@@ -1,38 +1,52 @@
 #include "waveformwidgetabstract.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
+#include <QtDebug>
 #include <QWidget>
 
-const QString WaveformWidgetAbstract::s_openGlFlag = QObject::tr("(GL)");
-const QString WaveformWidgetAbstract::s_openGlShaderFlag = QObject::tr("(GLSL)");
-
-//Default constructor is only use by the factory to evaluate dynamically WaveformWidget
+// Default constructor is only use by the factory to evaluate dynamically
+// WaveformWidget
 WaveformWidgetAbstract::WaveformWidgetAbstract() :
     WaveformWidgetRenderer() {
-    m_widget = 0;
+    m_widget = NULL;
 }
 
 WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group) :
     WaveformWidgetRenderer(group) {
-    m_widget = 0;
+    m_widget = NULL;
 }
 
 WaveformWidgetAbstract::~WaveformWidgetAbstract() {
 }
 
 void WaveformWidgetAbstract::hold() {
-    m_widget->hide();
+    if (m_widget) {
+        m_widget->hide();
+    }
 }
 
 void WaveformWidgetAbstract::release() {
-    m_widget->show();
+    if (m_widget) {
+        m_widget->show();
+    }
+}
+
+void WaveformWidgetAbstract::preRender() {
+    WaveformWidgetRenderer::onPreRender();
 }
 
 void WaveformWidgetAbstract::render() {
-    m_widget->update();
+    if (m_widget) {
+        if (!m_widget->isVisible()) {
+            m_widget->show();
+        }
+        m_widget->update();
+    }
 }
 
 void WaveformWidgetAbstract::resize( int width, int height) {
-    m_widget->resize( width, height);
-    WaveformWidgetRenderer::resize( width, height);
+    if (m_widget) {
+        m_widget->resize(width, height);
+    }
+    WaveformWidgetRenderer::resize(width, height);
 }

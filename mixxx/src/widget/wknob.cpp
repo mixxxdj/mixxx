@@ -26,8 +26,8 @@
 #include "defs.h"
 #include "widget/wpixmapstore.h"
 
-WKnob::WKnob(QWidget * parent, float defaultValue)
-        : WAbstractControl(parent, defaultValue),
+WKnob::WKnob(QWidget * parent)
+        : WAbstractControl(parent),
           m_iPos(0),
           m_iNoPos(0),
           m_pPixmaps(NULL),
@@ -155,7 +155,7 @@ void WKnob::mousePressEvent(QMouseEvent * e)
 {
     switch (e->button()) {
     case Qt::RightButton:
-        reset();
+        emit(valueReset());
         m_bRightButtonPressed = true;
         break;
     case Qt::LeftButton:

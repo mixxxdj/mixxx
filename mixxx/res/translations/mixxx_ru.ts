@@ -9,14 +9,92 @@
         </message>
     </context>
     <context>
+        <name>BasePlaylistFeature</name>
+        <message>
+            <source>New Playlist</source>
+            <translation>Создать список воспроизведения</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Удалить</translation>
+        </message>
+        <message>
+            <source>Rename</source>
+            <translation>Переименовать</translation>
+        </message>
+        <message>
+            <source>Lock</source>
+            <translation>Заблокировать</translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>Импортировать список воспроизведения</translation>
+        </message>
+        <message>
+            <source>Export Playlist</source>
+            <translation>Экспортировать список воспроизведения</translation>
+        </message>
+        <message>
+            <source>Rename Playlist</source>
+            <translation>Переименовать список воспроизведения</translation>
+        </message>
+        <message>
+            <source>New playlist name:</source>
+            <translation>Название нового списка воспроизведения:</translation>
+        </message>
+        <message>
+            <source>Renaming Playlist Failed</source>
+            <translation>Ошибка переименования списка воспроизведения</translation>
+        </message>
+        <message>
+            <source>A playlist by that name already exists.</source>
+            <translation>Список воспроизведения с этим названием уже существует.</translation>
+        </message>
+        <message>
+            <source>A playlist cannot have a blank name.</source>
+            <translation>Необходимо ввести название списка воспроизведения</translation>
+        </message>
+        <message>
+            <source>Playlist name:</source>
+            <translation>Название списка воспроизведения:</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation>Ошибка создания списка воспроизведения</translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation>Обнаружена неизвестная ошибка при создании списка воспроизведения </translation>
+        </message>
+        <message>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>Списки воспроизведения (*.m3u *.m3u8 *.pls *.csv)</translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation>сыграно</translation>
+            <translation>Воспроизведено</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Артист</translation>
+            <translation>Исполнитель</translation>
         </message>
         <message>
             <source>Title</source>
@@ -28,7 +106,12 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation>Стиль</translation>
+            <translation>Жанр</translation>
+        </message>
+        <message>
+            <source>Composer</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Year</source>
@@ -36,11 +119,13 @@
         </message>
         <message>
             <source>Type</source>
-            <translation>Тип</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Location</source>
-            <translation>Местоположение</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Comment</source>
@@ -48,11 +133,11 @@
         </message>
         <message>
             <source>Duration</source>
-            <translation>Продолжительность</translation>
+            <translation>Длительность</translation>
         </message>
         <message>
             <source>Rating</source>
-            <translation>Рейтинг</translation>
+            <translation>Оценка</translation>
         </message>
         <message>
             <source>Bitrate</source>
@@ -60,11 +145,12 @@
         </message>
         <message>
             <source>BPM</source>
-            <translation>Темп</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation>Номер дорожки</translation>
+            <translation>Дорожка №</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -75,8 +161,17 @@
             <translation>№</translation>
         </message>
         <message>
+            <source>Timestamp</source>
+            <translation>Метка времени</translation>
+        </message>
+        <message>
             <source>Key</source>
-            <translation>Тональность</translation>
+            <translation>Ключ</translation>
+        </message>
+        <message>
+            <source>BPM Lock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -156,6 +251,11 @@
             <translation>Стиль</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Comment</source>
             <translation>Комментарий</translation>
         </message>
@@ -165,23 +265,27 @@
         </message>
         <message>
             <source>BPM</source>
-            <translation>Темп</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Key</source>
-            <translation>Тональность</translation>
+            <translation>Ключ</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation>Тип</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Битрейт</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Location</source>
-            <translation>Размещение</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Mixxx Library</source>
@@ -232,15 +336,15 @@
         </message>
         <message>
             <source>Crates</source>
-            <translation>Списки</translation>
+            <translation>Контейнеры</translation>
         </message>
         <message>
             <source>Import Crate</source>
-            <translation>Импортировать ящик.</translation>
+            <translation>Импортировать контейнер.</translation>
         </message>
         <message>
             <source>Export Crate</source>
-            <translation>Экспортировать ящик.</translation>
+            <translation>Экспортировать контейнер.</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -248,45 +352,44 @@
         </message>
         <message>
             <source>Crate name:</source>
-            <translation>Наименование списка:</translation>
+            <translation>Наименование контейнера:</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Обнаружена неизвестная ошибка при создании группы: </translation>
+            <translation>Обнаружена неизвестная ошибка при создании контейнера: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation>Переименовать группу</translation>
+            <translation>Переименовать контейнер</translation>
         </message>
         <message>
             <source>New crate name:</source>
-            <translation>Новое название группы:</translation>
+            <translation>Новое название контейнера:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation>Ошибка переименования группы</translation>
+            <translation>Ошибка переименования контейнера</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>Списки воспроизведения (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Необходимо заполнить наименование списка.</translation>
+            <translation>Необходимо заполнить наименование контейнера.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation>Ошибка создания списка</translation>
+            <translation>Ошибка создания контейнера</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Список с ьаким именем уже существует.</translation>
+            <translation>Контейнер с таким именем уже существует.</translation>
         </message>
     </context>
     <context>
@@ -296,33 +399,74 @@
             <translation>Сведения о Mixxx</translation>
         </message>
         <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Авторы&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
-        </message>
-        <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
-            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Oфициальный вэб-сайт&lt;/a&gt;</translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Oфициальный веб-сайт&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
         <name>DlgAutoDJ</name>
         <message>
+            <source>Auto-DJ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>One player must be stopped to enable Auto-DJ mode.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Disable Auto DJ</source>
             <translation>Выключить автоматический диджеинг</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shuffle</source>
+            <translation>В случайном порядке</translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip Track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fade Now</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Determines the duration of the transition.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Seconds</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>sec.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turn Auto DJ on or off.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -330,15 +474,105 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Manage</source>
-            <translation>Диспетчер</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgBeatsDlg</name>
+        <message>
+            <source>Beat Detection Settings</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Shuffle playlist</source>
-            <translation>Перемешать плей-лист</translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Add tracks to the queue below...</source>
-            <translation>Добавить дорожки в очередь ниже...</translation>
+            <source>Enable BPM and Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose Analyser</source>
+            <translation>Выбрать анализатор</translation>
+        </message>
+        <message>
+            <source>Beat Analyser:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose beween different algorithms to detect beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Analyser Settings</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Assume constant tempo (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Offset Correction (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beats already present (e.g. from 3rd-party programs or older Mixxx versions)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Range</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Min:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Max:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -353,7 +587,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Range</source>
-            <translation>Диапазон уд./мин.</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Max</source>
@@ -392,7 +627,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
-            <translation>Этот мастер позволит вам легко разместить элементы управления вашего MIDI контроллера в Mixxx.</translation>
+            <translation>Этот мастер поможет Вам легко настроить Ваш MIDI-контроллер для управления элементами Mixxx</translation>
         </message>
         <message>
             <source>Begin</source>
@@ -464,7 +699,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
-            <translation>Сохранить сведения уд./мин. в тэг ID3</translation>
+            <translation>Сохранить сведения уд./мин. в тег ID3</translation>
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
@@ -484,7 +719,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Edit</source>
-            <translation>Правка</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Delete</source>
@@ -605,7 +841,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
-            <translation>Диапазон бегунка тона/скорости</translation>
+            <translation>Диапазон ползунка изменения темпа</translation>
         </message>
         <message>
             <source>Pitch/Rate slider direction</source>
@@ -629,7 +865,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Left click</source>
-            <translation>Щелчок левой кнопкой мыши</translation>
+            <translation>Щелчок левой кнопкой</translation>
         </message>
         <message>
             <source>Right click</source>
@@ -637,7 +873,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when left clicking</source>
-            <translation>Постоянная смена диапазона (между 1 и 8000) при щелчке левой кнопкой мыши</translation>
+            <translation>Постоянная смена диапазона (между 1 и 8000) при щелчке левой кнопкой</translation>
         </message>
         <message>
             <source>%</source>
@@ -645,7 +881,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
-            <translation>Постоянное изменение диапазона (между 1 и 8000) при щелчке правой кнопкой мыши</translation>
+            <translation>Постоянное изменение диапазона (между 1 и 8000) при щелчке правой кнопкой</translation>
         </message>
         <message>
             <source>Temporary Pitch/Rate Buttons</source>
@@ -653,11 +889,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when left clicking</source>
-            <translation>Временное изменение диапазона (между 1 и 8000) при щелчке левой кнопкой мыши</translation>
+            <translation>Временное изменение диапазона (между 1 и 8000) при щелчке левой кнопкой</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when right clicking</source>
-            <translation>Временное изменение диапазона (между 1 и 8000) при щелчке правой кнопкой мыши</translation>
+            <translation>Временное изменение диапазона (между 1 и 8000) при щелчке правой кнопкой</translation>
         </message>
         <message>
             <source>Ramping Pitchbend</source>
@@ -666,6 +902,56 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Pitchbend sensitivity</source>
             <translation>Чувствительность точной подстройки темпа</translation>
+        </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Frame Rate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>OpenGl status</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Display type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Default zoom</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>400%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -735,8 +1021,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 кГц</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -838,7 +1123,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Enabled</source>
-            <translation>Задействовать</translation>
+            <translation>Задействовано</translation>
         </message>
         <message>
             <source>Controls</source>
@@ -916,7 +1201,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation>Предуселитель Диска</translation>
+            <translation>Предусиление проигрывателя</translation>
         </message>
         <message>
             <source>1 (Off)</source>
@@ -928,7 +1213,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation>Конфигурирование Винила</translation>
+            <translation>Настройка винилового проигрывателя</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
@@ -948,7 +1233,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation>Отображать качество сигнала в оболочке</translation>
+            <translation>Отображать качество сигнала в обложке</translation>
         </message>
         <message>
             <source>Control Mode</source>
@@ -987,7 +1272,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation>Выберите каталог музыкальной библиотеки</translation>
+            <translation>Выберите папку музыкальной библиотеки</translation>
         </message>
         <message>
             <source>Multiple iPods Detected</source>
@@ -1056,7 +1341,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Synchronize ID3 tags on track modifications</source>
-            <translation>Синхронизировать тэги ID3 при изменении дорожек</translation>
+            <translation>Синхронизировать теги ID3 при изменении дорожек</translation>
         </message>
         <message>
             <source>Rescan library on start-up</source>
@@ -1064,7 +1349,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
-            <translation>Использовать относительные пути при экспорте плэй-листа, если возможно.</translation>
+            <translation>Использовать относительные размещения при экспортировании списка воспроизведения, если возможно.</translation>
         </message>
         <message>
             <source>iPod</source>
@@ -1088,7 +1373,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation>Музыкальный каталог:</translation>
+            <translation>Музыкальная папка:</translation>
         </message>
         <message>
             <source>Built-in</source>
@@ -1096,7 +1381,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Available Online...</source>
-            <translation>Доступные в вэб...</translation>
+            <translation>Доступные в веб...</translation>
         </message>
         <message>
             <source>Bundled Songs</source>
@@ -1124,7 +1409,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Encoding</source>
-            <translation>Кодировка</translation>
+            <translation>Кодирование</translation>
         </message>
         <message>
             <source>Quality</source>
@@ -1132,11 +1417,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>High</source>
-            <translation>Высокий</translation>
+            <translation>Высокое</translation>
         </message>
         <message>
             <source>Low</source>
-            <translation>Низкий</translation>
+            <translation>Низкое</translation>
         </message>
         <message>
             <source>Tags</source>
@@ -1164,11 +1449,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>File Splitting</source>
-            <translation>Разделение Файла</translation>
+            <translation>Разделение файла</translation>
         </message>
         <message>
             <source>Split recordings at</source>
-            <translation>Разделить запись около</translation>
+            <translation>Разделить запись по</translation>
         </message>
     </context>
     <context>
@@ -1226,7 +1511,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Использовать живое вещание</translation>
+            <translation>Активировать прямой ефир</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1342,7 +1627,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Битрейт</translation>
+            <translation>Частота бит</translation>
         </message>
         <message>
             <source>320 kbps</source>
@@ -1434,7 +1719,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
-            <translation>Изменение каких-либо настроек shoutcas по техническим причинам, приведёт к переподключению. </translation>
+            <translation>Изменение каких-либо настроек shoutcast по техническим причинам, приведёт к переподключению. </translation>
         </message>
     </context>
     <context>
@@ -1490,7 +1775,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Latency Tips</source>
-            <translation>невыявленные типы</translation>
+            <translation>Подсказки Задержки</translation>
         </message>
         <message>
             <source>&lt;ul&gt;
@@ -1512,11 +1797,12 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Query Devices</source>
-            <translation>Запрашивающие устройство</translation>
+            <translation>Запрашивающие устройства</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation>По умолчанию</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1578,7 +1864,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation>Проигрыватель предуселителя</translation>
+            <translation>Предусиление проигрывателя</translation>
         </message>
         <message>
             <source>1 (Off)</source>
@@ -1590,19 +1876,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation>Конфигурирование винила</translation>
+            <translation>Настройка винилового проигрывателя</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation>Дек 1 Вид Винила</translation>
+            <translation>Дека 1 Тип винила</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation>Дек 2 Вид Винила</translation>
+            <translation>Дека 2 тип винила</translation>
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation>Отображать качество сигнала в оболочке</translation>
+            <translation>Отображать качество сигнала в обложке</translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1614,7 +1900,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation>с</translation>
+            <translation>с.</translation>
         </message>
         <message>
             <source>Control Mode</source>
@@ -1676,8 +1962,14 @@ p, li { white-space: pre-wrap; }
             <translation>Запись</translation>
         </message>
         <message>
+            <source>Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>BPM Detection</source>
-            <translation>Определение уд./мин.</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Normalization</source>
@@ -1685,11 +1977,12 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation>Управление винилом</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Live Broadcasting</source>
-            <translation>Живое вещание</translation>
+            <translation>Прямой эфир</translation>
         </message>
     </context>
     <context>
@@ -1711,13 +2004,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Новый</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Все</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1748,7 +2039,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Status:</source>
-            <translation>Статус</translation>
+            <translation>Состояние:</translation>
         </message>
         <message>
             <source>Start Recording</source>
@@ -1756,11 +2047,21 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Start recording here ...</source>
-            <translation>Начало записи здесь ...</translation>
+            <translation>Начать запись здесь ...</translation>
         </message>
         <message>
             <source>Stop Recording</source>
-            <translation>Завершить запись</translation>
+            <translation>Остановить запись</translation>
+        </message>
+        <message>
+            <source>Recording to file: </source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>MB written</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1798,6 +2099,11 @@ p, li { white-space: pre-wrap; }
             <translation>Жанр:</translation>
         </message>
         <message>
+            <source>Composer:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Filename:</source>
             <translation>Имя файла:</translation>
         </message>
@@ -1819,7 +2125,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Comments:</source>
-            <translation>Комментарии:</translation>
+            <translation>Описания:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -1859,7 +2165,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Position</source>
-            <translation>Положение</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Hotcue</source>
@@ -1900,6 +2207,14 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>&amp;Next &gt;&gt;</source>
             <translation>&amp;Далее &gt;&gt;</translation>
+        </message>
+    </context>
+    <context>
+        <name>EmptyWaveformWidget</name>
+        <message>
+            <source>Empty</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1955,6 +2270,81 @@ p, li { white-space: pre-wrap; }
             <translation>Ошибка установки неблокирующего режима:</translation>
         </message>
         <message>
+            <source>Error setting hostname!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting port!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting password!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting mount!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting username!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream name!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream description!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream genre!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream url!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting bitrate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: unknown server protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: libshout only supports Shoutcast with MP3 format!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Lost connection to streaming server</source>
             <translation>Соединение с потоковым сервером прервано</translation>
         </message>
@@ -1964,7 +2354,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Live broadcasting</source>
-            <translation>Живое вещание</translation>
+            <translation>Прямой эфир</translation>
         </message>
         <message>
             <source>Mixxx has successfully connected to the shoutcast server</source>
@@ -2000,6 +2390,30 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Question</source>
             <translation>Вопрос</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2044,8 +2458,7 @@ p, li { white-space: pre-wrap; }
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Сканер библиотеки</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
@@ -2186,56 +2599,9 @@ p, li { white-space: pre-wrap; }
             <translation>Mixxx</translation>
         </message>
         <message>
-            <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation>Разработка Mixxx ведётся на основе взаимодействия с сообществом.  На ваше усмотрение, Mixxx может автоматически отправлять данные вашего пользовательского опыта разработчикам. Вы действительно хотите помочь нам улучшить Mixxx  включив эту возможность?</translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation>Да</translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation>Нет</translation>
-        </message>
-        <message>
-            <source>Privacy Policy</source>
-            <translation>Политика конфиденциальности</translation>
-        </message>
-        <message>
-            <source>Mixxx: Privacy Policy</source>
-            <translation>Mixxx: Политика конфиденциальности</translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
-The hardware information will include:
-	- CPU model and features
-	- Total/Available Amount of RAM
-	- Available disk space
-	- OS version
-Your usage information will include:
-	- Settings/Preferences
-	- Internal errors
-	- Internal debugging messages
-	- Performance statistics (average latency, CPU usage)
-This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
-</source>
-            <translation>Разработка Mixxx ведётся на основе взаимодействия с сообществом. Чтобы помочь нам внедрять новые возможности в будущие версии Mixxx, программа будет собирать сведения о вашем аппаратном обеспечении и использовании Mixxx.  Эти сведения в первую очередь будут использоваться для исправления ошибок, усовершенствования возможностей и определения системных требований новых версий. Также эти сведения могут использоваться  в статистических целях.
-Аппаратные сведения будут включать:
-	- Модель ЦП и функции
-	- Общее/доступное кол-во ОЗУ
-	- Доступное место на диске
-	- Версия ОС
-Сведения о использовании включают:
-	- Настройки/свойства
-	- Внутренние ошибки
-	- Внутренние сообщения отладки
-	- Статистика производительности (средняя задержка, использование ЦП)
-Эти сведения не будут использоваться для личностной идентификации, для связи с вами, для рекламы и в любом другом случае, который может побеспокоить вас.
-</translation>
-        </message>
-        <message>
             <source>Choose music library directory</source>
-            <translation>Выберите каталог музыкальной библиотеки</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
@@ -2278,20 +2644,42 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Выйти</translation>
         </message>
         <message>
+            <source>No Output Devices</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Continue</source>
             <translation>Продолжить</translation>
         </message>
         <message>
-            <source>&amp;Load Song (Player 1)...</source>
-            <translation>&amp;Загрузить композицию (Проигрыватель 1)...</translation>
+            <source>Load track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loads a track in deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Open</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+O</source>
             <translation>Ctrl+О</translation>
-        </message>
-        <message>
-            <source>&amp;Load Song (Player 2)...</source>
-            <translation>&amp;Загрузить композицию (Проигрыватель 2)...</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2302,12 +2690,22 @@ This information will not be used to personally identify you, contact you, adver
             <translation>&amp;Выйти</translation>
         </message>
         <message>
+            <source>Quits Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Ctrl+Q</source>
             <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
             <translation>&amp;Обновить библиотеку</translation>
+        </message>
+        <message>
+            <source>Rescans library folders for changes to tracks.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Add &amp;new playlist</source>
@@ -2319,31 +2717,25 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Add new &amp;crate</source>
-            <translation>Добавить новый &amp;список</translation>
+            <translation>Добавить новый &amp;контейнер</translation>
         </message>
         <message>
             <source>Ctrl+C</source>
             <translation>Ctrl+C</translation>
         </message>
         <message>
-            <source>&amp;Import playlist</source>
-            <translation>&amp;Импортировать список воспроизведения</translation>
+            <source>Deck %1 is currently playing a track.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Ctrl+I</source>
-            <translation>Ctrl+I</translation>
-        </message>
-        <message>
-            <source>&amp;Audio Beat Marks</source>
-            <translation>маркировка ритма</translation>
+            <source>Are you sure you want to load a new track?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Full Screen</source>
             <translation>&amp;Во весь экран</translation>
-        </message>
-        <message>
-            <source>Ctrl+F</source>
-            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>F11</source>
@@ -2354,21 +2746,30 @@ This information will not be used to personally identify you, contact you, adver
             <translation>&amp;Параметры</translation>
         </message>
         <message>
+            <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Ctrl+P</source>
             <translation>Ctrl+P</translation>
         </message>
         <message>
             <source>&amp;About</source>
-            <translation>&amp;О программе</translation>
+            <translation>&amp;Сведения о программе</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
             <translation>Поддержка &amp;сообщества</translation>
         </message>
         <message>
-            <source>&amp;User Manual</source>
+            <source>Get help with Mixxx</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>&amp;User Manual</source>
+            <translation>&amp;Руководство пользователя</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
@@ -2379,25 +2780,12 @@ This information will not be used to personally identify you, contact you, adver
             <translation>&amp;Перевести это приложение</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 1</source>
-            <translation>Включить &amp; Виниловый контроль 1</translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 2</source>
-            <translation>Включить &amp; Виниловый контроль 2</translation>
-        </message>
-        <message>
             <source>Ctrl+U</source>
             <translation>Ctrl+U</translation>
-        </message>
-        <message>
-            <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2412,184 +2800,64 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ctrl+R</translation>
         </message>
         <message>
-            <source>Show Studio</source>
-            <translation>Показать  студию</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 1</source>
-            <translation>Oткрывает композицию в проигрывателе 1</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 1</source>
-            <translation>Oткрыть
-Oткрывает композицию в проигрывателе 1</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 2</source>
-            <translation>Oткрывает композицию в проигрывателе 2</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 2</source>
-            <translation>Oткрыть
-Oткрывает композицию в проигрывателе 2</translation>
-        </message>
-        <message>
-            <source>Quits the application</source>
-            <translation>Выход из программы</translation>
-        </message>
-        <message>
-            <source>Exit
-Quits the application</source>
-            <translation>Выйти
-Выход из программы</translation>
-        </message>
-        <message>
-            <source>Rescans the song library</source>
-            <translation>Обновить музыкальную библиотеку</translation>
-        </message>
-        <message>
-            <source>Rescan library
-Rescans the song library</source>
-            <translation>Обновить библиотеку
-Обновить музыкальную библиотеку</translation>
-        </message>
-        <message>
             <source>Create a new playlist</source>
             <translation>Создать список воспроизведения</translation>
         </message>
         <message>
-            <source>New playlist
-Create a new playlist</source>
-            <translation>Создать список воспроизведения
-Создать новый список воспроизведения</translation>
-        </message>
-        <message>
             <source>Create a new crate</source>
-            <translation>Создать новый список</translation>
+            <translation>Создать новый контейнер</translation>
         </message>
         <message>
-            <source>New crate
-Create a new crate.</source>
-            <translation>Создать список
-Создать новый список.</translation>
+            <source>Ctrl+Shift+F</source>
+            <translation>Ctrl+Shift+F</translation>
         </message>
         <message>
-            <source>Import playlist</source>
-            <translation>Импортировать список воспроизведения</translation>
+            <source>Enable Vinyl Control &amp;1</source>
+            <translation>Активировать контроль винила &amp;1</translation>
         </message>
         <message>
-            <source>Audio Beat Marks</source>
-            <translation>Mаркировка ритма</translation>
+            <source>Enable Vinyl Control &amp;2</source>
+            <translation>Активировать контроль винила &amp;2</translation>
         </message>
         <message>
-            <source>Audio Beat Marks
-Mark beats by audio clicks</source>
-            <translation>маркировка ритма по аудио кликам</translation>
-        </message>
-        <message>
-            <source>Activate Vinyl Control</source>
-            <translation>Использовать управление винилом</translation>
+            <source>Enable live &amp;broadcasting</source>
+            <translation>Активировать прямую &amp;трансляцию</translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
             <translation>Использовать винил с временными метками на внешних проигрывателях для управления Mixxx</translation>
         </message>
         <message>
-            <source>Activate live broadcasting</source>
-            <translation>Использовать живое вещание</translation>
-        </message>
-        <message>
             <source>Stream your mixes to a shoutcast or icecast server</source>
             <translation>Транслируйте ваши миксы через серверы shoutcast или icecast</translation>
-        </message>
-        <message>
-            <source>Start Recording your Mix</source>
-            <translation>Начать запись вашего микса</translation>
         </message>
         <message>
             <source>Record your mix to a file</source>
             <translation>Записать ваш микс в файл</translation>
         </message>
         <message>
-            <source>Full Screen</source>
-            <translation>Во весь экран</translation>
-        </message>
-        <message>
             <source>Display Mixxx using the full screen</source>
             <translation>Разворачивать Mixxx на весь экран</translation>
         </message>
         <message>
-            <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences
-Playback and MIDI preferences</source>
-            <translation>Параметры
-Параметры воспроизведения и MIDI</translation>
-        </message>
-        <message>
-            <source>Support...</source>
-            <translation>Поддержка...</translation>
-        </message>
-        <message>
-            <source>Support
-Get help with Mixxx</source>
-            <translation>Поддержка
-Получите поддержку для Mixxx</translation>
-        </message>
-        <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Открыть руководство пользователя Mixxx.</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
             <translation>Отправить отзыв команде Mixxx.</translation>
         </message>
         <message>
-            <source>Support
-Send feedback to the Mixxx team.</source>
-            <translation>Поддержать
-Оставить отзыв команде Mixxx.</translation>
-        </message>
-        <message>
             <source>Help translate this application into your language.</source>
             <translation>Помочь перевести приложение на ваш язык.</translation>
-        </message>
-        <message>
-            <source>Support
-Help translate this application into your language.</source>
-            <translation>Поддержка
-Помочь перевести приложение на ваш язык.</translation>
         </message>
         <message>
             <source>About the application</source>
             <translation>Сведения о программе</translation>
         </message>
         <message>
-            <source>About
-About the application</source>
-            <translation>Сведения
-Сведения о программе</translation>
-        </message>
-        <message>
-            <source>Shows the macro studio window</source>
-            <translation>Показать окно mакро студии</translation>
-        </message>
-        <message>
-            <source>Show Studio
-Makes the macro studio visible</source>
-            <translation>Показать студию  Сделать макро студию видимой</translation>
+            <source>A sampler is currently playing. Exit Mixxx?</source>
+            <translation>Семплер в данный момент играет. Выйти из Mixxx?</translation>
         </message>
         <message>
             <source>&amp;File</source>
@@ -2612,45 +2880,34 @@ Makes the macro studio visible</source>
             <translation>&amp;Справка</translation>
         </message>
         <message>
-            <source>&amp;Macro</source>
-            <translation>&amp;Автоматизация</translation>
-        </message>
-        <message>
             <source>&amp;Vinyl Control</source>
-            <translation>&amp;Kонтроль Винилa</translation>
-        </message>
-        <message>
-            <source>Quit...</source>
-            <translation>Выход...</translation>
-        </message>
-        <message>
-            <source>Do your really want to quit?</source>
-            <translation>Вы действительно хотите выйти?</translation>
-        </message>
-        <message>
-            <source>Player 1 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>Проигрыватель 1 в данный момент воспроизводит композицию.
-Вы действительно хотите загрузить новую композицию?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 1</source>
-            <translation>Загрузить композицию в проигрыватель 1</translation>
-        </message>
-        <message>
-            <source>Player 2 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>Проигрыватель 2 в данный момент воспроизводит композицию.
-Вы действительно хотите загрузить новую композицию?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 2</source>
-            <translation>Загрузить композицию в проигрыватель 2</translation>
+            <translation>&amp;Kонтроль винилa</translation>
         </message>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
-            <translation>Нет устройства ввода (ы) выберите. Пожалуйста, выберите вашу звуковую карту (ы) в звуковых   настройках   компьютера.</translation>
+            <translation>Устройство(-а) не выбраны.
+Пожалуйста, выберите вашу звуковую карту(-ы) в настройках звукового оборудования.</translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation>Команда разработки Mixxx %1</translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation>При участии:</translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation>Особые благодарности:</translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation>Бывшие разработчики</translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation>Бывшие соавторы</translation>
         </message>
         <message>
             <source>Confirm Exit</source>
@@ -2664,25 +2921,24 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
+            <source>Missing Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Library</source>
             <translation>Библиотека</translation>
         </message>
     </context>
     <context>
-        <name>ParserM3u</name>
+        <name>ParserCsv</name>
         <message>
-            <source>Playlist Export Failed</source>
-            <translation>Сбой при экспорте плейлиста.</translation>
-        </message>
-        <message>
-            <source>File path contains characters, not allowed in m3u playlists.
-</source>
+            <source>Location</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Export a m3u8 playlist instead!
-</source>
+            <source>Playlist Export Failed</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2691,12 +2947,40 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Readable text Export Failed</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>ParserM3u</name>
+        <message>
+            <source>Playlist Export Failed</source>
+            <translation>Ошибка экспортирования списка воспроизведения</translation>
+        </message>
+        <message>
+            <source>File path contains characters, not allowed in m3u playlists.
+</source>
+            <translation>Адрес размещения содержит символы, которые недопустимы в списках воспроизведения m3u.
+</translation>
+        </message>
+        <message>
+            <source>Export a m3u8 playlist instead!
+</source>
+            <translation>Выполнить экспортирование списка воспроизведения m3u8!
+</translation>
+        </message>
+        <message>
+            <source>Could not create file</source>
+            <translation>Невозможно создать файл</translation>
+        </message>
     </context>
     <context>
         <name>ParserPls</name>
         <message>
             <source>Playlist Export Failed</source>
-            <translation>Сбой при экспорте плейлиста.</translation>
+            <translation>Ошибка экспортирования списка воспроизведения</translation>
         </message>
         <message>
             <source>Could not create file</source>
@@ -2706,31 +2990,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <context>
         <name>PlaylistFeature</name>
         <message>
-            <source>New Playlist</source>
-            <translation>Создать список воспроизведения</translation>
-        </message>
-        <message>
-            <source>Add to Auto-DJ Queue</source>
-            <translation>Добавить в очередь для автоматического диджеинга</translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation>Удалить</translation>
-        </message>
-        <message>
-            <source>Rename</source>
-            <translation>Переменовать</translation>
-        </message>
-        <message>
             <source>Lock</source>
-            <translation>Заблокировать</translation>
-        </message>
-        <message>
-            <source>Import Playlist</source>
-            <translation>Импортировать список воспроизведения</translation>
-        </message>
-        <message>
-            <source>Export Playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2740,49 +3000,8 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Unlock</source>
-            <translation>Разблокировать</translation>
-        </message>
-        <message>
-            <source>Playlist name:</source>
-            <translation>Название списка воспроизведения:</translation>
-        </message>
-        <message>
-            <source>Playlist Creation Failed</source>
-            <translation>Ошибка создания списка воспроизведения</translation>
-        </message>
-        <message>
-            <source>A playlist cannot have a blank name.</source>
-            <translation>Необходимо ввести название списка воспроизведения</translation>
-        </message>
-        <message>
-            <source>An unknown error occurred while creating playlist: </source>
-            <translation>Обнаружена неизвестная ошибка при создании списка воспроизведения </translation>
-        </message>
-        <message>
-            <source>Rename Playlist</source>
-            <translation>Переименовать список воспроизведения</translation>
-        </message>
-        <message>
-            <source>New playlist name:</source>
-            <translation>Название нового списка воспроизведения:</translation>
-        </message>
-        <message>
-            <source>Renaming Playlist Failed</source>
-            <translation>Ошибка переименования списка воспроизведения</translation>
-        </message>
-        <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist by that name already exists.</source>
-            <translation>Список воспроизведения с этим названием уже существует.</translation>
         </message>
     </context>
     <context>
@@ -2826,6 +3045,16 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <source>Unknown path type %1</source>
             <translation>Неизвестный тип размещение %1</translation>
         </message>
+        <message>
+            <source>(GL)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(GLSL)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>RecordingFeature</name>
@@ -2838,7 +3067,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>RhythmboxFeature</name>
         <message>
             <source>Rhythmbox</source>
-            <translation>&quot;Ритмбокс&quot;</translation>
+            <translation>Rhythmbox</translation>
         </message>
     </context>
     <context>
@@ -2873,46 +3102,34 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
     </context>
     <context>
-        <name>ScriptStudio</name>
+        <name>SetlogFeature</name>
         <message>
-            <source>Mixxx Script Studio</source>
-            <translation>Mixxx Скрипт Студио</translation>
+            <source>Join with previous</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>File</source>
-            <translation>Файл</translation>
+            <source>Set Logs</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Edit</source>
-            <translation>Правка</translation>
+            <source>Unlock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Run</source>
-            <translation>Выполнить</translation>
+            <source>Lock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
+    </context>
+    <context>
+        <name>SoftwareWaveformWidget</name>
         <message>
-            <source>Close</source>
-            <translation>Закрыть</translation>
-        </message>
-        <message>
-            <source>Import...</source>
-            <translation>Импортировать...</translation>
-        </message>
-        <message>
-            <source>Export...</source>
-            <translation>Экспортировать...</translation>
-        </message>
-        <message>
-            <source>Delete Macro</source>
-            <translation>Удалить макрос</translation>
-        </message>
-        <message>
-            <source>New Macro...</source>
-            <translation>Создать макрос...</translation>
-        </message>
-        <message>
-            <source>Run Macro</source>
-            <translation>Выполнить макрос</translation>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2948,11 +3165,11 @@ Click OK to exit.</source>
         <name>TraktorFeature</name>
         <message>
             <source>Traktor</source>
-            <translation>Трактор</translation>
+            <translation>Traktor</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation>(загружаю) Traktor</translation>
+            <translation>(загрузка) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -2971,7 +3188,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Remaining</source>
-            <translation>Oстальной</translation>
+            <translation>Осталось</translation>
         </message>
         <message>
             <source>On</source>
@@ -2983,11 +3200,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Don't load tracks into a playing deck</source>
-            <translation>Не загружайте треки в уже играющие деки</translation>
+            <translation>Не загружать дорожки в деку, которая уже используется для воспроизведения</translation>
         </message>
         <message>
             <source>Load tracks into playing decks</source>
-            <translation>Не загружайте треки в уже играющие деки</translation>
+            <translation>Загружать дорожки в деку, которая уже используется для воспроизведения</translation>
         </message>
         <message>
             <source>CDJ Mode</source>
@@ -2995,7 +3212,8 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Simple</source>
-            <translation>Простой</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
@@ -3011,11 +3229,12 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Параметры</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation>Плавный перевод звука между двумя выбранными каналами</translation>
+            <translation>Плавное микширование</translation>
         </message>
         <message>
             <source>Master volume</source>
@@ -3031,7 +3250,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Headphones mix (pre/main)</source>
-            <translation>Наушники смеситель (до / главный)</translation>
+            <translation>Микс в наушниках (предварительный/основной)</translation>
         </message>
         <message>
             <source>Cue button for Player %1</source>
@@ -3063,7 +3282,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>BPM tap button for Player %1</source>
-            <translation>BPM  кнопка для Плейра %1</translation>
+            <translation>Кнопка уд./мин. для проигрывателя %1</translation>
         </message>
         <message>
             <source>Keylock button for Player %1</source>
@@ -3083,7 +3302,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Gain knob for Channel %1</source>
-            <translation>Усиления  Kаналa  1</translation>
+            <translation>Регулятор усиления для канала %1</translation>
         </message>
         <message>
             <source>High EQ knob for Channel %1</source>
@@ -3111,120 +3330,103 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Setup a loop over 4 beats for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Установить петлю на 4 такта для Плеера %1</translation>
         </message>
         <message>
             <source>Halves the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Уменьшить длину петли вдвое для Плеера %1</translation>
         </message>
         <message>
             <source>Doubles the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Удваивает длительность текущей петли для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Player %1</source>
-            <translation>Кнопка  1 &quot;горячего сигнала&quot; для Плейра 1</translation>
+            <translation>Кнопка быстрой метки 1 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 2 button for Player %1</source>
-            <translation>Кнопка  2 &quot;горячего сигнала&quot; для Плейра 1</translation>
+            <translation>Кнопка быстрой метки 2 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 3 button for Player %1</source>
-            <translation>Кнопка  3 &quot;горячего сигнала&quot; для Плейра 1</translation>
+            <translation>Кнопка быстрой метки 3 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 4 button for Player %1</source>
-            <translation>Кнопка  4 &quot;горячего сигнала&quot; для Плейра 1</translation>
+            <translation>Кнопка быстрой метки 4 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 1 delete button for Player %1</source>
-            <translation>Кнопка  1   удаление &quot; горячего сигнала&quot; для Плейра 1</translation>
+            <translation>Кнопка удаления быстрой метки 1 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 2 delete button for Player %1</source>
-            <translation>Кнопка  2  удаление &quot; горячего сигнала&quot; для Плейра 1</translation>
+            <translation>Кнопка удаления быстрой метки 2 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 3 delete button for Player %1</source>
-            <translation>Кнопка 3 удаление &quot; горячего сигнала &quot; для Плейра 1</translation>
+            <translation>Кнопка удаления быстрой метки 3 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Hotcue 4 delete button for Player %1</source>
-            <translation>Кнопка 4  удаление &quot; горячего сигнала &quot; для Плейра 1</translation>
+            <translation>Кнопка удаления быстрой метки 4 для проигрывателя %1</translation>
         </message>
         <message>
             <source>Play button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка воспроизведения для семплера %1</translation>
         </message>
         <message>
             <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ручка усилителя для Семплера %1</translation>
         </message>
         <message>
             <source>Headphone listen button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка прослушивания в наушниках для Семплера %1</translation>
         </message>
         <message>
             <source>BPM tap button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка набивания темпа для Семплера %1</translation>
         </message>
         <message>
             <source>Keylock button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка блокировки клавиш для Семплера %1</translation>
         </message>
         <message>
             <source>Pitch control slider for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ползунок изменения темпа для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка горячей метки 1 для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 2 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка горячей метки 2 для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 3 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка горячей метки 3 для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 4 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка горячей метки 4 для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 1 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка удаления горячей метки 1 для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 2 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка удаления горячей метки 2 для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 3 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка удаления горячей метки 3 для Семплера %1</translation>
         </message>
         <message>
             <source>Hotcue 4 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кнопка удаления горячей метки 4 для Семплера %1</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -3252,32 +3454,35 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Adjusts the wavelength of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Настройка длинны волны фленджер-эффекта</translation>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Настройка интенсивности фленджер-эффекта</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Настройка задержки фазы фленджер-эффекта</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Включение/выключение микрофона</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Громкость микрофона</translation>
         </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>
+        <message>
+            <source>Ctrl+F</source>
+            <translation>Ctrl+F</translation>
+        </message>
+        <message>
+            <source>Esc</source>
+            <translation>Esc</translation>
+        </message>
         <message>
             <source>Search...</source>
             <translation>Найти...</translation>
@@ -3291,7 +3496,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Add to Crate</source>
-            <translation>Добавить в группу</translation>
+            <translation>Добавить в контейнер</translation>
         </message>
         <message>
             <source>Load to Sampler</source>
@@ -3306,12 +3511,33 @@ Click OK to exit.</source>
             <translation>Свойства...</translation>
         </message>
         <message>
-            <source>Add to Auto DJ Queue</source>
-            <translation>Добавить в очередь автоматического диджеинга</translation>
+            <source>Add to Auto-DJ Queue (bottom)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (top)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
             <translation>Обновить метаданные</translation>
+        </message>
+        <message>
+            <source>Lock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unlock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear BPM and Beatgrid</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
@@ -3323,8 +3549,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Обновление метаданных дорожки для загруженной дорожки, могут привести к резкому изменению объёма. Вы действительно хотите продолжить?</translation>
         </message>
     </context>
     <context>

@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+  <info>
+    <name>Akai MPD24</name>
+  </info>
+<controller id="Akai MPD24 MIDI 1">
+  <controls>
+    <control>
+      <group>[Master]</group>
+      <key>crossfader</key>
+      <status>0xB0</status>
+      <midino>17</midino>
+    </control>
+
+    <control>
+      <group>[Master]</group>
+      <key>balance</key>
+      <status>0xB0</status>
+      <midino>32</midino>
+    </control>
+
+    <control>
+      <group>[Master]</group>
+      <key>volume</key>
+      <status>0xB0</status>
+      <midino>3</midino>
+    </control>
+
+    <control>
+      <group>[Master]</group>
+      <key>headVolume</key>
+      <status>0xB0</status>
+      <midino>26</midino>
+    </control>
+
+    <control>
+      <group>[Master]</group>
+      <key>headMix</key>
+      <status>0xB0</status>
+      <midino>4</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>play</key>
+      <status>0x90</status>
+      <midino>48</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>play</key>
+      <status>0x80</status>
+      <midino>48</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>back</key>
+      <status>0x90</status>
+      <midino>44</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>back</key>
+      <status>0x80</status>
+      <midino>44</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>fwd</key>
+      <status>0x90</status>
+      <midino>45</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>fwd</key>
+      <status>0x80</status>
+      <midino>45</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_down</key>
+      <status>0x90</status>
+      <midino>36</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_down</key>
+      <status>0x80</status>
+      <midino>36</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_up</key>
+      <status>0x90</status>
+      <midino>37</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
+      <midino>37</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>volume</key>
+      <status>0xB0</status>
+      <midino>1</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>rate</key>
+      <status>0xB0</status>
+      <midino>2</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>pfl</key>
+      <status>0x90</status>
+      <midino>41</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>pfl</key>
+      <status>0x80</status>
+      <midino>41</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>cue_default</key>
+      <status>0x90</status>
+      <midino>49</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>cue_default</key>
+      <status>0x80</status>
+      <midino>49</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>flanger</key>
+      <status>0x90</status>
+      <midino>40</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>flanger</key>
+      <status>0x80</status>
+      <midino>40</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>filterLow</key>
+      <status>0xB0</status>
+      <midino>7</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>filterMid</key>
+      <status>0xB0</status>
+      <midino>9</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>filterHigh</key>
+      <status>0xB0</status>
+      <midino>11</midino>
+    </control>
+
+    <control>
+      <group>[Channel1]</group>
+      <key>pregain</key>
+      <status>0xB0</status>
+      <midino>13</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>play</key>
+      <status>0x90</status>
+      <midino>50</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>play</key>
+      <status>0x80</status>
+      <midino>50</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>back</key>
+      <status>0x90</status>
+      <midino>46</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>back</key>
+      <status>0x80</status>
+      <midino>46</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>fwd</key>
+      <status>0x90</status>
+      <midino>47</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>fwd</key>
+      <status>0x80</status>
+      <midino>47</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_down</key>
+      <status>0x90</status>
+      <midino>38</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_down</key>
+      <status>0x80</status>
+      <midino>38</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_up</key>
+      <status>0x90</status>
+      <midino>39</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate_temp_up</key>
+      <status>0x80</status>
+      <midino>39</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>volume</key>
+      <status>0xB0</status>
+      <midino>6</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>rate</key>
+      <status>0xB0</status>
+      <midino>5</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>pfl</key>
+      <status>0x90</status>
+      <midino>42</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>pfl</key>
+      <status>0x80</status>
+      <midino>42</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>cue_default</key>
+      <status>0x90</status>
+      <midino>51</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>cue_default</key>
+      <status>0x80</status>
+      <midino>51</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>flanger</key>
+      <status>0x90</status>
+      <midino>43</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>flanger</key>
+      <status>0x80</status>
+      <midino>43</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>filterLow</key>
+      <status>0xB0</status>
+      <midino>8</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>filterMid</key>
+      <status>0xB0</status>
+      <midino>10</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>filterHigh</key>
+      <status>0xB0</status>
+      <midino>12</midino>
+    </control>
+
+    <control>
+      <group>[Channel2]</group>
+      <key>pregain</key>
+      <status>0xB0</status>
+      <midino>14</midino>
+    </control>
+  </controls>
+</controller>
+</MixxxMIDIPreset>

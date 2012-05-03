@@ -1,14 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>html/crates.html</file>
-        <file>html/playlists.html</file>
-        <file>html/setlogs.html</file>
         <file>images/mixxx-icon.png</file>
         <file>images/ic_mixxx_window.png</file>
         <file>images/templates/logo_mixxx.png</file>
         <file>images/preferences/ic_preferences_bpmdetect.png</file>
         <file>images/preferences/ic_preferences_broadcast.png</file>
         <file>images/preferences/ic_preferences_controllers.png</file>
+        <file>images/preferences/ic_preferences_midicontrollers.png</file>
         <file>images/preferences/ic_preferences_crossfader.png</file>
         <file>images/preferences/ic_preferences_effects.png</file>
         <file>images/preferences/ic_preferences_equalizers.png</file>
@@ -36,8 +34,10 @@
         <file>images/library/ic_library_setlog.png</file>
         <file>images/library/ic_library_setlog_current.png</file>
         <file>translations/mixxx_ar.qm</file>
+        <file>translations/mixxx_ast.qm</file>
         <file>translations/mixxx_bg.qm</file>
         <file>translations/mixxx_br.qm</file>
+        <file>translations/mixxx_bs.qm</file>
         <file>translations/mixxx_ca.qm</file>
         <file>translations/mixxx_cs.qm</file>
         <file>translations/mixxx_da.qm</file>
@@ -50,6 +50,7 @@
         <file>translations/mixxx_eu.qm</file>
         <file>translations/mixxx_fi.qm</file>
         <file>translations/mixxx_fr.qm</file>
+        <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
         <file>translations/mixxx_he.qm</file>
         <file>translations/mixxx_hu.qm</file>
@@ -62,7 +63,9 @@
         <file>translations/mixxx_lb.qm</file>
         <file>translations/mixxx_ml.qm</file>
         <file>translations/mixxx_mn.qm</file>
+        <file>translations/mixxx_mr.qm</file>
         <file>translations/mixxx_ms.qm</file>
+        <file>translations/mixxx_nb.qm</file>
         <file>translations/mixxx_nl.qm</file>
         <file>translations/mixxx_nn.qm</file>
         <file>translations/mixxx_oc.qm</file>
@@ -78,5 +81,6 @@
         <file>translations/mixxx_uk.qm</file>
         <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
+        <file>translations/mixxx_zh_TW.qm</file>
     </qresource>
 </RCC>

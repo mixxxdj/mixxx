@@ -34,6 +34,7 @@ QQueue<ControlObject*> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject() :
     m_dValue(0),
+    m_dDefaultValue(0),
     m_bIgnoreNops(true) {
 }
 
@@ -180,7 +181,7 @@ ControlObject * ControlObject::getControl(ConfigKey key)
     }
     m_sqCOHashMutex.unlock();
 
-    qDebug() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
+    qWarning() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
     return NULL;
 }
 
@@ -196,11 +197,11 @@ void ControlObject::queueFromThread(double dValue, ControlObjectThread * pContro
     m_sqQueueMutexThread.unlock();
 }
 
-void ControlObject::queueFromMidi(MidiCategory c, double v)
+void ControlObject::queueFromMidi(MidiOpCode o, double v)
 {
     QueueObjectMidi * p = new QueueObjectMidi;
     p->pControlObject = this;
-    p->category = c;
+    p->opcode = o;
     p->value = v;
 
     m_sqQueueMutexMidi.lock();
@@ -214,8 +215,9 @@ void ControlObject::setValueFromEngine(double dValue)
     emit(valueChangedFromEngine(m_dValue));
 }
 
-void ControlObject::setValueFromMidi(MidiCategory, double v)
+void ControlObject::setValueFromMidi(MidiOpCode o, double v)
 {
+    Q_UNUSED(o);
     m_dValue = v;
     emit(valueChanged(m_dValue));
 }
@@ -314,11 +316,8 @@ void ControlObject::sync()
             } else if (obj->pControlObject == NULL) {
                 qDebug() << "Midi object with null control object!";
                 delete obj;
-            } else if (!obj->category) {
-                qDebug() << "Midi object with null category!";
-                delete obj;
             } else {
-                obj->pControlObject->setValueFromMidi(obj->category, obj->value);
+                obj->pControlObject->setValueFromMidi(obj->opcode,obj->value);
                 obj->pControlObject->updateProxies(0);
                 delete obj;
             }

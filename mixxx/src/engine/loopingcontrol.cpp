@@ -640,7 +640,7 @@ BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
     m_pLegacy = new ControlPushButton(
         keyForControl(pGroup, "beatloop_%1", size));
     m_pLegacy->setStates(2);
-    m_pLegacy->setToggleButton(true);
+    m_pLegacy->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pLegacy, SIGNAL(valueChanged(double)),
             this, SLOT(slotLegacy(double)),
             Qt::DirectConnection);
