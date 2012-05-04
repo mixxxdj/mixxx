@@ -17,6 +17,9 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.02	(04/05/2012)
+* Update: Apply styles to spinbox in AutoDJ tab
+
 v1.11.0.01	(01/05/2012)
 * Feature: Support <Mark> (Hot)Cue and <MarkRange> Loop marker in waveform <Overview>, lp:507215
   Note that only Hotcues 1-4 are currently customizable for [Channel$] & [Samplers$]
