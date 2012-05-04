@@ -34,6 +34,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isPlaylistLocked(int playlistId);
     /** Append a track to a playlist */
     void appendTrackToPlaylist(int trackId, int playlistId);
+    /** Append tracks to a playlist */
+    void appendTracksToPlaylist(QList<int> trackIds, int playlistId);
     /** Find out how many playlists exist. */
     unsigned int playlistCount();
     /** Get the name of the playlist at the given position */
@@ -51,7 +53,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     /** Remove a track from a playlist */
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
-    void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
+    bool insertTrackIntoPlaylist(int trackId, int playlistId, int position);
+    /** Inserts a list of tracks into playlist*/
+    int insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, int position);
     /** Add a playlist to the Auto-DJ Queue */
     void addToAutoDJQueue(int playlistId);
   signals:

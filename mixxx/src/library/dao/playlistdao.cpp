@@ -232,6 +232,57 @@ void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
     emit(changed(playlistId));
 }
 
+/** Append a track to a playlist */
+void PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId)
+{
+    // qDebug() << "PlaylistDAO::appendTrackToPlaylist"
+    //          << QThread::currentThread() << m_database.connectionName();
+
+    // Start the transaction
+    m_database.transaction();
+
+    //Find out the highest position existing in the playlist so we know what
+    //position this track should have.
+    QSqlQuery query(m_database);
+    query.prepare("SELECT max(position) as position FROM PlaylistTracks "
+                  "WHERE playlist_id = :id");
+    query.bindValue(":id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Get the position of the highest playlist...
+    int position = 0;
+    if (query.next()) {
+        position = query.value(query.record().indexOf("position")).toInt();
+    }
+    position++; //Append after the last song.
+
+    //Insert the song into the PlaylistTracks table
+    query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
+                  "VALUES (:playlist_id, :track_id, :position)");
+
+    int insertPosition = position;
+    foreach (int trackId, trackIds) {
+        query.bindValue(":playlist_id", playlistId);
+        query.bindValue(":track_id", trackId);
+        query.bindValue(":position", insertPosition++);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }
+
+    // Commit the transaction
+    m_database.commit();
+
+    insertPosition = position;
+    foreach (int trackId, trackIds) {
+        // TODO(XXX) don't emit if the track didn't add successfully.
+        emit(trackAdded(playlistId, trackId, position++));
+    }
+    emit(changed(playlistId));
+}
+
 /** Find out how many playlists exist. */
 unsigned int PlaylistDAO::playlistCount()
 {
@@ -362,10 +413,9 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     emit(changed(playlistId));
 }
 
-void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int position)
-{
+bool PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int position) {
     if (playlistId < 0 || trackId < 0 || position < 0)
-        return;
+        return false;
 
     m_database.transaction();
 
@@ -378,6 +428,8 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     QSqlQuery query(m_database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
+        m_database.rollback();
+        return false;
     }
 
     //Insert the song into the PlaylistTracks table
@@ -387,13 +439,70 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     query.bindValue(":track_id", trackId);
     query.bindValue(":position", position);
 
+
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        m_database.rollback();
+        return false;
     }
     m_database.commit();
 
     emit(trackAdded(playlistId, trackId, position));
     emit(changed(playlistId));
+    return true;
+}
+
+int PlaylistDAO::insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, int position) {
+    if (playlistId < 0 || position < 0 ) {
+        return 0;
+    }
+
+    int tracksAdded = 0;
+    m_database.transaction();
+
+    QSqlQuery insertQuery(m_database);
+    insertQuery.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
+                        "VALUES (:playlist_id, :track_id, :position)");
+    QSqlQuery query(m_database);
+
+    int insertPositon = position;
+    foreach (int trackId, trackIds) {
+        if (trackId < 0) {
+            continue;
+        }
+        // Move all tracks in playlist up by 1.
+        query.prepare(QString("UPDATE PlaylistTracks SET position=position+1 "
+                              "WHERE position>=%1 AND"
+                              "playlist_id=%2").arg(insertPositon).arg(playlistId));
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            continue;
+        }
+
+        // Insert the track at the given position
+        insertQuery.bindValue(":playlist_id", playlistId);
+        insertQuery.bindValue(":track_id", trackId);
+        insertQuery.bindValue(":position", insertPositon);
+        if (!insertQuery.exec()) {
+            LOG_FAILED_QUERY(insertQuery);
+            continue;
+        }
+
+        // Increment the insert position for the track.
+        insertPositon++;
+        tracksAdded++;
+    }
+
+    m_database.commit();
+
+    insertPositon = position;
+    foreach (int trackId, trackIds) {
+        // TODO(XXX) The position is wrong if any track failed to insert.
+        emit(trackAdded(playlistId, trackId, insertPositon++));
+    }
+    emit(changed(playlistId));
+    return tracksAdded;
 }
 
 void PlaylistDAO::addToAutoDJQueue(int playlistId) {
