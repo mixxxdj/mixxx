@@ -35,6 +35,7 @@ class TrackModel {
         TRACKMODELCAPS_LOADTOSAMPLER  = 0x0100,
         TRACKMODELCAPS_REMOVE         = 0x0200,
         TRACKMODELCAPS_RELOCATE       = 0x0400,
+        TRACKMODELCAPS_RESETPLAYED    = 0x0800,
     };
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
