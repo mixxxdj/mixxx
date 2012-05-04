@@ -30,6 +30,9 @@ class PlaylistTableModel : public BaseSqlTableModel {
     virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
+    // Adding multiple tracks at one to a playlist. Returns the number of
+    // successful additions.
+    virtual int addTracks(const QModelIndex& index, QList<QString> locations);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
     virtual void shuffleTracks(const QModelIndex& currentIndex);
 

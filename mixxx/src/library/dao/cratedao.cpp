@@ -197,6 +197,37 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     return true;
 }
 
+
+int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
+    Q_ASSERT(m_database.transaction());
+    QSqlQuery query(m_database);
+    query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
+
+    int crateAddFails = 0;
+    for (int i = 0; i < trackIdList.size(); ++i) {
+        query.bindValue(":crate_id", crateId);
+        query.bindValue(":track_id", trackIdList.at(i));
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            crateAddFails++;
+            // We must emit only those trackID that were added so we need to
+            // remove the failed ones.
+            trackIdList.removeAt(i);
+        }
+    }
+    Q_ASSERT(m_database.commit());
+
+    // Emitting the trackAdded signals for each trackID outside the transaction
+    foreach(int trackId, trackIdList) {
+        emit(trackAdded(crateId, trackId));
+    }
+
+    emit(changed(crateId));
+
+    // Return the number of tracks successfully added
+    return trackIdList.size();
+}
+
 void CrateDAO::removeTrackFromCrates(int trackId) {
     QSqlQuery query(m_database);
     QString queryString = QString("DELETE FROM %1 WHERE %2 = %3")

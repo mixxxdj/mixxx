@@ -454,6 +454,29 @@ int TrackDAO::addTrack(QFileInfo& fileInfo, bool unremove) {
     return trackId;
 }
 
+QList<int> TrackDAO::addTracks(QList<QFileInfo> fileInfoList, bool unremove) {
+    QList<int> trackIDs;
+
+    //create the list of TrackInfoObjects from the fileInfoList
+    QList<TrackInfoObject*> pTrackList;
+    QMutableListIterator<QFileInfo> it(fileInfoList);
+    while (it.hasNext()) {
+        QFileInfo& info = it.next();
+        pTrackList.append(new TrackInfoObject(info));
+    }
+
+    addTracks(pTrackList, unremove);
+
+    foreach (TrackInfoObject* pTrack, pTrackList) {
+        int trackID = pTrack->getId();
+        if (trackID >= 0) {
+            trackIDs.append(trackID);
+        }
+        delete pTrack;
+    }
+    return trackIDs;
+}
+
 int TrackDAO::addTrack(QString absoluteFilePath, bool unremove)
 {
     QFileInfo fileInfo(absoluteFilePath);
