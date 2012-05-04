@@ -1,5 +1,5 @@
-#ifndef GLWAVEFROMRENDERERFILTEREDSIGNAL_H
-#define GLWAVEFROMRENDERERFILTEREDSIGNAL_H
+#ifndef QTWAVEFROMRENDERERFILTEREDSIGNAL_H
+#define QTWAVEFROMRENDERERFILTEREDSIGNAL_H
 
 #include "waveformrendererabstract.h"
 #include "waveformsignalcolors.h"
@@ -10,18 +10,16 @@
 
 class ControlObject;
 
-class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract {
+class QtWaveformRendererFilteredSignal : public WaveformRendererAbstract {
   public:
-    explicit GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
-    virtual ~GLWaveformRendererFilteredSignal();
+    explicit QtWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
+    virtual ~QtWaveformRendererFilteredSignal();
 
     virtual void init();
     virtual void setup(const QDomNode &node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   protected:
-    void drawGeometry();
-
     virtual void onResize();
     int buildPolygon();
 
@@ -45,8 +43,6 @@ class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract {
     QBrush m_highKilledBrush;
 
     std::vector<QPointF> m_polygon[3];
-
-
 };
 
-#endif // GLWAVEFROMRENDERERFILTEREDSIGNAL_H
+#endif // QTWAVEFROMRENDERERFILTEREDSIGNAL_H
