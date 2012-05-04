@@ -767,6 +767,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
         styleHack.append(QString("QTextBrowser { color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QLabel { color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QSpinBox { color: %1; }\n ").arg(color.name()));
     }
 
     if (!XmlParse::selectNode(node, "BgColor").isNull()) {
@@ -797,6 +798,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
         styleHack.append(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString("QSpinBox {  background-color: %1; }\n ").arg(color.name()));
     }
 
     if (!XmlParse::selectNode(node, "BgColorRowEven").isNull()) {
