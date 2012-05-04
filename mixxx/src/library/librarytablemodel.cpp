@@ -148,5 +148,6 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
-            | TRACKMODELCAPS_CLEAR_BEATS;
+            | TRACKMODELCAPS_CLEAR_BEATS
+            | TRACKMODELCAPS_RESETPLAYED;
 }
