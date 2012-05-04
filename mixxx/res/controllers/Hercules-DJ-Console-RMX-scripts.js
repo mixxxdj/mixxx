@@ -457,7 +457,7 @@ HerculesRMX.Deck.prototype.gainHandler = function(value) {
 HerculesRMX.Deck.prototype.trebleHandler = function(value) {
    if(HerculesRMX.shiftMode) {
       //Flanger
-      Controls.FlangerDepth.setValue("[Flanger]", value);
+      HerculesRMX.Controls.FlangerDepth.setValue("[Flanger]", value);
    } else if(this.shiftMode) {
       //Soft set
       this.Controls.Treble.softMode = true;
@@ -471,7 +471,7 @@ HerculesRMX.Deck.prototype.trebleHandler = function(value) {
 HerculesRMX.Deck.prototype.mediumHandler = function(value) {
    if(HerculesRMX.shiftMode) {
       //Flanger
-      Controls.FlangerDelay.setValue("[Flanger]", value);
+      HerculesRMX.Controls.FlangerDelay.setValue("[Flanger]", value);
    } else if(this.shiftMode) {
       //Soft set
       this.Controls.Medium.softMode = true;
@@ -485,7 +485,7 @@ HerculesRMX.Deck.prototype.mediumHandler = function(value) {
 HerculesRMX.Deck.prototype.bassHandler = function(value) {
    if(HerculesRMX.shiftMode) {
       //Flanger
-      Controls.FlangerPeriod.setValue("[Flanger]", value);
+      HerculesRMX.Controls.FlangerPeriod.setValue("[Flanger]", value);
    } else if(this.shiftMode) {
       //Soft set
       this.Controls.Bass.softMode = true;

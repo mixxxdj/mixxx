@@ -395,6 +395,7 @@ void EngineBuffer::ejectTrack() {
     file_srate_old = 0;
     file_length_old = 0;
     playButton->set(0.0);
+    visualBpm->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
