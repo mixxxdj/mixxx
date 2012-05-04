@@ -146,6 +146,21 @@ void WaveformWidgetRenderer::onPreRender() {
         m_rendererTransformationGain = 0.0;
     }
 
+    if( lastPlayPos > m_playPos ||
+            lastFirstPos > m_firstDisplayedPosition ||
+            lastLastPos > m_lastDisplayedPosition) {
+        qDebug() << "m_group" << m_group
+                 << "lastPlayPos" << lastPlayPos
+                 << "m_playPos" << m_playPos
+                 << "lastFirstPos" << lastFirstPos
+                 << "m_firstDisplayedPosition" << m_firstDisplayedPosition
+                 << "lastLastPos" << lastLastPos
+                 << "m_lastDisplayedPosition" << m_lastDisplayedPosition;
+    }
+    lastPlayPos = m_playPos;
+    lastFirstPos = m_firstDisplayedPosition;
+    lastLastPos = m_lastDisplayedPosition;
+
     /*
     qDebug() << "m_group" << m_group
              << "m_trackSamples" << m_trackSamples
