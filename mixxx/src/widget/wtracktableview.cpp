@@ -261,6 +261,9 @@ void WTrackTableView::createActions() {
 
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()), this, SLOT(slotReloadTrackMetadata()));
+
+    m_pResetPlayedAct = new QAction(tr("Reset Play Count"), this);
+    connect(m_pResetPlayedAct, SIGNAL(triggered()), this, SLOT(slotResetPlayed()));
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
@@ -450,6 +453,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
     }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
+        m_pMenu->addAction(m_pResetPlayedAct);
+    }
+    m_pMenu->addSeparator();
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -850,6 +857,23 @@ void WTrackTableView::slotReloadTrackMetadata() {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
             pTrack->parse();
+        }
+    }
+}
+
+//slot for reset played count, sets count to 0 of one or more tracks
+void WTrackTableView::slotResetPlayed() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setTimesPlayed(0);
         }
     }
 }
