@@ -3614,7 +3614,7 @@
 					**********************************************
 					-->
 					<Visual>
-						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-cLick: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-click: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 						<Style></Style>
 						<Channel>1</Channel>
 						<Pos>0,0</Pos>
@@ -4861,7 +4861,7 @@
 					**********************************************
 					-->
 					<Visual>
-						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-cLick: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-click: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 						<Style></Style>
 						<Channel>2</Channel>
 						<Pos>0,0</Pos>
