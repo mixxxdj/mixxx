@@ -35,7 +35,6 @@ class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract {
     WaveformSignalColors m_colors;
     Qt::Alignment m_alignment;
 
-    QBrush m_overBrush;
     QBrush m_lowBrush;
     QBrush m_midBrush;
     QBrush m_highBrush;
