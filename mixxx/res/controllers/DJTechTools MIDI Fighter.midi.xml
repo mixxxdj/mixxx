@@ -5,7 +5,7 @@
     <author>RJ Ryan</author>
     <description></description>
   </info>
-  <controller id="Midi Fighter Classic" port="">
+  <controller id="DJTechTools MIDIFighter" port="">
     <scriptfiles>
       <file filename="DJTechTools-MIDIFighter-scripts.js" functionprefix="MIDIFighter"/>
     </scriptfiles>
