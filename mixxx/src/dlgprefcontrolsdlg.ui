@@ -481,6 +481,9 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="toolTip">
+      <string>Makes temporary pitch/rate buttons change the pitch gradually, instead of all at once.</string>
+     </property>
      <property name="title">
       <string>Ramping Pitchbend</string>
      </property>
@@ -527,6 +530,9 @@
        <widget class="QSpinBox" name="SpinBoxRateRampSensitivity">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Value in milliseconds</string>
         </property>
         <property name="minimum">
          <number>100</number>
