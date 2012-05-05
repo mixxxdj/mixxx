@@ -336,6 +336,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
 void MidiController::bindScriptFunctions() {
     qDebug() << "Binding MIDI Script Functions";
+    const ControllerEngine* pEngine = getEngine();
     const MidiControllerPreset* pPreset = (MidiControllerPreset*)preset();
     QHash<uint16_t, QPair<MixxxControl, MidiOptions> >::const_iterator mapping;
     for (mapping = pPreset->mappings.constBegin(); mapping != pPreset->mappings.constEnd(); ++mapping) {
@@ -344,7 +345,7 @@ void MidiController::bindScriptFunctions() {
         MidiOptions options = cfg.second;
 
         if (options.script) {
-            QScriptValue binding = resolveFunction(mc.item());
+            QScriptValue binding = pEngine->resolveFunction(mc.item());
             if (!binding.isValid() || !binding.isFunction()) {
                 qWarning() << "Controller: unable to resolve function:" << mc.item();
                 continue;
