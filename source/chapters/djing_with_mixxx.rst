@@ -80,33 +80,74 @@ via SYNC button .
 
 Starting with version 1.11, Mixxx comes with a new ultra-precise BPM and beat detector.
 The beat grid gets adjusted after track analysis has finished. Manual 
-adjustments are unnecessary in many cases because Mixxx knows where the beats are.
+adjustments are redundant in many cases because Mixxx knows where the beats are.
 
-Preference
-----------
+Analyser Settings
+-------------------
 
 BPM and beat detection is a complex operation. Depending on your computer, the track's bitrate and duration
 this may take some time. By default Mixxx analyzes the complete track, however, it will not analyze more than
-10 minutes of audio. To accelerate BPM detection on slower computers, a "Fast Analysis" option is available 
-in the preferences. If enabled, the BPM is computed by analyzing the first minute of the track. In most 
-cases this does not affect the BPM detection negatively because most modern dance music is written
-in a 4/4 signature. 
+10 minutes of audio. To accelerate BPM detection on slower computers, a "Fast Analysis" option is available. 
+If enabled, the BPM is computed by analyzing the first minute of the track. In most 
+cases this does not affect the BPM detection negatively because most of today's dance music is written
+in a 4/4 signature, i.e., the distances between the beats are constant. 
  
 .. figure:: ../_static/mixxx-1.11-bpm-prefs.png
    :align: center
    :width: 100%
    :figwidth: 100%
-   :alt: Mixxx preferences - Setting up recordings
+   :alt: Mixxx preferences - BPM settings
    :figclass: pretty-figures
 
-By default Mixxx assumes that your music follows a constant tempo, i.e., a 4/4 signature. 
+The table below summarizes the beat detection settings:
 
-Correcting beat grids
++----------------------------------------+-------------------------------------------------------+
+| Option                                 | Description                                           |
++========================================+=======================================================+
+| Enable Fast Analysis                   | If enabled, BPM detection results from the first      |
+|                                        | minute of audio.                                      |
++----------------------------------------+-------------------------------------------------------+
+| Assume constant tempo                  | If enabled, Mixxx assumes that the distances between  |
+|                                        | the beats are constant. If disabled, the raw beat grid| 
+|                                        | obtained by the analyzer is presented. The latter is  | 
+|                                        | appropriate for tracks with variable BPMs             |   
++----------------------------------------+-------------------------------------------------------+
+| Enable Offset Correction               | Prevents beat markers from being placed incorrectly.  |
++----------------------------------------+-------------------------------------------------------+
+| Re-analyse beats when settings         | If enabled, Mixxx over-write old beat grids from      |
+| change or beats already present        | Mixxx 1.10.0 and earlier. Moreover, it will re-analyze|
+|                                        | the BPM if your beat detection preference change.     |
+|                                        |                                                       |
++----------------------------------------+-------------------------------------------------------+
+ 
+
+Correcting Beat Grids
 ---------------------
 
-- If the BPM has been computed wrong
---> How to get the perfect beat grid
+There may be situations where BPM and beat detection do not result in a proper beat grid. This
+does not necessarily originate from a false computed BPM value. In most cases, the BPM value 
+is correct but the analyzer has failed to find the first "real" beat. Consequently, the beat markers 
+are shifted, i.e., they are placed somewhere between two correct beats. To re-adjust the beat grid
+cue the track before a real beat and click the "gate" button illustrated in the figure below.
+ 
+  
+.. figure:: ../_static/correcting_beat_grid.png
+   :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Mixxx preferences - Correcting beat grids
+   :figclass: pretty-figures
+  
+  
 
+If the detected BPM value is not sufficiently accurate, the corresponding beat grid is not accurate, too. A deviation of
+0.02 BPM units is enough -- compared to the correct BPM --  to notice an unaligned beat grid for long tracks (e.g., a club mix).
+In other words, your beat grid may look aligned for the first one or two minutes but you will notice the tiny error in placing
+the beat markers soon. Finding the correct BPM, however, is easy in many cases. Just follow the note below.
+
+.. note:: If the detected BPM value is not sufficiently accurate but very close to an integer value,
+          try to set the BPM value manually to the integer. 
+ 
  
    
 
