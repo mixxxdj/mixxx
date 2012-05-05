@@ -169,7 +169,3 @@ void Controller::bindScriptFunctions() {
     }
 }
 
-QScriptValue Controller::resolveFunction(QString functionName) {
-    return m_pEngine->resolveFunction(functionName);
-}
-

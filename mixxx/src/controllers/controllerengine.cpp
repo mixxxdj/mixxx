@@ -112,7 +112,7 @@ Purpose: Resolves a function name to a QScriptValue including
 Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::resolveFunction(QString function) {
+QScriptValue ControllerEngine::resolveFunction(QString function) const {
     QScriptValue object = m_pEngine->globalObject();
     QStringList parts = function.split(".");
     

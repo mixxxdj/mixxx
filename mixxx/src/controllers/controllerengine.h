@@ -78,7 +78,7 @@ class ControllerEngine : public QObject {
     void timerEvent(QTimerEvent *event);    // Needs to be public otherwise we'd have to friend Controller and all derived classes explicitly
 
     /** Resolve a function name to a QScriptValue. */
-    QScriptValue resolveFunction(QString function);
+    QScriptValue resolveFunction(QString function) const;
     /** Look up registered script function prefixes */
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
     /** Disconnect a ControllerEngineConnection */

@@ -124,7 +124,6 @@ class Controller : public QObject, ControllerPresetVisitor {
 
     // Script functions for binding
     QHash<QString, QScriptValue> m_scriptBindings;
-    QScriptValue resolveFunction(QString functionName);
 
   private slots:
     virtual int open() = 0;
