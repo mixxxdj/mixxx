@@ -23,6 +23,8 @@ class DlgPrefMappableController : public DlgPrefController {
   signals:
     void clearInputs();
     void clearOutputs();
+    void mappingStarted();
+    void mappingEnded();;
 
   private slots:
     void slotShowLearnDialog();

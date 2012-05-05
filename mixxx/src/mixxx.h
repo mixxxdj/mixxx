@@ -23,6 +23,10 @@
 #include <QMainWindow>
 #include <QString>
 
+// REMOVE ME
+#include <QtDebug>
+#include <QResizeEvent>
+
 class EngineMaster;
 class Library;
 class LibraryScanner;
@@ -55,6 +59,8 @@ class MixxxApp : public QMainWindow {
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
     void initMenuBar();
+
+    void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
 
     void rebootMixxxView();
 
@@ -100,6 +106,8 @@ class MixxxApp : public QMainWindow {
     void slotOptionsMenuShow();
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
+
+    void slotToCenterOfPrimaryScreen();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */

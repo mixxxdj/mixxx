@@ -56,6 +56,7 @@ private slots:
     void slotReEmitValueDown(double);
     void slotReEmitValueUp(double);
 signals:
+    void valueReset();
     void valueChangedDown(double);
     void valueChangedUp(double);
     void valueChangedLeftDown(double);

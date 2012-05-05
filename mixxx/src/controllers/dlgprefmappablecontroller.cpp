@@ -16,6 +16,8 @@
  ***************************************************************************/
 
 #include "dlgprefmappablecontroller.h"
+#include "controllers/controllerlearningeventfilter.h"
+#include "controllers/controllermanager.h"
 
 DlgPrefMappableController::DlgPrefMappableController(QWidget *parent, Controller* controller,
                           ControllerManager* controllerManager,
@@ -23,37 +25,41 @@ DlgPrefMappableController::DlgPrefMappableController(QWidget *parent, Controller
     : DlgPrefController(parent, controller, controllerManager, pConfig) {
 
     // Add our supplemental UI here
-    QWidget* containerWidget = new QWidget(this);
-    m_ui.setupUi(containerWidget);
-    addWidgetToLayout(containerWidget);
+    // QWidget* containerWidget = new QWidget(this);
+    // m_ui.setupUi(containerWidget);
+    // addWidgetToLayout(containerWidget);
 
     // Input bindings
-    connect(m_ui.btnLearnWizard, SIGNAL(clicked()),
+
+    getUi().pushButtonLearning->setEnabled(controller->isOpen());
+    connect(getUi().pushButtonLearning, SIGNAL(clicked()),
             this, SLOT(slotShowLearnDialog()));
-    connect(m_ui.btnLearnWizard, SIGNAL(clicked()),
+
+    connect(getUi().pushButtonLearning, SIGNAL(clicked()),
             this, SLOT(slotDirty()));
-    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()),
-            this, SLOT(clearAllInputBindings()));
-    connect(this, SIGNAL(clearInputs()),
-            getController(), SLOT(clearInputMappings()));
-    connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()),
-            this, SLOT(slotDirty()));
+    // connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()),
+    //         this, SLOT(clearAllInputBindings()));
+    // connect(this, SIGNAL(clearInputs()),
+    //         getController(), SLOT(clearInputMappings()));
+    // connect(m_ui.btnClearAllInputBindings, SIGNAL(clicked()),
+    //         this, SLOT(slotDirty()));
 //     connect(m_ui.btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
 //     connect(m_ui.btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 //     connect(m_ui.btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotAddInputBinding()));
 //     connect(m_ui.btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 
     // Output bindings
-    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()),
-            this, SLOT(clearAllOutputBindings()));
-    connect(this, SIGNAL(clearOutputs()),
-            getController(), SLOT(clearOutputMappings()));
-    connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()),
-            this, SLOT(slotDirty()));
+    // connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()),
+    //         this, SLOT(clearAllOutputBindings()));
+    // connect(this, SIGNAL(clearOutputs()),
+    //         getController(), SLOT(clearOutputMappings()));
+    // connect(m_ui.btnClearAllOutputBindings, SIGNAL(clicked()),
+    //         this, SLOT(slotDirty()));
 //     connect(m_ui.btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
 //     connect(m_ui.btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 //     connect(m_ui.btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
 //     connect(m_ui.btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
+
 }
 
 void DlgPrefMappableController::slotShowLearnDialog() {
@@ -81,16 +87,32 @@ void DlgPrefMappableController::slotShowLearnDialog() {
     // Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
     m_pDlgControllerLearning = new DlgControllerLearning(this, getController());
     m_pDlgControllerLearning->show();
+    ControllerLearningEventFilter* pControllerLearning = getControllerManager()->getControllerLearningEventFilter();
+    pControllerLearning->startListening();
+    connect(pControllerLearning, SIGNAL(controlClicked(ControlObject*)),
+            m_pDlgControllerLearning, SLOT(controlClicked(ControlObject*)));
+    connect(m_pDlgControllerLearning, SIGNAL(listenForClicks()),
+            pControllerLearning, SLOT(startListening()));
+    connect(m_pDlgControllerLearning, SIGNAL(stopListeningForClicks()),
+            pControllerLearning, SLOT(stopListening()));
+    connect(m_pDlgControllerLearning, SIGNAL(cancelLearning()),
+            this, SLOT(show()));
+
+    emit(mappingStarted());
+    connect(m_pDlgControllerLearning, SIGNAL(cancelLearning()),
+            this, SIGNAL(mappingEnded()));
 }
 
 void DlgPrefMappableController::slotDeviceState(int state) {
     DlgPrefController::slotDeviceState(state);
-    m_ui.toolBox->setEnabled(state == Qt::Checked);
+    //m_ui.toolBox->setEnabled(state == Qt::Checked);
+    getUi().pushButtonLearning->setEnabled(state == Qt::Checked);
 }
 
 void DlgPrefMappableController::slotUpdate() {
     DlgPrefController::slotUpdate();
-    m_ui.toolBox->setEnabled(getController()->isOpen());
+    getUi().pushButtonLearning->setEnabled(getController()->isOpen());
+    //m_ui.toolBox->setEnabled(getController()->isOpen());
 }
 
 void DlgPrefMappableController::clearAllInputBindings() {

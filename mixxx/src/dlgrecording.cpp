@@ -8,7 +8,6 @@
 #include "controlobjectthreadmain.h"
 #include "library/trackcollection.h"
 
-#
 #include "dlgrecording.h"
 
 
@@ -16,13 +15,12 @@
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
-            : QWidget(parent), Ui::DlgRecording(),
-            m_pConfig(pConfig),
-            m_pTrackCollection(pTrackCollection),
-            m_browseModel(this, m_pTrackCollection, pRecordingManager),
-            m_proxyModel(&m_browseModel),
-            m_pRecordingManager(pRecordingManager)
-{
+        : QWidget(parent),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection),
+          m_browseModel(this, m_pTrackCollection, pRecordingManager),
+          m_proxyModel(&m_browseModel),
+          m_pRecordingManager(pRecordingManager) {
     setupUi(this);
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -42,7 +40,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
-
 
     m_recordingDir = m_pRecordingManager->getRecordingDir();
 
@@ -69,6 +66,7 @@ DlgRecording::~DlgRecording()
 
 void DlgRecording::onShow()
 {
+    m_recordingDir = m_pRecordingManager->getRecordingDir();
     m_browseModel.setPath(m_recordingDir);
 }
 

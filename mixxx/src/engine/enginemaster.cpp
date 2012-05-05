@@ -84,6 +84,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Headphone mix (left/right)
     head_mix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
+    head_mix->setDefaultValue(-1.);
     head_mix->set(-1.);
 
     // Headphone Clipping
@@ -94,14 +95,14 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     
     // Eq Bypass
     m_pBypassEq = new ControlPushButton(ConfigKey(group, "bypass_eq"));
-    m_pBypassEq->setToggleButton(true);
+    m_pBypassEq->setButtonMode(ControlPushButton::TOGGLE);
     
     //set up input passthrough o
     //TODO: we should set up n passthroughs for n decks
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel1]","inputpassthrough")));
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel2]","inputpassthrough")));
-	m_passthrough[0]->setToggleButton(true);
-	m_passthrough[1]->setToggleButton(true);
+	m_passthrough[0]->setButtonMode(ControlPushButton::TOGGLE);
+	m_passthrough[1]->setButtonMode(ControlPushButton::TOGGLE);
 	m_bPassthroughWasActive[0] = false;
 	m_bPassthroughWasActive[1] = false;
 	m_iLastThruRead[0] = m_iLastThruRead[1] = -1;
@@ -543,6 +544,8 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
         ConfigKey(pChannel->getGroup(), "volume"), 1.0);
+    pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
+    pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);

@@ -13,30 +13,24 @@
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
-ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
-                                                        const QString deviceName,
-                                                        const bool forceLoad) {
+ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
+                                                              const QString deviceName,
+                                                              const bool forceLoad) {
+    if (root.isNull()) {
+        return ControllerPresetPointer();
+    }
+
+    QDomElement controller = getControllerNode(root, deviceName, forceLoad);
+    if (controller.isNull()) {
+        return ControllerPresetPointer();
+    }
+
     MidiControllerPreset* preset = new MidiControllerPreset();
 
-    if (root.isNull())
-        return preset;
+    // Superclass handles parsing <info> tag and script files
+    parsePresetInfo(root, preset);
+    addScriptFilesToPreset(controller, preset);
 
-    // Superclass handles script files
-    addScriptFilesToPreset(root, deviceName, forceLoad, preset);
-
-    /*
-    // We actually need to load any script code now to verify function
-    //  names against those in the XML
-    qDebug() << "Supposed to load" << m_scriptFileNames.size() << "script files here";
-    QStringList scriptFunctions;
-    if (m_pEngine != NULL) {
-        m_pEngine->loadScriptFiles(m_scriptFileNames);
-        scriptFunctions = m_pEngine->getScriptFunctions();
-    }
-    else qWarning() << "No engine!";
-    */
-
-    QDomElement controller = root.firstChildElement("controller");
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
     //Iterate through each <control> block in the XML
@@ -90,89 +84,49 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
             optionsNode = optionsNode.nextSiblingElement();
         }
 
-        /*
-        // Verify script functions are loaded
-        if (options.script && !scriptFunctions.isEmpty() && scriptFunctions.indexOf(controlKey)==-1) {
+        // Add the static mapping
+        QPair<MixxxControl, MidiOptions> target;
+        target.first = MixxxControl(controlGroup, controlKey);
+        target.second = options;
 
-            QString status = QString("0x%1").arg(midiStatusByte, 2, 16, QChar('0')).toUpper();
-            QString byte2 = QString("0x%1").arg(midiControl, 2, 16, QChar('0')).toUpper();
+        unsigned char opCode = midiStatusByte & 0xF0;
+        if (opCode >= 0xF0) opCode = midiStatusByte;
 
-            // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
-            if ((midiStatusByte & 0xF0) == MIDI_PITCH_BEND) byte2 = "";
-
-            QString errorLog = QString("MIDI script function \"%1\" not found. "
-                                        "(Mapped to MIDI message %2 %3)")
-                                        .arg(controlKey, status, byte2);
-
-            if (m_bIsOutputDevice && debugging()) {
-                    qCritical() << errorLog;
-            }
-            else {
-                qWarning() << errorLog;
-                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-                props->setType(DLG_WARNING);
-                props->setTitle(tr("MIDI script function not found"));
-                props->setText(QString(tr("The MIDI script function '%1' was not "
-                                "found in loaded scripts."))
-                                .arg(controlKey));
-                props->setInfoText(QString(tr("The MIDI message %1 %2 will not be bound."
-                                "\n(Click Show Details for hints.)"))
-                                    .arg(status, byte2));
-                QString detailsText = QString(tr("* Check to see that the "
-                    "function name is spelled correctly in the mapping "
-                    "file (.xml) and script file (.js)\n"));
-                detailsText += QString(tr("* Check to see that the script "
-                    "file name (.js) is spelled correctly in the mapping "
-                    "file (.xml)"));
-                props->setDetails(detailsText);
-
-                ErrorDialogHandler::instance()->requestErrorDialog(props);
-            }
-        } else
-        */
-        {
-            // Add the static mapping
-            QPair<MixxxControl, MidiOptions> target;
-            target.first = MixxxControl(controlGroup, controlKey);
-            target.second = options;
-
-            unsigned char opCode = midiStatusByte & 0xF0;
-            if (opCode >= 0xF0) opCode = midiStatusByte;
-
-            bool twoBytes = true;
-            switch (opCode) {
-                case MIDI_SONG:
-                case MIDI_NOTE_OFF:
-                case MIDI_NOTE_ON:
-                case MIDI_AFTERTOUCH:
-                case MIDI_CC:
-                    break;
-                case MIDI_PITCH_BEND:
-                case MIDI_SONG_POS:
-                case MIDI_PROGRAM_CH:
-                case MIDI_CH_AFTERTOUCH:
-                default:
-                    twoBytes = false;
-                    break;
-            }
-
-            MidiKey key;
-            key.status = midiStatusByte;
-
-            if (twoBytes) key.control = midiControl;
-            else {
-                // Signifies that the second byte is part of the payload, default
-                key.control = 0xFF;
-            }
-/*                qDebug() << "New mapping:" << QString::number(key.key, 16).toUpper()
-                        << QString::number(key.status, 16).toUpper()
-                        << QString::number(key.control, 16).toUpper()
-                        << target.first.group << target.first.item;
-*/
-            preset->mappings.insert(key.key, target);
-            // Notify the GUI and anyone else who cares
-//                 emit(newMapping());  // TODO
+        bool twoBytes = true;
+        switch (opCode) {
+            case MIDI_SONG:
+            case MIDI_NOTE_OFF:
+            case MIDI_NOTE_ON:
+            case MIDI_AFTERTOUCH:
+            case MIDI_CC:
+                break;
+            case MIDI_PITCH_BEND:
+            case MIDI_SONG_POS:
+            case MIDI_PROGRAM_CH:
+            case MIDI_CH_AFTERTOUCH:
+            default:
+                twoBytes = false;
+                break;
         }
+
+        MidiKey key;
+        key.status = midiStatusByte;
+
+        if (twoBytes) {
+            key.control = midiControl;
+        } else {
+            // Signifies that the second byte is part of the payload, default
+            key.control = 0xFF;
+        }
+        // qDebug() << "New mapping:" << QString::number(key.key, 16).toUpper()
+        //          << QString::number(key.status, 16).toUpper()
+        //          << QString::number(key.control, 16).toUpper()
+        //          << target.first.group << target.first.item;
+
+        preset->mappings.insert(key.key, target);
+        // Notify the GUI and anyone else who cares
+        //emit(newMapping());  // TODO
+
         control = control.nextSiblingElement("control");
     }
 
@@ -239,24 +193,23 @@ ControllerPreset* MidiControllerPresetFileHandler::load(const QDomElement root,
         // END unserialize output
 
         // Add the static output mapping.
-        /*
-        qDebug() << "New output mapping:"
-                        << QString::number(outputMessage.status, 16).toUpper()
-                        << QString::number(outputMessage.control, 16).toUpper()
-                        << QString::number(outputMessage.on, 16).toUpper()
-                        << QString::number(outputMessage.off, 16).toUpper()
-                        << controlGroup << controlKey;
-        */
+        // qDebug() << "New output mapping:"
+        //          << QString::number(outputMessage.status, 16).toUpper()
+        //          << QString::number(outputMessage.control, 16).toUpper()
+        //          << QString::number(outputMessage.on, 16).toUpper()
+        //          << QString::number(outputMessage.off, 16).toUpper()
+        //          << controlGroup << controlKey;
+
         // We use insertMulti because certain tricks are done with multiple
-        //  entries for the same MixxxControl
-        preset->outputMappings.insertMulti(MixxxControl(controlGroup, controlKey),outputMessage);
+        // entries for the same MixxxControl
+        preset->outputMappings.insertMulti(MixxxControl(controlGroup, controlKey), outputMessage);
 
         output = output.nextSiblingElement("output");
     }
 
     qDebug() << "MidiPresetFileHandler: Output mapping parsing complete.";
 
-    return preset;
+    return ControllerPresetPointer(preset);
 }
 
 bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,

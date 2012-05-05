@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0">
 	<info>
-		<name>Hercules DJ Control MP3 </name>
+		<name>Hercules DJ Control MP3</name>
 		<author>Vittorio Colao</author>
 		<description>Complete mapping for Hercules DJ Control MP3.</description>
 

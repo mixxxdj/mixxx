@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset mixxxVersion="1.7.2+" schemaVersion="1" >
     <info>
-        <name>Pioneer CDJ 350</name>
+        <name>Pioneer CDJ-350 CH2</name>
         <author>Kazuaki</author>
         <description>This is an incomplete mapping for a single Pioneer CDJ 350.</description>
     </info>

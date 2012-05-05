@@ -44,7 +44,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
 
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
-        m_dx[i] = NULL;
+        m_dx[i] = 0.0;
         m_pitchFilter[i] = new PitchFilter();
         m_ramp[i] = false;
     }
@@ -168,9 +168,8 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
     // scriptPaths holds the paths to search in when we're looking for scripts
     QList<QString> scriptPaths;
-//     scriptPaths.append(configPath.append("presets/"));
-//     scriptPaths.append(configPath.append("midi/"));
-    scriptPaths.append(USER_PRESETS_PATH.append("controllers/"));
+    scriptPaths.append(USER_PRESETS_PATH);
+    scriptPaths.append(LOCAL_PRESETS_PATH);
     scriptPaths.append(configPath.append("controllers/"));
 
     foreach (QString curScriptFileName, scriptFileNames) {
@@ -1077,7 +1076,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         killTimer(timerId);
         m_scratchTimers.remove(timerId);
 
-        m_dx[deck] = NULL;
+        m_dx[deck] = 0.0;
     }
 }
 

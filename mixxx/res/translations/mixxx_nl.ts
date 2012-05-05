@@ -9,6 +9,85 @@
         </message>
     </context>
     <context>
+        <name>BasePlaylistFeature</name>
+        <message>
+            <source>New Playlist</source>
+            <translation>Nieuwe afspeellijst</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation>Voeg toe aan Auto DJ Wachtrij (onderaan)</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation>Voeg toe aan Auto DJ Wachtrij (bovenaan)</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Rename</source>
+            <translation>Hernoem</translation>
+        </message>
+        <message>
+            <source>Lock</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>Afspeellijst importeren</translation>
+        </message>
+        <message>
+            <source>Export Playlist</source>
+            <translation>Afspeellijst exporteren</translation>
+        </message>
+        <message>
+            <source>Rename Playlist</source>
+            <translation>Afspeellijst hernoemen</translation>
+        </message>
+        <message>
+            <source>New playlist name:</source>
+            <translation>Nieuwe afspeellijst naam:</translation>
+        </message>
+        <message>
+            <source>Renaming Playlist Failed</source>
+            <translation>Afspeellijst Hernoemen Mislukt</translation>
+        </message>
+        <message>
+            <source>A playlist by that name already exists.</source>
+            <translation>Een afspeellijst met deze naam bestaat al.</translation>
+        </message>
+        <message>
+            <source>A playlist cannot have a blank name.</source>
+            <translation>Een afspeellijst kan geen lege naam hebben.</translation>
+        </message>
+        <message>
+            <source>Playlist name:</source>
+            <translation>Afspeellijstnaam:</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation>Afspeellijst Aanmaken Mislukt</translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation>Een onbekende fout is opgetreden bij het maken van afspeellijst: </translation>
+        </message>
+        <message>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
@@ -31,6 +110,10 @@
             <translation>Genre</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation>Componist</translation>
+        </message>
+        <message>
             <source>Year</source>
             <translation>Jaar</translation>
         </message>
@@ -44,11 +127,12 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation>Opmerking</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation>Tijd</translation>
+            <translation>Duur</translation>
         </message>
         <message>
             <source>Rating</source>
@@ -56,7 +140,7 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Bitsnelheid</translation>
+            <translation>Bitrate</translation>
         </message>
         <message>
             <source>BPM</source>
@@ -64,7 +148,7 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation>Nummer</translation>
+            <translation>Nummer #</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -75,8 +159,19 @@
             <translation>#</translation>
         </message>
         <message>
+            <source>Timestamp</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Key</source>
-            <translation>Sleutel</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Lock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -156,36 +251,49 @@
             <translation>Genre</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Comment</source>
-            <translation>Opmerking</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation>Tijd</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation>BPM</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Key</source>
-            <translation>Sleutel</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Type</source>
-            <translation>Type</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Bitsnelheid</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Location</source>
-            <translation>Locatie</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation>Mixxx Bibliotheek</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -267,12 +375,14 @@
             <translation>Hernoemen van de krat is mislukt</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation>Afspeellijstbestanden (*.m3u *.m3u8 *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation>M3U-afspeellijst (*.m3u);;M3U8-afspeellijst (*.m3u8);;PLS-afspeellijst (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -294,20 +404,6 @@
             <translation>Over Mixxx</translation>
         </message>
         <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
-        </message>
-        <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
             <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Officiele Website&lt;/a&gt;</translation>
         </message>
@@ -315,8 +411,62 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>DlgAutoDJ</name>
         <message>
+            <source>Auto-DJ</source>
+            <translation>Auto-DJ</translation>
+        </message>
+        <message>
+            <source>One player must be stopped to enable Auto-DJ mode.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Disable Auto DJ</source>
             <translation>Auto DJ uitschakelen</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shuffle</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist.</source>
+            <translation>Sla het volgende nummer in de Auto DJ afspeellijst over.</translation>
+        </message>
+        <message>
+            <source>Skip Track</source>
+            <translation>Sla nummer over</translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fade Now</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Determines the duration of the transition.</source>
+            <translation>Bepaalt de duur van de overgang.</translation>
+        </message>
+        <message>
+            <source>Seconds</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>sec.</source>
+            <translation>sec.</translation>
+        </message>
+        <message>
+            <source>Turn Auto DJ on or off.</source>
+            <translation>Schakel Auto DJ aan of uit.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -324,15 +474,98 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Manage</source>
-            <translation>Beheren</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgBeatsDlg</name>
+        <message>
+            <source>Beat Detection Settings</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Shuffle playlist</source>
-            <translation>Shuffle Afspeellijst</translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Add tracks to the queue below...</source>
-            <translation>Voeg nummers toe aan de wachtrij hieronder...</translation>
+            <source>Enable BPM and Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose Analyser</source>
+            <translation>Kies Analyser</translation>
+        </message>
+        <message>
+            <source>Beat Analyser:</source>
+            <translation>Beat Analyser:</translation>
+        </message>
+        <message>
+            <source>Choose beween different algorithms to detect beats.</source>
+            <translation>Kies tussen verschillende algoritmes om beats te detecteren.</translation>
+        </message>
+        <message>
+            <source>Analyser Settings</source>
+            <translation>Analyser Voorkeuren</translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Assume constant tempo (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Offset Correction (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beats already present (e.g. from 3rd-party programs or older Mixxx versions)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Range</source>
+            <translation>BPM bereik</translation>
+        </message>
+        <message>
+            <source>Min:</source>
+            <translation>Min:</translation>
+        </message>
+        <message>
+            <source>Max:</source>
+            <translation>Max:</translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation>Standaardinstellingen herstellen</translation>
         </message>
     </context>
     <context>
@@ -660,6 +893,47 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Pitchbend sensitivity</source>
             <translation>Pitch verbuigings gevoeligheid</translation>
+        </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Frame Rate</source>
+            <translation>Beelden per Seconden</translation>
+        </message>
+        <message>
+            <source>OpenGl status</source>
+            <translation>OpenGl status</translation>
+        </message>
+        <message>
+            <source>Display type</source>
+            <translation>Type tonen</translation>
+        </message>
+        <message>
+            <source>Default zoom</source>
+            <translation>Standaard zoom</translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation>100%</translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation>200%</translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation>300%</translation>
+        </message>
+        <message>
+            <source>400%</source>
+            <translation>400%</translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
+            <translation>Synchroniseer</translation>
         </message>
     </context>
     <context>
@@ -1669,8 +1943,12 @@ p, li { white-space: pre-wrap; }
             <translation>Opnemen</translation>
         </message>
         <message>
+            <source>Beat Detection</source>
+            <translation>Beat Detectie</translation>
+        </message>
+        <message>
             <source>BPM Detection</source>
-            <translation>BPM-detectie</translation>
+            <translation>BPM Detectie</translation>
         </message>
         <message>
             <source>Normalization</source>
@@ -1708,8 +1986,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alles</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1754,6 +2031,15 @@ p, li { white-space: pre-wrap; }
             <source>Stop Recording</source>
             <translation>Opname stoppen</translation>
         </message>
+        <message>
+            <source>Recording to file: </source>
+            <translation>Opnemen naar Bestand: </translation>
+        </message>
+        <message>
+            <source>MB written</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
@@ -1788,6 +2074,10 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Genre:</source>
             <translation>Genre:</translation>
+        </message>
+        <message>
+            <source>Composer:</source>
+            <translation>Componist:</translation>
         </message>
         <message>
             <source>Filename:</source>
@@ -1895,6 +2185,13 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>EmptyWaveformWidget</name>
+        <message>
+            <source>Empty</source>
+            <translation>Leeg</translation>
+        </message>
+    </context>
+    <context>
         <name>EncoderMp3</name>
         <message>
             <source>Encoder</source>
@@ -1947,6 +2244,80 @@ p, li { white-space: pre-wrap; }
             <translation>Fout instelling ongeblokkeerde modus:</translation>
         </message>
         <message>
+            <source>Error setting hostname!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting port!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting password!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting mount!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting username!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream name!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream description!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream genre!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream url!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+            <translation>zie https://bugs.launchpad.net/mixxx/+bug/686212 voor meer informatie.</translation>
+        </message>
+        <message>
+            <source>Error setting bitrate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: unknown server protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: libshout only supports Shoutcast with MP3 format!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Lost connection to streaming server</source>
             <translation>De verbinding met de stream server is verbroken</translation>
         </message>
@@ -1995,6 +2366,29 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>GLSLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation>Gefilterd</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>ITunesFeature</name>
         <message>
             <source>iTunes</source>
@@ -2036,8 +2430,7 @@ p, li { white-space: pre-wrap; }
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bibliotheekscanner</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
@@ -2178,54 +2571,6 @@ p, li { white-space: pre-wrap; }
             <translation>Mixxx</translation>
         </message>
         <message>
-            <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation>Mixxx's ontwikkelaars zijn gedreven op community feedback. Op jouw keuze, Mixxx kan automatisch jouw gebruikers ervaringen data opsturen naar de ontwikkelaars. Wil je ons graag helpen om Mixxx beter te maken, door deze optie aan te zetten?</translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation>Ja</translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation>Nee</translation>
-        </message>
-        <message>
-            <source>Privacy Policy</source>
-            <translation>Privacybeleid</translation>
-        </message>
-        <message>
-            <source>Mixxx: Privacy Policy</source>
-            <translation>Mixxx: Privé Beleid</translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
-The hardware information will include:
-	- CPU model and features
-	- Total/Available Amount of RAM
-	- Available disk space
-	- OS version
-Your usage information will include:
-	- Settings/Preferences
-	- Internal errors
-	- Internal debugging messages
-	- Performance statistics (average latency, CPU usage)
-This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
-</source>
-            <translation>Mixxx's ontwikkelaars zijn gedreven op community feedback. Om het mogelijk te maken om toekomstige versies van Mixxx te verbeteren, zouden we graag met uw toestemming informatie verzamelen van uw hardware en gebruik van Mixxx. Deze informatie wordt voornamelijk gebruikt om fouten op te lossen, mogelijkheden te verbeteren en de systeemeisen te  bepalen voor latere versies. Daarnaast kan deze informatie gebruikt worden voor gezamenlijke statistische doeleinden.
-De hardware informatie bevat:
-	- CPU type en features
-	- Totaal/Beschikbare geheugen
-	- Beschikbare schijfruimte
-	- Versie operatiesysteem 
-Uw gebruik informatie bevat:
-	- Instellingen/Voorkeuren
-	- Interne fouten
-	- Interne fout berichten
-	- Prestatiestatistieken (gemiddelde vertraging,  CPU gebruik)
-Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact op te nemen, reclame te versturen of elke andere manier van u lastig vallen.
-</translation>
-        </message>
-        <message>
             <source>Choose music library directory</source>
             <translation>Kies een muziek bibliotheek map</translation>
         </message>
@@ -2270,20 +2615,36 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>Afsluiten</translation>
         </message>
         <message>
+            <source>No Output Devices</source>
+            <translation>Geen Uitvoer Apparaten</translation>
+        </message>
+        <message>
+            <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
+            <translation>Mixxx is ingesteld zonder audio-uitvoer-apparaten. Audio verwerking is uitgeschakeld zolang er geen audio-uitvoer-apparaat is ingesteld.</translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
+            <translation>&lt;b&gt;Ga verder&lt;/b&gt;  zonder uitvoer.</translation>
+        </message>
+        <message>
             <source>Continue</source>
             <translation>Doorgaan</translation>
         </message>
         <message>
-            <source>&amp;Load Song (Player 1)...</source>
-            <translation>&amp;Nummer laden (Speler 1)...</translation>
+            <source>Load track to Deck %1</source>
+            <translation>Laad nummer naar deck %1</translation>
+        </message>
+        <message>
+            <source>Loads a track in deck %1</source>
+            <translation>Laad nummer in deck %1</translation>
+        </message>
+        <message>
+            <source>Open</source>
+            <translation>Open</translation>
         </message>
         <message>
             <source>Ctrl+O</source>
             <translation>Ctrl+O</translation>
-        </message>
-        <message>
-            <source>&amp;Load Song (Player 2)...</source>
-            <translation>&amp;Nummer laden (Speler 2)...</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2294,12 +2655,21 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>&amp;Afsluiten</translation>
         </message>
         <message>
+            <source>Quits Mixxx</source>
+            <translation>Sluit Mixxx af</translation>
+        </message>
+        <message>
             <source>Ctrl+Q</source>
             <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
             <translation>&amp;Bibliotheek opnieuw scannen</translation>
+        </message>
+        <message>
+            <source>Rescans library folders for changes to tracks.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Add &amp;new playlist</source>
@@ -2318,24 +2688,17 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>Ctrl+C</translation>
         </message>
         <message>
-            <source>&amp;Import playlist</source>
-            <translation>Afspeellijst %Importeren</translation>
+            <source>Deck %1 is currently playing a track.</source>
+            <translation>Deck %1 speelt momenteel een nummer af.</translation>
         </message>
         <message>
-            <source>Ctrl+I</source>
-            <translation>Ctrl+I</translation>
-        </message>
-        <message>
-            <source>&amp;Audio Beat Marks</source>
-            <translation>&amp;Geluid Beat Marks</translation>
+            <source>Are you sure you want to load a new track?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Full Screen</source>
             <translation>&amp;Volledig scherm</translation>
-        </message>
-        <message>
-            <source>Ctrl+F</source>
-            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>F11</source>
@@ -2344,6 +2707,11 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         <message>
             <source>&amp;Preferences</source>
             <translation>&amp;Voorkeuren</translation>
+        </message>
+        <message>
+            <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+P</source>
@@ -2358,6 +2726,11 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>&amp;Community Ondersteuning</translation>
         </message>
         <message>
+            <source>Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>&amp;User Manual</source>
             <translation>&amp;Gebruikers Handleiding</translation>
         </message>
@@ -2370,24 +2743,12 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>&amp;Vertaal deze applicatie</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 1</source>
-            <translation>Vinyl Bediening 1 Activeren</translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 2</source>
-            <translation>Vinyl Bediening 2 Activeren</translation>
-        </message>
-        <message>
             <source>Ctrl+U</source>
             <translation>Ctrl+U</translation>
-        </message>
-        <message>
-            <source>Enable live broadcasting</source>
-            <translation>Schakel live uitzenden in</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2402,184 +2763,66 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>Ctrl+R</translation>
         </message>
         <message>
-            <source>Show Studio</source>
-            <translation>Studio laten zien</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 1</source>
-            <translation>Opent een nummer in speler 1</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 1</source>
-            <translation>Openen
-Opent een nummer in speler 1</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 2</source>
-            <translation>Opent een nummer in speler 2</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 2</source>
-            <translation>Openen
-Opent een nummer in speler 2</translation>
-        </message>
-        <message>
-            <source>Quits the application</source>
-            <translation>Beëindigt de toepassing</translation>
-        </message>
-        <message>
-            <source>Exit
-Quits the application</source>
-            <translation>Afsluiten
-Beëindigt de toepassing</translation>
-        </message>
-        <message>
-            <source>Rescans the song library</source>
-            <translation>Herscan de nummer bibliotheek</translation>
-        </message>
-        <message>
-            <source>Rescan library
-Rescans the song library</source>
-            <translation>Herscan bibliotheek
-Herscan de nummer bibliotheek</translation>
-        </message>
-        <message>
             <source>Create a new playlist</source>
             <translation>Nieuwe afspeellijst aanmaken</translation>
-        </message>
-        <message>
-            <source>New playlist
-Create a new playlist</source>
-            <translation>Nieuwe afspeellijst
-Nieuwe afspeellijst aanmaken</translation>
         </message>
         <message>
             <source>Create a new crate</source>
             <translation>Een nieuwe crate aanmaken</translation>
         </message>
         <message>
-            <source>New crate
-Create a new crate.</source>
-            <translation>Nieuwe crate
-Een nieuwe crate maken.</translation>
+            <source>Ctrl+Shift+F</source>
+            <translation>Ctrl+Shift+F</translation>
         </message>
         <message>
-            <source>Import playlist</source>
-            <translation>Afspeellijst importeren</translation>
+            <source>Enable Vinyl Control &amp;1</source>
+            <translation>Schakel Vinyl Bediening in &amp;1</translation>
         </message>
         <message>
-            <source>Audio Beat Marks</source>
-            <translation>Geluid Beat Marks</translation>
+            <source>Enable Vinyl Control &amp;2</source>
+            <translation>Schakel Vinyl Bediening in &amp;2</translation>
         </message>
         <message>
-            <source>Audio Beat Marks
-Mark beats by audio clicks</source>
-            <translation>Geluid Beat Marks
-Beats markeren door geluid klikken</translation>
-        </message>
-        <message>
-            <source>Activate Vinyl Control</source>
-            <translation>Vinyl Bediening Activeren</translation>
+            <source>Enable live &amp;broadcasting</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
             <translation>Gebruik timecoded vinyls van externe draaitafels om Mixxx te besturen</translation>
         </message>
         <message>
-            <source>Activate live broadcasting</source>
-            <translation>Activeer live uitzenden</translation>
-        </message>
-        <message>
             <source>Stream your mixes to a shoutcast or icecast server</source>
             <translation>Stream je mixen naar een shoutcast of icecast server</translation>
-        </message>
-        <message>
-            <source>Start Recording your Mix</source>
-            <translation>Begin met jouw Mix opnemen</translation>
         </message>
         <message>
             <source>Record your mix to a file</source>
             <translation>Neem jouw mix op naar een bestand</translation>
         </message>
         <message>
-            <source>Full Screen</source>
-            <translation>Volledig scherm</translation>
-        </message>
-        <message>
             <source>Display Mixxx using the full screen</source>
             <translation>Geef Mixxx weer in volledig scherm</translation>
-        </message>
-        <message>
-            <source>Preferences</source>
-            <translation>Voorkeuren</translation>
-        </message>
-        <message>
-            <source>Preferences
-Playback and MIDI preferences</source>
-            <translation>Voorkeuren
-Afspeel en MIDI voorkeuren</translation>
-        </message>
-        <message>
-            <source>Support...</source>
-            <translation>Ondersteuning...</translation>
-        </message>
-        <message>
-            <source>Support
-Get help with Mixxx</source>
-            <translation>Ondersteuning
-Krijg hulp met Mixxx</translation>
         </message>
         <message>
             <source>Read the Mixxx user manual.</source>
             <translation>Lees de Mixxx gebruikers handleiding</translation>
         </message>
         <message>
-            <source>Support
-Read the Mixxx user manual.</source>
-            <translation>Ondersteuning
-Lees de Mixxx gebruikers handleiding.</translation>
-        </message>
-        <message>
             <source>Send feedback to the Mixxx team.</source>
             <translation>Stuur feedback naar het Mixxx team.</translation>
-        </message>
-        <message>
-            <source>Support
-Send feedback to the Mixxx team.</source>
-            <translation>Ondersteuning
-Stuur feedback naar het Mixxx team.</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
             <translation>Help om deze applicatie in jouw taal te vertalen.</translation>
         </message>
         <message>
-            <source>Support
-Help translate this application into your language.</source>
-            <translation>Ondersteuning
-Help om deze applicatie in jouw taal te vertalen.</translation>
-        </message>
-        <message>
             <source>About the application</source>
             <translation>Over het programma</translation>
         </message>
         <message>
-            <source>About
-About the application</source>
-            <translation>Over
-Over het programma</translation>
-        </message>
-        <message>
-            <source>Shows the macro studio window</source>
-            <translation>Toon het marco studio venster</translation>
-        </message>
-        <message>
-            <source>Show Studio
-Makes the macro studio visible</source>
-            <translation>Toon Studio
-Maakt het marco studio zichtbaar</translation>
+            <source>A sampler is currently playing. Exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;File</source>
@@ -2602,40 +2845,8 @@ Maakt het marco studio zichtbaar</translation>
             <translation>&amp;Hulp</translation>
         </message>
         <message>
-            <source>&amp;Macro</source>
-            <translation>&amp;Macro</translation>
-        </message>
-        <message>
             <source>&amp;Vinyl Control</source>
             <translation>Vinyl Bediening</translation>
-        </message>
-        <message>
-            <source>Quit...</source>
-            <translation>Afsluiten…</translation>
-        </message>
-        <message>
-            <source>Do your really want to quit?</source>
-            <translation>Weet u zeker dat u wilt afsluiten?</translation>
-        </message>
-        <message>
-            <source>Player 1 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>Speler 1 is momenteel aan het afspelen.
-Weet je zeker dat je een nieuw nummer wilt laden?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 1</source>
-            <translation>Laad nummer in Speler 1</translation>
-        </message>
-        <message>
-            <source>Player 2 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>Speler 2 is momenteel aan het afspelen.
-Weet je zeker dat je een nieuw nummer wilt laden?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 2</source>
-            <translation>Laad nummer in Speler 2</translation>
         </message>
         <message>
             <source>No input device(s) select.
@@ -2645,28 +2856,23 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
         </message>
         <message>
             <source>Mixxx %1 Development Team</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx %1 ontwikkelaarsteam</translation>
         </message>
         <message>
             <source>With contributions from:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Met bijdragen van:</translation>
         </message>
         <message>
             <source>And special thanks to:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>En speciale dank aan:</translation>
         </message>
         <message>
             <source>Past Developers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Oude ontwikkelaars:</translation>
         </message>
         <message>
             <source>Past Contributors</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Oude bijdragers:</translation>
         </message>
         <message>
             <source>Confirm Exit</source>
@@ -2680,8 +2886,32 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
+            <source>Missing Tracks</source>
+            <translation>Ontbrekende Nummers</translation>
+        </message>
+        <message>
             <source>Library</source>
-            <translation>Bibliotheek</translation>
+            <translation>Collectie</translation>
+        </message>
+    </context>
+    <context>
+        <name>ParserCsv</name>
+        <message>
+            <source>Location</source>
+            <translation>Locatie</translation>
+        </message>
+        <message>
+            <source>Playlist Export Failed</source>
+            <translation>Afspeellijst Exporteren Mislukt</translation>
+        </message>
+        <message>
+            <source>Could not create file</source>
+            <translation>Kon bestand niet maken</translation>
+        </message>
+        <message>
+            <source>Readable text Export Failed</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2721,32 +2951,8 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
     <context>
         <name>PlaylistFeature</name>
         <message>
-            <source>New Playlist</source>
-            <translation>Nieuwe afspeellijst</translation>
-        </message>
-        <message>
-            <source>Add to Auto-DJ Queue</source>
-            <translation>Toevoegen aan Auto-DJ Wachtrij</translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation>Verwijderen</translation>
-        </message>
-        <message>
-            <source>Rename</source>
-            <translation>Hernoemen</translation>
-        </message>
-        <message>
             <source>Lock</source>
-            <translation>Vergrendelen</translation>
-        </message>
-        <message>
-            <source>Import Playlist</source>
-            <translation>Afspeellijst importeren</translation>
-        </message>
-        <message>
-            <source>Export Playlist</source>
-            <translation>Afspeellijst exporteren</translation>
+            <translation>Vergrendel</translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2755,46 +2961,6 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
         <message>
             <source>Unlock</source>
             <translation>Ontgrendelen</translation>
-        </message>
-        <message>
-            <source>Playlist name:</source>
-            <translation>Afspeellijstnaam:</translation>
-        </message>
-        <message>
-            <source>Playlist Creation Failed</source>
-            <translation>Afspeellijst Aanmaken Mislukt</translation>
-        </message>
-        <message>
-            <source>A playlist cannot have a blank name.</source>
-            <translation>Een afspeellijst kan geen lege naam hebben.</translation>
-        </message>
-        <message>
-            <source>An unknown error occurred while creating playlist: </source>
-            <translation>Een onbekende fout is opgetreden bij het maken van afspeellijst: </translation>
-        </message>
-        <message>
-            <source>Rename Playlist</source>
-            <translation>Afspeellijst hernoemen</translation>
-        </message>
-        <message>
-            <source>New playlist name:</source>
-            <translation>Nieuwe afspeellijst naam:</translation>
-        </message>
-        <message>
-            <source>Renaming Playlist Failed</source>
-            <translation>Afspeellijst Hernoemen Mislukt</translation>
-        </message>
-        <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation>Afspeellijstbestanden (*.m3u *.m3u8 *.pls)</translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation>M3U-afspeellijst (*.m3u);;M3U8-afspeellijst (*.m3u8);;PLS-afspeellijst (*.pls)</translation>
-        </message>
-        <message>
-            <source>A playlist by that name already exists.</source>
-            <translation>Een afspeellijst met deze naam bestaat al.</translation>
         </message>
     </context>
     <context>
@@ -2837,6 +3003,16 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
         <message>
             <source>Unknown path type %1</source>
             <translation>Onbekend pad type %1</translation>
+        </message>
+        <message>
+            <source>(GL)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(GLSL)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2885,46 +3061,34 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
         </message>
     </context>
     <context>
-        <name>ScriptStudio</name>
+        <name>SetlogFeature</name>
         <message>
-            <source>Mixxx Script Studio</source>
-            <translation>Mixxx Script Studio</translation>
+            <source>Join with previous</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>File</source>
-            <translation>Bestand</translation>
+            <source>Set Logs</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Edit</source>
-            <translation>Bewerken</translation>
+            <source>Unlock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Run</source>
-            <translation>Uitvoeren</translation>
+            <source>Lock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
+    </context>
+    <context>
+        <name>SoftwareWaveformWidget</name>
         <message>
-            <source>Close</source>
-            <translation>Afsluiten</translation>
-        </message>
-        <message>
-            <source>Import...</source>
-            <translation>Importeren…</translation>
-        </message>
-        <message>
-            <source>Export...</source>
-            <translation>Exporteren...</translation>
-        </message>
-        <message>
-            <source>Delete Macro</source>
-            <translation>Marco Verwijderen</translation>
-        </message>
-        <message>
-            <source>New Macro...</source>
-            <translation>Nieuwe Marco...</translation>
-        </message>
-        <message>
-            <source>Run Macro</source>
-            <translation>Marco Uitvoeren</translation>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3007,7 +3171,8 @@ Druk op OK om af te sluiten.</translation>
         </message>
         <message>
             <source>Simple</source>
-            <translation>Eenvoudig</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
@@ -3023,7 +3188,8 @@ Druk op OK om af te sluiten.</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Voorkeuren</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -3282,6 +3448,14 @@ Druk op OK om af te sluiten.</translation>
     <context>
         <name>WSearchLineEdit</name>
         <message>
+            <source>Ctrl+F</source>
+            <translation>Ctrl+F</translation>
+        </message>
+        <message>
+            <source>Esc</source>
+            <translation>Esc</translation>
+        </message>
+        <message>
             <source>Search...</source>
             <translation>Zoeken…</translation>
         </message>
@@ -3309,12 +3483,31 @@ Druk op OK om af te sluiten.</translation>
             <translation>Eigenschappen ...</translation>
         </message>
         <message>
-            <source>Add to Auto DJ Queue</source>
-            <translation>Toevoegen aan Auto DJ Wachtrij</translation>
+            <source>Add to Auto-DJ Queue (bottom)</source>
+            <translation>Voeg toe aan Auto DJ wachtrij (onderaan)</translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (top)</source>
+            <translation>Voeg toe aan Auto DJ wachtrij (bovenaan)</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
             <translation>Metadata van nummer opnieuw laden</translation>
+        </message>
+        <message>
+            <source>Lock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unlock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear BPM and Beatgrid</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

@@ -59,6 +59,12 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     connect(controlDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(decSmallValue(double)));
 
+    ControlPushButton* controlDefault = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item) + "_set_default"));
+    controlDefault->setParent(this);
+    connect(controlDefault, SIGNAL(valueChanged(double)),
+            this, SLOT(setToDefault(double)));
+
     ControlPushButton* controlZero = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_set_zero"));
     controlZero->setParent(this);
@@ -120,6 +126,7 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue-m_dMinValue;
     m_dValue = m_dMinValue + 0.5*m_dValueRange;
+    m_dDefaultValue = m_dValue;
     //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
@@ -259,6 +266,13 @@ void ControlPotmeter::setToMinusOne(double keypos)
     }
 }
 
+void ControlPotmeter::setToDefault(double v) {
+    if (v > 0) {
+        m_dValue = m_dDefaultValue;
+        emit(valueChanged(m_dValue));
+        updateProxies(0);
+    }
+}
 
 void ControlPotmeter::toggleValue(double keypos)
 {

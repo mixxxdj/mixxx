@@ -9,6 +9,7 @@
 
 class EngineMaster;
 class ControlObject;
+class ControlPotmeter;
 class ControlObjectThreadMain;
 
 class BaseTrackPlayer : public BasePlayer {
@@ -40,6 +41,10 @@ class BaseTrackPlayer : public BasePlayer {
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
     AnalyserQueue* m_pAnalyserQueue;
+
+    // Waveform display related controls
+    ControlPotmeter* m_pWaveformZoom;
+    ControlObject* m_pEndOfTrack;
 
     ControlObjectThreadMain* m_pCuePoint;
     ControlObjectThreadMain* m_pLoopInPoint;

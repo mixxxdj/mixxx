@@ -32,7 +32,7 @@
 class WKnob : public WAbstractControl  {
    Q_OBJECT
 public:
-    WKnob(QWidget *parent=0, float defaultValue=63.);
+    WKnob(QWidget *parent=0);
     ~WKnob();
     void setup(QDomNode node);
     void setPositions(int iNoPos, bool bIncludingDisabled=false);

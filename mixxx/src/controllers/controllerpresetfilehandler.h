@@ -23,8 +23,8 @@ class ControllerPresetFileHandler {
      * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
      *        specified within matches the name of this Controller.
      */
-    ControllerPreset* load(const QString path, const QString deviceName,
-                                   const bool forceLoad);
+    ControllerPresetPointer load(const QString path, const QString deviceName,
+                                 const bool forceLoad);
 
     // Returns just the name of a given device (everything before the first
     // space)
@@ -33,6 +33,13 @@ class ControllerPresetFileHandler {
     }
 
   protected:
+    QDomElement getControllerNode(const QDomElement& root,
+                                  const QString deviceName,
+                                  const bool forceLoad);
+
+    void parsePresetInfo(const QDomElement& root,
+                         ControllerPreset* preset) const;
+
     /** addScriptFilesToPreset(QDomElement,QString,bool)
      * Loads script files specified in a QDomElement structure into the supplied
      *   ControllerPreset.
@@ -42,10 +49,8 @@ class ControllerPresetFileHandler {
      *        specified within matches the name of this Controller.
      * @param preset The ControllerPreset into which the scripts should be placed.
      */
-    void addScriptFilesToPreset(const QDomElement root,
-                                 const QString deviceName,
-                                 const bool forceLoad,
-                                 ControllerPreset* preset) const;
+    void addScriptFilesToPreset(const QDomElement& root,
+                                ControllerPreset* preset) const;
 
     // Creates the XML document and includes what script files are currently
     // loaded. Sub-classes need to call this before adding any other items.
@@ -56,8 +61,8 @@ class ControllerPresetFileHandler {
 
   private:
     // Sub-classes implement this.
-    virtual ControllerPreset* load(const QDomElement root, const QString deviceName,
-                                   const bool forceLoad) = 0;
+    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName,
+                                         const bool forceLoad) = 0;
 };
 
 #endif

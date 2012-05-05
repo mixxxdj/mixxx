@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0+">
   <info>
-    <name>VestaxTyphoon.midi.xml</name>
+    <name>Vestax Typhoon</name>
     <author>Bill Good, based on the work of Anders Gunnarsson</author>
     <description>Bill's controller mapping for Vestax Typhoon + script</description>
   </info>

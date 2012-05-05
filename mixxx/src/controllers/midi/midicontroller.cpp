@@ -34,6 +34,7 @@ QString MidiController::presetExtension() {
 
 void MidiController::visit(const MidiControllerPreset* preset) {
     m_preset = *preset;
+    emit(presetLoaded(getPreset()));
 }
 
 void MidiController::clearInputMappings() {
@@ -60,9 +61,9 @@ bool MidiController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-void MidiController::applyPreset() {
+void MidiController::applyPreset(QString configPath) {
     // Handles the engine
-    Controller::applyPreset();
+    Controller::applyPreset(configPath);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -266,8 +267,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
             }
             emit(learnedMessage(message));
         }
-        // Don't process MIDI messages when learning
-        return;
     }
 
     // If no control is bound to this MIDI message, return

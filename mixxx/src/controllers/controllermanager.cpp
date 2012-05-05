@@ -9,6 +9,7 @@
 
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/controllerlearningeventfilter.h"
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
@@ -24,10 +25,38 @@
 // Poll every 1ms (where possible) for good controller response
 const int kPollIntervalMillis = 1;
 
+QString firstAvailableFilename(QSet<QString>& filenames,
+                               const QString originalFilename) {
+    QString filename = originalFilename;
+    int i = 1;
+    while (filenames.contains(filename)) {
+        i++;
+        filename = QString("%1--%2").arg(originalFilename, QString::number(i));
+    }
+    filenames.insert(filename);
+    return filename;
+}
+
 ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
         QObject(),
         m_pConfig(pConfig),
+        // WARNING: Do not parent m_pControllerLearningEventFilter to
+        // ControllerManager because the CM is moved to its own thread and runs
+        // its own event loop.
+        m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
         m_pollTimer(this) {
+
+    qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
+
+    // Create controller mapping paths in the user's home directory.
+    if (!QDir(USER_PRESETS_PATH).exists()) {
+        qDebug() << "Creating user controller presets directory:" << USER_PRESETS_PATH;
+        QDir().mkpath(USER_PRESETS_PATH);
+    }
+    if (!QDir(LOCAL_PRESETS_PATH).exists()) {
+        qDebug() << "Creating local controller presets directory:" << LOCAL_PRESETS_PATH;
+        QDir().mkpath(LOCAL_PRESETS_PATH);
+    }
 
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
@@ -63,6 +92,11 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
 ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
+    delete m_pControllerLearningEventFilter;
+}
+
+ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
+    return m_pControllerLearningEventFilter;
 }
 
 void ControllerManager::slotShutdown() {
@@ -147,20 +181,17 @@ int ControllerManager::slotSetUpDevices() {
             pController->close();
         }
 
+        // The filename for this device name.
         const QString ofilename = presetFilenameFromName(name);
-        QString filename = ofilename;
-        int i=1;
-        while (filenames.contains(filename)) {
-            i++;
-            filename = QString("%1--%2").arg(ofilename, QString::number(i));
-        }
-        filenames.insert(filename);
+        // The first unique filename for this device (appends numbers at the end
+        // if we have already seen a controller by this name on this run of
+        // Mixxx.
+        QString filename = firstAvailableFilename(filenames, ofilename);
 
         if (!loadPreset(pController, filename, true)) {
+            // TODO(XXX) : auto load midi preset here.
             continue;
         }
-
-        //qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", ofilename));
 
         if (m_pConfig->getValueString(ConfigKey("[Controller]", ofilename)) != "1") {
             continue;
@@ -176,7 +207,7 @@ int ControllerManager::slotSetUpDevices() {
             }
             continue;
         }
-        pController->applyPreset();
+        pController->applyPreset(m_pConfig->getConfigPath());
     }
 
     maybeStartOrStopPolling();
@@ -226,9 +257,8 @@ QList<QString> ControllerManager::getPresetList(QString extension) {
     // Paths to search for controller presets
     QList<QString> controllerDirPaths;
     QString configPath = m_pConfig->getConfigPath();
-    //controllerDirPaths.append(configPath.append("presets/"));
-    //controllerDirPaths.append(configPath.append("midi/"));
     controllerDirPaths.append(configPath.append("controllers/"));
+    controllerDirPaths.append(LOCAL_PRESETS_PATH);
 
     // Should we also show the presets from USER_PRESETS_PATH? That could be
     // confusing.
@@ -248,6 +278,7 @@ QList<QString> ControllerManager::getPresetList(QString extension) {
             }
         }
     }
+    qSort(presets);
     return presets;
 }
 
@@ -264,13 +295,12 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset();
+        pController->applyPreset(m_pConfig->getConfigPath());
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->set(ConfigKey(
             "[Controller]", presetFilenameFromName(pController->getName())), 1);
     }
-
 }
 
 void ControllerManager::closeController(Controller* pController) {
@@ -285,6 +315,22 @@ void ControllerManager::closeController(Controller* pController) {
 }
 
 bool ControllerManager::loadPreset(Controller* pController,
+                                   ControllerPresetPointer preset) {
+    if (!preset) {
+        return false;
+    }
+    pController->setPreset(*preset.data());
+    // Save the file path/name in the config so it can be auto-loaded at
+    // startup next time
+    m_pConfig->set(
+        ConfigKey("[ControllerPreset]",
+                  presetFilenameFromName(pController->getName())),
+        preset->filePath());
+    return true;
+}
+
+
+bool ControllerManager::loadPreset(Controller* pController,
                                    const QString &filename,
                                    const bool force) {
     QScopedPointer<ControllerPresetFileHandler> handler(pController->getFileHandler());
@@ -297,45 +343,35 @@ bool ControllerManager::loadPreset(Controller* pController,
     QString filenameWithExt = filename + pController->presetExtension();
     QString filepath = USER_PRESETS_PATH + filenameWithExt;
 
+    // If the file isn't present in the user's directory, check the local
+    // presets path.
+    if (!QFile::exists(filepath)) {
+        filepath = LOCAL_PRESETS_PATH.append(filenameWithExt);
+    }
+
     // If the file isn't present in the user's directory, check res/
     if (!QFile::exists(filepath)) {
         filepath = m_pConfig->getConfigPath()
                 .append("controllers/") + filenameWithExt;
     }
 
-    if (QFile::exists(filepath)) {
-        ControllerPreset* preset = handler->load(
-            filepath, filename, force);
-        if (preset == NULL) {
-            qWarning() << "Unable to load preset" << filepath;
-        } else {
-            pController->setPreset(*preset);
-            // Save the file path/name in the config so it can be auto-loaded at
-            // startup next time
-            m_pConfig->set(
-                ConfigKey("[ControllerPreset]",
-                          presetFilenameFromName(pController->getName())),
-                filepath);
-            //qDebug() << "Successfully loaded preset" << filepath;
-            return true;
-        }
+    if (!QFile::exists(filepath)) {
+        qWarning() << "Cannot find" << filenameWithExt << "in either res/"
+                   << "or the user's Mixxx directories (" + LOCAL_PRESETS_PATH
+                   << USER_PRESETS_PATH + ")";
+        return false;
     }
-    qWarning() << "Cannot find" << filenameWithExt << "in either res/"
-               << "or the user's Mixxx directory (~/.mixxx/controllers/)";
-    return false;
-}
 
-
-QString firstAvailableFilename(QSet<QString>& filenames,
-                               const QString originalFilename) {
-    QString filename = originalFilename;
-    int i = 1;
-    while (filenames.contains(filename)) {
-        i++;
-        filename = QString("%1--%2").arg(originalFilename, QString::number(i));
+    ControllerPresetPointer pPreset = handler->load(
+        filepath, filename, force);
+    if (!pPreset) {
+        qWarning() << "Unable to load preset" << filepath;
+        return false;
     }
-    filenames.insert(filename);
-    return filename;
+
+    loadPreset(pController, pPreset);
+    //qDebug() << "Successfully loaded preset" << filepath;
+    return true;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {

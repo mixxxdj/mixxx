@@ -9,6 +9,81 @@
         </message>
     </context>
     <context>
+        <name>BasePlaylistFeature</name>
+        <message>
+            <source>New Playlist</source>
+            <translation>Nova Llista de Reproducció</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation>Afegir a la cua Auto DJ (baix)</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation>Afegir a la cua Auto DJ (dalt)</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Esborra</translation>
+        </message>
+        <message>
+            <source>Rename</source>
+            <translation>Canviar el nom</translation>
+        </message>
+        <message>
+            <source>Lock</source>
+            <translation>Bloqueja</translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>Importar llista de reproducció</translation>
+        </message>
+        <message>
+            <source>Export Playlist</source>
+            <translation>Exporta la llista de reproducció</translation>
+        </message>
+        <message>
+            <source>Rename Playlist</source>
+            <translation>Canvia el nom de la llista de reproducció</translation>
+        </message>
+        <message>
+            <source>New playlist name:</source>
+            <translation>Nou nom de la llista de reproducció:</translation>
+        </message>
+        <message>
+            <source>Renaming Playlist Failed</source>
+            <translation>Ha fallat en canvi de nom de la llista de reproducció</translation>
+        </message>
+        <message>
+            <source>A playlist by that name already exists.</source>
+            <translation>Ja existeix una llista de reproducció amb eixe nom.</translation>
+        </message>
+        <message>
+            <source>A playlist cannot have a blank name.</source>
+            <translation>Una llista de reproducció no pot tindre el nom en blanc</translation>
+        </message>
+        <message>
+            <source>Playlist name:</source>
+            <translation>Nom de la llista de reproducció:</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation>Ha fallat la creació de la llista de reproducció</translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation>S'ha produït un error desconegut mentre es creava la llista de reproducció: </translation>
+        </message>
+        <message>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>Arxius de llista de reproducció (*.m3u *.m3u8 *.pls *.csv)</translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation>Llista de repr. M3U (*.m3u);;Llista de repr. M3U8 (*.m3u8);;Llista de repr. PLS (*.pls);;Text CSV (*.csv);;Text llegible (*.txt)</translation>
+        </message>
+    </context>
+    <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
@@ -29,6 +104,10 @@
         <message>
             <source>Genre</source>
             <translation>Gènere</translation>
+        </message>
+        <message>
+            <source>Composer</source>
+            <translation>Compositor</translation>
         </message>
         <message>
             <source>Year</source>
@@ -56,11 +135,11 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Velocitat en bits</translation>
+            <translation>Taxa de bits</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation>Tempo</translation>
+            <translation>PPM</translation>
         </message>
         <message>
             <source>Track #</source>
@@ -75,8 +154,16 @@
             <translation>Núm.</translation>
         </message>
         <message>
+            <source>Timestamp</source>
+            <translation>Marca de temps</translation>
+        </message>
+        <message>
             <source>Key</source>
             <translation>Tecla</translation>
+        </message>
+        <message>
+            <source>BPM Lock</source>
+            <translation>Bloqueig de PPM</translation>
         </message>
     </context>
     <context>
@@ -156,6 +243,10 @@
             <translation>Gènere</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation>Compositor</translation>
+        </message>
+        <message>
             <source>Comment</source>
             <translation>Comentari</translation>
         </message>
@@ -165,7 +256,7 @@
         </message>
         <message>
             <source>BPM</source>
-            <translation>Tempo</translation>
+            <translation>PPM</translation>
         </message>
         <message>
             <source>Key</source>
@@ -177,7 +268,7 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Velocitat en bits</translation>
+            <translation>Taxa de bits</translation>
         </message>
         <message>
             <source>Location</source>
@@ -185,7 +276,7 @@
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation>Biblioteca Mixxx</translation>
+            <translation>Biblioteca de Mixxx</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -267,14 +358,12 @@
             <translation>Renombrant caixa fallida</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>Arxius de llista de reproducció (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation>Llista de repr. M3U (*.m3u);;Llista de repr. M3U8 (*.m3u8);;Llista de repr. PLS (*.pls);;Text CSV (*.csv);;Text llegible (*.txt)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -296,20 +385,6 @@
             <translation>Quant al Mixxx</translation>
         </message>
         <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
-        </message>
-        <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
             <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Pàgina Oficial&lt;/a&gt;</translation>
         </message>
@@ -317,8 +392,56 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>DlgAutoDJ</name>
         <message>
+            <source>Auto-DJ</source>
+            <translation>Auto-DJ</translation>
+        </message>
+        <message>
+            <source>One player must be stopped to enable Auto-DJ mode.</source>
+            <translation>És necessari detindre un reproductor per a activar el mode Auto-DJ</translation>
+        </message>
+        <message>
             <source>Disable Auto DJ</source>
             <translation>Desactiva el DJ automàtic</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist.</source>
+            <translation>Mescla el contingut de la llista de reproducció d'Auto-DJ.</translation>
+        </message>
+        <message>
+            <source>Shuffle</source>
+            <translation>Barreja</translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist.</source>
+            <translation>Ometre la següent pista a la llista de reproducció d'Auto-DJ.</translation>
+        </message>
+        <message>
+            <source>Skip Track</source>
+            <translation>Ometre pista</translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track.</source>
+            <translation>Passa la transició a la següent pista.</translation>
+        </message>
+        <message>
+            <source>Fade Now</source>
+            <translation>Esvair ara</translation>
+        </message>
+        <message>
+            <source>Determines the duration of the transition.</source>
+            <translation>Determina la duració de la transició.</translation>
+        </message>
+        <message>
+            <source>Seconds</source>
+            <translation>Segons</translation>
+        </message>
+        <message>
+            <source>sec.</source>
+            <translation>seg.</translation>
+        </message>
+        <message>
+            <source>Turn Auto DJ on or off.</source>
+            <translation>Activa o desactiva Auto DJ.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -328,13 +451,84 @@ p, li { white-space: pre-wrap; }
             <source>Manage</source>
             <translation>Gestiona</translation>
         </message>
+    </context>
+    <context>
+        <name>DlgBeatsDlg</name>
         <message>
-            <source>Shuffle playlist</source>
-            <translation>Llista de reproducció aleatòria</translation>
+            <source>Beat Detection Settings</source>
+            <translation>Configuració de detecció de ritme</translation>
         </message>
         <message>
-            <source>Add tracks to the queue below...</source>
-            <translation>Afegiu cançons a la cua...</translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation>Quan està activada la detecció de ritme, Mixxx detecta les pulsacions per minut de les seues cançons, mostra automàticament una xarxa de ritmes i permet sincronitzar les pistes en base a la seua informació de ritme.</translation>
+        </message>
+        <message>
+            <source>Enable BPM and Beat Detection</source>
+            <translation>Activa la detecció de PPM i ritme</translation>
+        </message>
+        <message>
+            <source>Choose Analyser</source>
+            <translation>Tria analitzador</translation>
+        </message>
+        <message>
+            <source>Beat Analyser:</source>
+            <translation>Analitzador de ritme:</translation>
+        </message>
+        <message>
+            <source>Choose beween different algorithms to detect beats.</source>
+            <translation>Tria entre diferents algoritmes per detectar el ritme.</translation>
+        </message>
+        <message>
+            <source>Analyser Settings</source>
+            <translation>Configuració d'analitzador</translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation>Activa la detecció ràpida de ritme. Si s'activa, Mixxx només analitzarà el primer minut de la pista per obtindre informació de ritme. Açò pot alleugerir la detecció a equips lents, però també pot resultar a xarxes de ritme de pitjor qualitat.</translation>
+        </message>
+        <message>
+            <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
+            <translation>Activa anàlisi ràpida (a equips lents pot ser menys precís)</translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation>Convertix el ritme detectat per l'analitzador a una xarxa de tempo fixe. Use esta opció si la pista té un tempo constant (per exemple la major part de música electrònica). Moltes voltes resulta en xarxes de major qualitat, però pot no funcionar be en pistes que tinguen canvis de tempo.</translation>
+        </message>
+        <message>
+            <source>Assume constant tempo (Recommended)</source>
+            <translation>Assumir un tempo constant (recomanat)</translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
+            <translation>Intenta corregir la fase (primer ritme) en xarxes de tempo fixe analitzant els batecs per descartar els valors atípics.</translation>
+        </message>
+        <message>
+            <source>Enable Offset Correction (Recommended)</source>
+            <translation>Activa la correcció de desplaçament (recomanat)</translation>
+        </message>
+        <message>
+            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
+            <translation>Si està activat, torna a analitzar les xarxes quan canvia preferències en esta pàgina. Si està activat, este ajust també tornarà a analitzar les xarxes generades per altres programes o versions anterior de Mixxx.</translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beats already present (e.g. from 3rd-party programs or older Mixxx versions)</source>
+            <translation>Torna a analitzar ritmes quan canvien els ajustos o els ritmes ja presents (per exemple des d'altres programes o versions anteriors de Mixx).</translation>
+        </message>
+        <message>
+            <source>BPM Range</source>
+            <translation>Intèrval de BPM</translation>
+        </message>
+        <message>
+            <source>Min:</source>
+            <translation>Mín:</translation>
+        </message>
+        <message>
+            <source>Max:</source>
+            <translation>Màx:</translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation>Reinicialitza als valors per defecte</translation>
         </message>
     </context>
     <context>
@@ -480,7 +674,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Edit</source>
-            <translation>Editar</translation>
+            <translation>Edita</translation>
         </message>
         <message>
             <source>Delete</source>
@@ -663,6 +857,46 @@ p, li { white-space: pre-wrap; }
             <source>Pitchbend sensitivity</source>
             <translation>Sensibilitat de corbat de velocitat</translation>
         </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation>Pantalla del Waveform</translation>
+        </message>
+        <message>
+            <source>Frame Rate</source>
+            <translation>Taxa de fotogrames</translation>
+        </message>
+        <message>
+            <source>OpenGl status</source>
+            <translation>Estat d'OpenGL</translation>
+        </message>
+        <message>
+            <source>Display type</source>
+            <translation>Mostra el tipus</translation>
+        </message>
+        <message>
+            <source>Default zoom</source>
+            <translation>Zoom per defecte</translation>
+        </message>
+        <message>
+            <source>100%</source>
+            <translation>100%</translation>
+        </message>
+        <message>
+            <source>200%</source>
+            <translation>200%</translation>
+        </message>
+        <message>
+            <source>300%</source>
+            <translation>300%</translation>
+        </message>
+        <message>
+            <source>400%</source>
+            <translation>400%</translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
+            <translation>Sincronitza</translation>
+        </message>
     </context>
     <context>
         <name>DlgPrefCrossfaderDlg</name>
@@ -731,8 +965,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -1672,6 +1905,10 @@ p, li { white-space: pre-wrap; }
             <translation>S'està enregistrant</translation>
         </message>
         <message>
+            <source>Beat Detection</source>
+            <translation>Detecció de ritme</translation>
+        </message>
+        <message>
             <source>BPM Detection</source>
             <translation>Detecció BPM</translation>
         </message>
@@ -1707,13 +1944,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nou</translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tot</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1758,6 +1993,14 @@ p, li { white-space: pre-wrap; }
             <source>Stop Recording</source>
             <translation>Atura l'enregistrament</translation>
         </message>
+        <message>
+            <source>Recording to file: </source>
+            <translation>Registrant a fitxer: </translation>
+        </message>
+        <message>
+            <source>MB written</source>
+            <translation>MB escrits</translation>
+        </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
@@ -1792,6 +2035,10 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Genre:</source>
             <translation>Gènere:</translation>
+        </message>
+        <message>
+            <source>Composer:</source>
+            <translation>Compositor:</translation>
         </message>
         <message>
             <source>Filename:</source>
@@ -1899,6 +2146,13 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>EmptyWaveformWidget</name>
+        <message>
+            <source>Empty</source>
+            <translation>Buit</translation>
+        </message>
+    </context>
+    <context>
         <name>EncoderMp3</name>
         <message>
             <source>Encoder</source>
@@ -1951,6 +2205,66 @@ p, li { white-space: pre-wrap; }
             <translation>Error configurant el mode sense blocs (Non-blocking):</translation>
         </message>
         <message>
+            <source>Error setting hostname!</source>
+            <translation>Error establint el nom del host!</translation>
+        </message>
+        <message>
+            <source>Error setting protocol!</source>
+            <translation>Error establint el protocol!</translation>
+        </message>
+        <message>
+            <source>Error setting port!</source>
+            <translation>Error establint el port!</translation>
+        </message>
+        <message>
+            <source>Error setting password!</source>
+            <translation>Error establint la contrasenya!</translation>
+        </message>
+        <message>
+            <source>Error setting mount!</source>
+            <translation>Error establint el muntatge!</translation>
+        </message>
+        <message>
+            <source>Error setting username!</source>
+            <translation>Error establint el nom d'usuari!</translation>
+        </message>
+        <message>
+            <source>Error setting stream name!</source>
+            <translation>Error establint el nom del stream!</translation>
+        </message>
+        <message>
+            <source>Error setting stream description!</source>
+            <translation>Error establint la descripció del stream!</translation>
+        </message>
+        <message>
+            <source>Error setting stream genre!</source>
+            <translation>Error establint el gènere del stream!</translation>
+        </message>
+        <message>
+            <source>Error setting stream url!</source>
+            <translation>Error establint la URL del stream!</translation>
+        </message>
+        <message>
+            <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+            <translation>Transmetre a 96kHz amb Ogg Vorbis no està suportat actualment. Per favor prove una freqüència de mostreig diferent o canvie a una codificació diferent.</translation>
+        </message>
+        <message>
+            <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+            <translation>Consulte https://bugs.launchpad.net/mixxx/+bug/686212 per més informació.</translation>
+        </message>
+        <message>
+            <source>Error setting bitrate</source>
+            <translation>Error establint la taxa de bits.</translation>
+        </message>
+        <message>
+            <source>Error: unknown server protocol!</source>
+            <translation>Error: protocol del servidor desconegut!</translation>
+        </message>
+        <message>
+            <source>Error: libshout only supports Shoutcast with MP3 format!</source>
+            <translation>Error: libshout només suporta Shoutcast amb el format MP3!</translation>
+        </message>
+        <message>
             <source>Lost connection to streaming server</source>
             <translation>S'ha perdut la connexió al servidor de emissió</translation>
         </message>
@@ -1999,6 +2313,27 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>GLSLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation>Filtrat</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation>Senzill</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation>Filtrat</translation>
+        </message>
+    </context>
+    <context>
         <name>ITunesFeature</name>
         <message>
             <source>iTunes</source>
@@ -2040,8 +2375,7 @@ p, li { white-space: pre-wrap; }
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analitzador del contingut</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
@@ -2182,56 +2516,8 @@ p, li { white-space: pre-wrap; }
             <translation>Mixxx</translation>
         </message>
         <message>
-            <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation>El desenvolupament de Mixxx està conduït pel feedback de la seua comunitat. Al teu gust, Mixxx pot enviar la teua experiència d'usuari automàticament de volta cap als programadors. Vols ajudar-nos a fer Mixxx millor activant esta característica?</translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation>Si</translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation>No</translation>
-        </message>
-        <message>
-            <source>Privacy Policy</source>
-            <translation>Política de privacitat</translation>
-        </message>
-        <message>
-            <source>Mixxx: Privacy Policy</source>
-            <translation>Mixxx: política de privacitat</translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
-The hardware information will include:
-	- CPU model and features
-	- Total/Available Amount of RAM
-	- Available disk space
-	- OS version
-Your usage information will include:
-	- Settings/Preferences
-	- Internal errors
-	- Internal debugging messages
-	- Performance statistics (average latency, CPU usage)
-This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
-</source>
-            <translation>El desenvolupament de Mixxx's està conduït pel feedback de la comunitat. Per poder ajudar-nos a millorar les versions futures de Mixxx podem, amb el teu permís, recollir la informació del teu maquinari i de l'ús de Mixxx. Esta informació serà usada primerament per a arreglar errors, millorar les caracterísitques i determinar els requisits del sistema per a versions posteriors. Adicionalment esta informació pot ser usada per a propòsits estadístics.
-La informació del maquinari pot incloure:
-	- Model de CPU i característiques
-	- Quantitat total/disponible de RAM
-	- Quantitat disponible d'espai al disc
-	- Versió del sistema operatiu
-La informació d'ús pot incloure:
-	- Ajustaments/Preferències
-	- Errors interns
-	- Missatges de dpuració interns
-	- Estadístiques de rendiment (latència mitjana, ús de la CPU)
-Esta informació no s'usarà de manera personal per a identificar-te, contactar amb tu, informar-te o, de cap manera, molestar-te.
-</translation>
-        </message>
-        <message>
             <source>Choose music library directory</source>
-            <translation>Tria el directori de la biblioteca de música.</translation>
+            <translation>Tria el directori de la biblioteca de música</translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
@@ -2274,20 +2560,38 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
             <translation>Eixir</translation>
         </message>
         <message>
+            <source>No Output Devices</source>
+            <translation>No hi ha dispositius d'eixida</translation>
+        </message>
+        <message>
+            <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
+            <translation>Mixxx ha sigut configurat sense dispositius d'eixida de so. Es desactivarà el processat d'àudio sense un dispositiu d'eixida configurat.</translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
+            <translation>&lt;b&gt;Continuar&lt;/b&gt; sense cap eixida.</translation>
+        </message>
+        <message>
             <source>Continue</source>
             <translation>Continua</translation>
         </message>
         <message>
-            <source>&amp;Load Song (Player 1)...</source>
-            <translation>&amp;Carregar cançó (reproductor 1)...</translation>
+            <source>Load track to Deck %1</source>
+            <translation>Carregar la pista al deck %1</translation>
+        </message>
+        <message>
+            <source>Loads a track in deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Open</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+O</source>
             <translation>Ctrl+O</translation>
-        </message>
-        <message>
-            <source>&amp;Load Song (Player 2)...</source>
-            <translation>&amp;Carregar cançó (reproductor 2)...</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2298,12 +2602,22 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
             <translation>&amp;Eixir</translation>
         </message>
         <message>
+            <source>Quits Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Ctrl+Q</source>
             <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
             <translation>&amp;Reescanejar biblioteca</translation>
+        </message>
+        <message>
+            <source>Rescans library folders for changes to tracks.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Add &amp;new playlist</source>
@@ -2322,24 +2636,18 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
             <translation>Ctrl+C</translation>
         </message>
         <message>
-            <source>&amp;Import playlist</source>
-            <translation>&amp;Importa llista de reproducció</translation>
+            <source>Deck %1 is currently playing a track.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Ctrl+I</source>
-            <translation>Ctrl+I</translation>
-        </message>
-        <message>
-            <source>&amp;Audio Beat Marks</source>
-            <translation>Marques de cops d'&amp;audio</translation>
+            <source>Are you sure you want to load a new track?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Full Screen</source>
             <translation>Pantalla sencera</translation>
-        </message>
-        <message>
-            <source>Ctrl+F</source>
-            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>F11</source>
@@ -2348,6 +2656,11 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
         <message>
             <source>&amp;Preferences</source>
             <translation>&amp;Preferències</translation>
+        </message>
+        <message>
+            <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+P</source>
@@ -2362,9 +2675,13 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
             <translation>Suport de la &amp;Comunitat</translation>
         </message>
         <message>
-            <source>&amp;User Manual</source>
+            <source>Get help with Mixxx</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>&amp;User Manual</source>
+            <translation>Manual de l'&amp;usuari</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
@@ -2375,25 +2692,12 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
             <translation>&amp;Traduïx esta aplicació</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 1</source>
-            <translation>Activar control per &amp;vinil 1</translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 2</source>
-            <translation>Activar control per &amp;vinil 2</translation>
-        </message>
-        <message>
             <source>Ctrl+U</source>
             <translation>Ctrl+U</translation>
-        </message>
-        <message>
-            <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2408,186 +2712,69 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
             <translation>Ctrl+R</translation>
         </message>
         <message>
-            <source>Show Studio</source>
-            <translation>Mostra estudio</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 1</source>
-            <translation>Obre una cançó al reproductor 1</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 1</source>
-            <translation>Obre
-Obre una cançó al reproductor 1</translation>
-        </message>
-        <message>
-            <source>Opens a song in player 2</source>
-            <translation>Obre una cançó al reproductor 2</translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 2</source>
-            <translation>Obre
-Obre una cançó al reproductor 2</translation>
-        </message>
-        <message>
-            <source>Quits the application</source>
-            <translation>Ix de l'aplicació</translation>
-        </message>
-        <message>
-            <source>Exit
-Quits the application</source>
-            <translation>Eixir
-Tanca l'aplicació</translation>
-        </message>
-        <message>
-            <source>Rescans the song library</source>
-            <translation>Torna a escanejar la biblioteca de cançons</translation>
-        </message>
-        <message>
-            <source>Rescan library
-Rescans the song library</source>
-            <translation>Rescaneja la biblioteca
-Rescaneja la biblioteca de cançons</translation>
-        </message>
-        <message>
             <source>Create a new playlist</source>
             <translation>Crea una nova llista de reproducció</translation>
-        </message>
-        <message>
-            <source>New playlist
-Create a new playlist</source>
-            <translation>Nova llista de reproducció
-Crea una nova llista de reproducció</translation>
         </message>
         <message>
             <source>Create a new crate</source>
             <translation>Crea un nou caixó</translation>
         </message>
         <message>
-            <source>New crate
-Create a new crate.</source>
-            <translation>Nou caixó
-Crea un nou caixó.</translation>
+            <source>Ctrl+Shift+F</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Import playlist</source>
-            <translation>Importa una llista de reproducció</translation>
+            <source>Enable Vinyl Control &amp;1</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Audio Beat Marks</source>
-            <translation>Marques de compàs d'àudio</translation>
+            <source>Enable Vinyl Control &amp;2</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Audio Beat Marks
-Mark beats by audio clicks</source>
-            <translation>Marques de compàs d'àudio
-Marca el compàs a través de clicks d'àudio</translation>
-        </message>
-        <message>
-            <source>Activate Vinyl Control</source>
-            <translation>Activa el control de vinil</translation>
+            <source>Enable live &amp;broadcasting</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
             <translation>Usa vinils amb codi de temps des de giradiscs externs per controlar Mixxx</translation>
         </message>
         <message>
-            <source>Activate live broadcasting</source>
-            <translation>Activa transmissió en viu</translation>
-        </message>
-        <message>
             <source>Stream your mixes to a shoutcast or icecast server</source>
             <translation>Transmet les teues mescles a un servidor de shoutcast o d'icecast</translation>
-        </message>
-        <message>
-            <source>Start Recording your Mix</source>
-            <translation>Comença a gravar la teua mescla</translation>
         </message>
         <message>
             <source>Record your mix to a file</source>
             <translation>Grava la teua mescla a un fitxer</translation>
         </message>
         <message>
-            <source>Full Screen</source>
-            <translation>Pantalla sencera</translation>
-        </message>
-        <message>
             <source>Display Mixxx using the full screen</source>
             <translation>Mostra Mixx a pantalla sencera</translation>
         </message>
         <message>
-            <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences
-Playback and MIDI preferences</source>
-            <translation>Preferències
-Preferències de reproducció i de MIDI</translation>
-        </message>
-        <message>
-            <source>Support...</source>
-            <translation>Suport...</translation>
-        </message>
-        <message>
-            <source>Support
-Get help with Mixxx</source>
-            <translation>Suport
-Obté ajuda amb Mixxx</translation>
-        </message>
-        <message>
             <source>Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llegiu el manual de l'usuari de Mixxx.</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
             <translation>Envia la teua opinió a l'equip de Mixx.</translation>
         </message>
         <message>
-            <source>Support
-Send feedback to the Mixxx team.</source>
-            <translation>Suport
-Envia la teua opinió a l'equip de Mixx.</translation>
-        </message>
-        <message>
             <source>Help translate this application into your language.</source>
             <translation>Ajuda a traduir esta aplicació a la teua llengua.</translation>
-        </message>
-        <message>
-            <source>Support
-Help translate this application into your language.</source>
-            <translation>Suport
-Ajuda a traduir esta aplicació a la teua llengua.</translation>
         </message>
         <message>
             <source>About the application</source>
             <translation>Quant a l'aplicació</translation>
         </message>
         <message>
-            <source>About
-About the application</source>
-            <translation>Quant a
-Quant a l'aplicació</translation>
-        </message>
-        <message>
-            <source>Shows the macro studio window</source>
-            <translation>Mostra la finestra del taller de macros</translation>
-        </message>
-        <message>
-            <source>Show Studio
-Makes the macro studio visible</source>
-            <translation>Mostra l'estudio
-Fa visible l'estudio de macros</translation>
+            <source>A sampler is currently playing. Exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;File</source>
@@ -2610,40 +2797,8 @@ Fa visible l'estudio de macros</translation>
             <translation>&amp;Ajuda</translation>
         </message>
         <message>
-            <source>&amp;Macro</source>
-            <translation>&amp;Macro</translation>
-        </message>
-        <message>
             <source>&amp;Vinyl Control</source>
             <translation>Control per &amp;vinils</translation>
-        </message>
-        <message>
-            <source>Quit...</source>
-            <translation>Ix...</translation>
-        </message>
-        <message>
-            <source>Do your really want to quit?</source>
-            <translation>Estàs segur que vols eixir?</translation>
-        </message>
-        <message>
-            <source>Player 1 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>El reproductor 1 està reproduint una cançó.
-Estàs segur que vols carregar una nova cançó?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 1</source>
-            <translation>Carregar cançó al reproductor 1</translation>
-        </message>
-        <message>
-            <source>Player 2 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation>El reproductor 2 està reproduint una cançó.
-Estàs segur que vols carregar una nova cançó?</translation>
-        </message>
-        <message>
-            <source>Load Song into Player 2</source>
-            <translation>Carregar cançó al reproductor 2</translation>
         </message>
         <message>
             <source>No input device(s) select.
@@ -2653,28 +2808,23 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         </message>
         <message>
             <source>Mixxx %1 Development Team</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Equip del desenvolupament de Mixxx %1</translation>
         </message>
         <message>
             <source>With contributions from:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Amb les contribucions de:</translation>
         </message>
         <message>
             <source>And special thanks to:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mereixements especials a:</translation>
         </message>
         <message>
             <source>Past Developers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Darrers desenvolupadors</translation>
         </message>
         <message>
             <source>Past Contributors</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Darreres contribucions</translation>
         </message>
         <message>
             <source>Confirm Exit</source>
@@ -2688,8 +2838,37 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
+            <source>Missing Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Library</source>
-            <translation>Biblioteca</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>ParserCsv</name>
+        <message>
+            <source>Location</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Playlist Export Failed</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Could not create file</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Readable text Export Failed</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2701,19 +2880,18 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         <message>
             <source>File path contains characters, not allowed in m3u playlists.
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>La ruta del fitxer conté caràcters no admesos als fitxers de les llistes de reproducció m3u.
+</translation>
         </message>
         <message>
             <source>Export a m3u8 playlist instead!
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Exporta al format m3u8!
+</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>No s'ha pogut crear el fitxer</translation>
         </message>
     </context>
     <context>
@@ -2730,31 +2908,7 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
     <context>
         <name>PlaylistFeature</name>
         <message>
-            <source>New Playlist</source>
-            <translation>Nova Llista de Reproducció</translation>
-        </message>
-        <message>
-            <source>Add to Auto-DJ Queue</source>
-            <translation>Afegir a la cua d'Audio-DJ</translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation>Suprimeix</translation>
-        </message>
-        <message>
-            <source>Rename</source>
-            <translation>Canvia el nom</translation>
-        </message>
-        <message>
             <source>Lock</source>
-            <translation>Bloqueja</translation>
-        </message>
-        <message>
-            <source>Import Playlist</source>
-            <translation>Importar llista de reproducció</translation>
-        </message>
-        <message>
-            <source>Export Playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2764,49 +2918,8 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         </message>
         <message>
             <source>Unlock</source>
-            <translation>Desbloqueja</translation>
-        </message>
-        <message>
-            <source>Playlist name:</source>
-            <translation>Nom de la llista de reproducció:</translation>
-        </message>
-        <message>
-            <source>Playlist Creation Failed</source>
-            <translation>Ha fallat la creació de la llista de reproducció</translation>
-        </message>
-        <message>
-            <source>A playlist cannot have a blank name.</source>
-            <translation>Una llista de reproducció no pot tindre el nom en blanc</translation>
-        </message>
-        <message>
-            <source>An unknown error occurred while creating playlist: </source>
-            <translation>S'ha produït un error desconegut mentre es creava la llista de reproducció: </translation>
-        </message>
-        <message>
-            <source>Rename Playlist</source>
-            <translation>Canvia el nom de la llista de reproducció</translation>
-        </message>
-        <message>
-            <source>New playlist name:</source>
-            <translation>Nou nom de la llista de reproducció:</translation>
-        </message>
-        <message>
-            <source>Renaming Playlist Failed</source>
-            <translation>Ha fallat en canvi de nom de la llista de reproducció</translation>
-        </message>
-        <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist by that name already exists.</source>
-            <translation>Ja existeix una llista de reproducció amb eixe nom.</translation>
         </message>
     </context>
     <context>
@@ -2849,6 +2962,16 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         <message>
             <source>Unknown path type %1</source>
             <translation>Tipus de ruta %1 desconegut</translation>
+        </message>
+        <message>
+            <source>(GL)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(GLSL)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2897,46 +3020,34 @@ Per favor, selecciona la teua targeta de so a les preferències del maquinari de
         </message>
     </context>
     <context>
-        <name>ScriptStudio</name>
+        <name>SetlogFeature</name>
         <message>
-            <source>Mixxx Script Studio</source>
-            <translation>Mixxx Script Studio</translation>
+            <source>Join with previous</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>File</source>
-            <translation>Fitxer</translation>
+            <source>Set Logs</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Edit</source>
-            <translation>Edita</translation>
+            <source>Unlock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Run</source>
-            <translation>Executa</translation>
+            <source>Lock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
+    </context>
+    <context>
+        <name>SoftwareWaveformWidget</name>
         <message>
-            <source>Close</source>
-            <translation>Tanca</translation>
-        </message>
-        <message>
-            <source>Import...</source>
-            <translation>Importa...</translation>
-        </message>
-        <message>
-            <source>Export...</source>
-            <translation>Exporta...</translation>
-        </message>
-        <message>
-            <source>Delete Macro</source>
-            <translation>Suprimeix una macro</translation>
-        </message>
-        <message>
-            <source>New Macro...</source>
-            <translation>Nova macro...</translation>
-        </message>
-        <message>
-            <source>Run Macro</source>
-            <translation>Executa macro</translation>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3019,7 +3130,8 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Simple</source>
-            <translation>Senzill</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
@@ -3035,7 +3147,8 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Preferències</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -3135,18 +3248,15 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Setup a loop over 4 beats for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crea un bucle de 4 beats al reproductor %1</translation>
         </message>
         <message>
             <source>Halves the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Escurça el bucle a la meitat al reproductor %1</translation>
         </message>
         <message>
             <source>Doubles the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duplica el bucle actual al reproductor %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Player %1</source>
@@ -3182,73 +3292,59 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Play button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó de reproducció per al Sampler %1</translation>
         </message>
         <message>
             <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Manipulació del Sampler %1</translation>
         </message>
         <message>
             <source>Headphone listen button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó de preescolta per al Sampler %1</translation>
         </message>
         <message>
             <source>BPM tap button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó d'assignació dels BPM per al Sampler %1</translation>
         </message>
         <message>
             <source>Keylock button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botó de blocatge per al Sampler %1</translation>
         </message>
         <message>
             <source>Pitch control slider for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lliscador del control de la tonalitat Pitch per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 1 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Primer botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 2 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Segon botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 3 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tercer botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 4 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quart botó de l'assignació d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 1 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Primer botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 2 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Segon botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 3 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tercer botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Hotcue 4 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quart botó de supressió d'inici per al Sampler %1</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -3276,32 +3372,36 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Adjusts the wavelength of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opcions de la durada de l'efecte robòtic</translation>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opcions de la intensitat de l'efecte robòtic</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opcions del retard de l'efecte robòtic</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Micròfon encès/apagat</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Volum del micròfon</translation>
         </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>
+        <message>
+            <source>Ctrl+F</source>
+            <translation>Ctrl+F</translation>
+        </message>
+        <message>
+            <source>Esc</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
         <message>
             <source>Search...</source>
             <translation>Cerca...</translation>
@@ -3330,12 +3430,33 @@ Fes click a OK per eixir.</translation>
             <translation>Propietats...</translation>
         </message>
         <message>
-            <source>Add to Auto DJ Queue</source>
-            <translation>Afegir a la cua d'Auto DJ</translation>
+            <source>Add to Auto-DJ Queue (bottom)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (top)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
             <translation>Recarrega les metadades de la pista</translation>
+        </message>
+        <message>
+            <source>Lock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unlock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear BPM and Beatgrid</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
@@ -3347,8 +3468,7 @@ Fes click a OK per eixir.</translation>
         </message>
         <message>
             <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tornar a carregar les dades de la pista actual podria donar com a resultat un canvi de volum no desitjat. Voleu continuar?</translation>
         </message>
     </context>
     <context>

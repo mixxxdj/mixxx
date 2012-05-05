@@ -405,26 +405,32 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     initMenuBar();
 
     // Use frame as container for view, needed for fullscreen display
-    m_pView = new QFrame;
+    m_pView = new QFrame();
 
     m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
-        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
-        qDebug() << "Could not load default skin.";
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
+        qCritical("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+
+        //TODO (XXX) add dialog to warn user and launch skin choice page
+        resize(640,480);
+    } else {
+        // this has to be after the OpenGL widgets are created or depending on a
+        // million different variables the first waveform may be horribly
+        // corrupted. See bug 521509 -- bkgood ?? -- vrince
+        setCentralWidget(m_pView);
+
+        // keep gui centered (esp for fullscreen)
+        m_pView->setLayout( new QHBoxLayout(m_pView));
+        m_pView->layout()->setContentsMargins(0,0,0,0);
+        m_pView->layout()->addWidget(m_pWidgetParent);
+        resize(m_pView->size());
     }
 
-    // this has to be after the OpenGL widgets are created or depending on a
-    // million different variables the first waveform may be horribly
-    // corrupted. See bug 521509 -- bkgood
-    setCentralWidget(m_pView);
-
-    // keep gui centered (esp for fullscreen)
-    // the layout will be deleted whenever m_pView gets deleted
-    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
-    pLayout->addWidget(m_pWidgetParent);
-    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
+    //move the app in the center of the primary screen
+    slotToCenterOfPrimaryScreen();
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -619,9 +625,10 @@ int MixxxApp::noSoundDlg(void)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            break;
         }
     }
+    return 1;
 }
 
 int MixxxApp::noOutputDlg(bool *continueClicked)
@@ -670,9 +677,10 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            return 1;
+            break;
         }
     }
+    return 1;
 }
 
 QString buildWhatsThis(QString title, QString text) {
@@ -1029,11 +1037,6 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 {
     if (m_pOptionsFullScreen)
         m_pOptionsFullScreen->setChecked(toggle);
-        
-	QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
-	
-    // Making a fullscreen window on linux and windows is harder than you
-    // could possibly imagine...
 
     if (isFullScreen() == toggle) {
         return;
@@ -1054,85 +1057,10 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 #endif
         menuBar()->setNativeMenuBar(false);
         showFullScreen();
-        //menuBar()->hide();
-        // FWI: Begin of fullscreen patch
-#if defined(__LINUX__) || defined(__APPLE__)
-        // Crazy X window managers break this so I'm told by Qt docs
-        //         int deskw = app->desktop()->width();
-        //         int deskh = app->desktop()->height();
-        
-        if (QDir(qSkinPath+"-fullscreen").exists())
-    	{
-			qDebug() << "fullscreen reshape";
-
-			QString fullscreenPath = m_pSkinLoader->getConfiguredSkinPath()+"-fullscreen";
-			
-			m_pView->hide();
-			delete m_pView;
-			m_pView = new QFrame();
-			
-			if (!m_pSkinLoader->loadCustomSkin(
-					fullscreenPath,
-					m_pView,
-                    m_pKeyboard,
-                    m_pPlayerManager,
-                    m_pLibrary,
-                    m_pVCManager)) {
-				qDebug() << "Could not reload the skin.";
-			}
-			
-			setCentralWidget(m_pView);
-
-			qDebug() << "fullscreen reshape DONE";
-		}
-
-        //support for xinerama
-        int deskw = m_pApp->desktop()->screenGeometry(m_pView).width();
-        int deskh = m_pApp->desktop()->screenGeometry(m_pView).height();
-#else
-        int deskw = width();
-        int deskh = height();
-#endif
-        if (m_pView)
-            m_pView->move((deskw - m_pView->width())/2,
-                          (deskh - m_pView->height())/2);
-        // FWI: End of fullscreen patch
     } else {
-        // FWI: Begin of fullscreen patch
-        if (m_pView)
-            m_pView->move(0,0);
-
-        menuBar()->show();
         showNormal();
-        
-        if (QDir(qSkinPath+"-fullscreen").exists())
-    	{
-			qDebug() << "unfullscreen resize";
-			
-			m_pView->hide();
-			delete m_pView;
-			m_pView = new QFrame();
-			
-			if (!m_pSkinLoader->loadDefaultSkin(
-					m_pView,
-                    m_pKeyboard,
-                    m_pPlayerManager,
-                    m_pLibrary,
-                    m_pVCManager)) {
-				qDebug() << "Could not reload the skin.";
-			}
-			
-			setCentralWidget(m_pView);
-
-			qDebug() << "unfullscreen DONE";
-		}
-
         menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
 #ifdef __LINUX__
-		if (size().width() != m_pView->width() ||
-		    size().height() != m_pView->height() + menuBar()->height()) {
-		    adjustSize();
-		}
         //move(m_winpos);
 #endif
     }
@@ -1244,8 +1172,7 @@ void MixxxApp::slotHelpAbout() {
     QString s_pastDevs=tr("Past Developers");
     QString s_pastContribs=tr("Past Contributors");
 
-    QString credits =
-    QString("<p align=\"center\"><b>%1</b></p>"
+    QString credits = QString("<p align=\"center\"><b>%1</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
@@ -1259,6 +1186,7 @@ void MixxxApp::slotHelpAbout() {
 "Owen Williams<br>"
 "Vittorio Colao<br>"
 "Daniel Sch&uuml;rmann<br>"
+"Thomas Vincent<br>"
 
 "</p>"
 "<p align=\"center\"><b>%2</b></p>"
@@ -1312,6 +1240,8 @@ void MixxxApp::slotHelpAbout() {
 "Akash Shetye<br>"
 "Pascal Bleser<br>"
 "Florian Mahlknecht<br>"
+"Ben Clark<br>"
+"Ilkka Tuohela<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1442,7 +1372,12 @@ void MixxxApp::rebootMixxxView() {
     if (!m_pWidgetParent || !m_pView)
         return;
 
-    qDebug() << "Now in Rebootmixxview...";
+    qDebug() << "Now in rebootMixxxView...";
+
+    QPoint initPosition = pos();
+    QSize initSize = size();
+
+    m_pView->hide();
 
     WaveformWidgetFactory::instance()->stop();
     WaveformWidgetFactory::instance()->destroyWidgets();
@@ -1451,39 +1386,52 @@ void MixxxApp::rebootMixxxView() {
     // mode. If you change skins while in fullscreen (on Linux, at least) the
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
+    bool wasFullScreen = m_pOptionsFullScreen->isChecked();
     slotOptionsFullScreen(false);
 
     // TODO(XXX) Make getSkinPath not public
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    QWidget* pNewView = new QFrame();
+    //delete the view cause swaping central widget do not remove the old one !
+    if( m_pView)
+        delete m_pView;
+
+    m_pView = new QFrame();
 
     // assignment in next line intentional
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(pNewView,
-                                        m_pKeyboard,
-                                        m_pPlayerManager,
-                                        m_pLibrary,
-                                        m_pVCManager))) {
-        qDebug() << "Could not reload the skin.";
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
+                                                           m_pKeyboard,
+                                                           m_pPlayerManager,
+                                                           m_pControllerManager,
+                                                           m_pLibrary,
+                                                           m_pVCManager))) {
+
+        QMessageBox::critical(this,
+                              tr("Error in skin file"),
+                              tr("The selected skin cannot be loaded."));
+    }
+    else {
+        // don't move this before loadDefaultSkin above. bug 521509 --bkgood
+        // NOTE: (vrince) I don't know this comment is relevant now ...
+        setCentralWidget(m_pView);
+
+        // keep gui centered (esp for fullscreen)
+        m_pView->setLayout( new QHBoxLayout(m_pView));
+        m_pView->layout()->setContentsMargins(0,0,0,0);
+        m_pView->layout()->addWidget(m_pWidgetParent);
+
+         //qDebug() << "view size" << m_pView->size();
+
+        //TODO: (vrince) size is good but resize do not append !!
+        resize(m_pView->size());
     }
 
-    // don't move this before loadDefaultSkin above. bug 521509 --bkgood
-    // this hides and deletes the old CentralWidget
-    setCentralWidget(pNewView);
-
-    m_pView = pNewView;
-
-    // keep gui centered (esp for fullscreen)
-    // the layout will be deleted whenever m_pView gets deleted
-    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
-    pLayout->addWidget(m_pWidgetParent);
-    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
-
-    // if we move from big skin to smaller skin, size the window down to fit
-    // (qt scales up for us if we go the other way) -bkgood
-    // this doesn't always seem to snap down tight on Windows... sigh -bkgood
-    setFixedSize(m_pView->width(), m_pView->height());
-    setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+    if( wasFullScreen) {
+        slotOptionsFullScreen(true);
+    } else {
+        move(initPosition.x() + (initSize.width() - width()) / 2,
+             initPosition.y() + (initSize.height() - height()) / 2);
+    }
 
     WaveformWidgetFactory::instance()->start();
 
@@ -1492,7 +1440,7 @@ void MixxxApp::rebootMixxxView() {
 #if __OSX__
     menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
 #endif
-    qDebug() << "rebootgui DONE";
+    qDebug() << "rebootMixxxView DONE";
 }
 
 /** Event filter to block certain events. For example, this function is used
@@ -1559,6 +1507,18 @@ void MixxxApp::slotOptionsShoutcast(bool value){
 #endif
 }
 
+void MixxxApp::slotToCenterOfPrimaryScreen() {
+    if (!m_pView)
+        return;
+
+    QDesktopWidget* desktop = QApplication::desktop();
+    int primaryScreen = desktop->primaryScreen();
+    QRect primaryScreenRect = desktop->availableGeometry(primaryScreen);
+
+    move(primaryScreenRect.left() + (primaryScreenRect.width() - m_pView->width()) / 2,
+         primaryScreenRect.top() + (primaryScreenRect.height() - m_pView->height()) / 2);
+}
+
 void MixxxApp::checkDirectRendering() {
     // IF
     //  * A waveform viewer exists
@@ -1569,17 +1529,25 @@ void MixxxApp::checkDirectRendering() {
     // THEN
     //  * Warn user
 
-    //TODO vRince replug this kind of warning using ...
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    if (!factory)
+        return;
 
-    /*
-    if (WaveformViewerFactory::numViewers(WAVEFORM_GL) > 0 &&
-        !WaveformViewerFactory::isDirectRenderingEnabled() &&
+    if (!factory->isOpenGLAvailable() &&
         m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
-		    QMessageBox::warning(0, "OpenGL Direct Rendering",
-                             "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
-        m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
+        QMessageBox::warning(
+            0, tr("OpenGL Direct Rendering"),
+            tr("Direct rendering is not enabled on your machine.<br><br>"
+               "This means that the waveform displays will be very<br>"
+               "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
+               "configuration to enable direct rendering, or disable<br>"
+               "the waveform displays in the Mixxx preferences by selecting<br>"
+               "\"Empty\" as the waveform display in the 'Interface' section.<br><br>"
+               "NOTE: If you use NVIDIA hardware,<br>"
+               "direct rendering may not be present, but you should<br>"
+               "not experience degraded performance."));
+        m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
-    */
 }
 
 bool MixxxApp::confirmExit() {

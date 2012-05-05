@@ -81,8 +81,10 @@ void SoundSourceProxy::loadPlugins()
         pluginDirs.append(QDir(clArgs.at(pluginPath + 1)));
     }
 #ifdef __LINUX__
-    pluginDirs.append(QDir("/usr/local/lib/mixxx/plugins/soundsource/"));
-    pluginDirs.append(QDir("/usr/lib/mixxx/plugins/soundsource/"));
+    QDir libPath(UNIX_LIB_PATH);
+    if (libPath.cd("plugins") && libPath.cd("soundsource")) {
+	pluginDirs.append(libPath.absolutePath());
+    }
     pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/.mixxx/plugins/soundsource/"));
 #elif __WINDOWS__
     pluginDirs.append(QDir(QCoreApplication::applicationDirPath() + "/plugins/soundsource/"));
@@ -93,7 +95,11 @@ void SoundSourceProxy::loadPlugins()
     //bundlePluginDir.append("PlugIns/soundsource");  //Our SCons bundle target doesn't handle plugin subdirectories :(
     bundlePluginDir.append("PlugIns/");
     pluginDirs.append(QDir(bundlePluginDir));
+    // Do we ever put stuff here? I think this was meant to be
+    // ~/Library/Application Support/Mixxx/Plugins rryan 04/2012
     pluginDirs.append(QDir("/Library/Application Support/Mixxx/Plugins/soundsource/"));
+    pluginDirs.append(QDir(QDesktopServices::storageLocation(QDesktopServices::HomeLocation) +
+			   "/Library/Application Support/Mixxx/Plugins/soundsource/"));
     nameFilters << "libsoundsource*";
 #endif
 
@@ -310,7 +316,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setBitrate(sndsrc->getBitrate());
         p->setSampleRate(sndsrc->getSampleRate());
         p->setChannels(sndsrc->getChannels());
-	p->setKey(sndsrc->getKey());
+        p->setKey(sndsrc->getKey());
         p->setHeaderParsed(true);
     }
     else

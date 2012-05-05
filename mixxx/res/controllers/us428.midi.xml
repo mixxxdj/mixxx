@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
-    <name>us428.midi.xml</name>
+    <name>Tascam US-428</name>
     <author>Auto-converted by madjesta's PHP script</author>
     <description>Automatic conversion of the file us428.midi.xml for Mixxx 1.6.2</description>
   </info>
@@ -19,7 +19,7 @@
         <status>0xB0</status>
         <midino>0x4c</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -28,7 +28,7 @@
         <status>0xB0</status>
         <midino>0x4d</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -61,7 +61,7 @@
         <status>0xB0</status>
         <midino>0x48</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -70,7 +70,7 @@
         <status>0xB0</status>
         <midino>0x4a</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -84,7 +84,7 @@
         <key>play</key>
         <status>0x80</status>
         <midino>0x3e</midino>
-      </control>     
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_goto</key>
@@ -96,7 +96,7 @@
         <key>cue_goto</key>
         <status>0x80</status>
         <midino>0x3f</midino>
-      </control>     
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>cue_set</key>
@@ -108,7 +108,7 @@
         <key>cue_set</key>
         <status>0x80</status>
         <midino>0x40</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>pfl</key>
@@ -120,7 +120,7 @@
         <key>pfl</key>
         <status>0x80</status>
         <midino>0x33</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>flanger</key>
@@ -132,7 +132,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x66</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>reverse</key>
@@ -144,14 +144,14 @@
         <key>reverse</key>
         <status>0x80</status>
         <midino>0x6e</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>playposition</key>
         <status>0xB0</status>
         <midino>0x60</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -165,7 +165,7 @@
         <key>slowback</key>
         <status>0x80</status>
         <midino>0x3c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>slowfwd</key>
@@ -177,7 +177,7 @@
         <key>slowfwd</key>
         <status>0x80</status>
         <midino>0x3d</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>volume</key>
@@ -208,7 +208,7 @@
         <status>0xB0</status>
         <midino>0x49</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -217,7 +217,7 @@
         <status>0xB0</status>
         <midino>0x4b</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -231,7 +231,7 @@
         <key>preplay</key>
         <status>0x81</status>
         <midino>0x3e</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_goto</key>
@@ -243,7 +243,7 @@
         <key>cue_goto</key>
         <status>0x81</status>
         <midino>0x3f</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>cue_set</key>
@@ -255,7 +255,7 @@
         <key>cue_set</key>
         <status>0x81</status>
         <midino>0x40</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>pfl</key>
@@ -267,7 +267,7 @@
         <key>pfl</key>
         <status>0x81</status>
         <midino>0x33</midino>
-      </control>     
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>flanger</key>
@@ -279,7 +279,7 @@
         <key>flanger</key>
         <status>0x80</status>
         <midino>0x67</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>reverse</key>
@@ -291,14 +291,14 @@
         <key>reverse</key>
         <status>0x80</status>
         <midino>0x6f</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>playposition</key>
         <status>0xB1</status>
         <midino>0x60</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -312,7 +312,7 @@
         <key>slowback</key>
         <status>0x81</status>
         <midino>0x3c</midino>
-      </control>      
+      </control>
       <control>
         <group>[Channel2]</group>
         <key>slowfwd</key>
@@ -324,14 +324,14 @@
         <key>slowfwd</key>
         <status>0x81</status>
         <midino>0x3d</midino>
-      </control>      
+      </control>
       <control>
         <group>[Flanger]</group>
         <key>lfoDepth</key>
         <status>0xB0</status>
         <midino>0x50</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -340,7 +340,7 @@
         <status>0xB0</status>
         <midino>0x51</midino>
         <options>
-        
+
       </options>
       </control>
       <control>
@@ -349,7 +349,7 @@
         <status>0xB0</status>
         <midino>0x52</midino>
         <options>
-        
+
       </options>
       </control>
     </controls>

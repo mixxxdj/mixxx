@@ -107,6 +107,8 @@ void HidController::visit(const MidiControllerPreset* preset) {
 
 void HidController::visit(const HidControllerPreset* preset) {
     m_preset = *preset;
+    // Emit presetLoaded with a clone of the preset.
+    emit(presetLoaded(getPreset()));
 }
 
 bool HidController::savePreset(const QString fileName) const {

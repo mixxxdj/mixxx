@@ -7,102 +7,132 @@
 #include "defs.h"
 #include "waveformwidgetrenderer.h"
 
+#include "controlobject.h"
+#include "controlobjectthreadmain.h"
+
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
+
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
-    WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_color(200, 25, 20),
-          m_blinkingPeriodMillis(1000),
-          m_remainingTimeTriggerSeconds(30.0) {
+        WaveformWidgetRenderer* waveformWidgetRenderer)
+    : WaveformRendererAbstract(waveformWidgetRenderer),
+      m_endOfTrackControl(NULL),
+      m_endOfTrackEnabled(false),
+      m_trackSampleRate(NULL),
+      m_playControl(NULL),
+      m_loopControl(NULL),
+      m_color(200, 25, 20),
+      m_blinkingPeriodMillis(1000),
+      m_remainingTimeTriggerSeconds(30.0) {
 }
 
 WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
+    delete m_endOfTrackControl;
+    delete m_trackSampleRate;
+    delete m_playControl;
+    delete m_loopControl;
 }
 
 void WaveformRendererEndOfTrack::init() {
     m_timer.restart();
+
+    m_endOfTrackControl = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "end_of_track")));
+    m_endOfTrackControl->setExtern(0.);
+    m_endOfTrackEnabled = false;
+
+    m_trackSampleRate = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "track_samplerate")));
+    m_playControl = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "play")));
+    m_loopControl = new ControlObjectThreadMain(
+                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "loop_enabled")));
 }
 
-void WaveformRendererEndOfTrack::setup(const QDomNode& /*node*/) {
-    // TODO(vrince): add EnfOfTrack color in skins and why not blinking period
-    // too
-    setDirty(true);
+void WaveformRendererEndOfTrack::setup(const QDomNode& node) {
+    m_color = QColor(200, 25, 20);
+    const QString endOfTrackColorName = WWidget::selectNodeQString(node, "EndOfTrackColor");
+    if (!endOfTrackColorName.isNull()) {
+        m_color.setNamedColor(endOfTrackColorName);
+        m_color = WSkinColor::getCorrectColor(m_color);
+    }
+    m_pen = QPen( QBrush( m_color), 2.5);
+}
+
+void WaveformRendererEndOfTrack::onResize() {
+    m_rect = QRect( 0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+    m_backRects.resize(4);
+    for( int i = 0; i < 3; i++) {
+        m_backRects[i].setTop(0);
+        m_backRects[i].setBottom(m_waveformRenderer->getHeight());
+        m_backRects[i].setLeft(m_waveformRenderer->getWidth()/2+i*m_waveformRenderer->getWidth()/8);
+        m_backRects[i].setRight(m_waveformRenderer->getWidth());
+    }
 }
 
 void WaveformRendererEndOfTrack::draw(QPainter* painter,
                                       QPaintEvent* /*event*/) {
-    if (isDirty()) {
-        generatePixmap();
-    }
 
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double sampleRate = m_trackSampleRate->get();
+
+    /*qDebug() << "WaveformRendererEndOfTrack :: "
+             << "trackSamples" << trackSamples
+             << "sampleRate" << sampleRate
+             << "m_playControl->get()" << m_playControl->get()
+             << "m_loopControl->get()" << m_loopControl->get();*/
+
+    m_endOfTrackEnabled = m_endOfTrackControl->get() > 0.5;
+
+    if (sampleRate < 0.1 //not ready
+            || trackSamples < 0.1 //not ready
+            || m_playControl->get() < 0.5 //not playing
+            || m_loopControl->get() > 0.5 //in loop
+            ) {
+        if(m_endOfTrackEnabled && m_endOfTrackControl->getControlObject()) {
+            m_endOfTrackControl->getControlObject()->set(0.);
+            m_endOfTrackEnabled = false;
+        }
         return;
     }
 
-    double trackSamples = m_waveformRenderer->getTrackSamples();
-    // TODO(rryan) WARNING NOT ACCURATE! Should use track_samplerate CO
-    double sampleRate = pTrack->getSampleRate();
-
-    if (sampleRate == 0.0 || trackSamples == 0.0) {
-        return;
-    }
-
-    double dPlaypos = m_waveformRenderer->getPlayPos();
-    double remainingFrames = (1.0 - dPlaypos) * 0.5 * trackSamples;
-    double remainingTime = remainingFrames / sampleRate;
+    const double dPlaypos = m_waveformRenderer->getPlayPos();
+    const double remainingFrames = (1.0 - dPlaypos) * 0.5 * trackSamples;
+    const double remainingTime = remainingFrames / sampleRate;
 
     if (remainingTime > m_remainingTimeTriggerSeconds) {
+        if( m_endOfTrackEnabled && m_endOfTrackControl->getControlObject()) {
+            m_endOfTrackControl->getControlObject()->set(0.);
+            m_endOfTrackEnabled = false;
+        }
         return;
     }
 
-    // TODO(vRince): add some logic about direction, play/stop, loop ?
-    // NOTE(vRince): why don't we use a nice QAnimation ?
-    int elapsed = m_timer.elapsed() % m_blinkingPeriodMillis;
-    int index = s_maxAlpha *
-            static_cast<double>(2*abs(elapsed - m_blinkingPeriodMillis/2)) /
-            m_blinkingPeriodMillis;
-    index = math_min(s_maxAlpha - 1, math_max(0, index));
+    //end of trak is on
+    if( !m_endOfTrackEnabled) {
+        m_endOfTrackControl->getControlObject()->set(1.);
+        m_endOfTrackEnabled = true;
 
-    int xPos = m_waveformRenderer->getWidth()-m_pixmaps[index].width();
-    painter->drawPixmap(QPoint(xPos, 0), m_pixmaps[index]);
-}
-
-void WaveformRendererEndOfTrack::generatePixmap() {
-    for (int i = 0; i < s_maxAlpha; ++i) {
-        m_pixmaps[i] = QPixmap(m_waveformRenderer->getWidth()/4,
-                               m_waveformRenderer->getHeight());
-        m_pixmaps[i].fill(QColor(0, 0, 0, 0));
-
-        QColor startColor = m_color;
-        startColor.setAlpha(0);
-        QColor endcolor = m_color;
-
-        QRadialGradient gradBackground(
-            QPointF(1.5*m_pixmaps[i].width(),
-                    m_pixmaps[i].height()/2),
-            1.5*m_pixmaps[i].width());
-        endcolor.setAlpha(i);
-        gradBackground.setColorAt(1.0, startColor);
-        gradBackground.setColorAt(0.0, endcolor);
-
-        QLinearGradient linearGradBorder(
-            QPointF(0, 0), QPointF(m_pixmaps[i].width(), 0));
-        linearGradBorder.setColorAt(0.0, startColor);
-        linearGradBorder.setColorAt(1.0, endcolor);
-
-        QBrush brush(gradBackground);
-        QPen pen(linearGradBorder, 2.0);
-
-        QRectF rectangle(2.5, 2.5,
-                         m_pixmaps[i].width() - 5,
-                         m_pixmaps[i].height() - 5);
-        QPainter painter;
-        painter.begin(&m_pixmaps[i]);
-        painter.setRenderHint(QPainter::HighQualityAntialiasing, true);
-        painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-        painter.setBrush(brush);
-        painter.setPen(pen);
-        painter.drawRoundedRect(rectangle, 9.5, 9.5);
+        //qDebug() << "EndOfTrack ON";
     }
-    setDirty(false);
+
+    const int elapsed = m_timer.elapsed() % m_blinkingPeriodMillis;
+
+    const double blickIntensity = (double)(2*abs(elapsed - m_blinkingPeriodMillis/2)) /
+            m_blinkingPeriodMillis;
+    const double criticalIntensity = (m_remainingTimeTriggerSeconds - remainingTime) /
+            m_remainingTimeTriggerSeconds;
+
+    painter->save();
+    painter->resetTransform();
+    painter->setOpacity(0.5*blickIntensity);
+    painter->setPen(m_pen);
+    painter->drawRect(1,1,
+                      m_waveformRenderer->getWidth()-2,m_waveformRenderer->getHeight()-2);
+
+    painter->setOpacity(0.5*0.25*criticalIntensity*blickIntensity);
+    painter->setPen(QPen());
+    painter->setBrush(m_color);
+    painter->drawRects(m_backRects);
+    painter->restore();
 }

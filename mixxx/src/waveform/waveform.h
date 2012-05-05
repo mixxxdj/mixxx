@@ -9,10 +9,6 @@
 
 #include "util.h"
 
-
-// WARNING: Do not change this struct without double-checking you are not
-// changing its byte layout. This is important for serialization of the
-// waveform.
 union WaveformData {
     struct {
         unsigned char low;
@@ -53,6 +49,8 @@ class Waveform {
 
     void reset();
 
+    bool isValid() const { return getDataSize() > 0 && getVisualSampleRate() > 0; }
+
     double getVisualSampleRate() const { return m_visualSampleRate; }
     double getAudioVisualRatio() const { return m_audioVisualRatio; }
     int getAudioSamplesPerVisualSample() const { return m_audioSamplesPerVisualSample; }
@@ -63,11 +61,10 @@ class Waveform {
     int getTextureStride() const { return m_textureStride; }
     int getTextureSize() const { return m_data.size(); }
 
-    double getActualSize() const { return m_actualSize; }
-
     // Atomically get the number of data elements in this Waveform. You do not
     // need to lock the Waveform's mutex before calling this method.
     int getDataSize() const { return m_dataSize; }
+    int getNumChannels() const { return m_numChannels; }
 
     const std::vector<WaveformData>& getConstData() const { return m_data;}
 
@@ -109,7 +106,7 @@ class Waveform {
     QString m_version;
     QString m_description;
 
-    double m_actualSize; //actual song size in visual world
+    const QAtomicInt m_numChannels;
     QAtomicInt m_dataSize; //m_data allocated size
     std::vector<WaveformData> m_data;
     int m_audioSamplesPerVisualSample;

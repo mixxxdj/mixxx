@@ -28,8 +28,7 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
-        : QWidget(parent),
-          Ui::DlgBeatsDlg() {
+        : QWidget(parent) {
     m_pconfig = _config;
     m_selectedAnalyser = "qm-tempotracker:0";
     setupUi(this);

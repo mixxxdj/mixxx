@@ -15,12 +15,14 @@ class Library;
 class MixxxKeyboard;
 class PlayerManager;
 class WAbstractControl;
+class ControllerManager;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
+                     ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan);
     virtual ~LegacySkinParser();
 
@@ -37,7 +39,6 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Support for various legacy behavior
     void parseColorSchemes(QDomElement node);
-    void setControlDefaults(QDomNode node, WAbstractControl* pControl);
     bool compareConfigKeys(QDomNode node, QString key);
 
     // Parsers for each node
@@ -74,6 +75,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
+    ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
     QWidget *m_pParent;

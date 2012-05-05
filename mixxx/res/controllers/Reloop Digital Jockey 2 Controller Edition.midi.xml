@@ -1,9 +1,9 @@
 <MixxxMIDIPreset mixxxVersion="1.8.0~beta2-pre+" schemaVersion="1">
 	<info>
-        <name>Reloop Digital Jockey 2 Controller</name>
+        <name>Reloop Digital Jockey 2 Controller Edition</name>
         <author>Tobias Rafreider</author>
         <description>This is a complete mapping for a Reloop Digital Jockey 2 Controller Edition or Reloop Digital Jockey 2 Interface Editiion </description>
-    </info>   
+    </info>
    <controller id="DIGITAL JOCKEY">
         <scriptfiles>
             <file functionprefix="DigitalJockey2Controller" filename="Reloop-Digital-Jockey2-Controller-scripts.js"/>

@@ -7,6 +7,7 @@
 
 class MixxxKeyboard;
 class PlayerManager;
+class ControllerManager;
 class Library;
 class MixxxView;
 class VinylControlManager;
@@ -18,15 +19,17 @@ class SkinLoader {
     QWidget* loadDefaultSkin(QWidget* pParent,
                                MixxxKeyboard* pKeyboard,
                                PlayerManager* pPlayerManager,
+                               ControllerManager* pControllerManager,
                                Library* pLibrary,
                                VinylControlManager* pVCMan);
                                
 	QWidget* loadCustomSkin(QString custom_skinpath, 
-							   QWidget* pParent,
-                               MixxxKeyboard* pKeyboard,
-                               PlayerManager* pPlayerManager,
-                               Library* pLibrary,
-                               VinylControlManager* pVCMan);
+							 QWidget* pParent,
+                             MixxxKeyboard* pKeyboard,
+                             PlayerManager* pPlayerManager,
+                             ControllerManager* pControllerManager,
+                             Library* pLibrary,
+                             VinylControlManager* pVCMan);
 
     QString getConfiguredSkinPath();
 

@@ -5,7 +5,9 @@
  *      Author: Vittorio Colao
  */
 
+#include <QDir>
 #include <QtDebug>
+#include <QDesktopServices>
 #include <QCoreApplication>
 #include <QStringList>
 #include <stdlib.h>
@@ -33,22 +35,30 @@ void VampAnalyser::initializePluginPaths() {
     QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
             : QStringList();
 
+    const QString homeLocation = QDesktopServices::storageLocation(
+        QDesktopServices::HomeLocation);
     QString applicationPath = QCoreApplication::applicationDirPath();
 #ifdef __WINDOWS__
-    pathElements << applicationPath.replace("/","\\"); //Use the path where Mixxx.exe is located
-#else
-#ifdef __APPLE__
+    QDir winVampPath(applicationPath);
+    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
+        pathElements << winVampPath.absolutePath().replace("/","\\");
+    }
+#elif __APPLE__
     // Location within the OS X bundle that we store plugins.
     pathElements << applicationPath +"/../Plugins";
     // For people who build from source.
-    pathElements << applicationPath +"/osx32_build/vamp-plugins";
-    pathElements << applicationPath +"/osx64_build/vamp-plugins";
-#else
-    pathElements << "/usr/local/lib/mixxx/vamp";
+    pathElements << applicationPath + "/osx32_build/vamp-plugins";
+    pathElements << applicationPath + "/osx64_build/vamp-plugins";
+    pathElements << homeLocation + "/Library/Application Support/Mixxx/Plugins/vamp/";
+#elif __LINUX__
+    QDir libPath(UNIX_LIB_PATH);
+    if (libPath.cd("plugins") && libPath.cd("vamp")) {
+        pathElements << libPath.absolutePath();
+    }
+    pathElements << homeLocation + "/.mixxx/plugins/vamp/";
     // For people who build from source.
     pathElements << applicationPath + "/lin32_build/vamp-plugins";
     pathElements << applicationPath + "/lin64_build/vamp-plugins";
-#endif
 #endif
 
     QString newPath = pathElements.join(PATH_SEPARATOR);

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+  <info>
+    <name>Akai MPD24</name>
+  </info>
 <controller id="Akai MPD24 MIDI 1">
   <controls>
     <control>
@@ -71,7 +74,7 @@
       <status>0x90</status>
       <midino>45</midino>
     </control>
-    
+
     <control>
       <group>[Channel1]</group>
       <key>fwd</key>
@@ -99,7 +102,7 @@
       <status>0x90</status>
       <midino>37</midino>
     </control>
-    
+
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_up</key>

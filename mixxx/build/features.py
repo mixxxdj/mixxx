@@ -64,32 +64,41 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        if build.platform_is_linux and (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or not conf.CheckHeader('libusb-1.0/libusb.h')):
-            raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
-            return
-        elif build.platform_is_windows:
-            if not conf.CheckLib(['hidapi', 'libhidapi']):
-                raise Exception('Did not find HIDAPI development library, exiting!')
-                return
+        # TODO(XXX) allow external hidapi install, but for now we just use our
+        # internal one.
+        build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
+
+        if build.platform_is_linux:
+            build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+            if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+                not conf.CheckHeader('libusb-1.0/libusb.h')):
+                raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
+
+            # Optionally add libpthread and librt. Some distros need this.
+            conf.CheckLib(['pthread', 'libpthread'])
+            conf.CheckLib(['rt', 'librt'])
+
+        elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
+            raise Exception('Did not find the setupapi library, exiting.')
+        elif build.platform_is_osx:
+            build.env.Append(LINKFLAGS='-framework IOKit')
+            build.env.Append(LINKFLAGS='-framework CoreFoundation')
 
         build.env.Append(CPPDEFINES = '__HID__')
 
     def sources(self, build):
-        build.env.Append(CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
         sources = ['controllers/hid/hidcontroller.cpp',
                    'controllers/hid/hidenumerator.cpp',
                    'controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
         if build.platform_is_windows:
-            # This doesn't work. You need to build it in MSVS like all the other dependencies
-            # sources.append("#lib/hidapi-0.7.0/windows/hid.c")
+            # Requires setupapi.lib which is included by the above check for
+            # setupapi.
+            sources.append("#lib/hidapi-0.7.0/windows/hid.c")
             return sources
         elif build.platform_is_linux:
-            build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
         elif build.platform_is_osx:
-            build.env.Append(LINKFLAGS='-framework IOKit')
-            build.env.Append(LINKFLAGS='-framework CoreFoundation')
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
         return sources
 
@@ -404,6 +413,11 @@ class Vamp(Feature):
 
         build.env.Append(CPPDEFINES = '__VAMP__')
 
+        # Needed on Linux at least. Maybe needed elsewhere?
+        if build.platform_is_linux:
+            # Optionally link libdl. Required for some distros.
+            conf.CheckLib(['dl', 'libdl'])
+
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
         have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
@@ -711,7 +725,7 @@ class Shoutcast(Feature):
         # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
         # libogg are included from build.py so don't add here.
         if not build.platform_is_windows or build.toolchain_is_gnu:
-            vorbisenc_found = conf.CheckLib(['vorbisenc'])
+            vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
 

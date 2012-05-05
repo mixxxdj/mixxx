@@ -1,4 +1,7 @@
 <MixxxMIDIPreset mixxxVersion="1.8.0+" schemaVersion="1">
+    <info>
+        <name>Behringer BCD3000</name>
+    </info>
     <controller id="BCD3000 MIDI 1">
         <scriptfiles>
             <file functionprefix="BehringerBCD3000" filename="Behringer-BCD3000-scripts.js"/>
