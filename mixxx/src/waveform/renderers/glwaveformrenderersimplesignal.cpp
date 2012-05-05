@@ -194,12 +194,12 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             //     qDebug() << "Sampling pixel " << x << "over [" << visualIndexStart << visualIndexStop << "]";
             // }
 
-            unsigned char maxAll = 0;
+            CSAMPLE maxAll = 0;
 
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
                  i += channelSeparation) {
                 const WaveformData& waveformData = *(data + i);
-                unsigned char all = waveformData.filtered.all;
+                CSAMPLE all = waveformData.filtered.all;
                 maxAll = math_max(maxAll, all);
             }
 

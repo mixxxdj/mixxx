@@ -18,12 +18,14 @@ class Waveform;
 class AnalysisDao;
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
-enum ChannelIndex { Right = 0, Left = 1, ChannelCount = 2};
+enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
 class WaveformStride {
     inline void init( int samples) {
         m_length = samples*2;
-        m_convertionFactor = (float)std::numeric_limits<unsigned char>::max()/(float)samples;
+        //m_convertionFactor = (float)std::numeric_limits<CSAMPLE>::max()/(float)samples;
+        m_convertionFactor = 1.0;
+        //qDebug() << "===================-=-=-=-=-=-=-=- CONVERSION FACTOR" << m_convertionFactor;
         reset();
     }
 
@@ -40,10 +42,10 @@ class WaveformStride {
     inline void store(WaveformData* data) {
         for( int i = 0; i < ChannelCount; i++) {
             WaveformData& datum = *(data + i);
-            datum.filtered.all = (unsigned char)(m_convertionFactor * m_overallData[i]);
-            datum.filtered.low = (unsigned char)(m_convertionFactor * m_filteredData[i][Low]);
-            datum.filtered.mid = (unsigned char)(m_convertionFactor * m_filteredData[i][Mid]);
-            datum.filtered.high = (unsigned char)(m_convertionFactor * m_filteredData[i][High]);
+            datum.filtered.all = (CSAMPLE)(m_convertionFactor * m_overallData[i]);
+            datum.filtered.low = (CSAMPLE)(m_convertionFactor * m_filteredData[i][Low]);
+            datum.filtered.mid = (CSAMPLE)(m_convertionFactor * m_filteredData[i][Mid]);
+            datum.filtered.high = (CSAMPLE)(m_convertionFactor * m_filteredData[i][High]);
         }
     }
 

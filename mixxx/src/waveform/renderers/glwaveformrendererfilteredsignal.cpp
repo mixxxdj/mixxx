@@ -50,21 +50,33 @@ void GLWaveformRendererFilteredSignal::setup(const QDomNode& node) {
 
     m_colors.setup(node);
 
+    //QColor over = m_colors.getLowColor();
     QColor low = m_colors.getLowColor();
     QColor mid = m_colors.getMidColor();
     QColor high = m_colors.getHighColor();
 
+    //QColor overCenter = over;
     QColor lowCenter = low;
     QColor midCenter = mid;
     QColor highCenter = high;
 
+    //over.setAlphaF(0.4);
     low.setAlphaF(0.9);
     mid.setAlphaF(0.9);
     high.setAlphaF(0.9);
 
+    //overCenter.setAlphaF(0.4);
     lowCenter.setAlphaF(0.5);
     midCenter.setAlphaF(0.5);
     highCenter.setAlphaF(0.5);
+    
+/*    QLinearGradient gradientOver(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
+    gradientOver.setColorAt(0.0, over);
+    gradientOver.setColorAt(0.25,over.lighter(85));
+    gradientOver.setColorAt(0.5, overCenter.darker(115));
+    gradientOver.setColorAt(0.75,over.lighter(85));
+    gradientOver.setColorAt(1.0, over);
+    m_overBrush = QBrush(gradientOver);*/
 
     QLinearGradient gradientLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
     gradientLow.setColorAt(0.0, low);
@@ -90,6 +102,7 @@ void GLWaveformRendererFilteredSignal::setup(const QDomNode& node) {
     gradientHigh.setColorAt(1.0, high);
     m_highBrush = QBrush(gradientHigh);
 
+    //over.setAlphaF(0.2);
     low.setAlphaF(0.3);
     mid.setAlphaF(0.3);
     high.setAlphaF(0.3);
@@ -117,12 +130,44 @@ void GLWaveformRendererFilteredSignal::onResize() {
     m_polygon[0].resize(2*m_waveformRenderer->getWidth()+2);
     m_polygon[1].resize(2*m_waveformRenderer->getWidth()+2);
     m_polygon[2].resize(2*m_waveformRenderer->getWidth()+2);
+    m_polygon[3].resize(2*m_waveformRenderer->getWidth()+2);
 }
 
 inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setX(x);
     point.setY(y);
 }
+
+inline double scaleSignal(double invalue)
+{
+    if (invalue == 0.0)
+    {
+        return 0;
+    }
+    else
+    {
+        return pow(invalue, 0.316);
+    }
+    
+/*    else
+    {
+        return (log10(invalue) + 6.0) * (factor / 7);
+    }*/
+/*    if (invalue <= 1.0)
+    {
+        return (log10(invalue) + 6.0) * (1.6667);
+    }
+    else if (invalue == 1.0)
+    {
+        return 10.0;
+    }
+    else if (invalue > 1.0)
+    {
+        return 9.7724*pow(1.02329,invalue);
+    }
+    return 0;*/
+}
+
 
 int GLWaveformRendererFilteredSignal::buildPolygon() {
     // We have to check the track is present because it might have been unloaded
@@ -153,6 +198,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
     setPoint(m_polygon[0][pointIndex], 0.0, 0.0);
     setPoint(m_polygon[1][pointIndex], 0.0, 0.0);
     setPoint(m_polygon[2][pointIndex], 0.0, 0.0);
+    setPoint(m_polygon[3][pointIndex], 0.0, 0.0);
     pointIndex++;
 
     const double offset = firstVisualIndex;
@@ -208,6 +254,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
             setPoint(m_polygon[0][pointIndex], m_waveformRenderer->getWidth(), 0.0);
             setPoint(m_polygon[1][pointIndex], m_waveformRenderer->getWidth(), 0.0);
             setPoint(m_polygon[2][pointIndex], m_waveformRenderer->getWidth(), 0.0);
+            setPoint(m_polygon[3][pointIndex], m_waveformRenderer->getWidth(), 0.0);
             pointIndex++;
         }
 
@@ -254,6 +301,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
                 setPoint(m_polygon[0][pointIndex], x, 0.0);
                 setPoint(m_polygon[1][pointIndex], x, 0.0);
                 setPoint(m_polygon[2][pointIndex], x, 0.0);
+                setPoint(m_polygon[3][pointIndex], x, 0.0);
                 pointIndex++;
                 continue;
             }
@@ -268,35 +316,42 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
             int visualIndexStart = visualFrameStart * 2 + channel;
             int visualIndexStop = visualFrameStop * 2 + channel;
 
-            // if (x == m_waveformRenderer->getWidth() / 2) {
-            //     qDebug() << "audioVisualRatio" << waveform->getAudioVisualRatio();
-            //     qDebug() << "visualSampleRate" << waveform->getVisualSampleRate();
-            //     qDebug() << "audioSamplesPerVisualPixel" << waveform->getAudioSamplesPerVisualSample();
-            //     qDebug() << "visualSamplePerPixel" << visualSamplePerPixel;
-            //     qDebug() << "xSampleWidth" << xSampleWidth;
-            //     qDebug() << "xVisualSampleIndex" << xVisualSampleIndex;
-            //     qDebug() << "maxSamplingRange" << maxSamplingRange;;
-            //     qDebug() << "Sampling pixel " << x << "over [" << visualIndexStart << visualIndexStop << "]";
-            // }
-
-            unsigned char maxLow = 0;
-            unsigned char maxBand = 0;
-            unsigned char maxHigh = 0;
-
+            //CSAMPLE maxOver = 0;
+            CSAMPLE maxLow = 0;
+            CSAMPLE maxBand = 0;
+            CSAMPLE maxHigh = 0;
+            
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
                  i += channelSeparation) {
                 const WaveformData& waveformData = *(data + i);
-                unsigned char low = waveformData.filtered.low;
-                unsigned char mid = waveformData.filtered.mid;
-                unsigned char high = waveformData.filtered.high;
+                //CSAMPLE over = waveformData.filtered.all;
+                CSAMPLE low = waveformData.filtered.low;
+                CSAMPLE mid = waveformData.filtered.mid;
+                CSAMPLE high = waveformData.filtered.high;
+
+                //maxOver = math_max(maxOver, over);
                 maxLow = math_max(maxLow, low);
                 maxBand = math_max(maxBand, mid);
                 maxHigh = math_max(maxHigh, high);
             }
 
-            setPoint(m_polygon[0][pointIndex], x, (float)maxLow*lowGain*direction);
-            setPoint(m_polygon[1][pointIndex], x, (float)maxBand*midGain*direction);
-            setPoint(m_polygon[2][pointIndex], x, (float)maxHigh*highGain*direction);
+             if (x == m_waveformRenderer->getWidth() / 2) {
+/*                 qDebug() << "audioVisualRatio" << waveform->getAudioVisualRatio();
+                 qDebug() << "visualSampleRate" << waveform->getVisualSampleRate();
+                 qDebug() << "audioSamplesPerVisualPixel" << waveform->getAudioSamplesPerVisualSample();
+                 qDebug() << "visualSamplePerPixel" << visualSamplePerPixel;
+                 qDebug() << "xSampleWidth" << xSampleWidth;
+                 qDebug() << "xVisualSampleIndex" << xVisualSampleIndex;
+                 qDebug() << "maxSamplingRange" << maxSamplingRange;;
+                 qDebug() << "Sampling pixel " << x << "over [" << visualIndexStart << visualIndexStop << "]";*/
+                 //qDebug() << maxLow + maxBand + maxHigh << maxLow << maxBand << maxHigh;
+             }
+
+
+            //setPoint(m_polygon[0][pointIndex], x, (float)scaleSignal(maxOver)*direction);
+            setPoint(m_polygon[1][pointIndex], x, (float)scaleSignal(maxLow)*lowGain*direction);
+            setPoint(m_polygon[2][pointIndex], x, (float)scaleSignal(maxBand)*midGain*direction);
+            setPoint(m_polygon[3][pointIndex], x, (float)scaleSignal(maxHigh)*highGain*direction);
             pointIndex++;
         }
     }
@@ -306,6 +361,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
         setPoint(m_polygon[0][pointIndex], m_waveformRenderer->getWidth(), 0.0);
         setPoint(m_polygon[1][pointIndex], m_waveformRenderer->getWidth(), 0.0);
         setPoint(m_polygon[2][pointIndex], m_waveformRenderer->getWidth(), 0.0);
+        setPoint(m_polygon[3][pointIndex], m_waveformRenderer->getWidth(), 0.0);
         pointIndex++;
     }
 
@@ -328,16 +384,21 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     if (m_alignment == Qt::AlignTop) {
         painter->translate(0.0,0.0);
-        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight());
     } else if (m_alignment == Qt::AlignBottom) {
         painter->translate(0.0,m_waveformRenderer->getHeight());
-        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight());
     } else {
         painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
-        painter->scale(1.0,1.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,1.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/2.0);
     }
 
     int numberOfPoints = buildPolygon();
+    
+/*    //draw "over" waveform
+    painter->setPen(QPen(m_overBrush, 0.0));
+    painter->setBrush(m_overBrush);
+    painter->drawPolygon(&m_polygon[0][0],numberOfPoints);*/
 
     if (m_lowKillControlObject && m_lowKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_lowKilledBrush, 0.0));
@@ -346,7 +407,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         painter->setPen(QPen(m_lowBrush, 0.0));
         painter->setBrush(m_lowBrush);
     }
-    painter->drawPolygon(&m_polygon[0][0],numberOfPoints);
+    painter->drawPolygon(&m_polygon[1][0],numberOfPoints);
 
     if (m_midKillControlObject && m_midKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_midKilledBrush, 0.0));
@@ -355,7 +416,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         painter->setPen(QPen(m_midBrush, 0.0));
         painter->setBrush(m_midBrush);
     }
-    painter->drawPolygon(&m_polygon[1][0],numberOfPoints);
+    painter->drawPolygon(&m_polygon[2][0],numberOfPoints);
 
     if (m_highKillControlObject && m_highKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_highKilledBrush, 0.0));
@@ -364,7 +425,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         painter->setPen(QPen(m_highBrush, 0.0));
         painter->setBrush(m_highBrush);
     }
-    painter->drawPolygon(&m_polygon[2][0],numberOfPoints);
+    painter->drawPolygon(&m_polygon[3][0],numberOfPoints);
 
     painter->restore();
 }

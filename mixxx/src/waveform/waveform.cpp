@@ -124,13 +124,13 @@ void Waveform::readByteArray(const QByteArray data) {
     bool mid_valid = mid.units() == io::Waveform::RMS;
     bool high_valid = high.units() == io::Waveform::RMS;
     for (int i = 0; i < m_dataSize; ++i) {
-        m_data[i].filtered.all = static_cast<unsigned char>(all.value(i));
+        m_data[i].filtered.all = static_cast<CSAMPLE>(all.value(i));
         bool use_low = low_valid && i < low.value_size();
         bool use_mid = mid_valid && i < mid.value_size();
         bool use_high = high_valid && i < high.value_size();
-        m_data[i].filtered.low = use_low ? static_cast<unsigned char>(low.value(i)) : 0;
-        m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
-        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
+        m_data[i].filtered.low = use_low ? static_cast<CSAMPLE>(low.value(i)) : 0;
+        m_data[i].filtered.mid = use_mid ? static_cast<CSAMPLE>(mid.value(i)) : 0;
+        m_data[i].filtered.high = use_high ? static_cast<CSAMPLE>(high.value(i)) : 0;
     }
     m_completion = m_dataSize;
 }
