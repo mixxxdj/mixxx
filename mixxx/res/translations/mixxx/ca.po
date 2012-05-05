@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-02 10:19-0400\n"
-"PO-Revision-Date: 2012-05-03 20:08+0000\n"
+"PO-Revision-Date: 2012-05-04 21:19+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-04 04:36+0000\n"
+"X-Launchpad-Export-Date: 2012-05-05 04:38+0000\n"
 "X-Generator: Launchpad (build 15195)\n"
 
 #: AutoDJFeature#1
@@ -901,39 +901,39 @@ msgstr "Canvia el mode bloqueig de tecla"
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
-msgstr ""
+msgstr "Barra lliscant del pitch (altura)"
 
 #: DlgControllerLearning#39
 msgid "Adjust rate up (course)"
-msgstr ""
+msgstr "Ajustar la freqüència alta (curs)"
 
 #: DlgControllerLearning#40
 msgid "Adjust rate up (fine)"
-msgstr ""
+msgstr "Ajustar la freqüència alta (fi)"
 
 #: DlgControllerLearning#41
 msgid "Adjust rate down (course)"
-msgstr ""
+msgstr "Ajustar la freqüència baixa (curs)"
 
 #: DlgControllerLearning#42
 msgid "Adjust rate down (fine)"
-msgstr ""
+msgstr "Ajustar la freqüència baixa (fi)"
 
 #: DlgControllerLearning#43
 msgid "Pitch-bend rate up (course)"
-msgstr ""
+msgstr "Ajustar el pitch-bend alt (curs)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (fine)"
-msgstr ""
+msgstr "Ajustar el pitch-bend alt (fi)"
 
 #: DlgControllerLearning#45
 msgid "Pitch-bend rate down (course)"
-msgstr ""
+msgstr "Ajustar el pitch-bend baix (curs)"
 
 #: DlgControllerLearning#46
 msgid "Pitch-bend rate down (fine)"
-msgstr ""
+msgstr "Ajustar el pitch-bend baix (fi)"
 
 #: DlgControllerLearning#47
 msgctxt "DlgControllerLearning#47"
@@ -942,15 +942,15 @@ msgstr "Equalitzadors"
 
 #: DlgControllerLearning#48
 msgid "High EQ knob"
-msgstr ""
+msgstr "Comandament EQ alt"
 
 #: DlgControllerLearning#49
 msgid "Mid EQ knob"
-msgstr ""
+msgstr "Comandament EQ mitjà"
 
 #: DlgControllerLearning#50
 msgid "Low EQ knob"
-msgstr ""
+msgstr "Comandament EQ baix"
 
 #: DlgControllerLearning#51
 msgid "High EQ kill"
@@ -971,11 +971,11 @@ msgstr "Control de vinil"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
-msgstr ""
+msgstr "Canvia el mode cuer del control de vinil (OFF/ONE/HOT)"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
-msgstr ""
+msgstr "Canvia el mode de control de vinil (ABS/REL/CONST)"
 
 #: DlgControllerLearning#57
 msgid "Cues / Hotcues"
@@ -983,55 +983,55 @@ msgstr ""
 
 #: DlgControllerLearning#58
 msgid "Cue button"
-msgstr ""
+msgstr "Botó cue"
 
 #: DlgControllerLearning#59
 msgid "Set cue point"
-msgstr ""
+msgstr "Crea un punt cue"
 
 #: DlgControllerLearning#60
 msgid "Go to cue point and stop"
-msgstr ""
+msgstr "Ves a un punt cue i para"
 
 #: DlgControllerLearning#61
 msgid "Set or jump to hotcue %1"
-msgstr ""
+msgstr "Crea o bota al hotcue %1"
 
 #: DlgControllerLearning#62
 msgid "Clear hotcue %1"
-msgstr ""
+msgstr "Neteja hotcue %1"
 
 #: DlgControllerLearning#63
 msgid "Jump to hotcue %1"
-msgstr ""
+msgstr "Ves fins al hotcue %1"
 
 #: DlgControllerLearning#64
 msgid "Jump to hotcue %1 and stop"
-msgstr ""
+msgstr "Ves fins al hotcue %1 i para"
 
 #: DlgControllerLearning#65
 msgid "Looping"
-msgstr ""
+msgstr "Repetint"
 
 #: DlgControllerLearning#66
 msgid "Loop In button"
-msgstr ""
+msgstr "Botó Loop In"
 
 #: DlgControllerLearning#67
 msgid "Loop Out button"
-msgstr ""
+msgstr "Botó Loop Out"
 
 #: DlgControllerLearning#68
 msgid "Reloop / Exit button"
-msgstr ""
+msgstr "Reloop / Botó eixir"
 
 #: DlgControllerLearning#69
 msgid "Halve the current loop's length"
-msgstr ""
+msgstr "Reduir a la meitat la duració del bucle (loop) actual"
 
 #: DlgControllerLearning#70
 msgid "Double the current loop's length"
-msgstr ""
+msgstr "Dobla la mida del bucle actual"
 
 #: DlgControllerLearning#71
 msgid "Beat-Looping"
@@ -1039,12 +1039,12 @@ msgstr ""
 
 #: DlgControllerLearning#72
 msgid "Create %1-beat loop"
-msgstr ""
+msgstr "Crea el bucle %1-beat"
 
 #: DlgControllerLearning#73
 msgctxt "DlgControllerLearning#73"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgControllerLearning#74
 msgid "Switch to the next view (library, playlist..)"
@@ -1066,36 +1066,36 @@ msgstr ""
 
 #: DlgControllerLearning#78
 msgid "Load selected track into first stopped deck"
-msgstr ""
+msgstr "Carrega la pista seleccionada a la primera coberta detinguda"
 
 #: DlgControllerLearning#79
 msgid "Load selected track"
-msgstr ""
+msgstr "Carrega la pista seleccionada"
 
 #: DlgControllerLearning#80
 msgid "Effects"
-msgstr ""
+msgstr "Efectes"
 
 #: DlgControllerLearning#81
 msgid "Toggle flange effect"
-msgstr ""
+msgstr "Canvia l'efecte flange"
 
 #: DlgControllerLearning#82
 msgid "Flange effect: Wavelength/period"
-msgstr ""
+msgstr "Efecte flange: Longitud d'ona/període"
 
 #: DlgControllerLearning#83
 msgid "Flange effect: Intensity"
-msgstr ""
+msgstr "Efecte flange: Intensitat"
 
 #: DlgControllerLearning#84
 msgid "Flange effect: Phase delay"
-msgstr ""
+msgstr "Efecte flange: Retard de fase"
 
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Microphone"
-msgstr ""
+msgstr "Micròfon"
 
 #: DlgControllerLearning#86
 msgid "Microphone on/off"
@@ -1107,35 +1107,35 @@ msgstr "Volum del micròfon"
 
 #: DlgControllerLearning#88
 msgid "Microphone channel orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Orientació del canal del micròfon (p.e. esquerra, dreta, centrat)"
 
 #: DlgControllerLearning#89
 msgid "User Interface"
-msgstr ""
+msgstr "Interfície d'usuari"
 
 #: DlgControllerLearning#90
 msgid "Show/hide the sampler section"
-msgstr ""
+msgstr "Mostra/amaga la secció del sampler"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the microphone section"
-msgstr ""
+msgstr "Mostra/amaga la secció del micròfon"
 
 #: DlgControllerLearning#92
 msgid "Show/hide the vinyl control section"
-msgstr ""
+msgstr "Mostra/amaga la secció del control de vinil"
 
 #: DlgControllerLearning#93
 msgid "Show/hide spinning vinyl widget"
-msgstr ""
+msgstr "Mostra/amaga el widget del vinil girant"
 
 #: DlgControllerLearning#94
 msgid "Ready to map: %1. Now move a control on your controller."
-msgstr ""
+msgstr "Preparat per mapejar: %1. Ara moga un control al seu controlador."
 
 #: DlgControllerLearning#95
 msgid "Successfully mapped to:"
-msgstr ""
+msgstr "Mapejat correctament a:"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -1157,7 +1157,7 @@ msgstr "Activa la detecció de BPM"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Tracks BPM on Import"
-msgstr ""
+msgstr "Detecta Pistes BPM a la Importació"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -1203,24 +1203,24 @@ msgstr "No s'ha pogut obrir el fitxer %1"
 #: DlgPrefController#1
 msgctxt "DlgPrefController#1"
 msgid "None"
-msgstr ""
+msgstr "Cap"
 
 #: DlgPrefController#2
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 per %2"
 
 #: DlgPrefController#3
 msgid "Custom Preset"
-msgstr ""
+msgstr "Preconfiguració a mida"
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Diàleg"
 
 #: DlgPrefControllerDlg#2
 msgid "Controller Name"
-msgstr ""
+msgstr "Nom del Controlador"
 
 #: DlgPrefControllerDlg#3
 msgid "Enabled"
@@ -1230,6 +1230,8 @@ msgstr "Activat"
 msgid ""
 "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
 msgstr ""
+"<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Solució de "
+"problemes</a>"
 
 #: DlgPrefControllerDlg#5
 msgid "Load Preset:"
@@ -1237,7 +1239,7 @@ msgstr "Carregar opcions predeterminades:"
 
 #: DlgPrefControllerDlg#6
 msgid "Loaded Preset:"
-msgstr ""
+msgstr "Carrega per Defecte:"
 
 #: DlgPrefControllerDlg#7
 msgid "Click to start the Controller Learning wizard."
