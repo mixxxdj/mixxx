@@ -281,7 +281,7 @@ bool WOverview::drawNextPixmapPart() {
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 
     painter.translate(0.0,m_waveformPixmap.height()/2.0);
-    painter.scale(1.0,(double)(m_waveformPixmap.height()-2)/50.0);
+    painter.scale(1.0,(double)(m_waveformPixmap.height()-2)/100.0);
 
     //draw only the new part
     const float pixelStartPosition = 1.0 + (float)m_actualCompletion / (float)m_waveform->getDataSize() * (float)(width()-2);
@@ -293,14 +293,8 @@ bool WOverview::drawNextPixmapPart() {
     lowColor.setAlphaF(alpha);
     QPen lowColorPen( QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
 
-    QColor midColor = m_signalColors.getMidColor();
-    midColor.setAlphaF(alpha);
-    QPen midColorPen( QBrush(midColor), 1.25, Qt::SolidLine, Qt::RoundCap);
-
-    QColor highColor = m_signalColors.getHighColor();
-    highColor.setAlphaF(alpha);
-    QPen highColorPen( QBrush(highColor), 1.25, Qt::SolidLine, Qt::RoundCap);
-
+    //TODO: now that we only draw the overall data, we don't need
+    //currentCompletion
     int currentCompletion = m_actualCompletion;
     float pixelPosition = pixelStartPosition;
     for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
@@ -308,34 +302,8 @@ bool WOverview::drawNextPixmapPart() {
         painter.drawLine( QPointF(pixelPosition, - m_waveform->getAll(currentCompletion+1) - 1.f),
                           QPointF(pixelPosition, m_waveform->getAll(currentCompletion) + 1.f));
         pixelPosition += 2.0*pixelByVisualSamples;
-        //qDebug() << "drawing line" << - m_waveform->getAll(currentCompletion+1) - 1.f << m_waveform->getAll(currentCompletion) + 1.f;
     }
     
-    /*for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen( lowColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getLow(currentCompletion+1) - 1.f),
-                          QPointF(pixelPosition, m_waveform->getLow(currentCompletion) + 1.f));
-        pixelPosition += 2.0*pixelByVisualSamples;
-    }
-
-    currentCompletion = m_actualCompletion;
-    pixelPosition = pixelStartPosition;
-    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen( midColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getMid(currentCompletion+1) - 1.f),
-                          QPointF(pixelPosition, m_waveform->getMid(currentCompletion) + 1.f));
-        pixelPosition += 2.0*pixelByVisualSamples;
-    }
-
-    currentCompletion = m_actualCompletion;
-    pixelPosition = pixelStartPosition;
-    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen( highColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getHigh(currentCompletion+1) - 1.f),
-                          QPointF(pixelPosition, m_waveform->getHigh(currentCompletion) + 1.f));
-        pixelPosition += 2.0*pixelByVisualSamples;
-    }*/
-
     m_actualCompletion = nextCompletion;
     m_waveform->getMutex()->unlock();
     return true;

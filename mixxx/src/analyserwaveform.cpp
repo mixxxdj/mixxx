@@ -86,8 +86,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 Waveform* pLoadedWaveform =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                         
-                //XXX added "&& false" here to force waveform regeneration
-                if (pLoadedWaveform && pLoadedWaveform->isValid() && false) {
+                if (pLoadedWaveform && pLoadedWaveform->isValid()) {
                     //if( m_waveform->getId() != -1) {
                     m_waveform = pLoadedWaveform;
                     loadedWaveform = true;
@@ -102,8 +101,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 foundWavesummary = true;
                 Waveform* pLoadedWaveformSummary =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
-                //XXX added "&& false" here to force summary regeneration
-                if (pLoadedWaveformSummary && pLoadedWaveformSummary->isValid() && false) {
+                if (pLoadedWaveformSummary && pLoadedWaveformSummary->isValid()) {
                     //if( m_waveformSummary->getId() != -1) {
                     m_waveformSummary = pLoadedWaveformSummary;
                     tio->setWaveformSummary(pLoadedWaveformSummary);
@@ -201,9 +199,6 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
     m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
-/*    CSAMPLE cmaxOver[2];
-    cmaxOver[Left] = 0;
-    cmaxOver[Right] = 0;*/
     CSAMPLE cmaxLow[2];
     cmaxLow[Left] = 0;
     cmaxLow[Right] = 0;
@@ -215,39 +210,18 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     cmaxHigh[Right] = 0;
 
     for( int i = 0; i < bufferLength; i+=2) {
-        //accumulate signal power of the stride
-        
-        //first one didn't work
-        //average is too low
-        //trying max now -- hey that's good
-        
-        //need max of both right and left
-        //remember to reset maxes when we finish the stride
-        
-        
-        //overall seems to need accum tho
+        //accumulate signal power of the stride only for overall data
         m_stride.m_overallData[ Left] += buffer[i]*buffer[i];
         m_stride.m_overallData[Right] += buffer[i+1]*buffer[i+1];
-        /*m_stride.m_filteredData[Right][ Low] += m_buffers[ Low][i  ]*m_buffers[ Low][i];
-        m_stride.m_filteredData[ Left][ Low] += m_buffers[ Low][i+1]*m_buffers[ Low][i+1];
-        m_stride.m_filteredData[Right][ Mid] += m_buffers[ Mid][i  ]*m_buffers[ Mid][i];
-        m_stride.m_filteredData[ Left][ Mid] += m_buffers[ Mid][i+1]*m_buffers[ Mid][i+1];
-        m_stride.m_filteredData[Right][High] += m_buffers[High][i  ]*m_buffers[High][i];
-        m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];*/
         
-/*        m_stride.m_filteredData[Right][ Low] += m_buffers[ Low][i  ]*m_buffers[ Low][i];
-        m_stride.m_filteredData[ Left][ Low] += m_buffers[ Low][i+1]*m_buffers[ Low][i+1];*/
-        
-        //CSAMPLE cover[2] = { buffer[i]*buffer[i], buffer[i]*buffer[i+1] };
+        //For everything else, take a max value
         CSAMPLE clow[2] = { m_buffers[ Low][i  ]*m_buffers[ Low][i],  m_buffers[ Low][i+1]*m_buffers[ Low][i+1] };
         CSAMPLE cmid[2] = { m_buffers[ Mid][i  ]*m_buffers[ Mid][i], m_buffers[ Mid][i  ]*m_buffers[ Mid][i+1] };
         CSAMPLE chigh[2] = { m_buffers[High][i  ]*m_buffers[High][i], m_buffers[High][i  ]*m_buffers[High][i+1] };
 
-        //cmaxOver[Left] = math_max(cmaxOver[Left], cover[Left]);
         cmaxLow[Left] = math_max(cmaxLow[Left], clow[Left]);
         cmaxBand[Left] = math_max(cmaxBand[Left], cmid[Left]);
         cmaxHigh[Left] = math_max(cmaxHigh[Left], chigh[Left]);
-        //cmaxOver[Right] = math_max(cmaxOver[Right], cover[Right]);
         cmaxLow[Right] = math_max(cmaxLow[Right], clow[Right]);
         cmaxBand[Right] = math_max(cmaxBand[Right], cmid[Right]);
         cmaxHigh[Right] = math_max(cmaxHigh[Right], chigh[Right]);
@@ -259,17 +233,6 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
                 return;
             }
             
-            /*m_stride.m_overallData[Right] /= m_stride.m_length;
-            m_stride.m_overallData[ Left] /= m_stride.m_length;
-            m_stride.m_filteredData[Right][ Low] /= m_stride.m_length;
-            m_stride.m_filteredData[ Left][ Low] /= m_stride.m_length;
-            m_stride.m_filteredData[Right][ Mid] /= m_stride.m_length;
-            m_stride.m_filteredData[ Left][ Mid] /= m_stride.m_length;
-            m_stride.m_filteredData[Right][High] /= m_stride.m_length;
-            m_stride.m_filteredData[ Left][High] /= m_stride.m_length;*/
-            
-/*            m_stride.m_overallData[ Left] = cmaxOver[Left];
-            m_stride.m_overallData[Right] = cmaxOver[Right];*/
             m_stride.m_filteredData[ Left][ Low] = cmaxLow[Left];
             m_stride.m_filteredData[Right][ Low] = cmaxLow[Right];
             m_stride.m_filteredData[ Left][ Mid] = cmaxBand[Left];
@@ -349,8 +312,6 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
             }
             m_strideSummary.m_position += 2;
             m_stride.reset();
-/*            cmaxOver[Left] = 0;
-            cmaxOver[Right] = 0;*/
             cmaxLow[Left] = 0;
             cmaxLow[Right] = 0;
             cmaxBand[Left] = 0;
@@ -363,10 +324,6 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
         m_stride.m_position += 2;
     }
     
-/*    qDebug() << bufferLength << m_stride.m_length;
-    qDebug() << cmaxLow[0] << cmaxBand[0] << cmaxHigh[0];*/
-    //qDebug() << log10(cmaxOver * 10000000)*36 << log10(cmaxLow * 10000000)*36 << log10(cmaxBand * 10000000)*36 << log10(cmaxHigh * 10000000)*36;
-
     m_waveform->setCompletion(m_currentStride);
     m_waveformSummary->setCompletion(m_currentSummaryStride);
 

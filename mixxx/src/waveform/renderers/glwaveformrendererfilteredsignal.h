@@ -43,7 +43,7 @@ class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract {
     QBrush m_midKilledBrush;
     QBrush m_highKilledBrush;
 
-    std::vector<QPointF> m_polygon[4];
+    std::vector<QPointF> m_polygon[3];
 };
 
 #endif // GLWAVEFROMRENDERERFILTEREDSIGNAL_H

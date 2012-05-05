@@ -23,9 +23,7 @@ enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 class WaveformStride {
     inline void init( int samples) {
         m_length = samples*2;
-        //m_convertionFactor = (float)std::numeric_limits<CSAMPLE>::max()/(float)samples;
         m_convertionFactor = 1.0;
-        //qDebug() << "===================-=-=-=-=-=-=-=- CONVERSION FACTOR" << m_convertionFactor;
         reset();
     }
 
