@@ -20,10 +20,23 @@ class AnalysisDao;
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
+inline double scaleSignal(double invalue)
+{
+    if (invalue == 0.0)
+    {
+        return 0;
+    }
+    else
+    {
+        return pow(invalue, 0.316);
+    }
+}
+
 class WaveformStride {
     inline void init( int samples) {
         m_length = samples*2;
-        m_convertionFactor = 1.0;
+        m_postScaleConversion = (float)std::numeric_limits<unsigned char>::max() / 2.0;
+        m_conversionFactor = 1.0; //because we are taking a max, not an average any more
         reset();
     }
 
@@ -40,10 +53,10 @@ class WaveformStride {
     inline void store(WaveformData* data) {
         for( int i = 0; i < ChannelCount; i++) {
             WaveformData& datum = *(data + i);
-            datum.filtered.all = (CSAMPLE)(m_convertionFactor * m_overallData[i]);
-            datum.filtered.low = (CSAMPLE)(m_convertionFactor * m_filteredData[i][Low]);
-            datum.filtered.mid = (CSAMPLE)(m_convertionFactor * m_filteredData[i][Mid]);
-            datum.filtered.high = (CSAMPLE)(m_convertionFactor * m_filteredData[i][High]);
+            datum.filtered.all = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_overallData[i]));
+            datum.filtered.low = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Low]));
+            datum.filtered.mid = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Mid]));
+            datum.filtered.high = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][High]));
         }
     }
 
@@ -54,7 +67,8 @@ class WaveformStride {
     float m_overallData[ChannelCount];
     float m_filteredData[ChannelCount][FilterCount];
 
-    float m_convertionFactor;
+    float m_conversionFactor;
+    float m_postScaleConversion;
 
   private:
     friend class AnalyserWaveform;

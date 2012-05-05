@@ -8,14 +8,13 @@
 #include <vector>
 
 #include "util.h"
-#include "defs.h"
 
 union WaveformData {
     struct {
-        CSAMPLE low;
-        CSAMPLE mid;
-        CSAMPLE high;
-        CSAMPLE all;
+        unsigned char low;
+        unsigned char mid;
+        unsigned char high;
+        unsigned char all;
     } filtered;
     int m_i;
 
@@ -70,10 +69,10 @@ class Waveform {
     const std::vector<WaveformData>& getConstData() const { return m_data;}
 
     inline const WaveformData& get(int i) const { return m_data[i];}
-    inline CSAMPLE getLow(int i) const { return m_data[i].filtered.low;}
-    inline CSAMPLE getMid(int i) const { return m_data[i].filtered.mid;}
-    inline CSAMPLE getHigh(int i) const { return m_data[i].filtered.high;}
-    inline CSAMPLE getAll(int i) const { return m_data[i].filtered.all;}
+    inline unsigned char getLow(int i) const { return m_data[i].filtered.low;}
+    inline unsigned char getMid(int i) const { return m_data[i].filtered.mid;}
+    inline unsigned char getHigh(int i) const { return m_data[i].filtered.high;}
+    inline unsigned char getAll(int i) const { return m_data[i].filtered.all;}
 
     WaveformData* data() { return &m_data[0];}
     const WaveformData* data() const { return &m_data[0];}
@@ -94,10 +93,10 @@ class Waveform {
     void allocateForAudioSamples(int audioSamples);
 
     inline WaveformData& at(int i) { return m_data[i];}
-    inline CSAMPLE& low(int i) { return m_data[i].filtered.low;}
-    inline CSAMPLE& mid(int i) { return m_data[i].filtered.mid;}
-    inline CSAMPLE& high(int i) { return m_data[i].filtered.high;}
-    inline CSAMPLE& all(int i) { return m_data[i].filtered.all;}
+    inline unsigned char& low(int i) { return m_data[i].filtered.low;}
+    inline unsigned char& mid(int i) { return m_data[i].filtered.mid;}
+    inline unsigned char& high(int i) { return m_data[i].filtered.high;}
+    inline unsigned char& all(int i) { return m_data[i].filtered.all;}
 
     int computeTextureSize(int getDataSize);
     void setCompletion(int completion) { m_completion = completion;}

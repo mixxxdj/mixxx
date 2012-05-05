@@ -47,19 +47,6 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setY(y);
 }
 
-inline double scaleSignal(double invalue)
-{
-    if (invalue == 0.0)
-    {
-        return 0;
-    }
-    else
-    {
-        return pow(invalue, 0.316);
-    }
-}
-
-
 void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/){
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
@@ -89,13 +76,13 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     if (m_alignment == Qt::AlignTop) {
         painter->translate(0.0,0.0);
-        painter->scale(1.0,m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight());
+        painter->scale(1.0,2.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else if (m_alignment == Qt::AlignBottom) {
         painter->translate(0.0,m_waveformRenderer->getHeight());
-        painter->scale(1.0,m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight());
+        painter->scale(1.0,2.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else {
         painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
-        painter->scale(1.0,m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/2.0);
+        painter->scale(1.0,1.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     }
 
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
@@ -207,16 +194,16 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             //     qDebug() << "Sampling pixel " << x << "over [" << visualIndexStart << visualIndexStop << "]";
             // }
 
-            CSAMPLE maxAll = 0;
+            unsigned char maxAll = 0;
 
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
                  i += channelSeparation) {
                 const WaveformData& waveformData = *(data + i);
-                CSAMPLE all = waveformData.filtered.all;
+                unsigned char all = waveformData.filtered.all;
                 maxAll = math_max(maxAll, all);
             }
-            
-            setPoint(m_polygon[pointIndex], x, (float)scaleSignal(maxAll / 100)*direction);
+
+            setPoint(m_polygon[pointIndex], x, (float)maxAll*direction);
             pointIndex++;
         }
     }

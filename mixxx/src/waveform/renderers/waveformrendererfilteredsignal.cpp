@@ -86,9 +86,9 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         const int xPos = i/samplesPerPixel;
         const int visualIndex = currentPosition + 2*i - numberOfSamples;
         if (visualIndex >= 0 && (visualIndex+1) < dataSize) {
-            CSAMPLE maxLow[2] = {0, 0};
-            CSAMPLE maxMid[2] = {0, 0};
-            CSAMPLE maxHigh[2] = {0, 0};
+            unsigned char maxLow[2] = {0, 0};
+            unsigned char maxMid[2] = {0, 0};
+            unsigned char maxHigh[2] = {0, 0};
 
             for (int subIndex = 0;
                  subIndex < 2*samplesPerPixel &&
