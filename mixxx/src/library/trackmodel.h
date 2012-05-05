@@ -36,7 +36,8 @@ class TrackModel {
         TRACKMODELCAPS_REMOVE         = 0x0200,
         TRACKMODELCAPS_RELOCATE       = 0x0400,
         TRACKMODELCAPS_BPMLOCK        = 0x0800,
-        TRACKMODELCAPS_CLEAR_BEATS    = 0x1000
+        TRACKMODELCAPS_CLEAR_BEATS    = 0x1000,
+        TRACKMODELCAPS_RESETPLAYED    = 0x2000
     };
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */

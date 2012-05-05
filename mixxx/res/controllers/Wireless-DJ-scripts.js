@@ -34,6 +34,17 @@ WirelessDJ.init = function(id) {
     engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback");
     engine.connectControl("[Master]", "crossfader", "WirelessDJ.controlFeedback");
     engine.connectControl("[Master]", "headMix", "WirelessDJ.controlFeedback");
+    engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback");
+    engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback");
+    engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback");
+    
+    // outputs in script instead xml mapping
+    engine.connectControl("[Channel1]", "play", "WirelessDJ.buttonOutput");
+    engine.connectControl("[Channel2]", "play", "WirelessDJ.buttonOutput");
+    engine.connectControl("[Channel1]", "pfl", "WirelessDJ.buttonOutput");
+    engine.connectControl("[Channel2]", "pfl", "WirelessDJ.buttonOutput");
+    engine.connectControl("[Channel1]", "flanger", "WirelessDJ.buttonOutput");
+    engine.connectControl("[Channel2]", "flanger", "WirelessDJ.buttonOutput");
 }
 
 WirelessDJ.shutdown = function(id) {
@@ -46,14 +57,24 @@ WirelessDJ.shutdown = function(id) {
     engine.connectControl("[Channel1]", "volume", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel1]", "filterHigh", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel1]", "filterMid", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Channel1]", "filterLow", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Channel1]", "filterLow", "WirelessDJ.controlFeedback", true);  
     engine.connectControl("[Channel2]", "rate", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "volume", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "filterHigh", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "filterMid", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback", true); 
     engine.connectControl("[Master]", "crossfader", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Master]", "headMix", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback", true);  
+    
+    engine.connectControl("[Channel1]", "play", "WirelessDJ.buttonOutput", true);
+    engine.connectControl("[Channel2]", "play", "WirelessDJ.buttonOutput", true);
+    engine.connectControl("[Channel1]", "pfl", "WirelessDJ.buttonOutput", true);
+    engine.connectControl("[Channel2]", "pfl", "WirelessDJ.buttonOutput", true);
+    engine.connectControl("[Channel1]", "flanger", "WirelessDJ.buttonOutput", true);
+    engine.connectControl("[Channel2]", "flanger", "WirelessDJ.buttonOutput", true);
 }
 
 WirelessDJ.groupToDeck = function(group) {
@@ -124,7 +145,31 @@ WirelessDJ.controlFeedback = function(value, group, key) {
             midi.sendShortMsg(0xb0 + deck, 0x18, value*127);
         } else if (key == "filterLow") {
             midi.sendShortMsg(0xb0 + deck, 0x19, value*127);
+        } else if (key == "lfoDelay") {
+            value = (value*6 - 52)/(10002 - 52)*127;
+            midi.sendShortMsg(0xb0, 0x1c, value);
+            midi.sendShortMsg(0xb1, 0x1c, value);
+        } else if (key == "lfoDepth") {
+            value *= 2*127;
+            midi.sendShortMsg(0xb0, 0x1d, value);
+            midi.sendShortMsg(0xb1, 0x1d, value);
+        } else if (key == "lfoPeriod") {
+            value = (value*6 - 50000)/(2000000 - 50000)*127; // convert to 0..127 range
+            midi.sendShortMsg(0xb0, 0x1e, value);
+            midi.sendShortMsg(0xb1, 0x1e, value);
         }
+    }
+}
+
+WirelessDJ.buttonOutput = function(value, group, key) {
+    var deck = WirelessDJ.groupToDeck(group);
+    
+    if (key == "play") {
+        midi.sendShortMsg(0x90 + deck, 0x01, value*127);
+    } else if (key == "pfl") {
+        midi.sendShortMsg(0x90 + deck, 0x03, value*127);
+    } else if (key == "flanger") {
+        midi.sendShortMsg(0x90 + deck, 0x08, value*127);
     }
 }
 
