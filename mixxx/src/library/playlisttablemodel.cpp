@@ -106,6 +106,35 @@ bool PlaylistTableModel::appendTrack(int trackId) {
     return true;
 }
 
+int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int position = index.sibling(index.row(), positionColumn).data().toInt();
+
+    // Handle weird cases like a drag and drop to an invalid index
+    if (position <= 0) {
+        position = rowCount() + 1;
+    }
+
+    QList<QFileInfo> fileInfoList;
+    foreach (QString fileLocation, locations) {
+        fileInfoList.append(QFileInfo(fileLocation));
+    }
+
+    QList<int> trackIds = m_trackDao.addTracks(fileInfoList, true);
+
+    int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
+        trackIds, m_iPlaylistId, position);
+
+    if (tracksAdded > 0) {
+        select();
+    } else if (locations.size() - tracksAdded > 0) {
+        qDebug() << "PlaylistTableModel::addTracks could not add"
+                 << locations.size() - tracksAdded
+                 << "to playlist" << m_iPlaylistId;
+    }
+    return tracksAdded;
+}
+
 TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const {
     //FIXME: use position instead of location for playlist tracks?
 
@@ -357,7 +386,8 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
-            | TRACKMODELCAPS_CLEAR_BEATS;
+            | TRACKMODELCAPS_CLEAR_BEATS
+            | TRACKMODELCAPS_RESETPLAYED;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {

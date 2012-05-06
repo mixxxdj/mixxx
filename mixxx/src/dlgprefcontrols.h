@@ -20,13 +20,14 @@
 
 #include "ui_dlgprefcontrolsdlg.h"
 #include "configobject.h"
-#include "mixxx.h"
 
 class QWidget;
 class ControlObjectThreadMain;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
+class MixxxApp;
+class ControlObject;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -65,6 +66,10 @@ public slots:
     void slotSetWaveformType(int index);
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
+    void slotSetVisualGainAll(double gain);
+    void slotSetVisualGainLow(double gain);
+    void slotSetVisualGainMid(double gain);
+    void slotSetVisualGainHigh(double gain);
 
     virtual void onShow();
     virtual void onHide();

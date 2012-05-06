@@ -24,8 +24,8 @@
 #include "recording/encoder.h"
 
 
-DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefRecordDlg()
-{
+DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config)
+        : QWidget(parent) {
     config = _config;
     confirmOverwrite = false;
     radioFlac = 0;
@@ -44,6 +44,21 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 #ifdef __SHOUTCAST__
     radioOgg = new QRadioButton("Ogg Vorbis");
     radioMp3 = new QRadioButton(ENCODING_MP3);
+
+    // Setting recordings path
+    QString recordingsPath = config->getValueString(ConfigKey("[Recording]","Directory"));
+    if (recordingsPath == "") {
+        // Initialize recordings path in config to old default path.
+        // Do it here so we show current value in UI correctly.
+        QDir musicDir(config->getValueString(ConfigKey("[Playlist]","Directory")));
+        QDir recordDir(musicDir.absolutePath() + "/Mixxx/Recordings");
+        recordingsPath = recordDir.absolutePath();
+    }
+    LineEditRecordings->setText(recordingsPath);
+
+    connect(PushButtonBrowseRecordings, SIGNAL(clicked()), this, SLOT(slotBrowseRecordingsDir()));
+    connect(LineEditRecordings, SIGNAL(returnPressed()), this, SLOT(slotApply()));
+
     connect(radioOgg,SIGNAL(clicked()),
             this, SLOT(slotApply()));
     connect(radioMp3, SIGNAL(clicked()),
@@ -226,6 +241,17 @@ void DlgPrefRecord::slotRecordPathChange()
 //This function updates/refreshes the contents of this dialog
 void DlgPrefRecord::slotUpdate()
 {
+    // Recordings path
+    QString recordingsPath = config->getValueString(ConfigKey("[Recording]","Directory"));
+    if (recordingsPath == "") {
+        // Initialize recordings path in config to old default path.
+        // Do it here so we show current value in UI correctly.
+        QDir musicDir(config->getValueString(ConfigKey("[Playlist]","Directory")));
+        QDir recordDir(musicDir.absolutePath() + "/Mixxx/Recordings");
+        recordingsPath = recordDir.absolutePath();
+    }
+    LineEditRecordings->setText(recordingsPath);
+
     if (radioWav && radioWav->isChecked())
     {
         config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
@@ -249,12 +275,37 @@ void DlgPrefRecord::slotUpdate()
     loadMetaData();
 }
 
+void DlgPrefRecord::slotBrowseRecordingsDir()
+{
+    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings direcory"),
+                                                   config->getValueString(ConfigKey("[Recording]","Directory")));
+    if (fd != "")
+    {
+        LineEditRecordings->setText(fd);
+    }
+}
+
 void DlgPrefRecord::slotApply()
 {
+    setRecordingFolder();
+
     setMetaData();
 
     slotEncoding();
 }
+
+void DlgPrefRecord::setRecordingFolder() {
+    if (LineEditRecordings->text() == "") {
+        qDebug() << "Recordings path was empty in dialog";
+        return;
+    }
+    if (LineEditRecordings->text() != config->getValueString(ConfigKey("[Recording]","Directory")))
+    {
+        qDebug() << "Saved recordings path" << LineEditRecordings->text();
+        config->set(ConfigKey("[Recording]","Directory"), LineEditRecordings->text());
+    }
+}
+
 void DlgPrefRecord::slotEnableCueFile(int enabled)
 {
     config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(CheckBoxRecordCueFile->isChecked()));

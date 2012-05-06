@@ -1,13 +1,14 @@
 #ifndef GLSIMPLEWAVEFORMWIDGET_H
 #define GLSIMPLEWAVEFORMWIDGET_H
 
-#include <QtOpenGL/QGLWidget>
+#include <QGLWidget>
+
 #include "waveformwidgetabstract.h"
 
-class GLSimpleWaveformWidget : public WaveformWidgetAbstract, public QGLWidget
-{
-public:
-    GLSimpleWaveformWidget( const char* group, QWidget* parent);
+class GLSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+    Q_OBJECT
+  public:
+    GLSimpleWaveformWidget(const char* group, QWidget* parent);
     virtual ~GLSimpleWaveformWidget();
 
     virtual QString getWaveformWidgetName() { return tr("Simple");}
@@ -16,11 +17,15 @@ public:
     virtual bool useOpenGl() const { return true;}
     virtual bool useOpenGLShaders() const { return false;}
 
-protected:
+    //reimplemet it to discard use of rate adjust
+    virtual void updateVisualSamplingPerPixel();
+
+  protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
+    virtual void postRender();
 
-private:
+  private:
     GLSimpleWaveformWidget() {}
     friend class WaveformWidgetFactory;
 };

@@ -12,7 +12,7 @@
 DlgPrepare::DlgPrepare(QWidget* parent,
                        ConfigObject<ConfigValue>* pConfig,
                        TrackCollection* pTrackCollection)
-        : QWidget(parent), Ui::DlgPrepare(),
+        : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false) {

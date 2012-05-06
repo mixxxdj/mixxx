@@ -2,17 +2,18 @@
 #define GLWAVEFORMWIDGETSHADER_H
 
 #include <QGLWidget>
+
 #include "waveformwidgetabstract.h"
 
 class GLSLWaveformRendererSignal;
 
-class GLSLWaveformWidget : public WaveformWidgetAbstract, public QGLWidget
-{
-public:
-    GLSLWaveformWidget( const char* group, QWidget* parent);
+class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+    Q_OBJECT
+  public:
+    GLSLWaveformWidget(const char* group, QWidget* parent);
     virtual ~GLSLWaveformWidget();
 
-    virtual QString getWaveformWidgetName() { return tr("Filtered");}
+    virtual QString getWaveformWidgetName() { return tr("Filtered (experimental)");}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLWaveform;}
 
     virtual bool useOpenGl() const { return true;}
@@ -20,15 +21,14 @@ public:
 
     virtual void resize( int width, int height);
 
-protected:
+  protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
     virtual void mouseDoubleClickEvent(QMouseEvent *);
 
-private:
+  private:
     GLSLWaveformRendererSignal* signalRenderer_;
 
-private:
     GLSLWaveformWidget() {}
     friend class WaveformWidgetFactory;
 };

@@ -76,6 +76,7 @@ class TrackDAO : public QObject, public virtual DAO {
     int addTrack(QString absoluteFilePath, bool unremove);
     int addTrack(QFileInfo& fileInfo, bool unremove);
     void addTracks(QList<TrackInfoObject*> tracksToAdd, bool unremove);
+    QList<int> addTracks(QList<QFileInfo> fileInfoList, bool unremove);
     void removeTrack(int id);
     void removeTracks(QList<int> ids);
     void unremoveTrack(int trackId);
@@ -84,7 +85,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
-    void markTracksInDirectoryAsVerified(QString directory);
+    void markTracksInDirectoriesAsVerified(QStringList directories);
     void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);

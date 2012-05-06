@@ -21,7 +21,7 @@ class LibraryHashDAO : public DAO {
     void invalidateAllDirectories();
     void markUnverifiedDirectoriesAsDeleted();
     void removeDeletedDirectoryHashes();
-    void updateDirectoryStatus(QString dirPath, bool deleted, bool verified);
+    void updateDirectoryStatuses(QStringList dirPaths, bool deleted, bool verified);
   private:
     QSqlDatabase &m_database;
 

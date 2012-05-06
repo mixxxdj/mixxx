@@ -30,12 +30,12 @@ flags = build.flags
 #Tell SCons to build Mixxx
 #=========================
 if build.platform_is_windows:
-	dist_dir = 'dist%s' % build.bitwidth
-	mixxx_bin = env.Program('mixxx',
+        dist_dir = 'dist%s' % build.bitwidth
+        mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
-	mixxx_bin = env.Program('mixxx', sources)
+        mixxx_bin = env.Program('mixxx', sources)
 
 def build_tests():
         test_files = Glob('test/*.cpp', strings=True)
@@ -49,18 +49,18 @@ def build_tests():
         test_sources = (test_files + mixxx_sources)
 
         env.Append(LIBPATH="#lib/gtest-1.5.0/lib")
-	env.Append(LIBS = 'gtest')
+        env.Append(LIBS = 'gtest')
 
         env.Append(LIBPATH="#lib/gmock-1.5.0/lib")
         env.Append(LIBS = 'gmock')
 
-	env.Program(target='mixxx-test', source=test_sources)
+        env.Program(target='mixxx-test', source=test_sources)
 
-	Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
+        Command("../mixxx-test", "./mixxx-test", Copy("$TARGET", "$SOURCE"))
 
 def run_tests():
         ret = Execute("./mixxx-test")
-	if ret != 0:
+        if ret != 0:
                 print "WARNING: Not all tests pass. See mixxx-test output."
                 Exit(ret)
 
@@ -69,8 +69,8 @@ if int(build.flags['test']):
         build_tests()
 
 if 'test' in BUILD_TARGETS:
-	print "Running tests."
-	run_tests()
+        print "Running tests."
+        run_tests()
 
 def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
         # In release mode, we only use the version.
@@ -82,30 +82,29 @@ def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
 def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
                              ubuntu_version):
         # In release mode, we only use the version and ubuntu_version
-	if build.build_is_release:
-		return "%s-%s" % (mixxx_version, ubuntu_version)
-	# In a debug build, include the branch name and revision number
-	return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
+        if build.build_is_release:
+                return "%s-%s" % (mixxx_version, ubuntu_version)
+        # In a debug build, include the branch name and revision number
+        return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
                                    branch_name, bazaar_revision)
 
 def windows_construct_version(build, mixxx_version, branch_name, bazaar_revision):
         # In release mode, we only use the version
-	if build.build_is_release:
-		return mixxx_version
-	# In a debug build, include the branch name and revision number
-	return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
+        if build.build_is_release:
+                return mixxx_version
+        # In a debug build, include the branch name and revision number
+        return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
 #Set up the install target
 #=========================
-"""
-flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
-if not os.path.exists(flags['prefix']):
-	print "Error: Prefix path does not exist!"
-	Exit(1)
-else:
-	unix_share_path = flags['prefix'] + "/share"
-	unix_bin_path   = flags['prefix'] + "/bin"
-"""
+
+# flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
+# if not os.path.exists(flags['prefix']):
+#         print "Error: Prefix path does not exist!"
+#         Exit(1)
+# else:
+#        unix_share_path = flags['prefix'] + "/share"
+#        unix_bin_path   = flags['prefix'] + "/bin"
 
 #Mixxx binary
 binary_files = mixxx_bin;
@@ -122,8 +121,8 @@ libmixxxminimal_vamp_plugin = mixxxminimal_plugins
 #Skins
 skin_files = Glob('#res/skins/*')
 
-#MIDI mappings
-midimappings_files = Glob('#res/midi/*')
+#Controller mappings
+controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
 translation_files = Glob('#res/translations/*.qm')
@@ -173,103 +172,100 @@ else:
 # dll_files = libsndfile
 dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtXmlPatterns4.dll $QTDIR/lib/QtSvg4.dll $QTDIR/lib/QtWebKit4.dll $QTDIR/lib/phonon4.dll""")
 if int(flags.get('sqlitedll', 0)):
-	sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
+        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
-if int(flags['midiscript']):
-	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
-
-
+dll_files += Split("""$QTDIR/lib/QtScript4.dll""")  # Required for non-midi controllers
 
 if build.platform_is_linux or build.platform_is_bsd:
-	flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
-	if not os.path.exists(flags['prefix']):
-		print "Error: Prefix path does not exist!"
-		Exit(1)
-	else:
-		#install_root is used in Debian/Ubuntu packaging (check the debian/rules file in the Ubuntu package)
-		#Basically, the flags['prefix'] is compiled into strings in Mixxx, whereas the install_root is not. When you're
-		#building a Debian package, pbuilder wants to install Mixxx to a temporary directory, but you still need
-		#the compiled-in strings using /usr as the prefix. That's why we have install_root and flags['prefix'].
-		install_root = ARGUMENTS.get('install_root', flags['prefix'])
-		print "Install root: " + install_root
+        flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
+        if not os.path.exists(flags['prefix']):
+                print "Error: Prefix path does not exist!"
+                Exit(1)
+        else:
+                #install_root is used in Debian/Ubuntu packaging (check the debian/rules file in the Ubuntu package)
+                #Basically, the flags['prefix'] is compiled into strings in Mixxx, whereas the install_root is not. When you're
+                #building a Debian package, pbuilder wants to install Mixxx to a temporary directory, but you still need
+                #the compiled-in strings using /usr as the prefix. That's why we have install_root and flags['prefix'].
+                install_root = ARGUMENTS.get('install_root', flags['prefix'])
+                print "Install root: " + install_root
                 unix_share_path = os.path.join(install_root, 'share')
                 unix_bin_path = os.path.join(install_root, 'bin')
                 unix_lib_path = os.path.join(install_root, 'lib')
 
-		binary = env.Install(unix_bin_path, binary_files)
-		resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
-		skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
+                binary = env.Install(unix_bin_path, binary_files)
+                resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
+                skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
 		vamp_plugin =  env.Install(
-                        os.path.join(unix_lib_path, 'mixxx', 'vamp'),
+                        os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
-                        
-		soundsource_plugins = env.Install(
+
+                soundsource_plugins = env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
                         soundsource_plugin_files)
-		midimappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'midi'), midimappings_files)
+                controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
-		keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
-		if int(flags['ladspa']):
-			ladspapresets = env.Install(
+                keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
+                if int(flags['ladspa']):
+                        ladspapresets = env.Install(
                                 os.path.join(unix_share_path, 'mixxx', 'ladspa_presets'), ladspapresets_files)
-		dotdesktop = env.Install(os.path.join(unix_share_path, 'applications'), dotdesktop_files)
-		docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
-		icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
-		promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
+                dotdesktop = env.Install(os.path.join(unix_share_path, 'applications'), dotdesktop_files)
+                docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
+                icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
+                promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
 
-		#Makes each of those Install builders get fired off when you run "scons install" :)
-		env.Alias('install', binary)
-		env.Alias('install', resource)
-		env.Alias('install', skins)
-		env.Alias('install', soundsource_plugins)
-		env.Alias('install', midimappings)
+                #Makes each of those Install builders get fired off when you run "scons install" :)
+                env.Alias('install', binary)
+                env.Alias('install', resource)
+                env.Alias('install', skins)
+                env.Alias('install', soundsource_plugins)
+                env.Alias('install', controllermappings)
                 env.Alias('install', translations)
-		env.Alias('install', keyboardmappings)
-		if int(flags['ladspa']):
-			env.Alias('install', ladspapresets)
-		env.Alias('install', docs)
-		env.Alias('install', dotdesktop)
-		env.Alias('install', icon)
-		env.Alias('install', promotracks)
+                env.Alias('install', keyboardmappings)
+                if int(flags['ladspa']):
+                        env.Alias('install', ladspapresets)
+                env.Alias('install', docs)
+                env.Alias('install', dotdesktop)
+                env.Alias('install', icon)
+                env.Alias('install', promotracks)
 		env.Alias('install', vamp_plugin)
 
-		#Delete the old Mixxx installation (because SCONS won't overwrite it)
-		#if 'install' in COMMAND_LINE_TARGETS:
-			#os.system('scons -c install')
-			#Delete(unix_share_path + "/mixxx/skins")
-			#print "Copying skins..."
-			#env.Command(unix_share_path + "/mixxx/skins", skin_files, Copy("$TARGET", "$SOURCE"), source_scanner = DirScanner)
-			#Copy(unix_share_path + "/.ixxx/skins", skin_files)
-			#Delete(unix_bin_path + "mixxx")
+                #Delete the old Mixxx installation (because SCONS won't overwrite it)
+                #if 'install' in COMMAND_LINE_TARGETS:
+                        #os.system('scons -c install')
+                        #Delete(unix_share_path + "/mixxx/skins")
+                        #print "Copying skins..."
+                        #env.Command(unix_share_path + "/mixxx/skins", skin_files, Copy("$TARGET", "$SOURCE"), source_scanner = DirScanner)
+                        #Copy(unix_share_path + "/.ixxx/skins", skin_files)
+                        #Delete(unix_bin_path + "mixxx")
 
-			#Delete(unix_share_path + "/mixxx/midi")
-			#Delete(unix_share_path + "/mixxx/keyboard")
+                        #Delete(unix_share_path + "/mixxx/controllers")
+                        #Delete(unix_share_path + "/mixxx/keyboard")
 
 #Build the Mixxx.app bundle
 if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
-	#Mixxx build variables
-	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
+        #Mixxx build variables
+        VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
         ARCH = 'ppc' if build.machine in ['powerpc', 'powerpc64'] else 'macintel'
         ARCH += ("64" if build.machine_is_64bit else "32")
 
-	DMG_ICON="#res/osx/VolumeIcon.icns"
+        DMG_ICON="#res/osx/VolumeIcon.icns"
 
-	# this is a BIG HACK to support Qt's plugins (since Qt *requires* that
-	# it's plugins be in specific subdirectories, which OS X doesn't really
-	# play nice with)
-	qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
+        # this is a BIG HACK to support Qt's plugins (since Qt *requires* that
+        # it's plugins be in specific subdirectories, which OS X doesn't really
+        # play nice with)
+        qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                       [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                       [("sqldrivers", e) for e in ["libqsqlite.dylib"]] +
                       [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
-	#Left out libqmng and libqtiff to save space.
+        #Left out libqmng and libqtiff to save space.
 
-	# Concatenate the SoundSource plugins to our list of plugins (converting
-	# from SCons File nodes to strings)
-	for x in soundsource_plugins:
-		plugins.append(x.get_abspath())
-		
+        # Concatenate the SoundSource plugins to our list of plugins (converting
+        # from SCons File nodes to strings)
+        for x in soundsource_plugins:
+                plugins.append(x.get_abspath())
+
 	for x in mixxxminimal_plugins:
-	    plugins.append(x.get_abspath())
+                plugins.append(x.get_abspath())
 
         resource_map = {}
         translation_files = Glob('#res/translations/*.qm')
@@ -292,12 +288,12 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         qtplugindir = SCons.ARGUMENTS.get('qtplugindir', None)
         if not qtplugindir:
                 qtplugindir = '/Developer/Applications/Qt/'
-	bundle = env.App(
+        bundle = env.App(
                 "Mixxx",
                 [mixxx_bin, '#res/osx/application.icns',
                  Dir('#res/skins/'),
                  File('#res/schema.xml'),
-                 Dir('#res/midi/'),
+                 Dir('#res/controllers/'),
                  translation_files,
                  Dir('#res/keyboard/'),
                  Dir('#res/ladspa_presets'),
@@ -319,52 +315,54 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 OTOOL_LOCAL_PATHS=otool_local_paths,
                 OTOOL_SYSTEM_PATHS=otool_system_paths
                 )
-	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
-	env.Alias('bundle', bundle)
+        #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
+        env.Alias('bundle', bundle)
 
         package_name = 'mixxx'
-	package_version = osx_construct_version(build, mixxx_version, branch_name, bazaar_revision)
+        package_version = osx_construct_version(build, mixxx_version, branch_name, bazaar_revision)
         dmg_name = '%s-%s-%s' % (package_name, package_version, ARCH)
-	dmg = env.Dmg(dmg_name, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
-	env.Alias('package', dmg)
+        dmg = env.Dmg(dmg_name, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+        env.Alias('package', dmg)
 
 if build.platform_is_windows:
         base_dist_dir = '#' + dist_dir
-	skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
-	resource = env.Install(base_dist_dir+"/", resource_files)
-        midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+        skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
+        resource = env.Install(base_dist_dir+"/", resource_files)
+        controllermappings = env.Install(os.path.join(base_dist_dir, "controllers"), controllermappings_files)
         translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
-	keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
-	if int(flags['ladspa']):
-		ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
-	docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
-	promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
-	#icon = env.Install(base_dist_dir+"", icon_files)
-	dlls = env.Install(base_dist_dir+"/", dll_files)
-	soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"), soundsource_plugin_files)
-	vamp_plugins = env.Install(base_dist_dir+"/", libmixxxminimal_vamp_plugin)
-	binary = env.Install(base_dist_dir+"/", binary_files)
+        keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
+        if int(flags['ladspa']):
+                ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
+        docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
+        promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
+        #icon = env.Install(base_dist_dir+"", icon_files)
+        dlls = env.Install(base_dist_dir+"/", dll_files)
+        soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"),
+                                          soundsource_plugin_files)
+        vamp_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "vamp/"),
+                                   libmixxxminimal_vamp_plugin)
+        binary = env.Install(base_dist_dir+"/", binary_files)
 
-	#Always trigger these install builders when compiling on Windows
-	env.Alias('mixxx', skins)
-	env.Alias('mixxx', resource)
-	env.Alias('mixxx', midimappings)
+        #Always trigger these install builders when compiling on Windows
+        env.Alias('mixxx', skins)
+        env.Alias('mixxx', resource)
+        env.Alias('mixxx', controllermappings)
         env.Alias('mixxx', translations)
-	env.Alias('mixxx', keyboardmappings)
-	if int(flags['ladspa']):
-		env.Alias('mixxx', ladspapresets)
-	env.Alias('mixxx', promotracks)
-	env.Alias('mixxx', docs)
-	env.Alias('mixxx', dlls)
-	env.Alias('mixxx', soundsource_plugins)
+        env.Alias('mixxx', keyboardmappings)
+        if int(flags['ladspa']):
+                env.Alias('mixxx', ladspapresets)
+        env.Alias('mixxx', promotracks)
+        env.Alias('mixxx', docs)
+        env.Alias('mixxx', dlls)
+        env.Alias('mixxx', soundsource_plugins)
 	env.Alias('mixxx', vamp_plugins)
-	#env.Alias('mixxx', icon)
-	env.Alias('mixxx', binary)
+        #env.Alias('mixxx', icon)
+        env.Alias('mixxx', binary)
 
-	# QSQLite DLL
-	if 'sqldll_files' in locals():
-		sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
-		env.Alias('mixxx', sql_dlls)
+        # QSQLite DLL
+        if 'sqldll_files' in locals():
+                sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
+                env.Alias('mixxx', sql_dlls)
 
 def win32_find_program_via_registry(program_name):
     # Windows registry access to find where program is installed
@@ -489,73 +487,73 @@ versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar'
 env.Append(BUILDERS = {'BuildRelease' : versionbld})
 
 if 'makerelease' in COMMAND_LINE_TARGETS:
-	makerelease = env.BuildRelease('', binary_files)
-	env.Alias('makerelease', makerelease)
+        makerelease = env.BuildRelease('', binary_files)
+        env.Alias('makerelease', makerelease)
 
 def ubuntu_append_changelog(debian_dir,
-			    package_name, package_version,
-			    description,
-			    distro='karmic',
-			    urgency='low',
+                            package_name, package_version,
+                            description,
+                            distro='karmic',
+                            urgency='low',
                             author="Mixxx Buildbot <builds@mixxx.org>"):
-	now_formatted = time.strftime("%a,  %d %b %Y %H:%M:%S +0000", time.gmtime())
-	new_entry = [
-		"%s (%s) %s; urgency=%s" % (package_name, package_version, distro, urgency),
-		"",
-		description,
-		"",
-		" -- %s  %s" % (author, now_formatted),
-		"",
-		]
-	lines = []
-	with open(os.path.join(debian_dir, 'changelog'), 'r') as changelog:
-		lines = list(changelog)
-	with open(os.path.join(debian_dir, 'changelog'), 'w') as changelog:
-		changelog.writelines(["%s\n" % x for x in new_entry])
-		changelog.writelines(lines)
+        now_formatted = time.strftime("%a,  %d %b %Y %H:%M:%S +0000", time.gmtime())
+        new_entry = [
+                "%s (%s) %s; urgency=%s" % (package_name, package_version, distro, urgency),
+                "",
+                description,
+                "",
+                " -- %s  %s" % (author, now_formatted),
+                "",
+                ]
+        lines = []
+        with open(os.path.join(debian_dir, 'changelog'), 'r') as changelog:
+                lines = list(changelog)
+        with open(os.path.join(debian_dir, 'changelog'), 'w') as changelog:
+                changelog.writelines(["%s\n" % x for x in new_entry])
+                changelog.writelines(lines)
 
 def ubuntu_cleanup():
-	os.system('rm -rf ubuntu')
-	os.mkdir('ubuntu')
+        os.system('rm -rf ubuntu')
+        os.mkdir('ubuntu')
 
 # Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
-	print
-	print "==== Mixxx Post-Build Checks ===="
-	print
-	print "You have built version ", mixxx_version
-	print
-	print
-	print "Top line of README, check version:"
-	os.system('head -n 1 README')
-	print
-	print "Top 2 lines of LICENSE, check version and copyright dates:"
-	os.system('head -n 2 LICENSE')
-	print
-	print "Top line of debian/ubuntu changelog, check version:"
-	os.system('head -n 1 build/debian/changelog')
-	print
+        print
+        print "==== Mixxx Post-Build Checks ===="
+        print
+        print "You have built version ", mixxx_version
+        print
+        print
+        print "Top line of README, check version:"
+        os.system('head -n 1 README')
+        print
+        print "Top 2 lines of LICENSE, check version and copyright dates:"
+        os.system('head -n 2 LICENSE')
+        print
+        print "Top line of debian/ubuntu changelog, check version:"
+        os.system('head -n 1 build/debian/changelog')
+        print
 
-	print "Now building DEB package..."
-	print
+        print "Now building DEB package..."
+        print
 
-	arch = 'amd64' if build.machine_is_64bit else 'i386'
+        arch = 'amd64' if build.machine_is_64bit else 'i386'
 
         package_target = ARGUMENTS.get('package', None)
-	ubuntu_distro = ARGUMENTS.get('ubuntu_dist', None)
-	if ubuntu_distro is None:
-		print "You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag."
-		# TODO(XXX) default to their current distro? the .pbuilderrc does this
-		return
+        ubuntu_distro = ARGUMENTS.get('ubuntu_dist', None)
+        if ubuntu_distro is None:
+                print "You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag."
+                # TODO(XXX) default to their current distro? the .pbuilderrc does this
+                return
         ubuntu_version = ARGUMENTS.get('ubuntu_version', '0ubuntu1')
 
-	# The underscore is super important here to make the deb package work
-	package_name = 'mixxx'
-	package_version = ubuntu_construct_version(build, mixxx_version,
+        # The underscore is super important here to make the deb package work
+        package_name = 'mixxx'
+        package_version = ubuntu_construct_version(build, mixxx_version,
                                                    branch_name, bazaar_revision,
                                                    ubuntu_version)
 
-	#mixxx_dir = '%s-%s' % (package_name, mixxx_version)
+        #mixxx_dir = '%s-%s' % (package_name, mixxx_version)
 
         # directory and original tarball need to have the upstream-release
         # version, NOT the package version. For example:
@@ -564,50 +562,50 @@ def BuildUbuntuPackage(target, source, env):
         # directory name: mixxx-1.10.0-beta1
         # original tarball: mixxx_1.10.0-beta1.orig.tar.gz
 
-	mixxx_dir = '%s-%s' % (package_name, mixxx_version)
-	mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, mixxx_version)
+        mixxx_dir = '%s-%s' % (package_name, mixxx_version)
+        mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, mixxx_version)
 
-	# Destroy ubuntu/ and create it
-	ubuntu_cleanup()
+        # Destroy ubuntu/ and create it
+        ubuntu_cleanup()
 
-	build_dir = os.path.join('ubuntu', mixxx_dir)
+        build_dir = os.path.join('ubuntu', mixxx_dir)
 
-	if os.path.exists(build_dir):
-		print "* Cleaning up %s (cwd: %s)" % (build_dir, os.getcwd())
-		print
-		os.system('rm -rf %s' % build_dir) # be careful.
+        if os.path.exists(build_dir):
+                print "* Cleaning up %s (cwd: %s)" % (build_dir, os.getcwd())
+                print
+                os.system('rm -rf %s' % build_dir) # be careful.
 
-	# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
+        # TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
-	# Export the source folder
-	print "* Exporting source folder from current workspace (bzr rev: %s)" % bazaar_revision
-	print
-	os.system('bzr export %s .' % build_dir)
+        # Export the source folder
+        print "* Exporting source folder from current workspace (bzr rev: %s)" % bazaar_revision
+        print
+        os.system('bzr export %s .' % build_dir)
 
-	# Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
-	if os.path.exists('post-export-patch'):
-		print "* Applying post export patch"
-		print
-		os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
+        # Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
+        if os.path.exists('post-export-patch'):
+                print "* Applying post export patch"
+                print
+                os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
 
-	os.chdir('ubuntu')
+        os.chdir('ubuntu')
 
-	# Tar the source code
-	print "* Tarring source directory to '%s' ... (this can take a couple minutes)" % os.path.join(os.getcwd(), mixxx_tarball)
-	print
-	os.system('rm -f "%s"' % mixxx_tarball) #Remove old tarball
-	os.system('tar --exclude=debian --exclude=debian/* -czf "%s" %s' % (mixxx_tarball, mixxx_dir))
+        # Tar the source code
+        print "* Tarring source directory to '%s' ... (this can take a couple minutes)" % os.path.join(os.getcwd(), mixxx_tarball)
+        print
+        os.system('rm -f "%s"' % mixxx_tarball) #Remove old tarball
+        os.system('tar --exclude=debian --exclude=debian/* -czf "%s" %s' % (mixxx_tarball, mixxx_dir))
 
-	os.chdir(mixxx_dir)
-	# Copy the debian folder from /build/debian to exported source folder root
-	print "* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd()
-	print
-	os.system('cp -r build/debian .')
+        os.chdir(mixxx_dir)
+        # Copy the debian folder from /build/debian to exported source folder root
+        print "* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd()
+        print
+        os.system('cp -r build/debian .')
 
-	# Add a changelog record for this package
-	if build.build_is_debug:
+        # Add a changelog record for this package
+        if build.build_is_debug:
                 description = "  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, bazaar_revision)
-		ubuntu_append_changelog('debian', package_name, package_version,
+                ubuntu_append_changelog('debian', package_name, package_version,
                                         description, distro=ubuntu_distro)
         else:
                 description = "  * New upstream release."
@@ -616,9 +614,9 @@ def BuildUbuntuPackage(target, source, env):
                                         distro=ubuntu_distro,
                                         author="RJ Ryan <rryan@mixxx.org>")
 
-	# Run pbuilder
-	print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
-	print
+        # Run pbuilder
+        print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
+        print
 
         command = ["ARCH=%s" % arch,
                    "DIST=%s" % ubuntu_distro]
@@ -631,10 +629,10 @@ def BuildUbuntuPackage(target, source, env):
                 command.extend(['pdebuild'])
         result = os.system(' '.join(command))
 
-	# Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
-	os.chdir('../..')
-	print "* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")"
-	print
+        # Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
+        os.chdir('../..')
+        print "* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")"
+        print
 
         if package_target == 'source':
                 if result == 0:
@@ -659,13 +657,13 @@ def BuildUbuntuPackage(target, source, env):
                         print "* Build failed."
                         print
 
-	# print "Signing the .deb changes file..."
-	# os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
+        # print "Signing the .deb changes file..."
+        # os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
 
 #Build the Ubuntu package if "makeubuntu" was passed as an argument
 versiondebbld = Builder(action = BuildUbuntuPackage) #, suffix = '.foo', src_suffix = '.bar')
 env.Append(BUILDERS = {'BuildUbuntuPackage' : versiondebbld})
 
 if 'makeubuntu' in COMMAND_LINE_TARGETS:
-	makeubuntu = env.BuildUbuntuPackage("blah", "defs_version.h" ) #(binary_files)
-	env.Alias('makeubuntu', makeubuntu)
+        makeubuntu = env.BuildUbuntuPackage("blah", "defs_version.h" ) #(binary_files)
+        env.Alias('makeubuntu', makeubuntu)

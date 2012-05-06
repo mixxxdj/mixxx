@@ -21,7 +21,6 @@
 #include "controlobject.h"
 #include "configobject.h"
 #include "defs.h"
-#include "midi/midimessage.h"
 #include <qdatetime.h>
 
 /**
@@ -45,7 +44,7 @@ class ControlBeat : public ControlObject {
     virtual ~ControlBeat();
 
   protected:
-    void setValueFromMidi(MidiCategory c, double v);
+    void setValueFromMidi(MidiOpCode o, double v);
     void setValueFromThread(double dValue);
   private:
     void beatTap();

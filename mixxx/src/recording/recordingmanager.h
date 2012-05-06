@@ -43,6 +43,7 @@ class RecordingManager : public QObject
     void startRecording(bool generateFileName=true);
     void stopRecording();
     bool isRecordingActive();
+    void setRecordingDir();
     QString& getRecordingDir();
     // Returns the currently recording file
     QString& getRecordingFile();
@@ -65,7 +66,7 @@ class RecordingManager : public QObject
     ControlObjectThread* m_recReady;
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
-
+    
     long getFileSplitSize();
 
     ConfigObject<ConfigValue>* m_pConfig;

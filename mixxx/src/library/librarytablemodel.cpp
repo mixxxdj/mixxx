@@ -64,6 +64,15 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
+int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    QList<QFileInfo> fileInfoList;
+    foreach (QString fileLocation, locations) {
+        fileInfoList.append(QFileInfo(fileLocation));
+    }
+    QList<int> trackIds = m_trackDao.addTracks(fileInfoList, true);
+    return trackIds.size();
+}
+
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const {
     int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
@@ -148,5 +157,6 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
-            | TRACKMODELCAPS_CLEAR_BEATS;
+            | TRACKMODELCAPS_CLEAR_BEATS
+            | TRACKMODELCAPS_RESETPLAYED;
 }

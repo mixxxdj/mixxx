@@ -9,8 +9,8 @@ IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
 // It should also adjust FILEFLAGS below to include VS_FF_PRIVATEBUILD and/or VS_FF_PRERELEASE as appropriate
 
 // Version number should be major, minor, bugfix, branch revison number
-#define VER_FILEVERSION             1,10,1,3057
-#define VER_PRODUCTVERSION          1,10,1,3057
+#define VER_FILEVERSION             1,11,0,2804
+#define VER_PRODUCTVERSION          1,11,0,2804
 
 #define CUR_YEAR                    "2012"
 // ---- End to-be-generated lines
