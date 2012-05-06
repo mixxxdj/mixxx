@@ -319,4 +319,13 @@ METADATA
     CREATE INDEX IF NOT EXISTS track_analysis_track_id_index ON track_analysis (track_id);
     </sql>
   </revision>
+  <revision version="17" min_compatible="3">
+    <description>
+      Add columns for BPM lock and a sub-version string for beats.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN bpm_lock INTEGER DEFAULT 0;
+      ALTER TABLE Library ADD COLUMN beats_sub_version TEXT DEFAULT '';
+    </sql>
+  </revision>
 </schema>

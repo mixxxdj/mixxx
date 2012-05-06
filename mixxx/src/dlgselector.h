@@ -26,6 +26,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
+    virtual void onHide();
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
     virtual void moveSelection(int delta);

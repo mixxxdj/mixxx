@@ -233,7 +233,6 @@ void CrateFeature::slotCreateCrate() {
 
     if (crate_id != -1) {
         emit(showTrackModel(&m_crateTableModel));
-        emit(featureUpdated());
     } else {
         qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
@@ -256,8 +255,7 @@ void CrateFeature::slotDeleteCrate() {
 
     bool deleted = m_crateDao.deleteCrate(crateId);
 
-    if (deleted) {
-        emit(featureUpdated());
+    if (deleted) {;
         activate();
     } else {
         qDebug() << "Failed to delete crateId" << crateId;
@@ -308,9 +306,7 @@ void CrateFeature::slotRenameCrate() {
     } while (!validNameGiven);
 
 
-    if (m_crateDao.renameCrate(crateId, newName)) {
-        emit(featureUpdated());
-    } else {
+    if (!m_crateDao.renameCrate(crateId, newName)) {
         qDebug() << "Failed to rename crateId" << crateId;
     }
 }

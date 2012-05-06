@@ -72,6 +72,10 @@ void DlgRecording::onShow()
     m_browseModel.setPath(m_recordingDir);
 }
 
+void DlgRecording::onHide()
+{
+}
+
 void DlgRecording::setup(QDomNode node)
 {
 

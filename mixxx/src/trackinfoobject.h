@@ -115,10 +115,10 @@ public:
     void setBpm(float);
     /** Returns BPM as a string */
     QString getBpmStr() const;
-    /** Retruns if BPM was confirmed (edited or verified manually) */
-    bool getBpmConfirm() const;
-    /** Set BPM confidence */
-    void setBpmConfirm(bool confirm=true);
+    // A track with a locked BPM will not be re-analyzed by the beats or bpm
+    // analyzer.
+    void setBpmLock(bool hasLock);
+    bool hasBpmLock() const;
     bool getHeaderParsed() const;
     void setHeaderParsed(bool parsed = true);
     /** Returns the user comment */
@@ -135,10 +135,6 @@ public:
     QString getBitrateStr() const;
     /** Sets the bitrate */
     void setBitrate(int);
-    /** Sets first beat pos */
-    void setBeatFirst(float);
-    /** Get first beat pos */
-    float getBeatFirst() const;
     /** Set sample rate */
     void setSampleRate(int iSampleRate);
     /** Get sample rate */
@@ -220,9 +216,6 @@ public:
     const Waveform* getWaveformSummary() const;
     void setWaveformSummary(Waveform* pWaveformSummary);
 
-    /** Set pointer to ControlObject holding BPM value in engine */
-    void setBpmControlObject(ControlObject *p);
-
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
     /** Get saved the cue point */
@@ -255,7 +248,7 @@ public:
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
-public slots:
+  public slots:
     void slotCueUpdated();
 
 signals:
@@ -349,18 +342,8 @@ private:
     float m_fReplayGain;
     /** Has this track been played this sessions? */
     bool m_bPlayed;
-    /** Beat per minutes (BPM) */
-    float m_fBpm;
-    /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */
-    float m_fMinBpm;
-    /** Maximum BPM range. If this is 0.0, then the config max BPM will be used */
-    float m_fMaxBpm;
-    /** True if BPM is confirmed */
-    bool m_bBpmConfirm;
     /** True if header was parsed */
     bool m_bHeaderParsed;
-    /** Position of first beat in song */
-    float m_fBeatFirst;
     /** Id. Unique ID of track */
     int m_iId;
     /** Cue point in samples or something */
@@ -371,6 +354,9 @@ private:
     QDateTime m_dateAdded;
 
     QString m_key;
+
+    /** BPM lock **/
+    bool m_bBpmLock;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;

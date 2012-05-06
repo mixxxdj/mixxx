@@ -119,6 +119,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
         (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
         (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
+        (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
         (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
         return true;
@@ -145,5 +146,7 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_REMOVE;
+            | TRACKMODELCAPS_REMOVE
+            | TRACKMODELCAPS_BPMLOCK
+            | TRACKMODELCAPS_CLEAR_BEATS;
 }

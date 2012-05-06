@@ -17,6 +17,7 @@ public:
     virtual void onSearchCleared() = 0;
     virtual void onSearch(const QString& text) = 0;
     virtual void onShow() = 0;
+    virtual void onHide() = 0;
 
     // If applicable, requests that the LibraryView load the selected
     // track. Does nothing otherwise.

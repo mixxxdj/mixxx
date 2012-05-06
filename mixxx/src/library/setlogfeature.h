@@ -39,6 +39,8 @@ public:
 
   private slots:
     void slotPlayingDeckChanged(int deck);
+    void slotPlaylistTableChanged(int playlistId);
+
 
   private:
     QAction *m_pJoinWithPreviousAction;

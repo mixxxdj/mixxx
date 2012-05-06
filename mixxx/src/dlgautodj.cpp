@@ -123,6 +123,9 @@ void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
+void DlgAutoDJ::onHide() {
+}
+
 void DlgAutoDJ::setup(QDomNode node) {
     QPalette pal = palette();
 

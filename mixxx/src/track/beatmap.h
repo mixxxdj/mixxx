@@ -1,28 +1,44 @@
-#ifndef BEATMATRIX_H
-#define BEATMATRIX_H
+/*
+ * beatmap.h
+ *
+ *  Created on: 08/dic/2011
+ *      Author: vittorio
+ */
+
+#ifndef BEATMAP_H_
+#define BEATMAP_H_
 
 #include <QObject>
 #include <QMutex>
 
 #include "trackinfoobject.h"
 #include "track/beats.h"
+#include "proto/beats.pb.h"
 
-// BeatMatrix is an implementation of the Beats interface that implements a list
-// of finite beats that have been extracted or otherwise annotated for a track.
-class BeatMatrix : public QObject, public Beats {
+#define BEAT_MAP_VERSION "BeatMap-1.0"
+
+typedef QList<mixxx::track::io::Beat> BeatList;
+
+class BeatMap : public QObject, public Beats {
     Q_OBJECT
   public:
-    BeatMatrix(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
-    virtual ~BeatMatrix();
+    BeatMap(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
+    // Construct a BeatMap, optionally providing a list of beat locations in
+    // audio frames.
+    BeatMap(TrackPointer pTrack, const QVector<double> beats = QVector<double>());
+    virtual ~BeatMap();
 
     // See method comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE | BEATSCAP_MOVEBEAT;
+        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
+                BEATSCAP_MOVEBEAT | BEATSCAP_SET;
     }
 
     virtual QByteArray* toByteArray() const;
     virtual QString getVersion() const;
+    virtual QString getSubVersion() const;
+    virtual void setSubVersion(QString subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -32,8 +48,9 @@ class BeatMatrix : public QObject, public Beats {
     virtual double findPrevBeat(double dSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual void findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const;
+    virtual void findBeats(double startSample, double stopSample, SampleList* pBeatsList) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
+
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
 
@@ -46,22 +63,28 @@ class BeatMatrix : public QObject, public Beats {
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
     virtual void scale(double dScalePercentage);
+    virtual void setBpm(double dBpm);
 
   signals:
     void updated();
 
-  private slots:
-    void slotTrackBpmUpdated(double bpm);
-
   private:
+    void initialize(TrackPointer pTrack);
     void readByteArray(const QByteArray* pByteArray);
+    void createFromBeatVector(QVector<double> beats);
+    void onBeatlistChanged();
+
+    double calculateBpm(const mixxx::track::io::Beat& startBeat,
+                        const mixxx::track::io::Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
-    unsigned int numBeats() const;
 
     mutable QMutex m_mutex;
+    QString m_subVersion;
+    double m_dCachedBpm;
     int m_iSampleRate;
-    BeatList m_beatList;
+    double m_dLastFrame;
+    BeatList m_beats;
 };
 
-#endif /* BEATMATRIX_H */
+#endif /* BEATMAP_H_ */

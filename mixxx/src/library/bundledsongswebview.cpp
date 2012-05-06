@@ -96,6 +96,10 @@ void BundledSongsWebView::onShow()
     //    page()->mainFrame()->evaluateJavaScript("showMainStuff(0, 0);");
 }
 
+void BundledSongsWebView::onHide()
+{
+}
+
 /* Google Analytics doesn't like our crappy malformed "Mixxx 1.8" string
    as a user agent. Let Qt construct it for us instead by leaving this commented out.
 QString PromoTracksWebView::userAgentForUrl (const QUrl & url) const

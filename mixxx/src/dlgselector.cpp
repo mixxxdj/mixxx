@@ -46,11 +46,11 @@ DlgSelector::DlgSelector(QWidget* parent,
             this,  SLOT(filterByHarmonicKey()));
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
             this,  SLOT(spinBoxBpmRangeChanged(int)));
-
     connect(m_pSelectorLibraryTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+
     connect(m_pSelectorLibraryTableModel,
             SIGNAL(doSearch(const QItemSelection &, const QItemSelection&)),
             this,
@@ -67,6 +67,16 @@ DlgSelector::~DlgSelector() {
 void DlgSelector::onShow()
 {
     qDebug() << "DlgSelector::onShow()";
+
+}
+
+void DlgSelector::onHide()
+{
+    qDebug() << "DlgSelector::onHide()";
+    // disconnect the old pitch slider
+    //if (m_pSelectorLibraryTableModel) {
+    //    m_pSelectorLibraryTableModel->disconnect(this);
+    //}
 }
 
 void DlgSelector::setup(QDomNode node)

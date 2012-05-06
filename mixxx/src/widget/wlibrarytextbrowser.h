@@ -19,6 +19,7 @@ class WLibraryTextBrowser : public QTextBrowser, public virtual LibraryView {
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
+    virtual void onHide();
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
     virtual void moveSelection(int delta);

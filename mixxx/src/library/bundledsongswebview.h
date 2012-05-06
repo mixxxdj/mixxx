@@ -45,6 +45,7 @@ class BundledSongsWebView : public QWebView, public LibraryView
     virtual void onSearchCleared()  {};
     virtual void onSearch(const QString&) {};
     virtual void onShow();
+    virtual void onHide();
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);

@@ -92,6 +92,10 @@ void DlgPrepare::onShow()
     //m_pCratesTableModel->select();
 }
 
+void DlgPrepare::onHide()
+{
+}
+
 void DlgPrepare::setup(QDomNode node)
 {
 

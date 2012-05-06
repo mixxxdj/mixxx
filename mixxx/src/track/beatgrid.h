@@ -6,6 +6,10 @@
 
 #include "trackinfoobject.h"
 #include "track/beats.h"
+#include "proto/beats.pb.h"
+
+#define BEAT_GRID_1_VERSION "BeatGrid-1.0"
+#define BEAT_GRID_2_VERSION "BeatGrid-2.0"
 
 // BeatGrid is an implementation of the Beats interface that implements an
 // infinite grid of beats, aligned to a song simply by a starting offset of the
@@ -13,7 +17,7 @@
 class BeatGrid : public QObject, public virtual Beats {
     Q_OBJECT
   public:
-    BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
+    BeatGrid(TrackInfoObject* pTrack, const QByteArray* pByteArray=NULL);
     virtual ~BeatGrid();
 
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
@@ -25,11 +29,13 @@ class BeatGrid : public QObject, public virtual Beats {
     // comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE;
+        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SET;
     }
 
     virtual QByteArray* toByteArray() const;
     virtual QString getVersion() const;
+    virtual QString getSubVersion() const;
+    virtual void setSubVersion(QString subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -39,7 +45,7 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual double findPrevBeat(double dSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual void findBeats(double startSample, double stopSample, BeatList* pBeatsList) const;
+    virtual void findBeats(double startSample, double stopSample, SampleList* pBeatsList) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
@@ -53,23 +59,28 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual void moveBeat(double dBeatSample, double dNewBeatSample);
     virtual void translate(double dNumSamples);
     virtual void scale(double dScalePercentage);
+    virtual void setBpm(double dBpm);
 
   signals:
     void updated();
 
-  private slots:
-    void slotTrackBpmUpdated(double bpm);
-
   private:
+    double firstBeatSample() const;
+    double bpm() const;
+
     void readByteArray(const QByteArray* pByteArray);
     // For internal use only.
     bool isValid() const;
 
     mutable QMutex m_mutex;
-    int m_iSampleRate;      /** The number of samples per second */
-    double m_dBpm;          /** The number of beats per minute */
-    double m_dFirstBeat;    /** The sample offset of the first beat */
-    double m_dBeatLength;   /** The length of a beat in samples */
+    // The sub-version of this beatgrid.
+    QString m_subVersion;
+    // The number of samples per second
+    int m_iSampleRate;
+    // Data storage for BeatGrid
+    mixxx::track::io::BeatGrid m_grid;
+    // The length of a beat in samples
+    double m_dBeatLength;
 };
 
 

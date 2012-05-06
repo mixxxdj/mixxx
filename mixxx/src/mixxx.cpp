@@ -52,6 +52,7 @@
 #include "skin/legacyskinparser.h"
 #include "waveform/waveformwidgetfactory.h"
 
+
 #include "build.h" // #defines of details of the build set up (flags,
 // repo number, etc). This isn't a real file, SConscript generates it and it
 // probably gets placed in $PLATFORM_build/. By including this file here and
