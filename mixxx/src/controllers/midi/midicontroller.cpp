@@ -294,7 +294,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
         pEngine->execute(mc.item(), args);
         return;
     }
-
+    
     // Only pass values on to valid ControlObjects.
     ControlObject* p = mc.getControlObject();
     if (p == NULL) {
@@ -319,6 +319,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
         // computeValue not done on pitch messages because it all assumes 7-bit numbers
     } else {
         newValue = computeValue(options, currMixxxControlValue, value);
+    }
+    
+    // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
+    // mapping is <button> we override the Midi 'status' appropriately.
+    if (options.sw) {
+        opCode = MIDI_NOTE_ON;
     }
 
     if (options.soft_takeover) {
