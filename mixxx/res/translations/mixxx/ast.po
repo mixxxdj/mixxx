@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-02 10:19-0400\n"
-"PO-Revision-Date: 2012-04-23 20:09+0000\n"
+"PO-Revision-Date: 2012-05-05 21:37+0000\n"
 "Last-Translator: Xuacu Saturio <xuacusk8@gmail.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-03 05:13+0000\n"
-"X-Generator: Launchpad (build 15185)\n"
+"X-Launchpad-Export-Date: 2012-05-06 04:36+0000\n"
+"X-Generator: Launchpad (build 15195)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -349,19 +349,19 @@ msgstr "Nun se pudieron anovar los metadatos del ficheru."
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Esceición non recoyida na llinia %1 del ficheru %2: %3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Esceición non recoyida na llinia %1 del códigu pasáu: %2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr ""
+msgstr "Error nel script del controlador"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "Un control que vienes d'usar nun funciona de mou correutu."
 
 #: ControllerEngine#5
 msgid ""
@@ -370,36 +370,41 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(El códigu del script necesita igua.)<br>De momentu, "
+"pues:<ul><li>Inorar esti error pa esta sesión, pero pues alcontrate "
+"comportamientos al debalu</li><li>Intentar recuperate reaniciando el to "
+"controlador</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Diálogu"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: ControllerMappingDlg#3
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
 msgstr ""
+"El cuadru d'abaxo ta en construcción y quedará baleru nesta versión de Mixxx."
 
 #: ControllerMappingDlg#4
 msgid "Controls"
-msgstr ""
+msgstr "Controles"
 
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Amestar"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Desaniciar"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -407,20 +412,20 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Llimpiar too"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Salida"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
-msgstr ""
+msgstr "Salies"
 
 #: ControllerMappingDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Llimpiar too"
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -742,7 +747,7 @@ msgstr ""
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "Fecho"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
@@ -767,7 +772,7 @@ msgstr ""
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr ""
+msgstr "Entemecedor"
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
@@ -776,23 +781,23 @@ msgstr ""
 
 #: DlgControllerLearning#11
 msgid "Master volume"
-msgstr ""
+msgstr "Volume mayestru"
 
 #: DlgControllerLearning#12
 msgid "Master balance"
-msgstr ""
+msgstr "Balance mayestru"
 
 #: DlgControllerLearning#13
 msgid "Headphone volume"
-msgstr ""
+msgstr "Volume de los cascos"
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
-msgstr ""
+msgstr "Entemezu de los cascos (pre/main)"
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "Tresporte"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
@@ -836,7 +841,7 @@ msgstr ""
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
-msgstr ""
+msgstr "Alternar mou repetición"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
@@ -921,7 +926,7 @@ msgstr ""
 #: DlgControllerLearning#47
 msgctxt "DlgControllerLearning#47"
 msgid "Equalizers"
-msgstr ""
+msgstr "Ecualizadores"
 
 #: DlgControllerLearning#48
 msgid "High EQ knob"
@@ -950,7 +955,7 @@ msgstr ""
 #: DlgControllerLearning#54
 msgctxt "DlgControllerLearning#54"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Control de vinilu"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
@@ -958,7 +963,7 @@ msgstr ""
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
-msgstr ""
+msgstr "Conmutar mou de control de vinilu (ABS/REL/CONST)"
 
 #: DlgControllerLearning#57
 msgid "Cues / Hotcues"
@@ -994,15 +999,15 @@ msgstr ""
 
 #: DlgControllerLearning#65
 msgid "Looping"
-msgstr ""
+msgstr "Repetición"
 
 #: DlgControllerLearning#66
 msgid "Loop In button"
-msgstr ""
+msgstr "Botón meter repetición"
 
 #: DlgControllerLearning#67
 msgid "Loop Out button"
-msgstr ""
+msgstr "Botón sacar repetición"
 
 #: DlgControllerLearning#68
 msgid "Reloop / Exit button"
@@ -1027,15 +1032,15 @@ msgstr ""
 #: DlgControllerLearning#73
 msgctxt "DlgControllerLearning#73"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgControllerLearning#74
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "Camudar a la vista siguiente (biblioteca, llista de reproducción...)"
 
 #: DlgControllerLearning#75
 msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgstr "Camudar a la vista anterior (biblioteca, llista de reproducción...)"
 
 #: DlgControllerLearning#76
 msgid "Scroll to next track in library/playlist"
@@ -1055,7 +1060,7 @@ msgstr ""
 
 #: DlgControllerLearning#80
 msgid "Effects"
-msgstr ""
+msgstr "Efeutos"
 
 #: DlgControllerLearning#81
 msgid "Toggle flange effect"
@@ -1076,39 +1081,40 @@ msgstr ""
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Microphone"
-msgstr ""
+msgstr "Micrófonu"
 
 #: DlgControllerLearning#86
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Micrófonu prendíu/apagáu"
 
 #: DlgControllerLearning#87
 msgid "Microphone volume"
-msgstr ""
+msgstr "Volume del micrófonu"
 
 #: DlgControllerLearning#88
 msgid "Microphone channel orientation (e.g. left, right, center)"
 msgstr ""
+"Orientación de la canal del micrófonu (p.ex. izquierda, drecha, centru)"
 
 #: DlgControllerLearning#89
 msgid "User Interface"
-msgstr ""
+msgstr "Interfaz d'usuariu"
 
 #: DlgControllerLearning#90
 msgid "Show/hide the sampler section"
-msgstr ""
+msgstr "Amosar/anubrir la seición del muestréu"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the microphone section"
-msgstr ""
+msgstr "Amosar/anubrir la seición del micrófonu"
 
 #: DlgControllerLearning#92
 msgid "Show/hide the vinyl control section"
-msgstr ""
+msgstr "Amosar/anubrir la seición del control de vinilu"
 
 #: DlgControllerLearning#93
 msgid "Show/hide spinning vinyl widget"
-msgstr ""
+msgstr "Amosar/anubrir el widget de xiru del vinilu"
 
 #: DlgControllerLearning#94
 msgid "Ready to map: %1. Now move a control on your controller."
@@ -1120,7 +1126,7 @@ msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Falta'l descargador de complementos de soníu"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
@@ -1159,58 +1165,60 @@ msgstr ""
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr ""
+msgstr "Amestar"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr ""
+msgstr "Desaniciar"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr ""
+msgstr "Predetermináu"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr ""
+msgstr "Fallu"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr ""
+msgstr "Nun pue abrise'l ficheru %1"
 
 #: DlgPrefController#1
 msgctxt "DlgPrefController#1"
 msgid "None"
-msgstr ""
+msgstr "Nengunu"
 
 #: DlgPrefController#2
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 por %2"
 
 #: DlgPrefController#3
 msgid "Custom Preset"
-msgstr ""
+msgstr "Configuración personalizada"
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Diálogu"
 
 #: DlgPrefControllerDlg#2
 msgid "Controller Name"
-msgstr ""
+msgstr "Nome del controlador"
 
 #: DlgPrefControllerDlg#3
 msgid "Enabled"
-msgstr ""
+msgstr "Activáu"
 
 #: DlgPrefControllerDlg#4
 msgid ""
 "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
 msgstr ""
+"<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Igua de "
+"problemes</a>"
 
 #: DlgPrefControllerDlg#5
 msgid "Load Preset:"
@@ -1231,11 +1239,11 @@ msgstr ""
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
 msgid "Position"
-msgstr ""
+msgstr "Posición"
 
 #: DlgPrefControls#2
 msgid "Remaining"
-msgstr ""
+msgstr "Queden"
 
 #: DlgPrefControls#3
 msgid "Don't load tracks into a playing deck"
@@ -1247,7 +1255,7 @@ msgstr ""
 
 #: DlgPrefControls#5
 msgid "CDJ Mode"
-msgstr ""
+msgstr "Mou CDJ"
 
 #: DlgPrefControls#6
 msgctxt "DlgPrefControls#6"
@@ -1257,20 +1265,20 @@ msgstr ""
 #: DlgPrefControls#7
 msgctxt "DlgPrefControls#7"
 msgid "On"
-msgstr ""
+msgstr "Prendíu"
 
 #: DlgPrefControls#8
 msgctxt "DlgPrefControls#8"
 msgid "Off"
-msgstr ""
+msgstr "Apagáu"
 
 #: DlgPrefControls#9
 msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
+msgstr "Mixxx detectó una pantalla WVGA"
 
 #: DlgPrefControls#10
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
+msgstr "Mixxx detectó que la pantalla tien una resolución de "
 
 #: DlgPrefControls#11
 msgid ""
@@ -1284,60 +1292,60 @@ msgstr ""
 
 #: DlgPrefControls#13
 msgid "6%"
-msgstr ""
+msgstr "6%"
 
 #: DlgPrefControls#14
 msgid "8% (Technics SL-1210)"
-msgstr ""
+msgstr "8% (Technics SL-1210)"
 
 #: DlgPrefControls#15
 msgid "Down increases speed (Technics SL-1210)"
-msgstr ""
+msgstr "Abaxo xube la velocidá (Technics SL-1210)"
 
 #: DlgPrefControls#16
 msgid "10%"
-msgstr ""
+msgstr "10%"
 
 #: DlgPrefControls#17
 msgid "20%"
-msgstr ""
+msgstr "20%"
 
 #: DlgPrefControls#18
 msgid "30%"
-msgstr ""
+msgstr "30%"
 
 #: DlgPrefControls#19
 msgid "40%"
-msgstr ""
+msgstr "40%"
 
 #: DlgPrefControls#20
 msgid "50%"
-msgstr ""
+msgstr "50%"
 
 #: DlgPrefControls#21
 msgid "60%"
-msgstr ""
+msgstr "60%"
 
 #: DlgPrefControls#22
 msgid "70%"
-msgstr ""
+msgstr "70%"
 
 #: DlgPrefControls#23
 msgid "80%"
-msgstr ""
+msgstr "80%"
 
 #: DlgPrefControls#24
 msgid "90%"
-msgstr ""
+msgstr "90%"
 
 #: DlgPrefControls#25
 msgid "Up increases speed"
-msgstr ""
+msgstr "Arriba xube la velocidá"
 
 #: DlgPrefControls#26
 msgctxt "DlgPrefControls#26"
 msgid "Information"
-msgstr ""
+msgstr "Información"
 
 #: DlgPrefControls#27
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1346,7 +1354,7 @@ msgstr ""
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulariu1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
@@ -1354,7 +1362,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
-msgstr ""
+msgstr "Esquema"
 
 #: DlgPrefControlsDlg#4
 msgid "Position display"
@@ -1367,12 +1375,12 @@ msgstr ""
 #: DlgPrefControlsDlg#6
 msgctxt "DlgPrefControlsDlg#6"
 msgid "On"
-msgstr ""
+msgstr "Prendíu"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "Off"
-msgstr ""
+msgstr "Apagáu"
 
 #: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
@@ -1412,7 +1420,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#17
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: DlgPrefControlsDlg#18
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
@@ -1444,48 +1452,48 @@ msgstr ""
 
 #: DlgPrefControlsDlg#25
 msgid "Frame Rate"
-msgstr ""
+msgstr "Tasa de fotogrames"
 
 #: DlgPrefControlsDlg#26
 msgid "OpenGl status"
-msgstr ""
+msgstr "Estáu d'OpenGL"
 
 #: DlgPrefControlsDlg#27
 msgid "Display type"
-msgstr ""
+msgstr "Amosar triba"
 
 #: DlgPrefControlsDlg#28
 msgid "Default zoom"
-msgstr ""
+msgstr "Zoom predetermináu"
 
 #: DlgPrefControlsDlg#29
 msgid "Visual gain"
-msgstr ""
+msgstr "Ganancia visual"
 
 #: DlgPrefControlsDlg#30
 msgid "<html><head/><body><p>Global visual gain</p></body></html>"
-msgstr ""
+msgstr "<html><head/><body><p>Ganancia visual global</p></body></html>"
 
 #: DlgPrefControlsDlg#31
 msgid "<html><head/><body><p>Low visual gain</p></body></html>"
-msgstr ""
+msgstr "<html><head/><body><p>Ganancia visual baxa</p></body></html>"
 
 #: DlgPrefControlsDlg#32
 msgid "<html><head/><body><p>Medium visual gain</p></body></html>"
-msgstr ""
+msgstr "<html><head/><body><p>Ganancia visual mediana</p></body></html>"
 
 #: DlgPrefControlsDlg#33
 msgid "<html><head/><body><p>High visual gain</p></body></html>"
-msgstr ""
+msgstr "<html><head/><body><p>Ganancia visual alta</p></body></html>"
 
 #: DlgPrefControlsDlg#34
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulariu1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -1513,25 +1521,25 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr ""
+msgstr "Llinial"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logarítmicu"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "Reaniciar"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulariu1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "EQs estáticos (pa CPUs lentes)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
@@ -1539,19 +1547,19 @@ msgstr ""
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr ""
+msgstr "EtiquetaTestu1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
-msgstr ""
+msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
-msgstr ""
+msgstr "1.014 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
-msgstr ""
+msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
@@ -1559,16 +1567,16 @@ msgstr ""
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
-msgstr ""
+msgstr "EtiquetaTestu2"
 
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "Reaniciar"
 
 #: DlgPrefMappableController#1
 msgid "Apply device settings?"
-msgstr ""
+msgstr "¿Aplicar la configuración del preséu?"
 
 #: DlgPrefMappableController#2
 msgid ""
@@ -1595,7 +1603,7 @@ msgstr ""
 #: DlgPrefNoControllersDlg#1
 msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulariu3"
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
@@ -1604,12 +1612,12 @@ msgstr ""
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulariu1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1626,6 +1634,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Seleiciona los preseos de soníu pal control de vinilu nel "
+"panel de Hardware se soníu.</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1634,46 +1653,49 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Igu"
+"a de problemes</a>"
 
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Preamplificador del platu"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Apagáu)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Configuración del vinilu"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Triba de vinilu nel muelle 1"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Triba de vinilu nel muelle 2"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Tiempu d'entrada"
 
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
@@ -1683,108 +1705,111 @@ msgstr ""
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Mou de control"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Mou absolutu"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Mou relativu"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Activar prevención de saltu d'aguya"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Calidá de la señal"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Funciona con xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b>Esta versión de Mixxx nun tien sofitu pa control de vinilos.</b> <br> "
+"Visita <ahref=\"http://mixxx.org\">Mixxx.org</a> pa más información."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Escueyi'l direutoriu de biblioteca de música"
 
 #: DlgPrefPlaylistDlg#1
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Formatos de ficheru de soníu"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Complementos pa más formatos:"
 
 #: DlgPrefPlaylistDlg#3
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#4
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Complementos cargaos:"
 
 #: DlgPrefPlaylistDlg#5
 msgctxt "DlgPrefPlaylistDlg#5"
 msgid "None"
-msgstr ""
+msgstr "Nengunu"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diversos"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "Sincronizar les etiquetes ID3 al camudar les pistes"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "Volver a escanear la biblioteca nel aniciu"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
 msgstr ""
+"Si ye posible, usar rutes relatives al esportar llistes de reproducción"
 
 #: DlgPrefPlaylistDlg#10
 msgctxt "DlgPrefPlaylistDlg#10"
 msgid "Browse..."
-msgstr ""
+msgstr "Esaminar…"
 
 #: DlgPrefPlaylistDlg#11
 msgctxt "DlgPrefPlaylistDlg#11"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Music Directory:"
-msgstr ""
+msgstr "Direutoriu de música:"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Built-in"
-msgstr ""
+msgstr "Internu"
 
 #: DlgPrefPlaylistDlg#14
 msgid "Available Online..."
-msgstr ""
+msgstr "Disponible en llinia..."
 
 #: DlgPrefPlaylistDlg#15
 msgid "Bundled Songs"
@@ -1798,7 +1823,7 @@ msgstr ""
 
 #: DlgPrefRecord#1
 msgid "kbps"
-msgstr ""
+msgstr "kbps"
 
 #: DlgPrefRecord#2
 msgid "Choose recordings direcory"
@@ -1807,64 +1832,64 @@ msgstr ""
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulariu3"
 
 #: DlgPrefRecordDlg#2
 msgid "Recordings Directory"
-msgstr ""
+msgstr "Direutoriu de grabaciones"
 
 #: DlgPrefRecordDlg#3
 msgid "Recordings Directory:"
-msgstr ""
+msgstr "Direutoriu de grabaciones:"
 
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
 msgid "Browse..."
-msgstr ""
+msgstr "Esaminar…"
 
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
-msgstr ""
+msgstr "Codificación"
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
-msgstr ""
+msgstr "Calidá"
 
 #: DlgPrefRecordDlg#7
 msgid "High"
-msgstr ""
+msgstr "Alta"
 
 #: DlgPrefRecordDlg#8
 msgid "Low"
-msgstr ""
+msgstr "Baxa"
 
 #: DlgPrefRecordDlg#9
 msgid "Tags"
-msgstr ""
+msgstr "Etiquetes"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Title"
-msgstr ""
+msgstr "Títulu"
 
 #: DlgPrefRecordDlg#11
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: DlgPrefRecordDlg#12
 msgctxt "DlgPrefRecordDlg#12"
 msgid "Album"
-msgstr ""
+msgstr "Álbum"
 
 #: DlgPrefRecordDlg#13
 msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diversos"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Crear un ficheru CUE"
 
 #: DlgPrefRecordDlg#15
 msgid "File Splitting"
@@ -1918,106 +1943,106 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset"
-msgstr ""
+msgstr "Reaniciar"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulariu3"
 
 #: DlgPrefShoutcastDlg#2
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Activar la tresmisión en vivo"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr ""
+msgstr "Conexón al sirvidor"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr ""
+msgstr "Triba"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
-msgstr ""
+msgstr "Icecast 2"
 
 #: DlgPrefShoutcastDlg#6
 msgid "Shoutcast"
-msgstr ""
+msgstr "Shoutcast"
 
 #: DlgPrefShoutcastDlg#7
 msgid "Icecast 1"
-msgstr ""
+msgstr "Icecast 1"
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
-msgstr ""
+msgstr "Montar"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
-msgstr ""
+msgstr "/mixxx.ogg"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
-msgstr ""
+msgstr "Sirvidor"
 
 #: DlgPrefShoutcastDlg#11
 msgid "192.168.123.8"
-msgstr ""
+msgstr "192.168.123.8"
 
 #: DlgPrefShoutcastDlg#12
 msgid "Port"
-msgstr ""
+msgstr "Puertu"
 
 #: DlgPrefShoutcastDlg#13
 msgid "8000"
-msgstr ""
+msgstr "8000"
 
 #: DlgPrefShoutcastDlg#14
 msgid "Login"
-msgstr ""
+msgstr "Aniciu de sesión"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
-msgstr ""
+msgstr "orixe"
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
-msgstr ""
+msgstr "probando1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
-msgstr ""
+msgstr "Configuración de la emisión"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr ""
+msgstr "Nome de la emisión"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr ""
+msgstr "Prueba de Icecast Mixxx"
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr ""
+msgstr "Páxina web"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
-msgstr ""
+msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -2033,11 +2058,22 @@ msgid ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">¡Esta tresmisión "
+"ta emitiendose pa facer pruebes!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
 msgid "Genre"
-msgstr ""
+msgstr "Xéneru"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
@@ -2045,118 +2081,121 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
-msgstr ""
+msgstr "Tresmisión pública"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Encoding"
-msgstr ""
+msgstr "Codificación"
 
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Bitrate"
-msgstr ""
+msgstr "Tasa de bits"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
-msgstr ""
+msgstr "320 kbps"
 
 #: DlgPrefShoutcastDlg#31
 msgid "256 kbps"
-msgstr ""
+msgstr "256 kbps"
 
 #: DlgPrefShoutcastDlg#32
 msgid "224 kbps"
-msgstr ""
+msgstr "224 kbps"
 
 #: DlgPrefShoutcastDlg#33
 msgid "192 kbps"
-msgstr ""
+msgstr "192 kbps"
 
 #: DlgPrefShoutcastDlg#34
 msgid "160 kbps"
-msgstr ""
+msgstr "160 kbps"
 
 #: DlgPrefShoutcastDlg#35
 msgid "128 kbps"
-msgstr ""
+msgstr "128 kbps"
 
 #: DlgPrefShoutcastDlg#36
 msgid "112 kbps"
-msgstr ""
+msgstr "112 kbps"
 
 #: DlgPrefShoutcastDlg#37
 msgid "96 kbps"
-msgstr ""
+msgstr "96 kbps"
 
 #: DlgPrefShoutcastDlg#38
 msgid "80 kbps"
-msgstr ""
+msgstr "80 kbps"
 
 #: DlgPrefShoutcastDlg#39
 msgid "64 kbps"
-msgstr ""
+msgstr "64 kbps"
 
 #: DlgPrefShoutcastDlg#40
 msgid "48 kbps"
-msgstr ""
+msgstr "48 kbps"
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr ""
+msgstr "Formatu"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
-msgstr ""
+msgstr "Ogg Vorbis"
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
-msgstr ""
+msgstr "MP3"
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr ""
+msgstr "Canales"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
-msgstr ""
+msgstr "Estéreo"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
-msgstr ""
+msgstr "Metadatos personalizaos"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr ""
+msgstr "Activar metadatos personalizaos"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
-msgstr ""
+msgstr "%mainartist"
 
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
 msgid "Title"
-msgstr ""
+msgstr "Títulu"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
-msgstr ""
+msgstr "%maintitle"
 
 #: DlgPrefShoutcastDlg#52
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
+"Atalanta que por razones téuniques el camudar cualquier configuración de "
+"Shoutcast causará qu'una conexón establecida se desconecte y vuelva a "
+"conectar. "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "Nengunu"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
@@ -2164,41 +2203,43 @@ msgstr ""
 
 #: DlgPrefSound#3
 msgid "a device"
-msgstr ""
+msgstr "un preséu"
 
 #: DlgPrefSound#4
 msgid "An unknown error occurred"
-msgstr ""
+msgstr "Hebo un fallu desconocíu"
 
 #: DlgPrefSound#5
 msgid "sound device \"%1\""
-msgstr ""
+msgstr "Preséu de soníu «%1»"
 
 #: DlgPrefSound#6
 msgid "Two outputs cannot share channels on %1"
-msgstr ""
+msgstr "Dos salíes nun pueden compartir canales en 1%"
 
 #: DlgPrefSound#7
 msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
+"Error al abrir %1\n"
+"%2"
 
 #: DlgPrefSound#8
 msgid "%1 ms"
-msgstr ""
+msgstr "%1 ms"
 
 #: DlgPrefSound#9
 msgid "Configuration error"
-msgstr ""
+msgstr "Fallu de configuración"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
-msgstr ""
+msgstr "API de soníu"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr ""
+msgstr "Tasa de muestréu"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -2215,12 +2256,12 @@ msgstr ""
 #: DlgPrefSoundDlg#5
 msgctxt "DlgPrefSoundDlg#5"
 msgid "Output"
-msgstr ""
+msgstr "Salida"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
@@ -2234,42 +2275,42 @@ msgstr ""
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
-msgstr ""
+msgstr "Llatencia"
 
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "Nengunu"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
-msgstr ""
+msgstr "Canal %1"
 
 #: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
-msgstr ""
+msgstr "Canales %1 - %2"
 
 #: DlgPrefSoundItem#4
 msgid "Form"
-msgstr ""
+msgstr "Formulariu"
 
 #: DlgPrefSoundItem#5
 msgid "Type (#)"
-msgstr ""
+msgstr "Tipu (#)"
 
 #: DlgPrefVinylDlg#1
 msgctxt "DlgPrefVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulariu1"
 
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefVinylDlg#3
 msgctxt "DlgPrefVinylDlg#3"
@@ -2286,6 +2327,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Seleiciona los preseos de soníu pal control de vinilu nel "
+"panel de Hardware se soníu.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
@@ -2294,36 +2346,39 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Igu"
+"a de problemes</a>"
 
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Preamplificador del platu"
 
 #: DlgPrefVinylDlg#6
 msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Apagáu)"
 
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Configuración del vinilu"
 
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Triba de vinilu nel muelle 1"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Triba de vinilu nel muelle 2"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
@@ -2333,17 +2388,17 @@ msgstr ""
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Tiempu d'entrada"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
@@ -2353,58 +2408,58 @@ msgstr ""
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Mou absolutu"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Mou relativu"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Activar prevención de saltu d'aguya"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Calidá de la señal"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Funciona con xwax"
 
 #: DlgPreferences#1
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencies"
 
 #: DlgPreferences#2
 msgid "Sound Hardware"
-msgstr ""
+msgstr "Hardware de soníu"
 
 #: DlgPreferences#3
 msgid "Controllers"
-msgstr ""
+msgstr "Controladores"
 
 #: DlgPreferences#4
 msgctxt "DlgPreferences#4"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgPreferences#5
 msgid "Interface"
-msgstr ""
+msgstr "Interfaz"
 
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Equalizers"
-msgstr ""
+msgstr "Ecualizadores"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
@@ -2414,7 +2469,7 @@ msgstr ""
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "Recording"
-msgstr ""
+msgstr "Grabación"
 
 #: DlgPreferences#9
 msgid "Beat Detection"
@@ -2432,147 +2487,147 @@ msgstr ""
 #: DlgPreferences#12
 msgctxt "DlgPreferences#12"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Control de vinilu"
 
 #: DlgPreferences#13
 msgid "Live Broadcasting"
-msgstr ""
+msgstr "Emisión en vivo"
 
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Diálogu"
 
 #: DlgPreferencesDlg#2
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
 msgid "Manage"
-msgstr ""
+msgstr "Alministrar"
 
 #: DlgPrepare#2
 msgid "New"
-msgstr ""
+msgstr "Nuevu"
 
 #: DlgPrepare#3
 msgid "All"
-msgstr ""
+msgstr "Too"
 
 #: DlgPrepare#4
 msgid "Progress"
-msgstr ""
+msgstr "Progresu"
 
 #: DlgPrepare#5
 msgid "Select All"
-msgstr ""
+msgstr "Seleicionar too"
 
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr ""
+msgstr "Analizar"
 
 #: DlgPrepare#7
 msgid "Stop Analysis"
-msgstr ""
+msgstr "Detener analís"
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "Analizando %1%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
 msgid "Manage"
-msgstr ""
+msgstr "Alministrar"
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr ""
+msgstr "Estáu:"
 
 #: DlgRecording#3
 msgid "Start Recording"
-msgstr ""
+msgstr "Aniciar grabación"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr ""
+msgstr "Aniciar grabación equí..."
 
 #: DlgRecording#5
 msgid "Stop Recording"
-msgstr ""
+msgstr "Detener grabación"
 
 #: DlgRecording#6
 msgid "Recording to file: "
-msgstr ""
+msgstr "Grabando a ficheru: "
 
 #: DlgRecording#7
 msgid "MB written"
-msgstr ""
+msgstr "MB escritos"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Editor de pistes"
 
 #: DlgTrackInfo#2
 msgid "Title:"
-msgstr ""
+msgstr "Títulu:"
 
 #: DlgTrackInfo#3
 msgid "Artist:"
-msgstr ""
+msgstr "Artista:"
 
 #: DlgTrackInfo#4
 msgid "Album:"
-msgstr ""
+msgstr "Álbum:"
 
 #: DlgTrackInfo#5
 msgid "Date:"
-msgstr ""
+msgstr "Data:"
 
 #: DlgTrackInfo#6
 msgid "Track #:"
-msgstr ""
+msgstr "Pista #:"
 
 #: DlgTrackInfo#7
 msgid "Genre:"
-msgstr ""
+msgstr "Xéneru:"
 
 #: DlgTrackInfo#8
 msgid "Composer:"
-msgstr ""
+msgstr "Compositor:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Nome del ficheru:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
-msgstr ""
+msgstr "Duración:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Triba de ficheru:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Comentarios:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
-msgstr ""
+msgstr "Recargar metadatos de la pista dende'l ficheru."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Información de la pista (Click pa espander)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2580,11 +2635,11 @@ msgstr ""
 
 #: DlgTrackInfo#18
 msgid "x2"
-msgstr ""
+msgstr "x2"
 
 #: DlgTrackInfo#19
 msgid "/2"
-msgstr ""
+msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
@@ -2600,7 +2655,7 @@ msgstr ""
 
 #: DlgTrackInfo#23
 msgid "Track:"
-msgstr ""
+msgstr "Pista:"
 
 #: DlgTrackInfo#24
 msgid "Cue Id"
@@ -2609,7 +2664,7 @@ msgstr ""
 #: DlgTrackInfo#25
 msgctxt "DlgTrackInfo#25"
 msgid "Position"
-msgstr ""
+msgstr "Posición"
 
 #: DlgTrackInfo#26
 msgid "Hotcue"
@@ -2617,7 +2672,7 @@ msgstr ""
 
 #: DlgTrackInfo#27
 msgid "Label"
-msgstr ""
+msgstr "Etiqueta"
 
 #: DlgTrackInfo#28
 msgid "Activate Cue"
@@ -2637,27 +2692,27 @@ msgstr ""
 
 #: DlgTrackInfo#32
 msgid "&Apply"
-msgstr ""
+msgstr "&Aplicar"
 
 #: DlgTrackInfo#33
 msgid "&Cancel"
-msgstr ""
+msgstr "En&caboxar"
 
 #: DlgTrackInfo#34
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#35
 msgid "&Next >>"
-msgstr ""
+msgstr "Siguie&nte >>"
 
 #: EmptyWaveformWidget#1
 msgid "Empty"
-msgstr ""
+msgstr "Balera"
 
 #: EncoderMp3#1
 msgid "Encoder"
-msgstr ""
+msgstr "Codificador"
 
 #: EncoderMp3#2
 msgid ""
@@ -2668,6 +2723,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx nun pue grabar o emitir en MP3 ensin el codificador de MP3 "
+"&quot;lame&quot;. Por problemes de llicencia, nun podemos incluilu con "
+"Mixxx. Pa grabar o emitir en MP3 debes descargar <b>libmp3lame</b> ya "
+"instalalu nel to ordenador. <p>Visita <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>la Wiki de "
+"Mixxx</a> pa más información. </html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2678,6 +2739,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx nun pue grabar o emitir en MP3 ensin el codificador de MP3 "
+"&quot;lame&quot;. Por problemes de llicencia, nun podemos incluilu con "
+"Mixxx. Pa grabar o emitir en MP3 debes descargar <b>lame_enc.dll</b> ya "
+"instalalu nel to ordenador. <p>Visita <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>la Wiki "
+"de Mixxx</a> pa más información. </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2688,6 +2755,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx nun pue grabar o emitir en MP3 ensin el codificador de MP3 "
+"&quot;lame&quot;. Por problemes de llicencia, nun podemos incluilu con "
+"Mixxx. Pa grabar o emitir en MP3 debes descargar <b>libmp3lame</b> ya "
+"instalalu nel to ordenador. <p>Visita <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>la Wiki "
+"de Mixxx</a> pa más información. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2695,11 +2768,14 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
+"<html>Mixxx detectó que tas usando una versión camudada de \"libmp3lame\". "
+"Visita <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>la "
+"Wiki de Mixxx</a> pa más información.</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
 msgid "Recording"
-msgstr ""
+msgstr "Grabación"
 
 #: EngineRecord#2
 msgid ""

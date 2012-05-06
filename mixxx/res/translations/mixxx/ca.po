@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-02 10:19-0400\n"
-"PO-Revision-Date: 2012-05-04 21:19+0000\n"
+"PO-Revision-Date: 2012-05-05 15:10+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-05 04:38+0000\n"
+"X-Launchpad-Export-Date: 2012-05-06 04:37+0000\n"
 "X-Generator: Launchpad (build 15195)\n"
 
 #: AutoDJFeature#1
@@ -1243,16 +1243,16 @@ msgstr "Carrega per Defecte:"
 
 #: DlgPrefControllerDlg#7
 msgid "Click to start the Controller Learning wizard."
-msgstr ""
+msgstr "Faça click per iniciar l'assistent d'aprenentatge del controlador"
 
 #: DlgPrefControllerDlg#8
 msgid "Learning Wizard (MIDI Only)"
-msgstr ""
+msgstr "Assistent d'aprenentatge (només MIDI)"
 
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
 msgid "Position"
-msgstr ""
+msgstr "Posició"
 
 #: DlgPrefControls#2
 msgid "Remaining"
@@ -1273,17 +1273,17 @@ msgstr "Mode CDJ"
 #: DlgPrefControls#6
 msgctxt "DlgPrefControls#6"
 msgid "Simple"
-msgstr ""
+msgstr "Senzill"
 
 #: DlgPrefControls#7
 msgctxt "DlgPrefControls#7"
 msgid "On"
-msgstr ""
+msgstr "Actiu"
 
 #: DlgPrefControls#8
 msgctxt "DlgPrefControls#8"
 msgid "Off"
-msgstr ""
+msgstr "Inactiu"
 
 #: DlgPrefControls#9
 msgid "Mixxx Detected a WVGA Screen"
@@ -1307,15 +1307,15 @@ msgstr "Esta pell no permet esquemes"
 
 #: DlgPrefControls#13
 msgid "6%"
-msgstr ""
+msgstr "6%"
 
 #: DlgPrefControls#14
 msgid "8% (Technics SL-1210)"
-msgstr ""
+msgstr "8% (Technics SL-1210)"
 
 #: DlgPrefControls#15
 msgid "Down increases speed (Technics SL-1210)"
-msgstr ""
+msgstr "Aminora l'increment de velocitat (Technics SL-1210)"
 
 #: DlgPrefControls#16
 msgid "10%"
@@ -1360,7 +1360,7 @@ msgstr "Incrementa la velocitat"
 #: DlgPrefControls#26
 msgctxt "DlgPrefControls#26"
 msgid "Information"
-msgstr ""
+msgstr "Informacio"
 
 #: DlgPrefControls#27
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1390,12 +1390,12 @@ msgstr "Informació sobre eines"
 #: DlgPrefControlsDlg#6
 msgctxt "DlgPrefControlsDlg#6"
 msgid "On"
-msgstr ""
+msgstr "Actiu"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "Off"
-msgstr ""
+msgstr "Inactiu"
 
 #: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
@@ -1483,11 +1483,11 @@ msgstr "Zoom per defecte"
 
 #: DlgPrefControlsDlg#29
 msgid "Visual gain"
-msgstr ""
+msgstr "Guany visual"
 
 #: DlgPrefControlsDlg#30
 msgid "<html><head/><body><p>Global visual gain</p></body></html>"
-msgstr ""
+msgstr "<html><head/><body><p>Guany visual global</p></body></html>"
 
 #: DlgPrefControlsDlg#31
 msgid "<html><head/><body><p>Low visual gain</p></body></html>"
