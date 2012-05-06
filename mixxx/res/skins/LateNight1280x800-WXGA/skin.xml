@@ -4347,8 +4347,6 @@
 			-->
 			<StatusLight>
 				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-				<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
-				</Style>
 				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
@@ -4361,7 +4359,6 @@
 			</StatusLight>
 			<StatusLight>
 				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-				</Style>
 				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
