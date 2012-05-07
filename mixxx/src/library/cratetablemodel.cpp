@@ -89,6 +89,31 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 }
 
+int CrateTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    // If a track is dropped but it isn't in the library, then add it because
+    // the user probably dropped a file from outside Mixxx into this playlist.
+    QList<QFileInfo> fileInfoList;
+    foreach(QString fileLocation, locations) {
+        fileInfoList.append(QFileInfo(fileLocation));
+    }
+
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+    QList<int> trackIDs = trackDao.addTracks(fileInfoList, true);
+
+    int tracksAdded = m_pTrackCollection->getCrateDAO().addTracksToCrate(
+        trackIDs, m_iCrateId);
+    if (tracksAdded > 0) {
+        select();
+    }
+
+    if (locations.size() - tracksAdded > 0) {
+        qDebug() << "CrateTableModel::addTracks could not add"
+                 << locations.size() - tracksAdded
+                 << "to crate" << m_iCrateId;
+    }
+    return tracksAdded;
+}
+
 TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
     int trackId = getTrackId(index);
     return m_pTrackCollection->getTrackDAO().getTrack(trackId);
@@ -172,7 +197,8 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
-            | TRACKMODELCAPS_CLEAR_BEATS;
+            | TRACKMODELCAPS_CLEAR_BEATS
+            | TRACKMODELCAPS_RESETPLAYED;
 
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     bool locked = crateDao.isCrateLocked(m_iCrateId);

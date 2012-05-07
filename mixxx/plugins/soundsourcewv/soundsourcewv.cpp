@@ -9,8 +9,6 @@
 
 #include "soundsourcewv.h"
 
-void format_samples(int bps, char *dst, int32_t *src, uint32_t count);
-
 namespace Mixxx {
 
 SoundSourceWV::SoundSourceWV(QString qFilename) : SoundSource(qFilename)
@@ -91,7 +89,8 @@ unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destinat
 		tsdone=WavpackUnpackSamples(filewvc, tempbuffer, timesamps);	//fill temp buffer with timesamps*4bytes*channels
 				//data is right justified, format_samples() fixes that.
 
-		format_samples(Bps, (char *) (dest + (sampsread>>1)*m_iChannels), tempbuffer, tsdone*m_iChannels); //this will unpack the 4byte/sample
+		SoundSourceWV::format_samples(Bps, (char *) (dest + (sampsread>>1)*m_iChannels), tempbuffer, tsdone*m_iChannels);
+								//this will unpack the 4byte/sample
 								//output of wUnpackSamples(), sign-extending or truncating to output 16bit / sample.
 								//specifying dest+sampsread should resume the conversion where it was left if size requested
 								//required multiple reads (size req. > fixed buffer size)
@@ -152,7 +151,7 @@ int SoundSourceWV::parseHeader() {
     return ERR;
 }
 
-void format_samples(int Bps, char *dst, int32_t *src, uint32_t count)
+void SoundSourceWV::format_samples(int Bps, char *dst, int32_t *src, uint32_t count)
 {
 	//this handles converting the fixed 32bit per sample produced by UnpackSamples
 	//to 16 bps, by truncating (24/32) or sign-extending (8)

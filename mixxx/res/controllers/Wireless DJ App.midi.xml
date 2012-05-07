@@ -86,6 +86,33 @@
                 </options>
             </control>
             <control>
+                <status>0xb0</status>
+                <midino>0x1c</midino>
+                <group>[Flanger]</group>
+                <key>lfoDelay</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb0</status>
+                <midino>0x1d</midino>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb0</status>
+                <midino>0x1e</midino>
+                <group>[Flanger]</group>
+                <key>lfoPeriod</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <status>0x90</status>
                 <midino>0x4</midino>
                 <group>[Channel1]</group>
@@ -131,13 +158,16 @@
                 </options>
             </control>
             <control>
-                <status>0x80</status>
-                <midino>0x6</midino>
+                <status>0x90</status>
+                <midino>0x8</midino>
                 <group>[Channel1]</group>
-                <key>WirelessDJ.tempo_tuning</key>
-                <options>
-                    <Script-Binding/>
-                </options>
+                <key>flanger</key>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0x8</midino>
+                <group>[Channel1]</group>
+                <key>flanger</key>
             </control>
             <control>
                 <status>0xb0</status>
@@ -249,9 +279,36 @@
                 </options>
             </control>
             <control>
+                <status>0xb1</status>
+                <midino>0x1c</midino>
+                <group>[Flanger]</group>
+                <key>lfoDelay</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb1</status>
+                <midino>0x1d</midino>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb1</status>
+                <midino>0x1e</midino>
+                <group>[Flanger]</group>
+                <key>lfoPeriod</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <status>0x91</status>
                 <midino>0x4</midino>
-                <group>[Channel1]</group>
+                <group>[Channel2]</group>
                 <key>WirelessDJ.seek_on</key>
                 <options>
                     <Script-Binding/>
@@ -265,6 +322,18 @@
                 <options>
                     <Script-Binding/>
                 </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x8</midino>
+                <group>[Channel2]</group>
+                <key>flanger</key>
+            </control>
+            <control>
+                <status>0x81</status>
+                <midino>0x8</midino>
+                <group>[Channel2]</group>
+                <key>flanger</key>
             </control>
             <control>
                 <status>0xb1</status>
@@ -304,48 +373,5 @@
                 </options>
             </control>
         </controls>
-        <outputs>   
-            <!-- Play and Cue-headphone controls -->
-            <output>
-				<group>[Channel1]</group>
-				<key>play</key>
-				<status>0x90</status>
-				<midino>0x1</midino>
-				<on>0x7f</on>
-				<off>0x00</off>
-				<maximum>1.0</maximum>
-				<minimum>0.1</minimum>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>play</key>
-				<status>0x91</status>
-				<midino>0x1</midino>
-				<on>0x7f</on>
-				<off>0x00</off>
-				<maximum>1.0</maximum>
-				<minimum>0.1</minimum>
-			</output>
-			<output>
-				<group>[Channel1]</group>
-				<key>pfl</key>
-				<status>0x90</status>
-				<midino>0x3</midino>
-				<on>0x00</on>
-				<off>0x7f</off>
-				<maximum>0.1</maximum>
-				<minimum>0.0</minimum>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>pfl</key>
-				<status>0x91</status>
-				<midino>0x3</midino>
-				<on>0x00</on>
-				<off>0x7f</off>
-				<maximum>0.1</maximum>
-				<minimum>0.0</minimum>
-			</output>
-        </outputs>
-    </controller>
+     </controller>
 </MixxxMIDIPreset>
