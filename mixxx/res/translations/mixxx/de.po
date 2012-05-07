@@ -4,14 +4,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-02 10:19-0400\n"
-"PO-Revision-Date: 2012-05-02 19:27+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2012-05-07 02:06+0000\n"
+"Last-Translator: Alexander Haack <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-03 05:14+0000\n"
-"X-Generator: Launchpad (build 15185)\n"
+"X-Launchpad-Export-Date: 2012-05-07 04:36+0000\n"
+"X-Generator: Launchpad (build 15195)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -84,7 +84,7 @@ msgstr "Erstellung der Wiedergabeliste fehlgeschlagen"
 
 #: BasePlaylistFeature#16
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Ein Fehler ist beim Erstellen der Wiedergabeliste aufgetreten: "
+msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -1210,7 +1210,7 @@ msgstr "Keine"
 
 #: DlgPrefController#2
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 von %2"
 
 #: DlgPrefController#3
 msgid "Custom Preset"
@@ -1494,23 +1494,26 @@ msgstr "Standard-Vergrößerung"
 
 #: DlgPrefControlsDlg#29
 msgid "Visual gain"
-msgstr ""
+msgstr "Visuelle Verstärkung"
 
 #: DlgPrefControlsDlg#30
 msgid "<html><head/><body><p>Global visual gain</p></body></html>"
-msgstr ""
+msgstr "<html><head/><body><p>Globale visuelle Verstärkung</p></body></html>"
 
 #: DlgPrefControlsDlg#31
 msgid "<html><head/><body><p>Low visual gain</p></body></html>"
 msgstr ""
+"<html><head/><body><p>Visuelle  Verstärkung der Tiefen</p></body></html>"
 
 #: DlgPrefControlsDlg#32
 msgid "<html><head/><body><p>Medium visual gain</p></body></html>"
 msgstr ""
+"<html><head/><body><p>Visuelle Verstärkung der Mitten</p></body></html>"
 
 #: DlgPrefControlsDlg#33
 msgid "<html><head/><body><p>High visual gain</p></body></html>"
 msgstr ""
+"<html><head/><body><p>Visuelle Verstärkung der Höhen</p></body></html>"
 
 #: DlgPrefControlsDlg#34
 msgid "Synchronize"
@@ -1771,9 +1774,9 @@ msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
-"<b>Diese Version von Mixxx unterstützt keine Vinyl-Steuerung.</b> <br> Bitte "
-"besuchen Sie <a href=\"http://mixxx.org\">Mixxx.org</a> für weitere "
-"Informationen."
+"<b>Diese Version von Mixxx unterstützt keine Vinyl-Steuerung.</b> <br>  Für "
+"weitere Informationen besuchen Sie Bitte <a "
+"href=\"http://mixxx.org\">Mixxx.org</a>."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1850,8 +1853,8 @@ msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
-"Unterstützen Sie Mixxx und erlauben das Sammeln und Senden\n"
-"von Statistiken über die Wiedergabe von mitgelieferten Titel und die Anzahl "
+"Unterstützen Sie Mixxx und erlauben Sie das Sammeln und Senden\n"
+"von Statistiken über die Wiedergabe der mitgelieferten Titel und die Anzahl "
 "der ausgehenden Links"
 
 #: DlgPrefRecord#1
@@ -2380,8 +2383,8 @@ msgstr ""
 "weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound-"
-"Hardware-Einstellungen aus.</span></p></body></html>"
+"weight:600;\">Bitte wählen Sie die Audio-Geräte für die Vinyl-Steuerung in "
+"den Sound Hardware-Einstellungen aus.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
