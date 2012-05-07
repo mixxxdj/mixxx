@@ -27,6 +27,35 @@ bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
+class BeatMapIterator : public BeatIterator {
+  public:
+    BeatMapIterator(BeatList::const_iterator start, BeatList::const_iterator end)
+            : m_currentBeat(start),
+              m_endBeat(end) {
+        // Advance to the first enabled beat.
+        while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
+            m_currentBeat++;
+        }
+    }
+
+    virtual bool hasNext() const {
+        return m_currentBeat != m_endBeat;
+    }
+
+    virtual double next() {
+        double beat = framesToSamples(m_currentBeat->frame_position());
+        m_currentBeat++;
+        while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
+            m_currentBeat++;
+        }
+        return beat;
+    }
+
+  private:
+    BeatList::const_iterator m_currentBeat;
+    BeatList::const_iterator m_endBeat;
+};
+
 BeatMap::BeatMap(TrackPointer pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive) {
@@ -196,13 +225,12 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     return -1;
 }
 
-void BeatMap::findBeats(double startSample, double stopSample,
-                        SampleList* pBeatsList) const {
+BeatIterator* BeatMap::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     //startSample and stopSample are sample offsets, converting them to
     //frames
     if (!isValid() || startSample > stopSample) {
-        return;
+        return NULL;
     }
 
     Beat startBeat, stopBeat;
@@ -217,13 +245,10 @@ void BeatMap::findBeats(double startSample, double stopSample,
             qUpperBound(m_beats.begin(), m_beats.end(),
                         stopBeat, BeatLessThan);
 
-    for (; curBeat != lastBeat; curBeat++) {
-        // BeatGrid::findBeats outputs a frame offset * kFrameSize, i.e. a
-        // sample offset here it should be the same:
-        if (curBeat->enabled()) {
-            pBeatsList->append(framesToSamples(curBeat->frame_position()));
-        }
+    if (curBeat >= lastBeat) {
+        return NULL;
     }
+    return new BeatMapIterator(curBeat, lastBeat);
 }
 
 bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
