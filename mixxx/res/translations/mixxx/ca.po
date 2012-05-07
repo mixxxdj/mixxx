@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-02 10:19-0400\n"
-"PO-Revision-Date: 2012-05-05 15:10+0000\n"
+"PO-Revision-Date: 2012-05-06 16:34+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-06 04:37+0000\n"
+"X-Launchpad-Export-Date: 2012-05-07 04:36+0000\n"
 "X-Generator: Launchpad (build 15195)\n"
 
 #: AutoDJFeature#1
@@ -1591,13 +1591,16 @@ msgstr "Restableix"
 
 #: DlgPrefMappableController#1
 msgid "Apply device settings?"
-msgstr ""
+msgstr "Aplicar configuració del dispositiu?"
 
 #: DlgPrefMappableController#2
 msgid ""
 "Your settings must be applied before starting the learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"És necessari aplicar la configuració abans de començar el assistent "
+"d'aprenentatge.\n"
+"Aplicar la configuració i continuar?"
 
 #: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
@@ -1618,11 +1621,11 @@ msgstr "Estàs segur de esborrar tots els paràmetres d'eixida?"
 #: DlgPrefNoControllersDlg#1
 msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulari3"
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
-msgstr ""
+msgstr "No hi ha controladors disponibles."
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
@@ -1784,12 +1787,12 @@ msgstr "Complements carregats:"
 #: DlgPrefPlaylistDlg#5
 msgctxt "DlgPrefPlaylistDlg#5"
 msgid "None"
-msgstr ""
+msgstr "Cap"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Miscel·lània"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
@@ -1807,12 +1810,12 @@ msgstr ""
 #: DlgPrefPlaylistDlg#10
 msgctxt "DlgPrefPlaylistDlg#10"
 msgid "Browse..."
-msgstr ""
+msgstr "Explora..."
 
 #: DlgPrefPlaylistDlg#11
 msgctxt "DlgPrefPlaylistDlg#11"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Music Directory:"
@@ -1844,7 +1847,7 @@ msgstr "kbps"
 
 #: DlgPrefRecord#2
 msgid "Choose recordings direcory"
-msgstr ""
+msgstr "Trie carpeta de gravacions"
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
@@ -1853,21 +1856,21 @@ msgstr "Formulari3"
 
 #: DlgPrefRecordDlg#2
 msgid "Recordings Directory"
-msgstr ""
+msgstr "Carpeta de gravacions"
 
 #: DlgPrefRecordDlg#3
 msgid "Recordings Directory:"
-msgstr ""
+msgstr "Carpeta de gravacions:"
 
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
 msgid "Browse..."
-msgstr ""
+msgstr "Explora..."
 
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
-msgstr ""
+msgstr "Codificant"
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
@@ -1888,7 +1891,7 @@ msgstr "Etiquetes"
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Title"
-msgstr ""
+msgstr "Tí­tol"
 
 #: DlgPrefRecordDlg#11
 msgid "Author"
@@ -1897,12 +1900,12 @@ msgstr "Autor"
 #: DlgPrefRecordDlg#12
 msgctxt "DlgPrefRecordDlg#12"
 msgid "Album"
-msgstr ""
+msgstr "Àlbum"
 
 #: DlgPrefRecordDlg#13
 msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Miscel·lània"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
@@ -1935,13 +1938,15 @@ msgstr "Activa l'anàlisi de Replay Gain"
 
 #: DlgPrefReplayGainDlg#5
 msgid "Apply volume normalization to loaded tracks."
-msgstr ""
+msgstr "Aplica normalització de volum a les pistes carregades."
 
 #: DlgPrefReplayGainDlg#6
 msgid ""
 "Calculate ReplayGain normalization for tracks which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Calcula la normalització ReplayGain a les pistes que s'han perdut de les "
+"metadades ReplayGain."
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1949,6 +1954,9 @@ msgid ""
 "applied to a new track. You may wish to wait before adjusting the pregain "
 "and volume."
 msgstr ""
+"A ordinadors antics, pot tardar uns segons abans de que la normalització del "
+"volum siga aplicada a la nova pista. És possible que desitge esperar abans "
+"d'ajustar el pregain i el volum."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
@@ -2278,7 +2286,7 @@ msgstr ""
 #: DlgPrefSoundDlg#5
 msgctxt "DlgPrefSoundDlg#5"
 msgid "Output"
-msgstr ""
+msgstr "Resultats"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
@@ -2459,7 +2467,7 @@ msgstr "Amb tecnologia xwax"
 
 #: DlgPreferences#1
 msgid "Preferences"
-msgstr ""
+msgstr "Preferències"
 
 #: DlgPreferences#2
 msgid "Sound Hardware"
@@ -2467,12 +2475,12 @@ msgstr "Maquinari de so"
 
 #: DlgPreferences#3
 msgid "Controllers"
-msgstr ""
+msgstr "Controladors"
 
 #: DlgPreferences#4
 msgctxt "DlgPreferences#4"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgPreferences#5
 msgid "Interface"
@@ -2481,17 +2489,17 @@ msgstr "Interfície"
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Equalizers"
-msgstr ""
+msgstr "Equalitzadors"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "Recording"
-msgstr ""
+msgstr "S'està enregistrant"
 
 #: DlgPreferences#9
 msgid "Beat Detection"
@@ -2500,7 +2508,7 @@ msgstr "Detecció de ritme"
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Detecció BPM"
 
 #: DlgPreferences#11
 msgid "Normalization"
@@ -2509,7 +2517,7 @@ msgstr "Normalització"
 #: DlgPreferences#12
 msgctxt "DlgPreferences#12"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Control de vinil"
 
 #: DlgPreferences#13
 msgid "Live Broadcasting"
@@ -2679,7 +2687,7 @@ msgstr "Pista BPM"
 
 #: DlgTrackInfo#23
 msgid "Track:"
-msgstr ""
+msgstr "Pista:"
 
 #: DlgTrackInfo#24
 msgid "Cue Id"
@@ -2945,7 +2953,7 @@ msgstr "Qüestió"
 
 #: GLSLWaveformWidget#1
 msgid "Filtered (experimental)"
-msgstr ""
+msgstr "Filtrat (experimental)"
 
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
@@ -3009,17 +3017,19 @@ msgstr "Cancel·la"
 
 #: MidiController#1
 msgid "MixxxControl not found"
-msgstr ""
+msgstr "No s'ha trobat MixxxControl"
 
 #: MidiController#2
 msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
-msgstr ""
+msgstr "El MixxxControl '%1, %2' especificat al mapejat carregat és invàlid."
 
 #: MidiController#3
 msgid ""
 "The MIDI output message 0x%1 0x%2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"El missatge de la eixida MIDI 0x%1 0x%2 Pot no estar obligat.\n"
+"(Faça click a Mostra Detalls per ajuda.)"
 
 #: MidiController#4
 msgid ""
