@@ -936,6 +936,15 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget) {
     if (!XmlParse::selectNode(node, "Tooltip").isNull()) {
         QString toolTip = XmlParse::selectNodeQString(node, "Tooltip");
         pWidget->setToolTip(toolTip);
+    } else if (!XmlParse::selectNode(node, "TooltipId").isNull()) {
+        QString toolTipId = XmlParse::selectNodeQString(node, "TooltipId");
+        QString toolTip = m_tooltips.tooltipForId(toolTipId);
+
+        if (toolTipId.length() > 0) {
+            pWidget->setToolTip(toolTip);
+        } else {
+            qDebug() << "Invalid <TooltipId> in skin.xml:" << toolTipId;
+        }
     }
 
     QString style = XmlParse::selectNodeQString(node, "Style");
