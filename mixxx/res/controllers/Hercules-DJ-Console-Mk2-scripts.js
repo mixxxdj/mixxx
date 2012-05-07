@@ -255,7 +255,7 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
 	break; // End fx mode
 
     case "cue": 
-	if (value){
+	if (value) { // onPress
 		switch (HerculesMk2.controls.inputs[control].name) {
 		    case "fx 1":
 			HerculesMk2.cueLastDate1[group] = new Date().getTime();
@@ -267,27 +267,35 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
 			HerculesMk2.cueLastDate3[group] = new Date().getTime();
 			break;
 		}
-	}
-	if (!value){
+	} else { // onRelease
 		currentDate = new Date().getTime();
 		switch (HerculesMk2.controls.inputs[control].name) {
 		    case "fx 1":
-			if (currentDate - HerculesMk2.cueLastDate1[group] < HerculesMk2.cueLongTime)
-				engine.setValue(group,"hotcue_1_activate",1)
-			else
-				engine.setValue(group,"hotcue_1_clear",1)
+			if (currentDate - HerculesMk2.cueLastDate1[group] < HerculesMk2.cueLongTime) {
+				engine.setValue(group,"hotcue_1_activate",1);
+				engine.setValue(group,"hotcue_1_activate",0);
+			} else {
+				engine.setValue(group,"hotcue_1_clear",1);
+				engine.setValue(group,"hotcue_1_clear",0);
+			}
 			break;
 		    case "fx 2":
-			if (currentDate - HerculesMk2.cueLastDate2[group] < HerculesMk2.cueLongTime)
-				engine.setValue(group,"hotcue_2_activate",1)
-			else
-				engine.setValue(group,"hotcue_2_clear",1)
+			if (currentDate - HerculesMk2.cueLastDate2[group] < HerculesMk2.cueLongTime) {
+				engine.setValue(group,"hotcue_2_activate",1);
+				engine.setValue(group,"hotcue_2_activate",0);
+			} else {
+				engine.setValue(group,"hotcue_2_clear",1);
+				engine.setValue(group,"hotcue_2_clear",0);
+			}
 			break;
 		    case "fx 3":
-			if (currentDate - HerculesMk2.cueLastDate3[group] < HerculesMk2.cueLongTime)
-				engine.setValue(group,"hotcue_3_activate",1)
-			else
-				engine.setValue(group,"hotcue_3_clear",1)
+			if (currentDate - HerculesMk2.cueLastDate3[group] < HerculesMk2.cueLongTime) {
+				engine.setValue(group,"hotcue_3_activate",1);
+				engine.setValue(group,"hotcue_3_activate",0);
+			} else {
+				engine.setValue(group,"hotcue_3_clear",1);
+				engine.setValue(group,"hotcue_3_clear",0);
+			}
 			break;
 		}
 

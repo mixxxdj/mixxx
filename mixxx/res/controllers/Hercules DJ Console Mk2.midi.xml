@@ -27,7 +27,7 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group> 
+        <group>[Channel1]</group>
         <key>HerculesMk2.cue</key>
 	<status>0xB0</status>
         <midino>0x09</midino>
@@ -325,20 +325,27 @@
           <Script-Binding/>
         </options>
       </control>
+
       <control>
-        <group>[Playlist]</group>
-        <key>SelectPrevTrack</key>
+        <group>[Channel1]</group>
+        <key>keylock</key>
         <status>0xB0</status>
         <midino>0x16</midino>
-        <options/>
+        <options>
+          <Button />
+        </options>
       </control>
+
       <control>
-        <group>[Playlist]</group>
-        <key>SelectNextTrack</key>
+        <group>[Channel2]</group>
+        <key>keylock</key>
         <status>0xB0</status>
         <midino>0x1A</midino>
-        <options/>
+        <options>
+          <Button />
+        </options>
       </control>
+
       <control>
         <group>[Channel1]</group>
         <key>HerculesMk2.loadSelectedTrack</key>
