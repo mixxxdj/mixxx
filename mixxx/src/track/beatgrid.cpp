@@ -11,6 +11,30 @@ struct BeatGridData {
 	double firstBeat;
 };
 
+class BeatGridIterator : public BeatIterator {
+  public:
+    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
+            : m_dBeatLength(dBeatLength),
+              m_dCurrentSample(dFirstBeat),
+              m_dEndSample(dEndSample) {
+    }
+
+    virtual bool hasNext() const {
+        return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
+    }
+
+    virtual double next() {
+        double beat = m_dCurrentSample;
+        m_dCurrentSample += m_dBeatLength;
+        return beat;
+    }
+
+  private:
+    double m_dBeatLength;
+    double m_dCurrentSample;
+    double m_dEndSample;
+};
+
 BeatGrid::BeatGrid(TrackInfoObject* pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
@@ -26,6 +50,10 @@ BeatGrid::~BeatGrid() {
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
+    if (dBpm < 0) {
+        dBpm = 0.0;
+    }
+
     QMutexLocker lock(&m_mutex);
     m_grid.mutable_bpm()->set_bpm(dBpm);
     m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample / kFrameSize);
@@ -149,16 +177,18 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     return dResult;
 }
 
-void BeatGrid::findBeats(double startSample, double stopSample, SampleList* pBeatsList) const {
+BeatIterator* BeatGrid::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startSample > stopSample) {
-        return;
+        return NULL;
     }
+    // qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
+    //          << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
     double curBeat = findNextBeat(startSample);
-    while (curBeat <= stopSample) {
-        pBeatsList->append(curBeat);
-        curBeat += m_dBeatLength;
+    if (curBeat == -1.0) {
+        return NULL;
     }
+    return new BeatGridIterator(m_dBeatLength, curBeat, stopSample);
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -167,7 +197,7 @@ bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
         return false;
     }
     double curBeat = findNextBeat(startSample);
-    if (curBeat <= stopSample) {
+    if (curBeat != -1.0 && curBeat <= stopSample) {
         return true;
     }
     return false;
