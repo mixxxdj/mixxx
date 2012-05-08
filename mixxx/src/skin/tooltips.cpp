@@ -36,7 +36,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Waveform display")
             << tr("Shows the loaded tracks' waveforms near the playback position.")
             << tr("Left-click: Use the mouse to scratch, halt, spin back and push forward a track.")
-            << tr("Right-cLick: Drag with mouse to make temporary pitch adjustments.")
+            << tr("Right-click: Drag with mouse to make temporary pitch adjustments.")
             << tr("Drop tracks from library or external file manager here.");
 
     add("spinny")
@@ -44,7 +44,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Rotates during playback and shows the position of a track.")
             << tr("Use the mouse to scratch, halt, spin back and push forward a track.")
             << tr("Drop tracks from library or external file manager here.")
-            << tr("If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).");
+            << tr("If Vinyl control is enabled, it can display the time-coded vinyls signal quality (see Preferences→Vinyl Control).");
 
     add("pregain")
             << tr("Gain")
@@ -115,15 +115,15 @@ void Tooltips::addStandardTooltips() {
 
     add("show_microphone")
             << tr("Microphone")
-            << tr("Show/hide the microphone widget.");
+            << tr("Show/hide the microphone section.");
 
     add("show_samplers")
             << tr("Sampler")
-            << tr("Show/hide the Sampler widget.");
+            << tr("Show/hide the Sampler section.");
 
     add("show_vinylcontrol")
             << tr("Vinyl Control")
-            << tr("Show/hide the Vinyl Control widget.")
+            << tr("Show/hide the Vinyl Control section.")
             << tr("Activate Vinyl Control from the Menu→Options");
 
     add("microphone_volume")
@@ -132,7 +132,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Right-click: Reset to default value");
 
     add("microphone_talkover")
-            << tr("Microphone talkover")
+            << tr("Microphone talk-over")
             << tr("Hold-to-talk or short click for latching to")
             << tr("mix microphone input into the master output.");
 
@@ -206,11 +206,11 @@ void Tooltips::addStandardTooltips() {
 
     add("show_spinny")
             << tr("Spinning vinyl")
-            << tr("Show/hide the spinning vinyl widget");
+            << tr("Show/hide the spinning vinyl section");
 
     add("beats_translate_curpos")
             << tr("Adjust beatgrid")
-            << tr("Adjust beatgrid so closest beat is aligned with the current playposition.");
+            << tr("Adjust beatgrid so closest beat is aligned with the current play position.");
 
     add("keylock")
             << tr("Key-lock")
@@ -238,7 +238,7 @@ void Tooltips::addStandardTooltips() {
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << tr("Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).")
-            << tr("Change the default cue behaviour in Preferences→Interface.")
+            << tr("Change the default cue behavior in Preferences→Interface.")
             << tr("Left-click (while stopped): Places a cue-point at the current position on the waveform.")
             << tr("Right-click: The track will seek to the cue-point and stop.");
 
@@ -258,7 +258,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Right-click: Jumps to the end of the track.");
 
     add("beatsync_beatsync_tempo")
-            << tr("Syncronize")
+            << tr("Synchronize")
             << tr("Left-click: Syncs the tempo (BPM) and phase to that of the other track, ")
             << tr("if BPM is detected on both")
             << tr("Right-click: Syncs the tempo (BPM) to that of the other track,")
@@ -285,7 +285,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Hotcue")
             << tr("Left-click: If Hotcue is set, seeks the deck to Hotcue position.")
             << tr("If Hotcue is not set, sets Hotcue to the current play position.")
-            << tr("Right-click: If Hotcue is set, clears its hotcue status (delete).");
+            << tr("Right-click: If Hotcue is set, clears its Hotcue status (delete).");
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")
