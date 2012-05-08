@@ -237,6 +237,9 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
     AnalyserQueue* ret = new AnalyserQueue();
+
+    ret->addAnalyser(new AnalyserWaveform());
+
 #ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserGainVamp(_config));
