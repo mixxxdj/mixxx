@@ -538,6 +538,7 @@ class MixxxCore(Feature):
                    "waveform/widgets/softwarewaveformwidget.cpp",
                    "waveform/widgets/glslwaveformwidget.cpp",
                    "waveform/widgets/glsimplewaveformwidget.cpp",
+                   "waveform/widgets/qtwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
