@@ -106,7 +106,7 @@
 							**********************************************
 							-->
 							<Text>
-								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -116,7 +116,7 @@
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
-								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -133,7 +133,7 @@
 							**********************************************
 							-->
 							<NumberBpm>
-								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<TooltipId>visual_bpm</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 								</Style>
@@ -158,9 +158,9 @@
 							-->
 							<PushButton>
 							<!-- Original:
-								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap</TooltipId>
 							-->
-								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -181,7 +181,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler1]</Group>
 								<Pos>5,25</Pos>
@@ -228,7 +228,7 @@
 							**********************************************
 							-->
 							<Knob>
-								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>pregain</TooltipId>
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
@@ -244,7 +244,7 @@
 							**********************************************
 							-->
 							<StatusLight>
-								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+								<TooltipId>PeakIndicator</TooltipId>
 								<Style></Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
@@ -260,7 +260,7 @@
 							**********************************************
 							-->
 							<VuMeter>
-								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
+								<TooltipId>channel_VuMeter</TooltipId>
 								<Style></Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
@@ -281,7 +281,7 @@
 							**********************************************
 							-->
 							<SliderComposed>
-								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>rate</TooltipId>
 								<Style></Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
@@ -299,7 +299,7 @@
 							****************************************
 							-->
 							<PushButton>
-								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -331,7 +331,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -365,7 +365,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -399,7 +399,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -433,7 +433,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -473,7 +473,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+								<TooltipId>pfl</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -498,7 +498,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
+								<TooltipId>eject</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -521,7 +521,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+								<TooltipId>repeat</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -546,7 +546,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<TooltipId>orientation</TooltipId>
 								<Style></Style>
 								<NumberStates>3</NumberStates>
 								<State>
@@ -578,7 +578,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+								<TooltipId>keylock</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -609,7 +609,7 @@
 							**********************************************
 							-->
 							<Text>
-								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -619,7 +619,7 @@
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
-								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -636,7 +636,7 @@
 							**********************************************
 							-->
 							<NumberBpm>
-								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<TooltipId>visual_bpm</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 								</Style>
@@ -661,9 +661,9 @@
 							-->
 							<PushButton>
 							<!-- Original:
-								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap</TooltipId>
 							-->
-								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -684,7 +684,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler2]</Group>
 								<Pos>5,25</Pos>
@@ -731,7 +731,7 @@
 							**********************************************
 							-->
 							<Knob>
-								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>pregain</TooltipId>
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
@@ -747,7 +747,7 @@
 							**********************************************
 							-->
 							<StatusLight>
-								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+								<TooltipId>PeakIndicator</TooltipId>
 								<Style></Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
@@ -763,7 +763,7 @@
 							**********************************************
 							-->
 							<VuMeter>
-								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
+								<TooltipId>channel_VuMeter</TooltipId>
 								<Style></Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
@@ -784,7 +784,7 @@
 							**********************************************
 							-->
 							<SliderComposed>
-								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>rate</TooltipId>
 								<Style></Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
@@ -802,7 +802,7 @@
 							****************************************
 							-->
 							<PushButton>
-								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -834,7 +834,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -868,7 +868,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -902,7 +902,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -936,7 +936,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -976,7 +976,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+								<TooltipId>pfl</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1001,7 +1001,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
+								<TooltipId>eject</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -1024,7 +1024,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+								<TooltipId>repeat</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1049,7 +1049,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<TooltipId>orientation</TooltipId>
 								<Style></Style>
 								<NumberStates>3</NumberStates>
 								<State>
@@ -1081,7 +1081,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+								<TooltipId>keylock</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1112,7 +1112,7 @@
 							**********************************************
 							-->
 							<Text>
-								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -1122,7 +1122,7 @@
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
-								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -1139,7 +1139,7 @@
 							**********************************************
 							-->
 							<NumberBpm>
-								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<TooltipId>visual_bpm</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 								</Style>
@@ -1164,9 +1164,9 @@
 							-->
 							<PushButton>
 							<!-- Original:
-								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap</TooltipId>
 							-->
-								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -1187,7 +1187,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler3]</Group>
 								<Pos>5,25</Pos>
@@ -1234,7 +1234,7 @@
 							**********************************************
 							-->
 							<Knob>
-								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>pregain</TooltipId>
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
@@ -1250,7 +1250,7 @@
 							**********************************************
 							-->
 							<StatusLight>
-								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+								<TooltipId>PeakIndicator</TooltipId>
 								<Style></Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
@@ -1266,7 +1266,7 @@
 							**********************************************
 							-->
 							<VuMeter>
-								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
+								<TooltipId>channel_VuMeter</TooltipId>
 								<Style></Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
@@ -1287,7 +1287,7 @@
 							**********************************************
 							-->
 							<SliderComposed>
-								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>rate</TooltipId>
 								<Style></Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
@@ -1305,7 +1305,7 @@
 							****************************************
 							-->
 							<PushButton>
-								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1337,7 +1337,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1371,7 +1371,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1405,7 +1405,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1439,7 +1439,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1479,7 +1479,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+								<TooltipId>pfl</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1504,7 +1504,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
+								<TooltipId>eject</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -1527,7 +1527,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+								<TooltipId>repeat</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1552,7 +1552,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<TooltipId>orientation</TooltipId>
 								<Style></Style>
 								<NumberStates>3</NumberStates>
 								<State>
@@ -1584,7 +1584,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+								<TooltipId>keylock</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1615,7 +1615,7 @@
 							**********************************************
 							-->
 							<Text>
-								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -1625,7 +1625,7 @@
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
-								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 								</Style>
@@ -1642,7 +1642,7 @@
 							**********************************************
 							-->
 							<NumberBpm>
-								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<TooltipId>visual_bpm</TooltipId>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 								</Style>
@@ -1667,9 +1667,9 @@
 							-->
 							<PushButton>
 							<!-- Original:
-								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap</TooltipId>
 							-->
-								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -1690,7 +1690,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler4]</Group>
 								<Pos>5,25</Pos>
@@ -1737,7 +1737,7 @@
 							**********************************************
 							-->
 							<Knob>
-								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>pregain</TooltipId>
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
@@ -1753,7 +1753,7 @@
 							**********************************************
 							-->
 							<StatusLight>
-								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+								<TooltipId>PeakIndicator</TooltipId>
 								<Style></Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
@@ -1769,7 +1769,7 @@
 							**********************************************
 							-->
 							<VuMeter>
-								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
+								<TooltipId>channel_VuMeter</TooltipId>
 								<Style></Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
@@ -1790,7 +1790,7 @@
 							**********************************************
 							-->
 							<SliderComposed>
-								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+								<TooltipId>rate</TooltipId>
 								<Style></Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
@@ -1808,7 +1808,7 @@
 							****************************************
 							-->
 							<PushButton>
-								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -1840,7 +1840,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1874,7 +1874,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1908,7 +1908,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1942,7 +1942,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1982,7 +1982,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+								<TooltipId>pfl</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -2007,7 +2007,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
+								<TooltipId>eject</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -2030,7 +2030,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+								<TooltipId>repeat</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -2055,7 +2055,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<TooltipId>orientation</TooltipId>
 								<Style></Style>
 								<NumberStates>3</NumberStates>
 								<State>
@@ -2087,7 +2087,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+								<TooltipId>keylock</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -2208,7 +2208,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Microphone&#10;Show/hide the microphone widget.&#10;</Tooltip>
+						<TooltipId>show_microphone</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2233,7 +2233,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Sampler&#10;Show/hide the Sampler widget.&#10;</Tooltip>
+						<TooltipId>show_samplers</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2261,7 +2261,7 @@
 					Comment out this tabs that no broken widget are displayed to the user
 					-->
 					<PushButton>
-						<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;Activate Vinyl Control from the Menu→Options&#10;</Tooltip>
+						<TooltipId>show_vinylcontrol</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2286,7 +2286,7 @@
 					**********************************************
 					-->
 					<SliderComposed>
-						<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>channel_volume</TooltipId>
 						<Style></Style>
 						<Handle>knob_volume1.png</Handle>
 						<Slider>slider_volume1.png</Slider>
@@ -2298,7 +2298,7 @@
 						</Connection>
 					</SliderComposed>
 					<SliderComposed>
-						<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>channel_volume</TooltipId>
 						<Style></Style>
 						<Handle>knob_volume2.png</Handle>
 						<Slider>slider_volume2.png</Slider>
@@ -2316,7 +2316,7 @@
 					**********************************************
 					-->
 					<SliderComposed>
-						<Tooltip>Crossfader&#10;Fade between the channels and define what you hear through the master output.&#10;Right-click: Reset to default value&#10;Change the crossfader curve in Preferences→Crossfader&#10;</Tooltip>
+						<TooltipId>crossfader</TooltipId>
 						<Style></Style>
 						<Handle>knob_crossfader.png</Handle>
 						<Slider>slider_crossfader.png</Slider>
@@ -2334,7 +2334,7 @@
 					****************************************
 					-->
 					<PushButton>
-						<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
+						<TooltipId>play_cue_set</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -2362,7 +2362,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
+						<TooltipId>play_cue_set</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -2396,7 +2396,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
+						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -2417,7 +2417,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
+						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -2444,7 +2444,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+						<TooltipId>pfl</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2463,7 +2463,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
+						<TooltipId>pfl</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2488,7 +2488,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
+						<TooltipId>flanger</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2507,7 +2507,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
+						<TooltipId>flanger</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2532,7 +2532,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
+						<TooltipId>filterHighKill</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2553,7 +2553,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
+						<TooltipId>filterMidKill</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2574,7 +2574,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
+						<TooltipId>filterLowKill</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2596,7 +2596,7 @@
 					</PushButton>
 
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
+						<TooltipId>filterHighKill</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2617,7 +2617,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
+						<TooltipId>filterMidKill</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2638,7 +2638,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
+						<TooltipId>filterLowKill</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -2665,7 +2665,7 @@
 					**********************************************
 					-->
 					<Knob>
-						<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>master_volume</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2675,7 +2675,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Balance&#10;Adjusts the left/right channel balance on the Master output.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>balance</TooltipId>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2691,7 +2691,7 @@
 					**********************************************
 					-->
 					<Knob>
-						<Tooltip>Headphone volume&#10;Adjusts the headphone output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>headphone_volume</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2701,7 +2701,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Headphone mix&#10;Controls what you hear on the headphone output.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>headMix</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2717,7 +2717,7 @@
 					**********************************************
 					-->
 					<Knob>
-						<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>lfoDelay</TooltipId>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2727,7 +2727,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Flanger depth&#10;Adjusts the intensity of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>lfoDepth</TooltipId>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2737,7 +2737,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Flanger LFO period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>lfoPeriod</TooltipId>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2753,7 +2753,7 @@
 					**********************************************
 					-->
 					<Knob>
-						<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>pregain</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2763,7 +2763,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>filterHigh</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2773,7 +2773,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>filterMid</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2783,7 +2783,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>filterLow</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2794,7 +2794,7 @@
 					</Knob>
 
 					<Knob>
-						<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>pregain</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2804,7 +2804,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>filterHigh</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2814,7 +2814,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>filterMid</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2824,7 +2824,7 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>filterLow</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
@@ -2840,7 +2840,7 @@
 					**********************************************
 					-->
 					<VuMeter>
-						<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
+						<TooltipId>channel_VuMeter</TooltipId>
 						<Style></Style>
 						<PathVu>btn_volume_display1_over.png</PathVu>
 						<PathBack>btn_volume_display1.png</PathBack>
@@ -2855,7 +2855,7 @@
 						</Connection>
 					</VuMeter>
 					<VuMeter>
-						<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
+						<TooltipId>channel_VuMeter</TooltipId>
 						<Style></Style>
 						<PathVu>btn_volume_display2_over.png</PathVu>
 						<PathBack>btn_volume_display2.png</PathBack>
@@ -2871,7 +2871,7 @@
 					</VuMeter>
 
 					<VuMeter>
-						<Tooltip>Master channel volume meter&#10;Outputs the current instantaneous master volume for the left channel.&#10;</Tooltip>
+						<TooltipId>master_VuMeterL</TooltipId>
 						<Style></Style>
 						<PathVu>btn_volume_display_master1_over.png</PathVu>
 						<PathBack>btn_volume_display_master1.png</PathBack>
@@ -2885,7 +2885,7 @@
 						</Connection>
 					</VuMeter>
 					<VuMeter>
-						<Tooltip>Master channel volume meter&#10;Outputs the current instantaneous master volume for the right channel.&#10;</Tooltip>
+						<TooltipId>master_VuMeterR</TooltipId>
 						<Style></Style>
 						<PathVu>btn_volume_display_master2_over.png</PathVu>
 						<PathBack>btn_volume_display_master2.png</PathBack>
@@ -2905,7 +2905,7 @@
 					**********************************************
 					-->
 					<StatusLight>
-						<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+						<TooltipId>PeakIndicator</TooltipId>
 						<Style></Style>
 						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 						<PathBack>btn_clipping1.png</PathBack>
@@ -2915,7 +2915,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+						<TooltipId>PeakIndicator</TooltipId>
 						<Style></Style>
 						<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 						<PathBack>btn_clipping2.png</PathBack>
@@ -2925,7 +2925,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Master Peak Indicator&#10;Indicates when the signal on the Master output is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+						<TooltipId>master_PeakIndicator</TooltipId>
 						<Style></Style>
 						<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 						<PathBack>btn_clipping_master.png</PathBack>
@@ -2966,7 +2966,7 @@
 					**********************************************
 					-->
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
@@ -2978,7 +2978,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
@@ -2990,7 +2990,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
@@ -3002,7 +3002,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
@@ -3036,7 +3036,7 @@
 							**********************************************
 							-->
 							<Visual>
-								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-click: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+								<TooltipId>waveform_display</TooltipId>
 								<Style></Style>
 								<Channel>1</Channel>
 								<Pos>0,0</Pos>
@@ -3362,7 +3362,7 @@
 											**********************************************
 											-->
 											<Spinny>
-												<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
+												<TooltipId>spinny</TooltipId>
 												<Style></Style>
 												<Channel>1</Channel>
 												<Pos>0,0</Pos>
@@ -3394,7 +3394,7 @@
 											-->
 											<!--
 											<PushButton>
-												<Tooltip>Vinyl status&#10;Toggles whether a deck is being controlled by digital timecode vinyl/CD&#10;When enabled, a indication should appear onscreen indicating green for Enabled.&#10;</Tooltip>
+												<TooltipId>vinylcontrol_status</TooltipId>
 												<Style></Style>
 												<NumberStates>2</NumberStates>
 												<State>
@@ -3425,7 +3425,7 @@
 											**********************************************
 											-->
 											<PushButton>
-												<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
+												<TooltipId>vinylcontrol_mode</TooltipId>
 												<Style></Style>
 												<NumberStates>3</NumberStates>
 												<State>
@@ -3454,7 +3454,7 @@
 											**********************************************
 											-->
 											<PushButton>
-												<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
+												<TooltipId>vinylcontrol_cueing</TooltipId>
 												<Style></Style>
 												<NumberStates>3</NumberStates>
 												<State>
@@ -3495,7 +3495,7 @@
 					**********************************************
 					-->
 					<Overview>
-						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+						<TooltipId>waveform_overview</TooltipId>
 						<Style></Style>
 						<Channel>1</Channel>
 						<Pos>2,161</Pos>
@@ -3561,7 +3561,7 @@
 					**********************************************
 					-->
 					<TrackProperty>
-						<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+						<TooltipId>track_title</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 						</Style>
@@ -3577,7 +3577,7 @@
 					**********************************************
 					-->
 					<TrackProperty>
-						<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+						<TooltipId>track_artist</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 						</Style>
@@ -3593,7 +3593,7 @@
 					**********************************************
 					-->
 					<NumberBpm>
-						<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+						<TooltipId>visual_bpm</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 						</Style>
@@ -3613,7 +3613,7 @@
 					**********************************************
 					-->
 					<NumberPos>
-						<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
+						<TooltipId>track_time</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 						</Style>
@@ -3638,9 +3638,9 @@
 					-->
 					<PushButton>
 					<!-- Original:
-						<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+						<TooltipId>bpm_tap</TooltipId>
 					-->
-						<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+						<TooltipId>bpm_tap_visual_bpm</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3661,7 +3661,7 @@
 					**********************************************
 					-->
 					<NumberRate>
-						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+						<TooltipId>rate_display</TooltipId>
 						<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: center; padding-right: 1px; }
 						</Style>
@@ -3678,7 +3678,7 @@
 					**********************************************
 					-->
 					<SliderComposed>
-						<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>rate</TooltipId>
 						<Style></Style>
 						<Handle>knob_pitch1.png</Handle>
 						<Slider>slider_pitch1.png</Slider>
@@ -3696,7 +3696,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
+						<TooltipId>beatsync_beatsync_tempo</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3723,7 +3723,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+						<TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3744,7 +3744,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+						<TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3771,7 +3771,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
+						<TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3792,7 +3792,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Lower pitch temporary (nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
+						<TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3819,7 +3819,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
+						<TooltipId>show_spinny</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3846,7 +3846,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
+						<TooltipId>beats_translate_curpos</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3868,7 +3868,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+						<TooltipId>keylock</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3893,7 +3893,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Quantize&#10;Toggles quantization in loops and cues&#10;</Tooltip>
+						<TooltipId>quantize</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3920,7 +3920,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+						<TooltipId>repeat</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -3945,7 +3945,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
+						<TooltipId>eject</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3974,7 +3974,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
+								<TooltipId>fwd_end</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -3995,7 +3995,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+								<TooltipId>back_start</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4022,7 +4022,7 @@
 							****************************************
 							-->
 							<PushButton>
-								<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
+								<TooltipId>reverse</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4044,7 +4044,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4065,7 +4065,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4086,7 +4086,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4107,7 +4107,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4128,7 +4128,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4149,7 +4149,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4170,7 +4170,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4191,7 +4191,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -4218,7 +4218,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Deck immediately loops if past the new endpoint.&#10;</Tooltip>
+								<TooltipId>loop_halve</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4234,7 +4234,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Loop double&#10;Doubles the current loop's length by moving the end marker.&#10;</Tooltip>
+								<TooltipId>loop_double</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4256,7 +4256,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop-In marker&#10;Sets the deck loop-in position to the current play position.&#10;</Tooltip>
+								<TooltipId>loop_in</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4272,7 +4272,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Loop-Out marker&#10;Sets the deck loop-out position to the current play position.&#10;</Tooltip>
+								<TooltipId>loop_out</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4288,7 +4288,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Reloop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
+								<TooltipId>reloop_exit</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4321,7 +4321,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4355,7 +4355,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4389,7 +4389,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4423,7 +4423,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4492,7 +4492,7 @@
 					**********************************************
 					-->
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
@@ -4504,7 +4504,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
@@ -4516,7 +4516,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
@@ -4528,7 +4528,7 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+						<TooltipId>vinylcontrol_status</TooltipId>
 						<Style></Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
@@ -4562,7 +4562,7 @@
 							**********************************************
 							-->
 							<Visual>
-								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Left-click: Use the mouse to scratch, halt, spin back and push forward a track.&#10;Right-click: Drag with mouse to make temporary pitch adjustments.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+								<TooltipId>waveform_display</TooltipId>
 								<Style></Style>
 								<Channel>2</Channel>
 								<Pos>0,0</Pos>
@@ -4888,7 +4888,7 @@
 											**********************************************
 											-->
 											<Spinny>
-												<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
+												<TooltipId>spinny</TooltipId>
 												<Style></Style>
 												<Channel>2</Channel>
 												<Pos>0,0</Pos>
@@ -4920,7 +4920,7 @@
 											-->
 											<!--
 											<PushButton>
-												<Tooltip>Vinyl status&#10;Toggles whether a deck is being controlled by digital timecode vinyl/CD&#10;When enabled, a indication should appear onscreen indicating green for Enabled.&#10;</Tooltip>
+												<TooltipId>vinylcontrol_status</TooltipId>
 												<Style></Style>
 												<NumberStates>2</NumberStates>
 												<State>
@@ -4951,7 +4951,7 @@
 											**********************************************
 											-->
 											<PushButton>
-												<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
+												<TooltipId>vinylcontrol_mode</TooltipId>
 												<Style></Style>
 												<NumberStates>3</NumberStates>
 												<State>
@@ -4980,7 +4980,7 @@
 											**********************************************
 											-->
 											<PushButton>
-												<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
+												<TooltipId>vinylcontrol_cueing</TooltipId>
 												<Style></Style>
 												<NumberStates>3</NumberStates>
 												<State>
@@ -5021,7 +5021,7 @@
 					**********************************************
 					-->
 					<Overview>
-						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+						<TooltipId>waveform_overview</TooltipId>
 						<Style></Style>
 						<Channel>2</Channel>
 						<Pos>2,161</Pos>
@@ -5087,7 +5087,7 @@
 					**********************************************
 					-->
 					<TrackProperty>
-						<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+						<TooltipId>track_title</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 						</Style>
@@ -5103,7 +5103,7 @@
 					**********************************************
 					-->
 					<TrackProperty>
-						<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+						<TooltipId>track_artist</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1px; }
 						</Style>
@@ -5119,7 +5119,7 @@
 					**********************************************
 					-->
 					<NumberBpm>
-						<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+						<TooltipId>visual_bpm</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 						</Style>
@@ -5139,7 +5139,7 @@
 					**********************************************
 					-->
 					<NumberPos>
-						<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
+						<TooltipId>track_time</TooltipId>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1px; }
 						</Style>
@@ -5164,9 +5164,9 @@
 					-->
 					<PushButton>
 					<!-- Original:
-						<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+						<TooltipId>bpm_tap</TooltipId>
 					-->
-						<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+						<TooltipId>bpm_tap_visual_bpm</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5187,7 +5187,7 @@
 					**********************************************
 					-->
 					<NumberRate>
-						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+						<TooltipId>rate_display</TooltipId>
 						<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #E4E4E4; text-align: center; padding-right: 1px; }
 						</Style>
@@ -5204,7 +5204,7 @@
 					**********************************************
 					-->
 					<SliderComposed>
-						<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<TooltipId>rate</TooltipId>
 						<Style></Style>
 						<Handle>knob_pitch2.png</Handle>
 						<Slider>slider_pitch2.png</Slider>
@@ -5222,7 +5222,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
+						<TooltipId>beatsync_beatsync_tempo</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5249,7 +5249,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+						<TooltipId>rate_perm_up_rate_perm_up_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5270,7 +5270,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
+						<TooltipId>rate_perm_down_rate_perm_down_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5297,7 +5297,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
+						<TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5318,7 +5318,7 @@
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Lower pitch temporary (nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
+						<TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5345,7 +5345,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
+						<TooltipId>show_spinny</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -5372,7 +5372,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
+						<TooltipId>beats_translate_curpos</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5394,7 +5394,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+						<TooltipId>keylock</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -5419,7 +5419,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Quantize&#10;Toggles quantization in loops and cues&#10;</Tooltip>
+						<TooltipId>quantize</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -5446,7 +5446,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+						<TooltipId>repeat</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -5471,7 +5471,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
+						<TooltipId>eject</TooltipId>
 						<Style></Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5500,7 +5500,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
+								<TooltipId>fwd_end</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5521,7 +5521,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+								<TooltipId>back_start</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5548,7 +5548,7 @@
 							****************************************
 							-->
 							<PushButton>
-								<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
+								<TooltipId>reverse</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5570,7 +5570,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5591,7 +5591,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5612,7 +5612,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5633,7 +5633,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5654,7 +5654,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5675,7 +5675,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5696,7 +5696,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5717,7 +5717,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+								<TooltipId>beatloop</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<State>
@@ -5744,7 +5744,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Deck immediately loops if past the new endpoint.&#10;</Tooltip>
+								<TooltipId>loop_halve</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5760,7 +5760,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Loop double&#10;Doubles the current loop's length by moving the end marker.&#10;</Tooltip>
+								<TooltipId>loop_double</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5782,7 +5782,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop-In marker&#10;Sets the deck loop-in position to the current play position.&#10;</Tooltip>
+								<TooltipId>loop_in</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5798,7 +5798,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Loop-Out marker&#10;Sets the deck loop-out position to the current play position.&#10;</Tooltip>
+								<TooltipId>loop_out</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5814,7 +5814,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Reloop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
+								<TooltipId>reloop_exit</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -5847,7 +5847,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -5881,7 +5881,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -5915,7 +5915,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -5949,7 +5949,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<TooltipId>hotcue</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -6011,7 +6011,7 @@
 			**********************************************
 			-->
 			<StatusLight>
-				<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+				<TooltipId>PeakIndicator</TooltipId>
 				<Style></Style>
 				<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
 				<PathBack>btn_clipping_microphone.png</PathBack>
@@ -6027,7 +6027,7 @@
 			**********************************************
 			-->
 			<VuMeter>
-				<Tooltip>Microphone volume meter&#10;Outputs the current instantaneous microphone volume&#10;</Tooltip>
+				<TooltipId>microphone_VuMeter</TooltipId>
 				<Style></Style>
 				<PathVu>btn_volume_display_microphone_over.png</PathVu>
 				<PathBack>btn_volume_display_microphone.png</PathBack>
@@ -6048,7 +6048,7 @@
 			**********************************************
 			-->
 			<PushButton>
-				<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+				<TooltipId>orientation</TooltipId>
 				<Style></Style>
 				<NumberStates>3</NumberStates>
 				<State>
@@ -6080,7 +6080,7 @@
 			**********************************************
 			-->
 			<Knob>
-				<Tooltip>Microphone volume&#10;Adjusts the microphone volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
+				<TooltipId>microphone_volume</TooltipId>
 				<Style></Style>
 				<NumberStates>64</NumberStates>
 				<Path>knobs/knob_rotary_s%1.png</Path>
@@ -6096,7 +6096,7 @@
 			****************************************
 			-->
 			<PushButton>
-				<Tooltip>Microphone talkover&#10;Hold-to-talk or short click for latching to&#10;mix microphone input into the master output.&#10;</Tooltip>
+				<TooltipId>microphone_talkover</TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
