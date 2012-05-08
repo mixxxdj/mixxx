@@ -201,7 +201,7 @@ void Tooltips::addStandardTooltips() {
     //this is a special case, in some skins (e.g. Deere) we display a transparent png for bpm_tap on top of visual_bpm
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
-            << tr("Displays the tempo of the loaded track in BPM (beats per minute)");
+            << tr("Displays the tempo of the loaded track in BPM (beats per minute)")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM");
 
     add("show_spinny")
