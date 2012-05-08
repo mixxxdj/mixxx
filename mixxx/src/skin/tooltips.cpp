@@ -160,11 +160,6 @@ void Tooltips::addStandardTooltips() {
             << tr("Right-click: Holds the pitch lower (small amount) while active")
             << tr("Change the amount of the steps in Preferences→Interface.");
 
-    add("track_title")
-            << tr("Track title")
-            << tr("Displays the artist and title of the loaded track.")
-            << tr("Informations are extracted from the tracks tags.");
-
     add("filterLow")
             << tr("Low EQ")
             << tr("Adjusts the gain of the low EQ filter.")
@@ -300,7 +295,6 @@ void Tooltips::addStandardTooltips() {
             << tr("Blinking yellow for when the needle reaches the end of the record")
             << tr("Red for needle skip detected");
 
-
     add("loop_in")
             << tr("Loop-In marker")
             << tr("Sets the deck loop-in position to the current play position.");
@@ -339,9 +333,28 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the elapsed or remaining time of the track loaded.")
             << tr("Click to toggle between time elapsed/remaining time.");
 
+    add("track_duration")
+            << tr("Track Duration")
+            << tr("Displays the duration of the loaded track")
+
     add("track_artist")
             << tr("Track Artist")
             << tr("Displays the artist of the loaded track.")
+            << tr("Informations are extracted from the tracks tags.");
+    
+    add("track_title")
+            << tr("Track Title")
+            << tr("Displays the title of the loaded track.")
+            << tr("Informations are extracted from the tracks tags.");
+
+    add("track_album")
+            << tr("Track Album")
+            << tr("Displays the name of the album of the loaded track.")
+            << tr("Informations are extracted from the tracks tags.");
+
+    add("text")
+            << tr("Track Artist/Title")
+            << tr("Displays the artist and title of the loaded track.")
             << tr("Informations are extracted from the tracks tags.");
 
     add("flanger")
