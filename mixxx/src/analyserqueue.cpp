@@ -13,7 +13,7 @@
 #include "analyserrg.h"
 #ifdef __VAMP__
 #include "analyserbeats.h"
-#include "analysergainvamp.h";
+#include "analysergainvamp.h"
 #include "vamp/vampanalyser.h"
 #endif
 
@@ -165,7 +165,7 @@ void AnalyserQueue::run() {
         QListIterator<Analyser*> it(m_aq);
         bool processTrack = false;
         while (it.hasNext()) {
-            processTrack = processTrack || it.next()->initialise(next, iSampleRate, iNumSamples);
+            processTrack = it.next()->initialise(next, iSampleRate, iNumSamples);
         }
 
         if (processTrack) {
