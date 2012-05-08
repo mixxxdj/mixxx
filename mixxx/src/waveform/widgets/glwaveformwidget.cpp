@@ -14,8 +14,8 @@
 #include "sharedglcontext.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
-    WaveformWidgetAbstract(group),
-    QGLWidget(SharedGLContext::getContext(), parent) {
+        QGLWidget(SharedGLContext::getContext(), parent),
+        WaveformWidgetAbstract(group) {
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();

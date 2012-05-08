@@ -47,6 +47,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotSendToAutoDJ();
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
+    void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
@@ -98,6 +99,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Remove from table
     QAction *m_pRemoveAct;
+
+    // Reset the played count of selected track or tracks
+    QAction* m_pResetPlayedAct;
 
     // Show track-editor action
     QAction *m_pPropertiesAct;

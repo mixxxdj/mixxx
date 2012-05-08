@@ -196,9 +196,9 @@ if build.platform_is_linux or build.platform_is_bsd:
                 resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
 		vamp_plugin =  env.Install(
-                        os.path.join(unix_lib_path, 'mixxx', 'vamp'),
+                        os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
-                        
+
                 soundsource_plugins = env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
                         soundsource_plugin_files)
@@ -263,9 +263,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # from SCons File nodes to strings)
         for x in soundsource_plugins:
                 plugins.append(x.get_abspath())
-		
+
 	for x in mixxxminimal_plugins:
-	    plugins.append(x.get_abspath())
+                plugins.append(x.get_abspath())
 
         resource_map = {}
         translation_files = Glob('#res/translations/*.qm')
@@ -337,8 +337,10 @@ if build.platform_is_windows:
         promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
         dlls = env.Install(base_dist_dir+"/", dll_files)
-        soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"), soundsource_plugin_files)
-	vamp_plugins = env.Install(base_dist_dir+"/", libmixxxminimal_vamp_plugin)
+        soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"),
+                                          soundsource_plugin_files)
+        vamp_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "vamp/"),
+                                   libmixxxminimal_vamp_plugin)
         binary = env.Install(base_dist_dir+"/", binary_files)
 
         #Always trigger these install builders when compiling on Windows

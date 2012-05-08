@@ -461,7 +461,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    // if any already loaded (skin/waveform type swithing)
+    // if any already loaded
     viewer->onTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
@@ -936,6 +936,15 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget) {
     if (!XmlParse::selectNode(node, "Tooltip").isNull()) {
         QString toolTip = XmlParse::selectNodeQString(node, "Tooltip");
         pWidget->setToolTip(toolTip);
+    } else if (!XmlParse::selectNode(node, "TooltipId").isNull()) {
+        QString toolTipId = XmlParse::selectNodeQString(node, "TooltipId");
+        QString toolTip = m_tooltips.tooltipForId(toolTipId);
+
+        if (toolTipId.length() > 0) {
+            pWidget->setToolTip(toolTip);
+        } else {
+            qDebug() << "Invalid <TooltipId> in skin.xml:" << toolTipId;
+        }
     }
 
     QString style = XmlParse::selectNodeQString(node, "Style");

@@ -41,7 +41,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
 
-
     m_recordingDir = m_pRecordingManager->getRecordingDir();
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -67,6 +66,7 @@ DlgRecording::~DlgRecording()
 
 void DlgRecording::onShow()
 {
+    m_recordingDir = m_pRecordingManager->getRecordingDir();
     m_browseModel.setPath(m_recordingDir);
 }
 

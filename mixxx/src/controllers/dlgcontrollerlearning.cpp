@@ -95,6 +95,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     // Vinyl Control
     QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
+    addDeckControl("vinylcontrol_enabled", tr("Toggle vinyl-control (ON/OFF)"), vinylControlMenu);
     addDeckControl("vinylcontrol_cueing", tr("Toggle vinyl-control cueing mode (OFF/ONE/HOT)"), vinylControlMenu);
     addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
 
@@ -152,7 +153,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                libraryMenu);
     addControl("[Playlist]", "SelectPrevTrack", tr("Scroll to previous track in library/playlist"),
                libraryMenu);
-    addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped player"),
+    addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped deck"),
                libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack", tr("Load selected track"), libraryMenu);
 

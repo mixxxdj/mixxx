@@ -48,6 +48,16 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
 
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
 
+    // Create controller mapping paths in the user's home directory.
+    if (!QDir(USER_PRESETS_PATH).exists()) {
+        qDebug() << "Creating user controller presets directory:" << USER_PRESETS_PATH;
+        QDir().mkpath(USER_PRESETS_PATH);
+    }
+    if (!QDir(LOCAL_PRESETS_PATH).exists()) {
+        qDebug() << "Creating local controller presets directory:" << LOCAL_PRESETS_PATH;
+        QDir().mkpath(LOCAL_PRESETS_PATH);
+    }
+
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
 #ifdef __HSS1394__
@@ -247,9 +257,8 @@ QList<QString> ControllerManager::getPresetList(QString extension) {
     // Paths to search for controller presets
     QList<QString> controllerDirPaths;
     QString configPath = m_pConfig->getConfigPath();
-    //controllerDirPaths.append(configPath.append("presets/"));
-    //controllerDirPaths.append(configPath.append("midi/"));
     controllerDirPaths.append(configPath.append("controllers/"));
+    controllerDirPaths.append(LOCAL_PRESETS_PATH);
 
     // Should we also show the presets from USER_PRESETS_PATH? That could be
     // confusing.
@@ -269,6 +278,7 @@ QList<QString> ControllerManager::getPresetList(QString extension) {
             }
         }
     }
+    qSort(presets);
     return presets;
 }
 
@@ -333,6 +343,12 @@ bool ControllerManager::loadPreset(Controller* pController,
     QString filenameWithExt = filename + pController->presetExtension();
     QString filepath = USER_PRESETS_PATH + filenameWithExt;
 
+    // If the file isn't present in the user's directory, check the local
+    // presets path.
+    if (!QFile::exists(filepath)) {
+        filepath = LOCAL_PRESETS_PATH.append(filenameWithExt);
+    }
+
     // If the file isn't present in the user's directory, check res/
     if (!QFile::exists(filepath)) {
         filepath = m_pConfig->getConfigPath()
@@ -341,7 +357,8 @@ bool ControllerManager::loadPreset(Controller* pController,
 
     if (!QFile::exists(filepath)) {
         qWarning() << "Cannot find" << filenameWithExt << "in either res/"
-                   << "or the user's Mixxx directory (~/.mixxx/controllers/)";
+                   << "or the user's Mixxx directories (" + LOCAL_PRESETS_PATH
+                   << USER_PRESETS_PATH + ")";
         return false;
     }
 

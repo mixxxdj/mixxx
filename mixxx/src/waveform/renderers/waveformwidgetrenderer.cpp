@@ -11,15 +11,15 @@ const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer() {
-    m_playPosControlObject = 0;
-    m_rateControlObject = 0;
-    m_rateRangeControlObject = 0;
-    m_rateDirControlObject = 0;
-    m_gainControlObject = 0;
-    m_trackSamplesControlObject = 0;
+    m_playPosControlObject = NULL;
+    m_rateControlObject = NULL;
+    m_rateRangeControlObject = NULL;
+    m_rateDirControlObject = NULL;
+    m_gainControlObject = NULL;
+    m_trackSamplesControlObject = NULL;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
-    m_timer = 0;
+    m_timer = NULL;
 #endif
 }
 
@@ -40,18 +40,18 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_visualSamplePerPixel = 1.0;
     m_audioSamplePerPixel = 1.0;
 
-    //Really create some to manage those
-    m_playPosControlObject = 0;
+    // Really create some to manage those
+    m_playPosControlObject = NULL;
     m_playPos = 0.0;
-    m_rateControlObject = 0;
+    m_rateControlObject = NULL;
     m_rate = 0.0;
-    m_rateRangeControlObject = 0;
+    m_rateRangeControlObject = NULL;
     m_rateRange = 0.0;
-    m_rateDirControlObject = 0;
+    m_rateDirControlObject = NULL;
     m_rateDir = 0.0;
-    m_gainControlObject = 0;
+    m_gainControlObject = NULL;
     m_gain = 1.0;
-    m_trackSamplesControlObject = 0;
+    m_trackSamplesControlObject = NULL;
     m_trackSamples = -1.0;
 
 
@@ -73,21 +73,15 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     for( int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
-    if( m_playPosControlObject)
-        delete m_playPosControlObject;
-    if( m_rateControlObject)
-        delete m_rateControlObject;
-    if( m_rateRangeControlObject)
-        delete m_rateRangeControlObject;
-    if( m_rateDirControlObject)
-        delete m_rateDirControlObject;
-    if( m_gainControlObject)
-        delete m_gainControlObject;
-    if( m_trackSamplesControlObject)
-        delete m_trackSamplesControlObject;
+    delete m_playPosControlObject;
+    delete m_rateControlObject;
+    delete m_rateRangeControlObject;
+    delete m_rateDirControlObject;
+    delete m_gainControlObject;
+    delete m_trackSamplesControlObject;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
-    if(m_timer) delete m_timer;
+    delete m_timer;
 #endif
 }
 
@@ -115,7 +109,7 @@ void WaveformWidgetRenderer::init() {
 void WaveformWidgetRenderer::onPreRender() {
 
     m_trackSamples = m_trackSamplesControlObject->get();
-    if( m_trackSamples < 0.0)
+    if (m_trackSamples < 0.0)
         return;
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
@@ -145,21 +139,6 @@ void WaveformWidgetRenderer::onPreRender() {
         m_rendererTransformationOffset = 0.0;
         m_rendererTransformationGain = 0.0;
     }
-
-    if( lastPlayPos > m_playPos ||
-            lastFirstPos > m_firstDisplayedPosition ||
-            lastLastPos > m_lastDisplayedPosition) {
-        qDebug() << "m_group" << m_group
-                 << "lastPlayPos" << lastPlayPos
-                 << "m_playPos" << m_playPos
-                 << "lastFirstPos" << lastFirstPos
-                 << "m_firstDisplayedPosition" << m_firstDisplayedPosition
-                 << "lastLastPos" << lastLastPos
-                 << "m_lastDisplayedPosition" << m_lastDisplayedPosition;
-    }
-    lastPlayPos = m_playPos;
-    lastFirstPos = m_firstDisplayedPosition;
-    lastLastPos = m_lastDisplayedPosition;
 
     /*
     qDebug() << "m_group" << m_group
