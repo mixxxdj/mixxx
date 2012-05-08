@@ -10,7 +10,7 @@
 class AnalyserBPM : public Analyser {
   public:
     AnalyserBPM(ConfigObject<ConfigValue> *_config);
-    void initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);
 

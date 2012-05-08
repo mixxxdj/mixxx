@@ -313,6 +313,7 @@ void DlgPrefRecord::slotEnableCueFile(int enabled)
 }
 void DlgPrefRecord::slotChangeSplitSize()
 {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"), ConfigValue(comboBoxSplitting->currentText()));
+        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
+                    ConfigValue(comboBoxSplitting->currentText()));
 
 }
