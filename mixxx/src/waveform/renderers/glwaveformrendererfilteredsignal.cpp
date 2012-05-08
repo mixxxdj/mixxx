@@ -31,6 +31,7 @@ void GLWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
 }
 
 void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
@@ -62,13 +63,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

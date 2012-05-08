@@ -3,7 +3,6 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/qtwaveformrendererfilteredsignal.h"
-#include "waveform/renderers/glwaveformrendererfilteredsignal.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"

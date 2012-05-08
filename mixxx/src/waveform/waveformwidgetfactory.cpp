@@ -11,11 +11,12 @@
 #include "controlpotmeter.h"
 #include "defs.h"
 #include "waveform/widgets/emptywaveformwidget.h"
-#include "waveform/widgets/glsimplewaveformwidget.h"
-#include "waveform/widgets/glslwaveformwidget.h"
-#include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/glwaveformwidget.h"
+#include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
+#include "waveform/widgets/qtsimplewaveformwidget.h"
+#include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 
@@ -402,7 +403,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveformWidget(); break;
         case WaveformWidgetType::SoftwareSimpleWaveform : break; //TODO: (vrince)
         case WaveformWidgetType::SoftwareWaveform : widget = new SoftwareWaveformWidget(); break;
-        case WaveformWidgetType::QtSimpleWaveform : break; //TODO: (vrince)
+        case WaveformWidgetType::QtSimpleWaveform : widget = new QtSimpleWaveformWidget(); break;
         case WaveformWidgetType::QtWaveform : widget = new QtWaveformWidget(); break;
         case WaveformWidgetType::GLSimpleWaveform : widget = new GLSimpleWaveformWidget(); break;
         case WaveformWidgetType::GLWaveform : widget = new GLWaveformWidget(); break;
@@ -442,7 +443,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidg
         case WaveformWidgetType::EmptyWaveform : return new EmptyWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::SoftwareSimpleWaveform : return 0; //TODO: (vrince)
         case WaveformWidgetType::SoftwareWaveform : return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::QtSimpleWaveform : return 0; //TODO: (vrince)
+        case WaveformWidgetType::QtSimpleWaveform : return new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::QtWaveform : return new QtWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::GLSimpleWaveform : return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::GLWaveform : return new GLWaveformWidget(viewer->getGroup(), viewer);

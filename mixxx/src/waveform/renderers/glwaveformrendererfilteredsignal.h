@@ -3,10 +3,6 @@
 
 #include "waveformrenderersignalbase.h"
 
-#include <QBrush>
-
-#include <vector>
-
 class ControlObject;
 
 class GLWaveformRendererFilteredSignal : public WaveformRendererSignalBase {

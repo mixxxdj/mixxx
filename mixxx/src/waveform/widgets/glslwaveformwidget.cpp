@@ -17,10 +17,10 @@ GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
-    addRenderer<WaveformRenderMarkRange>();
-    addRenderer<WaveformRenderMark>();
-    signalRenderer_ = addRenderer<GLSLWaveformRendererSignal>();
     addRenderer<WaveformRendererPreroll>();
+    addRenderer<WaveformRenderMarkRange>();
+    signalRenderer_ = addRenderer<GLSLWaveformRendererSignal>();
+    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
 
     setAttribute(Qt::WA_NoSystemBackground);
