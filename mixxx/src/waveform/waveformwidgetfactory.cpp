@@ -15,6 +15,7 @@
 #include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/qtwaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 
@@ -399,9 +400,11 @@ void WaveformWidgetFactory::evaluateWidgets() {
         WaveformWidgetAbstract* widget = 0;
         switch(type) {
         case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveformWidget(); break;
-        case WaveformWidgetType::SimpleSoftwareWaveform : break; //TODO: (vrince)
-        case WaveformWidgetType::GLSimpleWaveform : widget = new GLSimpleWaveformWidget(); break;
+        case WaveformWidgetType::SoftwareSimpleWaveform : break; //TODO: (vrince)
         case WaveformWidgetType::SoftwareWaveform : widget = new SoftwareWaveformWidget(); break;
+        case WaveformWidgetType::QtSimpleWaveform : break; //TODO: (vrince)
+        case WaveformWidgetType::QtWaveform : widget = new QtWaveformWidget(); break;
+        case WaveformWidgetType::GLSimpleWaveform : widget = new GLSimpleWaveformWidget(); break;
         case WaveformWidgetType::GLWaveform : widget = new GLWaveformWidget(); break;
         case WaveformWidgetType::GLSLWaveform : widget = new GLSLWaveformWidget(); break;
         }
@@ -437,9 +440,11 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidg
     if (viewer) {
         switch(type) {
         case WaveformWidgetType::EmptyWaveform : return new EmptyWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::SimpleSoftwareWaveform : return 0; //TODO: (vrince)
-        case WaveformWidgetType::GLSimpleWaveform : return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::SoftwareSimpleWaveform : return 0; //TODO: (vrince)
         case WaveformWidgetType::SoftwareWaveform : return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::QtSimpleWaveform : return 0; //TODO: (vrince)
+        case WaveformWidgetType::QtWaveform : return new QtWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::GLSimpleWaveform : return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::GLWaveform : return new GLWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::GLSLWaveform : return new GLSLWaveformWidget(viewer->getGroup(), viewer);
         default : return 0;
