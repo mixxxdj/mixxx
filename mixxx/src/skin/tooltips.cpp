@@ -234,7 +234,7 @@ void Tooltips::addStandardTooltips() {
     add("quantize")
             << tr("Quantize")
             << tr("Toggles quantization.")
-            << tr("Loops and cues snap to the nearest beat when quantization is enabled.")
+            << tr("Loops and cues snap to the nearest beat when quantization is enabled.");
 
     add("reverse")
             << tr("Reverse")
