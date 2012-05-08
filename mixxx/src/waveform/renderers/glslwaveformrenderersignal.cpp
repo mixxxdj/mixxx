@@ -8,7 +8,7 @@
 #include <QGLFramebufferObject>
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract(waveformWidgetRenderer) {
+    WaveformRendererSignalBase(waveformWidgetRenderer) {
 
     m_signalMaxShaderProgram = 0;
     m_frameShaderProgram = 0;
@@ -204,7 +204,7 @@ void GLSLWaveformRendererSignal::createFrameBuffer()
     //qDebug() << bufferWidth;
 }
 
-void GLSLWaveformRendererSignal::init(){
+void GLSLWaveformRendererSignal::onInit(){
 
     if(!m_signalMaxShaderProgram)
         m_signalMaxShaderProgram = new QGLShaderProgram();
@@ -221,8 +221,8 @@ void GLSLWaveformRendererSignal::init(){
     loadTexture();
 }
 
-void GLSLWaveformRendererSignal::setup(const QDomNode& node) {
-    m_colors.setup(node);
+void GLSLWaveformRendererSignal::onSetup(const QDomNode& /*node*/) {
+
 }
 
 void GLSLWaveformRendererSignal::onSetTrack(){

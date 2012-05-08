@@ -524,10 +524,12 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformrendererendoftrack.cpp",
                    "waveform/renderers/waveformrendererpreroll.cpp",
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/glslwaveformrenderersignal.cpp",
                    "waveform/renderers/waveformsignalcolors.cpp",
                    "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/waveformrenderersignalbase.cpp",
                    "waveform/renderers/waveformmark.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
 
@@ -537,6 +539,7 @@ class MixxxCore(Feature):
                    "waveform/widgets/softwarewaveformwidget.cpp",
                    "waveform/widgets/glslwaveformwidget.cpp",
                    "waveform/widgets/glsimplewaveformwidget.cpp",
+                   "waveform/widgets/qtwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",

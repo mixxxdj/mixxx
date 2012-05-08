@@ -107,7 +107,6 @@ protected:
     ControlObjectThreadMain* m_trackSamplesControlObject;
     int m_trackSamples;
 
-
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     QTime* m_timer;
     int m_lastFrameTime;
