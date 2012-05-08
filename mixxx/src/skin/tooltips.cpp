@@ -27,20 +27,20 @@ QList<QString>& Tooltips::add(QString id) {
 
 void Tooltips::addStandardTooltips() {
     add("waveform_overview")
-            << tr("Waveform overview")
+            << tr("Waveform Overview")
             << tr("Shows information about the track currently loaded in this channel.")
             << tr("Jump around in the track by clicking somewhere on the waveform.")
             << tr("Drop tracks from library or external file manager here.");
 
     add("waveform_display")
-            << tr("Waveform display")
+            << tr("Waveform Display")
             << tr("Shows the loaded tracks' waveforms near the playback position.")
             << tr("Left-click: Use the mouse to scratch, halt, spin back and push forward a track.")
             << tr("Right-click: Drag with mouse to make temporary pitch adjustments.")
             << tr("Drop tracks from library or external file manager here.");
 
     add("spinny")
-            << tr("Spinning vinyl")
+            << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
             << tr("Use the mouse to scratch, halt, spin back and push forward a track.")
             << tr("Drop tracks from library or external file manager here.")
@@ -62,28 +62,28 @@ void Tooltips::addStandardTooltips() {
             << tr("(too loud for the hardware and is being distorted).");
 
     add("channel_VuMeter")
-            << tr("Channel volume meter")
+            << tr("Channel Volume Meter")
             << tr("Shows the current channel volume");
 
     add("microphone_VuMeter")
-            << tr("Microphone volume meter")
+            << tr("Microphone Volume Meter")
             << tr("Outputs the current instantaneous microphone volume");
 
     add("master_VuMeterL")
-            << tr("Master channel volume meter")
+            << tr("Master Channel Volume Meter")
             << tr("Outputs the current instantaneous master volume for the left channel.");
 
     add("master_VuMeterR")
-            << tr("Master channel volume meter")
+            << tr("Master Channel Volume Meter")
             << tr("Outputs the current instantaneous master volume for the right channel.");
 
     add("channel_volume")
-            << tr("Volume control")
+            << tr("Volume Control")
             << tr("Adjust the volume of the selected channel.")
             << tr("Right-click: Reset to default value");
 
     add("master_volume")
-            << tr("Master volume")
+            << tr("Master Volume")
             << tr("Adjusts the Master output volume.")
             << tr("Right-click: Reset to default value");
 
@@ -99,17 +99,17 @@ void Tooltips::addStandardTooltips() {
             << tr("Right-click: Reset to default value");
 
     add("headphone_volume")
-            << tr("Headphone volume")
+            << tr("Headphone Volume")
             << tr("Adjusts the headphone output volume.")
             << tr("Right-click: Reset to default value");
 
     add("headMix")
-            << tr("Headphone mix")
+            << tr("Headphone Mix")
             << tr("Controls what you hear on the headphone output.")
             << tr("Right-click: Reset to default value");
 
     add("orientation")
-            << tr("Mix orientation")
+            << tr("Mix Orientation")
             << tr("Set the channel's mix orientation.")
             << tr("L = left side of crossfader, R = right side of crossfader, M = center (default)");
 
@@ -127,35 +127,35 @@ void Tooltips::addStandardTooltips() {
             << tr("Activate Vinyl Control from the Menu→Options");
 
     add("microphone_volume")
-            << tr("Microphone volume")
+            << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")
             << tr("Right-click: Reset to default value");
 
     add("microphone_talkover")
-            << tr("Microphone talk-over")
+            << tr("Microphone Talk-Over")
             << tr("Hold-to-talk or short click for latching to")
             << tr("mix microphone input into the master output.");
 
     add("rate_perm_up_rate_perm_up_small")
-            << tr("Raise pitch")
+            << tr("Raise Pitch")
             << tr("Left-click: Sets the pitch higher")
             << tr("Right-click: Sets the pitch higher in small steps.")
             << tr("Change the the amount of the steps in Preferences→Interface menu.");
 
     add("rate_perm_down_rate_perm_down_small")
-            << tr("Lower pitch")
+            << tr("Lower Pitch")
             << tr("Left-click: Sets the pitch lower")
             << tr("Right-click: Sets the pitch lower in small steps.")
             << tr("Change the the amount of the steps in Preferences→Interface menu.");
 
     add("rate_temp_up_rate_temp_up_small")
-            << tr("Raise pitch temporary (nudge)")
+            << tr("Raise Pitch Temporary (Nudge)")
             << tr("Left-click: Holds the pitch higher while active")
             << tr("Right-click: Holds the pitch higher (small amount) while active")
             << tr("Change the amount of the steps in Preferences→Interface");
 
     add("rate_temp_down_rate_temp_down_small")
-            << tr("Lower pitch temporary (nudge)")
+            << tr("Lower Pitch Temporary (Nudge)")
             << tr("Left-click: Holds the pitch lower while active")
             << tr("Right-click: Holds the pitch lower (small amount) while active")
             << tr("Change the amount of the steps in Preferences→Interface.");
@@ -176,17 +176,17 @@ void Tooltips::addStandardTooltips() {
             << tr("Right-click: Reset to default value");
 
     add("filterHighKill")
-            << tr("High EQ kill")
+            << tr("High EQ Kill")
             << tr("Holds the gain of the high EQ to zero while active.")
             << tr("Hold-to-kill or short click for latching.");
 
     add("filterMidKill")
-            << tr("Mid EQ kill")
+            << tr("Mid EQ Kill")
             << tr("Holds the gain of the mid EQ to zero while active.")
             << tr("Hold-to-kill or short click for latching.");
 
     add("filterLowKill")
-            << tr("Low EQ kill")
+            << tr("Low EQ Kill")
             << tr("Holds the gain of the low EQ to zero while active.")
             << tr("Hold-to-kill or short click for latching.");
 
@@ -195,12 +195,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the tempo of the loaded track in BPM (beats per minute)");
 
     add("bpm_tap")
-            << tr("Tempo and BPM tap")
-            << tr("Displays the tempo of the loaded track in BPM (beats per minute)")
+            << tr("BPM Tap")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM");
 
     add("show_spinny")
-            << tr("Spinning vinyl")
+            << tr("Spinning Vinyl")
             << tr("Show/hide the spinning vinyl section");
 
     add("beats_translate_curpos")
@@ -208,7 +207,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust beatgrid so closest beat is aligned with the current play position.");
 
     add("keylock")
-            << tr("Key-lock")
+            << tr("Key-Lock")
             << tr("Activates pitch-independent time stretch in the deck.")
             << tr("Toggling key-lock during playback may result in a momentary audio glitch.");
 
@@ -260,12 +259,12 @@ void Tooltips::addStandardTooltips() {
             << tr("if BPM is detected on both");
 
     add("rate")
-            << tr("Pitch control")
+            << tr("Pitch Control")
             << tr("Changes the tempo of the track currently loaded when it is moved")
             << tr("Right-click: Reset to default value");
 
     add("rate_display")
-            << tr("Pitch rate")
+            << tr("Pitch Rate")
             << tr("Displays the current pitch of the track based on the original tempo.");
 
     add("repeat")
@@ -296,20 +295,20 @@ void Tooltips::addStandardTooltips() {
             << tr("Red for needle skip detected");
 
     add("loop_in")
-            << tr("Loop-In marker")
+            << tr("Loop-In Marker")
             << tr("Sets the deck loop-in position to the current play position.");
 
     add("loop_out")
-            << tr("Loop-Out marker")
+            << tr("Loop-Out Marker")
             << tr("Sets the deck loop-out position to the current play position.");
 
     add("loop_halve")
-            << tr("Loop halve")
+            << tr("Loop Halve")
             << tr("Halves the current loop's length by moving the end marker.")
             << tr("Deck immediately loops if past the new endpoint.");
 
     add("loop_double")
-            << tr("Loop double")
+            << tr("Loop Double")
             << tr("Doubles the current loop's length by moving the end marker.");
 
     add("beatloop")
@@ -335,7 +334,7 @@ void Tooltips::addStandardTooltips() {
 
     add("track_duration")
             << tr("Track Duration")
-            << tr("Displays the duration of the loaded track")
+            << tr("Displays the duration of the loaded track");
 
     add("track_artist")
             << tr("Track Artist")
@@ -362,17 +361,17 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggles the flange effect. Use the depth/delay/lfo knobs to adjust");
 
     add("lfoDelay")
-            << tr("Flanger delay")
+            << tr("Flanger Delay")
             << tr("Adjusts the phase delay of the flange effect (when active).")
             << tr("Right-click: Reset to default value");
 
     add("lfoDepth")
-            << tr("Flanger depth")
+            << tr("Flanger Depth")
             << tr("Adjusts the intensity of the flange effect (when active).")
             << tr("Right-click: Reset to default value");
 
     add("lfoPeriod")
-            << tr("Flanger LFO period")
+            << tr("Flanger LFO Period")
             << tr("Adjusts the wavelength of the flange effect (when active).")
             << tr("Right-click: Reset to default value");
 
