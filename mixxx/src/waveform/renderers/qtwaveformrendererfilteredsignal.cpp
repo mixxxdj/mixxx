@@ -1,55 +1,30 @@
-#include <QDomNode>
+#include "qtwaveformrendererfilteredsignal.h"
+
+#include "controlobjectthreadmain.h"
+#include "waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+
+#include "trackinfoobject.h"
+#include "defs.h"
+
 #include <QLineF>
 #include <QLinearGradient>
-#include <QMutexLocker>
-
-#include "controlobject.h"
-#include "defs.h"
-#include "qtwaveformrendererfilteredsignal.h"
-#include "trackinfoobject.h"
-#include "waveform/waveform.h"
-#include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "waveform/waveformwidgetfactory.h"
 
 QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererAbstract(waveformWidgetRenderer) {
-    m_lowFilterControlObject = NULL;
-    m_midFilterControlObject = NULL;
-    m_highFilterControlObject = NULL;
-    m_lowKillControlObject = NULL;
-    m_midKillControlObject = NULL;
-    m_highKillControlObject = NULL;
-    m_alignment = Qt::AlignCenter;
+    : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
 QtWaveformRendererFilteredSignal::~QtWaveformRendererFilteredSignal() {
+
 }
 
-void QtWaveformRendererFilteredSignal::init() {
-    //create controls
-    m_lowFilterControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterLow"));
-    m_midFilterControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterMid"));
-    m_highFilterControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHigh"));
-    m_lowKillControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterLowKill"));
-    m_midKillControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterMidKill"));
-    m_highKillControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHighKill"));
+void QtWaveformRendererFilteredSignal::onInit() {
+
 }
 
-void QtWaveformRendererFilteredSignal::setup(const QDomNode& node) {
-    QString alignString = WWidget::selectNodeQString(node, "Align");
-    if (alignString == "bottom") {
-        m_alignment = Qt::AlignBottom;
-    } else if (alignString == "top") {
-        m_alignment = Qt::AlignTop;
-    } else {
-        m_alignment = Qt::AlignCenter;
-    }
-
-    m_colors.setup(node);
-
+void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
     QColor low = m_colors.getLowColor();
     QColor mid = m_colors.getMidColor();
     QColor high = m_colors.getHighColor();
@@ -157,14 +132,9 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     const double offset = firstVisualIndex;
 
-
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
             (double)m_waveformRenderer->getWidth();
-
-    // The number of visual samples that should be represented within one pixel
-    // given our current zoom level and track speed.
-    const double visualSamplePerPixel = m_waveformRenderer->getVisualSamplePerPixel();
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0);

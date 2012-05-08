@@ -1,124 +1,32 @@
-#include <QDomNode>
-#include <QLineF>
-#include <QLinearGradient>
-#include <QMutexLocker>
-
 #include "controlobject.h"
 #include "defs.h"
 #include "glwaveformrendererfilteredsignal.h"
 #include "trackinfoobject.h"
 #include "waveform/waveform.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
 #include "waveform/waveformwidgetfactory.h"
+
+#include <QDomNode>
 
 #include <qgl.h>
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererAbstract(waveformWidgetRenderer) {
-    m_lowFilterControlObject = NULL;
-    m_midFilterControlObject = NULL;
-    m_highFilterControlObject = NULL;
-    m_lowKillControlObject = NULL;
-    m_midKillControlObject = NULL;
-    m_highKillControlObject = NULL;
-    m_alignment = Qt::AlignCenter;
+    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+
 }
 
 GLWaveformRendererFilteredSignal::~GLWaveformRendererFilteredSignal() {
+
 }
 
-void GLWaveformRendererFilteredSignal::init() {
-    //create controls
-    m_lowFilterControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterLow"));
-    m_midFilterControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterMid"));
-    m_highFilterControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHigh"));
-    m_lowKillControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterLowKill"));
-    m_midKillControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterMidKill"));
-    m_highKillControlObject = ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHighKill"));
+void GLWaveformRendererFilteredSignal::onInit() {
+
 }
 
-void GLWaveformRendererFilteredSignal::setup(const QDomNode& node) {
-    QString alignString = WWidget::selectNodeQString(node, "Align");
-    if (alignString == "bottom") {
-        m_alignment = Qt::AlignBottom;
-    } else if (alignString == "top") {
-        m_alignment = Qt::AlignTop;
-    } else {
-        m_alignment = Qt::AlignCenter;
-    }
+void GLWaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
 
-    m_colors.setup(node);
-
-    QColor low = m_colors.getLowColor();
-    QColor mid = m_colors.getMidColor();
-    QColor high = m_colors.getHighColor();
-
-    QColor lowCenter = low;
-    QColor midCenter = mid;
-    QColor highCenter = high;
-
-    low.setAlphaF(0.9);
-    mid.setAlphaF(0.9);
-    high.setAlphaF(0.9);
-
-    lowCenter.setAlphaF(0.5);
-    midCenter.setAlphaF(0.5);
-    highCenter.setAlphaF(0.5);
-
-    QLinearGradient gradientLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientLow.setColorAt(0.0, low);
-    gradientLow.setColorAt(0.25,low.lighter(85));
-    gradientLow.setColorAt(0.5, lowCenter.darker(115));
-    gradientLow.setColorAt(0.75,low.lighter(85));
-    gradientLow.setColorAt(1.0, low);
-    m_lowBrush = QBrush(gradientLow);
-
-    QLinearGradient gradientMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientMid.setColorAt(0.0, mid);
-    gradientMid.setColorAt(0.35,mid.lighter(85));
-    gradientMid.setColorAt(0.5, midCenter.darker(115));
-    gradientMid.setColorAt(0.65,mid.lighter(85));
-    gradientMid.setColorAt(1.0, mid);
-    m_midBrush = QBrush(gradientMid);
-
-    QLinearGradient gradientHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientHigh.setColorAt(0.0, high);
-    gradientHigh.setColorAt(0.45,high.lighter(85));
-    gradientHigh.setColorAt(0.5, highCenter.darker(115));
-    gradientHigh.setColorAt(0.55,high.lighter(85));
-    gradientHigh.setColorAt(1.0, high);
-    m_highBrush = QBrush(gradientHigh);
-
-    low.setAlphaF(0.3);
-    mid.setAlphaF(0.3);
-    high.setAlphaF(0.3);
-
-    QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledLow.setColorAt(0.0,low.darker(80));
-    gradientKilledLow.setColorAt(0.5,lowCenter.darker(150));
-    gradientKilledLow.setColorAt(1.0,low.darker(80));
-    m_lowKilledBrush = QBrush(gradientKilledLow);
-
-    QLinearGradient gradientKilledMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledMid.setColorAt(0.0,mid.darker(80));
-    gradientKilledMid.setColorAt(0.5,midCenter.darker(150));
-    gradientKilledMid.setColorAt(1.0,mid.darker(80));
-    m_midKilledBrush = QBrush(gradientKilledMid);
-
-    QLinearGradient gradientKilledHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledHigh.setColorAt(0.0,high.darker(80));
-    gradientKilledHigh.setColorAt(0.5,highCenter.darker(150));
-    gradientKilledHigh.setColorAt(1.0,high.darker(80));
-    m_highKilledBrush = QBrush(gradientKilledHigh);
-}
-
-void GLWaveformRendererFilteredSignal::onResize() {
-    m_polygon[0].resize(2*m_waveformRenderer->getWidth()+2);
-    m_polygon[1].resize(2*m_waveformRenderer->getWidth()+2);
-    m_polygon[2].resize(2*m_waveformRenderer->getWidth()+2);
 }
 
 void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -160,8 +68,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     glLoadIdentity();
     glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
-    float visualSamplesPerPixel = float(lastVisualIndex - firstVisualIndex) / m_waveformRenderer->getWidth();
-
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(.0f,.0f,.0f);
@@ -173,10 +79,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     glEnable(GL_LINE_SMOOTH);
 
     glEnable(GL_MULTISAMPLE_ARB);
-
-    //NOTE: if opengl < 1.2 we should use the following
-    //glEnable(GL_POLYGON_SMOOTH);
-    //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
     const QColor& l = m_colors.getLowColor();
     const QColor& m = m_colors.getMidColor();
