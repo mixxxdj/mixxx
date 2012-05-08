@@ -165,7 +165,8 @@ void AnalyserQueue::run() {
         QListIterator<Analyser*> it(m_aq);
         bool processTrack = false;
         while (it.hasNext()) {
-            processTrack = processTrack || it.next()->initialise(next, iSampleRate, iNumSamples);
+            // Make sure not to short-circuit initialise(...)
+            processTrack = it.next()->initialise(next, iSampleRate, iNumSamples) || processTrack;
         }
 
         if (processTrack) {
