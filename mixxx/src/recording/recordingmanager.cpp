@@ -59,6 +59,7 @@ void RecordingManager::slotToggleRecording(double v) {
 void RecordingManager::startRecording(bool generateFileName) {
     m_iNumberOfBytesRecored = 0;
     m_split_size = getFileSplitSize();
+    qDebug() << "Split size is:" << m_split_size;
     QString encodingType = m_pConfig->getValueString(
             ConfigKey("[Recording]", "Encoding"));
 
