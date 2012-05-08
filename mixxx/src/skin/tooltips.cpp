@@ -111,7 +111,7 @@ void Tooltips::addStandardTooltips() {
     add("orientation")
             << tr("Mix Orientation")
             << tr("Set the channel's mix orientation.")
-            << tr("L = left side of crossfader, R = right side of crossfader, M = center (default)");
+            << tr("Either to the left side of crossfader, to the right side or to the center (default)");
 
     add("show_microphone")
             << tr("Microphone")
