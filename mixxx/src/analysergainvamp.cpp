@@ -20,7 +20,7 @@ AnalyserGainVamp::AnalyserGainVamp(ConfigObject<ConfigValue>* _config) {
 AnalyserGainVamp::~AnalyserGainVamp() {
 }
 
-void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_pVamp = new VampAnalyser(m_pConfig);
     m_bShouldAnalyze = false;
     bool bAnalyserEnabled = static_cast<bool>(
@@ -30,7 +30,7 @@ void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSam
     if (totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
         //qDebug() << "Replaygain Analyser will not start.";
         //if (fReplayGain != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fReplayGain) << "dB for track :" <<(tio->getFilename());
-        return;
+        return false;
     }
 
     m_bShouldAnalyze = m_pVamp->Init("libmixxxminimal", "replaygain:0",
@@ -40,6 +40,7 @@ void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSam
         delete m_pVamp;
         m_pVamp = NULL;
     }
+    return m_bShouldAnalyze;
 }
 
 void AnalyserGainVamp::process(const CSAMPLE *pIn, const int iLen) {

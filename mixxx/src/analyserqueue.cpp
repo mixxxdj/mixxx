@@ -163,18 +163,22 @@ void AnalyserQueue::run() {
         }
 
         QListIterator<Analyser*> it(m_aq);
-
+        bool processTrack = false;
         while (it.hasNext()) {
-            it.next()->initialise(next, iSampleRate, iNumSamples);
+            processTrack = processTrack || it.next()->initialise(next, iSampleRate, iNumSamples);
         }
 
-        doAnalysis(next, pSoundSource);
+        if (processTrack) {
+            doAnalysis(next, pSoundSource);
 
-        QListIterator<Analyser*> itf(m_aq);
-
-        while (itf.hasNext()) {
-            itf.next()->finalise(next);
+            QListIterator<Analyser*> itf(m_aq);
+            while (itf.hasNext()) {
+                itf.next()->finalise(next);
+            }
+        } else {
+            qDebug() << "Skipping track analysis because no analyser initialized.";
         }
+
 
         delete pSoundSource;
         emit(trackFinished(next));
