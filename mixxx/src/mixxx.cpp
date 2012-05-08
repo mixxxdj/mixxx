@@ -770,7 +770,7 @@ void MixxxApp::initActions()
     QString createCrateTitle = tr("Add new &crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
-    m_pCratesNew->setShortcut(tr("Ctrl+C"));
+    m_pCratesNew->setShortcut(tr("Ctrl+Shift+N"));
     m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pCratesNew->setStatusTip(createCrateText);
     m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
