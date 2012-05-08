@@ -4,10 +4,8 @@
 #include <QtDebug>
 #include <QWidget>
 
-const QString WaveformWidgetAbstract::s_openGlFlag = QObject::tr("(GL)");
-const QString WaveformWidgetAbstract::s_openGlShaderFlag = QObject::tr("(GLSL)");
-
-//Default constructor is only use by the factory to evaluate dynamically WaveformWidget
+// Default constructor is only use by the factory to evaluate dynamically
+// WaveformWidget
 WaveformWidgetAbstract::WaveformWidgetAbstract() :
     WaveformWidgetRenderer() {
     m_widget = NULL;

@@ -260,25 +260,29 @@ void WSpinny::paintEvent(QPaintEvent *e)
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle
    in our polar coordinate system.
    Returns an angle clamped between -180 and 180 degrees. */
-double WSpinny::calculateAngle(double playpos)
-{
-    if (isnan(playpos))
+double WSpinny::calculateAngle(double playpos) {
+    double trackFrames = m_pTrackSamples->get() / 2;
+    double trackSampleRate = m_pTrackSampleRate->get();
+    if (isnan(playpos) || isnan(trackFrames) || isnan(trackSampleRate) ||
+        trackFrames <= 0 || trackSampleRate <= 0) {
         return 0.0f;
+    }
 
-    //Convert playpos to seconds.
-    //double t = playpos * m_pDuration->get();
-    double t = playpos * (m_pTrackSamples->get()/2 /  // Stereo audio!
-                          m_pTrackSampleRate->get());
+    // Convert playpos to seconds.
+    double t = playpos * trackFrames / trackSampleRate;
 
-    if (isnan(t)) //Bad samplerate or number of track samples.
+    // Bad samplerate or number of track samples.
+    if (isnan(t)) {
         return 0.0f;
+    }
 
     //33 RPM is approx. 0.5 rotations per second.
-    double angle = 360*m_dRotationsPerSecond*t;
+    double angle = 360.0 * m_dRotationsPerSecond * t;
     //Clamp within -180 and 180 degrees
     //qDebug() << "pc:" << angle;
     //angle = ((angle + 180) % 360.) - 180;
     //modulo for doubles :)
+    const double originalAngle = angle;
     if (angle > 0)
     {
         int x = (angle+180)/360;
@@ -289,7 +293,11 @@ double WSpinny::calculateAngle(double playpos)
         angle = angle - (360*x);
     }
 
-    Q_ASSERT(angle <= 180 && angle >= -180);
+    if (angle <= -180 || angle > 180) {
+        qDebug() << "Angle clamping failed!" << t << originalAngle << "->" << angle
+                 << "Please file a bug or email mixxx-devel@lists.sourceforge.net";
+        return 0.0;
+    }
     return angle;
 }
 
@@ -314,16 +322,26 @@ int WSpinny::calculateFullRotations(double playpos)
 //Inverse of calculateAngle()
 double WSpinny::calculatePositionFromAngle(double angle)
 {
-    if (isnan(angle))
+    if (isnan(angle)) {
         return 0.0f;
+    }
 
     //33 RPM is approx. 0.5 rotations per second.
-    double t = angle/(360*m_dRotationsPerSecond); //time in seconds
+    double t = angle/(360.0 * m_dRotationsPerSecond); //time in seconds
+
+    double trackFrames = m_pTrackSamples->get() / 2;
+    double trackSampleRate = m_pTrackSampleRate->get();
+    if (isnan(trackFrames) || isnan(trackSampleRate) ||
+        trackFrames <= 0 || trackSampleRate <= 0) {
+        return 0.0f;
+    }
 
     //Convert t from seconds into a normalized playposition value.
     //double playpos = t / m_pDuration->get();
-    double playpos = t / (m_pTrackSamples->get()/2 /  // Stereo audio!
-                          m_pTrackSampleRate->get());
+    double playpos = t * trackSampleRate / trackFrames;
+    if (isnan(playpos)) {
+        return 0.0;
+    }
     return playpos;
 }
 

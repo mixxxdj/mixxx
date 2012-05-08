@@ -18,6 +18,15 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.11.0.01	(01/05/2012)
+	* Feature: Support <EndOfTrackColor> notification withing the last seconds of a track in waveform & waveform overview, lp:661443
+			   Note that this feature currently only works for regular decks [Channel$] but not for sampler decks [Sampler$]
+	* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
+	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
+	* Update: Tooltips for EQ kill & microphone buttons
+	* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
+	* Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualisation in waveform overview , obsolete in Mixxx 1.11+
+
 	v1.10.0.13	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
 	* Change: Use global QToolTip style declaration instead of one per node
@@ -318,40 +327,10 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
 							</Overview>
 
 							<!--
@@ -824,40 +803,10 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
 							</Overview>
 
 							<!--
@@ -1330,40 +1279,10 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
 							</Overview>
 
 							<!--
@@ -1836,40 +1755,10 @@
 								<Size>210,35</Size>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<ProgressColor>#3087BF</ProgressColor>
-								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
 							</Overview>
 
 							<!--
@@ -2411,7 +2300,6 @@
 						<Pos>80,93</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
-							<!--ConfigKey>[Channel1],waveform_zoom_up</ConfigKey-->
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
@@ -2433,7 +2321,6 @@
 						<Pos>54,93</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
-							<!--ConfigKey>[Channel1],waveform_zoom_down</ConfigKey-->
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
@@ -2621,19 +2508,16 @@
 						<Style></Style>
 						<Channel>1</Channel>
 						<Pos>0,0</Pos>
-						<Align>bottom</Align>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
-						<SignalColor>#3087BF</SignalColor>
-						<LowColor>#3087BF</LowColor>
-						<MidColor>#74BBE9</MidColor>
-						<HighColor>#A2CDE9</HighColor>
+						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<EndOfTrackColor>#FF6834</EndOfTrackColor>
+						<CueColor>#000000</CueColor>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<MarkRange>
 							<StartControl>loop_start_position</StartControl>
 							<EndControl>loop_end_position</EndControl>
@@ -2669,7 +2553,7 @@
 							<Control>hotcue_1_position</Control>
 							<Pixmap>marker_hotcue1_1.png</Pixmap>
 							<Text> HOTCUE 1 </Text>
-							<Align>top</Align>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2677,7 +2561,7 @@
 							<Control>hotcue_2_position</Control>
 							<Pixmap>marker_hotcue1_2.png</Pixmap>
 							<Text> HOTCUE 2 </Text>
-							<Align>top</Align>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2685,7 +2569,7 @@
 							<Control>hotcue_3_position</Control>
 							<Pixmap>marker_hotcue1_3.png</Pixmap>
 							<Text> HOTCUE 3 </Text>
-							<Align>top</Align>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2693,7 +2577,7 @@
 							<Control>hotcue_4_position</Control>
 							<Pixmap>marker_hotcue1_4.png</Pixmap>
 							<Text> HOTCUE 4 </Text>
-							<Align>top</Align>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2921,6 +2805,7 @@
 							<Color>#AE5CFF</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
+
 						<Mark>
 							<Control>cue_point</Control>
 							<Pixmap>marker_cue1.png</Pixmap>
@@ -2935,20 +2820,16 @@
 						<Style></Style>
 						<Channel>2</Channel>
 						<Pos>0,73</Pos>
-						<Align>top</Align>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
-						<HfcColor>#1b1b1b</HfcColor>
 						<SignalColor>#E17800</SignalColor>
-						<LowColor>#E17900</LowColor>
-						<MidColor>#F5A951</MidColor>
-						<HighColor>#F5C791</HighColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<EndOfTrackColor>#00A046</EndOfTrackColor>
+						<CueColor>#000000</CueColor>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<MarkRange>
 							<StartControl>loop_start_position</StartControl>
 							<EndControl>loop_end_position</EndControl>
@@ -2960,7 +2841,7 @@
 							<Control>loop_start_position</Control>
 							<Pixmap>marker_loop_in1.png</Pixmap>
 							<Text>LOOP IN</Text>
-							<Align>bottom</Align>
+							<Align>top</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2968,7 +2849,7 @@
 							<Control>loop_end_position</Control>
 							<Pixmap>marker_loop_out1.png</Pixmap>
 							<Text>LOOP OUT</Text>
-							<Align>bottom</Align>
+							<Align>top</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -3236,11 +3117,12 @@
 							<Color>#AE5CFF</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
+
 						<Mark>
 							<Control>cue_point</Control>
 							<Pixmap>marker_cue1.png</Pixmap>
 							<Text> CUE </Text>
-							<Align>bottom</Align>
+							<Align>center</Align>
 							<Color>#FF001C</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -3631,13 +3513,18 @@
 					****************************************
 					-->
 					<PushButton>
-						<Tooltip>Microphone talkover&#10;Hold-to-talk and mix microphone input into the master output.&#10;</Tooltip>
+						<Tooltip>Microphone talkover&#10;Hold-to-talk or short click for latching to&#10;mix microphone input into the master output.&#10;</Tooltip>
 						<Style></Style>
-						<NumberStates>1</NumberStates>
+						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_microphone_talkover_over.png</Pressed>
 							<Unpressed>btn_microphone_talkover.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_microphone_talkover_over.png</Pressed>
+							<Unpressed>btn_microphone_talkover_over.png</Unpressed>
 						</State>
 						<Pos>10,12</Pos>
 						<Connection>
@@ -4086,7 +3973,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -4096,18 +3983,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>14,57</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterHighKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -4117,18 +4004,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>14,96</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterMidKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -4138,19 +4025,19 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>14,133</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterLowKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 
 					<PushButton>
-						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -4160,18 +4047,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>292,57</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterHighKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -4181,18 +4068,18 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>292,96</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterMidKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<State>
@@ -4202,13 +4089,13 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill.png</Pressed>
+							<Pressed>btn_kill_over.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>292,133</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterLowKill</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
@@ -4483,65 +4370,17 @@
 				<Channel>1</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present
 				<BgColor>#1C1C1C</BgColor>
-				<!-- transparent background if no <BgPixmap> is present
 				<BgPixmap></BgPixmap>
 				-->
-				<SignalColor>#3087BF</SignalColor>								
-				<LowColor>#3087BF</LowColor>
-				<MidColor>#74BBE9</MidColor>
-				<HighColor>#A2CDE9</HighColor>
+				<SignalColor>#0099FF</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
-				<EndOfTrackColor>#FF6834</EndOfTrackColor>				
-				<ProgressColor>#0099FF</ProgressColor>
-				<ProgressAlpha>80</ProgressAlpha>
+				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<Connection>
 					<ConfigKey>[Channel1],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
 				</Connection>
-				<MarkRange>
-					<StartControl>loop_start_position</StartControl>
-					<EndControl>loop_end_position</EndControl>
-					<EnabledControl>loop_enabled</EnabledControl>
-					<Color>#00FF00</Color>
-					<DisabledColor>#FFFFFF</DisabledColor>
-				</MarkRange>
-					<Mark>
-					<Control>cue_point</Control>
-					<Text>C</Text>
-					<Align>top</Align>
-					<Color>#FF001C</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_1_position</Control>
-					<Text>1</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_2_position</Control>
-					<Text>2</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_3_position</Control>
-					<Text>3</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_4_position</Control>
-					<Text>4</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<!-- TODO vrince support full hotcues ?-->		
 			</Overview>
 
 			<!--
@@ -5407,65 +5246,17 @@
 				<Channel>2</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
-				<BgColor>#1C1C1C</BgColor>			
-				<!-- transparent background if no <BgPixmap> is present
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present
+				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#E17800</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
-				<LowColor>#E17900</LowColor>
-				<MidColor>#F5A951</MidColor>
-				<HighColor>#F5C791</HighColor>
-				<EndOfTrackColor>#00A046</EndOfTrackColor>
-				<ProgressColor>#E17800</ProgressColor>
-				<ProgressAlpha>80</ProgressAlpha>
+				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<Connection>
 					<ConfigKey>[Channel2],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
 				</Connection>
-				<MarkRange>
-					<StartControl>loop_start_position</StartControl>
-					<EndControl>loop_end_position</EndControl>
-					<EnabledControl>loop_enabled</EnabledControl>
-					<Color>#00FF00</Color>
-					<DisabledColor>#FFFFFF</DisabledColor>
-				</MarkRange>
-				<Mark>
-					<Control>cue_point</Control>
-					<Text>C</Text>
-					<Align>top</Align>
-					<Color>#FF001C</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_1_position</Control>
-					<Text>1</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_2_position</Control>
-					<Text>2</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_3_position</Control>
-					<Text>3</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_4_position</Control>
-					<Text>4</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<!-- TODO vrince support full hotcues ? -->
 			</Overview>
 
 			<!--

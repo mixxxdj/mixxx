@@ -17,6 +17,15 @@
 	along with this program.  If not, see http://www.gnu.org/licenses
 
 	CHANGELOG
+	v1.11.0.01	(01/05/2012)
+	* Feature: Support <EndOfTrackColor> notification withing the last seconds of a track in waveform & waveform overview, lp:661443
+			   Note that this feature currently only works for regular decks [Channel$] but not for sampler decks [Sampler$]
+	* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
+	* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
+	* Update: Tooltips for EQ kill & microphone buttons
+	* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
+	* Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualisation in waveform overview , obsolete in Mixxx 1.11+
+
 	v1.10.0.10	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
 	* Change: Use global QToolTip style declaration instead of one per node
@@ -237,12 +246,12 @@
 		<Pos>80,18</Pos>
 		<Size>629,46</Size>
 		<BgColor>#FFFFFF</BgColor>
-		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#00ff00</SignalColor>
 		<BeatColor>#0032FF</BeatColor>
 		<BeatHighlightColor>#000000</BeatHighlightColor>
 		<MarkerColor>#0033FF</MarkerColor>
 		<CueColor>#00FF00</CueColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<MarkRange>
 			<StartControl>loop_start_position</StartControl>
 			<EndControl>loop_end_position</EndControl>
@@ -540,12 +549,12 @@
 		<Pos>80,63</Pos>
 		<Size>629,46</Size>
 		<BgColor>#FFFFFF</BgColor>
-		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#00ff00</SignalColor>
 		<BeatColor>#F00000</BeatColor>
 		<BeatHighlightColor>#000000</BeatHighlightColor>
 		<MarkerColor>#FF0000</MarkerColor>
 		<CueColor>#000000</CueColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<MarkRange>
 			<StartControl>loop_start_position</StartControl>
 			<EndControl>loop_end_position</EndControl>
@@ -851,8 +860,8 @@
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#0032FF</MarkerColor>
-		<ProgressColor>#00ff00</ProgressColor>
-		<ProgressAlpha>80</ProgressAlpha>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -867,8 +876,6 @@
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#ff0000</MarkerColor>
-		<ProgressColor>#00ff00</ProgressColor>
-		<ProgressAlpha>80</ProgressAlpha>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -2328,7 +2335,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+		<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -2344,12 +2351,12 @@
 		<Pos>52,341</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHighKill</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+		<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -2365,12 +2372,12 @@
 		<Pos>52,376</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMidKill</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+		<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -2386,12 +2393,12 @@
 		<Pos>52,410</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLowKill</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
+		<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -2407,12 +2414,12 @@
 		<Pos>763,341</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHighKill</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
+		<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -2428,12 +2435,12 @@
 		<Pos>763,376</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMidKill</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
+		<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;Hold-to-kill or short click for latching.&#10;</Tooltip>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -2449,7 +2456,7 @@
 		<Pos>763,410</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLowKill</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>

@@ -102,7 +102,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
-    playButton->setToggleButton(true);
+    playButton->setButtonMode(ControlPushButton::TOGGLE);
     connect(playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)),
             Qt::DirectConnection);
@@ -170,7 +170,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pTrackEndCOT = new ControlObjectThreadMain(m_pTrackEnd);
 
     m_pRepeat = new ControlPushButton(ConfigKey(group, "repeat"));
-    m_pRepeat->setToggleButton(true);
+    m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
     // Sample rate
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
@@ -218,7 +218,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     setNewPlaypos(0.);
 
     m_pKeylock = new ControlPushButton(ConfigKey(group, "keylock"));
-    m_pKeylock->setToggleButton(true);
+    m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
     m_pKeylock->set(false);
 
     m_pEject = new ControlPushButton(ConfigKey(group, "eject"));
@@ -395,6 +395,7 @@ void EngineBuffer::ejectTrack() {
     file_srate_old = 0;
     file_length_old = 0;
     playButton->set(0.0);
+    visualBpm->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
