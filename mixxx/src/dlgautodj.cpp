@@ -107,6 +107,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
+    qDebug() << "~DlgAutoDJ()";
     delete m_pCOPlayPos1;
     delete m_pCOPlayPos2;
     delete m_pCOPlay1;
@@ -116,6 +117,9 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pCORepeat1;
     delete m_pCORepeat2;
     delete m_pCOCrossfader;
+    // Delete m_pTrackTableView before the table model. This is because the
+    // table view saves the header state using the model.
+    delete m_pTrackTableView;
     delete m_pAutoDJTableModel;
 }
 
