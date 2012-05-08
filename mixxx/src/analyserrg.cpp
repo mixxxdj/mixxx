@@ -26,16 +26,17 @@ AnalyserGain::~AnalyserGain() {
 //		On the other hand, every other ReplayGain tagger uses exactly these methods so that we do not have problems about
 //		values to coincide.
 
-void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
     bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
     float fReplayGain = tio->getReplayGain();
     if(totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
         //qDebug() << "Replaygain Analyser will not start.";
         //if (fReplayGain != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fReplayGain) << "dB for track :" <<(tio->getFilename());
-        return;
+        return false;
     }
     m_iStepControl = InitGainAnalysis( (long)sampleRate );
+    return true;
 }
 
 void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {

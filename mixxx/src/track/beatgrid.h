@@ -45,7 +45,7 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual double findPrevBeat(double dSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual void findBeats(double startSample, double stopSample, SampleList* pBeatsList) const;
+    virtual BeatIterator* findBeats(double startSample, double stopSample) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;

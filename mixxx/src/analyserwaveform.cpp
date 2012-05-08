@@ -53,7 +53,7 @@ AnalyserWaveform::~AnalyserWaveform() {
     delete m_analysisDao;
 }
 
-void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_skipProcessing = false;
 
     m_timer->start();
@@ -62,7 +62,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
     if (!m_waveform || !m_waveformSummary || totalSamples == 0) {
         qWarning() << "AnalyserWaveform::initialise - no waveform/waveform summary";
-        return;
+        return false;
     }
 
     int trackId = tio->getId();
@@ -121,7 +121,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         (!missingWavesummary || (missingWavesummary && foundWavesummary && loadedWavesummary))) {
         qDebug() << "AnalyserWaveform::initialise - Waveform loaded";
         m_skipProcessing = true;
-        return;
+        return false;
     }
 
     QMutexLocker waveformLocker(m_waveform->getMutex());
@@ -167,6 +167,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     test_heatMap = new QImage(256,256,QImage::Format_RGB32);
     test_heatMap->fill(0xFFFFFFFF);
 #endif
+    return true;
 }
 
 void AnalyserWaveform::resetFilters(TrackPointer tio) {
