@@ -61,7 +61,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
     m_pControlObjectSampleRate = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     m_pControlObjectSoundStatus = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[SoundManager]", "status")));
+        new ControlObject(ConfigKey("[SoundManager]", "status")));
     m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_DISCONNECTED);
     m_pControlObjectVinylControlMode = new ControlObjectThreadMain(
         new ControlObject(ConfigKey("[VinylControl]", "mode")));
