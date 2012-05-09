@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-02 10:19-0400\n"
-"PO-Revision-Date: 2012-05-08 04:30+0000\n"
+"POT-Creation-Date: 2012-05-08 13:17-0400\n"
+"PO-Revision-Date: 2012-05-08 16:57+0000\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-08 04:39+0000\n"
-"X-Generator: Launchpad (build 15204)\n"
+"X-Launchpad-Export-Date: 2012-05-09 04:37+0000\n"
+"X-Generator: Launchpad (build 15213)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -75,7 +75,7 @@ msgstr "Samanniminen soittolista on jo olemassa."
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "Nimi ei voi olla tyhjä"
+msgstr "Soittolistan nimi ei voi olla tyhjä."
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
@@ -174,7 +174,7 @@ msgstr "BPM"
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr "Kappalenumero"
+msgstr "Kappale #"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -216,7 +216,7 @@ msgstr "Irrotettavat laitteet"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Mixxx-kirjasto"
+msgstr "Mixxx-kokoelma"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -315,7 +315,7 @@ msgstr "Sijainti"
 #: BrowseTableModel#16
 msgctxt "BrowseTableModel#16"
 msgid "Mixxx Library"
-msgstr "Mixxx-kirjasto"
+msgstr "Mixxx-kokoelma"
 
 #: BrowseTableModel#17
 msgid ""
@@ -339,11 +339,11 @@ msgid ""
 "application:"
 msgstr ""
 "Seuraavaa tiedostoa ei voitu poistaa, koska se on Mixxx:n tai jonkin muun "
-"sovelluksen käytössä."
+"sovelluksen käytössä:"
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "Tiedoston metadataa ei voitu päivittää"
+msgstr "Tiedoston metadataa ei voitu päivittää."
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -351,7 +351,7 @@ msgstr "Käsittelemätön poikkeus rivillä %1 tiedostossa %2; %3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr "Käsittelemätön poikkeus rivillä %1 koodissa: %2"
+msgstr "Käsittelemätön poikkeus rivillä %1 hyväksytyssä koodissa: %2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
@@ -359,7 +359,7 @@ msgstr "Virhe ohjainskriptissä"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr "Äsken käyttämäsi ohjain ei toimi oikein"
+msgstr "Äsken käyttämäsi ohjain ei toimi oikein."
 
 #: ControllerEngine#5
 msgid ""
@@ -406,7 +406,7 @@ msgstr "Poista"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr ""
+msgstr "Ohjattu ohjainten määrittely"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
@@ -472,7 +472,7 @@ msgstr "Levylaukun nimi:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Tapahtui tuntematon virhe luotaessa levylaukkua "
+msgstr "Tapahtui tuntematon virhe luotaessa levylaukkua: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
@@ -484,7 +484,7 @@ msgstr "Uusi levylaukun nimi:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Levylaukun nimeäminen epäonnistui"
+msgstr "Levylaukun uudelleennimeäminen epäonnistui"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -520,7 +520,7 @@ msgstr "Levylaukkujen avulla voit järjestellä musiikkisi kuten haluat!"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
-msgstr "Levylaukun nimi ei voi olla tyhjä"
+msgstr "Levylaukun nimi ei voi olla tyhjä."
 
 #: CrateFeature#21
 msgid "Creating Crate Failed"
@@ -532,11 +532,11 @@ msgstr "Samanniminen levylaukku on jo olemassa."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr "Tietoja Mixxxistä"
+msgstr "Tietoja mixxxistä"
 
 #: DlgAboutDlg#2
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr "<a href=\"http://mixxx.org/\">Mixxxin verkkosivut</a>"
+msgstr "<a href=\"http://mixxx.org/\">Ohjelman verkkosivut</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
@@ -545,7 +545,8 @@ msgstr "Auto-DJ"
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
 msgstr ""
-"Yhden dekin täytyy olla pysäytetty, jotta auto-dj voidaan käynnistää."
+"Yhden dekin täytyy olla pysäytetty, jotta auto-DJ -toiminto voidaan "
+"käynnistää."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -561,7 +562,7 @@ msgstr "Sekoita"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr "Ohita seuraava kappale auto-DJ -listalla"
+msgstr "Ohita seuraava auto-DJ -listan kappale."
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
@@ -585,7 +586,7 @@ msgstr "sekuntia"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr "sek."
+msgstr "s."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
@@ -593,7 +594,7 @@ msgstr "Määritä onko auto-DJ käytössä."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
-msgstr "Ota auto-dj käyttöön"
+msgstr "Ota auto-DJ käyttöön"
 
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
@@ -684,12 +685,18 @@ msgid ""
 "If set, this setting will also re-analyse beatgrids generated by 3rd-party "
 "programs or previous versions of Mixxx."
 msgstr ""
+"Jos valinta on päällä, iskuverkot analysoidaan uudestaan kun muutat tämän "
+"sivun asetuksia. Valinnan ollessa päällä analysoidaan uudestaan myös "
+"kolmansien osapuolien tai aikaisempien mixxx-versioiden tekemät iskuverkot."
 
 #: DlgBeatsDlg#15
 msgid ""
 "Re-analyse beats when settings change or beats already present\n"
 "(e.g. from 3rd-party programs or older Mixxx versions)"
 msgstr ""
+"Analysoi iskuverkot uudestaan asetuksia muutettaessa tai havaittaessa "
+"aikaisempia tietoja\n"
+"(esimerkiksi kolmannen osapuolen ohjelmilta tai vanhemmista mixxx-versioista)"
 
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
@@ -711,11 +718,11 @@ msgstr "Palauta oletusarvot"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "Tempoalue"
+msgstr "Tempomalli"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "Alueen nimi:"
+msgstr "Tempomallin nimi:"
 
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
@@ -736,7 +743,7 @@ msgstr "Analysoi koko kappale"
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr ""
+msgstr "Ohjattu ohjainten määrittely"
 
 #: DlgControllerLearning#2
 msgid ""
@@ -744,6 +751,10 @@ msgid ""
 "move a control on your controller to map it. Repeat this as many times as "
 "you wish. When you are finished mapping controls, click Done."
 msgstr ""
+"Napsauta jotain mixxx-käyttöliittymän ohjainta tai valitse ohjain "
+"luettelosta. Liikuta tämän jälkeen ohjainlaitteesta haluttua ohjainta. "
+"Toista tätä niin useasti kuin haluat. Kun olet liittynyt haluamasi ohjaimet, "
+"paina Valmis."
 
 #: DlgControllerLearning#3
 msgid "Done"
@@ -752,6 +763,8 @@ msgstr "Valmis"
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
 msgstr ""
+"Jos haluat liittää toisen ohjaimen, paina nappia tai valitse ohjain "
+"luettelosta."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
@@ -785,7 +798,7 @@ msgstr "Äänenvoimakkuus"
 
 #: DlgControllerLearning#12
 msgid "Master balance"
-msgstr "Balanssi"
+msgstr "Yleinen kanavatasapaino"
 
 #: DlgControllerLearning#13
 msgid "Headphone volume"
@@ -793,15 +806,15 @@ msgstr "Kuulokkeiden äänenvoimakkuus"
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
-msgstr ""
+msgstr "Kuulokemiksaus (esikuuntelu/yleinen)"
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "Esitysohjaus"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
-msgstr ""
+msgstr "Siirry kappaleen sisällä"
 
 #: DlgControllerLearning#17
 msgid "Play button"
@@ -837,27 +850,27 @@ msgstr "Sisääntulon herkkyys"
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
-msgstr ""
+msgstr "Esikuuntelu -nappi"
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
-msgstr ""
+msgstr "Valitse kertaustila"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
-msgstr ""
+msgstr "Poista kappale dekistä"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Miksauksen suunta (vasen, oikea, keskellä)"
 
 #: DlgControllerLearning#29
 msgid "BPM and Sync"
-msgstr ""
+msgstr "BPM ja tahdistus"
 
 #: DlgControllerLearning#30
 msgid "BPM tap button"
-msgstr ""
+msgstr "BPM-syötön nappi"
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
@@ -865,63 +878,63 @@ msgstr ""
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
-msgstr ""
+msgstr "Valitse kvantisointitila"
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr ""
+msgstr "Iskujen tahdistus (tempo ja vaihe)"
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
-msgstr ""
+msgstr "Iskujen tahdistus (vain tempo)"
 
 #: DlgControllerLearning#35
 msgid "Beat sync (phase only)"
-msgstr ""
+msgstr "Iskujen tahdistus (vain vaihe)"
 
 #: DlgControllerLearning#36
 msgid "Pitch and Rate"
-msgstr ""
+msgstr "Korkeus ja nopeus"
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
-msgstr ""
+msgstr "Valitse sävellajin lukitustila"
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
-msgstr ""
+msgstr "Nopeudensäädin (pitch)"
 
 #: DlgControllerLearning#39
 msgid "Adjust rate up (course)"
-msgstr ""
+msgstr "Säädä nopeammaksi (karkea)"
 
 #: DlgControllerLearning#40
 msgid "Adjust rate up (fine)"
-msgstr ""
+msgstr "Säädä nopeammaksi (hienosäätö)"
 
 #: DlgControllerLearning#41
 msgid "Adjust rate down (course)"
-msgstr ""
+msgstr "Säädä hitaammaksi (karkea)"
 
 #: DlgControllerLearning#42
 msgid "Adjust rate down (fine)"
-msgstr ""
+msgstr "Säädä hitaammaksi (hienosäätö)"
 
 #: DlgControllerLearning#43
 msgid "Pitch-bend rate up (course)"
-msgstr ""
+msgstr "Venytä nopeutta ylöspäin (karkea)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (fine)"
-msgstr ""
+msgstr "Venytä nopeutta ylöspäin (hienosäätö)"
 
 #: DlgControllerLearning#45
 msgid "Pitch-bend rate down (course)"
-msgstr ""
+msgstr "Venytä nopeutta alaspäin (karkea)"
 
 #: DlgControllerLearning#46
 msgid "Pitch-bend rate down (fine)"
-msgstr ""
+msgstr "Venytä nopeutta alaspäin (hienosäätö)"
 
 #: DlgControllerLearning#47
 msgctxt "DlgControllerLearning#47"
@@ -958,168 +971,172 @@ msgid "Vinyl Control"
 msgstr ""
 
 #: DlgControllerLearning#55
-msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
-msgstr ""
+msgid "Toggle vinyl-control (ON/OFF)"
+msgstr "Ohjainlevy päällä/pois"
 
 #: DlgControllerLearning#56
-msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
-msgstr ""
+msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
+msgstr "Ohjainlevyn käynnistystila (päällä/pois/kuuma)"
 
 #: DlgControllerLearning#57
-msgid "Cues / Hotcues"
-msgstr ""
+msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
+msgstr "Ohjainlevyn ohjaustila (abs./suht./vakio)"
 
 #: DlgControllerLearning#58
-msgid "Cue button"
-msgstr ""
+msgid "Cues / Hotcues"
+msgstr "Cue / hotcue -pisteet"
 
 #: DlgControllerLearning#59
-msgid "Set cue point"
-msgstr ""
+msgid "Cue button"
+msgstr "Cue-nappi"
 
 #: DlgControllerLearning#60
-msgid "Go to cue point and stop"
-msgstr ""
+msgid "Set cue point"
+msgstr "Aseta cue-piste"
 
 #: DlgControllerLearning#61
-msgid "Set or jump to hotcue %1"
-msgstr ""
+msgid "Go to cue point and stop"
+msgstr "Siirry cue-pisteeseen ja pysäytä"
 
 #: DlgControllerLearning#62
-msgid "Clear hotcue %1"
-msgstr ""
+msgid "Set or jump to hotcue %1"
+msgstr "Aseta tai siirry hotcue-pisteeseen %1"
 
 #: DlgControllerLearning#63
-msgid "Jump to hotcue %1"
-msgstr ""
+msgid "Clear hotcue %1"
+msgstr "Poista hotcue-piste %1"
 
 #: DlgControllerLearning#64
-msgid "Jump to hotcue %1 and stop"
-msgstr ""
+msgid "Jump to hotcue %1"
+msgstr "Siirry hotcue-pisteeseen %1"
 
 #: DlgControllerLearning#65
-msgid "Looping"
-msgstr ""
+msgid "Jump to hotcue %1 and stop"
+msgstr "Siirry hotcue-pisteeseen %1 ja pysäytä"
 
 #: DlgControllerLearning#66
-msgid "Loop In button"
-msgstr ""
+msgid "Looping"
+msgstr "Loopit"
 
 #: DlgControllerLearning#67
-msgid "Loop Out button"
-msgstr ""
+msgid "Loop In button"
+msgstr "Loopin aloitusnappi"
 
 #: DlgControllerLearning#68
-msgid "Reloop / Exit button"
-msgstr ""
+msgid "Loop Out button"
+msgstr "Loopin lopetusnappi"
 
 #: DlgControllerLearning#69
-msgid "Halve the current loop's length"
-msgstr ""
+msgid "Reloop / Exit button"
+msgstr "Looppaa uudestaan / poistu loopista -nappi"
 
 #: DlgControllerLearning#70
-msgid "Double the current loop's length"
-msgstr ""
+msgid "Halve the current loop's length"
+msgstr "Puolita loopin koko"
 
 #: DlgControllerLearning#71
-msgid "Beat-Looping"
-msgstr ""
+msgid "Double the current loop's length"
+msgstr "Tuplaa loopin koko"
 
 #: DlgControllerLearning#72
-msgid "Create %1-beat loop"
-msgstr ""
+msgid "Beat-Looping"
+msgstr "Iskujen looppaus"
 
 #: DlgControllerLearning#73
-msgctxt "DlgControllerLearning#73"
+msgid "Create %1-beat loop"
+msgstr "Luo %1-iskun looppi"
+
+#: DlgControllerLearning#74
+msgctxt "DlgControllerLearning#74"
 msgid "Library"
 msgstr "Kokoelma"
 
-#: DlgControllerLearning#74
+#: DlgControllerLearning#75
 msgid "Switch to the next view (library, playlist..)"
 msgstr "Vaihda seuraavaan näkymään (kirjasto, soittolistat..)"
 
-#: DlgControllerLearning#75
+#: DlgControllerLearning#76
 msgid "Switch to the previous view (library, playlist..)"
 msgstr "Vaihda edelliseen näkymään (kirjasto, soittolistat..)"
 
-#: DlgControllerLearning#76
+#: DlgControllerLearning#77
 msgid "Scroll to next track in library/playlist"
 msgstr "Vieritä seuraavaan kappaleeseen kirjastossa/soittolistassa"
 
-#: DlgControllerLearning#77
+#: DlgControllerLearning#78
 msgid "Scroll to previous track in library/playlist"
 msgstr "Vieritä edelliseen kappaleeseen kirjastossa/soittolistassa"
 
-#: DlgControllerLearning#78
+#: DlgControllerLearning#79
 msgid "Load selected track into first stopped deck"
 msgstr "Lataa valittu kappale ensimmäiseen pysäytettyyn dekkiin"
 
-#: DlgControllerLearning#79
+#: DlgControllerLearning#80
 msgid "Load selected track"
 msgstr "Lataa valittu kappale"
 
-#: DlgControllerLearning#80
+#: DlgControllerLearning#81
 msgid "Effects"
 msgstr "Efektit"
 
-#: DlgControllerLearning#81
-msgid "Toggle flange effect"
-msgstr ""
-
 #: DlgControllerLearning#82
-msgid "Flange effect: Wavelength/period"
-msgstr ""
+msgid "Toggle flange effect"
+msgstr "Flange-efekti päällä/pois"
 
 #: DlgControllerLearning#83
-msgid "Flange effect: Intensity"
-msgstr ""
+msgid "Flange effect: Wavelength/period"
+msgstr "Flange-efektin aallonpituus/nopeus"
 
 #: DlgControllerLearning#84
-msgid "Flange effect: Phase delay"
-msgstr ""
+msgid "Flange effect: Intensity"
+msgstr "Flange-efektin intensiteetti"
 
 #: DlgControllerLearning#85
-msgctxt "DlgControllerLearning#85"
+msgid "Flange effect: Phase delay"
+msgstr "Flange-efektin vaiheen viive"
+
+#: DlgControllerLearning#86
+msgctxt "DlgControllerLearning#86"
 msgid "Microphone"
 msgstr "Mikrofoni"
 
-#: DlgControllerLearning#86
-msgid "Microphone on/off"
-msgstr "Mikrofoni päällä / pois"
-
 #: DlgControllerLearning#87
+msgid "Microphone on/off"
+msgstr "Mikrofoni päällä/pois"
+
+#: DlgControllerLearning#88
 msgid "Microphone volume"
 msgstr "Mikrofonin äänenvoimakkuus"
 
-#: DlgControllerLearning#88
-msgid "Microphone channel orientation (e.g. left, right, center)"
-msgstr ""
-
 #: DlgControllerLearning#89
+msgid "Microphone channel orientation (e.g. left, right, center)"
+msgstr "Mikrofonin kanavabalanssi (vasen,oikea,keskellä)"
+
+#: DlgControllerLearning#90
 msgid "User Interface"
 msgstr "Käyttöliittymä"
 
-#: DlgControllerLearning#90
+#: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
 msgstr "Näytä tai piilota näytesoittimet"
 
-#: DlgControllerLearning#91
+#: DlgControllerLearning#92
 msgid "Show/hide the microphone section"
 msgstr "Näytä tai piilota mikrofonin valinnat"
 
-#: DlgControllerLearning#92
+#: DlgControllerLearning#93
 msgid "Show/hide the vinyl control section"
 msgstr "Näytä tai piilota ohjainlevyjen valinnat"
 
-#: DlgControllerLearning#93
+#: DlgControllerLearning#94
 msgid "Show/hide spinning vinyl widget"
 msgstr "Näytä tai piilota pyörivä ohjainlevy"
 
-#: DlgControllerLearning#94
+#: DlgControllerLearning#95
 msgid "Ready to map: %1. Now move a control on your controller."
 msgstr ""
 
-#: DlgControllerLearning#95
+#: DlgControllerLearning#96
 msgid "Successfully mapped to:"
 msgstr ""
 
@@ -1130,24 +1147,24 @@ msgstr "Äänen lisäosien lataaja puuttuu"
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr "BPM-tunnistuksen asetukset"
+msgstr "Tempotunnistuksen asetukset"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr "BPM-tunnistus"
+msgstr "Tempotunnistus"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr "Käytä BPM-tunnistusta"
+msgstr "Käytä tempotunnistusta"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Tracks BPM on Import"
-msgstr "Tunnista kappaleen BPM tuotaessa"
+msgstr "Tunnista kappaleen tempo tuotaessa"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr "Lisää BPM-tieto kappaleen ID3-tagiin"
+msgstr "Lisää tempo kappaleen ID3-tagiin"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
@@ -1160,7 +1177,7 @@ msgstr "Salli tempoalueen ylitys"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr "Tempoalueet"
+msgstr "Tempomallit"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
@@ -1194,11 +1211,11 @@ msgstr "Määrittelemätön"
 
 #: DlgPrefController#2
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 (tehnyt %2)"
 
 #: DlgPrefController#3
 msgid "Custom Preset"
-msgstr ""
+msgstr "Oma asetus"
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
@@ -1217,6 +1234,7 @@ msgstr "Käytössä"
 msgid ""
 "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
 msgstr ""
+"<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Vianetsintä</a>"
 
 #: DlgPrefControllerDlg#5
 msgid "Load Preset:"
@@ -1224,15 +1242,15 @@ msgstr "Lataa asetukset:"
 
 #: DlgPrefControllerDlg#6
 msgid "Loaded Preset:"
-msgstr ""
+msgstr "Ladattu asetus:"
 
 #: DlgPrefControllerDlg#7
 msgid "Click to start the Controller Learning wizard."
-msgstr ""
+msgstr "Aloita ohjattu ohjainten määrittely napsauttamalla."
 
 #: DlgPrefControllerDlg#8
 msgid "Learning Wizard (MIDI Only)"
-msgstr ""
+msgstr "Ohjattu ohjainten määrittely (vain MIDI-laitteet)"
 
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
@@ -1245,66 +1263,66 @@ msgstr "Jäljellä"
 
 #: DlgPrefControls#3
 msgid "Don't load tracks into a playing deck"
-msgstr "Älä lataa kappaleita soittavaan kanavaan"
+msgstr "Älä lataa kappaleita soittavaan dekkiin"
 
 #: DlgPrefControls#4
-msgid "Load tracks into playing decks"
-msgstr "Lataa kappaleita soittavaan kanavaan"
-
-#: DlgPrefControls#5
 msgid "CDJ Mode"
 msgstr "CDJ-tila"
 
+#: DlgPrefControls#5
+msgctxt "DlgPrefControls#5"
+msgid "Simple"
+msgstr ""
+
 #: DlgPrefControls#6
 msgctxt "DlgPrefControls#6"
-msgid "Simple"
-msgstr "Yksinkertainen"
+msgid "On"
+msgstr ""
 
 #: DlgPrefControls#7
 msgctxt "DlgPrefControls#7"
-msgid "On"
-msgstr "Päällä"
+msgid "Off"
+msgstr ""
 
 #: DlgPrefControls#8
-msgctxt "DlgPrefControls#8"
-msgid "Off"
-msgstr "Pois päältä"
-
-#: DlgPrefControls#9
 msgid "Mixxx Detected a WVGA Screen"
 msgstr "Mixxx tunnisti WVGA-näytön"
 
-#: DlgPrefControls#10
+#: DlgPrefControls#9
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr "Mixxx havaitsi näyttötarkkuudeksesi "
+msgstr "Mixxx havaitsi näytön tarkkuudeksi "
 
-#: DlgPrefControls#11
+#: DlgPrefControls#10
 msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
-"Ainoa ulkoasu tälle näytön koolle on Outline800x480-WVGA. Haluatko käyttää "
-"tätä ulkoasua?"
+"Ainoa näytön koon kanssa yhteensopiva teema on Outline800x480-WVGA. Haluatko "
+"käyttää tätä ulkoasua?"
 
-#: DlgPrefControls#12
+#: DlgPrefControls#11
 msgid "This skin does not support schemes"
 msgstr "Tämä teema ei salli mukauttamista"
 
-#: DlgPrefControls#13
+#: DlgPrefControls#12
 msgid "6%"
 msgstr "6 %"
 
-#: DlgPrefControls#14
+#: DlgPrefControls#13
 msgid "8% (Technics SL-1210)"
 msgstr "8 % (Technics SL-1210)"
 
-#: DlgPrefControls#15
+#: DlgPrefControls#14
 msgid "Down increases speed (Technics SL-1210)"
 msgstr "Alaspäin kasvattaa nopeutta (Technics SL-1210)"
 
-#: DlgPrefControls#16
+#: DlgPrefControls#15
 msgid "10%"
-msgstr "10%"
+msgstr "10 %"
+
+#: DlgPrefControls#16
+msgid "Load tracks into a playing deck"
+msgstr ""
 
 #: DlgPrefControls#17
 msgid "20%"
@@ -1312,7 +1330,7 @@ msgstr "20 %"
 
 #: DlgPrefControls#18
 msgid "30%"
-msgstr "30%"
+msgstr "30 %"
 
 #: DlgPrefControls#19
 msgid "40%"
@@ -1345,17 +1363,20 @@ msgstr "Ylöspäin säätäminen nostaa nopeutta"
 #: DlgPrefControls#26
 msgctxt "DlgPrefControls#26"
 msgid "Information"
-msgstr ""
+msgstr "Tietoja"
 
 #: DlgPrefControls#27
 msgid "Mixxx must be restarted before the changes will take effect."
+msgstr "Mixxx täytyy käynnistää uudestaan, jotta muutokset tulevat voimaan."
+
+#: DlgPrefControls#28
+msgid "OpenGL not available"
 msgstr ""
-"Jotta muutokset voidaan ottaa käyttöön on Mixxx käynnistettävä uudelleen."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr "Muoto1"
+msgstr "Lomake1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
@@ -1393,73 +1414,68 @@ msgstr "Pitch-säätimien toimintasuunta"
 
 #: DlgPrefControlsDlg#10
 msgid "Track load behaviour"
-msgstr "Raidan lataamisen käyttäytyminen"
+msgstr "Kappaleen lataamisen käyttäytyminen"
 
 #: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
-msgstr "Cue toiminnon käyttäytyminen"
+msgstr "Cue-toiminnon käyttäytyminen"
 
 #: DlgPrefControlsDlg#12
 msgid "Auto Recall Cue"
 msgstr "Palaa Cue-merkin kohdalle automaattisesti"
 
 #: DlgPrefControlsDlg#13
-msgid "Permanent Pitch/Rate Buttons"
-msgstr "Pysyvä äänen korkeuden/nopeuden säätö"
+msgid "Temporary rate change when left-clicking"
+msgstr ""
 
 #: DlgPrefControlsDlg#14
-msgid "Left click"
-msgstr "Vasen painike"
+msgid "Temporary rate change when right-clicking"
+msgstr ""
 
 #: DlgPrefControlsDlg#15
-msgid "Right click"
-msgstr "Oikea painike"
+msgid "Permanent Pitch/Rate Buttons"
+msgstr "Pysyvä korkeuden ja nopeuden säätö"
 
 #: DlgPrefControlsDlg#16
-msgid "Permanent rate change (between 1 and 8000) when left clicking"
+msgid "Synchronize zoom level accross all waveform displays."
 msgstr ""
-"Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren vasenta "
-"painiketta"
 
 #: DlgPrefControlsDlg#17
-msgid "%"
-msgstr "%"
+msgid "Displays which OpenGL version is supported by the current platform."
+msgstr ""
 
 #: DlgPrefControlsDlg#18
-msgid "Permanent rate change (between 1 and 8000) when right clicking"
+msgid "Displays the actual frame rate."
 msgstr ""
 
 #: DlgPrefControlsDlg#19
-msgid "Temporary Pitch/Rate Buttons"
-msgstr "Väliaikaisen äänen korkeuden tai nopeuden säädön painikkeet"
+msgid "Left click"
+msgstr "Vasen painike"
 
 #: DlgPrefControlsDlg#20
-msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
-"Tilapäinen nopeuden säätö (väliltä 1 ja 8000) painettaessa vasenta hiiren "
-"painiketta."
+msgid "Right click"
+msgstr "Oikea painike"
 
 #: DlgPrefControlsDlg#21
-msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr ""
-"Tilapäinen nopeuden säätö (väliltä 1 ja 8000) painettaessa oikeaa hiiren "
-"painiketta."
+msgid "%"
+msgstr "%"
 
 #: DlgPrefControlsDlg#22
-msgid "Ramping Pitchbend"
-msgstr "Muutuva nopeuden säätö"
+msgid "Temporary Pitch/Rate Buttons"
+msgstr "Väliaikainen korkeuden ja nopeuden säätö"
 
 #: DlgPrefControlsDlg#23
-msgid "Pitchbend sensitivity"
-msgstr "Nopeuden säädön herkkyys"
+msgid "Ramping Pitchbend"
+msgstr "Mukautuva nopeudensäätö"
 
 #: DlgPrefControlsDlg#24
-msgid "Waveform Display"
-msgstr "Aaltomuodon näyttö"
+msgid "Pitchbend sensitivity"
+msgstr "Nopeudensäädön herkkyys"
 
 #: DlgPrefControlsDlg#25
-msgid "Frame Rate"
-msgstr "Kehysnopeus"
+msgctxt "DlgPrefControlsDlg#25"
+msgid "Waveform Display"
+msgstr ""
 
 #: DlgPrefControlsDlg#26
 msgid "OpenGl status"
@@ -1470,41 +1486,64 @@ msgid "Display type"
 msgstr "Näyttötyyppi"
 
 #: DlgPrefControlsDlg#28
-msgid "Default zoom"
+msgid "Permanent rate change when left-clicking"
 msgstr ""
 
 #: DlgPrefControlsDlg#29
-msgid "Visual gain"
+msgid "Permanent rate change when right-clicking"
 msgstr ""
 
 #: DlgPrefControlsDlg#30
-msgid "<html><head/><body><p>Global visual gain</p></body></html>"
+msgid ""
+"Makes temporary pitch/rate buttons change the pitch gradually, instead of "
+"all at once."
 msgstr ""
 
 #: DlgPrefControlsDlg#31
-msgid "<html><head/><body><p>Low visual gain</p></body></html>"
+msgid "Value in milliseconds"
 msgstr ""
 
 #: DlgPrefControlsDlg#32
-msgid "<html><head/><body><p>Medium visual gain</p></body></html>"
+msgid "Visual gain of the high frequencies"
 msgstr ""
 
 #: DlgPrefControlsDlg#33
-msgid "<html><head/><body><p>High visual gain</p></body></html>"
+msgid "Visual gain of the middle frequencies"
 msgstr ""
 
 #: DlgPrefControlsDlg#34
+msgid "Visual gain of the low frequencies"
+msgstr ""
+
+#: DlgPrefControlsDlg#35
+msgid "Global visual gain"
+msgstr ""
+
+#: DlgPrefControlsDlg#36
+msgid "Frame rate"
+msgstr ""
+
+#: DlgPrefControlsDlg#37
+msgid "Default zoom"
+msgstr "Oletus-suurennos"
+
+#: DlgPrefControlsDlg#38
+msgid "Visual gain"
+msgstr "Näkyvä herkkyys"
+
+#: DlgPrefControlsDlg#39
+msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr "Tahdista"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr "Muoto1"
+msgstr "Lomake1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
-msgstr "Crossfaderin säätökäyrä"
+msgstr "Ristiinhäivytyksen säätökäyrä"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
@@ -1520,11 +1559,11 @@ msgstr "Vakioteho"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr "Miksaaminen"
+msgstr "Miksaus"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
-msgstr "''Skrätsääminen''"
+msgstr "Skrätsäys"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
@@ -1536,13 +1575,13 @@ msgstr "Logaritminen"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
-msgid "Reset"
-msgstr "Palauta asetus"
+msgid "Reset to Defaults"
+msgstr ""
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr "Muoto1"
+msgstr "Lomake1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
@@ -1554,7 +1593,7 @@ msgstr "Korkeiden taajuuksien kynnys"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr "tekstiMalli1"
+msgstr "tekstikenttä1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
@@ -1574,12 +1613,12 @@ msgstr "Matalien taajuuksien kynnys"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
-msgstr "tekstiMalli2"
+msgstr "tekstikenttä2"
 
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
-msgid "Reset"
-msgstr "Palauta asetus"
+msgid "Reset to Defaults"
+msgstr ""
 
 #: DlgPrefMappableController#1
 msgid "Apply device settings?"
@@ -1590,10 +1629,13 @@ msgid ""
 "Your settings must be applied before starting the learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"Laitteen asetukset tulee ottaa käyttöön ennen ohjatun määrittelyn "
+"käynnistämistä.\n"
+"Haluatko ottaa asetukset käyttöön ja jatkaa?"
 
 #: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
-msgstr "Poista sisääntulosidonnat"
+msgstr "Tyhjennä sisääntulosidonnat"
 
 #: DlgPrefMappableController#4
 msgid "Are you sure you want to clear all bindings?"
@@ -1619,7 +1661,7 @@ msgstr "Ohjaimia ei ole saatavilla"
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr "Muoto1"
+msgstr "Lomake1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
@@ -1651,7 +1693,7 @@ msgstr ""
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "weight:600;\">Valitse äänilaitteet ohjainlevylle äänilaitteiden "
-"hallinnassa.</span></p></body></html>"
+"asetuksista.</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1687,12 +1729,12 @@ msgstr "Levysoittimen asetukset"
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr "Osio 1 Levysoittimen tyyppi"
+msgstr "1. dekin levysoittimen tyyppi"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr "Osio 2 Levysoittimen tyyppi"
+msgstr "2. dekin levysoittimen tyyppi"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
@@ -1717,7 +1759,7 @@ msgstr "Toimintatila"
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr "Todellinen tila"
+msgstr "Absoluuttinen tila"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
@@ -1727,7 +1769,7 @@ msgstr "Suhteellinen tila"
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr "Ota käyttöön neulan hyppimisen esto"
+msgstr "Suojaa neulan hyppimiseltä"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
@@ -1742,20 +1784,20 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr "Toimittanut xwax"
+msgstr "Toteuttanut xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
-"<b>Tämä Mixxx:in versio ei tue vinyl control ominaisuutta.</b> <br>Katso "
-"lisätietoja osoitteesta <a href=\"http://mixxx.org\">Mixxx.org</a>."
+"<b>Tämä Mixxx:in versio ei tue levysoittimilla ohjausta ominaisuutta.</b> "
+"<br>Katso lisätietoja osoitteesta <a href=\"http://mixxx.org\">Mixxx.org</a>."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr "Valitse musiikkikirjaston sijainti"
+msgstr "Valitse musiikkikokoelman sijainti"
 
 #: DlgPrefPlaylistDlg#1
 msgid "Audio File Formats"
@@ -1763,7 +1805,7 @@ msgstr "Äänitiedostojen muodot"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Additional Format Plugins:"
-msgstr "Muiden äänitiedostojen lisäosat"
+msgstr "Lisäosat muille äänimuodoille:"
 
 #: DlgPrefPlaylistDlg#3
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
@@ -1771,30 +1813,29 @@ msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#4
 msgid "Loaded Plugins:"
-msgstr "Ladatut lisäosat"
+msgstr "Ladatut lisäosat:"
 
 #: DlgPrefPlaylistDlg#5
 msgctxt "DlgPrefPlaylistDlg#5"
 msgid "None"
-msgstr "Määrittelemätön"
+msgstr "Ei mitään"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Lisäasetukset"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
-msgstr "Sykronoi ID3 leimat muokkauksissa"
+msgstr "Synkronoi ID3 tagit muokattaessa kappaletta"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
-msgstr "Skannaa kirjasto uudelleen käynnistyksen yhteydessä"
+msgstr "Käy läpi kokoelman käynnistettäessä"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
-msgstr ""
-"Käytä suhteellisia polkuja soittolistojen viennissä mikäli mahdollista"
+msgstr "Yritä käyttää suhteellisia polkuja soittolistojen viennissä"
 
 #: DlgPrefPlaylistDlg#10
 msgctxt "DlgPrefPlaylistDlg#10"
@@ -1808,7 +1849,7 @@ msgstr "Kokoelma"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Music Directory:"
-msgstr "Musiikkikirjasto"
+msgstr "Musiikkikansio:"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Built-in"
@@ -1816,7 +1857,7 @@ msgstr "Sisäänrakennettu"
 
 #: DlgPrefPlaylistDlg#14
 msgid "Available Online..."
-msgstr "Saatavilla verkosta"
+msgstr "Saatavilla verkosta..."
 
 #: DlgPrefPlaylistDlg#15
 msgid "Bundled Songs"
@@ -1827,21 +1868,22 @@ msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
-"Tue Mixxx-ohjelmaa lisäämällä ja jakamalla mukana tulevia kappaleita\n"
-"toista ja lähetä linkkitiedot"
+"Tue mixxx-ohjelmaa  lasekemalla ja jakamalla mukana\n"
+"tulevien ohjelmien soitto- ja kuuntelukerrat"
 
 #: DlgPrefRecord#1
+msgctxt "DlgPrefRecord#1"
 msgid "kbps"
-msgstr "Kilobit/s"
+msgstr ""
 
 #: DlgPrefRecord#2
-msgid "Choose recordings direcory"
-msgstr "Valitse tallennettujen nauhoitusten kansio"
+msgid "Choose recordings directory"
+msgstr ""
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr "Malli3"
+msgstr "Lomake1"
 
 #: DlgPrefRecordDlg#2
 msgid "Recordings Directory"
@@ -1859,7 +1901,7 @@ msgstr "Selaa..."
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
-msgstr "Pakkaus"
+msgstr "Pakkausmuoto"
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
@@ -1894,7 +1936,7 @@ msgstr "Levy"
 #: DlgPrefRecordDlg#13
 msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr "Sekalaiset"
+msgstr "Lisäasetukset"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
@@ -1902,38 +1944,40 @@ msgstr "Luo CUE tiedosto"
 
 #: DlgPrefRecordDlg#15
 msgid "File Splitting"
-msgstr "Tiedoston leikkaaminen"
+msgstr "Tiedoston jakaminen"
 
 #: DlgPrefRecordDlg#16
 msgid "Split recordings at"
-msgstr "Leikkaa tallenteet seuraavasti"
+msgstr "Jaa tallenteet kohdasta"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr "BPM tunnistuksen asetukset"
+msgstr "Tempotunnistuksen asetukset"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr "Toistotason normalisointi"
+msgstr "ReplayGain -normalisointi"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Enable Replay Gain"
-msgstr "Käytä Toistotason normalisointia"
+msgstr "Käytä ReplayGain -tasausta"
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain Analysis"
-msgstr "Salli Toistotason analysointi"
+msgstr "Salli ReplayGain -analysointi"
 
 #: DlgPrefReplayGainDlg#5
 msgid "Apply volume normalization to loaded tracks."
-msgstr "Käytä äänenvoimakkuuden tasausta ladatuille kappaleille"
+msgstr "Tasaa ladattujen kappaleiden äänenvoimakkuus."
 
 #: DlgPrefReplayGainDlg#6
 msgid ""
 "Calculate ReplayGain normalization for tracks which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Laske ReplayGain -voimakkuustasot kappaleille, joista ReplayGain-tagit "
+"puuttuvat."
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1941,14 +1985,17 @@ msgid ""
 "applied to a new track. You may wish to wait before adjusting the pregain "
 "and volume."
 msgstr ""
+"Vanhemmilla tietokoneilla saattaa kestää muutaman sekunnin enne kuin "
+"äänenvoimakkuuden tasaus on laskettu uudelle kappaleelle. Odota hetki ennen "
+"kuin alat säätämään herkkyyttä tai äänenvoimakkuutta."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr "Alkuperäinen tehostus"
+msgstr "Alustava tehostus"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr "Alkuperäinen tehon lisäys"
+msgstr "Alustava herkkyyden lisäys"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
@@ -1956,17 +2003,17 @@ msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
-msgid "Reset"
-msgstr "Palauta"
+msgid "Reset to Defaults"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr "Malli3"
+msgstr "Lomake3"
 
 #: DlgPrefShoutcastDlg#2
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Käynnistä verkkojulkaisu"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -1991,7 +2038,7 @@ msgstr "Icecast 1"
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
-msgstr "Liitä"
+msgstr "Liitospiste"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
@@ -2015,7 +2062,7 @@ msgstr "8000"
 
 #: DlgPrefShoutcastDlg#14
 msgid "Login"
-msgstr "Kirjaudu"
+msgstr "Käyttäjätunnus"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
@@ -2035,7 +2082,7 @@ msgstr "Suoratoiston asetukset"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr "Suoratoiston nimi"
+msgstr "Virran nimi"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
@@ -2077,7 +2124,7 @@ msgstr ""
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Tämä lähete on "
-"linjoilla ainoastaan testausta varten</span></p></body></html>"
+"kuunneltavissa ainoastaan testausta varten</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -2086,16 +2133,16 @@ msgstr "Tyylilaji"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
-msgstr ""
+msgstr "Live-miksaus"
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
-msgstr "Julkinen toisto"
+msgstr "Julkinen virta"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Encoding"
-msgstr "Muunnos"
+msgstr "Pakkaustapa"
 
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
@@ -2104,7 +2151,7 @@ msgstr "Bittinopeus"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
-msgstr "320 kb/s"
+msgstr "320 kbps"
 
 #: DlgPrefShoutcastDlg#31
 msgid "256 kbps"
@@ -2112,43 +2159,43 @@ msgstr "256 kb/s"
 
 #: DlgPrefShoutcastDlg#32
 msgid "224 kbps"
-msgstr "224 kb/s"
+msgstr "224 kbps"
 
 #: DlgPrefShoutcastDlg#33
 msgid "192 kbps"
-msgstr "192 kb/s"
+msgstr "192 kbps"
 
 #: DlgPrefShoutcastDlg#34
 msgid "160 kbps"
-msgstr "160 kb/s"
+msgstr "160 kbps"
 
 #: DlgPrefShoutcastDlg#35
 msgid "128 kbps"
-msgstr "128 kb/s"
+msgstr "128 kbps"
 
 #: DlgPrefShoutcastDlg#36
 msgid "112 kbps"
-msgstr "112 kb/s"
+msgstr "112 kbps"
 
 #: DlgPrefShoutcastDlg#37
 msgid "96 kbps"
-msgstr "96 kb/s"
+msgstr "96 kbps"
 
 #: DlgPrefShoutcastDlg#38
 msgid "80 kbps"
-msgstr "80 kb/s"
+msgstr "80 kbps"
 
 #: DlgPrefShoutcastDlg#39
 msgid "64 kbps"
-msgstr "64 kb/s"
+msgstr "64 kbps"
 
 #: DlgPrefShoutcastDlg#40
 msgid "48 kbps"
-msgstr "48 kb/s"
+msgstr "48 kbps"
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr "Tiedostomuoto"
+msgstr "Pakkausmuoto"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
@@ -2168,11 +2215,11 @@ msgstr "Stereo"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
-msgstr "Mukautettu metadata"
+msgstr "Omat metatiedot"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr "Käytä mukautettua metadataa"
+msgstr "Käytä omia metatietoja"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
@@ -2181,7 +2228,7 @@ msgstr "Artisti"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
-msgstr "%mainartist"
+msgstr "%esittäjä"
 
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
@@ -2190,14 +2237,14 @@ msgstr "Nimi"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
-msgstr "%maintitle"
+msgstr "%nimi"
 
 #: DlgPrefShoutcastDlg#52
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
-"Huomautus: teknisistä syistä johtuen Shoutcast-asetusten muuttaminen vaatii "
+"Huomautus: teknisistä syistä johtuen shoutcast-asetusten muuttaminen vaatii "
 "olemassaolevan yhteyden katkaisun ja uudelleenavaamisen. "
 
 #: DlgPrefSound#1
@@ -2230,7 +2277,7 @@ msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
-"Virhe avattaessa %1\n"
+"Virhe avattaessa laitetta %1\n"
 "%2"
 
 #: DlgPrefSound#8
@@ -2251,7 +2298,7 @@ msgstr "Näytteenottotaajuus"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
-msgstr "Viive vinkit"
+msgstr "Vihjeitä viiveen säätämiseksi"
 
 #: DlgPrefSoundDlg#4
 msgid ""
@@ -2261,15 +2308,15 @@ msgid ""
 "</ul>"
 msgstr ""
 "<ul>\n"
-"<li>Lisää viivettä jos kuulet naksuja toistossa</li>\n"
-"<li>Vähennä viivettä jos haluat lisätä Mixxx:in käyttöliittymän "
-"vastetta</li>\n"
+"<li>Lisää latenssia, jos ääni napsuu toistossa</li>\n"
+"<li>Vähennä latenssia, jos haluat lisätä parantaa ohjelman "
+"käyttötuntumaa</li>\n"
 "</ul>"
 
 #: DlgPrefSoundDlg#5
 msgctxt "DlgPrefSoundDlg#5"
 msgid "Output"
-msgstr ""
+msgstr "Lähtö"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
@@ -2278,7 +2325,7 @@ msgstr "Sisääntulo"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr "Päivitä laitteet"
+msgstr "Etsi laitteita"
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
@@ -2350,7 +2397,7 @@ msgstr ""
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "weight:600;\">Valitse äänilaitteet ohjainlevylle äänilaitteiden "
-"hallinnassa.</span></p></body></html>"
+"hallinnasta.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
@@ -2386,12 +2433,12 @@ msgstr "Ohjainlevyn asetukset"
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr "Ohjainlevyn 1 tyyppi"
+msgstr "1. ohjainlevyn tyyppi"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr "Ohjainlevyn 2 tyyppi"
+msgstr "2. ohjainlevyn tyyppi"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
@@ -2431,7 +2478,7 @@ msgstr "Suhteellinen"
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr "Estä neulan hyppiminen"
+msgstr "Suojaudu neulan hyppimseltä"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
@@ -2446,15 +2493,15 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr "Mahdollistanut xwax"
+msgstr "Toteutus xwax"
 
 #: DlgPreferences#1
 msgid "Preferences"
-msgstr "Valinnat"
+msgstr "Asetukset"
 
 #: DlgPreferences#2
 msgid "Sound Hardware"
-msgstr "Äänikortti"
+msgstr "Ääniliitynnät"
 
 #: DlgPreferences#3
 msgid "Controllers"
@@ -2491,7 +2538,7 @@ msgstr "Iskuntunnistus"
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "BPM Detection"
-msgstr "BPM-tunnistus"
+msgstr "Tempotunnistus"
 
 #: DlgPreferences#11
 msgid "Normalization"
@@ -2500,16 +2547,16 @@ msgstr "Normalisointi"
 #: DlgPreferences#12
 msgctxt "DlgPreferences#12"
 msgid "Vinyl Control"
-msgstr "Ohjainlevy"
+msgstr "Ohjainlevyt"
 
 #: DlgPreferences#13
 msgid "Live Broadcasting"
-msgstr ""
+msgstr "Verkkojulkaisu"
 
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
 msgid "Dialog"
-msgstr "Kyselyikkuna"
+msgstr "Valintaikkuna"
 
 #: DlgPreferencesDlg#2
 msgid "1"
@@ -2521,31 +2568,47 @@ msgid "Manage"
 msgstr "Hallinta"
 
 #: DlgPrepare#2
+msgid "Shows tracks added to the library within the last 7 days."
+msgstr ""
+
+#: DlgPrepare#3
 msgid "New"
 msgstr "Uusi"
 
-#: DlgPrepare#3
+#: DlgPrepare#4
+msgid "Shows all tracks in the library."
+msgstr ""
+
+#: DlgPrepare#5
 msgid "All"
 msgstr "Kaikki"
 
-#: DlgPrepare#4
+#: DlgPrepare#6
 msgid "Progress"
 msgstr "Edistyminen"
 
-#: DlgPrepare#5
+#: DlgPrepare#7
+msgid "Selects all tracks in the table below."
+msgstr ""
+
+#: DlgPrepare#8
 msgid "Select All"
 msgstr "Valitse kaikki"
 
-#: DlgPrepare#6
-msgctxt "DlgPrepare#6"
-msgid "Analyze"
-msgstr "Analysoi"
+#: DlgPrepare#9
+msgid "Runs the BPM and beatgrid detection on the selected tracks."
+msgstr ""
 
-#: DlgPrepare#7
+#: DlgPrepare#10
+msgctxt "DlgPrepare#10"
+msgid "Analyze"
+msgstr ""
+
+#: DlgPrepare#11
 msgid "Stop Analysis"
 msgstr "Keskeytä analysointi"
 
-#: DlgPrepare#8
+#: DlgPrepare#12
 msgid "Analyzing %1%"
 msgstr "Analysoidaan %1%"
 
@@ -2564,7 +2627,7 @@ msgstr "Aloita tallennus"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr "Aloita tallennus tänne ..."
+msgstr "Aloita nauhoitus tästä ..."
 
 #: DlgRecording#5
 msgid "Stop Recording"
@@ -2583,24 +2646,24 @@ msgid "Track Editor"
 msgstr "Kappalemuokkain"
 
 #: DlgTrackInfo#2
+msgid "Summary"
+msgstr ""
+
+#: DlgTrackInfo#3
 msgid "Title:"
 msgstr "Nimi:"
 
-#: DlgTrackInfo#3
-msgid "Artist:"
-msgstr "Artisti:"
-
 #: DlgTrackInfo#4
-msgid "Album:"
-msgstr "Julkaisu:"
+msgid "Artist:"
+msgstr "Esittäjä:"
 
 #: DlgTrackInfo#5
-msgid "Date:"
-msgstr "Päiväys:"
+msgid "Album:"
+msgstr "Levy:"
 
 #: DlgTrackInfo#6
 msgid "Track #:"
-msgstr "Raita #:"
+msgstr "Kappale #:"
 
 #: DlgTrackInfo#7
 msgid "Genre:"
@@ -2611,114 +2674,123 @@ msgid "Composer:"
 msgstr "Säveltäjä:"
 
 #: DlgTrackInfo#9
-msgid "Filename:"
-msgstr "Tiedostonimi"
+msgctxt "DlgTrackInfo#9"
+msgid "Year"
+msgstr ""
 
 #: DlgTrackInfo#10
+msgctxt "DlgTrackInfo#10"
+msgid "Key"
+msgstr ""
+
+#: DlgTrackInfo#11
+msgid "Filetype:"
+msgstr ""
+
+#: DlgTrackInfo#12
+msgid "BPM:"
+msgstr "BPM:"
+
+#: DlgTrackInfo#13
+msgid "Location:"
+msgstr ""
+
+#: DlgTrackInfo#14
+msgid "Filename:"
+msgstr "Tiedostonimi:"
+
+#: DlgTrackInfo#15
+msgid "Bitrate:"
+msgstr ""
+
+#: DlgTrackInfo#16
+msgctxt "DlgTrackInfo#16"
+msgid "BPM"
+msgstr ""
+
+#: DlgTrackInfo#17
+msgid "Double BPM"
+msgstr ""
+
+#: DlgTrackInfo#18
+msgid "Halve BPM"
+msgstr ""
+
+#: DlgTrackInfo#19
+msgid "Cuepoints"
+msgstr ""
+
+#: DlgTrackInfo#20
+msgid "&Previous"
+msgstr ""
+
+#: DlgTrackInfo#21
+msgid "&Next"
+msgstr ""
+
+#: DlgTrackInfo#22
 msgid "Duration:"
 msgstr "Kesto:"
 
-#: DlgTrackInfo#11
-msgid "3:00"
-msgstr "3:00"
-
-#: DlgTrackInfo#12
-msgid "File Type:"
-msgstr "Tiedostomuoto:"
-
-#: DlgTrackInfo#13
-msgid "77"
-msgstr "77"
-
-#: DlgTrackInfo#14
+#: DlgTrackInfo#23
 msgid "Comments:"
 msgstr "Kommentit:"
 
-#: DlgTrackInfo#15
+#: DlgTrackInfo#24
 msgid "Reload track metadata from file."
 msgstr "Päivitä metadata tiedostosta."
 
-#: DlgTrackInfo#16
-msgid "Track Information (Click to Expand)"
-msgstr "Raidan tiedot (Klikkaa avataksesi)"
-
-#: DlgTrackInfo#17
-msgid "Track BPM: "
-msgstr "Tempo "
-
-#: DlgTrackInfo#18
-msgid "x2"
-msgstr "Tuplaa"
-
-#: DlgTrackInfo#19
-msgid "/2"
-msgstr "Puolita"
-
-#: DlgTrackInfo#20
-msgid "Tap to Beat"
-msgstr "Näppäile tahdissa"
-
-#: DlgTrackInfo#21
-msgid "Hint: Use the Library Analyze view to run BPM detection."
-msgstr ""
-"Vinkki: Käytä kirjaston analysointi näkymää käynnistääksesi BPM tunnistuksen."
-
-#: DlgTrackInfo#22
-msgid "Track BPM"
-msgstr "Tempo"
-
-#: DlgTrackInfo#23
-msgid "Track:"
-msgstr ""
-
-#: DlgTrackInfo#24
-msgid "Cue Id"
-msgstr "Merkin numero"
-
 #: DlgTrackInfo#25
-msgctxt "DlgTrackInfo#25"
-msgid "Position"
-msgstr "Kohta"
+msgid "Track BPM: "
+msgstr "Tempo (BPM): "
 
 #: DlgTrackInfo#26
-msgid "Hotcue"
-msgstr "Nopea merkki"
+msgid "Tap to Beat"
+msgstr "Naputa tahdissa"
 
 #: DlgTrackInfo#27
+msgid "Hint: Use the Library Analyze view to run BPM detection."
+msgstr ""
+"Vinkki: voit käynnistää tempotunnistuksen kirjaston analysointinäkymstä."
+
+#: DlgTrackInfo#28
+msgid "Cue Id"
+msgstr "Cue-tunniste"
+
+#: DlgTrackInfo#29
+msgctxt "DlgTrackInfo#29"
+msgid "Position"
+msgstr ""
+
+#: DlgTrackInfo#30
+msgctxt "DlgTrackInfo#30"
+msgid "Hotcue"
+msgstr ""
+
+#: DlgTrackInfo#31
 msgid "Label"
 msgstr "Selite"
 
-#: DlgTrackInfo#28
-msgid "Activate Cue"
-msgstr "Ota käyttöön"
-
-#: DlgTrackInfo#29
-msgid "Delete Cue"
-msgstr "Poista"
-
-#: DlgTrackInfo#30
-msgid "Track Cuepoints"
-msgstr "Cue-pisteet"
-
-#: DlgTrackInfo#31
-msgid "<< &Prev"
-msgstr "<< &Edellinen"
-
 #: DlgTrackInfo#32
+msgid "Activate Cue"
+msgstr "Hyppää cue-merkkiin"
+
+#: DlgTrackInfo#33
+msgid "Delete Cue"
+msgstr "Poista cue-merkki"
+
+#: DlgTrackInfo#34
 msgid "&Apply"
 msgstr "&Käytä"
 
-#: DlgTrackInfo#33
-msgid "&Cancel"
-msgstr "&Peruuta"
-
-#: DlgTrackInfo#34
-msgid "Alt+O"
-msgstr "Alt+O"
-
 #: DlgTrackInfo#35
-msgid "&Next >>"
-msgstr "&Seuraava >>"
+msgid "&Cancel"
+msgstr "&Peru"
+
+#: DlgTrackInfo#36
+msgctxt "DlgTrackInfo#36"
+msgid "kbps"
+msgstr ""
 
 #: EmptyWaveformWidget#1
 msgid "Empty"
@@ -2737,13 +2809,13 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 "
-"enkooderia &quot;lame&quot;. Lisensointiongelmista johtuen, emme voi "
-"sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- "
-"muodossa, sinun täytyy ladata <b>libmp3lame</b> ja asentaa se "
-"tietokoneellesi. <p>Katso <a "
+"<html>Mixxx ei voi nauhoittaa tai julkaista MP3- muodossa ilman "
+"&quot;lame&quot; -mp3-pakkausohjelmaa. Lisensointiongelmista johtuen, emme "
+"voi sisällyttää tätä ohjelman mukaan. Jos haluat toistaa tai nauhoittaa mp3-"
+"muodossa, lataa <b>libmp3lame</b>-kirjasto ja asenna se tietokoneellesi. "
+"<p>Katso lisätietoja <a "
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
-"Wiki</a> saadaksesi lisätietoa asiasta. </html>"
+"Wiki</a> -sivulta.</html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2754,13 +2826,13 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 "
-"enkooderia &quot;lame&quot;. Lisensointiongelmista johtuen, emme voi "
-"sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- "
-"muodossa, sinun täytyy ladata <b>libmp3lame</b> ja asentaa se "
-"tietokoneellesi. <p>Katso <a "
-"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
-"Wiki</a> saadaksesi lisätietoa asiasta. </html>"
+"<html>Mixxx ei voi nauhoittaa tai julkaista MP3- muodossa ilman "
+"&quot;lame&quot; -mp3-pakkausohjelmaa. Lisensointiongelmista johtuen, emme "
+"voi sisällyttää tätä ohjelman mukaan. Jos haluat toistaa tai nauhoittaa mp3-"
+"muodossa, lataa <b>libmp3lame</b>-kirjasto ja asenna se tietokoneellesi. "
+"<p>Katso lisätietoja <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> -sivulta.</html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2776,7 +2848,7 @@ msgstr ""
 "sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- "
 "muodossa, sinun täytyy ladata <b>libmp3lame</b> ja asentaa se "
 "tietokoneellesi. <p>Katso <a "
-"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
 "Wiki</a> saadaksesi lisätietoa asiasta. </html>"
 
 #: EncoderMp3#5
@@ -2785,34 +2857,34 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
-"<html>Mixxx havaitse että käytöt muokattua versiota libmp3lame:sta. Katso <a "
+"<html>Käyttämäsi libmp3lame -kirjastosta on mukautettu. Katso lisätietoja <a "
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> "
-"sivustolta lisätietoja.</html>"
+"sivuilta.</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
 msgid "Recording"
-msgstr "Äänitys"
+msgstr "Nauhoitus"
 
 #: EngineRecord#2
 msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
-"<html>Nauhoituksen aloittaminen epäonnistui!<p><br>Tarkista levytila ja että "
-"valitsemaasi hakemistoon on kirjoitusoikeus.</html>"
+"<html>Nauhoitukseen tarvittavaa tiedostoa ei voitu luoda!<p><br>Tarkista "
+"levytila ja että valitsemaasi hakemistoon on kirjoitusoikeus.</html>"
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
-msgstr "Mixxx törmäsi ongelmaan"
+msgstr "Mixxx havaitsi virheen"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr "Ei voida varata shout_t"
+msgstr "Tietorakenteen shout_t varaus epäonnistui"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr "Ei voida varata shout_metadata_t"
+msgstr "Tietorakenteen shout_metadata_t varaus epäonnistui"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
@@ -2820,7 +2892,7 @@ msgstr "Virhe asetettaessa ei-esto moodia"
 
 #: EngineShoutcast#5
 msgid "Error setting hostname!"
-msgstr "Virhe asetettaessa tietokoneen nimeä!"
+msgstr "Virhe asetettaessa verkkonimeä!"
 
 #: EngineShoutcast#6
 msgid "Error setting protocol!"
@@ -2856,21 +2928,22 @@ msgstr "Virhe asetettaessa virran tyyliä!"
 
 #: EngineShoutcast#14
 msgid "Error setting stream url!"
-msgstr "Virhe asetettaessa virran URLia!"
+msgstr "Virhe asetettaessa virran URL:ia!"
 
 #: EngineShoutcast#15
 msgid ""
 "Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try "
 "a different sample-rate or switch to a different encoding."
 msgstr ""
-"Radiolähetys 96kHz ogg vorbis-virtojen avulla ei ole vielä tuettu. Valitse "
-"joku muu näytenopeus tai vaihda pakkaustapaa."
+"Julkaisu 96kHz ogg vorbis-virtojen avulla ei ole vielä tuettu. Valitse joku "
+"muu näytenopeus tai vaihda pakkaustapaa."
 
 #: EngineShoutcast#16
 msgid ""
 "See https://bugs.launchpad.net/mixxx/+bug/686212 for more information."
 msgstr ""
-"Katso lisätietoja bugiraportista https://bugs.launchpad.net/mixxx/+bug/686212"
+"Katso lisätietoja bugiraportista "
+"https://bugs.launchpad.net/mixxx/+bug/686212 ."
 
 #: EngineShoutcast#17
 msgid "Error setting bitrate"
@@ -2886,7 +2959,7 @@ msgstr "Virhe: libshout tukee vain mp3-muotoisia shoutcast-lähetyksiä!"
 
 #: EngineShoutcast#20
 msgid "Lost connection to streaming server"
-msgstr "Yhteys lähettävään palvelimeen katkesi"
+msgstr "Yhteys levityspalvelimeen katkesi"
 
 #: EngineShoutcast#21
 msgid ""
@@ -2898,19 +2971,19 @@ msgstr ""
 
 #: EngineShoutcast#22
 msgid "Live broadcasting"
-msgstr ""
+msgstr "Verkkojulkaisu"
 
 #: EngineShoutcast#23
 msgid "Mixxx has successfully connected to the shoutcast server"
-msgstr "Yhteys Shoutcast-palvelimeen luotu"
+msgstr "Yhteys Shoutcast-palvelimeen avattiin onnistuneesti"
 
 #: EngineShoutcast#24
 msgid "Mixxx could not connect to streaming server"
-msgstr "Mixxx ei pystynyt yhdistämään lähettävään palvelimeen"
+msgstr "Yhteys levityspalvelimeen epäonnistui"
 
 #: EngineShoutcast#25
 msgid "Mixxx has successfully disconnected to the shoutcast server"
-msgstr "Yhteys Shoutcast-palvelimeen katkaistu"
+msgstr "Yhteys levityspalvelimeen katkaistiin onnistuneesti"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
@@ -2957,39 +3030,39 @@ msgstr "Valitse iTunes kirjastosi"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr "(ladataan) iTunes:ia"
+msgstr "(ladataan) iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
-msgstr "Käytä oletus kirjastoa"
+msgstr "Käytä oletuskirjastoa"
 
 #: ITunesFeature#5
 msgid "Choose Library..."
-msgstr "Valitse kirjasto"
+msgstr "Valitse kirjasto..."
 
 #: ITunesFeature#6
 msgid "Error Loading iTunes Library"
-msgstr "Virhe ladattaessa iTunes kirjastoa"
+msgstr "Virhe ladattaessa iTunes-kirjastoa"
 
 #: ITunesFeature#7
 msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
 msgstr ""
-"Tapahtui virhe ladattaessa iTunes kirjastoasi. Osa iTunes kappaleistasi tai "
-"soittolistoistasi saattaa puuttua."
+"Tapahtui virhe ladattaessa iTunes kirjastoa. Osa iTunes kappaleista tai "
+"soittolistoista saattaa puuttua."
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
-msgstr "Vedä esiasetukset listasta ja pudota se tänne"
+msgstr "Vedä esiasetus luettelosta ja pudota se tänne"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
-msgstr "Kokoelman skannaus"
+msgstr "Kokoelman läpikäynti"
 
 #: LibraryScannerDlg#2
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
-msgstr "Kokoelman skannaaminen kestää hetken. Ole hyvä ja odota..."
+msgstr "Kokoelman läpikäynti kestää hetken. Ole hyvä ja odota..."
 
 #: LibraryScannerDlg#3
 msgid "Cancel"
@@ -2997,29 +3070,36 @@ msgstr "Keskeytä"
 
 #: MidiController#1
 msgid "MixxxControl not found"
-msgstr ""
+msgstr "MixxxControl-kohdetta ei löytynyt"
 
 #: MidiController#2
 msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
 msgstr ""
+"Ladatussa asetustiedostossa määritelty MixxxControl-'%1, %2' on virheellinen."
 
 #: MidiController#3
 msgid ""
 "The MIDI output message 0x%1 0x%2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"Lähetetävää MIDI-viestiä 0x%1 0x%2 ei sidota.\n"
+"(Lisätietoja 'näytä yksityiskohdat napista)"
 
 #: MidiController#4
 msgid ""
 "* Check to see that the MixxxControl name is spelled correctly in the "
 "mapping file (.xml)\n"
 msgstr ""
+"Varmista että MixxxControl-kohteen nimi on oikein kirjoitettu xml-"
+"määrittelytiedostossa\n"
 
 #: MidiController#5
 msgid ""
 "* Make sure the MixxxControl you're trying to use actually exists. Visit "
 "this wiki page for a complete list:"
 msgstr ""
+"Tarkista että käytettävä MixxxControl-kohde on olemassa. Voit nähdä "
+"kelvolliset arvot wiki-sivulta:"
 
 #: MixxxApp#1
 msgid "Mixxx "
@@ -3032,7 +3112,7 @@ msgstr "Mixxx"
 #: MixxxApp#3
 msgctxt "MixxxApp#3"
 msgid "Choose music library directory"
-msgstr "Määritä musiikkikokoelman sijainti"
+msgstr "Valitse musiikkikokoelman sijainti"
 
 #: MixxxApp#4
 msgid "Sound Device Busy"
@@ -3040,7 +3120,7 @@ msgstr "Äänilaite on varattu"
 
 #: MixxxApp#5
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr "Etsi <b>apua</b> Mixxxin wikistä."
+msgstr "Etsi <b>apua</b> Mixxx-wikistä."
 
 #: MixxxApp#6
 msgid ""
@@ -3048,20 +3128,21 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
-"Mixxx ei saanut yhteyttä kaikkiin asetettuihin äänilaitteisiin. Toinen "
-"ohjelma käyttää äänilaitetta tai äänilaite ei ole kytkettynä."
+"Mixxx ei voinut avata kaikkia määriteltyjä äänilaitteita. Voi olla että joku "
+"toinen ohjelma on varannut äänilaitteen, tai äänilaitetta ei ole kytketty "
+"tietokoneeseen."
 
 #: MixxxApp#7
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
-"<b>Yritä uudelleen</b> suljettuasi toinen ohjelma tai yhdistettyäsi "
-"äänilaite uudelleen"
+"<b>Yritä uudelleen</b> suljettuasi toisen ohjelman tai yhdistettyäsi "
+"äänilaitteen"
 
 #: MixxxApp#8
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
-msgstr "<b>Uudelleen määritä</b> Mixxx:n äänilaitteen asetukset"
+msgstr "<b>Määrittelle uudestaan</b> Mixxx- äänilaitteidn asetukset."
 
 #: MixxxApp#9
 msgid "<b>Exit</b> Mixxx."
@@ -3085,17 +3166,19 @@ msgstr "Sulje"
 
 #: MixxxApp#14
 msgid "No Output Devices"
-msgstr ""
+msgstr "Äänilaitteita ei löytynyt"
 
 #: MixxxApp#15
 msgid ""
 "Mixxx was configured without any output sound devices. Audio processing will "
 "be disabled without a configured output device."
 msgstr ""
+"Äänilaitteita ei ole määritelty mixxx-asetuksissa. Äänen käsittely ei ole "
+"käytössä, kunnes kelvollinen toistolaite on määritelty."
 
 #: MixxxApp#16
 msgid "<b>Continue</b> without any outputs."
-msgstr ""
+msgstr "<b>Jatka</b> määrittelemättä äänilaitteita."
 
 #: MixxxApp#17
 msgid "Continue"
@@ -3123,7 +3206,7 @@ msgstr "Ctrl+Shift+O"
 
 #: MixxxApp#23
 msgid "&Exit"
-msgstr "Sulje"
+msgstr "&Sulje"
 
 #: MixxxApp#24
 msgid "Quits Mixxx"
@@ -3135,7 +3218,7 @@ msgstr "Ctrl+Q"
 
 #: MixxxApp#26
 msgid "&Rescan Library"
-msgstr "Lue kokoelma uudelleen"
+msgstr "&Etsi musiikkikokoelman muutoksia"
 
 #: MixxxApp#27
 msgid "Rescans library folders for changes to tracks."
@@ -3143,7 +3226,7 @@ msgstr "Etsii muutoksia kappaleisiin musiikkikirjaston kansioissa."
 
 #: MixxxApp#28
 msgid "Add &new playlist"
-msgstr "Uusi soittolista"
+msgstr "Lisää &uusi soittolista"
 
 #: MixxxApp#29
 msgid "Ctrl+N"
@@ -3151,209 +3234,221 @@ msgstr "Ctrl+N"
 
 #: MixxxApp#30
 msgid "Add new &crate"
-msgstr "Uusi levylaukku"
+msgstr "Lisää uusi &levylaukku"
 
 #: MixxxApp#31
-msgid "Ctrl+C"
-msgstr "Ctrl+C"
+msgid "Deck %1 is currently playing a track."
+msgstr "Dekki %1 soittaa kappaletta."
 
 #: MixxxApp#32
-msgid "Deck %1 is currently playing a track."
-msgstr "Dekki %1 soittaa kappaletta nyt."
-
-#: MixxxApp#33
 msgid "Are you sure you want to load a new track?"
 msgstr "Haluatko varmasti ladata uuden kappaleen?"
 
-#: MixxxApp#34
+#: MixxxApp#33
 msgid "&Full Screen"
-msgstr "Kokoruututila"
+msgstr "K&okoruututila"
 
-#: MixxxApp#35
+#: MixxxApp#34
 msgid "F11"
 msgstr "F11"
 
-#: MixxxApp#36
+#: MixxxApp#35
 msgid "&Preferences"
-msgstr "Asetukset"
+msgstr "&Asetukset"
+
+#: MixxxApp#36
+msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
+msgstr "Muokkaa ohjelman asetuksia (toistoa, MIDI-ohjaimia jne.)"
 
 #: MixxxApp#37
-msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
-msgstr ""
-
-#: MixxxApp#38
 msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
-#: MixxxApp#39
+#: MixxxApp#38
 msgid "&About"
 msgstr "&Tietoja"
 
-#: MixxxApp#40
+#: MixxxApp#39
 msgid "&Community Support"
 msgstr "&Mixxx-yhteisö (englanniksi)"
 
-#: MixxxApp#41
+#: MixxxApp#40
 msgid "Get help with Mixxx"
 msgstr "Pyydä apua Mixxx:in kanssa"
 
-#: MixxxApp#42
+#: MixxxApp#41
 msgid "&User Manual"
 msgstr "&Käyttöohje"
 
-#: MixxxApp#43
+#: MixxxApp#42
 msgid "Send Us &Feedback"
 msgstr "Lähetä meille &palautetta"
 
-#: MixxxApp#44
+#: MixxxApp#43
 msgid "&Translate this application"
 msgstr "&Käännä tätä ohjelmaa kielellesi"
 
-#: MixxxApp#45
+#: MixxxApp#44
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#46
+#: MixxxApp#45
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#47
+#: MixxxApp#46
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#48
+#: MixxxApp#47
 msgid "&Record Mix"
-msgstr "Miksauksen äänitys"
+msgstr "N&auhoita miksaus"
 
-#: MixxxApp#49
+#: MixxxApp#48
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#50
+#: MixxxApp#49
 msgid "Create a new playlist"
 msgstr "Luo uusi soittolista"
 
-#: MixxxApp#51
+#: MixxxApp#50
 msgid "Create a new crate"
 msgstr "Luo uusi levylaukku"
 
-#: MixxxApp#52
+#: MixxxApp#51
 msgid "Ctrl+Shift+F"
 msgstr "Ctrl+Shift+F"
 
-#: MixxxApp#53
+#: MixxxApp#52
 msgid "Enable Vinyl Control &1"
 msgstr "Ota ohjainlevy &1 käyttöön"
 
-#: MixxxApp#54
+#: MixxxApp#53
 msgid "Enable Vinyl Control &2"
 msgstr "Ota ohjainlevy &2 käyttöön"
 
-#: MixxxApp#55
+#: MixxxApp#54
 msgid "Enable live &broadcasting"
-msgstr ""
+msgstr "Käynnistä &verkkojulkaisu"
+
+#: MixxxApp#55
+msgid "Use timecoded vinyls on external turntables to control Mixxx"
+msgstr "Ohjaa mixxx:iä levysoittimilla ja aikakoodatuilla levyillä"
 
 #: MixxxApp#56
-msgid "Use timecoded vinyls on external turntables to control Mixxx"
-msgstr "Mixxxin ohjaus aikakoodilevyjen avulla"
+msgid "Stream your mixes to a shoutcast or icecast server"
+msgstr "Lähetä miksauksesi shoutcast- tai icecast-palvelimelle"
 
 #: MixxxApp#57
-msgid "Stream your mixes to a shoutcast or icecast server"
-msgstr "Lähetä miksauksesi shoutcast tai icecast palvelimeen"
-
-#: MixxxApp#58
 msgid "Record your mix to a file"
 msgstr "Nauhoita miksauksesi tiedostoon"
 
-#: MixxxApp#59
+#: MixxxApp#58
 msgid "Display Mixxx using the full screen"
-msgstr "Näytä Mixxx kokoruutu tilassa"
+msgstr "Näytä Mixxx kokoruututilassa"
 
-#: MixxxApp#60
+#: MixxxApp#59
 msgid "Read the Mixxx user manual."
 msgstr "Lue Mixxx-käyttöohjetta."
 
-#: MixxxApp#61
+#: MixxxApp#60
 msgid "Send feedback to the Mixxx team."
-msgstr "Lähetä palautetta Mixxx- tiimille"
+msgstr "Lähetä palautetta Mixxx-tiimille."
+
+#: MixxxApp#61
+msgid "Help translate this application into your language."
+msgstr "Auta tämän ohjelman kääntämisessä kielellesi."
 
 #: MixxxApp#62
-msgid "Help translate this application into your language."
-msgstr "Auta tämän ohjelman kääntämisessä kielellesi"
+msgid "About the application"
+msgstr "Tietoja ohjelmasta"
 
 #: MixxxApp#63
-msgid "About the application"
-msgstr "Tietoja sovelluksesta"
+msgid "A sampler is currently playing. Exit Mixxx?"
+msgstr "Näytesoitin on käynnissä. Suljetaanko mixxx?"
 
 #: MixxxApp#64
-msgid "A sampler is currently playing. Exit Mixxx?"
-msgstr ""
+msgid "&File"
+msgstr "&Tiedosto"
 
 #: MixxxApp#65
-msgid "&File"
-msgstr "Tiedosto"
+msgid "Ctrl+Shift+N"
+msgstr ""
 
 #: MixxxApp#66
-msgid "&Options"
-msgstr "Asetukset"
+msgid "Enable &keyboard shortcuts"
+msgstr "Ota &pikanäppäimet käyttöön"
 
 #: MixxxApp#67
-msgid "&Library"
-msgstr "Kokoelma"
+msgid "Toggles keyboard shortcuts on or off"
+msgstr "Määrittää ovatko pikanäppäimet käytössä"
 
 #: MixxxApp#68
-msgid "&View"
-msgstr "Näytä"
+msgid "Ctrl+`"
+msgstr ""
 
 #: MixxxApp#69
-msgid "&Help"
-msgstr "Ohje"
+msgid "&Options"
+msgstr "&Valinnat"
 
 #: MixxxApp#70
+msgid "&Library"
+msgstr "&Kokoelma"
+
+#: MixxxApp#71
+msgid "&View"
+msgstr "&Näytä"
+
+#: MixxxApp#72
+msgid "&Help"
+msgstr "&Ohje"
+
+#: MixxxApp#73
 msgid "&Vinyl Control"
 msgstr "&Levyohjain"
 
-#: MixxxApp#71
+#: MixxxApp#74
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
-"Sisääntulo laitteita ei ole valittu.\n"
-"Valitse äänikorttisi äänilaitteiden hallinnassa"
+"Sisääntulojen laitteita ei ole valittu.\n"
+"Valitse äänikorttisi äänilaitteiden asetuksista."
 
-#: MixxxApp#72
+#: MixxxApp#75
 msgid "Mixxx %1 Development Team"
 msgstr "Mixxx %1 kehitystiimi"
 
-#: MixxxApp#73
+#: MixxxApp#76
 msgid "With contributions from:"
 msgstr "Avustajina ovat toimineet:"
 
-#: MixxxApp#74
+#: MixxxApp#77
 msgid "And special thanks to:"
 msgstr "Lisäkiitokset seuraaville henkilöille:"
 
-#: MixxxApp#75
+#: MixxxApp#78
 msgid "Past Developers"
 msgstr "Aikaisemmat kehittäjät"
 
-#: MixxxApp#76
+#: MixxxApp#79
 msgid "Past Contributors"
 msgstr "Aikaisemmat avustajat"
 
-#: MixxxApp#77
+#: MixxxApp#80
 msgid "Error in skin file"
 msgstr "Virhe teematiedostossa"
 
-#: MixxxApp#78
+#: MixxxApp#81
 msgid "The selected skin cannot be loaded."
 msgstr "Valittua teemaa ei voi ladata."
 
-#: MixxxApp#79
+#: MixxxApp#82
 msgid "OpenGL Direct Rendering"
-msgstr ""
+msgstr "OpenGL-suorapiirto"
 
-#: MixxxApp#80
+#: MixxxApp#83
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3364,17 +3459,17 @@ msgid ""
 "not be present, but you should<br>not experience degraded performance."
 msgstr ""
 
-#: MixxxApp#81
+#: MixxxApp#84
 msgid "Confirm Exit"
 msgstr "Varmista lopetus"
 
-#: MixxxApp#82
+#: MixxxApp#85
 msgid "A deck is currently playing. Exit Mixxx?"
-msgstr "Kanavaa toistetaan parhaillaan. Suljetaanko Mixxx?"
+msgstr "Dekki soittaa kappaletta. Suljetaanko Mixxx?"
 
 #: MixxxLibraryFeature#1
 msgid "Missing Tracks"
-msgstr "Puuttuvat kappaleen"
+msgstr "Puuttuvat kappaleet"
 
 #: MixxxLibraryFeature#2
 msgctxt "MixxxLibraryFeature#2"
@@ -3408,10 +3503,12 @@ msgstr "Soittolistan vienti epäonnistui"
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
 msgstr ""
+"Tiedoston polku sisältää merkkejä, jotka eivät ole sallittu m3u-soittolistan "
+"nimissä.\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr "Vie m3u8-soittolista sen sijasta!\n"
+msgstr "Vie m3u8-soittolistaksi sen sijasta!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
@@ -3446,24 +3543,32 @@ msgstr "Poista lukitus"
 msgid ""
 "Playlists are ordered lists of songs that allow you to plan your DJ sets."
 msgstr ""
+"Soittolistat ovat järjestettyjä kappalelistoja, joiden avulla voit "
+"suunnitella DJ-esityksiä."
 
 #: PlaylistFeature#5
 msgid ""
 "Some DJs construct playlists before they perform live, but others prefer to "
 "build them on-the-fly."
 msgstr ""
+"Jotkut DJ:t luovat soittolistoja ennen esintymistä, toiset rakentavat "
+"soittolistan esityksen aikana."
 
 #: PlaylistFeature#6
 msgid ""
 "When using a playlist during a live DJ set, remember to always pay close "
 "attention to how your audience reacts to the music you've chosen to play."
 msgstr ""
+"Käyttäessäsi soittolistaa DJ-esityksen aikana, muista tarkkailla yleisön "
+"reaktioita valitsemaasi musiikkiin."
 
 #: PlaylistFeature#7
 msgid ""
 "It may be necessary to skip some songs in your prepared playlist or add some "
 "different songs in order to maintain the energy of your audience."
 msgstr ""
+"Voit joutua ohittamaan tai vaihtamaan valmistellulla listalla olevia "
+"kappaleita, jotta yleisön mielenkiinto säilyy."
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3484,7 +3589,7 @@ msgstr "Kuulokkeet"
 
 #: QObject#4
 msgid "Deck"
-msgstr "Kanava"
+msgstr "Dekki"
 
 #: QObject#5
 msgctxt "QObject#5"
@@ -3498,7 +3603,7 @@ msgstr "Mikrofoni"
 
 #: QObject#7
 msgid "Passthrough"
-msgstr "Läpäisy"
+msgstr "Läpisyöttö"
 
 #: QObject#8
 msgid "Unknown path type %1"
@@ -3514,31 +3619,31 @@ msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr "Tallenna samplepankki"
+msgstr "Tallenna näytepankki"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr "Virhe tallennettaessa samplepankkia"
+msgstr "Virhe tallennettaessa näytepankkia"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr "Ei voitu tallentaa samplepankkia tiedostoon '%1'"
+msgstr "Näytepankkia ei voitu tallentaa tiedostoon '%1'."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr "Lataa samplepankki"
+msgstr "Lataa näytepankki"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr "Virhe ladattaessa samplepankkia"
+msgstr "Virhe luettaessa näytepankkia"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr "Ei voitu avata samplepankkitiedostoa '%1'"
+msgstr "Näytepankkitiedostoa '%1' ei voitu avata."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr "Ei voitu lukea samplepankkitiedostoa '%1'"
+msgstr "Näytepankkitiedostoa '%1' ei voitu lukea."
 
 #: SetlogFeature#1
 msgid "Join with previous"
@@ -3564,30 +3669,796 @@ msgid ""
 "sets."
 msgstr ""
 "Soittohistoria pitää automaattisesti kirjaa kappaleista, joita olet "
-"soittanut."
+"soittanut DJ-esityksissä."
 
 #: SetlogFeature#6
 msgid ""
 "This is handy for remembering what worked in your DJ sets, posting set-"
 "lists, or reporting your plays to licensing organizations."
 msgstr ""
+"Tämä toiminto auttaa muistamaan hyvin yhteen toimineet kappaleet, "
+"julkaisemaan kappaleluetteloita tai raportoimaan soitettuja kappaleita "
+"lisensointiorganisaatioille."
 
 #: SetlogFeature#7
 msgid ""
 "Every time you start Mixxx, a new history section is created. You can export "
 "it as an m3u playlist or play it again with Auto DJ."
 msgstr ""
+"Uusi soittohistorian osio luodaan joka kerta ohjelmaa käynnistettäessä. Voit "
+"viedä tiedosto m3u-soittolistaksi tai soittaa sen uudestaan Auto-DJ -"
+"toiminnolla."
 
 #: SetlogFeature#8
 msgid ""
 "You can join the current history session with a previous one by right-"
 "clicking and selecting \"Join with previous\"."
 msgstr ""
+"Voit liittää nykyisen ja aikaisemman soittohistorian kontekstivalikon "
+"valinnalla \"liitä edelliseen\"."
 
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
 msgstr "Suodatettu"
+
+#: Tooltips#1
+msgid "Drop tracks from library or external file manager here."
+msgstr ""
+"Voit tiputtaa kappaleita ulkoisesta tiedostonhallintaohjelmasta tähän."
+
+#: Tooltips#2
+msgid "Reset to default value."
+msgstr ""
+
+#: Tooltips#3
+msgid "Left-click"
+msgstr ""
+
+#: Tooltips#4
+msgid "Right-click"
+msgstr ""
+
+#: Tooltips#5
+msgid "Waveform Overview"
+msgstr ""
+
+#: Tooltips#6
+msgid "Shows information about the track currently loaded in this channel."
+msgstr "Näyttää tietoja tähän kanavaan ladatusta kappaleesta."
+
+#: Tooltips#7
+msgid "Jump around in the track by clicking somewhere on the waveform."
+msgstr ""
+"Voit siirtyä kappaleen sisällä napsauttamalla aaltomuotoa eri kohdista."
+
+#: Tooltips#8
+msgid "Use the mouse to scratch, spin-back or throw tracks."
+msgstr ""
+
+#: Tooltips#9
+msgctxt "Tooltips#9"
+msgid "Waveform Display"
+msgstr ""
+
+#: Tooltips#10
+msgid "Shows the loaded track's waveform near the playback position."
+msgstr ""
+
+#: Tooltips#11
+msgid "Drag with mouse to make temporary pitch adjustments."
+msgstr ""
+
+#: Tooltips#12
+msgid "Spinning Vinyl"
+msgstr ""
+
+#: Tooltips#13
+msgid "Rotates during playback and shows the position of a track."
+msgstr "Pyörii soiton aikana ja näyttää kappaleen kohdan."
+
+#: Tooltips#14
+msgid ""
+"If Vinyl control is enabled, displays time-coded vinyl signal quality (see "
+"PreferencesâVinyl Control)."
+msgstr ""
+
+#: Tooltips#15
+msgid "Gain"
+msgstr "Herkkyys"
+
+#: Tooltips#16
+msgid "Adjusts the pre-fader gain of the track (to avoid clipping)."
+msgstr ""
+
+#: Tooltips#17
+msgid "(too loud for the hardware and is being distorted)."
+msgstr "(liian voimakas laitteistolle ja säröytyy)."
+
+#: Tooltips#18
+msgid "Peak Indicator"
+msgstr "Piikki-ilmaisin"
+
+#: Tooltips#19
+msgid "Indicates when the signal on the channel is clipping,"
+msgstr "Ilmaisee koska kanavan signaali on liian voimakas ja leikkautuu,"
+
+#: Tooltips#20
+msgid "Master Peak Indicator"
+msgstr "Pääkanavan leikkausilmaisin"
+
+#: Tooltips#21
+msgid "Indicates when the signal on the master output is clipping,"
+msgstr ""
+
+#: Tooltips#22
+msgid "Channel Volume Meter"
+msgstr ""
+
+#: Tooltips#23
+msgid "Shows the current channel volume."
+msgstr ""
+
+#: Tooltips#24
+msgid "Microphone Volume Meter"
+msgstr ""
+
+#: Tooltips#25
+msgid "Shows the current microphone volume."
+msgstr ""
+
+#: Tooltips#26
+msgid "Master Channel Volume Meter"
+msgstr ""
+
+#: Tooltips#27
+msgid "Shows the current master volume for the left channel."
+msgstr ""
+
+#: Tooltips#28
+msgid "Shows the current  master volume for the right channel."
+msgstr ""
+
+#: Tooltips#29
+msgid "Volume Control"
+msgstr ""
+
+#: Tooltips#30
+msgid "Adjusts the volume of the selected channel."
+msgstr ""
+
+#: Tooltips#31
+msgid "Master Volume"
+msgstr ""
+
+#: Tooltips#32
+msgid "Adjusts the master output volume."
+msgstr ""
+
+#: Tooltips#33
+msgctxt "Tooltips#33"
+msgid "Crossfader"
+msgstr ""
+
+#: Tooltips#34
+msgid ""
+"Determines the master output by fading between the left and right channels."
+msgstr ""
+
+#: Tooltips#35
+msgid "Change the crossfader curve in PreferencesâCrossfader"
+msgstr "Muuta ristihäivytyksen käyrää Asetusten kohdassa 'Risthäivytys'"
+
+#: Tooltips#36
+msgid "Balance"
+msgstr "Kanavatasapaino"
+
+#: Tooltips#37
+msgid "Adjusts the left/right channel balance on the master output."
+msgstr ""
+
+#: Tooltips#38
+msgid "Headphone Volume"
+msgstr ""
+
+#: Tooltips#39
+msgid "Adjusts the headphone output volume."
+msgstr ""
+
+#: Tooltips#40
+msgid "Headphone Mix"
+msgstr ""
+
+#: Tooltips#41
+msgid "Controls what you hear on the headphone output."
+msgstr "Ohjaa mitä kuulokeulostulosta toistetaan."
+
+#: Tooltips#42
+msgid "Mix Orientation"
+msgstr ""
+
+#: Tooltips#43
+msgid "Set the channel's mix orientation."
+msgstr ""
+
+#: Tooltips#44
+msgid ""
+"Either to the left side of crossfader, to the right side or to the center "
+"(default)."
+msgstr ""
+
+#: Tooltips#45
+msgctxt "Tooltips#45"
+msgid "Microphone"
+msgstr ""
+
+#: Tooltips#46
+msgid "Show/hide the Microphone section."
+msgstr ""
+
+#: Tooltips#47
+msgid "Sampler"
+msgstr "Näytesoitin"
+
+#: Tooltips#48
+msgid "Show/hide the Sampler section."
+msgstr ""
+
+#: Tooltips#49
+msgctxt "Tooltips#49"
+msgid "Vinyl Control"
+msgstr ""
+
+#: Tooltips#50
+msgid "Show/hide the Vinyl Control section."
+msgstr ""
+
+#: Tooltips#51
+msgid "Activate Vinyl Control from the MenuâOptions."
+msgstr ""
+
+#: Tooltips#52
+msgid "Microphone Volume"
+msgstr ""
+
+#: Tooltips#53
+msgid "Adjusts the microphone volume."
+msgstr "Säätää mikrofonin äänenvoimakkuutta."
+
+#: Tooltips#54
+msgid "Microphone Talk-Over"
+msgstr ""
+
+#: Tooltips#55
+msgid "Hold-to-talk or short click for latching to"
+msgstr ""
+
+#: Tooltips#56
+msgid "mix microphone input into the master output."
+msgstr ""
+
+#: Tooltips#57
+msgid "Change the step-size in the PreferencesâInterface menu."
+msgstr ""
+
+#: Tooltips#58
+msgid "Raise Pitch"
+msgstr ""
+
+#: Tooltips#59
+msgid "Sets the pitch higher."
+msgstr ""
+
+#: Tooltips#60
+msgid "Sets the pitch higher in small steps."
+msgstr ""
+
+#: Tooltips#61
+msgid "Lower Pitch"
+msgstr ""
+
+#: Tooltips#62
+msgid "Sets the pitch lower."
+msgstr ""
+
+#: Tooltips#63
+msgid "Sets the pitch lower in small steps."
+msgstr ""
+
+#: Tooltips#64
+msgid "Raise Pitch Temporary (Nudge)"
+msgstr ""
+
+#: Tooltips#65
+msgid "Holds the pitch higher while active."
+msgstr ""
+
+#: Tooltips#66
+msgid "Holds the pitch higher (small amount) while active."
+msgstr ""
+
+#: Tooltips#67
+msgid "Lower Pitch Temporary (Nudge)"
+msgstr ""
+
+#: Tooltips#68
+msgid "Holds the pitch lower while active."
+msgstr ""
+
+#: Tooltips#69
+msgid "Holds the pitch lower (small amount) while active."
+msgstr ""
+
+#: Tooltips#70
+msgid "Low EQ"
+msgstr "Matalien taajuuksien korjain"
+
+#: Tooltips#71
+msgid "Adjusts the gain of the low EQ filter."
+msgstr ""
+
+#: Tooltips#72
+msgid "Mid EQ"
+msgstr "Keskitaajuuksien korjain"
+
+#: Tooltips#73
+msgid "Adjusts the gain of the mid EQ filter."
+msgstr ""
+
+#: Tooltips#74
+msgid "High EQ"
+msgstr "Korkeiden taajuuksien korjain"
+
+#: Tooltips#75
+msgid "Adjusts the gain of the high EQ filter."
+msgstr ""
+
+#: Tooltips#76
+msgid "Hold-to-kill or short click for latching."
+msgstr ""
+"Leikkaa kuunes hiiren nappia pidetään pohjassa. Kytke päälle tai pois "
+"napsauttamalla lyhyesti."
+
+#: Tooltips#77
+msgid "High EQ Kill"
+msgstr ""
+
+#: Tooltips#78
+msgid "Holds the gain of the high EQ to zero while active."
+msgstr "Leikkaa korkeat taajuudet minimiin aktivoituna."
+
+#: Tooltips#79
+msgid "Mid EQ Kill"
+msgstr ""
+
+#: Tooltips#80
+msgid "Holds the gain of the mid EQ to zero while active."
+msgstr "Leikkaa matalat taajuudet minimiin aktivoituna."
+
+#: Tooltips#81
+msgid "Low EQ Kill"
+msgstr ""
+
+#: Tooltips#82
+msgid "Holds the gain of the low EQ to zero while active."
+msgstr "Leikkaa keskitaajuudet minimiin aktivoituna."
+
+#: Tooltips#83
+msgid "Displays the tempo of the loaded track in BPM (beats per minute)."
+msgstr ""
+
+#: Tooltips#84
+msgid "Tempo"
+msgstr "Tempo"
+
+#: Tooltips#85
+msgid "BPM Tap"
+msgstr ""
+
+#: Tooltips#86
+msgid "When tapped repeatedly, adjusts the BPM to match the tapped BPM."
+msgstr ""
+
+#: Tooltips#87
+msgid "Tempo and BPM Tap"
+msgstr ""
+
+#: Tooltips#88
+msgid "Show/hide the spinning vinyl section."
+msgstr ""
+
+#: Tooltips#89
+msgid "Adjust Beatgrid"
+msgstr ""
+
+#: Tooltips#90
+msgid ""
+"Adjust beatgrid so the closest beat is aligned with the current play "
+"position."
+msgstr ""
+
+#: Tooltips#91
+msgid "Key-Lock"
+msgstr ""
+
+#: Tooltips#92
+msgid "Prevents the pitch from from changing when the rate changes."
+msgstr ""
+
+#: Tooltips#93
+msgid ""
+"Toggling key-lock during playback may result in a momentary audio glitch."
+msgstr ""
+
+#: Tooltips#94
+msgid "If quantize is enabled, snaps to the nearest beat."
+msgstr ""
+
+#: Tooltips#95
+msgid "Quantize"
+msgstr "Kvantisoi"
+
+#: Tooltips#96
+msgid "Toggles quantization."
+msgstr ""
+
+#: Tooltips#97
+msgid "Loops and cues snap to the nearest beat when quantization is enabled."
+msgstr ""
+
+#: Tooltips#98
+msgid "Reverse"
+msgstr "Soita takaperin"
+
+#: Tooltips#99
+msgid "Reverses track playback during regular playback."
+msgstr ""
+
+#: Tooltips#100
+msgid "Play/Pause"
+msgstr "Soita/pysäytä"
+
+#: Tooltips#101
+msgid "Toggles playing or pausing the track."
+msgstr ""
+
+#: Tooltips#102
+msgid "Jumps to the beginning of the track."
+msgstr ""
+
+#: Tooltips#103
+msgid "Places a cue-point at the current position on the waveform."
+msgstr ""
+
+#: Tooltips#104
+msgid "Plays or pauses the track."
+msgstr ""
+
+#: Tooltips#105
+msgid "(while playing)"
+msgstr ""
+
+#: Tooltips#106
+msgid "Cue"
+msgstr "Cue-nappi"
+
+#: Tooltips#107
+msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
+msgstr ""
+
+#: Tooltips#108
+msgid "Change the default cue behavior in PreferencesâInterface."
+msgstr ""
+
+#: Tooltips#109
+msgid "Seeks the track to the cue-point and stops."
+msgstr ""
+
+#: Tooltips#110
+msgid "Headphone"
+msgstr "Kuulokkeet"
+
+#: Tooltips#111
+msgid "Sends the selected channel's audio to the headphone output."
+msgstr ""
+
+#: Tooltips#112
+msgid "selected in PreferencesâSound Hardware."
+msgstr ""
+
+#: Tooltips#113
+msgid "Fast Rewind"
+msgstr "Pikakelaus eteenpäin"
+
+#: Tooltips#114
+msgid "Fast rewind through the track."
+msgstr ""
+
+#: Tooltips#115
+msgid "Fast Forward"
+msgstr "Pikakelaus taaksepäin"
+
+#: Tooltips#116
+msgid "Fast forward through the track."
+msgstr ""
+
+#: Tooltips#117
+msgid "Jumps to the end of the track."
+msgstr ""
+
+#: Tooltips#118
+msgctxt "Tooltips#118"
+msgid "Synchronize"
+msgstr ""
+
+#: Tooltips#119
+msgid "Syncs the tempo (BPM) and phase to that of the other track, "
+msgstr ""
+
+#: Tooltips#120
+msgid "if BPM is detected on both."
+msgstr ""
+
+#: Tooltips#121
+msgid "Syncs the tempo (BPM) to that of the other track,"
+msgstr ""
+
+#: Tooltips#122
+msgid "Pitch Control"
+msgstr ""
+
+#: Tooltips#123
+msgid "Changes the track playback rate."
+msgstr ""
+
+#: Tooltips#124
+msgid "Pitch Rate"
+msgstr ""
+
+#: Tooltips#125
+msgid "Displays the current playback rate of the track."
+msgstr ""
+
+#: Tooltips#126
+msgid "Repeat"
+msgstr "Kertaa"
+
+#: Tooltips#127
+msgid ""
+"When active the track will repeat if you go past the end or reverse before "
+"the start."
+msgstr ""
+
+#: Tooltips#128
+msgid "Eject"
+msgstr "Poistaa dekistä"
+
+#: Tooltips#129
+msgid "Ejects track from the player."
+msgstr ""
+
+#: Tooltips#130
+msgctxt "Tooltips#130"
+msgid "Hotcue"
+msgstr "Hotcue"
+
+#: Tooltips#131
+msgid "If hotcue is set, jumps to the hotcue."
+msgstr ""
+
+#: Tooltips#132
+msgid "If hotcue is not set, sets the hotcue to the current play position."
+msgstr ""
+
+#: Tooltips#133
+msgid "If hotcue is set, clears the hotcue."
+msgstr ""
+
+#: Tooltips#134
+msgid "Vinyl Control Mode"
+msgstr ""
+
+#: Tooltips#135
+msgid "Absolute mode - track position equals needle position and speed."
+msgstr ""
+
+#: Tooltips#136
+msgid ""
+"Relative mode - track speed equals needle speed regardless of needle "
+"position."
+msgstr ""
+
+#: Tooltips#137
+msgid ""
+"Constant mode - track speed equals last known-steady speed regardless of "
+"needle input."
+msgstr ""
+
+#: Tooltips#138
+msgid "Vinyl Status"
+msgstr ""
+
+#: Tooltips#139
+msgid "Provides visual feedback for vinyl control status:"
+msgstr ""
+
+#: Tooltips#140
+msgid "Green for control enabled."
+msgstr ""
+
+#: Tooltips#141
+msgid "Blinking yellow for when the needle reaches the end of the record."
+msgstr ""
+
+#: Tooltips#142
+msgid "Red for needle skip detected."
+msgstr ""
+
+#: Tooltips#143
+msgid "Loop-In Marker"
+msgstr ""
+
+#: Tooltips#144
+msgid "Sets the deck loop-in position to the current play position."
+msgstr ""
+
+#: Tooltips#145
+msgid "Loop-Out Marker"
+msgstr ""
+
+#: Tooltips#146
+msgid "Sets the deck loop-out position to the current play position."
+msgstr ""
+
+#: Tooltips#147
+msgid "Loop Halve"
+msgstr ""
+
+#: Tooltips#148
+msgid "Halves the current loop's length by moving the end marker."
+msgstr "Puolittaa nykyisen loopin pituuden siirtämällä loppumerkkiä."
+
+#: Tooltips#149
+msgid "Deck immediately loops if past the new endpoint."
+msgstr "Dekki toistaa loopin heti, jos ollaan uuden ohituskohdan ohi"
+
+#: Tooltips#150
+msgid "Loop Double"
+msgstr ""
+
+#: Tooltips#151
+msgid "Doubles the current loop's length by moving the end marker."
+msgstr "Tuplaa nykyisen loopin pituuden siirtämällä loppumerkkiä."
+
+#: Tooltips#152
+msgid "Beatloop"
+msgstr "Iskulooppi"
+
+#: Tooltips#153
+msgid "Setup a loop over X beats."
+msgstr ""
+
+#: Tooltips#154
+msgid "Reloop/Exit"
+msgstr "Looppaa uudestaan / poistu loopista"
+
+#: Tooltips#155
+msgid "Toggles the current loop on or off."
+msgstr ""
+
+#: Tooltips#156
+msgid "Works only if Loop-In and Loop-Out marker are set."
+msgstr ""
+
+#: Tooltips#157
+msgid "Vinyl Cueing Mode"
+msgstr ""
+
+#: Tooltips#158
+msgid "Determines how cue points are treated in vinyl control Relative mode:"
+msgstr ""
+
+#: Tooltips#159
+msgid "Off - Cue points ignored."
+msgstr ""
+
+#: Tooltips#160
+msgid ""
+"One Cue - If needle is dropped after the cue point, track will seek to that "
+"cue point."
+msgstr ""
+
+#: Tooltips#161
+msgid "Hot Cue - Track will seek to nearest previous hot cue point."
+msgstr ""
+
+#: Tooltips#162
+msgid "Track Time"
+msgstr "Kappaleen kesto"
+
+#: Tooltips#163
+msgid "Displays the elapsed or remaining time of the track loaded."
+msgstr "Näyttää ladatun kappaleen kuluneen tai jäljelläolevan ajan."
+
+#: Tooltips#164
+msgid "Click to toggle between time elapsed/remaining time."
+msgstr "Vaihda kuluneen ja jäljelläolevan ajan välillä napsauttamalla."
+
+#: Tooltips#165
+msgid "Track Duration"
+msgstr ""
+
+#: Tooltips#166
+msgid "Displays the duration of the loaded track."
+msgstr ""
+
+#: Tooltips#167
+msgid "Information is loaded from the track's metadata tags."
+msgstr ""
+
+#: Tooltips#168
+msgid "Track Artist"
+msgstr "Kappaleen esittäjä"
+
+#: Tooltips#169
+msgid "Displays the artist of the loaded track."
+msgstr "Näyttää ladatun kappaleen esittäjän."
+
+#: Tooltips#170
+msgid "Track Title"
+msgstr ""
+
+#: Tooltips#171
+msgid "Displays the title of the loaded track."
+msgstr ""
+
+#: Tooltips#172
+msgid "Track Album"
+msgstr ""
+
+#: Tooltips#173
+msgid "Displays the album name of the loaded track."
+msgstr ""
+
+#: Tooltips#174
+msgid "Track Artist/Title"
+msgstr ""
+
+#: Tooltips#175
+msgid "Displays the artist and title of the loaded track."
+msgstr "Näyttää ladatun kappaleen esittäjän ja nimen."
+
+#: Tooltips#176
+msgid "Flanger"
+msgstr "Flanger"
+
+#: Tooltips#177
+msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
+msgstr ""
+
+#: Tooltips#178
+msgid "Flanger Delay"
+msgstr ""
+
+#: Tooltips#179
+msgid "Adjusts the phase delay of the flange effect (when active)."
+msgstr "Säätää flange-efektin vaiheviivettä (efektin ollessa aktiivinen)."
+
+#: Tooltips#180
+msgid "Flanger Depth"
+msgstr ""
+
+#: Tooltips#181
+msgid "Adjusts the intensity of the flange effect (when active)."
+msgstr ""
+
+#: Tooltips#182
+msgid "Flanger LFO Period"
+msgstr ""
+
+#: Tooltips#183
+msgid "Adjusts the wavelength of the flange effect (when active)."
+msgstr "Säätää flange-efektin aallonpituutta (efektin ollessa aktiivinen)."
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -3609,7 +4480,7 @@ msgstr ""
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
-msgstr "Ei voitu päivittää tietokanta mallia"
+msgstr "Tietokantamallia ei voida päivittää"
 
 #: TrackCollection#4
 msgid ""
@@ -3631,19 +4502,19 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr "(ladataan) Traktoria"
+msgstr "(ladataan) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
-msgstr "Virhe ladattaessa Traktor kirjastoa"
+msgstr "Virhe ladattaessa traktor-kirjastoa"
 
 #: TraktorFeature#4
 msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
-"Tapahtui virhe ladattaessa Traktor kirjastoasi. Jotkin Traktor kappaleistasi "
-"tai soittolistoistasi saattavat puuttua."
+"Tapahtui virhe ladattaessa Traktor-kirjastoa. Jotkin Traktor kappaleista tai "
+"soittolistoista saattavat puuttua."
 
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
@@ -3667,7 +4538,7 @@ msgstr "Lisää levylaukkuun"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr "Lataa sampleriin"
+msgstr "Lataa näytesoittimeen"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
@@ -3679,39 +4550,47 @@ msgid "Properties..."
 msgstr "Ominaisuudet..."
 
 #: WTrackTableView#6
+msgid "Open in file browser"
+msgstr ""
+
+#: WTrackTableView#7
 msgid "Add to Auto-DJ Queue (bottom)"
 msgstr "Lisää auto-dj -jonon loppuun"
 
-#: WTrackTableView#7
+#: WTrackTableView#8
 msgid "Add to Auto-DJ Queue (top)"
 msgstr "Lisää auto-dj -jonon alkuun"
 
-#: WTrackTableView#8
+#: WTrackTableView#9
 msgid "Reload Track Metadata"
 msgstr "Lataa kappaleen metadata uudelleen"
 
-#: WTrackTableView#9
+#: WTrackTableView#10
+msgid "Reset Play Count"
+msgstr "Nollaa soittokerrat"
+
+#: WTrackTableView#11
 msgid "Lock BPM"
 msgstr "Lukitse BPM"
 
-#: WTrackTableView#10
-msgid "Unlock BPM"
-msgstr "Avaa BPM-lukitus"
-
-#: WTrackTableView#11
-msgid "Clear BPM and Beatgrid"
-msgstr ""
-
 #: WTrackTableView#12
-msgid "Load to Deck %1"
-msgstr "Lataa %1. dekkiin"
+msgid "Unlock BPM"
+msgstr "Poista BPM-lukitus"
 
 #: WTrackTableView#13
-msgctxt "WTrackTableView#13"
-msgid "Sampler %1"
-msgstr "Näytesoitin %1"
+msgid "Clear BPM and Beatgrid"
+msgstr "Tyhjennä BPM ja iskuverkko"
 
 #: WTrackTableView#14
+msgid "Load to Deck %1"
+msgstr "Lataa dekkiin %1"
+
+#: WTrackTableView#15
+msgctxt "WTrackTableView#15"
+msgid "Sampler %1"
+msgstr ""
+
+#: WTrackTableView#16
 msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
@@ -3888,6 +4767,10 @@ msgstr "(GL)"
 #~ msgid "BPM Detection"
 #~ msgstr "Temponmääritys"
 
+#~ msgctxt "DlgPrepare#6"
+#~ msgid "Analyze"
+#~ msgstr "Analysoi"
+
 #~ msgid "Recently Added"
 #~ msgstr "Äskettäin lisätyt"
 
@@ -3942,9 +4825,6 @@ msgstr "(GL)"
 
 #~ msgid "1.x.x"
 #~ msgstr "1.x.x"
-
-#~ msgid "Waveform display"
-#~ msgstr "Aaltomuotonäyttö"
 
 #~ msgid "2.045 kHz"
 #~ msgstr "2,045 kHz"
@@ -4132,9 +5012,21 @@ msgstr "(GL)"
 #~ msgid "Relative Mode"
 #~ msgstr "Suhteellinen"
 
+#~ msgid "Date:"
+#~ msgstr "Päiväys:"
+
 #~ msgctxt "DlgTrackInfo#24"
 #~ msgid "Position"
 #~ msgstr "Kohta"
+
+#~ msgid "Track Cuepoints"
+#~ msgstr "Cue-pisteet"
+
+#~ msgid "<< &Prev"
+#~ msgstr "<< &Edellinen"
+
+#~ msgid "&Next >>"
+#~ msgstr "&Seuraava >>"
 
 #~ msgid "Would you like to load your iTunes library?"
 #~ msgstr "Ladataanko iTunes-kokoelma?"
@@ -4200,6 +5092,9 @@ msgstr "(GL)"
 
 #~ msgid "&Load Song (Player 1)..."
 #~ msgstr "Lataa kappale soittimeen 1"
+
+#~ msgid "Ctrl+C"
+#~ msgstr "Ctrl+C"
 
 #~ msgid "&Import playlist"
 #~ msgstr "Tuo soittolista"
@@ -4404,9 +5299,6 @@ msgstr "(GL)"
 #~ msgid "Alt+G"
 #~ msgstr "Alt+G"
 
-#~ msgid "BPM:"
-#~ msgstr "BPM:"
-
 #~ msgctxt "DlgBpmTapDlg#8"
 #~ msgid "BPM Detection"
 #~ msgstr "BPM:n tunnistus"
@@ -4604,6 +5496,9 @@ msgstr "(GL)"
 #~ msgctxt "DlgPreferences#6"
 #~ msgid "Crossfader"
 #~ msgstr "Ristihäivytys"
+
+#~ msgid "Hotcue"
+#~ msgstr "Nopea merkki"
 
 #~ msgid ""
 #~ "* Check to see that the function name is spelled correctly in the mapping "
@@ -5029,9 +5924,21 @@ msgstr "(GL)"
 #~ msgid "Description"
 #~ msgstr "Kuvaus"
 
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgid "77"
+#~ msgstr "77"
+
 #~ msgctxt "MidiInputMappingTableModel#6"
 #~ msgid "Description"
 #~ msgstr "Kuvaus"
+
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgid "File Type:"
+#~ msgstr "Tiedostomuoto:"
 
 #~ msgctxt "MidiOutputMappingTableModel#6"
 #~ msgid "Description"
@@ -5092,3 +5999,54 @@ msgstr "(GL)"
 
 #~ msgid "Sampler %1"
 #~ msgstr "Sampleri"
+
+#~ msgid "Load tracks into playing decks"
+#~ msgstr "Lataa kappaleita soittavaan dekkiin"
+
+#~ msgid "Permanent rate change (between 1 and 8000) when left clicking"
+#~ msgstr ""
+#~ "Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren vasenta nappia"
+
+#~ msgid "Permanent rate change (between 1 and 8000) when right clicking"
+#~ msgstr ""
+#~ "Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren oikeaa nappia"
+
+#~ msgid "Temporary rate change (between 1 and 8000) when left clicking"
+#~ msgstr ""
+#~ "Tilapäinen nopeuden säätö (väliltä 1 ja 8000) painettaessa vasenta hiiren "
+#~ "nappia"
+
+#~ msgid "Temporary rate change (between 1 and 8000) when right clicking"
+#~ msgstr ""
+#~ "Tilapäinen nopeuden säätö (väliltä 1 ja 8000) painettaessa oikeaa hiiren "
+#~ "nappia"
+
+#~ msgctxt "DlgPrefCrossfaderDlg#10"
+#~ msgid "Reset"
+#~ msgstr "Nollaa asetukset"
+
+#~ msgctxt "DlgPrefEQDlg#10"
+#~ msgid "Reset"
+#~ msgstr "Nollaa asetukset"
+
+#~ msgid "kbps"
+#~ msgstr "kbps"
+
+#~ msgctxt "DlgPrefReplayGainDlg#11"
+#~ msgid "Reset"
+#~ msgstr "Nollaa asetukset"
+
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Kappaleen tiedot (laajenna napsauttamalla)"
+
+#~ msgid "x2"
+#~ msgstr "x2"
+
+#~ msgid "/2"
+#~ msgstr "/2"
+
+#~ msgid "Track BPM"
+#~ msgstr "Tempo  (BPM)"
+
+#~ msgid "Waveform display"
+#~ msgstr "Alltomuotonäyttö"
