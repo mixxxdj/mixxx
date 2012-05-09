@@ -36,10 +36,10 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config)
 AnalyserBeats::~AnalyserBeats(){
 }
 
-void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_bShouldAnalyze = false;
     if (totalSamples == 0)
-        return;
+        return false;
 
     QString library = m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY));
@@ -74,14 +74,14 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     if (!m_bPreferencesBeatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
         m_bShouldAnalyze = false;
-        return;
+        return false;
     }
 
     bool bpmLock = tio->hasBpmLock();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
         m_bShouldAnalyze = false;
-        return;
+        return false;
     }
 
     // If we got here, we think we may want to analyze this track.
@@ -145,7 +145,7 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
 
     if (!m_bShouldAnalyze) {
         qDebug() << "Beat calculation will not start";
-        return;
+        return false;
     }
     qDebug() << "Beat calculation started with plugin" << pluginID;
 
@@ -156,6 +156,7 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         delete m_pVamp;
         m_pVamp = NULL;
     }
+    return m_bShouldAnalyze;;
 }
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {

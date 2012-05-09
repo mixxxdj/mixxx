@@ -277,7 +277,7 @@ void DlgPrefRecord::slotUpdate()
 
 void DlgPrefRecord::slotBrowseRecordingsDir()
 {
-    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings direcory"),
+    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings directory"),
                                                    config->getValueString(ConfigKey("[Recording]","Directory")));
     if (fd != "")
     {
@@ -313,6 +313,7 @@ void DlgPrefRecord::slotEnableCueFile(int enabled)
 }
 void DlgPrefRecord::slotChangeSplitSize()
 {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"), ConfigValue(comboBoxSplitting->currentText()));
+        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
+                    ConfigValue(comboBoxSplitting->currentText()));
 
 }
