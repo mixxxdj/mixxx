@@ -94,14 +94,13 @@ bool CrateDAO::isCrateLocked(int crateId) {
 }
 
 bool CrateDAO::deleteCrate(int crateId) {
-    Q_ASSERT(m_database.transaction());
+    ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE crate_id = :id");
     query.bindValue(":id", crateId);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        Q_ASSERT(m_database.rollback());
         return false;
     }
 
@@ -110,10 +109,9 @@ bool CrateDAO::deleteCrate(int crateId) {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        Q_ASSERT(m_database.rollback());
         return false;
     }
-    Q_ASSERT(m_database.commit());
+    transaction.commit();
 
     emit(deleted(crateId));
     return true;
@@ -200,7 +198,7 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
 
 
 int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
-    Q_ASSERT(m_database.transaction());
+    ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
 
@@ -216,7 +214,7 @@ int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
             trackIdList.removeAt(i);
         }
     }
-    Q_ASSERT(m_database.commit());
+    transaction.commit();
 
     // Emitting the trackAdded signals for each trackID outside the transaction
     foreach(int trackId, trackIdList) {

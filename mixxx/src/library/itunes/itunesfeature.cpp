@@ -12,6 +12,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/itunes/itunesplaylistmodel.h"
 #include "library/itunes/itunestrackmodel.h"
+#include "library/queryutil.h"
 
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
@@ -63,6 +64,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
 }
 
 ITunesFeature::~ITunesFeature() {
+    m_database.close();
     m_cancelImport = true;
     m_future.waitForFinished();
     delete m_pITunesTrackModel;
@@ -223,16 +225,15 @@ TreeItem* ITunesFeature::importLibrary() {
     thisThread->setPriority(QThread::LowestPriority);
 
     //Delete all table entries of iTunes feature
-    m_database.transaction();
+    ScopedTransaction transaction(m_database);
     clearTable("itunes_playlist_tracks");
     clearTable("itunes_library");
     clearTable("itunes_playlists");
-    m_database.commit();
+    transaction.commit();
 
     qDebug() << "ITunesFeature::importLibrary() ";
 
-
-    m_database.transaction();
+    transaction.transaction();
 
     //Parse iTunes XML file using SAX (for performance)
     QFile itunes_file(m_dbfile);
@@ -258,7 +259,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     // Even if an error occured, commit the transaction. The file may have been
     // half-parsed.
-    m_database.commit();
+    transaction.commit();
 
     if (xml.hasError()) {
         // do error handling

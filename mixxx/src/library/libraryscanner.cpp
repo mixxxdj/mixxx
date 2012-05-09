@@ -23,6 +23,7 @@
 #include "library/legacylibraryimporter.h"
 #include "libraryscanner.h"
 #include "libraryscannerdlg.h"
+#include "library/queryutil.h"
 #include "trackinfoobject.h"
 
 LibraryScanner::LibraryScanner(TrackCollection* collection) :
@@ -86,7 +87,7 @@ LibraryScanner::~LibraryScanner()
     }
 
     //Do housekeeping on the LibraryHashes table.
-    m_pCollection->getDatabase().transaction();
+    ScopedTransaction transaction(m_pCollection->getDatabase());
 
     //Mark the corresponding file locations in the track_locations table as deleted
     //if we find one or more deleted directories.
@@ -118,7 +119,7 @@ LibraryScanner::~LibraryScanner()
         m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
     }
 
-    m_pCollection->getDatabase().commit();
+    transaction.commit();
 
     //Close our database connection
     Q_ASSERT(!m_database.rollback()); //Rollback any uncommitted transaction
@@ -184,9 +185,9 @@ void LibraryScanner::run()
         connect(&libImport, SIGNAL(progress(QString)),
                 m_pProgress, SLOT(slotUpdate(QString)),
                 Qt::BlockingQueuedConnection);
-        m_database.transaction();
+        ScopedTransaction transaction(m_database);
         libImport.import();
-        m_database.commit();
+        transaction.commit();
         qDebug("Legacy importer took %d ms", t2.elapsed());
     }
 
@@ -224,7 +225,7 @@ void LibraryScanner::run()
     } else {
         qDebug() << "Recursive scan finished cleanly.";
     }
-	/*
+    /*
      * We store the scanned files in the database: Note that the recursiveScan()
      * method used TrackCollection::importDirectory() to scan the folders. The
      * method TrackCollection::importDirectory() added all the files to the
@@ -247,9 +248,9 @@ void LibraryScanner::run()
         delete pTrack;
     }
 
-    //Start a transaction for all the library hashing (moved file detection)
-    //stuff.
-    m_database.transaction();
+    // Start a transaction for all the library hashing (moved file detection)
+    // stuff.
+    ScopedTransaction transaction(m_database);
 
     //At the end of a scan, mark all tracks and directories that
     //weren't "verified" as "deleted" (as long as the scan wasn't cancelled
@@ -278,22 +279,17 @@ void LibraryScanner::run()
         //A to B, then back to A.
         m_libraryHashDao.removeDeletedDirectoryHashes();
 
-        m_database.commit();
+        transaction.commit();
         qDebug() << "Scan finished cleanly";
     }
     else {
-        m_database.rollback();
+        transaction.rollback();
         qDebug() << "Scan cancelled";
     }
 
     qDebug("Scan took: %d ms", t.elapsed());
 
     //m_pProgress->slotStopTiming();
-
-    Q_ASSERT(!m_database.rollback()); //Rollback any uncommitted transaction
-    //The above is an ASSERT because there should never be an outstanding
-    //transaction when this code is called. If there is, it means we probably
-    //aren't committing a transaction somewhere that should be.
     m_database.close();
 
     resetCancel();

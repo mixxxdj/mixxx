@@ -7,6 +7,56 @@
 #define LOG_FAILED_QUERY(query) qDebug() << __FILE__ << __LINE__ << "FAILED QUERY [" \
     << query.executedQuery() << "]" << query.lastError()
 
+class ScopedTransaction {
+  public:
+    explicit ScopedTransaction(QSqlDatabase& database) :
+            m_database(database),
+            m_active(false) {
+        if (!transaction()) {
+            qDebug() << "ERROR: Could not start transaction.";
+        }
+    }
+    virtual ~ScopedTransaction() {
+        if (m_active) {
+            rollback();
+        }
+    }
+    bool active() const {
+        return m_active;
+    }
+    bool transaction() {
+        if (m_active) {
+            qDebug() << "WARNING: Transaction already active and received transaction() request.";
+            return false;
+        }
+        m_active = m_database.transaction();
+        return m_active;
+    }
+    bool commit() {
+        if (!m_active) {
+            qDebug() << "WARNING: commit() called on inactive transaction.";
+            return false;
+        }
+        bool result = m_database.commit();
+        qDebug() << "Committing transaction:" << result;
+        m_active = false;
+        return result;
+    }
+    bool rollback() {
+        if (!m_active) {
+            qDebug() << "WARNING: rollback() called on inactive transaction.";
+            return false;
+        }
+        bool result = m_database.rollback();
+        qDebug() << "Rolling back transaction:" << result;
+        m_active = false;
+        return result;
+    }
+  private:
+    QSqlDatabase& m_database;
+    bool m_active;
+};
+
 class FieldEscaper {
   public:
     FieldEscaper(const QSqlDatabase& database)
