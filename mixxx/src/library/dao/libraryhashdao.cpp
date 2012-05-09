@@ -167,5 +167,7 @@ void LibraryHashDAO::removeDeletedDirectoryHashes()
     query.prepare("DELETE FROM LibraryHashes WHERE "
                "directory_deleted=:directory_deleted");
     query.bindValue(":directory_deleted", 1);
-    Q_ASSERT(query.exec());
+    if (!query.exec()) {
+        qDebug() << query.lastError();
+    }
 }
