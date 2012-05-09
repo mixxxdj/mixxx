@@ -11,13 +11,13 @@
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererAbstract( waveformWidgetRenderer) {
+    : WaveformRendererSignalBase( waveformWidgetRenderer) {
 }
 
 WaveformRendererFilteredSignal::~WaveformRendererFilteredSignal() {
 }
 
-void WaveformRendererFilteredSignal::init() {
+void WaveformRendererFilteredSignal::onInit() {
 }
 
 void WaveformRendererFilteredSignal::onResize() {
@@ -26,17 +26,8 @@ void WaveformRendererFilteredSignal::onResize() {
     m_highLines.resize(m_waveformRenderer->getWidth());
 }
 
-void WaveformRendererFilteredSignal::setup(const QDomNode& node) {
-    m_signalColor.setNamedColor(
-                WWidget::selectNodeQString(node, "SignalColor"));
-    m_signalColor = WSkinColor::getCorrectColor(m_signalColor);
+void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
 
-    // TODO(vRince): fetch color from skin
-    int h, s, l;
-    m_signalColor.getHsl(&h, &s, &l);
-    m_lowColor = QColor::fromHsl(h, s, 50, 128);
-    m_midColor = QColor::fromHsl(h-2, s, 100, 128);
-    m_highColor =  QColor::fromHsl(h+2, s, 200, 128);
 }
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,
@@ -117,11 +108,11 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         }
     }
 
-    painter->setPen(QPen(QBrush(m_lowColor), 1));
+    painter->setPen(QPen(QBrush(m_colors.getLowColor()), 1));
     painter->drawLines(&m_lowLines[0], m_lowLines.size());
-    painter->setPen(QPen(QBrush(m_midColor), 1));
+    painter->setPen(QPen(QBrush(m_colors.getMidColor()), 1));
     painter->drawLines(&m_midLines[0], m_midLines.size());
-    painter->setPen(QPen(QBrush(m_highColor), 1));
+    painter->setPen(QPen(QBrush(m_colors.getHighColor()), 1));
     painter->drawLines(&m_highLines[0], m_highLines.size());
 
     painter->restore();
