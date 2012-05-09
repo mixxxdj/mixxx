@@ -16,7 +16,7 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(const QSqlDatabase& database)
+AnalysisDao::AnalysisDao(QSqlDatabase& database)
         : m_db(database) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
@@ -30,8 +30,8 @@ AnalysisDao::~AnalysisDao() {
 void AnalysisDao::initialize() {
 }
 
-void AnalysisDao::setDatabase(const QSqlDatabase& database) {
-    m_db = QSqlDatabase(database);
+void AnalysisDao::setDatabase(QSqlDatabase& database) {
+    m_db = database;
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
