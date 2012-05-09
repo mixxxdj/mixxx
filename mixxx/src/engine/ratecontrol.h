@@ -66,10 +66,11 @@ public:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
+    void slotControlVinylScratching(double);
     void slotWheelSensitivity(double);
+    
   protected:
 	static double m_dWheelSensitivity;
-    void slotControlVinylScratching(double);
 
   private:
     double getJogFactor();
