@@ -131,7 +131,6 @@ LibraryScanner::~LibraryScanner()
             qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
                      << "There is a logic error somewhere.";
         }
-        Q_ASSERT(!m_database.rollback());
         // Close our database connection
         m_database.close();
     }
