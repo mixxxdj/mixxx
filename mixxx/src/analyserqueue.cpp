@@ -78,7 +78,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
     m_qm.unlock();
 
     if (pLoadTrack) {
-        qDebug() << "Analyzing" << pLoadTrack->getTitle() << pTrack->getLocation();
+        qDebug() << "Analyzing" << pLoadTrack->getTitle() << pLoadTrack->getLocation();
     }
     // pTrack might be NULL, up to the caller to check.
     return pLoadTrack;
