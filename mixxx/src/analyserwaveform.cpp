@@ -27,7 +27,8 @@ AnalyserWaveform::AnalyserWaveform() {
     m_currentStride = 0;
     m_currentSummaryStride = 0;
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS");
+    static int i = 0;
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
         m_database.setDatabaseName(MIXXX_DB_PATH);
@@ -48,6 +49,7 @@ AnalyserWaveform::AnalyserWaveform() {
 AnalyserWaveform::~AnalyserWaveform() {
     qDebug() << "AnalyserWaveform::~AnalyserWaveform()";
     destroyFilters();
+    m_database.close();
     delete m_timer;
     delete m_analysisDao;
 }
@@ -86,11 +88,9 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 Waveform* pLoadedWaveform =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                 if (pLoadedWaveform && pLoadedWaveform->isValid()) {
-                    //if( m_waveform->getId() != -1) {
                     m_waveform = pLoadedWaveform;
                     loadedWaveform = true;
                     tio->setWaveform(pLoadedWaveform);
-                    //}
                 } else {
                     delete pLoadedWaveform;
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
@@ -101,11 +101,9 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 Waveform* pLoadedWaveformSummary =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                 if (pLoadedWaveformSummary && pLoadedWaveformSummary->isValid()) {
-                    //if( m_waveformSummary->getId() != -1) {
                     m_waveformSummary = pLoadedWaveformSummary;
                     tio->setWaveformSummary(pLoadedWaveformSummary);
                     loadedWavesummary = true;
-                    //}
                 } else {
                     delete pLoadedWaveformSummary;
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
