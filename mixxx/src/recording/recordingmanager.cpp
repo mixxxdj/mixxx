@@ -20,10 +20,10 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig) :
         m_iNumberOfBytesRecored(0),
         m_split_size(0),
         m_iNumberSplits(0) {
-    m_pToggleRecording = new ControlPushButton(ConfigKey("[Master]", "toggle_recording"));
+    m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
-    m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
+    m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
     m_recReady = new ControlObjectThread(m_recReadyCO);
 
     m_split_size = getFileSplitSize();

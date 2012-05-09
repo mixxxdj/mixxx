@@ -55,13 +55,22 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
-    // It is possible to take them out?    
-    m_pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
-    m_pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
-    m_pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "mode")));
-    m_pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
-    m_pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode")));
-    m_pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "gain")));
+    // It is possible to take them out?
+    m_pControlObjectLatency = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]", "latency")));
+    m_pControlObjectSampleRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
+    m_pControlObjectSoundStatus = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[SoundManager]", "status")));
+    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_DISCONNECTED);
+    m_pControlObjectVinylControlMode = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[VinylControl]", "mode")));
+    m_pControlObjectVinylControlMode1 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
+    m_pControlObjectVinylControlMode2 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode")));
+    m_pControlObjectVinylControlGain = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[VinylControl]", "gain")));
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -248,6 +257,9 @@ void SoundManager::closeDevices()
         }
     }
     m_inputBuffers.clear();
+
+    // Indicate to the rest of Mixxx that sound is disconnected.
+    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_DISCONNECTED);
 }
 
 /** Closes all the devices and empties the list of devices we have. */
@@ -365,6 +377,7 @@ void SoundManager::queryDevices()
 int SoundManager::setupDevices()
 {
     qDebug() << "SoundManager::setupDevices()";
+    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_CONNECTING);
     int err = 0;
     clearOperativeVariables();
     int devicesAttempted = 0;
@@ -463,6 +476,7 @@ int SoundManager::setupDevices()
     // wanted
     if (devicesAttempted == devicesOpened) {
         emit(devicesSetup());
+        m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_CONNECTED);
         return OK;
     }
     m_pErrorDevice = NULL;
