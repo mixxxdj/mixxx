@@ -27,11 +27,13 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_crateDao(crateDao),
-          m_trackCache(TRACK_CACHE_SIZE),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_trackCache(TRACK_CACHE_SIZE) {
 }
 
 void TrackDAO::finish() {
+    // Save all tracks that haven't been saved yet.
+    saveDirtyTracks();
     //clear out played information on exit
     //crash prevention: if mixxx crashes, played information will be maintained
     qDebug() << "Clearing played information for this session";
