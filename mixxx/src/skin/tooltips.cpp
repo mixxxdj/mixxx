@@ -50,7 +50,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Rotates during playback and shows the position of a track.")
             << scratchMouse
             << dropTracksHere
-            << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences→Vinyl Control).");
+            << tr("If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -> Vinyl Control).");
 
     add("pregain")
             << tr("Gain")
@@ -82,7 +82,7 @@ void Tooltips::addStandardTooltips() {
 
     add("master_VuMeterR")
             << tr("Master Channel Volume Meter")
-            << tr("Shows the current  master volume for the right channel.");
+            << tr("Shows the current master volume for the right channel.");
 
     add("channel_volume")
             << tr("Volume Control")
@@ -98,7 +98,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Crossfader")
             << tr("Determines the master output by fading between the left and right channels.")
             << QString("%1: %2").arg(rightClick, resetToDefault)
-            << tr("Change the crossfader curve in Preferences→Crossfader");
+            << tr("Change the crossfader curve in Preferences -> Crossfader");
 
     add("balance")
             << tr("Balance")
@@ -133,7 +133,7 @@ void Tooltips::addStandardTooltips() {
     add("show_vinylcontrol")
             << tr("Vinyl Control")
             << tr("Show/hide the Vinyl Control section.")
-            << tr("Activate Vinyl Control from the Menu→Options.");
+            << tr("Activate Vinyl Control from the Menu -> Options.");
 
     add("microphone_volume")
             << tr("Microphone Volume")
@@ -145,7 +145,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Hold-to-talk or short click for latching to")
             << tr("mix microphone input into the master output.");
 
-    QString changeAmount = tr("Change the step-size in the Preferences→Interface menu.");
+    QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
     add("rate_perm_up_rate_perm_up_small")
             << tr("Raise Pitch")
             << QString("%1: %2").arg(leftClick, tr("Sets the pitch higher."))
@@ -258,7 +258,7 @@ void Tooltips::addStandardTooltips() {
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."))
-            << tr("Change the default cue behavior in Preferences→Interface.")
+            << tr("Change the default cue behavior in Preferences -> Interface.")
             << QString("%1 %2: %3").arg(leftClick, whileStopped, cueSet)
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue-point and stops."));
@@ -266,7 +266,7 @@ void Tooltips::addStandardTooltips() {
     add("pfl")
             << tr("Headphone")
             << tr("Sends the selected channel's audio to the headphone output.")
-            << tr("selected in Preferences→Sound Hardware.");
+            << tr("selected in Preferences -> Sound Hardware.");
 
     add("back_start")
             << tr("Fast Rewind")

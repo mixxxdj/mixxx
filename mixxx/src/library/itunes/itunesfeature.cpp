@@ -12,6 +12,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/itunes/itunesplaylistmodel.h"
 #include "library/itunes/itunestrackmodel.h"
+#include "library/queryutil.h"
 
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
@@ -19,7 +20,6 @@ const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pTrackCollection(pTrackCollection),
-          m_database(pTrackCollection->getDatabase()),
           m_cancelImport(false) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
@@ -46,23 +46,21 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    if (!m_database.isOpen()) {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "ITUNES_SCANNER");
-        m_database.setHostName("localhost");
-        m_database.setDatabaseName(MIXXX_DB_PATH);
-        m_database.setUserName("mixxx");
-        m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "ITUNES_SCANNER");
+    m_database.setHostName("localhost");
+    m_database.setDatabaseName(MIXXX_DB_PATH);
+    m_database.setUserName("mixxx");
+    m_database.setPassword("mixxx");
 
-        //Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
-        }
+    //Open the database connection in this thread.
+    if (!m_database.open()) {
+        qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
-
     connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
 }
 
 ITunesFeature::~ITunesFeature() {
+    m_database.close();
     m_cancelImport = true;
     m_future.waitForFinished();
     delete m_pITunesTrackModel;
@@ -223,16 +221,15 @@ TreeItem* ITunesFeature::importLibrary() {
     thisThread->setPriority(QThread::LowestPriority);
 
     //Delete all table entries of iTunes feature
-    m_database.transaction();
+    ScopedTransaction transaction(m_database);
     clearTable("itunes_playlist_tracks");
     clearTable("itunes_library");
     clearTable("itunes_playlists");
-    m_database.commit();
+    transaction.commit();
 
     qDebug() << "ITunesFeature::importLibrary() ";
 
-
-    m_database.transaction();
+    transaction.transaction();
 
     //Parse iTunes XML file using SAX (for performance)
     QFile itunes_file(m_dbfile);
@@ -258,7 +255,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     // Even if an error occured, commit the transaction. The file may have been
     // half-parsed.
-    m_database.commit();
+    transaction.commit();
 
     if (xml.hasError()) {
         // do error handling

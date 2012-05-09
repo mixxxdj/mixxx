@@ -12,9 +12,9 @@
 
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
-
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
         LibraryFeature(parent),
@@ -45,22 +45,22 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
     m_title = tr("Traktor");
-    if (!m_database.isOpen()) {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "TRAKTOR_SCANNER");
-        m_database.setHostName("localhost");
-        m_database.setDatabaseName(MIXXX_DB_PATH);
-        m_database.setUserName("mixxx");
-        m_database.setPassword("mixxx");
 
-        //Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
-        }
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "TRAKTOR_SCANNER");
+    m_database.setHostName("localhost");
+    m_database.setDatabaseName(MIXXX_DB_PATH);
+    m_database.setUserName("mixxx");
+    m_database.setPassword("mixxx");
+
+    //Open the database connection in this thread.
+    if (!m_database.open()) {
+        qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
     connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
 }
 
 TraktorFeature::~TraktorFeature() {
+    m_database.close();
     m_cancelImport = true;
     m_future.waitForFinished();
     if(m_pTraktorTableModel)
@@ -159,13 +159,13 @@ TreeItem* TraktorFeature::importLibrary(QString file){
     //Invisible root item of Traktor's child model
     TreeItem* root = NULL;
     //Delete all table entries of Traktor feature
-    m_database.transaction();
+    ScopedTransaction transaction(m_database);
     clearTable("traktor_playlist_tracks");
     clearTable("traktor_library");
     clearTable("traktor_playlists");
-    m_database.commit();
+    transaction.commit();
 
-    m_database.transaction();
+    transaction.transaction();
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO traktor_library (artist, title, album, year, genre,comment,"
                    "tracknumber,"
@@ -260,7 +260,7 @@ TreeItem* TraktorFeature::importLibrary(QString file){
 
     qDebug() << "Found: " << nAudioFiles << " audio files in Traktor";
     //initialize TraktorTableModel
-    m_database.commit();
+    transaction.commit();
 
     return root;
 }

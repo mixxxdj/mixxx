@@ -31,11 +31,11 @@ class AnalysisDao : public DAO {
         QByteArray data;
     };
 
-    AnalysisDao(const QSqlDatabase& database);
+    AnalysisDao(QSqlDatabase& database);
     virtual ~AnalysisDao();
 
     virtual void initialize();
-    void setDatabase(const QSqlDatabase& database);
+    void setDatabase(QSqlDatabase& database);
 
     bool getWaveform(TrackInfoObject& tio);
     bool saveWaveform(const TrackInfoObject& tio);
