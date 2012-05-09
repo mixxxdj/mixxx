@@ -36,7 +36,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
-    m_resetStr = tr("reset to default");
+    m_resetStr = tr("Reset to default");
 
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));

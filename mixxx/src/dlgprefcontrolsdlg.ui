@@ -747,7 +747,7 @@
       <item row="3" column="4" colspan="2">
        <widget class="QCheckBox" name="synchronizeZoomCheckBox">
         <property name="toolTip">
-         <string>Synchronize zoom level accross all waveform displays.</string>
+         <string>Synchronize zoom level across all waveform displays.</string>
         </property>
         <property name="text">
          <string>Synchronize</string>
