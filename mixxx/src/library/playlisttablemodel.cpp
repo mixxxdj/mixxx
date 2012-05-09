@@ -215,11 +215,11 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         newPosition = rowCount();
 
     //Start the transaction
-    m_pTrackCollection->getDatabase().transaction();
+    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 
     //Find out the highest position existing in the playlist so we know what
     //position this track should have.
-    QSqlQuery query;
+    QSqlQuery query(m_pTrackCollection->getDatabase());
 
     //Insert the song into the PlaylistTracks table
 
@@ -293,7 +293,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         query.exec(queryString);
     }
 
-    m_pTrackCollection->getDatabase().commit();
+    transaction.commit();
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
@@ -312,7 +312,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
     int currentPosition = currentIndex.sibling(currentIndex.row(), positionColumnIndex).data().toInt();
     int shuffleStartIndex = currentPosition + 1;
 
-    m_pTrackCollection->getDatabase().transaction();
+    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 
     // This is a simple Fisher-Yates shuffling algorithm
     for (int i=numOfTracks-1; i >= shuffleStartIndex; i--)
@@ -334,7 +334,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
             qDebug() << query.lastError();
     }
 
-    m_pTrackCollection->getDatabase().commit();
+    transaction.commit();
     // TODO(XXX) set dirty because someday select() will only do work on dirty.
     select();
 }

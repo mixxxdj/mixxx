@@ -86,11 +86,9 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 Waveform* pLoadedWaveform =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                 if (pLoadedWaveform && pLoadedWaveform->isValid()) {
-                    //if( m_waveform->getId() != -1) {
                     m_waveform = pLoadedWaveform;
                     loadedWaveform = true;
                     tio->setWaveform(pLoadedWaveform);
-                    //}
                 } else {
                     delete pLoadedWaveform;
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
@@ -101,11 +99,9 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 Waveform* pLoadedWaveformSummary =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                 if (pLoadedWaveformSummary && pLoadedWaveformSummary->isValid()) {
-                    //if( m_waveformSummary->getId() != -1) {
                     m_waveformSummary = pLoadedWaveformSummary;
                     tio->setWaveformSummary(pLoadedWaveformSummary);
                     loadedWavesummary = true;
-                    //}
                 } else {
                     delete pLoadedWaveformSummary;
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
