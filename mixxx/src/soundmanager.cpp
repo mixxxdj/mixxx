@@ -476,9 +476,11 @@ int SoundManager::setupDevices()
     // wanted
     if (devicesAttempted == devicesOpened) {
         emit(devicesSetup());
-        m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_CONNECTED);
+        m_pControlObjectSoundStatus->slotSet(
+            devicesOpened > 0 ? SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
         return OK;
     }
+    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_DISCONNECTED);
     m_pErrorDevice = NULL;
     return ERR;
 closeAndError:
