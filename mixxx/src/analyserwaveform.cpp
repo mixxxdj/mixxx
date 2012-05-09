@@ -27,7 +27,8 @@ AnalyserWaveform::AnalyserWaveform() {
     m_currentStride = 0;
     m_currentSummaryStride = 0;
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS");
+    static int i = 0;
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
         m_database.setDatabaseName(MIXXX_DB_PATH);
@@ -48,6 +49,7 @@ AnalyserWaveform::AnalyserWaveform() {
 AnalyserWaveform::~AnalyserWaveform() {
     qDebug() << "AnalyserWaveform::~AnalyserWaveform()";
     destroyFilters();
+    m_database.close();
     delete m_timer;
     delete m_analysisDao;
 }
