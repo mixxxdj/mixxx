@@ -37,6 +37,10 @@ class AudioDestination;
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
+#define SOUNDMANAGER_DISCONNECTED 0
+#define SOUNDMANAGER_CONNECTING 1
+#define SOUNDMANAGER_CONNECTED 2
+
 class SoundManager : public QObject {
     Q_OBJECT
 public:
@@ -98,6 +102,7 @@ private:
 
     ControlObjectThreadMain* m_pControlObjectLatency;
     ControlObjectThreadMain* m_pControlObjectSampleRate;
+    ControlObjectThreadMain* m_pControlObjectSoundStatus;
     ControlObjectThreadMain* m_pControlObjectVinylControlMode;
     ControlObjectThreadMain* m_pControlObjectVinylControlMode1;
     ControlObjectThreadMain* m_pControlObjectVinylControlMode2;
