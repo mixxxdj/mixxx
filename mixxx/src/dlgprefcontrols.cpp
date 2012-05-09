@@ -148,7 +148,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Override Playing Track on Track Load
     //
     ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Don't load tracks into a playing deck"));
-    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Load tracks into playing decks"));
+    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Load tracks into a playing deck"));
     ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt());
     connect(ComboBoxAllowTrackLoadToPlayingDeck, SIGNAL(activated(int)), this, SLOT(slotSetAllowTrackLoadToPlayingDeck(int)));
 
@@ -557,9 +557,9 @@ void DlgPrefControls::initWaveformControl()
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
     if (factory->isOpenGLAvailable())
-        openGlSatatusIcon->setText(factory->getOpenGLVersion());
+        openGlStatusIcon->setText(factory->getOpenGLVersion());
     else
-        openGlSatatusIcon->setText("X");
+        openGlStatusIcon->setText(tr("OpenGL not available"));
 
     WaveformWidgetType::Type currentType = factory->getType();
     int currentIndex = -1;

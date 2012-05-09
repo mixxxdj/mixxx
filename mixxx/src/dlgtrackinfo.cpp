@@ -95,8 +95,9 @@ void DlgTrackInfo::cueDelete() {
 }
 
 void DlgTrackInfo::populateFields(TrackPointer pTrack) {
+    setWindowTitle(pTrack->getTitle());
+
     // Editable fields
-    lblSong->setText(pTrack->getTitle());
     txtTrackName->setText(pTrack->getTitle());
     txtArtist->setText(pTrack->getArtist());
     txtAlbum->setText(pTrack->getAlbum());
@@ -110,8 +111,10 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
     txtFilepath->setText(pTrack->getFilename());
-    txtFilepath->setCursorPosition(0);
+    txtLocation->setText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
+    txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
+    txtBpm->setText(pTrack->getBpmStr());
 
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
@@ -257,8 +260,6 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-    txtTrackName->setText("");
-    lblSong->setText("Track:");
 
     txtTrackName->setText("");
     txtArtist->setText("");
@@ -273,6 +274,9 @@ void DlgTrackInfo::clear() {
     txtDuration->setText("");
     txtFilepath->setText("");
     txtType->setText("");
+    txtLocation->setText("");
+    txtBitrate->setText("");
+    txtBpm->setText("");
 
     m_cueMap.clear();
     cueTable->clearContents();
