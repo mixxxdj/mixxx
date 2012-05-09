@@ -13,7 +13,8 @@ class ScopedTransaction {
             m_database(database),
             m_active(false) {
         if (!transaction()) {
-            qDebug() << "ERROR: Could not start transaction.";
+            qDebug() << "ERROR: Could not start transaction on"
+                     << m_database.connectionName();
         }
     }
     virtual ~ScopedTransaction() {
@@ -26,7 +27,8 @@ class ScopedTransaction {
     }
     bool transaction() {
         if (m_active) {
-            qDebug() << "WARNING: Transaction already active and received transaction() request.";
+            qDebug() << "WARNING: Transaction already active and received transaction() request on"
+                     << m_database.connectionName();
             return false;
         }
         m_active = m_database.transaction();
@@ -34,21 +36,27 @@ class ScopedTransaction {
     }
     bool commit() {
         if (!m_active) {
-            qDebug() << "WARNING: commit() called on inactive transaction.";
+            qDebug() << "WARNING: commit() called on inactive transaction for"
+                     << m_database.connectionName();
             return false;
         }
         bool result = m_database.commit();
-        qDebug() << "Committing transaction:" << result;
+        qDebug() << "Committing transaction on"
+                 << m_database.connectionName()
+                 << "result:" << result;
         m_active = false;
         return result;
     }
     bool rollback() {
         if (!m_active) {
-            qDebug() << "WARNING: rollback() called on inactive transaction.";
+            qDebug() << "WARNING: rollback() called on inactive transaction for"
+                     << m_database.connectionName();
             return false;
         }
         bool result = m_database.rollback();
-        qDebug() << "Rolling back transaction:" << result;
+        qDebug() << "Rolling back transaction on"
+                 << m_database.connectionName()
+                 << "result:" << result;
         m_active = false;
         return result;
     }
