@@ -67,7 +67,7 @@ QVariant SetlogFeature::title() {
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_setlog.png");
+    return QIcon(":/images/library/ic_library_history.png");
 }
 
 void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
@@ -167,7 +167,7 @@ QModelIndex SetlogFeature::constructChildModel(int selected_id)
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
         if (playlist_id == m_playlistId) {
-            item->setIcon(QIcon(":/images/library/ic_library_setlog_current.png"));
+            item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
         } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
             item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
         } else {

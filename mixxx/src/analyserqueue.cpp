@@ -163,18 +163,23 @@ void AnalyserQueue::run() {
         }
 
         QListIterator<Analyser*> it(m_aq);
-
+        bool processTrack = false;
         while (it.hasNext()) {
-            it.next()->initialise(next, iSampleRate, iNumSamples);
+            // Make sure not to short-circuit initialise(...)
+            processTrack = it.next()->initialise(next, iSampleRate, iNumSamples) || processTrack;
         }
 
-        doAnalysis(next, pSoundSource);
+        if (processTrack) {
+            doAnalysis(next, pSoundSource);
 
-        QListIterator<Analyser*> itf(m_aq);
-
-        while (itf.hasNext()) {
-            itf.next()->finalise(next);
+            QListIterator<Analyser*> itf(m_aq);
+            while (itf.hasNext()) {
+                itf.next()->finalise(next);
+            }
+        } else {
+            qDebug() << "Skipping track analysis because no analyser initialized.";
         }
+
 
         delete pSoundSource;
         emit(trackFinished(next));
@@ -233,6 +238,9 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
     AnalyserQueue* ret = new AnalyserQueue();
+
+    ret->addAnalyser(new AnalyserWaveform());
+
 #ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserGainVamp(_config));
