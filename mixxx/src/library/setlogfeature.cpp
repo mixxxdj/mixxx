@@ -289,7 +289,7 @@ QString SetlogFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("History");
     QString playlistsSummary = tr("The history section automatically keeps a list of tracks you play in your DJ sets.");
     QString playlistsSummary2 = tr("This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.");
-    QString playlistsSummary3 = tr("Every time you start Mixxx, a new history section is created. You can export it as an m3u playlist or play it again with Auto DJ.");
+    QString playlistsSummary3 = tr("Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.");
     QString playlistsSummary4 = tr("You can join the current history session with a previous one by right-clicking and selecting \"Join with previous\".");
 
     QString html;
