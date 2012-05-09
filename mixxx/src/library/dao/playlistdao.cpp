@@ -352,6 +352,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     if (!query.next()) {
         qDebug() << "removeTrackFromPlaylist no track exists at position:"
                  << position << "in playlist:" << playlistId;
+        m_database.rollback();
         return;
     }
     int trackId = query.value(query.record().indexOf("id")).toInt();

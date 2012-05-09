@@ -206,8 +206,6 @@ bool AnalysisDao::deleteAnalysesForTrack(int trackId) {
     }
     QSqlQuery query(m_db);
     query.prepare(QString(
-        "DELETE FROM %1 WHERE track_id = :track_id").arg(s_analysisTableName));
-    query.prepare(QString(
         "SELECT id FROM %1 where track_id = :track_id").arg(s_analysisTableName));
     query.bindValue(":track_id", trackId);
 
