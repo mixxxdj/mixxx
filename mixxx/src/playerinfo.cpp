@@ -77,6 +77,18 @@ void PlayerInfo::setTrackInfo(QString group, TrackPointer track)
     m_loadedTrackMap[group] = track;
 }
 
+bool PlayerInfo::isTrackLoaded(TrackPointer pTrack) const {
+    QMutexLocker locker(&m_mutex);
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value() == pTrack) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
     updateCurrentPlayingDeck();
 }
