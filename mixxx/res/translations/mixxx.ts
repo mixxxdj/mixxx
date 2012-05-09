@@ -868,7 +868,7 @@
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="39"/>
-        <source>reset to default</source>
+        <source>Reset to default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1678,11 +1678,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrolsdlg.ui" line="750"/>
-        <source>Synchronize zoom level accross all waveform displays.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="773"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation type="unfinished"></translation>
@@ -1730,6 +1725,11 @@
     <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="557"/>
         <source>Waveform Display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="750"/>
+        <source>Synchronize zoom level across all waveform displays.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2956,11 +2956,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../src/dlgprepare.ui" line="97"/>
-        <source>Runs the BPM and beatgrid detection on the selected tracks.</source>
+        <source>Runs the BPM and beatgrid detection on the selected tracks.
+Waveforms will be generated as part of a analysis as well.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprepare.ui" line="100"/>
+        <location filename="../../src/dlgprepare.ui" line="101"/>
         <location filename="../../src/dlgprepare.cpp" line="165"/>
         <source>Analyze</source>
         <translation type="unfinished"></translation>
@@ -3439,38 +3440,38 @@ p, li { white-space: pre-wrap; }
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="47"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="621"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="618"/>
         <source>iTunes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="116"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="173"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="114"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="171"/>
         <source>Select your iTunes library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="137"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="135"/>
         <source>(loading) iTunes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="161"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="159"/>
         <source>Use Default Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="162"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="160"/>
         <source>Choose Library...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="616"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="613"/>
         <source>Error Loading iTunes Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="617"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="614"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4149,8 +4150,8 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 <context>
     <name>RhythmboxFeature</name>
     <message>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="37"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="448"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="38"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="445"/>
         <source>Rhythmbox</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4231,7 +4232,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="292"/>
-        <source>Every time you start Mixxx, a new history section is created. You can export it as an m3u playlist or play it again with Auto DJ.</source>
+        <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4317,11 +4318,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="53"/>
-        <source>If Vinyl control is enabled, displays time-coded vinyl signal quality (see PreferencesâVinyl Control).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/skin/tooltips.cpp" line="56"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
@@ -4388,11 +4384,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="85"/>
-        <source>Shows the current  master volume for the right channel.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/skin/tooltips.cpp" line="88"/>
         <source>Volume Control</source>
         <translation type="unfinished"></translation>
@@ -4420,11 +4411,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="99"/>
         <source>Determines the master output by fading between the left and right channels.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="101"/>
-        <source>Change the crossfader curve in PreferencesâCrossfader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4503,11 +4489,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="136"/>
-        <source>Activate Vinyl Control from the MenuâOptions.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/skin/tooltips.cpp" line="139"/>
         <source>Microphone Volume</source>
         <translation type="unfinished"></translation>
@@ -4530,11 +4511,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="146"/>
         <source>mix microphone input into the master output.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="148"/>
-        <source>Change the step-size in the PreferencesâInterface menu.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4792,11 +4768,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="261"/>
-        <source>Change the default cue behavior in PreferencesâInterface.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/skin/tooltips.cpp" line="264"/>
         <source>Seeks the track to the cue-point and stops.</source>
         <translation type="unfinished"></translation>
@@ -4812,8 +4783,38 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/skin/tooltips.cpp" line="53"/>
+        <source>If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -&gt; Vinyl Control).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="85"/>
+        <source>Shows the current master volume for the right channel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="101"/>
+        <source>Change the crossfader curve in Preferences -&gt; Crossfader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="136"/>
+        <source>Activate Vinyl Control from the Menu -&gt; Options.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="148"/>
+        <source>Change the step-size in the Preferences -&gt; Interface menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="261"/>
+        <source>Change the default cue behavior in Preferences -&gt; Interface.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/skin/tooltips.cpp" line="269"/>
-        <source>selected in PreferencesâSound Hardware.</source>
+        <source>selected in Preferences -&gt; Sound Hardware.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5176,12 +5177,12 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="61"/>
+        <location filename="../../src/library/trackcollection.cpp" line="65"/>
         <source>Cannot open database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="62"/>
+        <location filename="../../src/library/trackcollection.cpp" line="66"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
@@ -5189,12 +5190,12 @@ Click OK to exit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="73"/>
+        <location filename="../../src/library/trackcollection.cpp" line="77"/>
         <source>Cannot upgrade database schema</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="74"/>
+        <location filename="../../src/library/trackcollection.cpp" line="78"/>
         <source>Unable to upgrade your database schema to version %1.
 Your mixxx.db file may be corrupt.
 Try renaming it and restarting Mixxx.
