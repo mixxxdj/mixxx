@@ -3,6 +3,7 @@
 #include "trackinfoobject.h"
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
+#include "playerinfo.h"
 
 #ifdef __TONAL__
 #include "tonal/tonalanalyser.h"
@@ -52,14 +53,37 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
         }
     }
 
-    // Implicit cast to TrackPointer from weak pointer
-    TrackPointer pTrack = m_tioq.dequeue();
+    const PlayerInfo& info = PlayerInfo::Instance();
+    TrackPointer pLoadTrack;
+    QMutableListIterator<TrackPointer> it(m_tioq);
+    while (it.hasNext()) {
+        TrackPointer& pTrack = it.next();
+        if (!pTrack) {
+            it.remove();
+            continue;
+        }
+        // Prioritize tracks that are loaded.
+        if (info.isTrackLoaded(pTrack)) {
+            qDebug() << "Prioritizing" << pTrack->getTitle() << pTrack->getLocation();
+            pLoadTrack = pTrack;
+            it.remove();
+            break;
+        }
+    }
+
+    if (!pLoadTrack && m_tioq.size() > 0) {
+        pLoadTrack = m_tioq.dequeue();
+    }
 
     m_qm.unlock();
 
+    if (pLoadTrack) {
+        qDebug() << "Analyzing" << pLoadTrack->getTitle() << pLoadTrack->getLocation();
+    }
     // pTrack might be NULL, up to the caller to check.
-    return pTrack;
+    return pLoadTrack;
 }
+
 
 void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource) {
 
