@@ -273,8 +273,8 @@ void AnalyserQueue::run() {
 
 void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
     m_qm.lock();
+    m_aiCheckPriorities = true;
     if( !m_tioq.contains(tio)){
-        m_aiCheckPriorities = true;
         m_tioq.enqueue(tio);
         m_qwait.wakeAll();
     }
