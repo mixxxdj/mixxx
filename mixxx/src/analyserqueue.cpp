@@ -1,6 +1,7 @@
 #include <QtDebug>
 
 #include "trackinfoobject.h"
+#include "playerinfo.h"
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 #include "playerinfo.h"
@@ -24,7 +25,8 @@ AnalyserQueue::AnalyserQueue() : m_aq(),
     m_tioq(),
     m_qm(),
     m_qwait(),
-    m_exit(false)
+    m_exit(false),
+    m_aiCheckPriorities(false)
 {
 
 }
@@ -39,6 +41,25 @@ int AnalyserQueue::numQueuedTracks()
 
 void AnalyserQueue::addAnalyser(Analyser* an) {
     m_aq.push_back(an);
+}
+
+bool AnalyserQueue::isLoadedTrackWaiting()
+{
+    m_qm.lock();
+    
+    const PlayerInfo& info = PlayerInfo::Instance();
+    TrackPointer pTrack;
+    QMutableListIterator<TrackPointer> it(m_tioq);
+    while (it.hasNext()) {
+        TrackPointer& pTrack = it.next();
+        if (info.isTrackLoaded(pTrack)) {
+            m_qm.unlock();
+            return true;
+        }
+    }
+    
+    m_qm.unlock();
+    return false;
 }
 
 TrackPointer AnalyserQueue::dequeueNextBlocking() {
@@ -85,7 +106,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 
-void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource) {
+bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource) {
 
     // TonalAnalyser requires a block size of 65536. Using a different value
     // breaks the tonal analyser. We need to use a smaller block size becuase on
@@ -102,6 +123,7 @@ void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
 
     int read = 0;
     bool dieflag = false;
+    bool cancelled = false;
 
     do {
         read = pSoundSource->read(ANALYSISBLOCKSIZE, data16);
@@ -144,11 +166,24 @@ void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
         // the audio callback thread.
         //QThread::yieldCurrentThread();
         //QThread::usleep(10);
-
+        
+        //has something new entered the queue?
+        if (m_aiCheckPriorities)
+        {
+            m_aiCheckPriorities = false;
+            if (! PlayerInfo::Instance().isTrackLoaded(tio) && isLoadedTrackWaiting())
+            {
+                qDebug() << "Interrupting analysis to give preference to a loaded track.";
+                dieflag = true;
+                cancelled = true;
+            }
+        }
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
 
     delete[] data16;
     delete[] samples;
+    
+    return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }
 
 void AnalyserQueue::stop() {
@@ -192,13 +227,32 @@ void AnalyserQueue::run() {
             // Make sure not to short-circuit initialise(...)
             processTrack = it.next()->initialise(next, iSampleRate, iNumSamples) || processTrack;
         }
-
+        
         if (processTrack) {
-            doAnalysis(next, pSoundSource);
-
-            QListIterator<Analyser*> itf(m_aq);
-            while (itf.hasNext()) {
-                itf.next()->finalise(next);
+            if (! PlayerInfo::Instance().isTrackLoaded(next) && isLoadedTrackWaiting()) {
+                qDebug() << "Delaying track analysis because track is not loaded -- requeuing";
+                queueAnalyseTrack(next);
+            } 
+            else 
+            {
+                bool completed = doAnalysis(next, pSoundSource);
+                
+                if (!completed)
+                {
+                    //This track was cancelled
+                    QListIterator<Analyser*> itf(m_aq);
+                    while (itf.hasNext()) {
+                        itf.next()->cleanup(next);
+                    }
+                    queueAnalyseTrack(next);
+                }
+                else
+                {
+                    QListIterator<Analyser*> itf(m_aq);
+                    while (itf.hasNext()) {
+                        itf.next()->finalise(next);
+                    }
+                }
             }
         } else {
             qDebug() << "Skipping track analysis because no analyser initialized.";
@@ -220,6 +274,7 @@ void AnalyserQueue::run() {
 void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
     m_qm.lock();
     if( !m_tioq.contains(tio)){
+        m_aiCheckPriorities = true;
         m_tioq.enqueue(tio);
         m_qwait.wakeAll();
     }

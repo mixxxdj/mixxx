@@ -18,6 +18,7 @@ class AnalyserGain : public Analyser {
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
+    void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 
   private:

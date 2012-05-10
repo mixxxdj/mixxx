@@ -169,10 +169,10 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 }
 
 void AnalyserWaveform::resetFilters(TrackPointer tio) {
+    Q_UNUSED(tio);
     m_filter[Low] = new EngineFilterIIR(bessel_lowpass4,4);
     m_filter[Mid] = new EngineFilterIIR(bessel_bandpass,8);
     m_filter[High] = new EngineFilterIIR(bessel_highpass4,4);
-    
 }
 
 void AnalyserWaveform::destroyFilters() {
@@ -336,6 +336,23 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     //qDebug() << "AnalyserWaveform::process - m_waveform->getCompletion()" << m_waveform->getCompletion();
     //qDebug() << "AnalyserWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion();
 }
+
+void AnalyserWaveform::cleanup(TrackPointer tio) {
+    if (m_skipProcessing) {
+        return;
+    }
+    
+    Waveform* pWaveform = tio->getWaveform();
+    if (pWaveform) {
+        pWaveform->reset();
+    }
+    
+    Waveform* pWaveformSummary = tio->getWaveformSummary();
+    if (pWaveformSummary) {
+        pWaveformSummary->reset();
+    }
+}
+
 void AnalyserWaveform::finalise(TrackPointer tio) {
     if (m_waveform == NULL || m_waveformSummary == NULL) {
         return;
