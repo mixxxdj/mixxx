@@ -13,6 +13,10 @@
 #include "library/browse/browsefeature.h"
 #include "library/trackcollection.h"
 #include "library/dao/trackdao.h"
+#include "widget/wlibrarytextbrowser.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "mixxxkeyboard.h"
 
 BrowseFeature::BrowseFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
@@ -153,7 +157,18 @@ bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
 
+void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
+                               WLibrary* libraryWidget,
+                               MixxxKeyboard* keyboard) {
+    Q_UNUSED(sidebarWidget);
+    Q_UNUSED(keyboard);
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
+    edit->setHtml(getRootViewHtml());
+    libraryWidget->registerView("BROWSEHOME", edit);
+}
+
 void BrowseFeature::activate() {
+    emit(switchToView("BROWSEHOME"));
     emit(restoreSearch(m_currentSearch));
 }
 /*
@@ -240,4 +255,16 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
     if (!folders.isEmpty()) {
         m_childModel.insertRows(folders, 0, folders.size() , index);
     }
+}
+
+QString BrowseFeature::getRootViewHtml() const {
+    QString browseTitle = tr("Browse");
+    QString browseSummary = tr("Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.");
+
+    QString html;
+    html.append(QString("<h2>%1</h2>").arg(browseTitle));
+    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
+    html.append(QString("<p>%1</p>").arg(browseSummary));
+    html.append("</td></tr></table>");
+    return html;
 }
