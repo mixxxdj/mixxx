@@ -82,9 +82,7 @@ private:
 
     EngineMaster *m_pMaster;
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectThreadMain *m_pControlObjectInputPassthrough1, *m_pControlObjectInputPassthrough2;
     ControlObjectThreadMain *m_pControlObjectVinylStatus1, *m_pControlObjectVinylStatus2;
-    bool m_bPassthroughActive[2];
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
     QString m_hostAPI;

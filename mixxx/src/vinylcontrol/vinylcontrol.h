@@ -79,7 +79,6 @@ class VinylControl : public QThread
     ControlObjectThread *rateDir; //direction of rate
     ControlObjectThread *m_pVinylPitchTweakKnob;
     ControlObjectThread *loopEnabled; //looping enabled?
-    ControlObjectThread *inputPassthrough; //is input passing through to outputs?
     ControlObjectThread *signalenabled; //show the signal in the skin?
     //ControlObject *vinylStatus;  //Status of vinyl control
 

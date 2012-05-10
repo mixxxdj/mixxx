@@ -29,7 +29,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     //a midi knob to tweak the vinyl pitch for decks with crappy sliders
     m_pVinylPitchTweakKnob = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,  "vinylpitchtweak")));
-    inputPassthrough	= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "inputpassthrough")));
     loopEnabled     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
     signalenabled     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_signal_enabled")));
 

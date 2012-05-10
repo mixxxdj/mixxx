@@ -97,30 +97,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pBypassEq = new ControlPushButton(ConfigKey(group, "bypass_eq"));
     m_pBypassEq->setButtonMode(ControlPushButton::TOGGLE);
     
-    //set up input passthrough o
-    //TODO: we should set up n passthroughs for n decks
-	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel1]","inputpassthrough")));
-	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel2]","inputpassthrough")));
-	m_passthrough[0]->setButtonMode(ControlPushButton::TOGGLE);
-	m_passthrough[1]->setButtonMode(ControlPushButton::TOGGLE);
-	m_bPassthroughWasActive[0] = false;
-	m_bPassthroughWasActive[1] = false;
-	m_iLastThruRead[0] = m_iLastThruRead[1] = -1;
-    m_iLastThruWrote[0] = m_iLastThruWrote[1] = -1;
-    m_iThruFill[0] = m_iThruFill[1] = 0;
-    m_iThruBufferCount = _config->getValueString(ConfigKey("[Master]","passthrough_buffercount")).toInt();
-    m_iThruBufferCount = math_max(1, m_iThruBufferCount);
-    m_bFilling[0] = m_bFilling[1] = true;
-
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
     memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-	m_passthroughBuffers.append(SampleUtil::alloc(MAX_BUFFER_LEN));
-	m_passthroughBuffers.append(SampleUtil::alloc(MAX_BUFFER_LEN));
-	memset(m_passthroughBuffers[0], 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-	memset(m_passthroughBuffers[1], 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     //Starts a thread for recording and shoutcast
     sidechain = NULL;
@@ -378,6 +359,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         
+        if (!pChannel->isActive()) {
+            continue;
+        }
+
         bool needsProcessing = false;
         if (pChannel->isMaster()) {
             masterOutput |= (1 << channel_number);
@@ -391,84 +376,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             needsProcessing = true;
         }
 
-        //FIXME: this assumes second two decks are passthrough
-        bool isPassthroughActive = false;
-        int deck_index = channel_number-1;
-        if (deck_index >= 0 && deck_index < 2)
-        	isPassthroughActive = m_passthrough[deck_index]->get();
-        	
-        if(isPassthroughActive)
-    	{
-    		//if we're passing through, we don't care if channel
-	    	//is active or not
-    		//overwrite the channel buffer with the input so the decks, 
-    		//not just the master get output
-    		
-    		passthroughBufferMutex[deck_index].lock();
-    		
-    		//currently playing silence while filling up the buffer
-    		if (m_bFilling[deck_index])
-    		{
-    			if (m_iThruFill[deck_index] >= m_iThruBufferCount)
-				{
-					//qDebug() << "Buffer filled" << m_iThruFill[deck_index] << m_iThruBufferCount;
-					m_bFilling[deck_index] = false;
-				}
-				else
-				{
-					//qDebug() << "Buffer filling" << m_iThruFill[deck_index] << m_iThruBufferCount;
-					SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
-				}
-			}
-    		
-    		if (!m_bFilling[deck_index])
-    		{
-    			if (m_iThruFill[deck_index] < 1)
-				{
-					qDebug() << "ERROR: input passthrough buffer underrun";
-					SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
-					m_bFilling[deck_index] = true;
-				}
-				else
-				{
-				    m_iLastThruRead[deck_index] = (m_iLastThruRead[deck_index]+1) % m_iThruBufferCount;
-					m_iThruFill[deck_index]--;
-					//qDebug() << "read" << m_iLastThruRead[deck_index] << "fill" << m_iThruFill[deck_index];
-					SampleUtil::copyWithGain(pChannelInfo->m_pBuffer,
-											m_passthroughBuffers[deck_index]+m_iLastThruRead[deck_index]*iBufferSize, 
-											1.0f, iBufferSize);
-				}
-			}
-    		passthroughBufferMutex[deck_index].unlock();
-	    	pChannel->process(pChannelInfo->m_pBuffer, pChannelInfo->m_pBuffer, iBufferSize);
+		// Process the buffer if necessary
+        if (needsProcessing) {
+			pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
 	    }
-	    else
-	    {
-	        if (deck_index >=0 && deck_index < 2)
-        	{
-        	    //if it was active last time, zero out
-   	        	if (m_bPassthroughWasActive[deck_index])
-   	        	{
-   	        		SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
-   	        		m_bPassthroughWasActive[deck_index] = false;
-					m_iLastThruRead[deck_index] = -1;
-					m_iLastThruWrote[deck_index] = -1;
-					m_iThruFill[deck_index] = 0;
-					//m_iThruBufferCount[deck_index] = 1;
-					m_bFilling[deck_index] = true;
-
-   	        	}
-   	        }
-   	        if (!pChannel->isActive()) {
-				continue;
-    		}
-    		if (needsProcessing)
-    		{
-				pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
-			}
-	    }
-	    if (deck_index >=0 && deck_index < 2)
-	    	m_bPassthroughWasActive[deck_index] = isPassthroughActive;
     }
 
     // Mix all the enabled headphone channels together.
@@ -575,40 +486,6 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
             }
         }
     }
-}
-
-void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
-{
-	Q_ASSERT(c<2); // really, now.
-	
-	len /= 2; // this seems to be needed all of a sudden
-
-	passthroughBufferMutex[c].lock();
-
-	//check that we aren't overflowing.	
-	if (m_iThruFill[c] >= m_iThruBufferCount)
-	{
-		qDebug() << "WARNING: Input Passthrough buffer overflow " << m_iThruBufferCount;
-		return;
-	}
-
-    m_iLastThruWrote[c] = (m_iLastThruWrote[c] + 1) % m_iThruBufferCount;
-	m_iThruFill[c]++;
-
-	//qDebug() << "writ" << m_iLastThruWrote[c] << "fill" << m_iThruFill[c]; //  << &m_passthroughBuffers[c][(m_iLastThruWrote[c]*len)];
-
-	for (int i=0; i<len; i++)
-	{
-		//why don't we need to divide by SHRT_MAX???
-		m_passthroughBuffers[c][(m_iLastThruWrote[c]*len) + i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
-		/*m_passthroughBuffers[c][i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;*/
-		//qDebug() << i << (CSAMPLE)input[i] << m_passthroughBuffers[c][(m_iLastThruWrote[c]*len) + i];
-		//if (i % 2 == 0)
-			//writer << i << "," <<(CSAMPLE)input[i] << "\n";
-	}
-	//qDebug() << "write" << m_iLastThruWrote[c] << (m_iLastThruWrote[c]*len) << (m_iLastThruWrote[c]*len) + len - 1;
-
-	passthroughBufferMutex[c].unlock();
 }
 
 int EngineMaster::numChannels() const {

@@ -37,7 +37,6 @@ private:
     ControlLogpotmeter *potmeterPregain;
     ControlObject *m_pTotalGain;
     ControlObject* m_pControlReplayGain;
-    ControlObject* m_pPassthrough;
     static ControlPotmeter *s_pReplayGainBoost;
     static ControlObject *s_pEnableReplayGain;
     float m_fReplayGainCorrection;

@@ -57,17 +57,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     
     // It is possible to take them out?
-    m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
-    m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
-    m_bPassthroughActive[0] = false;
-    m_bPassthroughActive[1] = false;
-    connect(m_pControlObjectInputPassthrough1, SIGNAL(valueChanged(double)),
-            this, SLOT(slotInputPassthrough1(double)),
-            Qt::DirectConnection);
-            
-	connect(m_pControlObjectInputPassthrough2, SIGNAL(valueChanged(double)),
-            this, SLOT(slotInputPassthrough2(double)),
-            Qt::DirectConnection);            	
     m_pControlObjectLatency = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Master]", "latency")));
     m_pControlObjectSampleRate = new ControlObjectThreadMain(
@@ -690,10 +679,6 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 
             short* pInputBuffer = m_inputBuffers[in];
             
-            if (in.getIndex() >=0 && in.getIndex() < 2)
-            	if (m_bPassthroughActive[in.getIndex()])
-					m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], iFrameSize * iFramesPerBuffer);
-
             if (m_registeredDestinations.contains(in)) {
                 AudioDestination* destination = m_registeredDestinations[in];
                 if (destination) {

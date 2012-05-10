@@ -212,10 +212,6 @@ void VinylControlXwax::run()
         //Check if vinyl control is enabled...
         bIsEnabled = checkEnabled(bIsEnabled, enabled->get());
         
-        if (inputPassthrough->get())
-        	//don't process
-        	continue;
-
         //Get the pitch range from the prefs.
         fRateRange = rateRange->get();
 
@@ -832,11 +828,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		iVCMode = mode->get();
 		atRecordEnd = false;
 	}
-	if (inputPassthrough->get())
-	{
-		vinylStatus->slotSet(VINYL_STATUS_PASSTHROUGH);
-	}
-	else if (is && (vinylStatus->get() == VINYL_STATUS_PASSTHROUGH || !was))
+    if (is && !was)
 	{
 		vinylStatus->slotSet(VINYL_STATUS_OK);
 	}

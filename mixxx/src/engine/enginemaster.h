@@ -53,7 +53,6 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    void pushPassthroughBuffer(int c, short *input, int len);
     int numChannels() const;
     const CSAMPLE* buffer(AudioOutput output) const;
 
@@ -136,9 +135,6 @@ class EngineMaster : public EngineObject, public AudioSource {
     QList<ChannelInfo*> m_channels;
 
     CSAMPLE *m_pMaster, *m_pHead;
-    QList<CSAMPLE*> m_passthroughBuffers;
-    bool m_bPassthroughWasActive[2];
-    QMutex passthroughBufferMutex[2];
 
     EngineWorkerScheduler *m_pWorkerScheduler;
     SyncWorker* m_pSyncWorker;
@@ -161,7 +157,6 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     ControlPotmeter *crossfader, *head_mix,
         *m_pBalance, *xFaderCurve, *xFaderCalibration;
-    QList<ControlPushButton*>m_passthrough;
     int m_iLastThruRead[2];
     int m_iLastThruWrote[2];
     int m_iThruBufferCount;

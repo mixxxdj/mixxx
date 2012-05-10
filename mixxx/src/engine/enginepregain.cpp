@@ -36,7 +36,6 @@ EnginePregain::EnginePregain(const char * group)
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
-    m_pPassthrough = ControlObject::getControl(ConfigKey(group, "inputpassthrough"));
 
     if (s_pReplayGainBoost == NULL) {
         s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
@@ -63,9 +62,6 @@ EnginePregain::~EnginePregain()
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     float fEnableReplayGain = s_pEnableReplayGain->get();
-    //if passthrough is on, ignore replaygain
-	if(m_pPassthrough->get())
-		fEnableReplayGain=0.0f;
     float fReplayGainBoost = s_pReplayGainBoost->get();
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fGain = potmeterPregain->get();

@@ -122,9 +122,6 @@ void WSpinny::setup(QDomNode node, QString group)
     connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
             this, SLOT(updateAngle(double)));
             
-    m_pPassthroughEnabled = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "inputpassthrough")));
-            
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_speed_type")));
@@ -170,8 +167,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
 
 #ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
-    // but not input passthrough
-    if (m_bVinylActive && m_bSignalActive && !m_pPassthroughEnabled->get())
+    if (m_bVinylActive && m_bSignalActive)
     {
         //reduce cpu load by only updating every 3 times
         m_iSignalUpdateTick = (m_iSignalUpdateTick + 1) % 3;
