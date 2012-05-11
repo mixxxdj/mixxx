@@ -102,7 +102,7 @@ private:
 
     ControlObjectThreadMain* m_pControlObjectLatency;
     ControlObjectThreadMain* m_pControlObjectSampleRate;
-    ControlObjectThreadMain* m_pControlObjectSoundStatus;
+    ControlObject* m_pControlObjectSoundStatus;
     ControlObjectThreadMain* m_pControlObjectVinylControlMode;
     ControlObjectThreadMain* m_pControlObjectVinylControlMode1;
     ControlObjectThreadMain* m_pControlObjectVinylControlMode2;
