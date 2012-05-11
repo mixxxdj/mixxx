@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QMutexLocker>
 
 #include "trackinfoobject.h"
 #include "playerinfo.h"
@@ -45,7 +46,7 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 
 bool AnalyserQueue::isLoadedTrackWaiting()
 {
-    m_qm.lock();
+    QMutexLocker queueLocker(&m_qm);
     
     const PlayerInfo& info = PlayerInfo::Instance();
     TrackPointer pTrack;
@@ -53,12 +54,9 @@ bool AnalyserQueue::isLoadedTrackWaiting()
     while (it.hasNext()) {
         TrackPointer& pTrack = it.next();
         if (info.isTrackLoaded(pTrack)) {
-            m_qm.unlock();
             return true;
         }
     }
-    
-    m_qm.unlock();
     return false;
 }
 
@@ -231,6 +229,10 @@ void AnalyserQueue::run() {
         if (processTrack) {
             if (! PlayerInfo::Instance().isTrackLoaded(next) && isLoadedTrackWaiting()) {
                 qDebug() << "Delaying track analysis because track is not loaded -- requeuing";
+                QListIterator<Analyser*> itf(m_aq);
+                while (itf.hasNext()) {
+                    itf.next()->cleanup(next);
+                }
                 queueAnalyseTrack(next);
             } 
             else 

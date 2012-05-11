@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>512</width>
-    <height>442</height>
+    <height>469</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -179,6 +179,36 @@ playback and outbound link statistics</string>
        <widget class="QCheckBox" name="checkBox_use_relative_path">
         <property name="text">
          <string>Use relative paths for playlist export if possible</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="checkBox_show_rhythmbox">
+        <property name="text">
+         <string>Show Rhythmbox Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="checkBox_show_itunes">
+        <property name="text">
+         <string>Show iTunes Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QCheckBox" name="checkBox_show_traktor">
+        <property name="text">
+         <string>Show Traktor Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

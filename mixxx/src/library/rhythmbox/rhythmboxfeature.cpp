@@ -9,9 +9,9 @@
 #include "library/queryutil.h"
 
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
-    : LibraryFeature(parent),
-      m_pTrackCollection(pTrackCollection),
-      m_cancelImport(false) {
+        : BaseExternalLibraryFeature(parent, pTrackCollection),
+          m_pTrackCollection(pTrackCollection),
+          m_cancelImport(false) {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -50,7 +50,6 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     connect(&m_track_watcher, SIGNAL(finished()),
             this, SLOT(onTrackCollectionLoaded()),
             Qt::QueuedConnection);
-
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
@@ -60,6 +59,12 @@ RhythmboxFeature::~RhythmboxFeature() {
     m_track_future.waitForFinished();
     delete m_pRhythmboxTrackModel;
     delete m_pRhythmboxPlaylistModel;
+}
+
+BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+    RhythmboxPlaylistModel* pModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 bool RhythmboxFeature::isSupported() {
@@ -113,25 +118,25 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
-void RhythmboxFeature::onRightClick(const QPoint& globalPos) {
-}
-
-void RhythmboxFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-}
-
 bool RhythmboxFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
@@ -446,7 +451,8 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
     emit(featureLoadingFinished(this));
     activate();
 }
+
 void RhythmboxFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
+    Q_UNUSED(index);
 }
-

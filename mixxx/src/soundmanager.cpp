@@ -61,9 +61,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
         ControlObject::getControl(ConfigKey("[Master]", "latency")));
     m_pControlObjectSampleRate = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
-    m_pControlObjectSoundStatus = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[SoundManager]", "status")));
-    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_DISCONNECTED);
+    m_pControlObjectSoundStatus = new ControlObject(ConfigKey("[SoundManager]", "status"));
+    m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
     m_pControlObjectVinylControlMode = new ControlObjectThreadMain(
         new ControlObject(ConfigKey("[VinylControl]", "mode")));
     m_pControlObjectVinylControlMode1 = new ControlObjectThreadMain(
@@ -112,6 +111,7 @@ SoundManager::~SoundManager()
 
     delete m_pControlObjectLatency;
     delete m_pControlObjectSampleRate;
+    delete m_pControlObjectSoundStatus;
     delete m_pControlObjectVinylControlMode;
     delete m_pControlObjectVinylControlMode1;
     delete m_pControlObjectVinylControlMode2;
@@ -260,7 +260,7 @@ void SoundManager::closeDevices()
     m_inputBuffers.clear();
 
     // Indicate to the rest of Mixxx that sound is disconnected.
-    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_DISCONNECTED);
+    m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
 }
 
 /** Closes all the devices and empties the list of devices we have. */
@@ -378,7 +378,7 @@ void SoundManager::queryDevices()
 int SoundManager::setupDevices()
 {
     qDebug() << "SoundManager::setupDevices()";
-    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_CONNECTING);
+    m_pControlObjectSoundStatus->set(SOUNDMANAGER_CONNECTING);
     int err = 0;
     clearOperativeVariables();
     int devicesAttempted = 0;
@@ -473,15 +473,15 @@ int SoundManager::setupDevices()
     qDebug() << m_outputDevicesOpened << "output sound devices opened";
     qDebug() << m_inputDevicesOpened << "input  sound devices opened";
 
+    m_pControlObjectSoundStatus->set(
+        m_outputDevicesOpened > 0 ? SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
+
     // returns OK if we were able to open all the devices the user
     // wanted
     if (devicesAttempted == devicesOpened) {
         emit(devicesSetup());
-        m_pControlObjectSoundStatus->slotSet(
-            devicesOpened > 0 ? SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
         return OK;
     }
-    m_pControlObjectSoundStatus->slotSet(SOUNDMANAGER_DISCONNECTED);
     m_pErrorDevice = NULL;
     return ERR;
 closeAndError:

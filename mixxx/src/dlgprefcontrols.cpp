@@ -20,6 +20,7 @@
 #include <QToolTip>
 #include <QDoubleSpinBox>
 #include <QWidget>
+#include <QLocale>
 
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"
@@ -151,6 +152,40 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Load tracks into a playing deck"));
     ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt());
     connect(ComboBoxAllowTrackLoadToPlayingDeck, SIGNAL(activated(int)), this, SLOT(slotSetAllowTrackLoadToPlayingDeck(int)));
+
+    //
+    // Locale setting
+    //
+
+    // Iterate through the available locales and add them to the combobox
+    // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
+    QString translationsFolder = m_pConfig->getConfigPath() + "translations/";
+    QString currentLocale = pConfig->getValueString(ConfigKey("[Config]","Locale"));
+
+    QDir translationsDir(translationsFolder);
+    QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
+
+    ComboBoxLocale->addItem("System", ""); // System default locale
+    ComboBoxLocale->setCurrentIndex(0);
+
+    for (int i = 0; i < fileNames.size(); ++i) {
+        // Extract locale from filename
+        QString locale = fileNames[i];
+        locale.truncate(locale.lastIndexOf('.'));
+        locale.remove(0, locale.indexOf('_') + 1);
+
+        QString lang = QLocale::languageToString(QLocale(locale).language());
+        if (lang == "C") { // Ugly hack to remove the non-resolving locales
+            continue;
+        }
+
+        ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
+        if (locale == currentLocale) { // Set the currently selected locale
+            ComboBoxLocale->setCurrentIndex(ComboBoxLocale->count() - 1);
+        }
+    }
+    connect(ComboBoxLocale, SIGNAL(activated(int)),
+            this, SLOT(slotSetLocale(int)));
 
     //
     // Default Cue Behavior
@@ -324,6 +359,12 @@ void DlgPrefControls::slotUpdate()
         ComboBoxRateDir->setCurrentIndex(1);
 }
 
+void DlgPrefControls::slotSetLocale(int pos) {
+    QString newLocale = ComboBoxLocale->itemData(pos).toString();
+    m_pConfig->set(ConfigKey("[Config]","Locale"), ConfigValue(newLocale));
+    notifyRebootNecessary();
+}
+
 void DlgPrefControls::slotSetRateRange(int pos)
 {
     float range = (float)(pos-1)/10.;
@@ -384,10 +425,14 @@ void DlgPrefControls::slotSetTooltips(int)
     //on the QApplication object. That object is located in MixxxApp (mixxx.cpp/h), so that's where
     //the eventFilter is. The value of the ConfigObject is cached at startup because it's too slow
     //to refresh it during each Tooltip event (I think), which is why we require a restart.
+    notifyRebootNecessary();
+}
 
-
-    QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
-                             tr("Mixxx must be restarted before the changes will take effect."));
+void DlgPrefControls::notifyRebootNecessary() {
+    // make the fact that you have to restart mixxx more obvious
+    QMessageBox::information(
+        this, tr("Information"),
+        tr("Mixxx must be restarted before the changes will take effect."));
 }
 
 void DlgPrefControls::slotSetScheme(int)

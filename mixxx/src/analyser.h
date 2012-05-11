@@ -21,7 +21,7 @@ public:
         return false;
     }
     virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
-    virtual void cleanup(TrackPointer tio) { Q_UNUSED(tio); }
+    virtual void cleanup(TrackPointer tio) = 0;
     virtual void finalise(TrackPointer tio) { Q_UNUSED(tio); }
     virtual ~Analyser() {}
 };

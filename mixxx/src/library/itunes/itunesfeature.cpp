@@ -18,7 +18,7 @@ const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
 
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : LibraryFeature(parent),
+        : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     QString tableName = "itunes_library";
@@ -65,6 +65,12 @@ ITunesFeature::~ITunesFeature() {
     m_future.waitForFinished();
     delete m_pITunesTrackModel;
     delete m_pITunesPlaylistModel;
+}
+
+BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
+    ITunesPlaylistModel* pModel = new ITunesPlaylistModel(this, m_pTrackCollection);
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 bool ITunesFeature::isSupported() {
@@ -155,6 +161,7 @@ TreeItemModel* ITunesFeature::getChildModel() {
 }
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
+    BaseExternalLibraryFeature::onRightClick(globalPos);
     QMenu menu;
     QAction useDefault(tr("Use Default Library"), &menu);
     QAction chooseNew(tr("Choose Library..."), &menu);
@@ -178,22 +185,25 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
     }
 }
 
-void ITunesFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-}
-
 bool ITunesFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool ITunesFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 bool ITunesFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool ITunesFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
@@ -622,4 +632,6 @@ void ITunesFeature::onTrackCollectionLoaded(){
 
 void ITunesFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
+    Q_UNUSED(index);
 }
+
