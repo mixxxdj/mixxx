@@ -71,7 +71,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     const QColor& color = m_colors.getSignalColor();
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
+    const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
 
     float maxAll[2];
 

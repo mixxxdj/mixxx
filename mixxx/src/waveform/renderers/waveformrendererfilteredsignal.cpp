@@ -2,12 +2,15 @@
 
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 
 #include "defs.h"
+
+#include "controlobjectthreadmain.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -70,8 +73,25 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
     painter->setWorldMatrixEnabled(false);
 
+    // Per-band gain from the EQ knobs.
+    float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
+    if (m_lowFilterControlObject &&
+            m_midFilterControlObject &&
+            m_highFilterControlObject) {
+        lowGain = m_lowFilterControlObject->get();
+        midGain = m_midFilterControlObject->get();
+        highGain = m_highFilterControlObject->get();
+    }
+    allGain = m_waveformRenderer->getGain();
+
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
+    lowGain *= factory->getVisualGain(WaveformWidgetFactory::Low);
+    midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
+    highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
+
     const float halfHeight = m_waveformRenderer->getHeight()/2.0;
-    const float heightFactor = halfHeight/255.0;
+    const float heightFactor = allGain*halfHeight/255.0;
 
     for (int i = 0; i < numberOfSamples; i += samplesPerPixel) {
         const int xPos = i/samplesPerPixel;
@@ -95,12 +115,12 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
                 maxHigh[1] = math_max(maxHigh[1], waveformDataNext.filtered.high);
             }
 
-            m_lowLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxLow[0]),
-                                     xPos, (int)(halfHeight+heightFactor*(float)maxLow[1])+1);
-            m_midLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxMid[0]),
-                                     xPos, (int)(halfHeight+heightFactor*(float)maxMid[1]));
-            m_highLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxHigh[0]),
-                                      xPos, (int)(halfHeight+heightFactor*(float)maxHigh[1]));
+            m_lowLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxLow[0]*lowGain),
+                                     xPos, (int)(halfHeight+heightFactor*(float)maxLow[1]*lowGain));
+            m_midLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxMid[0]*midGain),
+                                     xPos, (int)(halfHeight+heightFactor*(float)maxMid[1]*midGain));
+            m_highLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxHigh[0]*highGain),
+                                      xPos, (int)(halfHeight+heightFactor*(float)maxHigh[1]*highGain));
         } else {
             m_lowLines[xPos].setLine(xPos, halfHeight, xPos, halfHeight+1);
             m_midLines[xPos].setLine(xPos, halfHeight, xPos, halfHeight);

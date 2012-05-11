@@ -2,6 +2,7 @@
 #include "waveformwidgetrenderer.h"
 
 #include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #include "mathstuff.h"
 
@@ -342,6 +343,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->release();
     }
 
+
+
     glLoadIdentity();
     float scale = (float)m_framebuffer->width()/(2.0*(float)m_waveformRenderer->getWidth());
     scale /= (1.0+m_waveformRenderer->getRateAdjust());
@@ -355,9 +358,12 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     const float range = float(visualSamplePerPixel * m_waveformRenderer->getWidth());
     const float deltaInGeometry = deltaPosition / range;*/
 
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    double visualGain = factory->getVisualGain(WaveformWidgetFactory::All);
+    visualGain *= m_waveformRenderer->getGain();
 
     glTranslatef( 0.0, 0.0, 0.0);
-    glScalef(scale, 1.0, 1.0);
+    glScalef(scale, visualGain, 1.0);
 
     //paint buffer into viewport
     {
