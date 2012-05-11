@@ -124,7 +124,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
 
     destroyFilters();
-    resetFilters(tio);
+    resetFilters(tio, sampleRate);
 
     //TODO (vrince) Do we want to expose this as settings or whatever ?
     const double mainWaveformSampleRate = 441;
@@ -166,11 +166,11 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     return true;
 }
 
-void AnalyserWaveform::resetFilters(TrackPointer tio) {
+void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
     //TODO: (vRince) bind this with *actual* filter values ...
-    m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, tio->getSampleRate(), 200);
-    m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, tio->getSampleRate(), 200, 2000);
-    m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, tio->getSampleRate(), 2000);
+    m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
+    m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
+    m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
 }
 
 void AnalyserWaveform::destroyFilters() {
