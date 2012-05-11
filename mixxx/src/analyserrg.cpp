@@ -39,6 +39,11 @@ bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
     return true;
 }
 
+void AnalyserGain::cleanup(TrackPointer tio)
+{
+    Q_UNUSED(tio);
+}
+
 void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
     if(m_iStepControl != 1)
         return;
