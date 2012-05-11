@@ -10,7 +10,7 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
-#include "library/libraryfeature.h"
+#include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
@@ -20,8 +20,8 @@ class ITunesTrackModel;
 class ITunesPlaylistModel;
 
 
-class ITunesFeature : public LibraryFeature {
- Q_OBJECT
+class ITunesFeature : public BaseExternalLibraryFeature {
+    Q_OBJECT
  public:
     ITunesFeature(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~ITunesFeature();
@@ -41,12 +41,12 @@ class ITunesFeature : public LibraryFeature {
     void activate();
     void activate(bool forceReload);
     void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    virtual void onRightClick(const QPoint& globalPos);
     void onLazyChildExpandation(const QModelIndex& index);
     void onTrackCollectionLoaded();
 
   private:
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     static QString getiTunesMusicPath();
     //returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
