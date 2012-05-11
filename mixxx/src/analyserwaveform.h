@@ -68,6 +68,7 @@ class AnalyserWaveform : public Analyser {
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
 
     void process(const CSAMPLE *buffer, const int bufferLength);
+    void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 
   private:

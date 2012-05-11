@@ -297,6 +297,23 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     //qDebug() << "AnalyserWaveform::process - m_waveform->getCompletion()" << m_waveform->getCompletion();
     //qDebug() << "AnalyserWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion();
 }
+
+void AnalyserWaveform::cleanup(TrackPointer tio) {
+    if (m_skipProcessing) {
+        return;
+    }
+    
+    Waveform* pWaveform = tio->getWaveform();
+    if (pWaveform) {
+        pWaveform->reset();
+    }
+    
+    Waveform* pWaveformSummary = tio->getWaveformSummary();
+    if (pWaveformSummary) {
+        pWaveformSummary->reset();
+    }
+}
+
 void AnalyserWaveform::finalise(TrackPointer tio) {
     if (m_waveform == NULL || m_waveformSummary == NULL) {
         return;

@@ -169,6 +169,16 @@ void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 
+void AnalyserBeats::cleanup(TrackPointer tio)
+{
+    Q_UNUSED(tio);
+    if (!m_bShouldAnalyze) {
+        return;
+    }
+    delete m_pVamp;
+    m_pVamp = NULL;
+}
+
 void AnalyserBeats::finalise(TrackPointer tio) {
     if (!m_bShouldAnalyze || m_pVamp == NULL) {
         return;
