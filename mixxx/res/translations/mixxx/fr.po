@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-09 14:46+0200\n"
-"PO-Revision-Date: 2012-05-09 17:42+0000\n"
-"Last-Translator: Maxime MARAIS <Unknown>\n"
+"PO-Revision-Date: 2012-05-10 11:33+0000\n"
+"Last-Translator: lalimacefolle <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-10 05:14+0000\n"
-"X-Generator: Launchpad (build 15213)\n"
+"X-Launchpad-Export-Date: 2012-05-11 04:34+0000\n"
+"X-Generator: Launchpad (build 15225)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -1140,7 +1140,7 @@ msgstr "Montrer/cacher la section contrôle vinyle"
 
 #: DlgControllerLearning#94
 msgid "Show/hide spinning vinyl widget"
-msgstr ""
+msgstr "Montrer/cacher le widget vinyle en rotation"
 
 #: DlgControllerLearning#95
 msgid "Ready to map: %1. Now move a control on your controller."
@@ -1230,7 +1230,7 @@ msgstr "Pré-réglages personnalisés"
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Boîte de dialogue"
 
 #: DlgPrefControllerDlg#2
 msgid "Controller Name"
@@ -3908,7 +3908,7 @@ msgstr "Contrôle ce que vous entendez sur la sortie du casque."
 
 #: Tooltips#39
 msgid "Mix Orientation"
-msgstr ""
+msgstr "Orientation du Mix"
 
 #: Tooltips#40
 msgid "Set the channel's mix orientation."
@@ -3982,11 +3982,11 @@ msgstr ""
 
 #: Tooltips#56
 msgid "Lower Pitch"
-msgstr ""
+msgstr "Son plus grave"
 
 #: Tooltips#57
 msgid "Sets the pitch lower."
-msgstr ""
+msgstr "Rend le son plus grave."
 
 #: Tooltips#58
 msgid "Sets the pitch lower in small steps."
@@ -4010,7 +4010,7 @@ msgstr ""
 
 #: Tooltips#63
 msgid "Holds the pitch lower while active."
-msgstr ""
+msgstr "Maintiens le son plus grave lors de l'activation"
 
 #: Tooltips#64
 msgid "Holds the pitch lower (small amount) while active."
@@ -4018,7 +4018,7 @@ msgstr ""
 
 #: Tooltips#65
 msgid "Low EQ"
-msgstr ""
+msgstr "Egalisation Grave"
 
 #: Tooltips#66
 msgid "Adjusts the gain of the low EQ filter."
@@ -4054,7 +4054,7 @@ msgstr ""
 
 #: Tooltips#74
 msgid "Mid EQ Kill"
-msgstr ""
+msgstr "Arrêt de l'égalisation medium"
 
 #: Tooltips#75
 msgid "Holds the gain of the mid EQ to zero while active."
@@ -4070,11 +4070,11 @@ msgstr ""
 
 #: Tooltips#78
 msgid "Displays the tempo of the loaded track in BPM (beats per minute)."
-msgstr ""
+msgstr "Affiche le tempo du morceau chargé en BPM (battements par minute)"
 
 #: Tooltips#79
 msgid "Tempo"
-msgstr ""
+msgstr "tempo"
 
 #: Tooltips#80
 msgid "BPM Tap"
@@ -4141,7 +4141,7 @@ msgstr ""
 
 #: Tooltips#95
 msgid "Play/Pause"
-msgstr ""
+msgstr "Lecture/Pause"
 
 #: Tooltips#96
 msgid "Toggles playing or pausing the track."
@@ -4177,7 +4177,7 @@ msgstr ""
 
 #: Tooltips#104
 msgid "Headphone"
-msgstr ""
+msgstr "Écouteurs"
 
 #: Tooltips#105
 msgid "Sends the selected channel's audio to the headphone output."
@@ -4223,7 +4223,7 @@ msgstr ""
 
 #: Tooltips#115
 msgid "Fast Forward"
-msgstr ""
+msgstr "Avance rapide"
 
 #: Tooltips#116
 msgid "Fast forward through the track."
@@ -4236,7 +4236,7 @@ msgstr ""
 #: Tooltips#118
 msgctxt "Tooltips#118"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: Tooltips#119
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4268,7 +4268,7 @@ msgstr ""
 
 #: Tooltips#126
 msgid "Repeat"
-msgstr ""
+msgstr "Répéter"
 
 #: Tooltips#127
 msgid ""
@@ -4278,16 +4278,16 @@ msgstr ""
 
 #: Tooltips#128
 msgid "Eject"
-msgstr ""
+msgstr "Éjecter"
 
 #: Tooltips#129
 msgid "Ejects track from the player."
-msgstr ""
+msgstr "Ejecte le morceau du lecteur."
 
 #: Tooltips#130
 msgctxt "Tooltips#130"
 msgid "Hotcue"
-msgstr ""
+msgstr "Point de repère"
 
 #: Tooltips#131
 msgid "If hotcue is set, jumps to the hotcue."
@@ -4371,7 +4371,7 @@ msgstr ""
 
 #: Tooltips#150
 msgid "Loop Double"
-msgstr ""
+msgstr "Doublage de la boucle"
 
 #: Tooltips#151
 msgid "Doubles the current loop's length by moving the end marker."
@@ -4421,11 +4421,11 @@ msgstr ""
 
 #: Tooltips#162
 msgid "Track Time"
-msgstr ""
+msgstr "Temps du morceau"
 
 #: Tooltips#163
 msgid "Displays the elapsed or remaining time of the track loaded."
-msgstr ""
+msgstr "Affiche le temps écoulé ou restant du morceau chargé"
 
 #: Tooltips#164
 msgid "Click to toggle between time elapsed/remaining time."
@@ -4433,7 +4433,7 @@ msgstr ""
 
 #: Tooltips#165
 msgid "Track Duration"
-msgstr ""
+msgstr "Durée de la piste"
 
 #: Tooltips#166
 msgid "Displays the duration of the loaded track."
@@ -4445,7 +4445,7 @@ msgstr ""
 
 #: Tooltips#168
 msgid "Track Artist"
-msgstr ""
+msgstr "Artiste du morceau"
 
 #: Tooltips#169
 msgid "Displays the artist of the loaded track."
@@ -4453,15 +4453,15 @@ msgstr ""
 
 #: Tooltips#170
 msgid "Track Title"
-msgstr ""
+msgstr "Titre du morceau"
 
 #: Tooltips#171
 msgid "Displays the title of the loaded track."
-msgstr ""
+msgstr "Affiche le titre du morceau."
 
 #: Tooltips#172
 msgid "Track Album"
-msgstr ""
+msgstr "Album du morceau"
 
 #: Tooltips#173
 msgid "Displays the album name of the loaded track."
@@ -4469,7 +4469,7 @@ msgstr ""
 
 #: Tooltips#174
 msgid "Track Artist/Title"
-msgstr ""
+msgstr "Artiste/titre du morceau"
 
 #: Tooltips#175
 msgid "Displays the artist and title of the loaded track."
@@ -4477,7 +4477,7 @@ msgstr ""
 
 #: Tooltips#176
 msgid "Flanger"
-msgstr ""
+msgstr "Flanger"
 
 #: Tooltips#177
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
