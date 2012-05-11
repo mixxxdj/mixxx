@@ -20,7 +20,7 @@ static QMutex s_Mutex;
  * that is used to read ID3 metadata
  * from a particular folder.
  *
- * The BroseTableModel uses this class.
+ * The BrowseTableModel uses this class.
  * Note: Don't call getInstance() from places
  * other than the GUI thread. BrowseThreads emit
  * signals to BrowseModel objects. It does not
@@ -114,12 +114,14 @@ void BrowseThread::populateModel() {
     while (fileIt.hasNext()) {
         // If a user quickly jumps through the folders
         // the current task becomes "dirty"
-        QMutexLocker locker(&m_path_mutex);
-        if(thisPath != m_path){
+        m_path_mutex.lock();
+        QString newPath = m_path;
+        m_path_mutex.unlock();
+
+        if(thisPath != newPath) {
             qDebug() << "Abort populateModel()";
             return populateModel();
         }
-        locker.unlock();
 
         QString filepath = fileIt.next();
         TrackInfoObject tio(filepath);
