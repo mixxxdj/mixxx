@@ -229,6 +229,10 @@ void AnalyserQueue::run() {
         if (processTrack) {
             if (! PlayerInfo::Instance().isTrackLoaded(next) && isLoadedTrackWaiting()) {
                 qDebug() << "Delaying track analysis because track is not loaded -- requeuing";
+                QListIterator<Analyser*> itf(m_aq);
+                while (itf.hasNext()) {
+                    itf.next()->cleanup(next);
+                }
                 queueAnalyseTrack(next);
             } 
             else 
