@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-09 14:46+0200\n"
-"PO-Revision-Date: 2012-05-01 09:49+0000\n"
+"PO-Revision-Date: 2012-05-11 14:40+0000\n"
 "Last-Translator: luyikei <luyikei@live.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-10 05:15+0000\n"
-"X-Generator: Launchpad (build 15213)\n"
+"X-Launchpad-Export-Date: 2012-05-12 05:12+0000\n"
+"X-Generator: Launchpad (build 15225)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: AutoDJFeature#1
@@ -497,17 +497,17 @@ msgstr ""
 #: CrateFeature#17
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
-msgstr ""
+msgstr "CratesはDJでしたい音楽を整理しやすくするための優れた方法です。"
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
-msgstr ""
+msgstr "お気に入りelectrohouseトラックの、または最もリクエストの多い曲を、あなたの次のgigのためにcratesを作成します。"
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "Cratesはあなたがしたいあなたの音楽を整理しましょう！"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
@@ -527,7 +527,7 @@ msgstr "Mixxxについて"
 
 #: DlgAboutDlg#2
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr "<a href=\"http://mixxx.org/\">公式Webサイト</a>"
+msgstr "<a href=\"http://mixxx.org/\">公式ウェブサイト</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
