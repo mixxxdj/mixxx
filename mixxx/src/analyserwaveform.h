@@ -91,7 +91,7 @@ class AnalyserWaveform : public Analyser {
     void storeCurentStridePower();
     void resetCurrentStride();
 
-    void resetFilters(TrackPointer tio, int sampleRate);
+    void resetFilters(TrackPointer tio);
     void destroyFilters();
 
   private:

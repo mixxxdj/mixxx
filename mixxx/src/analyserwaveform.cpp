@@ -126,7 +126,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
 
     destroyFilters();
-    resetFilters(tio, sampleRate);
+    resetFilters(tio);
 
     //TODO (vrince) Do we want to expose this as settings or whatever ?
     const double mainWaveformSampleRate = 441;
