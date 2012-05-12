@@ -53,8 +53,10 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pUpdateShoutcastFromPrefs(NULL),
           m_pMasterSamplerate(new ControlObjectThread(
               ControlObject::getControl(ConfigKey("[Master]", "samplerate")))),
+          m_pShoutcastStatus(new ControlObjectThread(
+              new ControlObject(ConfigKey("[Shoutcast]", "status")))),
           m_shoutMutex(QMutex::Recursive) {
-
+    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     m_pShout = 0;
     m_iShoutStatus = 0;
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
@@ -95,6 +97,7 @@ EngineShoutcast::~EngineShoutcast()
 
     delete m_pUpdateShoutcastFromPrefs;
     delete m_pShoutcastNeedUpdateFromPrefs;
+    delete m_pShoutcastStatus;
     delete m_pMasterSamplerate;
 
     if (m_pShoutMetaData)
@@ -114,6 +117,8 @@ bool EngineShoutcast::serverDisconnect()
         delete m_encoder;
         m_encoder = NULL;
     }
+
+    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
 
     if (m_pShout) {
         shout_close(m_pShout);
@@ -305,6 +310,7 @@ bool EngineShoutcast::serverConnect()
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
+    m_pShoutcastStatus->slotSet(SHOUTCAST_CONNECTING);
     // reset the number of failures to zero
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
@@ -348,6 +354,7 @@ bool EngineShoutcast::serverConnect()
     if (m_bQuit) {
         if (m_pShout)
             shout_close(m_pShout);
+        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
         return false;
     }
 
@@ -361,6 +368,7 @@ bool EngineShoutcast::serverConnect()
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         qDebug() << "***********Connected to Shoutcast server...";
+        m_pShoutcastStatus->slotSet(SHOUTCAST_CONNECTED);
         return true;
     }
     //otherwise disable shoutcast in preferences
@@ -369,7 +377,7 @@ bool EngineShoutcast::serverConnect()
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
-
+    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     return false;
 }
 
@@ -474,18 +482,14 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
             updateFromPreferences();
             serverConnect();
         }
-     }
-    //if shoutcast is disabled
-    else{
-        if(isConnected()){
-            serverDisconnect();
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_INFO);
-            props->setTitle(tr("Live broadcasting"));
-            props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
-
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
-        }
+     } else if (isConnected()) {
+        // if shoutcast is disabled but we are connected, disconnect
+        serverDisconnect();
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_INFO);
+        props->setTitle(tr("Live broadcasting"));
+        props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
 }
 
@@ -499,7 +503,6 @@ bool EngineShoutcast::metaDataHasChanged()
 {
     QMutexLocker locker(&m_shoutMutex);
     TrackPointer pTrack;
-
 
     if ( m_iMetaDataLife < 16 ) {
         m_iMetaDataLife++;

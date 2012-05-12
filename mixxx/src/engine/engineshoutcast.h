@@ -32,6 +32,10 @@
 #include "errordialoghandler.h"
 #include "recording/encoder.h"
 
+#define SHOUTCAST_DISCONNECTED 0
+#define SHOUTCAST_CONNECTING 1
+#define SHOUTCAST_CONNECTED 2
+
 class EncoderVorbis;
 
 class EngineShoutcast : public EngineAbstractRecord {
@@ -74,6 +78,7 @@ class EngineShoutcast : public EngineAbstractRecord {
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
     ControlObjectThread* m_pMasterSamplerate;
+    ControlObjectThread* m_pShoutcastStatus;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
     /** static metadata according to prefereneces **/

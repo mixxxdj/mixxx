@@ -17,8 +17,9 @@ class AnalyserGainVamp: public Analyser {
     AnalyserGainVamp(ConfigObject<ConfigValue> *_config);
     virtual ~AnalyserGainVamp();
 
-    void initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
+    void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 
   private:
