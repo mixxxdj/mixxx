@@ -704,8 +704,21 @@ static void *read_thread(void *param)
 		int res;
 		res = libusb_handle_events(NULL);
 		if (res < 0) {
-			/* There was an error. Break out of this loop. */
-			break;
+			/* There was an error. */
+			LOG("libusb reports error # %d\n", res);
+			/* Should call libusb_error_name() to get the string version but
+			   the compiler doesn't recognize that function for some reason */
+
+			/* Break out of this loop only on fatal error conditions.
+			   See the list at:
+			   http://libusb.sourceforge.net/api-1.0/group__misc.html#gab2323aa0f04bc22038e7e1740b2f29ef
+			   */
+			if (res != LIBUSB_ERROR_BUSY &&
+				res != LIBUSB_ERROR_TIMEOUT &&
+				res != LIBUSB_ERROR_OVERFLOW &&
+				res != LIBUSB_ERROR_INTERRUPTED) {
+				break;
+			}
 		}
 	}
 	
