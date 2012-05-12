@@ -261,6 +261,10 @@ void WTrackTableView::createActions() {
     connect(m_pPropertiesAct, SIGNAL(triggered()),
             this, SLOT(slotShowTrackInfo()));
 
+    m_pFileBrowserAct = new QAction(tr("Open in file browser"), this);
+    connect(m_pFileBrowserAct, SIGNAL(triggered()),
+            this, SLOT(slotOpenInFileBrowser()));
+
     m_pAutoDJAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
 
@@ -333,6 +337,33 @@ void WTrackTableView::slotRemove()
             trackModel->removeTracks(indices);
         }
     }
+}
+
+void WTrackTableView::slotOpenInFileBrowser() {
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel)
+        return;
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    QSet<QString> dirs;
+    foreach (QModelIndex index, indices) {
+        if (!index.isValid())
+            continue;
+
+        QFileInfo file(trackModel->getTrackLocation(index));
+
+        if (!file.exists()) {
+            continue;
+        }
+
+        const QString directory = file.dir().absolutePath();
+        if (dirs.contains(directory))
+          continue;
+        dirs.insert(directory);
+        QDesktopServices::openUrl(QUrl::fromLocalFile(directory));
+    }
+
 }
 
 void WTrackTableView::slotShowTrackInfo() {
@@ -491,6 +522,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
         m_pMenu->addAction(m_pResetPlayedAct);
     }
+    m_pMenu->addAction(m_pFileBrowserAct);
     m_pMenu->addSeparator();
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);

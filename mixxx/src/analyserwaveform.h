@@ -65,16 +65,17 @@ class AnalyserWaveform : public Analyser {
     AnalyserWaveform();
     virtual ~AnalyserWaveform();
 
-    void initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
 
     void process(const CSAMPLE *buffer, const int bufferLength);
+    void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 
   private:
     void storeCurentStridePower();
     void resetCurrentStride();
 
-    void resetFilters(TrackPointer tio);
+    void resetFilters(TrackPointer tio, int sampleRate);
     void destroyFilters();
 
   private:

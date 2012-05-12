@@ -41,10 +41,12 @@ class AnalyserQueue : public QThread {
 
     QList<Analyser*> m_aq;
 
+    bool isLoadedTrackWaiting();
     TrackPointer dequeueNextBlocking();
-    void doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
+    bool doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
 
     bool m_exit;
+    QAtomicInt m_aiCheckPriorities;
 
     // The processing queue and associated mutex
     QQueue<TrackPointer> m_tioq;

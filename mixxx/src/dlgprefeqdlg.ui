@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>DlgPrefEQDlg</class>
- <widget class="QWidget" name="DlgPrefEQDlg" >
-  <property name="geometry" >
+ <widget class="QWidget" name="DlgPrefEQDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,15 +10,15 @@
     <height>520</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form1</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
-      <widget class="QCheckBox" name="CheckBoxLoFi" >
-       <property name="text" >
+      <widget class="QCheckBox" name="CheckBoxLoFi">
+       <property name="text">
         <string>Static EQs (for slower CPUs)</string>
        </property>
       </widget>
@@ -25,17 +26,17 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBoxHiEQ" >
-     <property name="title" >
+    <widget class="QGroupBox" name="GroupBoxHiEQ">
+     <property name="title">
       <string>High Shelf EQ</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2" >
-      <item row="0" column="0" colspan="4" >
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0" colspan="4">
        <spacer>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" stdset="0" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
           <height>20</height>
@@ -43,63 +44,63 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="4" >
-       <widget class="QLabel" name="TextHiEQ" >
-        <property name="text" >
+      <item row="0" column="4">
+       <widget class="QLabel" name="TextHiEQ">
+        <property name="text">
          <string>textLabel1</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>SliderHiEQ</cstring>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="5" >
-       <widget class="QSlider" name="SliderHiEQ" >
-        <property name="minimum" >
+      <item row="1" column="0" colspan="5">
+       <widget class="QSlider" name="SliderHiEQ">
+        <property name="minimum">
          <number>80</number>
         </property>
-        <property name="maximum" >
+        <property name="maximum">
          <number>480</number>
         </property>
-        <property name="singleStep" >
+        <property name="singleStep">
          <number>1</number>
         </property>
-        <property name="pageStep" >
+        <property name="pageStep">
          <number>1</number>
         </property>
-        <property name="value" >
+        <property name="value">
          <number>80</number>
         </property>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="tickInterval" >
+        <property name="tickInterval">
          <number>5</number>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" >
-       <widget class="QLabel" name="TextLabel8_3" >
-        <property name="font" >
+      <item row="2" column="0">
+       <widget class="QLabel" name="TextLabel8_3">
+        <property name="font">
          <font/>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>16 Hz</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="2" column="1" >
+      <item row="2" column="1">
        <spacer>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" stdset="0" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
           <height>20</height>
@@ -107,25 +108,25 @@
         </property>
        </spacer>
       </item>
-      <item row="2" column="2" >
-       <widget class="QLabel" name="TextLabel8_2_3" >
-        <property name="font" >
+      <item row="2" column="2">
+       <widget class="QLabel" name="TextLabel8_2_3">
+        <property name="font">
          <font/>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>1.014 kHz</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="2" column="3" >
+      <item row="2" column="3">
        <spacer>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" stdset="0" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
           <height>20</height>
@@ -133,15 +134,15 @@
         </property>
        </spacer>
       </item>
-      <item row="2" column="4" >
-       <widget class="QLabel" name="TextLabel8_2_2" >
-        <property name="font" >
+      <item row="2" column="4">
+       <widget class="QLabel" name="TextLabel8_2_2">
+        <property name="font">
          <font/>
         </property>
-        <property name="text" >
+        <property name="text">
          <string>20.05 kHz</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
        </widget>
@@ -150,17 +151,17 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBoxLoEQ" >
-     <property name="title" >
+    <widget class="QGroupBox" name="GroupBoxLoEQ">
+     <property name="title">
       <string>Low Shelf EQ</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout" >
-      <item row="0" column="0" >
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
        <spacer>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeHint" stdset="0" >
+        <property name="sizeHint" stdset="0">
          <size>
           <width>40</width>
           <height>20</height>
@@ -168,65 +169,65 @@
         </property>
        </spacer>
       </item>
-      <item row="0" column="1" >
-       <widget class="QLabel" name="TextLoEQ" >
-        <property name="text" >
+      <item row="0" column="1">
+       <widget class="QLabel" name="TextLoEQ">
+        <property name="text">
          <string>textLabel2</string>
         </property>
-        <property name="wordWrap" >
+        <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>SliderLoEQ</cstring>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2" >
-       <widget class="QSlider" name="SliderLoEQ" >
-        <property name="minimum" >
+      <item row="1" column="0" colspan="2">
+       <widget class="QSlider" name="SliderLoEQ">
+        <property name="minimum">
          <number>80</number>
         </property>
-        <property name="maximum" >
+        <property name="maximum">
          <number>480</number>
         </property>
-        <property name="singleStep" >
+        <property name="singleStep">
          <number>1</number>
         </property>
-        <property name="pageStep" >
+        <property name="pageStep">
          <number>1</number>
         </property>
-        <property name="value" >
+        <property name="value">
          <number>80</number>
         </property>
-        <property name="orientation" >
+        <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="tickInterval" >
+        <property name="tickInterval">
          <number>5</number>
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2" >
-       <layout class="QHBoxLayout" >
+      <item row="2" column="0" colspan="2">
+       <layout class="QHBoxLayout">
         <item>
-         <widget class="QLabel" name="TextLabel8_3_2" >
-          <property name="font" >
+         <widget class="QLabel" name="TextLabel8_3_2">
+          <property name="font">
            <font/>
           </property>
-          <property name="text" >
+          <property name="text">
            <string>16 Hz</string>
           </property>
-          <property name="wordWrap" >
+          <property name="wordWrap">
            <bool>false</bool>
           </property>
          </widget>
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" stdset="0" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
             <height>20</height>
@@ -235,24 +236,24 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="TextLabel8_2_4" >
-          <property name="font" >
+         <widget class="QLabel" name="TextLabel8_2_4">
+          <property name="font">
            <font/>
           </property>
-          <property name="text" >
+          <property name="text">
            <string>1.014 kHz</string>
           </property>
-          <property name="wordWrap" >
+          <property name="wordWrap">
            <bool>false</bool>
           </property>
          </widget>
         </item>
         <item>
          <spacer>
-          <property name="orientation" >
+          <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" stdset="0" >
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
             <height>20</height>
@@ -261,14 +262,14 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="TextLabel8_2_2_2" >
-          <property name="font" >
+         <widget class="QLabel" name="TextLabel8_2_2_2">
+          <property name="font">
            <font/>
           </property>
-          <property name="text" >
+          <property name="text">
            <string>20.05 kHz</string>
           </property>
-          <property name="wordWrap" >
+          <property name="wordWrap">
            <bool>false</bool>
           </property>
          </widget>
@@ -279,13 +280,13 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" >
+    <layout class="QHBoxLayout">
      <item>
       <spacer>
-       <property name="orientation" >
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0" >
+       <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
          <height>20</height>
@@ -294,9 +295,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="PushButtonReset" >
-       <property name="text" >
-        <string>Reset</string>
+      <widget class="QPushButton" name="PushButtonReset">
+       <property name="text">
+        <string>Reset to Defaults</string>
        </property>
       </widget>
      </item>
@@ -304,10 +305,10 @@
    </item>
    <item>
     <spacer>
-     <property name="orientation" >
+     <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
-     <property name="sizeHint" stdset="0" >
+     <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
        <height>40</height>
@@ -317,7 +318,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11" />
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

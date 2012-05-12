@@ -11,7 +11,7 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
-#include "library/libraryfeature.h"
+#include "library/baseexternallibraryfeature.h"
 #include "library/traktor/traktortablemodel.h"
 #include "library/traktor/traktorplaylistmodel.h"
 #include "library/treeitemmodel.h"
@@ -20,9 +20,9 @@ class LibraryTableModel;
 class MissingTableModel;
 class TrackCollection;
 
-class TraktorFeature : public LibraryFeature {
+class TraktorFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
-    public:
+  public:
     TraktorFeature(QObject* parent, TrackCollection*);
     virtual ~TraktorFeature();
 
@@ -37,15 +37,15 @@ class TraktorFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-public slots:
+  public slots:
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void onLazyChildExpandation(const QModelIndex& index);
     void refreshLibraryModels();
     void onTrackCollectionLoaded();
-private:
+
+  private:
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     TreeItem* importLibrary(QString file);
     /** parses a track in the music collection **/
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);

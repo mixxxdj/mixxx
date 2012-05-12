@@ -45,7 +45,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
     m_sndfile = NULL;
 
     m_recReady = new ControlObjectThread(
-                               ControlObject::getControl(ConfigKey("[Master]", "Record")));
+                               ControlObject::getControl(ConfigKey(RECORDING_PREF_KEY, "status")));
     m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 
     m_iMetaDataLife = 0;

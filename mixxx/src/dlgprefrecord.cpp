@@ -33,13 +33,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     radioOgg = 0;
     radioAiff= 0;
     radioWav = 0;
-
-
     setupUi(this);
 
-    recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in defs_recording.h
-
-
+    //See RECORD_* #defines in defs_recording.h
+    recordControl = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(RECORDING_PREF_KEY, "status")));
 
 #ifdef __SHOUTCAST__
     radioOgg = new QRadioButton("Ogg Vorbis");
@@ -277,7 +275,7 @@ void DlgPrefRecord::slotUpdate()
 
 void DlgPrefRecord::slotBrowseRecordingsDir()
 {
-    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings direcory"),
+    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings directory"),
                                                    config->getValueString(ConfigKey("[Recording]","Directory")));
     if (fd != "")
     {
@@ -313,6 +311,7 @@ void DlgPrefRecord::slotEnableCueFile(int enabled)
 }
 void DlgPrefRecord::slotChangeSplitSize()
 {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"), ConfigValue(comboBoxSplitting->currentText()));
+        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
+                    ConfigValue(comboBoxSplitting->currentText()));
 
 }

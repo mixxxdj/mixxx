@@ -16,8 +16,9 @@ class AnalyserGain : public Analyser {
     AnalyserGain(ConfigObject<ConfigValue> *_config);
     virtual ~AnalyserGain();
 
-    void initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
+    void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 
   private:
