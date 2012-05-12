@@ -187,9 +187,9 @@
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
 								<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<ProgressColor>#EECE33</ProgressColor>
 								<ProgressAlpha>80</ProgressAlpha>
@@ -696,9 +696,9 @@
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
 								<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<ProgressColor>#EECE33</ProgressColor>
 								<ProgressAlpha>80</ProgressAlpha>
@@ -1205,9 +1205,9 @@
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
 								<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<ProgressColor>#EECE33</ProgressColor>
 								<ProgressAlpha>80</ProgressAlpha>
@@ -1714,9 +1714,9 @@
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
 								<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<ProgressColor>#EECE33</ProgressColor>
 								<ProgressAlpha>80</ProgressAlpha>
@@ -2516,9 +2516,9 @@
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
 						<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
@@ -2832,9 +2832,9 @@
 						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
 						<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
@@ -4415,9 +4415,9 @@
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<ProgressColor>#EECE33</ProgressColor>
 				<ProgressAlpha>80</ProgressAlpha>
@@ -5339,9 +5339,9 @@
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#f27222</SignalLowColor>
-								<SignalMidColor>#EECE33</SignalMidColor>
-								<SignalHighColor>#ffefa4</SignalHighColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<ProgressColor>#EECE33</ProgressColor>
 				<ProgressAlpha>80</ProgressAlpha>
