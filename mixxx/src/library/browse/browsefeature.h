@@ -42,6 +42,8 @@ class BrowseFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
 
   public slots:
+    void slotAddQuickLink();
+    void slotRemoveQuickLink();
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
@@ -54,12 +56,22 @@ class BrowseFeature : public LibraryFeature {
 
   private:
     QString getRootViewHtml() const;
+    QString extractNameFromPath(QString spath);
+    QStringList getDefaultQuickLinks() const;
+    void saveQuickLinks();
+    void loadQuickLinks();
+
     ConfigObject<ConfigValue>* m_pConfig;
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     QString m_currentSearch;
+    QAction* m_pAddQuickLinkAction;
+    QAction* m_pRemoveQuickLinkAction;
+    TreeItem* m_pLastRightClickedItem;
+    TreeItem* m_pQuickLinkItem;
+    QStringList m_quickLinkList;
 };
 
 #endif /* BROWSEFEATURE_H */
