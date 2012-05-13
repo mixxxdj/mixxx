@@ -81,6 +81,7 @@ protected:
     QVector<WaveformRendererAbstract*> m_rendererStack;
     int m_height;
     int m_width;
+    QColor m_axesColor;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
