@@ -62,7 +62,7 @@ void WaveformRendererSignalBase::init() {
 }
 
 void WaveformRendererSignalBase::setup(const QDomNode &node) {
-    QString alignString = WWidget::selectNodeQString(node, "Align");
+    QString alignString = WWidget::selectNodeQString(node, "Align").toLower();
     if (alignString == "bottom") {
         m_alignment = Qt::AlignBottom;
     } else if (alignString == "top") {
@@ -70,6 +70,12 @@ void WaveformRendererSignalBase::setup(const QDomNode &node) {
     } else {
         m_alignment = Qt::AlignCenter;
     }
+
+    m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
+    m_axesColor = WSkinColor::getCorrectColor(m_axesColor);
+
+    if( !m_axesColor.isValid())
+        m_axesColor = QColor(245,245,245,128);
 
     m_colors.setup(node);
 

@@ -95,6 +95,12 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
             ? 2.0*allGain*halfHeight/255.0
             : allGain*m_waveformRenderer->getHeight()/255.0;
 
+    //draw reference line
+    if( m_alignment == Qt::AlignCenter) {
+        painter->setPen(m_axesColor);
+        painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
+    }
+
     int actualLowLineNumber = 0;
     int actualMidLineNumber = 0;
     int actualHighLineNumber = 0;

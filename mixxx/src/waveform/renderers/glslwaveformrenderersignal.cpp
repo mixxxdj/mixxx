@@ -343,8 +343,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->release();
     }
 
-
-
     glLoadIdentity();
     float scale = (float)m_framebuffer->width()/(2.0*(float)m_waveformRenderer->getWidth());
     scale /= (1.0+m_waveformRenderer->getRateAdjust());
@@ -364,6 +362,15 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     glTranslatef( 0.0, 0.0, 0.0);
     glScalef(scale, visualGain, 1.0);
+
+    /*
+    glBegin(GL_LINES); {
+        glColor4f(m_axesColor.redF(),m_axesColor.greenF(),m_axesColor.blueF(),m_axesColor.alphaF());
+        glVertex2f(0,0);
+        glVertex2f(m_waveformRenderer->getWidth(),0);
+    }
+    glEnd();
+    */
 
     //paint buffer into viewport
     {
