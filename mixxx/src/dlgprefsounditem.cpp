@@ -69,6 +69,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
     foreach (SoundDevice *device, m_devices) {
+        if (!hasSufficientChannels(device)) continue;
         deviceComboBox->addItem(device->getDisplayName(), device->getInternalName());
     }
     int newIndex = deviceComboBox->findData(oldDev);
@@ -252,5 +253,19 @@ void DlgPrefSoundItem::setChannel(unsigned int channel) {
         channelComboBox->setCurrentIndex(index);
     } else {
         channelComboBox->setCurrentIndex(0); // 1
+    }
+}
+
+/**
+ * Checks that a given device can act as a source/input for our type.
+ */
+int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice *device) const
+{
+    unsigned char needed(AudioPath::channelsNeededForType(m_type));
+
+    if (m_isInput) {
+        return device->getNumInputChannels() >= needed;
+    } else {
+        return device->getNumOutputChannels() >= needed;
     }
 }
