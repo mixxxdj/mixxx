@@ -15,17 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "engineshoutcast.h"
-//#include "controllogpotmeter.h"
-#include "configobject.h"
-#include "dlgprefshoutcast.h"
+#include <QDebug>
+#include <QMutexLocker>
+#include <stdio.h> // currently used for writing to stdout
 
-
-#include "recording/encodervorbis.h"
-#include "recording/encodermp3.h"
-
-#include "playerinfo.h"
-#include "trackinfoobject.h"
 #ifdef __WINDOWS__
     #include <windows.h>
     //sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
@@ -34,37 +27,47 @@
 #include <unistd.h>
 #endif
 
+#include "engine/engineshoutcast.h"
+
+#include "configobject.h"
+#include "dlgprefshoutcast.h"
+#include "playerinfo.h"
+#include "recording/encodermp3.h"
+#include "recording/encodervorbis.h"
+#include "shoutcast/defs_shoutcast.h"
+#include "trackinfoobject.h"
+
 #define TIMEOUT 10
 
-#include <QDebug>
-#include <QMutexLocker>
-#include <stdio.h> // currently used for writing to stdout
-
-
-/*
- * Initialize EngineShoutcast
- */
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
         : m_pMetaData(),
           m_pShout(NULL),
           m_pShoutMetaData(NULL),
+          m_iMetaDataLife(0),
+          m_iShoutStatus(0),
           m_pConfig(_config),
           m_encoder(NULL),
+          m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
           m_pMasterSamplerate(new ControlObjectThread(
               ControlObject::getControl(ConfigKey("[Master]", "samplerate")))),
           m_pShoutcastStatus(new ControlObjectThread(
               new ControlObject(ConfigKey("[Shoutcast]", "status")))),
-          m_shoutMutex(QMutex::Recursive) {
+          m_bQuit(false),
+          m_shoutMutex(QMutex::Recursive),
+          m_custom_metadata(false),
+          m_firstCall(false),
+          m_format_is_mp3(false),
+          m_format_is_ov(false),
+          m_protocol_is_icecast1(false),
+          m_protocol_is_icecast2(false),
+          m_protocol_is_shoutcast(false) {
     m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
-    m_pShout = 0;
-    m_iShoutStatus = 0;
-    m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
+    m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
+        ConfigKey("[Shoutcast]","update_from_prefs"));
+    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(
+        m_pShoutcastNeedUpdateFromPrefs);
 
-    m_bQuit = false;
-
-    m_firstCall = false;
     // Initialize libshout
     shout_init();
 
@@ -83,14 +86,10 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     }
 }
 
-/*
- * Cleanup EngineShoutcast
- */
-EngineShoutcast::~EngineShoutcast()
-{
+EngineShoutcast::~EngineShoutcast() {
     QMutexLocker locker(&m_shoutMutex);
 
-    if (m_encoder){
+    if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
     }
@@ -100,8 +99,9 @@ EngineShoutcast::~EngineShoutcast()
     delete m_pShoutcastStatus;
     delete m_pMasterSamplerate;
 
-    if (m_pShoutMetaData)
+    if (m_pShoutMetaData) {
         shout_metadata_free(m_pShoutMetaData);
+    }
     if (m_pShout) {
         shout_close(m_pShout);
         shout_free(m_pShout);
@@ -127,8 +127,7 @@ bool EngineShoutcast::serverDisconnect()
     return false; //if no connection has been established, nothing can be disconnected
 }
 
-bool EngineShoutcast::isConnected()
-{
+bool EngineShoutcast::isConnected() {
     QMutexLocker locker(&m_shoutMutex);
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
@@ -137,15 +136,19 @@ bool EngineShoutcast::isConnected()
     }
     return false;
 }
-/*
- * Update EngineShoutcast values from the preferences.
- */
+
 void EngineShoutcast::updateFromPreferences()
 {
     QMutexLocker locker(&m_shoutMutex);
     qDebug() << "EngineShoutcast: updating from preferences";
 
     m_pUpdateShoutcastFromPrefs->slotSet(0.0f);
+
+    m_format_is_mp3 = false;
+    m_format_is_ov = false;
+    m_protocol_is_icecast1 = false;
+    m_protocol_is_icecast2 = false;
+    m_protocol_is_shoutcast = false;
 
     //Convert a bunch of QStrings to QByteArrays so we can get regular C char* strings to pass to libshout.
     QByteArray baHost       = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"host")).toLatin1();
@@ -161,18 +164,16 @@ void EngineShoutcast::updateFromPreferences()
     QByteArray baStreamPublic = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toLatin1();
     QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
 
-    m_baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
+    QByteArray baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt();
     m_baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title")).toLatin1();
     m_baCustom_artist = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist")).toLatin1();
 
     int format;
-    int len;
     int protocol;
 
-
-    if (shout_set_host(m_pShout, baHost.data()) != SHOUTERR_SUCCESS) {
+    if (shout_set_host(m_pShout, baHost.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting hostname!"), shout_get_error(m_pShout));
         return;
     }
@@ -187,45 +188,50 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-    if (shout_set_password(m_pShout, baPassword.data()) != SHOUTERR_SUCCESS) {
+    if (shout_set_password(m_pShout, baPassword.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting password!"), shout_get_error(m_pShout));
         return;
     }
-    if (shout_set_mount(m_pShout, baMountPoint.data()) != SHOUTERR_SUCCESS) {
+
+    if (shout_set_mount(m_pShout, baMountPoint.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_user(m_pShout, baLogin.data()) != SHOUTERR_SUCCESS) {
+
+    if (shout_set_user(m_pShout, baLogin.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
         return;
     }
-    if (shout_set_name(m_pShout, baStreamName.data()) != SHOUTERR_SUCCESS) {
+
+    if (shout_set_name(m_pShout, baStreamName.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream name!"), shout_get_error(m_pShout));
         return;
     }
-    if (shout_set_description(m_pShout, baStreamDesc.data()) != SHOUTERR_SUCCESS) {
+
+    if (shout_set_description(m_pShout, baStreamDesc.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream description!"), shout_get_error(m_pShout));
         return;
     }
-    if (shout_set_genre(m_pShout, baStreamGenre.data()) != SHOUTERR_SUCCESS) {
-          errorDialog(tr("Error setting stream genre!"), shout_get_error(m_pShout));
+
+    if (shout_set_genre(m_pShout, baStreamGenre.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream genre!"), shout_get_error(m_pShout));
         return;
     }
-    if (shout_set_url(m_pShout, baStreamWebsite.data()) != SHOUTERR_SUCCESS) {
-       errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
-       return;
+
+    if (shout_set_url(m_pShout, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
+        return;
     }
 
-
-    if ( !qstrcmp(m_baFormat.data(), "MP3")) {
+    m_format_is_mp3 = !qstrcmp(baFormat.constData(), SHOUTCAST_FORMAT_MP3);
+    m_format_is_ov = !qstrcmp(baFormat.constData(), SHOUTCAST_FORMAT_OV);
+    if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
-    }
-    else if ( !qstrcmp(m_baFormat.data(), "Ogg Vorbis")) {
+    } else if (m_format_is_ov) {
         format = SHOUT_FORMAT_OGG;
-    }
-    else {
-        qDebug() << "Error: unknown format:" << m_baFormat.data();
+    } else {
+        qDebug() << "Error: unknown format:" << baFormat.constData();
         return;
     }
 
@@ -234,13 +240,15 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-    if ((len = baBitrate.indexOf(' ')) != -1) {
-        baBitrate.resize(len);
+    bool bitrate_is_int = false;
+    int iBitrate = baBitrate.toInt(&bitrate_is_int);
+
+    if (!bitrate_is_int) {
+        qDebug() << "Error: unknown bitrate:" << baBitrate.constData();
     }
-    int iBitrate = baBitrate.toInt();
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
-    if (format == SHOUT_FORMAT_OGG && iMasterSamplerate == 96000) {
+    if (m_format_is_ov && iMasterSamplerate == 96000) {
         errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
                     "supported. Please try a different sample-rate or switch "
                     "to a different encoding."),
@@ -249,24 +257,30 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-    if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.data()) != SHOUTERR_SUCCESS) {
+    if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting bitrate"), shout_get_error(m_pShout));
         return;
     }
 
-    if ( ! qstricmp(baServerType.data(), "Icecast 2")) {
+    m_protocol_is_icecast2 = !qstricmp(baServerType.constData(), SHOUTCAST_SERVER_ICECAST2);
+    m_protocol_is_shoutcast = !qstricmp(baServerType.constData(), SHOUTCAST_SERVER_SHOUTCAST);
+    m_protocol_is_icecast1 = !qstricmp(baServerType.constData(), SHOUTCAST_SERVER_ICECAST1);
+
+
+    if (m_protocol_is_icecast2) {
         protocol = SHOUT_PROTOCOL_HTTP;
-    } else if ( ! qstricmp(baServerType.data(), "Shoutcast")) {
+    } else if (m_protocol_is_shoutcast) {
         protocol = SHOUT_PROTOCOL_ICY;
-    } else if ( ! qstricmp(baServerType.data(), "Icecast 1")) {
+    } else if (m_protocol_is_icecast1) {
         protocol = SHOUT_PROTOCOL_XAUDIOCAST;
     } else {
         errorDialog(tr("Error: unknown server protocol!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (( protocol == SHOUT_PROTOCOL_ICY ) && ( format != SHOUT_FORMAT_MP3)) {
-        errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"), shout_get_error(m_pShout));
+    if (m_protocol_is_shoutcast && !m_format_is_mp3) {
+        errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"),
+                    shout_get_error(m_pShout));
         return;
     }
 
@@ -276,20 +290,21 @@ void EngineShoutcast::updateFromPreferences()
     }
 
     // Initialize m_encoder
-    if(m_encoder) {
-        delete m_encoder;        //delete m_encoder if it has been initalized (with maybe) different bitrate
+    if (m_encoder) {
+        // delete m_encoder if it has been initalized (with maybe) different bitrate
+        delete m_encoder;
+        m_encoder = NULL;
     }
-    if ( ! qstrcmp(m_baFormat, "MP3")) {
-        m_encoder = new EncoderMp3(this);
 
-    }
-    else if ( ! qstrcmp(m_baFormat, "Ogg Vorbis")) {
+    if (m_format_is_mp3) {
+        m_encoder = new EncoderMp3(this);
+    } else if (m_format_is_ov) {
         m_encoder = new EncoderVorbis(this);
-    }
-    else {
+    } else {
         qDebug() << "**** Unknown Encoder Format";
         return;
     }
+
     if (m_encoder->initEncoder(iBitrate) < 0) {
         //e.g., if lame is not found
         //init m_encoder itself will display a message box
@@ -297,13 +312,8 @@ void EngineShoutcast::updateFromPreferences()
         delete m_encoder;
         m_encoder = NULL;
     }
-
 }
 
-/*
- * Reset the Server state and Connect to the Server.
- *
- */
 bool EngineShoutcast::serverConnect()
 {
     QMutexLocker locker(&m_shoutMutex);
@@ -381,12 +391,8 @@ bool EngineShoutcast::serverConnect()
     return false;
 }
 
-/*
- * Called by the encoder in method 'encodebuffer()' to flush the stream to the server.
- */
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
-                                int headerLen, int bodyLen)
-{
+                            int headerLen, int bodyLen) {
     QMutexLocker locker(&m_shoutMutex);
     int ret;
 
@@ -436,31 +442,21 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
     }
 }
 
-/*
- * This is called by the Engine implementation for each sample.
- * Encode and send the stream, as well as check for metadata changes.
- */
-void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
-{
+void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
     QMutexLocker locker(&m_shoutMutex);
-     //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
-     bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+    //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
+    bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
 
     if (prefEnabled) {
         if(!isConnected()){
             //Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
             updateFromPreferences();
 
-            if(serverConnect()){
-                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-                props->setType(DLG_INFO);
-                props->setTitle(tr("Live broadcasting"));
-                props->setText(tr("Mixxx has successfully connected to the shoutcast server"));
-                ErrorDialogHandler::instance()->requestErrorDialog(props);
-            }
-            else{
-                errorDialog(tr("Mixxx could not connect to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-
+            if(serverConnect()) {
+                infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
+            } else {
+                errorDialog(tr("Mixxx could not connect to streaming server"),
+                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
             }
         }
         //send to shoutcast, if connection has been established
@@ -485,60 +481,40 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
      } else if (isConnected()) {
         // if shoutcast is disabled but we are connected, disconnect
         serverDisconnect();
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-        props->setType(DLG_INFO);
-        props->setTitle(tr("Live broadcasting"));
-        props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
-        ErrorDialogHandler::instance()->requestErrorDialog(props);
+        infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
     }
 }
 
-/*
- * Check if the metadata has changed since the previous check.
- * We also check when was the last check performed to avoid using
- * too much CPU and as well to avoid changing the metadata during
- * scratches.
- */
-bool EngineShoutcast::metaDataHasChanged()
-{
+bool EngineShoutcast::metaDataHasChanged() {
     QMutexLocker locker(&m_shoutMutex);
     TrackPointer pTrack;
 
-    if ( m_iMetaDataLife < 16 ) {
+    if (m_iMetaDataLife < 16) {
         m_iMetaDataLife++;
         return false;
     }
 
     m_iMetaDataLife = 0;
 
-
     pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
-    if ( !pTrack )
+    if (!pTrack)
         return false;
 
-    if ( m_pMetaData ) {
+    if (m_pMetaData) {
         if ((pTrack->getId() == -1) || (m_pMetaData->getId() == -1)) {
             if ((pTrack->getArtist() == m_pMetaData->getArtist()) &&
                 (pTrack->getTitle() == m_pMetaData->getArtist())) {
                 return false;
             }
-        }
-        else if (pTrack->getId() == m_pMetaData->getId()) {
+        } else if (pTrack->getId() == m_pMetaData->getId()) {
             return false;
         }
     }
-
     m_pMetaData = pTrack;
     return true;
 }
 
-/*
- * Update shoutcast metadata.
- * This does not work for OGG/Vorbis and Icecast, since the actual
- * OGG/Vorbis stream contains the metadata.
- */
-void EngineShoutcast::updateMetaData()
-{
+void EngineShoutcast::updateMetaData() {
     QMutexLocker locker(&m_shoutMutex);
     if (!m_pShout || !m_pShoutMetaData)
         return;
@@ -559,7 +535,7 @@ void EngineShoutcast::updateMetaData()
 
 
     //If we use MP3 streaming and want dynamic metadata changes
-    if(!m_custom_metadata && !qstrcmp(m_baFormat, "MP3")){
+    if (!m_custom_metadata && m_format_is_mp3) {
         if (m_pMetaData != NULL) {
             // convert QStrings to char*s
             QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
@@ -571,28 +547,22 @@ void EngineShoutcast::updateMetaData()
                 baSong = baArtist + " - " + baTitle;
 
             /** Update metadata */
-            shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
-                shout_set_metadata(m_pShout, m_pShoutMetaData);
+            shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+            shout_set_metadata(m_pShout, m_pShoutMetaData);
         }
-    }
-    //Otherwise we might use static metadata
-    else{
+    } else {
+        //Otherwise we might use static metadata
         /** If we use static metadata, we only need to call the following line once **/
         if(m_custom_metadata && !m_firstCall){
             baSong = m_baCustom_artist + " - " + m_baCustom_title;
             /** Update metadata */
-            shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
-                shout_set_metadata(m_pShout, m_pShoutMetaData);
+            shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+            shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }
     }
 }
-/* -------- ------------------------------------------------------
-Purpose: Common error dialog creation code for run-time exceptions
-         Notify user when connected or disconnected and so on
-Input:   Detailed error string
-Output:  -
--------- ------------------------------------------------------ */
+
 void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     qWarning() << "Shoutcast error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
@@ -602,10 +572,18 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
     props->setDefaultButton(QMessageBox::Close);
-
     props->setModal(false);
-
     ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 
-
+void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
+    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+    props->setType(DLG_INFO);
+    props->setTitle(tr("Live broadcasting"));
+    props->setText(text);
+    props->setDetails(detailedInfo);
+    props->setKey(text + detailedInfo);
+    props->setDefaultButton(QMessageBox::Close);
+    props->setModal(false);
+    ErrorDialogHandler::instance()->requestErrorDialog(props);
+}
