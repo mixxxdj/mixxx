@@ -501,6 +501,8 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     if (!nextTrack) {
         // Disable auto DJ and return...
         pushButtonAutoDJ->setChecked(false);
+        // And eject track as "End of auto DJ warning"
+        emit(loadTrack(nextTrack));
         return false;
     }
 
