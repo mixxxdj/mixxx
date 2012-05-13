@@ -78,6 +78,7 @@ class EngineShoutcast : public EngineAbstractRecord {
     // Common error dialog creation code for run-time exceptions. Notify user
     // when connected or disconnected and so on
     void errorDialog(QString text, QString detailedError);
+    void infoDialog(QString text, QString detailedError);
 
     TrackPointer m_pMetaData;
     shout_t *m_pShout;

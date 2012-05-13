@@ -452,16 +452,11 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
             //Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
             updateFromPreferences();
 
-            if(serverConnect()){
-                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-                props->setType(DLG_INFO);
-                props->setTitle(tr("Live broadcasting"));
-                props->setText(tr("Mixxx has successfully connected to the shoutcast server"));
-                ErrorDialogHandler::instance()->requestErrorDialog(props);
-            }
-            else{
-                errorDialog(tr("Mixxx could not connect to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-
+            if(serverConnect()) {
+                infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
+            } else {
+                errorDialog(tr("Mixxx could not connect to streaming server"),
+                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
             }
         }
         //send to shoutcast, if connection has been established
@@ -486,11 +481,7 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
      } else if (isConnected()) {
         // if shoutcast is disabled but we are connected, disconnect
         serverDisconnect();
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-        props->setType(DLG_INFO);
-        props->setTitle(tr("Live broadcasting"));
-        props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
-        ErrorDialogHandler::instance()->requestErrorDialog(props);
+        infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
     }
 }
 
@@ -581,10 +572,18 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
     props->setDefaultButton(QMessageBox::Close);
-
     props->setModal(false);
-
     ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 
-
+void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
+    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+    props->setType(DLG_INFO);
+    props->setTitle(tr("Live broadcasting"));
+    props->setText(text);
+    props->setDetails(detailedInfo);
+    props->setKey(text + detailedInfo);
+    props->setDefaultButton(QMessageBox::Close);
+    props->setModal(false);
+    ErrorDialogHandler::instance()->requestErrorDialog(props);
+}
