@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-09 14:46+0200\n"
-"PO-Revision-Date: 2011-11-30 20:30+0000\n"
+"PO-Revision-Date: 2012-05-12 08:22+0000\n"
 "Last-Translator: Jakub Hadámek <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-10 05:14+0000\n"
-"X-Generator: Launchpad (build 15213)\n"
+"X-Launchpad-Export-Date: 2012-05-13 04:40+0000\n"
+"X-Generator: Launchpad (build 15225)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -27,35 +27,35 @@ msgstr "Nový playlist"
 
 #: BasePlaylistFeature#2
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Přidat na konec Auto DJ playlistu"
 
 #: BasePlaylistFeature#3
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Přidat na začátek Auto DJ playlistu"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Odebrat"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Zamknout"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importovat seznam skladeb"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportovat seznam skladeb"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
@@ -92,7 +92,7 @@ msgstr "Při vytváření playlistu došlo k neznámé chybě. "
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Soubory typu playlist (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -100,6 +100,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
+"(*.csv);;Prostý text (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -133,27 +135,27 @@ msgstr ""
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "Kometář"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "Trvání"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -162,17 +164,17 @@ msgstr "Hodnocení"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "Pořadí skladby"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -184,7 +186,7 @@ msgstr "Pořadí"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "Časové razítko"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
@@ -278,17 +280,17 @@ msgstr ""
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Kometář"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Trvání"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -298,22 +300,22 @@ msgstr ""
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: BrowseTableModel#16
 msgctxt "BrowseTableModel#16"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Knihovna Mixxxu"
 
 #: BrowseTableModel#17
 msgid ""
@@ -351,11 +353,11 @@ msgstr "Nedeklarovaná chyba na řádku %1 v zaslaném kódu: %2:"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr ""
+msgstr "Chyba ve skriptu ovladače"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "Ovládací prvek nefunguje správně."
 
 #: ControllerEngine#5
 msgid ""
@@ -364,22 +366,25 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Skript musí být opraven.)<br>Zatím můžete:<ul><li>Ignorovat tuto "
+"chybu po zbytek sezení, ale může se vyskytnout nepředvídatelné "
+"chování</li><li>Pokusit se o opravu restartováním ovladače</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Vstup"
 
 #: ControllerMappingDlg#3
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
-msgstr ""
+msgstr "Rámeček níže je v této verzi Mixxxu úmyslně ponechán prázdný."
 
 #: ControllerMappingDlg#4
 msgid "Controls"
@@ -388,12 +393,12 @@ msgstr "Ovládací prvky"
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Odebrat"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -401,12 +406,12 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Vyčistit vše"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Výstup"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
@@ -480,7 +485,7 @@ msgstr "Přejmenování přepravky se nezdařilo"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Soubory typu playlist (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -488,21 +493,26 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
+"(*.csv);;Prostý text (*.txt)"
 
 #: CrateFeature#17
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Přepravky jsou skvělý způsob, jak organizovat hudbu, se kterou chcete hrát."
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Vytvořte si přepravku pro svůj další set, pro svůj oblíbený electrohouse, a "
+"nebo třeba pro nejoblíbenější skladby."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "Přepravky vám umožní zorganizovat si svou sbírku skladeb po vašem!"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
@@ -526,11 +536,12 @@ msgstr "<a href=\"http://mixxx.org/\">Oficiální webová stránka</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
 msgstr ""
+"Jedna plotna musí být zastavená, aby bylo možné spustit režim Auto-DJ."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -538,43 +549,43 @@ msgstr "Zastavit Auto DJ"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "Zamíchat pořadím v seznamu skladeb Auto-DJ."
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Zamíchat"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "Preskočit další skladbu v seznamu skladeb Auto-DJ."
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "Preskočit skladbu"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Spustit plynulý přechod k další skladbě."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Přejít nyní"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Určuje trvání plynulého přechodu."
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Sekundy"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "s"
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Zapne nebo vypne Auto-DJ."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -583,11 +594,11 @@ msgstr "Spustit Auto DJ"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Správa"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Nastavení detekce úderů"
 
 #: DlgBeatsDlg#2
 msgid ""
