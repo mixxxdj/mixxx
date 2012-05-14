@@ -287,6 +287,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
+        int current_zoom = previousWidget->getZoomFactor();
         previousWidget->hold();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
@@ -301,6 +302,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         //viewer->resize(viewer->size());
         widget->resize(viewer->width(), viewer->height());
         widget->setTrack(pTrack);
+        viewer->setZoom(current_zoom);
     }
 
     m_skipRender = false;
