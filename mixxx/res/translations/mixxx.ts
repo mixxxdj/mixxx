@@ -1041,18 +1041,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="78"/>
-        <source>Adjust rate up (course)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="79"/>
         <source>Adjust rate up (fine)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="80"/>
-        <source>Adjust rate down (course)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1061,18 +1051,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="82"/>
-        <source>Pitch-bend rate up (course)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="83"/>
         <source>Pitch-bend rate up (fine)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="78"/>
+        <source>Adjust rate up (coarse)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="80"/>
+        <source>Adjust rate down (coarse)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="82"/>
+        <source>Pitch-bend rate up (coarse)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="84"/>
-        <source>Pitch-bend rate down (course)</source>
+        <source>Pitch-bend rate down (coarse)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4102,7 +4102,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="38"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="455"/>
         <source>Rhythmbox</source>
         <translation type="unfinished"></translation>
     </message>
