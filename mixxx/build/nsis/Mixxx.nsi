@@ -225,7 +225,7 @@ Section "Mixxx (required)" SecMixxx
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*.dll"
 
   SetOutPath $INSTDIR\keyboard
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
+  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
 
   ; HID/MIDI mapping tools (mappings are below) & common script file
   SetOutPath $INSTDIR\controllers
@@ -510,8 +510,9 @@ Section "Uninstall"
   RMDir "$INSTDIR\translations"
 
   ; Remove keyboard mappings
-  Delete $INSTDIR\keyboard\Standard.kbd.cfg
-  Delete $INSTDIR\keyboard\Old-pre1.10.0.kbd.cfg
+  ; TODO(XXX): Only delete files that were not changed since install
+  ; Custom Keyboard mappings should be placed in Custom.kbd.cfg in user folder
+  Delete $INSTDIR\keyboard\*.kbd.cfg
   RMDir "$INSTDIR\keyboard" ; No /r flag means remove the directory only if it's empty
 
   ; Remove midi mappings/scripts that we may have installed
