@@ -349,7 +349,7 @@ ReplayGain::ResetSampleFrequency(long samplefreq){
 float
 ReplayGain::analyzeResult ( unsigned int* Array, size_t len ){
 
-    uint32_t  elems;
+    Uint32_t  elems;
     int32_t   upper;
     size_t    i;
 
