@@ -6,11 +6,12 @@
 #include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/treeitem.h"
+#include "library/queryutil.h"
 
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
-    : LibraryFeature(parent),
-      m_pTrackCollection(pTrackCollection),
-      m_cancelImport(false) {
+        : BaseExternalLibraryFeature(parent, pTrackCollection),
+          m_pTrackCollection(pTrackCollection),
+          m_cancelImport(false) {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -36,30 +37,34 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    if (!m_database.isOpen()) {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "RHYTHMBOX_SCANNER");
-        m_database.setHostName("localhost");
-        m_database.setDatabaseName(MIXXX_DB_PATH);
-        m_database.setUserName("mixxx");
-        m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "RHYTHMBOX_SCANNER");
+    m_database.setHostName("localhost");
+    m_database.setDatabaseName(MIXXX_DB_PATH);
+    m_database.setUserName("mixxx");
+    m_database.setPassword("mixxx");
 
-        //Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database for Rhythmbox scanner." << m_database.lastError();
-        }
+    //Open the database connection in this thread.
+    if (!m_database.open()) {
+        qDebug() << "Failed to open database for Rhythmbox scanner." << m_database.lastError();
     }
     connect(&m_track_watcher, SIGNAL(finished()),
             this, SLOT(onTrackCollectionLoaded()),
             Qt::QueuedConnection);
-
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
+    m_database.close();
     // stop import thread, if still running
     m_cancelImport = true;
     m_track_future.waitForFinished();
     delete m_pRhythmboxTrackModel;
     delete m_pRhythmboxPlaylistModel;
+}
+
+BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+    RhythmboxPlaylistModel* pModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 bool RhythmboxFeature::isSupported() {
@@ -113,25 +118,25 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
-void RhythmboxFeature::onRightClick(const QPoint& globalPos) {
-}
-
-void RhythmboxFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-}
-
 bool RhythmboxFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
@@ -153,13 +158,13 @@ TreeItem* RhythmboxFeature::importMusicCollection()
         return false;
 
     //Delete all table entries of Traktor feature
-    m_database.transaction();
+    ScopedTransaction transaction(m_database);
     clearTable("rhythmbox_playlist_tracks");
     clearTable("rhythmbox_library");
     clearTable("rhythmbox_playlists");
-    m_database.commit();
+    transaction.commit();
 
-    m_database.transaction();
+    transaction.transaction();
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO rhythmbox_library (artist, title, album, year, genre, comment, tracknumber,"
                   "bpm, bitrate,"
@@ -181,7 +186,7 @@ TreeItem* RhythmboxFeature::importMusicCollection()
             }
         }
     }
-    m_database.commit();
+    transaction.commit();
 
     if (xml.hasError()) {
         // do error handling
@@ -252,9 +257,6 @@ TreeItem* RhythmboxFeature::importPlaylists()
             }
         }
     }
-
-    m_database.commit();
-
 
     if (xml.hasError()) {
         // do error handling
@@ -449,7 +451,8 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
     emit(featureLoadingFinished(this));
     activate();
 }
+
 void RhythmboxFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
+    Q_UNUSED(index);
 }
-

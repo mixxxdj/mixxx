@@ -54,6 +54,16 @@ void AnalyserGainVamp::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 
+void AnalyserGainVamp::cleanup(TrackPointer tio)
+{
+    Q_UNUSED(tio);
+    if (!m_bShouldAnalyze) {
+        return;
+    }
+    delete m_pVamp;
+    m_pVamp = NULL;
+}
+
 void AnalyserGainVamp::finalise(TrackPointer tio) {
     if (!m_bShouldAnalyze) {
         return;

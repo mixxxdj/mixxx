@@ -27,7 +27,8 @@ AnalyserWaveform::AnalyserWaveform() {
     m_currentStride = 0;
     m_currentSummaryStride = 0;
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS");
+    static int i = 0;
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
         m_database.setDatabaseName(MIXXX_DB_PATH);
@@ -48,6 +49,7 @@ AnalyserWaveform::AnalyserWaveform() {
 AnalyserWaveform::~AnalyserWaveform() {
     qDebug() << "AnalyserWaveform::~AnalyserWaveform()";
     destroyFilters();
+    m_database.close();
     delete m_timer;
     delete m_analysisDao;
 }
@@ -86,11 +88,9 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 Waveform* pLoadedWaveform =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                 if (pLoadedWaveform && pLoadedWaveform->isValid()) {
-                    //if( m_waveform->getId() != -1) {
                     m_waveform = pLoadedWaveform;
                     loadedWaveform = true;
                     tio->setWaveform(pLoadedWaveform);
-                    //}
                 } else {
                     delete pLoadedWaveform;
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
@@ -101,11 +101,9 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 Waveform* pLoadedWaveformSummary =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                 if (pLoadedWaveformSummary && pLoadedWaveformSummary->isValid()) {
-                    //if( m_waveformSummary->getId() != -1) {
                     m_waveformSummary = pLoadedWaveformSummary;
                     tio->setWaveformSummary(pLoadedWaveformSummary);
                     loadedWavesummary = true;
-                    //}
                 } else {
                     delete pLoadedWaveformSummary;
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
@@ -126,7 +124,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
 
     destroyFilters();
-    resetFilters(tio);
+    resetFilters(tio, sampleRate);
 
     //TODO (vrince) Do we want to expose this as settings or whatever ?
     const double mainWaveformSampleRate = 441;
@@ -168,11 +166,11 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     return true;
 }
 
-void AnalyserWaveform::resetFilters(TrackPointer tio) {
+void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
     //TODO: (vRince) bind this with *actual* filter values ...
-    m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, tio->getSampleRate(), 200);
-    m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, tio->getSampleRate(), 200, 2000);
-    m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, tio->getSampleRate(), 2000);
+    m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
+    m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
+    m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
 }
 
 void AnalyserWaveform::destroyFilters() {
@@ -299,6 +297,23 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     //qDebug() << "AnalyserWaveform::process - m_waveform->getCompletion()" << m_waveform->getCompletion();
     //qDebug() << "AnalyserWaveform::process - m_waveformSummary->getCompletion()" << m_waveformSummary->getCompletion();
 }
+
+void AnalyserWaveform::cleanup(TrackPointer tio) {
+    if (m_skipProcessing) {
+        return;
+    }
+    
+    Waveform* pWaveform = tio->getWaveform();
+    if (pWaveform) {
+        pWaveform->reset();
+    }
+    
+    Waveform* pWaveformSummary = tio->getWaveformSummary();
+    if (pWaveformSummary) {
+        pWaveformSummary->reset();
+    }
+}
+
 void AnalyserWaveform::finalise(TrackPointer tio) {
     if (m_waveform == NULL || m_waveformSummary == NULL) {
         return;

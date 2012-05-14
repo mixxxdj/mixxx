@@ -142,6 +142,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     QString userLocale = args.locale;
     QLocale systemLocale = QLocale::system();
 
+    // Attempt to load user locale from config
+    if (userLocale == "") {
+        userLocale = m_pConfig->getValueString(ConfigKey("[Config]","Locale"));
+    }
+
     // Load Qt translations for this locale from the system translation
     // path. This is the lowest precedence QTranslator.
     QTranslator* qtTranslator = new QTranslator(a);
@@ -770,7 +775,7 @@ void MixxxApp::initActions()
     QString createCrateTitle = tr("Add new &crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
-    m_pCratesNew->setShortcut(tr("Ctrl+C"));
+    m_pCratesNew->setShortcut(tr("Ctrl+Shift+N"));
     m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pCratesNew->setStatusTip(createCrateText);
     m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
@@ -1253,6 +1258,7 @@ void MixxxApp::slotHelpAbout() {
 "Florian Mahlknecht<br>"
 "Ben Clark<br>"
 "Ilkka Tuohela<br>"
+"Tom Gascoigne<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"

@@ -66,12 +66,18 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
-    if (RhythmboxFeature::isSupported())
+    if (RhythmboxFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
-    if (ITunesFeature::isSupported())
+    }
+    if (ITunesFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
-    if (TraktorFeature::isSupported())
+    }
+    if (TraktorFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
+    }
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
