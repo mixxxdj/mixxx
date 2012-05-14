@@ -183,8 +183,9 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
             }
             if (bInputDevices)
             {
-                if (device->getNumInputChannels() <= 1) //Ignore mono input and no-input devices
+                if (device->getNumInputChannels() <= 0) {
                     bMatchedCriteria = false;
+                }
             }
 
             if (bMatchedCriteria)
