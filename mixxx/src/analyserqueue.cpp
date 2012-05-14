@@ -16,7 +16,6 @@
 #include "analyserrg.h"
 #ifdef __VAMP__
 #include "analyserbeats.h"
-#include "analysergainvamp.h";
 #include "vamp/vampanalyser.h"
 #endif
 
