@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-09 14:46+0200\n"
-"PO-Revision-Date: 2011-07-27 12:49+0000\n"
-"Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"PO-Revision-Date: 2012-05-13 13:39+0000\n"
+"Last-Translator: Иван Старчевић <ivanstar61@gmail.com>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-10 05:16+0000\n"
-"X-Generator: Launchpad (build 15213)\n"
+"X-Launchpad-Export-Date: 2012-05-14 04:41+0000\n"
+"X-Generator: Launchpad (build 15238)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -23,7 +23,7 @@ msgstr "Ауто ДиЏеј"
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Нови списак нумера"
 
 #: BasePlaylistFeature#2
 msgid "Add to Auto DJ Queue (bottom)"
@@ -36,30 +36,30 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Уклони"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Преименуј"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Закључај"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Увези листу нумера"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "Извези листу"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Преименовање списка нумера"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
@@ -79,7 +79,7 @@ msgstr ""
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr ""
+msgstr "Назив листе нумера:"
 
 #: BasePlaylistFeature#15
 msgid "Playlist Creation Failed"
@@ -128,32 +128,32 @@ msgstr "Жанр"
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr ""
+msgstr "Састављач"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "Година"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "Врста"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "Локација"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "Примедба"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "Трајање"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -162,7 +162,7 @@ msgstr "Оцена"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Проток"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -172,7 +172,7 @@ msgstr ""
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "Нумера #"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -184,12 +184,12 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "Временска ознака"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr ""
+msgstr "Кључ"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
@@ -273,17 +273,17 @@ msgstr "Жанр"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "Састављач"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Примедба"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Трајање"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
@@ -293,12 +293,12 @@ msgstr ""
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr ""
+msgstr "Кључ"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Врста"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
@@ -370,12 +370,12 @@ msgstr ""
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Дијалог"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Улаз"
 
 #: ControllerMappingDlg#3
 msgid ""
@@ -385,17 +385,17 @@ msgstr ""
 
 #: ControllerMappingDlg#4
 msgid "Controls"
-msgstr ""
+msgstr "Контроле"
 
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Додај"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Уклони"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -403,20 +403,20 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Очистите све"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Излаз"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
-msgstr ""
+msgstr "Излази"
 
 #: ControllerMappingDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Очисти све"
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -544,7 +544,7 @@ msgstr ""
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Насумично"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
@@ -568,11 +568,11 @@ msgstr ""
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Секунди"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "сек."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
@@ -585,7 +585,7 @@ msgstr "Укључи аутоматског ди џеја"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Уреди"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
@@ -671,16 +671,16 @@ msgstr ""
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "Најмање:"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "Највише:"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Постави на подразумевано"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -720,7 +720,7 @@ msgstr ""
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "Готово"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
@@ -728,7 +728,7 @@ msgstr ""
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
-msgstr ""
+msgstr "Изабери контролу"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
@@ -741,11 +741,11 @@ msgstr ""
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr ""
+msgstr "Подеси на подразумевано"
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr ""
+msgstr "Мешач"
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
@@ -754,7 +754,7 @@ msgstr ""
 
 #: DlgControllerLearning#11
 msgid "Master volume"
-msgstr ""
+msgstr "Главна јачина звука"
 
 #: DlgControllerLearning#12
 msgid "Master balance"
@@ -770,7 +770,7 @@ msgstr ""
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "Транспорт"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
@@ -976,7 +976,7 @@ msgstr ""
 
 #: DlgControllerLearning#66
 msgid "Looping"
-msgstr ""
+msgstr "Упетљавање"
 
 #: DlgControllerLearning#67
 msgid "Loop In button"
@@ -1009,7 +1009,7 @@ msgstr ""
 #: DlgControllerLearning#74
 msgctxt "DlgControllerLearning#74"
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
 #: DlgControllerLearning#75
 msgid "Switch to the next view (library, playlist..)"
@@ -1037,7 +1037,7 @@ msgstr ""
 
 #: DlgControllerLearning#81
 msgid "Effects"
-msgstr ""
+msgstr "Ефекти"
 
 #: DlgControllerLearning#82
 msgid "Toggle flange effect"
@@ -1058,7 +1058,7 @@ msgstr ""
 #: DlgControllerLearning#86
 msgctxt "DlgControllerLearning#86"
 msgid "Microphone"
-msgstr ""
+msgstr "Микрофон"
 
 #: DlgControllerLearning#87
 msgid "Microphone on/off"
@@ -1074,7 +1074,7 @@ msgstr ""
 
 #: DlgControllerLearning#90
 msgid "User Interface"
-msgstr ""
+msgstr "Корисничко сучеље"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
@@ -1112,11 +1112,11 @@ msgstr ""
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Откривање БПМ података"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr ""
+msgstr "Омогучи BPM откривање"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Tracks BPM on Import"
@@ -1141,40 +1141,40 @@ msgstr ""
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr ""
+msgstr "Додај"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Уреди"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr ""
+msgstr "Обриши"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr ""
+msgstr "Подразумевано"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr ""
+msgstr "Грешка"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr ""
+msgstr "Не могу да отворим датотеку %1"
 
 #: DlgPrefController#1
 msgctxt "DlgPrefController#1"
 msgid "None"
-msgstr ""
+msgstr "Ништа"
 
 #: DlgPrefController#2
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 од %2"
 
 #: DlgPrefController#3
 msgid "Custom Preset"
-msgstr ""
+msgstr "Жељено постављење"
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
