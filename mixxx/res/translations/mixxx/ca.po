@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-09 14:46+0200\n"
-"PO-Revision-Date: 2012-05-09 09:59+0000\n"
+"PO-Revision-Date: 2012-05-13 14:33+0000\n"
 "Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-10 05:13+0000\n"
-"X-Generator: Launchpad (build 15213)\n"
+"X-Launchpad-Export-Date: 2012-05-14 04:41+0000\n"
+"X-Generator: Launchpad (build 15238)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -780,7 +780,7 @@ msgstr "Sampler %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr ""
+msgstr "Restaura els valors per defecte"
 
 #: DlgControllerLearning#9
 msgid "Mixer"
@@ -1048,7 +1048,7 @@ msgstr "Crea el bucle %1-beat"
 #: DlgControllerLearning#74
 msgctxt "DlgControllerLearning#74"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgControllerLearning#75
 msgid "Switch to the next view (library, playlist..)"
@@ -1099,7 +1099,7 @@ msgstr "Efecte flange: Retard de fase"
 #: DlgControllerLearning#86
 msgctxt "DlgControllerLearning#86"
 msgid "Microphone"
-msgstr ""
+msgstr "Micròfon"
 
 #: DlgControllerLearning#87
 msgid "Microphone on/off"
@@ -1273,17 +1273,17 @@ msgstr "Mode CDJ"
 #: DlgPrefControls#5
 msgctxt "DlgPrefControls#5"
 msgid "Simple"
-msgstr ""
+msgstr "Senzill"
 
 #: DlgPrefControls#6
 msgctxt "DlgPrefControls#6"
 msgid "On"
-msgstr ""
+msgstr "Actiu"
 
 #: DlgPrefControls#7
 msgctxt "DlgPrefControls#7"
 msgid "Off"
-msgstr ""
+msgstr "Inactiu"
 
 #: DlgPrefControls#8
 msgid "Mixxx Detected a WVGA Screen"
@@ -1323,7 +1323,7 @@ msgstr "10%"
 
 #: DlgPrefControls#16
 msgid "Load tracks into a playing deck"
-msgstr ""
+msgstr "Carrega pistes a una pletina activa"
 
 #: DlgPrefControls#17
 msgid "20%"
