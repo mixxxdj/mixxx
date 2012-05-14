@@ -120,18 +120,24 @@ void RhythmboxFeature::onRightClickChild(const QPoint& globalPos, QModelIndex in
 }
 
 bool RhythmboxFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
@@ -192,7 +198,7 @@ TreeItem* RhythmboxFeature::importMusicCollection()
 
     db.close();
     if (m_cancelImport) {
-    	return NULL;
+        return NULL;
     }
     return importPlaylists();
 }
@@ -276,6 +282,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
     QString year;
     QString genre;
     QString location;
+    QUrl locationUrl;
 
     int bpm = 0;
     int bitrate = 0;
@@ -326,11 +333,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
                 continue;
             }
             if(xml.name() == "location"){
-                location = xml.readElementText();
-                location.remove("file://");
-                QByteArray strlocbytes = location.toUtf8();
-                QUrl locationUrl = QUrl::fromEncoded(strlocbytes);
-                location = locationUrl.toLocalFile();
+                locationUrl = QUrl::fromEncoded( xml.readElementText().toUtf8() );
                 continue;
             }
         }
@@ -338,8 +341,17 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
         if (xml.isEndElement() && xml.name() == "entry") {
             break;
         }
-
     }
+
+    location = locationUrl.toLocalFile();
+
+    if (location.isEmpty()) {
+        // here in case of smb:// location
+        // TODO(XXX) QUrl does not support SMB:// locations does Mixxx?
+        // use ~/.gvfs location instead
+        return;
+    }
+
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
     query.bindValue(":album", album);
@@ -359,7 +371,6 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
         qDebug() << "SQL Error in rhythmboxfeature.cpp: line" << __LINE__ << " " << query.lastError();
         return;
     }
-
 }
 
 /** reads all playlist entries and executes a SQL statement **/
@@ -449,7 +460,8 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
     emit(featureLoadingFinished(this));
     activate();
 }
+
 void RhythmboxFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
+    Q_UNUSED(index);
 }
-
