@@ -109,7 +109,7 @@ void WaveformWidgetRenderer::init() {
 void WaveformWidgetRenderer::onPreRender() {
 
     m_trackSamples = m_trackSamplesControlObject->get();
-    if( m_trackSamples < 0.0)
+    if (m_trackSamples < 0.0)
         return;
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values

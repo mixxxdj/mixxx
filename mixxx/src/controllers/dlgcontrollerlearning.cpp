@@ -36,7 +36,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
-    m_resetStr = tr("reset to default");
+    m_resetStr = tr("Reset to default");
 
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
@@ -95,6 +95,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     // Vinyl Control
     QMenu* vinylControlMenu = addSubmenu(tr("Vinyl Control"));
+    addDeckControl("vinylcontrol_enabled", tr("Toggle vinyl-control (ON/OFF)"), vinylControlMenu);
     addDeckControl("vinylcontrol_cueing", tr("Toggle vinyl-control cueing mode (OFF/ONE/HOT)"), vinylControlMenu);
     addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
 

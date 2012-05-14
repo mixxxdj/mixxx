@@ -455,14 +455,13 @@ class MixxxCore(Feature):
                    "recording/recordingmanager.cpp",
 
                    # External Library Features
+                   "library/baseexternallibraryfeature.cpp",
                    "library/rhythmbox/rhythmboxfeature.cpp",
                    "library/rhythmbox/rhythmboxtrackmodel.cpp",
                    "library/rhythmbox/rhythmboxplaylistmodel.cpp",
-
                    "library/itunes/itunesfeature.cpp",
                    "library/itunes/itunestrackmodel.cpp",
                    "library/itunes/itunesplaylistmodel.cpp",
-
                    "library/traktor/traktorfeature.cpp",
                    "library/traktor/traktortablemodel.cpp",
                    "library/traktor/traktorplaylistmodel.cpp",
@@ -545,6 +544,7 @@ class MixxxCore(Feature):
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
                    "skin/propertybinder.cpp",
+                   "skin/tooltips.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

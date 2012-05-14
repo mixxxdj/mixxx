@@ -66,18 +66,16 @@ void WStatusLight::setup(QDomNode node)
     // Number of states. Add one to account for the background
     setNoPos(selectNodeInt(node, "NumberPos") + 1);
 
-    // Set background pixmap if available
-    if (!selectNode(node, "PathBack").isNull()) {
-        setPixmap(0, getPath(selectNodeQString(node, "PathBack")));
-    } else {
-        m_pPixmapSLs[0] = NULL;
-    }
-
     // Set pixmaps
-    for (int i = 1; i < m_iNoPos; ++i) {
-        QString nodeName = (i == 1) ? "PathStatusLight" : QString("PathStatusLight%1").arg(i);
+    for (int i = 0; i < m_iNoPos; ++i) {
+        // Accept either PathStatusLight or PathStatusLight1 for value 1,
+        QString nodeName = QString("PathStatusLight%1").arg(i);
         if (!selectNode(node, nodeName).isNull()) {
             setPixmap(i, getPath(selectNodeQString(node, nodeName)));
+        } else if (i == 0 && !selectNode(node, "PathBack").isNull()) {
+            setPixmap(i, getPath(selectNodeQString(node, "PathBack")));
+        } else if (i == 1 && !selectNode(node, "PathStatusLight").isNull()) {
+            setPixmap(i, getPath(selectNodeQString(node, "PathStatusLight")));
         } else {
             m_pPixmapSLs[i] = NULL;
         }
@@ -113,10 +111,7 @@ void WStatusLight::setValue(double v)
 
     if (m_iNoPos == 2) {
         //original behavior for two-state lights: any non-zero value is "on"
-        if (val == 0)
-            m_iPos = 0;
-        else
-            m_iPos = 1;
+        m_iPos = val > 0 ? 1 : 0;
         update();
     } else {
         //multi-state behavior: values must be correct
@@ -129,18 +124,13 @@ void WStatusLight::setValue(double v)
     }
 }
 
-void WStatusLight::paintEvent(QPaintEvent *)
-{
-    Q_ASSERT (m_iPos < m_iNoPos);
-
-    QPainter p(this);
-
-    // Draw the background
-    if (m_iPos != 0 && m_iNoPos > 0 && m_pPixmapSLs[0] != NULL && !m_pPixmapSLs[0]->isNull()) {
-        p.drawPixmap(0, 0, *m_pPixmapSLs[0]);
+void WStatusLight::paintEvent(QPaintEvent *) {
+    if (m_iPos < 0 || m_iPos >= m_iNoPos) {
+        return;
     }
 
-    if (m_iPos >= 0 && m_iPos < m_iNoPos && m_pPixmapSLs[m_iPos] != NULL && !m_pPixmapSLs[m_iPos]->isNull()) {
+    QPainter p(this);
+    if (m_pPixmapSLs[m_iPos] != NULL && !m_pPixmapSLs[m_iPos]->isNull()) {
         p.drawPixmap(0, 0, *m_pPixmapSLs[m_iPos]);
     }
 }
