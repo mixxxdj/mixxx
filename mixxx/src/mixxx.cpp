@@ -74,7 +74,7 @@ bool loadTranslations(const QLocale& systemLocale, QString userLocale,
             // the case where the user's install of Qt doesn't have an explicit
             // English translation file and the fact that we don't ship a
             // mixxx_en.qm.
-            return;
+            return false;
         }
         return pTranslator->load(systemLocale, translation, prefix, translationPath);
 #else
