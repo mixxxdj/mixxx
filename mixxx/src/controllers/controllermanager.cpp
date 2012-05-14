@@ -22,8 +22,8 @@
 
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
-// Poll every 1ms (where possible) for good controller response
-const int kPollIntervalMillis = 1;
+// Poll every 5ms (where possible) for good controller response
+const int kPollIntervalMillis = 5;
 
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
