@@ -94,7 +94,8 @@
      <item>
       <widget class="QPushButton" name="pushButtonAnalyze">
        <property name="toolTip">
-        <string>Runs the BPM and beatgrid detection on the selected tracks.</string>
+        <string>Runs the BPM and beatgrid detection on the selected tracks.
+Waveforms will be generated as part of a analysis as well.</string>
        </property>
        <property name="text">
         <string>Analyze</string>

@@ -41,6 +41,7 @@ class WTrackTableView : public WLibraryTableView {
 
   private slots:
     void slotRemove();
+    void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
@@ -105,6 +106,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Show track-editor action
     QAction *m_pPropertiesAct;
+    QAction *m_pFileBrowserAct;
 
     // BPM Lock feature
     QAction *m_pBpmLockAction;

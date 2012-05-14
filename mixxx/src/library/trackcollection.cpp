@@ -43,17 +43,21 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     qDebug() << "~TrackCollection()";
-    // Save all tracks that haven't been saved yet.
-    m_trackDao.saveDirtyTracks();
-    // TODO(XXX) Maybe fold saveDirtyTracks into TrackDAO::finish now that it
-    // exists? -- rryan 10/2010
     m_trackDao.finish();
 
-    Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
-    //The above is an ASSERT because there should never be an outstanding
-    //transaction when this code is called. If there is, it means we probably
-    //aren't committing a transaction somewhere that should be.
-    m_db.close();
+    if (m_db.isOpen()) {
+        // There should never be an outstanding transaction when this code is
+        // called. If there is, it means we probably aren't committing a
+        // transaction somewhere that should be.
+        if (m_db.rollback()) {
+            qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
+                     << "There is a logic error somewhere.";
+        }
+        m_db.close();
+    } else {
+        qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
+                 << "There is a logic error somewhere.";
+    }
 }
 
 bool TrackCollection::checkForTables() {

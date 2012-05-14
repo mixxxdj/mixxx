@@ -60,6 +60,7 @@ public slots:
     void slotSetCueRecall(int);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
+    void slotSetLocale(int);
     void slotApply();
 
     void slotSetFrameRate(int frameRate);
@@ -79,6 +80,7 @@ protected:
 
 private:
     void initWaveformControl();
+    void notifyRebootNecessary();
 
 private:
     /** Pointer to ConfigObject */

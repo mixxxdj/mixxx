@@ -2381,7 +2381,7 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_kill1.png</Pressed>
+			<Pressed>btn_kill1_over.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
 		<Pos>52,341</Pos>
@@ -2402,7 +2402,7 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_kill1.png</Pressed>
+			<Pressed>btn_kill1_over.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
 		<Pos>52,376</Pos>
@@ -2423,7 +2423,7 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_kill1.png</Pressed>
+			<Pressed>btn_kill1_over.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
 		<Pos>52,410</Pos>
@@ -2444,7 +2444,7 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_kill2.png</Pressed>
+			<Pressed>btn_kill2_over.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
 		<Pos>763,341</Pos>
@@ -2465,7 +2465,7 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_kill2.png</Pressed>
+			<Pressed>btn_kill2_over.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
 		<Pos>763,376</Pos>
@@ -2486,7 +2486,7 @@
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_kill2.png</Pressed>
+			<Pressed>btn_kill2_over.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
 		<Pos>763,410</Pos>

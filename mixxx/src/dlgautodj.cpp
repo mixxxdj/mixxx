@@ -48,8 +48,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                                                  "mixxx.db.model.autodj");
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
-        m_playlistDao.createPlaylist(AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
-        playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        playlistId = m_playlistDao.createPlaylist(AUTODJ_TABLE,
+                                                  PlaylistDAO::PLHT_AUTO_DJ);
     }
     m_pAutoDJTableModel->setPlaylist(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
@@ -501,6 +501,8 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     if (!nextTrack) {
         // Disable auto DJ and return...
         pushButtonAutoDJ->setChecked(false);
+        // And eject track as "End of auto DJ warning"
+        emit(loadTrack(nextTrack));
         return false;
     }
 

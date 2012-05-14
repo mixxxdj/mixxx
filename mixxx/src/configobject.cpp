@@ -203,6 +203,16 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k)
     return get(k)->val->value;
 }
 
+template <class ValueType>
+QString ConfigObject<ValueType>::getValueString(ConfigKey k, const QString& default_string)
+{
+    QString ret = get(k)->val->value;
+    if (ret.isEmpty()) {
+        return default_string;
+    }
+    return ret;
+}
+
 template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
