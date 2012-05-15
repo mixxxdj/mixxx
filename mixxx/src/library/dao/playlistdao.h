@@ -61,6 +61,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isHidden(int playlistId);
     // Returns the HiddenType of playlistId
     HiddenType getHiddenType(int playlistId);
+    // Returns the maximum position of the given playlist
+    int getMaxPosition(int playlistId);
     /** Remove a track from all playlists */
     void removeTrackFromPlaylists(int trackId);
     /** Remove a track from a playlist */
