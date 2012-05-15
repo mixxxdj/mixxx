@@ -155,8 +155,8 @@ void EngineShoutcast::updateFromPreferences()
     QByteArray baStreamWebsite = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_website")).toLatin1();
     QByteArray baStreamDesc = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_desc")).toLatin1();
     QByteArray baStreamGenre = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre")).toLatin1();
-    QByteArray baStreamPublic = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toLatin1();
     QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
+    bool bStreamPublic = static_cast<bool>(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toInt());
 
     QByteArray baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
 
@@ -210,6 +210,10 @@ void EngineShoutcast::updateFromPreferences()
     if (shout_set_url(m_pShout, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
        errorDialog("Error setting stream url!", shout_get_error(m_pShout));
        return;
+    }
+    if (shout_set_public(m_pShout, bStreamPublic ? 1 : 0) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream public."), shout_get_error(m_pShout));
+        return;
     }
 
     m_format_is_mp3 = !qstrcmp(baFormat.constData(), SHOUTCAST_FORMAT_MP3);
