@@ -1029,13 +1029,103 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             }
 
             // Add keyboard shortcut info to tooltip string
-            QString tooltip = pWidget->toolTip();
-            QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
-            if (!shortcut.isEmpty() && !tooltip.contains(shortcut, Qt::CaseInsensitive)) {
-                tooltip.append(QString("\nShortcut: %1").arg(shortcut));
-                pWidget->setToolTip(tooltip);
+            if (connectValueFromWidget) {
+                // do not add Shortcut string for feedback connections
+                QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
+                addShortcutToToolTip(pWidget, shortcut, QString(""));
+
+                const WSliderComposed* pSlider;
+
+                if (qobject_cast<const  WPushButton*>(pWidget)) {
+                    // check for "_activate", "_toggle"
+                    ConfigKey subkey;
+                    QString shortcut;
+
+                    subkey = configKey;
+                    subkey.item += "_activate";
+                    shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                    addShortcutToToolTip(pWidget, shortcut, tr("activate"));
+
+                    subkey = configKey;
+                    subkey.item += "_toggle";
+                    shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                    addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
+                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget))) {
+                    // check for "_up", "_down", "_up_small", "_down_small"
+                    ConfigKey subkey;
+                    QString shortcut;
+
+                    if (pSlider->isHorizontal()) {
+                        subkey = configKey;
+                        subkey.item += "_up";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("right"));
+
+                        subkey = configKey;
+                        subkey.item += "_down";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("left"));
+
+                        subkey = configKey;
+                        subkey.item += "_up_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("right small"));
+
+                        subkey = configKey;
+                        subkey.item += "_down_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("left small"));
+                    } else {
+                        subkey = configKey;
+                        subkey.item += "_up";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("up"));
+
+                        subkey = configKey;
+                        subkey.item += "_down";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("down"));
+
+                        subkey = configKey;
+                        subkey.item += "_up_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("up small"));
+
+                        subkey = configKey;
+                        subkey.item += "_down_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("down small"));
+                    }
+                }
             }
         }
         con = con.nextSibling();
     }
 }
+
+void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd) {
+    if (shortcut.isEmpty()) {
+        return;
+    }
+
+    QString tooltip = pWidget->toolTip();
+
+    // translate shortcut to native text
+#if QT_VERSION >= 0x040700
+    QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText).toString(QKeySequence::NativeText);
+#else
+    QKeySequence keySec = QKeySequence::fromString(shortcut, QKeySequence::PortableText);
+    QString nativeShortcut = keySec.toString(QKeySequence::NativeText);
+#endif
+
+    tooltip += "\n";
+    tooltip += tr("Shortcut");
+    if (!cmd.isEmpty()) {
+        tooltip += " ";
+        tooltip += cmd;
+    }
+    tooltip += ": ";
+    tooltip += nativeShortcut;
+    pWidget->setToolTip(tooltip);
+}
+
