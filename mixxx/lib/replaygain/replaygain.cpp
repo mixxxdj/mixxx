@@ -1,6 +1,7 @@
 /*
  *  ReplayGainAnalysis - analyzes input samples and give the recommended dB change
  *  Copyright (C) 2001 David Robinson and Glen Sawyer
+ *  Copyright (C) 2012 Vittorio Calao and RJ Ryan
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -89,79 +90,14 @@
  *  Optimization/clarity suggestions are welcome.
  */
 
-#if HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "replaygain.h"
 
-#include "replaygain_analysis.h"
-
-Float_t ReplayGainReferenceLoudness = 89.0; /* in dB SPL */
-
-typedef unsigned short  Uint16_t;
-typedef signed short    Int16_t;
-typedef unsigned int    Uint32_t;
-typedef signed int      Int32_t;
-
-#define YULE_ORDER         10
-#define BUTTER_ORDER        2
-#define RMS_PERCENTILE      0.95        /* percentile which is louder than the proposed level */
-#define MAX_SAMP_FREQ   48000.          /* maximum allowed sample frequency [Hz] */
-#define RMS_WINDOW_TIME     0.050       /* Time slice size [s] */
-#define STEPS_per_dB      100.          /* Table entries per dB */
-#define MAX_dB            120.          /* Table entries for 0...MAX_dB (normal max. values are 70...80 dB) */
-
-#define MAX_ORDER               (BUTTER_ORDER > YULE_ORDER ? BUTTER_ORDER : YULE_ORDER)
-/* [JEC] the following was originally #defined as:
- *   (size_t) (MAX_SAMP_FREQ * RMS_WINDOW_TIME)
- * but that seemed to fail to take into account the ceil() part of the
- * sampleWindow calculation in ResetSampleFrequency(), and was causing
- * buffer overflows for 48kHz analysis, hence the +1.
- */
-#ifndef __sun
- #define MAX_SAMPLES_PER_WINDOW  (size_t) (MAX_SAMP_FREQ * RMS_WINDOW_TIME + 1.)   /* max. Samples per Time slice */
-#else
- /* [JEC] Solaris Forte compiler doesn't like float calc in array indices */
- #define MAX_SAMPLES_PER_WINDOW  (size_t) (2401)
-#endif
-#define PINK_REF                64.82 /* 298640883795 */                          /* calibration value */
-
-static Float_t          linprebuf [MAX_ORDER * 2];
-static Float_t*         linpre;                                          /* left input samples, with pre-buffer */
-static Float_t          lstepbuf  [MAX_SAMPLES_PER_WINDOW + MAX_ORDER];
-static Float_t*         lstep;                                           /* left "first step" (i.e. post first filter) samples */
-static Float_t          loutbuf   [MAX_SAMPLES_PER_WINDOW + MAX_ORDER];
-static Float_t*         lout;                                            /* left "out" (i.e. post second filter) samples */
-static Float_t          rinprebuf [MAX_ORDER * 2];
-static Float_t*         rinpre;                                          /* right input samples ... */
-static Float_t          rstepbuf  [MAX_SAMPLES_PER_WINDOW + MAX_ORDER];
-static Float_t*         rstep;
-static Float_t          routbuf   [MAX_SAMPLES_PER_WINDOW + MAX_ORDER];
-static Float_t*         rout;
-static unsigned int              sampleWindow;                           /* number of samples required to reach number of milliseconds required for RMS window */
-static unsigned long    totsamp;
-static double           lsum;
-static double           rsum;
-static int              freqindex;
-#ifndef __sun
-static Uint32_t  A [(size_t)(STEPS_per_dB * MAX_dB)];
-/*static Uint32_t  B [(size_t)(STEPS_per_dB * MAX_dB)];*/
-#else
-/* [JEC] Solaris Forte compiler doesn't like float calc in array indices */
-static Uint32_t  A [12000];
-/*static Uint32_t  B [12000];*/
-#endif
-
-/* for each filter:
-   [0] 48 kHz, [1] 44.1 kHz, [2] 32 kHz, [3] 24 kHz, [4] 22050 Hz, [5] 16 kHz, [6] 12 kHz, [7] is 11025 Hz, [8] 8 kHz */
-
-#ifdef WIN32
-#pragma warning ( disable : 4305 )
-#endif
+typedef float Float_t;
 
 static const Float_t  AYule [9] [11] = {
     { 1., -3.84664617118067,  7.81501653005538,-11.34170355132042, 13.05504219327545,-12.28759895145294,  9.48293806319790, -5.87257861775999,  2.75465861874613, -0.86984376593551, 0.13919314567432 },
@@ -211,67 +147,25 @@ static const Float_t  BButter [9] [3] = {
     { 0.94597685600279, -1.89195371200558, 0.94597685600279 }
 };
 
-#ifdef WIN32
-#pragma warning ( default : 4305 )
-#endif
-
-/* When calling this procedure, make sure that ip[-order] and op[-order] point to real data! */
-
-static void
-filter ( const Float_t* input, Float_t* output, size_t nSamples, const Float_t* a, const Float_t* b, size_t order )
-{
-    double  y;
-    size_t  i;
-    size_t  k;
-
-    for ( i = 0; i < nSamples; i++ ) {
-        y = input[i] * b[0];
-        for ( k = 1; k <= order; k++ )
-            y += input[i-k] * b[k] - output[i-k] * a[k];
-        output[i] = (Float_t)y;
-    }
+ReplayGain::ReplayGain() :
+        num_channels(1),
+        freqindex(0) {
 }
 
-/* returns a INIT_GAIN_ANALYSIS_OK if successful, INIT_GAIN_ANALYSIS_ERROR if not */
-
-int
-ResetSampleFrequency ( long samplefreq ) {
-    int  i;
-
-    /* zero out initial values */
-    for ( i = 0; i < MAX_ORDER; i++ )
-        linprebuf[i] = lstepbuf[i] = loutbuf[i] = rinprebuf[i] = rstepbuf[i] = routbuf[i] = 0.;
-
-    switch ( (int)(samplefreq) ) {
-        case 48000: freqindex = 0; break;
-        case 44100: freqindex = 1; break;
-        case 32000: freqindex = 2; break;
-        case 24000: freqindex = 3; break;
-        case 22050: freqindex = 4; break;
-        case 16000: freqindex = 5; break;
-        case 12000: freqindex = 6; break;
-        case 11025: freqindex = 7; break;
-        case  8000: freqindex = 8; break;
-        default:    return INIT_GAIN_ANALYSIS_ERROR;
-    }
-
-    sampleWindow = (int) ceil (samplefreq * RMS_WINDOW_TIME);
-
-    lsum         = 0.;
-    rsum         = 0.;
-    totsamp      = 0;
-
-    memset ( A, 0, sizeof(A) );
-
-	return INIT_GAIN_ANALYSIS_OK;
+ReplayGain::~ReplayGain() {
 }
 
-int
-InitGainAnalysis ( long samplefreq )
-{
-	if (ResetSampleFrequency(samplefreq) != INIT_GAIN_ANALYSIS_OK) {
-		return INIT_GAIN_ANALYSIS_ERROR;
-	}
+bool ReplayGain::initialise(long samplefreq, size_t channels) {
+
+    if (channels < 1 || channels > 2) {
+        return false;
+    }
+
+
+    bool ok = ResetSampleFrequency(samplefreq);
+    if (!ok) {
+        return false;
+    }
 
     linpre       = linprebuf + MAX_ORDER;
     rinpre       = rinprebuf + MAX_ORDER;
@@ -280,42 +174,38 @@ InitGainAnalysis ( long samplefreq )
     lout         = loutbuf   + MAX_ORDER;
     rout         = routbuf   + MAX_ORDER;
 
-    //memset ( B, 0, sizeof(B) );
-
-    return INIT_GAIN_ANALYSIS_OK;
+    num_channels  = channels;
+    return true;
 }
 
-/* returns GAIN_ANALYSIS_OK if successful, GAIN_ANALYSIS_ERROR if not */
 
-int
-AnalyzeSamples ( const Float_t* left_samples, const Float_t* right_samples, size_t num_samples, int num_channels )
-{
-    const Float_t*  curleft;
-    const Float_t*  curright;
+bool ReplayGain::process(const float* left_samples, const float* right_samples, size_t blockSize) {
+    const float*  curleft = NULL;
+    const float*  curright = NULL;
     long            batchsamples;
     long            cursamples;
     long            cursamplepos;
     int             i;
 
-    if ( num_samples == 0 )
-        return GAIN_ANALYSIS_OK;
+    if ( blockSize == 0 )
+        return true;
 
     cursamplepos = 0;
-    batchsamples = num_samples;
+    batchsamples = blockSize;
 
     switch ( num_channels) {
     case  1: right_samples = left_samples;
     case  2: break;
-    default: return GAIN_ANALYSIS_ERROR;
+    default: return false;
     }
 
-    if ( num_samples < MAX_ORDER ) {
-        memcpy ( linprebuf + MAX_ORDER, left_samples , num_samples * sizeof(Float_t) );
-        memcpy ( rinprebuf + MAX_ORDER, right_samples, num_samples * sizeof(Float_t) );
+    if (blockSize < MAX_ORDER) {
+        memcpy ( linprebuf + MAX_ORDER, left_samples , blockSize * sizeof(float) );
+        memcpy ( rinprebuf + MAX_ORDER, right_samples, blockSize * sizeof(float) );
     }
     else {
-        memcpy ( linprebuf + MAX_ORDER, left_samples,  MAX_ORDER   * sizeof(Float_t) );
-        memcpy ( rinprebuf + MAX_ORDER, right_samples, MAX_ORDER   * sizeof(Float_t) );
+        memcpy ( linprebuf + MAX_ORDER, left_samples,  MAX_ORDER   * sizeof(float) );
+        memcpy ( rinprebuf + MAX_ORDER, right_samples, MAX_ORDER   * sizeof(float) );
     }
 
     while ( batchsamples > 0 ) {
@@ -331,11 +221,11 @@ AnalyzeSamples ( const Float_t* left_samples, const Float_t* right_samples, size
             curright = right_samples + cursamplepos;
         }
 
-        filter ( curleft , lstep + totsamp, cursamples, AYule[freqindex], BYule[freqindex], YULE_ORDER );
-        filter ( curright, rstep + totsamp, cursamples, AYule[freqindex], BYule[freqindex], YULE_ORDER );
+        filterYule( curleft , lstep + totsamp, cursamples );
+        filterYule( curright, rstep + totsamp, cursamples );
 
-        filter ( lstep + totsamp, lout + totsamp, cursamples, AButter[freqindex], BButter[freqindex], BUTTER_ORDER );
-        filter ( rstep + totsamp, rout + totsamp, cursamples, AButter[freqindex], BButter[freqindex], BUTTER_ORDER );
+        filterButter( lstep + totsamp, lout + totsamp, cursamples );
+        filterButter( rstep + totsamp, rout + totsamp, cursamples );
 
         for ( i = 0; i < cursamples; i++ ) {             /* Get the squared values */
             lsum += lout [totsamp+i] * lout [totsamp+i];
@@ -346,70 +236,42 @@ AnalyzeSamples ( const Float_t* left_samples, const Float_t* right_samples, size
         cursamplepos += cursamples;
         totsamp      += cursamples;
         if ( totsamp == sampleWindow ) {  /* Get the Root Mean Square (RMS) for this set of samples */
-            double  val  = STEPS_per_dB * 10. * log10 ( (lsum+rsum) / totsamp * 0.5 + 1.e-37 );
+            double  val  = STEPS_per_dB * 10 * log10 ( (lsum+rsum) / totsamp * 0.5 + 1.e-37 );
             int     ival = (int) val;
             if ( ival <                     0 ) ival = 0;
             if ( ival >= (int)(sizeof(A)/sizeof(*A)) ) ival = (int)(sizeof(A)/sizeof(*A)) - 1;
             A [ival]++;
             lsum = rsum = 0.;
-            memmove ( loutbuf , loutbuf  + totsamp, MAX_ORDER * sizeof(Float_t) );
-            memmove ( routbuf , routbuf  + totsamp, MAX_ORDER * sizeof(Float_t) );
-            memmove ( lstepbuf, lstepbuf + totsamp, MAX_ORDER * sizeof(Float_t) );
-            memmove ( rstepbuf, rstepbuf + totsamp, MAX_ORDER * sizeof(Float_t) );
+            memmove ( loutbuf , loutbuf  + totsamp, MAX_ORDER * sizeof(float) );
+            memmove ( routbuf , routbuf  + totsamp, MAX_ORDER * sizeof(float) );
+            memmove ( lstepbuf, lstepbuf + totsamp, MAX_ORDER * sizeof(float) );
+            memmove ( rstepbuf, rstepbuf + totsamp, MAX_ORDER * sizeof(float) );
             totsamp = 0;
         }
         if ( totsamp > sampleWindow )   /* somehow I really screwed up: Error in programming! Contact author about totsamp > sampleWindow */
-            return GAIN_ANALYSIS_ERROR;
+            return false;
     }
-    if ( num_samples < MAX_ORDER ) {
-        memmove ( linprebuf,                           linprebuf + num_samples, (MAX_ORDER-num_samples) * sizeof(Float_t) );
-        memmove ( rinprebuf,                           rinprebuf + num_samples, (MAX_ORDER-num_samples) * sizeof(Float_t) );
-        memcpy  ( linprebuf + MAX_ORDER - num_samples, left_samples,          num_samples             * sizeof(Float_t) );
-        memcpy  ( rinprebuf + MAX_ORDER - num_samples, right_samples,         num_samples             * sizeof(Float_t) );
+    if (  blockSize < MAX_ORDER ) {
+        memmove ( linprebuf,                           linprebuf +  blockSize, (MAX_ORDER- blockSize) * sizeof(float) );
+        memmove ( rinprebuf,                           rinprebuf +  blockSize, (MAX_ORDER- blockSize) * sizeof(float) );
+        memcpy  ( linprebuf + MAX_ORDER -  blockSize, left_samples,           blockSize             * sizeof(float) );
+        memcpy  ( rinprebuf + MAX_ORDER -  blockSize, right_samples,          blockSize            * sizeof(float) );
     }
     else {
-        memcpy  ( linprebuf, left_samples  + num_samples - MAX_ORDER, MAX_ORDER * sizeof(Float_t) );
-        memcpy  ( rinprebuf, right_samples + num_samples - MAX_ORDER, MAX_ORDER * sizeof(Float_t) );
+        memcpy  ( linprebuf, left_samples  + blockSize - MAX_ORDER, MAX_ORDER * sizeof(float) );
+        memcpy  ( rinprebuf, right_samples + blockSize - MAX_ORDER, MAX_ORDER * sizeof(float) );
     }
-
-    return GAIN_ANALYSIS_OK;
+    return true;
 }
 
-
-static Float_t
-analyzeResult ( Uint32_t* Array, size_t len )
+float ReplayGain::end()
 {
-    Uint32_t  elems;
-    Int32_t   upper;
-    size_t    i;
-
-    elems = 0;
-    for ( i = 0; i < len; i++ )
-        elems += Array[i];
-    if ( elems == 0 )
-        return GAIN_NOT_ENOUGH_SAMPLES;
-
-    upper = (Int32_t) ceil (elems * (1. - RMS_PERCENTILE));
-    for ( i = len; i-- > 0; ) {
-        if ( (upper -= Array[i]) <= 0 )
-            break;
-    }
-
-   return (Float_t) ((Float_t)PINK_REF - (Float_t)i / (Float_t)STEPS_per_dB);
-   // return (Float_t)  ((Float_t)i / (Float_t)STEPS_per_dB);
-}
-
-
-Float_t
-GetTitleGain ( void )
-{
-    Float_t  retval;
+    float  retval;
     unsigned int    i;
 
-    retval = analyzeResult ( A, sizeof(A)/sizeof(*A) );
+    retval = analyzeResult( A, sizeof(A)/sizeof(*A) );
 
-    for ( i = 0; i < sizeof(A)/sizeof(*A); i++ ) {
-        //B[i] += A[i];
+    for ( i = 0; i < (int)(sizeof(A)/sizeof(*A)); i++ ) {
         A[i]  = 0;
     }
 
@@ -421,11 +283,88 @@ GetTitleGain ( void )
     return retval;
 }
 
+//private functions
 
-//Float_t
-//GetAlbumGain ( void )
-//{
-//    return analyzeResult ( B, sizeof(B)/sizeof(*B) );
-//}
+void
+ReplayGain::filterYule (const float* input, float* output, size_t nSamples) {
+    const float* a = AYule[freqindex];
+    const float* b = BYule[freqindex];
+    for (size_t i = 0; i < nSamples; i++) {
+        // TODO(XXX) Add back 1e-10 hack for denormal range?
+        double y = input[i] * b[0];
+        for (size_t k = 1; k <= YULE_ORDER; k++) {
+            y += input[i - k] * b[k] - output[i-k] * a[k];
+        }
+        output[i] = (Float_t)y;
+    }
+}
 
-/* end of replaygain_analysis.c */
+void
+ReplayGain::filterButter(const float* input, float* output, size_t nSamples) {
+    const float* a = AButter[freqindex];
+    const float* b = BButter[freqindex];
+    for (size_t i = 0; i < nSamples; i++) {
+        // TODO(XXX) Add back 1e-10 hack for denormal range?
+        double y = input[i] * b[0];
+        for (size_t k = 1; k <= BUTTER_ORDER; k++) {
+            y += input[i - k] * b[k] - output[i-k] * a[k];
+        }
+        output[i] = (Float_t)y;
+    }
+
+}
+
+bool
+ReplayGain::ResetSampleFrequency(long samplefreq){
+    int  i;
+
+    // zero out initial values
+    for ( i = 0; i < MAX_ORDER; i++ )
+        linprebuf[i] = lstepbuf[i] = loutbuf[i] = rinprebuf[i] = rstepbuf[i] = routbuf[i] = 0.;
+
+    switch ( (int)(samplefreq) ) {
+        case 48000: freqindex = 0; break;
+        case 44100: freqindex = 1; break;
+        case 32000: freqindex = 2; break;
+        case 24000: freqindex = 3; break;
+        case 22050: freqindex = 4; break;
+        case 16000: freqindex = 5; break;
+        case 12000: freqindex = 6; break;
+        case 11025: freqindex = 7; break;
+        case  8000: freqindex = 8; break;
+        default:    return false;
+    }
+
+    sampleWindow = (int) ceil (samplefreq * RMS_WINDOW_TIME);
+
+    lsum         = 0.;
+    rsum         = 0.;
+    totsamp      = 0;
+
+    memset ( A, 0, sizeof(A) );
+
+    return true;
+}
+
+float
+ReplayGain::analyzeResult ( unsigned int* Array, size_t len ){
+
+    Uint32_t  elems;
+    int32_t   upper;
+    size_t    i;
+
+    elems = 0;
+    // TODO(XXX) possible overflow?
+    for ( i = 0; i < len; i++ )
+        elems += Array[i];
+    if ( elems == 0 )
+        return GAIN_NOT_ENOUGH_SAMPLES;
+
+    upper = (int32_t) ceil (elems * (1. - RMS_PERCENTILE));
+    for ( i = len; i-- > 0; ) {
+        if ( (upper -= Array[i]) <= 0 )
+            break;
+    }
+
+    return (float) ((float)PINK_REF - (float)i / (float)STEPS_per_dB);
+}

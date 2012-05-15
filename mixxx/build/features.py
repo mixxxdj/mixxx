@@ -429,7 +429,6 @@ class Vamp(Feature):
         sources = ['vamp/vampanalyser.cpp',
                    'vamp/vamppluginloader.cpp',
                    'analyserbeats.cpp',
-                   'analysergainvamp.cpp',
                    'dlgprefbeats.cpp']
         if self.INTERNAL_LINK:
             hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH

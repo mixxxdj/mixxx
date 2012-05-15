@@ -16,7 +16,6 @@
 #include "analyserrg.h"
 #ifdef __VAMP__
 #include "analyserbeats.h"
-#include "analysergainvamp.h";
 #include "vamp/vampanalyser.h"
 #endif
 
@@ -47,7 +46,7 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 bool AnalyserQueue::isLoadedTrackWaiting()
 {
     QMutexLocker queueLocker(&m_qm);
-    
+
     const PlayerInfo& info = PlayerInfo::Instance();
     TrackPointer pTrack;
     QMutableListIterator<TrackPointer> it(m_tioq);
@@ -164,7 +163,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
         // the audio callback thread.
         //QThread::yieldCurrentThread();
         //QThread::usleep(10);
-        
+
         //has something new entered the queue?
         if (m_aiCheckPriorities)
         {
@@ -180,7 +179,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
 
     delete[] data16;
     delete[] samples;
-    
+
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }
 
@@ -225,7 +224,7 @@ void AnalyserQueue::run() {
             // Make sure not to short-circuit initialise(...)
             processTrack = it.next()->initialise(next, iSampleRate, iNumSamples) || processTrack;
         }
-        
+
         if (processTrack) {
             if (! PlayerInfo::Instance().isTrackLoaded(next) && isLoadedTrackWaiting()) {
                 qDebug() << "Delaying track analysis because track is not loaded -- requeuing";
@@ -234,11 +233,11 @@ void AnalyserQueue::run() {
                     itf.next()->cleanup(next);
                 }
                 queueAnalyseTrack(next);
-            } 
-            else 
+            }
+            else
             {
                 bool completed = doAnalysis(next, pSoundSource);
-                
+
                 if (!completed)
                 {
                     //This track was cancelled
@@ -303,16 +302,15 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 #endif
 
     ret->addAnalyser(new AnalyserWaveform());
-
+    ret->addAnalyser(new AnalyserGain(_config));
 #ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
-    ret->addAnalyser(new AnalyserGainVamp(_config));
     ret->addAnalyser(new AnalyserBeats(_config));
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 #else
     ret->addAnalyser(new AnalyserBPM(_config));
-    ret->addAnalyser(new AnalyserGain(_config));
 #endif
+
     ret->start(QThread::IdlePriority);
     return ret;
 }
@@ -321,16 +319,15 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
     AnalyserQueue* ret = new AnalyserQueue();
 
     ret->addAnalyser(new AnalyserWaveform());
-
+    ret->addAnalyser(new AnalyserGain(_config));
 #ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
-    ret->addAnalyser(new AnalyserGainVamp(_config));
     ret->addAnalyser(new AnalyserBeats(_config));
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 #else
     ret->addAnalyser(new AnalyserBPM(_config));
-    ret->addAnalyser(new AnalyserGain(_config));
 #endif
+
     ret->start(QThread::IdlePriority);
     return ret;
 }

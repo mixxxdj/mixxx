@@ -214,7 +214,7 @@ class FidLib(Dependence):
 class ReplayGain(Dependence):
 
     def sources(self, build):
-        return ["#lib/replaygain/replaygain_analysis.c"]
+        return ["#lib/replaygain/replaygain.cpp"]
 
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
