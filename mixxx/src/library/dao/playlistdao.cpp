@@ -183,26 +183,14 @@ void PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId) {
     // Start the transaction
     ScopedTransaction transaction(m_database);
 
-    //Find out the highest position existing in the playlist so we know what
-    //position this track should have.
-    QSqlQuery query(m_database);
-    query.prepare("SELECT max(position) as position FROM PlaylistTracks "
-                  "WHERE playlist_id = :id");
-    query.bindValue(":id", playlistId);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+    int position = getMaxPosition(playlistId);
 
-    // Get the position of the highest track in the playlist.
-    int position = 0;
-    if (query.next()) {
-        position = query.value(query.record().indexOf("position")).toInt();
-    }
     // Append after the last song. If no songs or a failed query then 0 becomes
     // 1.
     position++;
 
     //Insert the song into the PlaylistTracks table
+    QSqlQuery query(m_database);
     query.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position, pl_datetime_added)"
                   "VALUES (:playlist_id, :track_id, :position, CURRENT_TIMESTAMP)");
     query.bindValue(":playlist_id", playlistId);
@@ -382,6 +370,12 @@ bool PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
 
     ScopedTransaction transaction(m_database);
 
+    int max_position = getMaxPosition(playlistId) + 1;
+
+    if (position > max_position) {
+        position = max_position;
+    }
+
     // Move all the tracks in the playlist up by one
     QString queryString =
             QString("UPDATE PlaylistTracks SET position=position+1 "
@@ -537,3 +531,23 @@ void PlaylistDAO::copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistId)
     }
     appendTracksToPlaylist(trackIds, targetPlaylistId);
 }
+
+int PlaylistDAO::getMaxPosition(int playlistId) {
+    //Find out the highest position existing in the playlist so we know what
+    //position this track should have.
+    QSqlQuery query(m_database);
+    query.prepare("SELECT max(position) as position FROM PlaylistTracks "
+                  "WHERE playlist_id = :id");
+    query.bindValue(":id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Get the position of the highest track in the playlist.
+    int position = 0;
+    if (query.next()) {
+        position = query.value(query.record().indexOf("position")).toInt();
+    }
+    return position;
+}
+
