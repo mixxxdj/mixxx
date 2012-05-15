@@ -3,30 +3,57 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-09 14:46+0200\n"
-"PO-Revision-Date: 2012-05-09 13:52+0000\n"
+"POT-Creation-Date: 2012-05-14 15:35-0400\n"
+"PO-Revision-Date: 2012-05-14 20:10+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-10 05:14+0000\n"
-"X-Generator: Launchpad (build 15213)\n"
+"X-Launchpad-Export-Date: 2012-05-15 04:38+0000\n"
+"X-Generator: Launchpad (build 15238)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
 msgstr "Auto-DJ"
 
+#: BaseExternalLibraryFeature#1
+msgctxt "BaseExternalLibraryFeature#1"
+msgid "Add to Auto DJ Queue (bottom)"
+msgstr "Zur Auto-DJ Warteschlange hinzufügen (unten)"
+
+#: BaseExternalLibraryFeature#2
+msgctxt "BaseExternalLibraryFeature#2"
+msgid "Add to Auto DJ Queue (top)"
+msgstr "Zur Auto-DJ Warteschlange hinzufügen (oben)"
+
+#: BaseExternalLibraryFeature#3
+msgctxt "BaseExternalLibraryFeature#3"
+msgid "Import Playlist"
+msgstr "Wiedergabeliste importieren"
+
+#: BaseExternalLibraryFeature#4
+msgctxt "BaseExternalLibraryFeature#4"
+msgid "Playlist Creation Failed"
+msgstr "Erstellung der Wiedergabeliste fehlgeschlagen"
+
+#: BaseExternalLibraryFeature#5
+msgctxt "BaseExternalLibraryFeature#5"
+msgid "An unknown error occurred while creating playlist: "
+msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
+
 #: BasePlaylistFeature#1
 msgid "New Playlist"
 msgstr "Neue Wiedergabeliste"
 
 #: BasePlaylistFeature#2
+msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
 msgstr "Zur Auto-DJ Warteschlange hinzufügen (unten)"
 
 #: BasePlaylistFeature#3
+msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
 msgstr "Zur Auto-DJ Warteschlange hinzufügen (oben)"
 
@@ -79,10 +106,12 @@ msgid "Playlist name:"
 msgstr "Name der Wiedergabeliste:"
 
 #: BasePlaylistFeature#15
+msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
 msgstr "Erstellung der Wiedergabeliste fehlgeschlagen"
 
 #: BasePlaylistFeature#16
+msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
 msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
 
@@ -199,39 +228,34 @@ msgid "Couldn't load track."
 msgstr "Titel konnte nicht geladen werden."
 
 #: BrowseFeature#1
-msgid "Quick Links"
-msgstr "Kurzlinks"
+msgid "Add to Quick Links"
+msgstr "Zu Schnellzugriff hinzufügen"
 
 #: BrowseFeature#2
+msgid "Remove from Quick Links"
+msgstr "Vom Schnellzugriff entfernen"
+
+#: BrowseFeature#3
+msgid "Quick Links"
+msgstr "Schnellzugriff"
+
+#: BrowseFeature#4
 msgid "Devices"
 msgstr "Geräte"
 
-#: BrowseFeature#3
+#: BrowseFeature#5
 msgid "Removable Devices"
 msgstr "Wechseldatenträger"
 
-#: BrowseFeature#4
-msgctxt "BrowseFeature#4"
-msgid "Mixxx Library"
-msgstr "Mixxx-Bibliothek"
-
-#: BrowseFeature#5
-msgid "Home"
-msgstr "Persönlicher Ordner"
-
 #: BrowseFeature#6
-msgid "Music"
-msgstr "Musik"
+msgid ""
+"Browse lets you navigate, view, and load tracks from folders on your hard "
+"disk and external devices."
+msgstr ""
+"Sie können Ordnern auf Ihrer Festplatte und externen Geräten durchsuchen, "
+"sich Titel anzeigen lassen und diese laden."
 
 #: BrowseFeature#7
-msgid "Documents"
-msgstr "Dokumente"
-
-#: BrowseFeature#8
-msgid "Desktop"
-msgstr "Arbeitsfläche"
-
-#: BrowseFeature#9
 msgid "Browse"
 msgstr "Durchsuchen"
 
@@ -310,7 +334,6 @@ msgid "Location"
 msgstr "Speicherort"
 
 #: BrowseTableModel#16
-msgctxt "BrowseTableModel#16"
 msgid "Mixxx Library"
 msgstr "Mixxx-Bibliothek"
 
@@ -907,31 +930,31 @@ msgid "Pitch control slider"
 msgstr "Tonhöhen-Regler"
 
 #: DlgControllerLearning#39
-msgid "Adjust rate up (course)"
-msgstr "Geschwindigkeit erhöhen (grob)"
-
-#: DlgControllerLearning#40
 msgid "Adjust rate up (fine)"
 msgstr "Geschwindigkeit erhöhen (fein)"
 
-#: DlgControllerLearning#41
-msgid "Adjust rate down (course)"
-msgstr "Geschwindigkeit verringern (grob)"
-
-#: DlgControllerLearning#42
+#: DlgControllerLearning#40
 msgid "Adjust rate down (fine)"
 msgstr "Geschwindigkeit verringern (fein)"
 
-#: DlgControllerLearning#43
-msgid "Pitch-bend rate up (course)"
-msgstr "Geschwindigkeit vorübergehend erhöhen (grob)"
-
-#: DlgControllerLearning#44
+#: DlgControllerLearning#41
 msgid "Pitch-bend rate up (fine)"
 msgstr "Geschwindigkeit vorübergehend erhöhen (fein)"
 
+#: DlgControllerLearning#42
+msgid "Adjust rate up (coarse)"
+msgstr "Geschwindigkeit erhöhen (grob)"
+
+#: DlgControllerLearning#43
+msgid "Adjust rate down (coarse)"
+msgstr "Geschwindigkeit verringern (grob)"
+
+#: DlgControllerLearning#44
+msgid "Pitch-bend rate up (coarse)"
+msgstr "Geschwindigkeit vorübergehend erhöhen (grob)"
+
 #: DlgControllerLearning#45
-msgid "Pitch-bend rate down (course)"
+msgid "Pitch-bend rate down (coarse)"
 msgstr "Geschwindigkeit vorübergehend verringern (grob)"
 
 #: DlgControllerLearning#46
@@ -1429,76 +1452,80 @@ msgid "Auto Recall Cue"
 msgstr "Cue automatisch abrufen"
 
 #: DlgPrefControlsDlg#13
+msgid "Locale"
+msgstr "Sprache"
+
+#: DlgPrefControlsDlg#14
 msgid "Temporary rate change when left-clicking"
 msgstr "Vorübergehende Geschwindigkeitsänderung beim Linksklick"
 
-#: DlgPrefControlsDlg#14
+#: DlgPrefControlsDlg#15
 msgid "Temporary rate change when right-clicking"
 msgstr "Vorübergehende Geschwindigkeitsänderung beim Rechtsklick"
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#16
 msgid "Permanent Pitch/Rate Buttons"
 msgstr "Knopf für permanente Tonhöhe/Geschwindigkeit"
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#17
 msgid "Displays which OpenGL version is supported by the current platform."
 msgstr ""
 "Zeigt an welche OpenGL-Version von der aktuellen Plattform unterstützt wird."
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#18
 msgid "Displays the actual frame rate."
 msgstr "Zeigt die tatsächliche Bildwiederholrate."
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#19
 msgid "Left click"
 msgstr "Linksklick"
 
-#: DlgPrefControlsDlg#19
+#: DlgPrefControlsDlg#20
 msgid "Right click"
 msgstr "Rechtsklick"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#21
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#22
 msgid "Temporary Pitch/Rate Buttons"
 msgstr "Knopf für vorübergehende Tonhöhe/Geschwindigkeit"
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
 msgstr "Weiche Tonhöhenveränderung"
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
 msgstr "Feinheit der Tonhöhenveränderung"
 
-#: DlgPrefControlsDlg#24
-msgctxt "DlgPrefControlsDlg#24"
+#: DlgPrefControlsDlg#25
+msgctxt "DlgPrefControlsDlg#25"
 msgid "Waveform Display"
 msgstr "Wellenformanzeige"
 
-#: DlgPrefControlsDlg#25
+#: DlgPrefControlsDlg#26
 msgid "Synchronize zoom level across all waveform displays."
 msgstr "Synchronisieren die Vergrößerungsstufe in all Wellenform-Anzeigen."
 
-#: DlgPrefControlsDlg#26
+#: DlgPrefControlsDlg#27
 msgid "OpenGl status"
 msgstr "OpenGl-Status"
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#28
 msgid "Display type"
 msgstr "Anzeige-Art"
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#29
 msgid "Permanent rate change when left-clicking"
 msgstr "Permanente Geschwindigkeitsänderung beim Linksklick"
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#30
 msgid "Permanent rate change when right-clicking"
 msgstr "Permanente Geschwindigkeitsänderung beim Rechtsklick"
 
-#: DlgPrefControlsDlg#30
+#: DlgPrefControlsDlg#31
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
@@ -1506,40 +1533,40 @@ msgstr ""
 "Läßt die Knöpfe für vorübergehende Tonhöhen-/Geschwindigkeitsänderungen "
 "diese schrittweise anpassen antstatt auf einmal."
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#32
 msgid "Value in milliseconds"
 msgstr "Wert in Millisekunden"
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#33
 msgid "Visual gain of the high frequencies"
 msgstr "Visuelle Verstärkung der hohen Frequenzen"
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the middle frequencies"
 msgstr "Visuelle Verstärkung der mittleren Frequenzen"
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#35
 msgid "Visual gain of the low frequencies"
 msgstr "Visuelle Verstärkung der tiefen Frequenzen"
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#36
 msgid "Global visual gain"
 msgstr "Globale Visuelle Verstärkung"
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#37
 msgid "Frame rate"
 msgstr "Bildwiederholrate"
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#38
 msgid "Default zoom"
 msgstr "Standard-Vergrößerung"
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#39
 msgid "Visual gain"
 msgstr "Visuelle Verstärkung"
 
-#: DlgPrefControlsDlg#39
-msgctxt "DlgPrefControlsDlg#39"
+#: DlgPrefControlsDlg#40
+msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
 msgstr "Synchronisieren"
 
@@ -1847,32 +1874,44 @@ msgstr ""
 "Wenn möglich, relative Pfade für den Export von Wiedergabelisten verwenden"
 
 #: DlgPrefPlaylistDlg#10
-msgctxt "DlgPrefPlaylistDlg#10"
+msgid "Show Rhythmbox Library"
+msgstr "Rhythmbox-Bibliothek anzeigen"
+
+#: DlgPrefPlaylistDlg#11
+msgid "Show iTunes Library"
+msgstr "iTunes-Bibliothek anzeigen"
+
+#: DlgPrefPlaylistDlg#12
+msgid "Show Traktor Library"
+msgstr "Traktor-Bibliothek anzeigen"
+
+#: DlgPrefPlaylistDlg#13
+msgctxt "DlgPrefPlaylistDlg#13"
 msgid "Browse..."
 msgstr "Durchsuchen..."
 
-#: DlgPrefPlaylistDlg#11
-msgctxt "DlgPrefPlaylistDlg#11"
+#: DlgPrefPlaylistDlg#14
+msgctxt "DlgPrefPlaylistDlg#14"
 msgid "Library"
 msgstr "Bibliothek"
 
-#: DlgPrefPlaylistDlg#12
+#: DlgPrefPlaylistDlg#15
 msgid "Music Directory:"
 msgstr "Musikverzeichnis:"
 
-#: DlgPrefPlaylistDlg#13
+#: DlgPrefPlaylistDlg#16
 msgid "Built-in"
 msgstr "Integriert"
 
-#: DlgPrefPlaylistDlg#14
+#: DlgPrefPlaylistDlg#17
 msgid "Available Online..."
 msgstr "Online verfügbar..."
 
-#: DlgPrefPlaylistDlg#15
+#: DlgPrefPlaylistDlg#18
 msgid "Bundled Songs"
 msgstr "Mitgelieferte Titel"
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#19
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -2016,6 +2055,30 @@ msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset to Defaults"
 msgstr "Zurücksetzen"
 
+#: DlgPrefShoutcast#1
+msgid "Icecast 2"
+msgstr "Icecast 2"
+
+#: DlgPrefShoutcast#2
+msgid "Shoutcast"
+msgstr "Shoutcast"
+
+#: DlgPrefShoutcast#3
+msgid "Icecast 1"
+msgstr "Icecast 1"
+
+#: DlgPrefShoutcast#4
+msgid "MP3"
+msgstr "MP3"
+
+#: DlgPrefShoutcast#5
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: DlgPrefShoutcast#6
+msgid "Stereo"
+msgstr "Stereo"
+
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
@@ -2035,82 +2098,50 @@ msgid "Type"
 msgstr "Typ"
 
 #: DlgPrefShoutcastDlg#5
-msgid "Icecast 2"
-msgstr "Icecast 2"
-
-#: DlgPrefShoutcastDlg#6
-msgid "Shoutcast"
-msgstr "Shoutcast"
-
-#: DlgPrefShoutcastDlg#7
-msgid "Icecast 1"
-msgstr "Icecast 1"
-
-#: DlgPrefShoutcastDlg#8
 msgid "Mount"
 msgstr "Einhängen"
 
-#: DlgPrefShoutcastDlg#9
-msgid "/mixxx.ogg"
-msgstr "/mixxx.ogg"
-
-#: DlgPrefShoutcastDlg#10
+#: DlgPrefShoutcastDlg#6
 msgid "Host"
 msgstr "Host"
 
-#: DlgPrefShoutcastDlg#11
-msgid "192.168.123.8"
-msgstr "192.168.123.8"
-
-#: DlgPrefShoutcastDlg#12
+#: DlgPrefShoutcastDlg#7
 msgid "Port"
 msgstr "Port"
 
-#: DlgPrefShoutcastDlg#13
-msgid "8000"
-msgstr "8000"
-
-#: DlgPrefShoutcastDlg#14
+#: DlgPrefShoutcastDlg#8
 msgid "Login"
 msgstr "Anmeldung"
 
-#: DlgPrefShoutcastDlg#15
-msgid "source"
-msgstr "Quelle"
-
-#: DlgPrefShoutcastDlg#16
+#: DlgPrefShoutcastDlg#9
 msgid "Password"
 msgstr "Passwort"
 
-#: DlgPrefShoutcastDlg#17
-msgid "test1234"
-msgstr "test1234"
-
-#: DlgPrefShoutcastDlg#18
+#: DlgPrefShoutcastDlg#10
 msgid "Stream settings"
 msgstr "Stream-Einstellungen"
 
-#: DlgPrefShoutcastDlg#19
+#: DlgPrefShoutcastDlg#11
 msgid "Stream name"
 msgstr "Stream-Name"
 
-#: DlgPrefShoutcastDlg#20
+#: DlgPrefShoutcastDlg#12
 msgid "Mixxx Icecast Testing"
 msgstr "Mixxx Icecast-Test"
 
-#: DlgPrefShoutcastDlg#21
+#: DlgPrefShoutcastDlg#13
 msgid "Website"
 msgstr "Webseite"
 
-#: DlgPrefShoutcastDlg#22
+#: DlgPrefShoutcastDlg#14
 msgid "http://www.mixxx.org"
 msgstr "http://www.mixxx.org"
 
-#: DlgPrefShoutcastDlg#23
+#: DlgPrefShoutcastDlg#15
 msgid "Description"
 msgstr "Beschreibung"
 
-#: DlgPrefShoutcastDlg#24
+#: DlgPrefShoutcastDlg#16
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -2136,120 +2167,56 @@ msgstr ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Dieser Stream ist "
 "nur zum Test online!</span></p></body></html>"
 
-#: DlgPrefShoutcastDlg#25
-msgctxt "DlgPrefShoutcastDlg#25"
+#: DlgPrefShoutcastDlg#17
+msgctxt "DlgPrefShoutcastDlg#17"
 msgid "Genre"
 msgstr "Genre"
 
-#: DlgPrefShoutcastDlg#26
+#: DlgPrefShoutcastDlg#18
 msgid "Live mix"
 msgstr "Livemix"
 
-#: DlgPrefShoutcastDlg#27
+#: DlgPrefShoutcastDlg#19
 msgid "Public stream"
 msgstr "Öffentlicher Stream"
 
-#: DlgPrefShoutcastDlg#28
-msgctxt "DlgPrefShoutcastDlg#28"
+#: DlgPrefShoutcastDlg#20
+msgctxt "DlgPrefShoutcastDlg#20"
 msgid "Encoding"
 msgstr "Kodierung"
 
-#: DlgPrefShoutcastDlg#29
-msgctxt "DlgPrefShoutcastDlg#29"
+#: DlgPrefShoutcastDlg#21
+msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Bitrate"
 msgstr "Bitrate"
 
-#: DlgPrefShoutcastDlg#30
-msgid "320 kbps"
-msgstr "320 kbps"
-
-#: DlgPrefShoutcastDlg#31
-msgid "256 kbps"
-msgstr "256 kbps"
-
-#: DlgPrefShoutcastDlg#32
-msgid "224 kbps"
-msgstr "224 kbps"
-
-#: DlgPrefShoutcastDlg#33
-msgid "192 kbps"
-msgstr "192 kbps"
-
-#: DlgPrefShoutcastDlg#34
-msgid "160 kbps"
-msgstr "160 kbps"
-
-#: DlgPrefShoutcastDlg#35
-msgid "128 kbps"
-msgstr "128 kbps"
-
-#: DlgPrefShoutcastDlg#36
-msgid "112 kbps"
-msgstr "112 kbps"
-
-#: DlgPrefShoutcastDlg#37
-msgid "96 kbps"
-msgstr "96 kbps"
-
-#: DlgPrefShoutcastDlg#38
-msgid "80 kbps"
-msgstr "80 kbps"
-
-#: DlgPrefShoutcastDlg#39
-msgid "64 kbps"
-msgstr "64 kbps"
-
-#: DlgPrefShoutcastDlg#40
-msgid "48 kbps"
-msgstr "48 kbps"
-
-#: DlgPrefShoutcastDlg#41
+#: DlgPrefShoutcastDlg#22
 msgid "Format"
 msgstr "Format"
 
-#: DlgPrefShoutcastDlg#42
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: DlgPrefShoutcastDlg#43
-msgid "MP3"
-msgstr "MP3"
-
-#: DlgPrefShoutcastDlg#44
+#: DlgPrefShoutcastDlg#23
 msgid "Channels"
 msgstr "Kanäle"
 
-#: DlgPrefShoutcastDlg#45
-msgid "Stereo"
-msgstr "Stereo"
-
-#: DlgPrefShoutcastDlg#46
+#: DlgPrefShoutcastDlg#24
 msgid "Custom metadata"
 msgstr "Benutzerdefinierte Metadaten"
 
-#: DlgPrefShoutcastDlg#47
+#: DlgPrefShoutcastDlg#25
 msgid "Enable custom metadata"
 msgstr "Benutzerdefinierte Metadaten aktivieren"
 
-#: DlgPrefShoutcastDlg#48
-msgctxt "DlgPrefShoutcastDlg#48"
+#: DlgPrefShoutcastDlg#26
+msgctxt "DlgPrefShoutcastDlg#26"
 msgid "Artist"
 msgstr "Interpret"
 
-#: DlgPrefShoutcastDlg#49
-msgid "%mainartist"
-msgstr "%mainartist"
-
-#: DlgPrefShoutcastDlg#50
-msgctxt "DlgPrefShoutcastDlg#50"
+#: DlgPrefShoutcastDlg#27
+msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Title"
 msgstr "Titel"
 
-#: DlgPrefShoutcastDlg#51
-msgid "%maintitle"
-msgstr "%maintitle"
-
-#: DlgPrefShoutcastDlg#52
+#: DlgPrefShoutcastDlg#28
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
@@ -4830,9 +4797,32 @@ msgstr "(GL)"
 #~ msgid "File"
 #~ msgstr "Datei"
 
+#~ msgid "/mixxx.ogg"
+#~ msgstr "/mixxx.ogg"
+
 #~ msgctxt "DlgPrefRecordDlg#11"
 #~ msgid "Album"
 #~ msgstr "Album"
+
+#~ msgid "192.168.123.8"
+#~ msgstr "192.168.123.8"
+
+#~ msgid "source"
+#~ msgstr "Quelle"
+
+#~ msgid "8000"
+#~ msgstr "8000"
+
+#~ msgid "test1234"
+#~ msgstr "test1234"
+
+#~ msgctxt "DlgPrefShoutcastDlg#29"
+#~ msgid "Bitrate"
+#~ msgstr "Bitrate"
+
+#~ msgctxt "DlgPrefShoutcastDlg#25"
+#~ msgid "Genre"
+#~ msgstr "Genre"
 
 #~ msgid ""
 #~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
@@ -4858,6 +4848,47 @@ msgstr "(GL)"
 #~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 #~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Dieser Stream ist "
 #~ "nur zu Testzwecken online!</span></p></body></html>"
+
+#~ msgctxt "DlgPrefShoutcastDlg#28"
+#~ msgid "Encoding"
+#~ msgstr "Kodierung"
+
+#~ msgid "160 kbps"
+#~ msgstr "160 kbps"
+
+#~ msgid "112 kbps"
+#~ msgstr "112 kbps"
+
+#~ msgid "96 kbps"
+#~ msgstr "96 kbps"
+
+#~ msgid "80 kbps"
+#~ msgstr "80 kbps"
+
+#~ msgid "64 kbps"
+#~ msgstr "64 kbps"
+
+#~ msgid "320 kbps"
+#~ msgstr "320 kbps"
+
+#~ msgid "256 kbps"
+#~ msgstr "256 kbps"
+
+#~ msgid "224 kbps"
+#~ msgstr "224 kbps"
+
+#~ msgid "192 kbps"
+#~ msgstr "192 kbps"
+
+#~ msgid "128 kbps"
+#~ msgstr "128 kbps"
+
+#~ msgctxt "DlgPrefShoutcastDlg#48"
+#~ msgid "Artist"
+#~ msgstr "Interpret"
+
+#~ msgid "48 kbps"
+#~ msgstr "48 kbps"
 
 #~ msgid ""
 #~ "<a "
@@ -5042,6 +5073,9 @@ msgstr "(GL)"
 #~ "Die Datei %1 existiert bereits. Möchten Sie diese Datei überschreiben?\n"
 #~ "\"Nein\" beendet die Aufnahme."
 
+#~ msgid "Playlist Creation Failed"
+#~ msgstr "Erstellung der Wiedergabeliste fehlgeschlagen"
+
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Entfernen"
@@ -5131,6 +5165,12 @@ msgstr "(GL)"
 
 #~ msgid "1.x.x"
 #~ msgstr "1.x.x"
+
+#~ msgid "%maintitle"
+#~ msgstr "%maintitle"
+
+#~ msgid "%mainartist"
+#~ msgstr "%mainartist"
 
 #~ msgid "All Songs"
 #~ msgstr "Alle Titel"
@@ -5265,6 +5305,10 @@ msgstr "(GL)"
 #~ msgid "Enable live broadcasting"
 #~ msgstr "Liveübertragung aktivieren"
 
+#~ msgctxt "DlgPrefShoutcastDlg#50"
+#~ msgid "Title"
+#~ msgstr "Titel"
+
 #~ msgid "Turntable Preamp"
 #~ msgstr "Plattenspieler Vorverstärker"
 
@@ -5376,6 +5420,12 @@ msgstr "(GL)"
 #~ msgid "BPM"
 #~ msgstr "BPM"
 
+#~ msgid "Music"
+#~ msgstr "Musik"
+
+#~ msgid "Documents"
+#~ msgstr "Dokumente"
+
 #~ msgctxt "BrowseTableModel#9"
 #~ msgid "Duration"
 #~ msgstr "Dauer"
@@ -5411,10 +5461,6 @@ msgstr "(GL)"
 #~ msgctxt "DlgPrefPlaylistDlg#6"
 #~ msgid "None"
 #~ msgstr "Keine"
-
-#~ msgctxt "DlgPrefPlaylistDlg#14"
-#~ msgid "Library"
-#~ msgstr "Bibliothek"
 
 #~ msgctxt "DlgPrefPlaylistDlg#12"
 #~ msgid "Browse..."
@@ -5721,6 +5767,9 @@ msgstr "(GL)"
 #~ msgid "Play Time:"
 #~ msgstr "Abspieldauer:"
 
+#~ msgid "Home"
+#~ msgstr "Persönlicher Ordner"
+
 #~ msgid "&Push to tap tempo"
 #~ msgstr "&Drücken um die Geschwindigkeit einzustellen"
 
@@ -5924,6 +5973,10 @@ msgstr "(GL)"
 #~ msgid "Duration"
 #~ msgstr "Länge"
 
+#~ msgctxt "BrowseFeature#4"
+#~ msgid "Mixxx Library"
+#~ msgstr "Mixxx-Bibliothek"
+
 #~ msgid "Analyze Entire Song"
 #~ msgstr "Gesamten Titel analysieren"
 
@@ -5980,6 +6033,9 @@ msgstr "(GL)"
 #~ msgctxt "DlgPreferences#10"
 #~ msgid "Vinyl Control"
 #~ msgstr "Vinyl-Steuerung"
+
+#~ msgid "Desktop"
+#~ msgstr "Arbeitsfläche"
 
 #~ msgctxt "BrowseTableModel#12"
 #~ msgid "Type"
@@ -6380,3 +6436,6 @@ msgstr "(GL)"
 #~ msgctxt "DlgPrefRecordDlg#10"
 #~ msgid "Miscellaneous"
 #~ msgstr "Verschiedenes"
+
+#~ msgid "An unknown error occurred while creating playlist: "
+#~ msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "

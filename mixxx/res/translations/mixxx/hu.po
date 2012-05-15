@@ -7,29 +7,56 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-09 14:46+0200\n"
+"POT-Creation-Date: 2012-05-14 15:35-0400\n"
 "PO-Revision-Date: 2012-03-03 23:01+0000\n"
 "Last-Translator: Varga Edvárd <varga.edvard@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-10 05:15+0000\n"
-"X-Generator: Launchpad (build 15213)\n"
+"X-Launchpad-Export-Date: 2012-05-15 04:39+0000\n"
+"X-Generator: Launchpad (build 15238)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
 msgstr "Auto DJ"
+
+#: BaseExternalLibraryFeature#1
+msgctxt "BaseExternalLibraryFeature#1"
+msgid "Add to Auto DJ Queue (bottom)"
+msgstr ""
+
+#: BaseExternalLibraryFeature#2
+msgctxt "BaseExternalLibraryFeature#2"
+msgid "Add to Auto DJ Queue (top)"
+msgstr ""
+
+#: BaseExternalLibraryFeature#3
+msgctxt "BaseExternalLibraryFeature#3"
+msgid "Import Playlist"
+msgstr ""
+
+#: BaseExternalLibraryFeature#4
+msgctxt "BaseExternalLibraryFeature#4"
+msgid "Playlist Creation Failed"
+msgstr ""
+
+#: BaseExternalLibraryFeature#5
+msgctxt "BaseExternalLibraryFeature#5"
+msgid "An unknown error occurred while creating playlist: "
+msgstr ""
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
 msgstr "Új lejátszólista"
 
 #: BasePlaylistFeature#2
+msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
 msgstr ""
 
 #: BasePlaylistFeature#3
+msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
 msgstr ""
 
@@ -82,12 +109,14 @@ msgid "Playlist name:"
 msgstr "A lejátszólista neve:"
 
 #: BasePlaylistFeature#15
+msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr "Lejátszólista készítése sikertelen"
+msgstr ""
 
 #: BasePlaylistFeature#16
+msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Egy ismeretlen hiba történt a lejátszólista készítésekor: "
+msgstr ""
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -200,39 +229,32 @@ msgid "Couldn't load track."
 msgstr "Nem lehet a számot betölteni."
 
 #: BrowseFeature#1
+msgid "Add to Quick Links"
+msgstr ""
+
+#: BrowseFeature#2
+msgid "Remove from Quick Links"
+msgstr ""
+
+#: BrowseFeature#3
 msgid "Quick Links"
 msgstr "Gyors Linkek"
 
-#: BrowseFeature#2
+#: BrowseFeature#4
 msgid "Devices"
 msgstr "Eszközök"
 
-#: BrowseFeature#3
+#: BrowseFeature#5
 msgid "Removable Devices"
 msgstr "Cserélhető eszközök"
 
-#: BrowseFeature#4
-msgctxt "BrowseFeature#4"
-msgid "Mixxx Library"
-msgstr "Mixxx Könyvtár"
-
-#: BrowseFeature#5
-msgid "Home"
-msgstr "Saját mappa"
-
 #: BrowseFeature#6
-msgid "Music"
-msgstr "Zenék"
+msgid ""
+"Browse lets you navigate, view, and load tracks from folders on your hard "
+"disk and external devices."
+msgstr ""
 
 #: BrowseFeature#7
-msgid "Documents"
-msgstr "Dokumentumok"
-
-#: BrowseFeature#8
-msgid "Desktop"
-msgstr "Asztal"
-
-#: BrowseFeature#9
 msgid "Browse"
 msgstr "Böngészés"
 
@@ -311,7 +333,6 @@ msgid "Location"
 msgstr ""
 
 #: BrowseTableModel#16
-msgctxt "BrowseTableModel#16"
 msgid "Mixxx Library"
 msgstr ""
 
@@ -866,31 +887,31 @@ msgid "Pitch control slider"
 msgstr ""
 
 #: DlgControllerLearning#39
-msgid "Adjust rate up (course)"
-msgstr ""
-
-#: DlgControllerLearning#40
 msgid "Adjust rate up (fine)"
 msgstr ""
 
-#: DlgControllerLearning#41
-msgid "Adjust rate down (course)"
-msgstr ""
-
-#: DlgControllerLearning#42
+#: DlgControllerLearning#40
 msgid "Adjust rate down (fine)"
 msgstr ""
 
-#: DlgControllerLearning#43
-msgid "Pitch-bend rate up (course)"
-msgstr ""
-
-#: DlgControllerLearning#44
+#: DlgControllerLearning#41
 msgid "Pitch-bend rate up (fine)"
 msgstr ""
 
+#: DlgControllerLearning#42
+msgid "Adjust rate up (coarse)"
+msgstr ""
+
+#: DlgControllerLearning#43
+msgid "Adjust rate down (coarse)"
+msgstr ""
+
+#: DlgControllerLearning#44
+msgid "Pitch-bend rate up (coarse)"
+msgstr ""
+
 #: DlgControllerLearning#45
-msgid "Pitch-bend rate down (course)"
+msgid "Pitch-bend rate down (coarse)"
 msgstr ""
 
 #: DlgControllerLearning#46
@@ -1383,114 +1404,118 @@ msgid "Auto Recall Cue"
 msgstr ""
 
 #: DlgPrefControlsDlg#13
-msgid "Temporary rate change when left-clicking"
+msgid "Locale"
 msgstr ""
 
 #: DlgPrefControlsDlg#14
-msgid "Temporary rate change when right-clicking"
+msgid "Temporary rate change when left-clicking"
 msgstr ""
 
 #: DlgPrefControlsDlg#15
-msgid "Permanent Pitch/Rate Buttons"
+msgid "Temporary rate change when right-clicking"
 msgstr ""
 
 #: DlgPrefControlsDlg#16
-msgid "Displays which OpenGL version is supported by the current platform."
+msgid "Permanent Pitch/Rate Buttons"
 msgstr ""
 
 #: DlgPrefControlsDlg#17
-msgid "Displays the actual frame rate."
+msgid "Displays which OpenGL version is supported by the current platform."
 msgstr ""
 
 #: DlgPrefControlsDlg#18
+msgid "Displays the actual frame rate."
+msgstr ""
+
+#: DlgPrefControlsDlg#19
 msgid "Left click"
 msgstr "Bal kattintás"
 
-#: DlgPrefControlsDlg#19
+#: DlgPrefControlsDlg#20
 msgid "Right click"
 msgstr "Jobb kattintás"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#21
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#22
 msgid "Temporary Pitch/Rate Buttons"
 msgstr ""
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
 msgstr ""
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
 msgstr ""
 
-#: DlgPrefControlsDlg#24
-msgctxt "DlgPrefControlsDlg#24"
+#: DlgPrefControlsDlg#25
+msgctxt "DlgPrefControlsDlg#25"
 msgid "Waveform Display"
 msgstr ""
 
-#: DlgPrefControlsDlg#25
+#: DlgPrefControlsDlg#26
 msgid "Synchronize zoom level across all waveform displays."
 msgstr ""
 
-#: DlgPrefControlsDlg#26
+#: DlgPrefControlsDlg#27
 msgid "OpenGl status"
 msgstr ""
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#28
 msgid "Display type"
 msgstr ""
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#29
 msgid "Permanent rate change when left-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#30
 msgid "Permanent rate change when right-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#30
+#: DlgPrefControlsDlg#31
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
 msgstr ""
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#32
 msgid "Value in milliseconds"
 msgstr ""
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#33
 msgid "Visual gain of the high frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the middle frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#35
 msgid "Visual gain of the low frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#36
 msgid "Global visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#37
 msgid "Frame rate"
 msgstr ""
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#38
 msgid "Default zoom"
 msgstr ""
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#39
 msgid "Visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#39
-msgctxt "DlgPrefControlsDlg#39"
+#: DlgPrefControlsDlg#40
+msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
 msgstr ""
 
@@ -1777,32 +1802,44 @@ msgid "Use relative paths for playlist export if possible"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#10
-msgctxt "DlgPrefPlaylistDlg#10"
-msgid "Browse..."
+msgid "Show Rhythmbox Library"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#11
-msgctxt "DlgPrefPlaylistDlg#11"
-msgid "Library"
+msgid "Show iTunes Library"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#12
+msgid "Show Traktor Library"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#13
+msgctxt "DlgPrefPlaylistDlg#13"
+msgid "Browse..."
+msgstr ""
+
+#: DlgPrefPlaylistDlg#14
+msgctxt "DlgPrefPlaylistDlg#14"
+msgid "Library"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#15
 msgid "Music Directory:"
 msgstr "Zene Könyvtár:"
 
-#: DlgPrefPlaylistDlg#13
+#: DlgPrefPlaylistDlg#16
 msgid "Built-in"
 msgstr "Beépített"
 
-#: DlgPrefPlaylistDlg#14
+#: DlgPrefPlaylistDlg#17
 msgid "Available Online..."
 msgstr "Elérhető Online..."
 
-#: DlgPrefPlaylistDlg#15
+#: DlgPrefPlaylistDlg#18
 msgid "Bundled Songs"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#19
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -1938,6 +1975,30 @@ msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset to Defaults"
 msgstr ""
 
+#: DlgPrefShoutcast#1
+msgid "Icecast 2"
+msgstr ""
+
+#: DlgPrefShoutcast#2
+msgid "Shoutcast"
+msgstr ""
+
+#: DlgPrefShoutcast#3
+msgid "Icecast 1"
+msgstr ""
+
+#: DlgPrefShoutcast#4
+msgid "MP3"
+msgstr "MP3"
+
+#: DlgPrefShoutcast#5
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: DlgPrefShoutcast#6
+msgid "Stereo"
+msgstr "Sztereó"
+
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
@@ -1957,82 +2018,50 @@ msgid "Type"
 msgstr "Típus"
 
 #: DlgPrefShoutcastDlg#5
-msgid "Icecast 2"
-msgstr ""
-
-#: DlgPrefShoutcastDlg#6
-msgid "Shoutcast"
-msgstr ""
-
-#: DlgPrefShoutcastDlg#7
-msgid "Icecast 1"
-msgstr ""
-
-#: DlgPrefShoutcastDlg#8
 msgid "Mount"
 msgstr "Felcsatol"
 
-#: DlgPrefShoutcastDlg#9
-msgid "/mixxx.ogg"
-msgstr "/mixxx.ogg"
-
-#: DlgPrefShoutcastDlg#10
+#: DlgPrefShoutcastDlg#6
 msgid "Host"
 msgstr "Kiszolgáló"
 
-#: DlgPrefShoutcastDlg#11
-msgid "192.168.123.8"
-msgstr "192.168.123.8"
-
-#: DlgPrefShoutcastDlg#12
+#: DlgPrefShoutcastDlg#7
 msgid "Port"
 msgstr "Port"
 
-#: DlgPrefShoutcastDlg#13
-msgid "8000"
-msgstr "8000"
-
-#: DlgPrefShoutcastDlg#14
+#: DlgPrefShoutcastDlg#8
 msgid "Login"
 msgstr "Bejelentkezés"
 
-#: DlgPrefShoutcastDlg#15
-msgid "source"
-msgstr "forrás"
-
-#: DlgPrefShoutcastDlg#16
+#: DlgPrefShoutcastDlg#9
 msgid "Password"
 msgstr "Jelszó"
 
-#: DlgPrefShoutcastDlg#17
-msgid "test1234"
-msgstr "test1234"
-
-#: DlgPrefShoutcastDlg#18
+#: DlgPrefShoutcastDlg#10
 msgid "Stream settings"
 msgstr "Stream beállításai"
 
-#: DlgPrefShoutcastDlg#19
+#: DlgPrefShoutcastDlg#11
 msgid "Stream name"
 msgstr "Stream neve"
 
-#: DlgPrefShoutcastDlg#20
+#: DlgPrefShoutcastDlg#12
 msgid "Mixxx Icecast Testing"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#21
+#: DlgPrefShoutcastDlg#13
 msgid "Website"
 msgstr "Weboldal"
 
-#: DlgPrefShoutcastDlg#22
+#: DlgPrefShoutcastDlg#14
 msgid "http://www.mixxx.org"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#23
+#: DlgPrefShoutcastDlg#15
 msgid "Description"
 msgstr "Leírás"
 
-#: DlgPrefShoutcastDlg#24
+#: DlgPrefShoutcastDlg#16
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -2047,120 +2076,56 @@ msgid ""
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#25
-msgctxt "DlgPrefShoutcastDlg#25"
+#: DlgPrefShoutcastDlg#17
+msgctxt "DlgPrefShoutcastDlg#17"
 msgid "Genre"
-msgstr "Műfaj"
+msgstr ""
 
-#: DlgPrefShoutcastDlg#26
+#: DlgPrefShoutcastDlg#18
 msgid "Live mix"
 msgstr "Élő mix"
 
-#: DlgPrefShoutcastDlg#27
+#: DlgPrefShoutcastDlg#19
 msgid "Public stream"
 msgstr "Nyilvános stream"
 
-#: DlgPrefShoutcastDlg#28
-msgctxt "DlgPrefShoutcastDlg#28"
+#: DlgPrefShoutcastDlg#20
+msgctxt "DlgPrefShoutcastDlg#20"
 msgid "Encoding"
-msgstr "Kódolás"
+msgstr ""
 
-#: DlgPrefShoutcastDlg#29
-msgctxt "DlgPrefShoutcastDlg#29"
+#: DlgPrefShoutcastDlg#21
+msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Bitrate"
-msgstr "Bitráta"
+msgstr ""
 
-#: DlgPrefShoutcastDlg#30
-msgid "320 kbps"
-msgstr "320 kbit/s"
-
-#: DlgPrefShoutcastDlg#31
-msgid "256 kbps"
-msgstr "256 kbit/s"
-
-#: DlgPrefShoutcastDlg#32
-msgid "224 kbps"
-msgstr "224 kbit/s"
-
-#: DlgPrefShoutcastDlg#33
-msgid "192 kbps"
-msgstr "192 kbit/s"
-
-#: DlgPrefShoutcastDlg#34
-msgid "160 kbps"
-msgstr "160 kbit/s"
-
-#: DlgPrefShoutcastDlg#35
-msgid "128 kbps"
-msgstr "128 kbit/s"
-
-#: DlgPrefShoutcastDlg#36
-msgid "112 kbps"
-msgstr "112 kbit/s"
-
-#: DlgPrefShoutcastDlg#37
-msgid "96 kbps"
-msgstr "96 kbit/s"
-
-#: DlgPrefShoutcastDlg#38
-msgid "80 kbps"
-msgstr "80 kbit/s"
-
-#: DlgPrefShoutcastDlg#39
-msgid "64 kbps"
-msgstr "64 kbit/s"
-
-#: DlgPrefShoutcastDlg#40
-msgid "48 kbps"
-msgstr "48 kbit/s"
-
-#: DlgPrefShoutcastDlg#41
+#: DlgPrefShoutcastDlg#22
 msgid "Format"
 msgstr "Formátum"
 
-#: DlgPrefShoutcastDlg#42
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: DlgPrefShoutcastDlg#43
-msgid "MP3"
-msgstr "MP3"
-
-#: DlgPrefShoutcastDlg#44
+#: DlgPrefShoutcastDlg#23
 msgid "Channels"
 msgstr "Csatornák"
 
-#: DlgPrefShoutcastDlg#45
-msgid "Stereo"
-msgstr "Sztereó"
-
-#: DlgPrefShoutcastDlg#46
+#: DlgPrefShoutcastDlg#24
 msgid "Custom metadata"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#47
+#: DlgPrefShoutcastDlg#25
 msgid "Enable custom metadata"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#48
-msgctxt "DlgPrefShoutcastDlg#48"
+#: DlgPrefShoutcastDlg#26
+msgctxt "DlgPrefShoutcastDlg#26"
 msgid "Artist"
-msgstr "Előadó"
-
-#: DlgPrefShoutcastDlg#49
-msgid "%mainartist"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#50
-msgctxt "DlgPrefShoutcastDlg#50"
+#: DlgPrefShoutcastDlg#27
+msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Title"
-msgstr "Cím"
-
-#: DlgPrefShoutcastDlg#51
-msgid "%maintitle"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#52
+#: DlgPrefShoutcastDlg#28
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
@@ -4659,9 +4624,32 @@ msgstr ""
 #~ msgid "Browse..."
 #~ msgstr "Böngészés..."
 
+#~ msgid "/mixxx.ogg"
+#~ msgstr "/mixxx.ogg"
+
 #~ msgctxt "DlgPrefRecordDlg#11"
 #~ msgid "Album"
 #~ msgstr "Album"
+
+#~ msgid "192.168.123.8"
+#~ msgstr "192.168.123.8"
+
+#~ msgid "source"
+#~ msgstr "forrás"
+
+#~ msgid "8000"
+#~ msgstr "8000"
+
+#~ msgid "test1234"
+#~ msgstr "test1234"
+
+#~ msgctxt "DlgPrefShoutcastDlg#29"
+#~ msgid "Bitrate"
+#~ msgstr "Bitráta"
+
+#~ msgctxt "DlgPrefShoutcastDlg#25"
+#~ msgid "Genre"
+#~ msgstr "Műfaj"
 
 #~ msgid ""
 #~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
@@ -4687,6 +4675,51 @@ msgstr ""
 #~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 #~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 #~ "line for testing purposes!</span></p></body></html>"
+
+#~ msgctxt "DlgPrefShoutcastDlg#28"
+#~ msgid "Encoding"
+#~ msgstr "Kódolás"
+
+#~ msgid "112 kbps"
+#~ msgstr "112 kbit/s"
+
+#~ msgid "96 kbps"
+#~ msgstr "96 kbit/s"
+
+#~ msgid "80 kbps"
+#~ msgstr "80 kbit/s"
+
+#~ msgid "320 kbps"
+#~ msgstr "320 kbit/s"
+
+#~ msgid "256 kbps"
+#~ msgstr "256 kbit/s"
+
+#~ msgid "224 kbps"
+#~ msgstr "224 kbit/s"
+
+#~ msgid "192 kbps"
+#~ msgstr "192 kbit/s"
+
+#~ msgid "160 kbps"
+#~ msgstr "160 kbit/s"
+
+#~ msgid "128 kbps"
+#~ msgstr "128 kbit/s"
+
+#~ msgid "64 kbps"
+#~ msgstr "64 kbit/s"
+
+#~ msgctxt "DlgPrefShoutcastDlg#48"
+#~ msgid "Artist"
+#~ msgstr "Előadó"
+
+#~ msgid "48 kbps"
+#~ msgstr "48 kbit/s"
+
+#~ msgctxt "DlgPrefShoutcastDlg#50"
+#~ msgid "Title"
+#~ msgstr "Cím"
 
 #~ msgid ""
 #~ "<a "
@@ -4908,6 +4941,12 @@ msgstr ""
 #~ msgid "Save Recording As..."
 #~ msgstr "Felvétel mentése mint..."
 
+#~ msgid "Playlist Creation Failed"
+#~ msgstr "Lejátszólista készítése sikertelen"
+
+#~ msgid "An unknown error occurred while creating playlist: "
+#~ msgstr "Egy ismeretlen hiba történt a lejátszólista készítésekor: "
+
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Törlés"
@@ -5016,6 +5055,10 @@ msgstr ""
 #~ msgid "Duration"
 #~ msgstr "Időtartam"
 
+#~ msgctxt "BrowseFeature#4"
+#~ msgid "Mixxx Library"
+#~ msgstr "Mixxx Könyvtár"
+
 #~ msgctxt "BaseSqlTableModel#13"
 #~ msgid "BPM"
 #~ msgstr "BPM"
@@ -5031,6 +5074,18 @@ msgstr ""
 #~ msgctxt "BaseSqlTableModel#12"
 #~ msgid "Bitrate"
 #~ msgstr "Bitráta"
+
+#~ msgid "Desktop"
+#~ msgstr "Asztal"
+
+#~ msgid "Home"
+#~ msgstr "Saját mappa"
+
+#~ msgid "Music"
+#~ msgstr "Zenék"
+
+#~ msgid "Documents"
+#~ msgstr "Dokumentumok"
 
 #~ msgid "&Go"
 #~ msgstr "&Ugrás"
