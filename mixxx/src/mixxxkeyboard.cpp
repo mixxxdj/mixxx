@@ -38,8 +38,8 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
     if (e->type() == QEvent::KeyPress) {
         QKeyEvent * ke = (QKeyEvent *)e;
 
-#ifdef __OSX__
-        // On Mac OSX the nativeScanCode is empty http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
+#ifdef __APPLE__
+        // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
         // We may loose the release event if a the shift key is pressed later
         // and there is character shift like "1" -> "!"
         int keyId = ke->key();
