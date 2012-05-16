@@ -11,10 +11,14 @@
 #include "configobject.h"
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetinfo.h"
 
 //Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
+
+// Function to sort controllers by name
+bool controllerCompare(Controller *a,Controller *b);
 
 /** Manages enumeration/operation/deletion of hardware controllers. */
 class ControllerManager : public QObject {
@@ -25,7 +29,6 @@ class ControllerManager : public QObject {
 
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
-    QList<QString> getPresetList(QString extension);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
@@ -47,6 +50,9 @@ class ControllerManager : public QObject {
 
     // Writes out presets for currently connected input devices
     void slotSavePresets(bool onlyActive=false);
+   
+    PresetInfo* matchControllerPreset(Controller *controller);
+    PresetInfoEnumerator* getPresetInfoManager();
 
   private slots:
     // Open whatever controllers are selected in the preferences. This currently
@@ -76,6 +82,7 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
+    PresetInfoEnumerator* presetInfoManager;
 };
 
 #endif  // CONTROLLERMANAGER_H

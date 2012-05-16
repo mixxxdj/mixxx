@@ -21,6 +21,8 @@ Controller::Controller()
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive);
+    // Initialize device category to empty
+    setDeviceCategory("");
 }
 
 Controller::~Controller() {
