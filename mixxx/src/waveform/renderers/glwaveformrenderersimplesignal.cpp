@@ -64,14 +64,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glLineWidth(1.1);
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_MULTISAMPLE_ARB);
-
     const QColor& color = m_colors.getSignalColor();
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
+    const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
 
     float maxAll[2];
 
@@ -86,6 +82,20 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glLoadIdentity();
 
         glScalef(1.f,2.f*visualGain*m_waveformRenderer->getGain(),1.f);
+
+        glLineWidth(1.0);
+        glDisable(GL_LINE_SMOOTH);
+
+        //draw reference line
+        glBegin(GL_LINES); {
+            glColor4f(m_axesColor.redF(),m_axesColor.greenF(),m_axesColor.blueF(),m_axesColor.alphaF());
+            glVertex2f(firstVisualIndex,0);
+            glVertex2f(lastVisualIndex,0);
+        }
+        glEnd();
+
+        glLineWidth(1.1);
+        glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
             for( int visualIndex = firstVisualIndex;
@@ -118,6 +128,9 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glLoadIdentity();
 
         glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+
+        glLineWidth(1.1);
+        glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
             for( int visualIndex = firstVisualIndex;

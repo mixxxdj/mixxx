@@ -2,6 +2,7 @@
 
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
@@ -9,28 +10,17 @@
 #include <QLinearGradient>
 
 QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract( waveformWidgetRenderer) {
+    WaveformRendererSignalBase( waveformWidgetRenderer) {
 
 }
 
 QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal(){
 }
 
-void QtWaveformRendererSimpleSignal::init(){
+void QtWaveformRendererSimpleSignal::onInit(){
 }
 
-void QtWaveformRendererSimpleSignal::setup(const QDomNode &node){
-    m_colors.setup(node);
-
-    QString alignString = WWidget::selectNodeQString(node, "Align");
-    if (alignString == "bottom") {
-        m_alignment = Qt::AlignBottom;
-    } else if (alignString == "top") {
-        m_alignment = Qt::AlignTop;
-    } else {
-        m_alignment = Qt::AlignCenter;
-    }
-
+void QtWaveformRendererSimpleSignal::onSetup(const QDomNode &node){
     QColor signalColor = m_colors.getSignalColor();
     signalColor.setAlphaF(0.8);
 
@@ -74,15 +64,24 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     painter->setRenderHint(QPainter::Antialiasing);
     painter->resetTransform();
 
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    const double  visualGain = factory->getVisualGain(WaveformWidgetFactory::All);
+
     if (m_alignment == Qt::AlignTop) {
         painter->translate(0.0,0.0);
-        painter->scale(1.0,2.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else if (m_alignment == Qt::AlignBottom) {
         painter->translate(0.0,m_waveformRenderer->getHeight());
-        painter->scale(1.0,2.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     } else {
         painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
-        painter->scale(1.0,1.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->scale(1.0,1.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+    }
+
+    //draw reference line
+    if( m_alignment == Qt::AlignCenter) {
+        painter->setPen(m_axesColor);
+        painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
     }
 
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
@@ -96,10 +95,6 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
             (double)m_waveformRenderer->getWidth();
-
-    // The number of visual samples that should be represented within one pixel
-    // given our current zoom level (this shoud be an dinterger in the 'simple' version
-    const double visualSamplePerPixel = m_waveformRenderer->getVisualSamplePerPixel();
 
     //NOTE(vrince) Please help me find a better name for "channelSeparation"
     //this variable stand for merged channel ... 1 = merged & 2 = separated

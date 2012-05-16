@@ -31,6 +31,7 @@ protected:
     ControlObjectThreadMain* m_highKillControlObject;
 
     WaveformSignalColors m_colors;
+    QColor m_axesColor;
     Qt::Alignment m_alignment;
 };
 

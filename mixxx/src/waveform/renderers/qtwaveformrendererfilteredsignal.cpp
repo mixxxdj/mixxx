@@ -307,6 +307,12 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         painter->scale(1.0,1.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
     }
 
+    //draw reference line
+    if( m_alignment == Qt::AlignCenter) {
+        painter->setPen(m_axesColor);
+        painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
+    }
+
     int numberOfPoints = buildPolygon();
 
     if (m_lowKillControlObject && m_lowKillControlObject->get() > 0.1) {
