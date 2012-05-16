@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-12 22:55+0000\n"
-"Last-Translator: mahicol caetano <Unknown>\n"
+"PO-Revision-Date: 2012-05-15 19:59+0000\n"
+"Last-Translator: Eddieduce <eddieduce@yahoo.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-15 04:40+0000\n"
-"X-Generator: Launchpad (build 15238)\n"
+"X-Launchpad-Export-Date: 2012-05-16 04:48+0000\n"
+"X-Generator: Launchpad (build 15247)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -27,27 +27,27 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Agregar a Lista Auto DJ (Final)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Agregar a Lista Auto DJ (Inicio)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importar Lista de Reproducción"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Error Creando Lista de Reproducción"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Un error se produjo creando lista de reproducción: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -56,12 +56,12 @@ msgstr "Lista de reproducción nueva"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Agregar a lista de Auto DJ (final)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Agregar a lista de Auto DJ (Inicio)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -114,12 +114,12 @@ msgstr "Nombre:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Error Creando Lista de Reproducción"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Un error se produjo creando Lista de Reproducción: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -235,11 +235,11 @@ msgstr "No se pudo cargar la pista."
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "Agregar a Enlace Rapido"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "Quitar de Enlace Rapido"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -258,6 +258,8 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"El Buscar permite navegar, ver, y subir pistas desde folders en el disco "
+"duro y dispositivos externos."
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -339,7 +341,7 @@ msgstr "Ubicación"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Biblioteca Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -383,7 +385,7 @@ msgstr "Error de controlador de script"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "El control usado no esta funcionando correctamente."
 
 #: ControllerEngine#5
 msgid ""
@@ -392,6 +394,10 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(El codigo del script necesita ser corregido.)<br>Por ahora, se "
+"puede:<ul><li>Ignorar este error por esta secion pero puede que experimente "
+"comportamiento erratico</li><li>Intente recuperar reseteando el "
+"controlador</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
@@ -408,6 +414,8 @@ msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
 msgstr ""
+"El cuadro de abajo esta bajo construccion y permanecera vacio en esta "
+"version de Mixxx."
 
 #: ControllerMappingDlg#4
 msgid "Controls"
@@ -425,7 +433,7 @@ msgstr "Quitar"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr ""
+msgstr "Asistente de Aprendisaje"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
@@ -523,16 +531,20 @@ msgstr ""
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Los Cajones son una gran manera de ayudar a organizar la musca deseada para "
+"hacer DJ."
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Crea un cajón para el próximo concierto, tus pistas electrónicas favoritas, "
+"o las canciones mas pedidas."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "Los cajones permiten organizar tu música como tu quieras!"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
@@ -560,7 +572,7 @@ msgstr "Auto-DJ"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "Un tocador debe ser detenido para habilitar el modo Auto-DJ."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -672,6 +684,10 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Convierte compáses detectados por el analizador en una cuadricula de tempo "
+"fijo. Use esta opción si sus pistas tienen un tempo constante (e.j. la "
+"mayoría de música electrónica). Muy seguido resulta en cuadriculas de mas "
+"alta calidad, pero no resulta tan bien en pistas con cambios de tempo."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
@@ -682,10 +698,12 @@ msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
 "analyzing the beats to discard outliers."
 msgstr ""
+"Intenta corregir la face (primer compás) de cuadriculas de tempo fijo "
+"analizando los compáses para desechar valores atípicos."
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
-msgstr ""
+msgstr "Habilitar Correccion de Contrarresto (Recomendado)"
 
 #: DlgBeatsDlg#14
 msgid ""
@@ -693,12 +711,17 @@ msgid ""
 "If set, this setting will also re-analyse beatgrids generated by 3rd-party "
 "programs or previous versions of Mixxx."
 msgstr ""
+"Si se activa, reanaliza cuadriculas de tempo al cambiar preferencias en esta "
+"pagina.  Si se configura, esta opción al igual reanalizará cuadriculas de "
+"tempo generados por programas de 3as compañias o previas versiones de Mixxx."
 
 #: DlgBeatsDlg#15
 msgid ""
 "Re-analyse beats when settings change or beats already present\n"
 "(e.g. from 3rd-party programs or older Mixxx versions)"
 msgstr ""
+"Reanaliza compáses cuando opciones cambian o compáses ya existen\n"
+"(e.j. programas de 3as compañias o versiones antiguas de Mixx)"
 
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
@@ -745,7 +768,7 @@ msgstr "Analizar Toda La Pista"
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr ""
+msgstr "Guia de Aprendizaje para Controlador"
 
 #: DlgControllerLearning#2
 msgid ""
