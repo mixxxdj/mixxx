@@ -347,8 +347,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     float scale = (float)m_framebuffer->width()/(2.0*(float)m_waveformRenderer->getWidth());
     scale /= (1.0+m_waveformRenderer->getRateAdjust());
 
-    //NOTE: (vrince) try to move the camera to limit the stepping effect of actula versus current position centering
-    //The following code must be paired with the shader hat compute signal value in texture/gemometry world
+    //NOTE: (vrince) try to move the camera to limit the stepping effect of actual versus current position centering
+    //The following code must be paired with the shader that compute signal value in texture/gemometry world
     /*const int visualSamplePerPixel = m_signalFrameBufferRatio * m_waveformRenderer->getZoomFactor();
     const int nearestCurrentIndex = int(floor(indexPosition));
     const float actualIndexPosition = indexPosition - float(nearestCurrentIndex%(2*visualSamplePerPixel));
@@ -364,6 +364,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glScalef(scale, visualGain, 1.0);
 
     /*
+    //TODO: (vrince) make this line work sometime
     glBegin(GL_LINES); {
         glColor4f(m_axesColor.redF(),m_axesColor.greenF(),m_axesColor.blueF(),m_axesColor.alphaF());
         glVertex2f(0,0);
