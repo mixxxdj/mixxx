@@ -74,7 +74,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
     } else if (e->type()==QEvent::KeyRelease) {
         QKeyEvent * ke = (QKeyEvent *)e;
 
-#ifdef __OSX__
+#ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty
         int keyId = ke->key();
 #else

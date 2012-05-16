@@ -1475,7 +1475,7 @@ void MixxxApp::rebootMixxxView() {
 
     // Set native menu bar. Fixes issue on OSX where menu bar went away after a
     // skin change.
-#if __OSX__
+#if __APPLE__
     menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
 #endif
     qDebug() << "rebootMixxxView DONE";
