@@ -111,30 +111,36 @@ class Qt(Dependence):
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
 
-        qt_modules = [
-            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg', 
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtWebKit',
-            'QtNetwork'
-            #'QtUiTools', #'QtDesigner',
-        ]
-
         # Enable Qt include paths
         if build.platform_is_linux:
             if not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
 
+            #Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
             #(This hopefully respects our qtdir=blah flag while linking now.)
-            build.env.EnableQt4Modules(qt_modules,debug=False)
-
+            build.env.EnableQt4Modules(['QtCore',
+                                        'QtGui',
+                                        'QtOpenGL',
+                                        'QtXml',
+                                        'QtSvg',
+                                        'QtSql',
+                                        'QtScript',
+                                        'QtXmlPatterns',
+                                        'QtWebKit'
+                                        #'QtUiTools',
+                                        #'QtDesigner',
+                                        ],
+                                       debug=False)
         elif build.platform_is_osx:
-            qtdir = build.env['QTDIR']
-            build.env.Append(
-                LINKFLAGS=' '.join('-framework %s' % m for m in qt_modules)
-            )
-            build.env.Append(CPPPATH = [os.path.join(qtdir,'Frameworks','%s.framework' % m,'Headers') for m in qt_modules])
-            build.env.Append(LINKFLAGS = [
-                '-F%s' % os.path.join(build.env['QTDIR'],'Frameworks')
-            ])
+            build.env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
+            build.env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
+                                        '/Library/Frameworks/QtOpenGL.framework/Headers/',
+                                        '/Library/Frameworks/QtGui.framework/Headers/',
+                                        '/Library/Frameworks/QtXml.framework/Headers/',
+                                        '/Library/Frameworks/QtNetwork.framework/Headers/',
+                                        '/Library/Frameworks/QtSql.framework/Headers/',
+                                        '/Library/Frameworks/QtWebKit.framework/Headers/',
+                                        '/Library/Frameworks/QtScript.framework/Headers/'])
 
         # Setup Qt library includes for non-OSX
         if build.platform_is_linux or build.platform_is_bsd:
@@ -368,7 +374,6 @@ class MixxxCore(Feature):
                    "controllers/controllerlearningeventfilter.cpp",
                    "controllers/controllermanager.cpp",
                    "controllers/controllerpresetfilehandler.cpp",
-                   "controllers/controllerpresetinfo.cpp",
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
@@ -691,19 +696,16 @@ class MixxxCore(Feature):
 
         elif build.platform_is_osx:
             #Stuff you may have compiled by hand
-            if os.path.isdir('/usr/local/include'):
-                build.env.Append(LIBPATH = ['/usr/local/lib'])
-                build.env.Append(CPPPATH = ['/usr/local/include'])
+            build.env.Append(LIBPATH = ['/usr/local/lib'])
+            build.env.Append(CPPPATH = ['/usr/local/include'])
 
             #Non-standard libpaths for fink and certain (most?) darwin ports
-            if os.path.isdir('/sw/include'):
-                build.env.Append(LIBPATH = ['/sw/lib'])
-                build.env.Append(CPPPATH = ['/sw/include'])
+            build.env.Append(LIBPATH = ['/sw/lib'])
+            build.env.Append(CPPPATH = ['/sw/include'])
 
             #Non-standard libpaths for darwin ports
-            if os.path.isdir('/opt/local/include'):
-                build.env.Append(LIBPATH = ['/opt/local/lib'])
-                build.env.Append(CPPPATH = ['/opt/local/include'])
+            build.env.Append(LIBPATH = ['/opt/local/lib'])
+            build.env.Append(CPPPATH = ['/opt/local/include'])
 
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
