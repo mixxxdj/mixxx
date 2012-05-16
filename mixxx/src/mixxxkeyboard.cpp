@@ -38,15 +38,15 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
     if (e->type() == QEvent::KeyPress) {
         QKeyEvent * ke = (QKeyEvent *)e;
 
-#ifdef __OSX__
-        // On Mac OSX the nativeScanCode is empty http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
+#ifdef __APPLE__
+        // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
         // We may loose the release event if a the shift key is pressed later
         // and there is character shift like "1" -> "!"
         int keyId = ke->key();
 #else
         int keyId = ke->nativeScanCode();
 #endif
-        //qDebug() << "key event =" << ke->key() << "KeyId =" << keyId;
+        //qDebug() << "KeyPress event =" << ke->key() << "KeyId =" << keyId;
 
         // Run through list of active keys to see if the pressed key is already active
         // Just for returning true if we are consuming this key event
@@ -57,11 +57,11 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
             }
         }
 
-        QString keystring = getKeySeq(ke);
-        if (!keystring.isEmpty())
+        QKeySequence ks = getKeySeq(ke);
+        if (!ks.isEmpty())
         {
             // Check if a shortcut is defined
-            ConfigKey * pConfigKey = m_pKbdConfigObject->get(ConfigValueKbd(keystring));
+            ConfigKey * pConfigKey = m_pKbdConfigObject->get(ConfigValueKbd(ks));
 
             if (pConfigKey)
             {
@@ -74,7 +74,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
     } else if (e->type()==QEvent::KeyRelease) {
         QKeyEvent * ke = (QKeyEvent *)e;
 
-#ifdef __OSX__
+#ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty
         int keyId = ke->key();
 #else
@@ -82,7 +82,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
 #endif
         bool autoRepeat = ke->isAutoRepeat();
 
-        //qDebug() << "key event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
+        //qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
 
         // Run through list of active keys to see if the released key is active
         for (int i = m_qActiveKeyList.size() - 1; i >= 0; i--) {
@@ -104,12 +104,15 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
     return false;
 }
 
-QString MixxxKeyboard::getKeySeq(QKeyEvent * e) {
+QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e) {
     QString modseq;
 	QString keyseq;
+	QKeySequence k;
+
+	// TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
 
 	if (e->modifiers() & Qt::ShiftModifier)
-               modseq += "Shift+";
+        modseq += "Shift+";
 
 	if (e->modifiers() & Qt::ControlModifier)
 		modseq += "Ctrl+";
@@ -120,13 +123,17 @@ QString MixxxKeyboard::getKeySeq(QKeyEvent * e) {
 	if (e->modifiers() & Qt::MetaModifier)
 		modseq += "Meta+";
 
-	keyseq = e->text();
+	if( e->key() >= 0x01000020 && e->key() <= 0x01000023 ) {
+	    // Do not act on Modifier only
+	    // avoid returning "khmer vowel sign ie (U+17C0)"
+	    return k;
+	}
 
-	if (!keyseq.isEmpty()) { // avoid returning e.g. "Meta+"
-        keyseq = modseq + keyseq;
-    }
-	qDebug() << "keyboard press: " << keyseq;
-	return keyseq;
+    keyseq = QKeySequence(e->key()).toString();
+    k = QKeySequence(modseq + keyseq);
+
+    qDebug() << "keyboard press: " << k.toString();
+    return k;
 }
 
 void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd> * pKbdConfigObject) {
