@@ -48,6 +48,8 @@ class MidiController : public Controller {
         return m_preset.isMappable();
     }
 
+    virtual bool matchProductInfo(QHash <QString,QString >);
+
   protected:
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
     // Alias for send()
