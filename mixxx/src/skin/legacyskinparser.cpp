@@ -430,6 +430,8 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
         return NULL;
 
     WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pConfig, m_pParent);
+    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
+    viewer->setLibraryPrefix(prefix);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     WaveformWidgetFactory::instance()->setWaveformWidget(viewer, node);
 
