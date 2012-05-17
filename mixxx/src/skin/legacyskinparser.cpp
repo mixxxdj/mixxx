@@ -431,15 +431,14 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    WaveformWidgetFactory::instance()->setWaveformWidget(viewer, node);
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    factory->setWaveformWidget(viewer, node);
 
     //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
     //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
 
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-
-    // Hook up the wheel Control Object to the Visual Controller
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(

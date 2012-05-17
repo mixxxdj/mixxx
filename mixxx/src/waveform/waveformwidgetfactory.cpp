@@ -23,8 +23,8 @@
 ///////////////////////////////////////////
 
 WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
-        : m_active(true),
-          m_type(WaveformWidgetType::Count_WaveformwidgetType) {
+    : m_active(true),
+      m_type(WaveformWidgetType::Count_WaveformwidgetType) {
 }
 
 ///////////////////////////////////////////
@@ -32,9 +32,9 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
                                            WWaveformViewer* waveformViewer,
                                            const QDomNode& visualNodeCache)
-        : m_waveformWidget(waveformWidget),
-          m_waveformViewer(waveformViewer),
-          m_visualNodeCache(visualNodeCache.cloneNode()) {
+    : m_waveformWidget(waveformWidget),
+      m_waveformViewer(waveformViewer),
+      m_visualNodeCache(visualNodeCache.cloneNode()) {
 }
 
 ///////////////////////////////////////////
@@ -44,7 +44,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
     m_config = 0;
     m_skipRender = false;
     setFrameRate(33);
-    m_defaultZoom = 1;
+    m_defaultZoom = 3;
     m_zoomSync = false;
     m_visualGain[All] = 1.5;
     m_visualGain[Low] = 1.0;
@@ -149,14 +149,14 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
     }
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
-        m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
+                m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
     if (!ok || !setWidgetType(type)) {
         setWidgetType(autoChooseWidgetType());
     }
 
     for (int i = 0; i < FilterCount; i++) {
         double visualGain = m_config->getValueString(
-            ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
+                    ConfigKey("[Waveform]","VisualGain_" + QString::number(i))).toDouble(&ok);
 
         if (ok) {
             setVisualGain(FilterIndex(i), visualGain);
@@ -225,7 +225,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDo
 
     viewer->setZoom(m_defaultZoom);
 
-    qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory index" << index;
+    qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
 
     return true;
 }
@@ -263,7 +263,7 @@ bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
-    if (handleIndex < 0 && handleIndex > m_waveformWidgetHandles.size()) {
+    if (handleIndex < 0 && handleIndex > (int)m_waveformWidgetHandles.size()) {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);
@@ -280,22 +280,24 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     setWidgetType(handle.m_type);
 
     m_skipRender = true;
-    qDebug() << "recreate start";
+    //qDebug() << "recreate start";
 
     //re-create/setup all waveform widgets
     for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++) {
         WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
-        previousWidget->hold();
+        //previousWidget->hold();
+        int previousZoom = previousWidget->getZoomFactor();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
         holder.m_waveformWidget = widget;
         widget->castToQWidget();
-        widget->hold();
+        //widget->hold();
         viewer->setWaveformWidget(widget);
         viewer->setup(holder.m_visualNodeCache);
+        viewer->setZoom(previousZoom);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
@@ -304,7 +306,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     }
 
     m_skipRender = false;
-    qDebug() << "recreate done";
+    //qDebug() << "recreate done";
     return true;
 }
 
@@ -350,7 +352,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     if (isZoomSync()) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         int refZoom = viewer->getWaveformWidget()->getZoomFactor();
-        for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        for (int i = 0; i < (int)m_waveformWidgetHolders.size(); i++) {
             if (m_waveformWidgetHolders[i].m_waveformViewer != viewer) {
                 m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
             }
@@ -360,7 +362,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 
 void WaveformWidgetFactory::refresh() {
     if (m_skipRender)
-       return;
+        return;
 
     for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->preRender();
@@ -455,7 +457,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidg
 }
 
 int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
-    for (int i = 0; i < m_waveformWidgetHolders.size(); i++)
+    for (int i = 0; i < (int)m_waveformWidgetHolders.size(); i++)
         if (m_waveformWidgetHolders[i].m_waveformViewer == viewer)
             return i;
     return -1;
