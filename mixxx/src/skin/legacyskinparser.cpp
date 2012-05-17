@@ -821,10 +821,10 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     pTabWidget->setStyleSheet(style);
 
-    qDebug() << " my message "<< node.nodeName();
-    qDebug() << " my message "<< node.lastChildElement().previousSiblingElement().previousSiblingElement().nodeName();
-    qDebug() << " my message "<< node.lastChildElement().previousSiblingElement().nodeName();
-    qDebug() << " my message "<< node.lastChildElement().nodeName();
+    qDebug() << " Kain88 message "<< node.nodeName();
+    qDebug() << " Kain88 message "<< node.lastChildElement().previousSiblingElement().previousSiblingElement().nodeName();
+    qDebug() << " Kain88 message "<< node.lastChildElement().previousSiblingElement().nodeName();
+    qDebug() << " Kain88 message "<< node.lastChildElement().nodeName();
     parsePushButton(node.lastChildElement().previousSiblingElement().previousSiblingElement());
     parseOverview(node.lastChildElement().previousSiblingElement());
     parseText(node.lastChildElement());

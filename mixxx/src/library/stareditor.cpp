@@ -75,6 +75,7 @@ void StarEditor::paintEvent(QPaintEvent *)
  */
  void StarEditor::mouseReleaseEvent(QMouseEvent * /* event */)
  {
+    qDebug() << "kain88 emit editingFinished";
     emit editingFinished();
  }
 /*

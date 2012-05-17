@@ -118,7 +118,7 @@ Sampler* PlayerManager::addSampler() {
 PreviewDeck* PlayerManager::addPreviewDeck() {
     PreviewDeck* pPreviewDeck;
     //not sure what this does
-    QString group = groupForLibPreviewPlaye(numPreviewDeck());
+    QString group = groupForLibPreviewPlayer(numPreviewDeck());
 
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
@@ -172,6 +172,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 }
 
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
+    qDebug() << "load track to player";//context menu event
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
@@ -183,6 +184,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
 }
 
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
+    qDebug() << "Load to player";//drag and drop event
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {

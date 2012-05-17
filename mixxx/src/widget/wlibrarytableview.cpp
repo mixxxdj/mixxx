@@ -9,6 +9,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wlibrarytableview.h"
 #include "../library/stardelegate.h"
+#include "../library/previewbuttondelegate.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      ConfigObject<ConfigValue>* pConfig,
@@ -23,7 +24,12 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setEditTriggers(QAbstractItemView::SelectedClicked);
 
     // This is to support rating of tracks
+    //TODO(kain88) use setItemDelegateForColumn instead
     setItemDelegate(new StarDelegate(this));
+    //This is to have a Preview Button 
+    //TODO(kain88) get column number of artist dynamically
+    // setItemDelegateForColumn(3,new PreviewButtonDelegate(this));
+    setItemDelegate(new PreviewButtonDelegate(this));
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);

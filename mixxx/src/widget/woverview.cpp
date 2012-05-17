@@ -538,6 +538,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 void WOverview::dropEvent(QDropEvent* event) {
     if (event->mimeData()->hasUrls() &&
         event->mimeData()->urls().size() > 0) {
+        qDebug() << "my message I'm trunk";
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();
@@ -547,7 +548,9 @@ void WOverview::dropEvent(QDropEvent* event) {
         }
         event->accept();
         emit(trackDropped(name, m_pGroup));
+        qDebug() << "emited track";     
     } else {
+        qDebug() << "deck is playing";
         event->ignore();
     }
 }

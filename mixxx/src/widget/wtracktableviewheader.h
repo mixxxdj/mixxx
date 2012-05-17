@@ -25,7 +25,7 @@ class WTrackTableViewHeader : public QHeaderView {
 
     void saveHeaderState();
     void restoreHeaderState();
-     /** returns false if the header state is stored in the database (on first time usgae) **/
+     /** returns false if the header state is stored in the database (on first time usage) **/
     bool hasPersistedHeaderState();
 
   private slots:

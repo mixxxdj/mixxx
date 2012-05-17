@@ -37,6 +37,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 #include <stdio.h> // currently used for writing to stdout
+#include <unistd.h>
 
 
 /*

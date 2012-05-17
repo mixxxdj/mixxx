@@ -67,7 +67,7 @@ class PlayerManager : public QObject {
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
-    static QString groupForLibPreviewPlaye(int i) {
+    static QString groupForLibPreviewPlayer(int i) {
         return QString("[PreviewDeck%1]").arg(i+1);
     }
 

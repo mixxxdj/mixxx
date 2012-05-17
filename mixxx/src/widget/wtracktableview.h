@@ -64,6 +64,7 @@ class WTrackTableView : public WLibraryTableView {
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging
     void mouseMoveEvent(QMouseEvent *pEvent);
+    // void mousePressEvent(QMouseEvent *pEvent);
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();

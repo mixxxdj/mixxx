@@ -44,6 +44,7 @@ const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
 const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
 const QString LIBRARYTABLE_TIMESPLAYED = "timesplayed";
 const QString LIBRARYTABLE_PLAYED = "played";
+const QString LIBRARYTABLE_PREVIEW = "preview";
 const QString LIBRARYTABLE_RATING = "rating";
 const QString LIBRARYTABLE_KEY = "key";
 
