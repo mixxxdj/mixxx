@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-09 16:36+0000\n"
+"PO-Revision-Date: 2012-05-16 15:30+0000\n"
 "Last-Translator: Sid Roberts <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-15 04:41+0000\n"
-"X-Generator: Launchpad (build 15238)\n"
+"X-Launchpad-Export-Date: 2012-05-17 04:35+0000\n"
+"X-Generator: Launchpad (build 15259)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,27 +24,27 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Add to Auto DJ Queue (bottom)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Add to Auto DJ Queue (top)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Import Playlist"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Playlist Creation Failed"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "An unknown error occurred while creating playlist: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -53,12 +53,12 @@ msgstr "New Playlist"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Add to Auto DJ Queue (bottom)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Add to Auto DJ Queue (top)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -111,12 +111,12 @@ msgstr "Playlist name:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Playlist Creation Failed"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "An unknown error occurred while creating playlist: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -232,11 +232,11 @@ msgstr "Couldn't load track."
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "Add to Quick Links"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "Remove from Quick Links"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -336,7 +336,7 @@ msgstr "Location"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx Library"
 
 #: BrowseTableModel#17
 msgid ""
@@ -1488,7 +1488,7 @@ msgstr "Pitchbend sensitivity"
 #: DlgPrefControlsDlg#25
 msgctxt "DlgPrefControlsDlg#25"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Waveform Display"
 
 #: DlgPrefControlsDlg#26
 msgid "Synchronize zoom level across all waveform displays."
@@ -1553,7 +1553,7 @@ msgstr "Visual gain"
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronise"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1857,25 +1857,25 @@ msgstr "Use relative paths for playlist export if possible"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Show Rhythmbox Library"
-msgstr ""
+msgstr "Show Rhythmbox Library"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show iTunes Library"
-msgstr ""
+msgstr "Show iTunes Library"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Show Traktor Library"
-msgstr ""
+msgstr "Show Traktor Library"
 
 #: DlgPrefPlaylistDlg#13
 msgctxt "DlgPrefPlaylistDlg#13"
 msgid "Browse..."
-msgstr ""
+msgstr "Browse..."
 
 #: DlgPrefPlaylistDlg#14
 msgctxt "DlgPrefPlaylistDlg#14"
 msgid "Library"
-msgstr ""
+msgstr "Library"
 
 #: DlgPrefPlaylistDlg#15
 msgid "Music Directory:"
@@ -2151,7 +2151,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#17
 msgctxt "DlgPrefShoutcastDlg#17"
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Live mix"
@@ -2164,7 +2164,7 @@ msgstr "Public stream"
 #: DlgPrefShoutcastDlg#20
 msgctxt "DlgPrefShoutcastDlg#20"
 msgid "Encoding"
-msgstr ""
+msgstr "Encoding"
 
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
@@ -2190,12 +2190,12 @@ msgstr "Enable custom metadata"
 #: DlgPrefShoutcastDlg#26
 msgctxt "DlgPrefShoutcastDlg#26"
 msgid "Artist"
-msgstr ""
+msgstr "Artist"
 
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Title"
-msgstr ""
+msgstr "Title"
 
 #: DlgPrefShoutcastDlg#28
 msgid ""
