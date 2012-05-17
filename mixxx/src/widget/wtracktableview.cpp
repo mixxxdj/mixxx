@@ -511,14 +511,20 @@ void WTrackTableView::onShow() {
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
-   //only use this for drag and drop if the LeftButton is pressed
-   //we need to check for this because PreviewButtonDelegate activates 
-   //mousetracking and this function is called everytime the mouse is moved
-   //-- kain88 May 2012
-   if(pEvent->buttons()!=Qt::LeftButton){
-       return;
-   }
-   TrackModel* trackModel = getTrackModel();
+    //emit this signal for previewButtonDelegate
+    QPoint bottomRight = pEvent->pos();
+    QPersistentModelIndex index = indexAt(bottomRight);
+    if(index.isValid()){
+        emit(entered(index));
+    }
+    //only use this for drag and drop if the LeftButton is pressed
+    //we need to check for this because PreviewButtonDelegate activates 
+    //mousetracking and this function is called everytime the mouse is moved
+    //-- kain88 May 2012
+    if(pEvent->buttons()!=Qt::LeftButton){
+        return;
+    }
+    TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
     qDebug() << "MouseMoveEvent";

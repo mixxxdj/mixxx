@@ -43,7 +43,7 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
         return QStyledItemDelegate::createEditor(parent, option, index);
     }
     QPushButton * btn = new QPushButton(parent);
-    btn->setText("play");
+    btn->setText(qVariantValue<QString>(index.data()));
     qDebug() <<"kain88 index.data() = "<<index.data();
     
     // getTrackPointer(index);
@@ -94,7 +94,7 @@ void PreviewButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
     }
     
     m_pBtn->setGeometry(option.rect);
-    m_pBtn->setText("play");
+    m_pBtn->setText(qVariantValue<QString>(index.data()));
     if (option.state == QStyle::State_Selected)
                     painter->fillRect(option.rect, option.palette.highlight());
     QPixmap map = QPixmap::grabWidget(m_pBtn);
@@ -115,9 +115,9 @@ QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const 
 void PreviewButtonDelegate::cellEntered(const QModelIndex &index)
 {
 
-        qDebug() << "kain88 cell entered";
     if(index.column()==m_column)
     {
+        // qDebug() << "kain88 cell entered";
         if(m_isOneCellInEditMode)
         {
             m_pMyWidget->closePersistentEditor(m_currentEditedCellIndex);
