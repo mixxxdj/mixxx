@@ -96,7 +96,7 @@ WTrackTableView::~WTrackTableView()
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 
@@ -195,6 +195,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     // Stupid hack that assumes column 0 is never visible, but this is a weak
     // proxy for "there was a saved column sort order"
+    
     if (horizontalHeader()->sortIndicatorSection() > 0) {
         // Sort by the saved sort section and order. This line sorts the
         // TrackModel and in turn generates a select()
@@ -272,11 +273,10 @@ void WTrackTableView::createActions() {
             this, SLOT(slotReloadTrackMetadata()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load into Preview Deck"), this);
-	QString deckGroup = QString("[PreviewDeck%1]").arg(1);
+	QString deckGroup = QString("[PreviewDeck%1]").arg(1);//currently there is only one previewDeck
 	m_pMenu->addAction(m_pAddToPreviewDeck);
 	m_deckMapper.setMapping(m_pAddToPreviewDeck, deckGroup);
     connect(m_pAddToPreviewDeck, SIGNAL(triggered()),
-        //    this,SLOT(slotLoadToPreviewDeck()));
             &m_deckMapper,SLOT(map()));
 }
 
@@ -293,6 +293,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
 }
 
 void WTrackTableView::loadSelectionToGroup(QString group) {
+    qDebug() << "my message load track yeah" << group;
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         // If the track load override is disabled, check to see if a track is
@@ -301,8 +302,10 @@ void WTrackTableView::loadSelectionToGroup(QString group) {
             bool groupPlaying = ControlObject::getControl(
                 ConfigKey(group, "play"))->get() == 1.0f;
 
-            if (groupPlaying)
+            if (groupPlaying){
+                qDebug() << "playing" ;
                 return;
+            }
         }
 
         QModelIndex index = indices.at(0);
@@ -505,12 +508,18 @@ void WTrackTableView::onShow() {
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
-   Q_UNUSED(pEvent);
+   //only use this for drag and drop if the LeftButton is pressed
+   //we need to check for this because PreviewButtonDelegate activates 
+   //mousetracking and this function is called everytime the mouse is moved
+   // -- kain88 May 2012
+   if(pEvent->buttons()!=Qt::LeftButton){
+       return;
+   }
    TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
-
-    // Iterate over selected rows and append each item's location url to a list
+    qDebug() << "MouseMoveEvent";
+    // Iterate over selected rows and append each item's location url to a list.
     QList<QUrl> locationUrls;
     QModelIndexList indices = selectionModel()->selectedRows();
     foreach (QModelIndex index, indices) {
@@ -542,7 +551,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {
-    //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+    qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
@@ -578,7 +587,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
-    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {

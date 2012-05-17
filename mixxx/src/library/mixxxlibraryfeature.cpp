@@ -19,6 +19,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         : LibraryFeature(parent) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
+            // << "library." + LIBRARYTABLE_PREVIEW
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
             << "library." + LIBRARYTABLE_ARTIST

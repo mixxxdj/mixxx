@@ -468,6 +468,7 @@ class MixxxCore(Feature):
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
+                   "library/previewbuttondelegate.cpp",
                    "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",

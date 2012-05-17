@@ -116,6 +116,7 @@ void MissingTableModel::slotSearch(const QString& searchText) {
 bool MissingTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
+        column == fieldIndex(LIBRARYTABLE_PREVIEW) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;

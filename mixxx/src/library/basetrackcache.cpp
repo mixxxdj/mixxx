@@ -351,6 +351,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 
     QString filter = filterClause(searchQuery, extraFilter, idStrings);
     QString orderBy = orderByClause(sortColumn, sortOrder);
+    qDebug() << "kain88 orderBy "<< orderBy;
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
             .arg(m_idColumn, m_tableName, filter, orderBy);
 
@@ -366,7 +367,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 
     if (!query.exec()) {
         qDebug() << this << "select() error:" << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError();
+                 << query.executedQuery() << query.lastError() << sortColumn;
     }
 
     QSqlRecord record = query.record();
