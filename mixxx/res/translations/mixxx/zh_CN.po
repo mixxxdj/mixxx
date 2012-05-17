@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-10 01:30+0000\n"
-"Last-Translator: HappyChapman <ncboyjoe@yahoo.com.cn>\n"
+"PO-Revision-Date: 2012-05-17 04:34+0000\n"
+"Last-Translator: yjfhw <yjfhw007@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-15 04:41+0000\n"
-"X-Generator: Launchpad (build 15238)\n"
+"X-Launchpad-Export-Date: 2012-05-17 04:35+0000\n"
+"X-Generator: Launchpad (build 15259)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -29,7 +29,7 @@ msgstr ""
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "添加至自动曲目队列（顶部）"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -53,12 +53,12 @@ msgstr "新建播放列表"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "添加至自动曲目队列（底部）"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "添加至自动曲目队列（顶部）"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -94,7 +94,7 @@ msgstr "新建播放列表名称："
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "c重命名播放列表失败"
+msgstr "重命名播放列表失败"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
@@ -833,7 +833,7 @@ msgstr ""
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
-msgstr ""
+msgstr "耳机监听键"
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
@@ -865,7 +865,7 @@ msgstr ""
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr ""
+msgstr "节拍同步（拍子和位相）"
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
@@ -1240,7 +1240,7 @@ msgstr ""
 
 #: DlgPrefControls#2
 msgid "Remaining"
-msgstr ""
+msgstr "剩余时间"
 
 #: DlgPrefControls#3
 msgid "Don't load tracks into a playing deck"
