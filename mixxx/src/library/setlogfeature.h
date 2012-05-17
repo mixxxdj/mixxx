@@ -47,6 +47,7 @@ public:
 
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
+    int m_iLastPlayedTrack;
 };
 
 #endif /* SETLOGFEATURE_H */

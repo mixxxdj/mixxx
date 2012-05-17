@@ -23,6 +23,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
+            
+    m_iLastPlayedTrack=-1;
 
     //create a new playlist for today
     QString set_log_name_format;
@@ -248,6 +250,12 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (currentPlayingTrackId < 0) {
             return;
         }
+        
+        if (currentPlayingTrackId == m_iLastPlayedTrack)
+        {
+            return;
+        }
+        m_iLastPlayedTrack = currentPlayingTrackId;
 
         // Here the song is realy played, not only loaded.
         currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
