@@ -153,7 +153,8 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/){
 
 void WWaveformViewer::wheelEvent(QWheelEvent *event) {
     if (m_waveformWidget) {
-        if (event->x() > width() - m_zoomZoneWidth) {
+        //NOTE: (vrince) to limit the zoom action area uncomment the following line
+        //if (event->x() > width() - m_zoomZoneWidth) {
             if (event->delta() > 0) {
                 //qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
                 onZoomChange(m_waveformWidget->getZoomFactor()+1);
@@ -162,7 +163,7 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
                 //qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
                 onZoomChange(m_waveformWidget->getZoomFactor()-1);
             }
-        }
+        //}
     }
 }
 
