@@ -136,10 +136,12 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index)
 
 void PreviewButtonDelegate::buttonclicked(){
     qDebug() << "kain88 button clicked";
-    QModelIndexList indices = m_pMyWidget->selectionModel()->selectedRows();
-    
     TrackModel* ptrackModel = dynamic_cast<TrackModel*>(m_pMyWidget->model());
-    QModelIndex index = indices.at(0);
-    TrackPointer Track = ptrackModel->getTrack(index);
-    emit(loadTrackToPlayer(Track,m_group));
+    QModelIndexList indices = m_pMyWidget->selectionModel()->selectedRows();
+    //if no row is selected then indices is empty and Qt crashes
+    if(!indices.empty()){
+        QModelIndex index = indices.at(0);
+        TrackPointer Track = ptrackModel->getTrack(index);
+        emit(loadTrackToPlayer(Track,m_group));
+    }
 }
