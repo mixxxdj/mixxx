@@ -7,6 +7,7 @@
 #include <QTableView>
 
 #include "trackinfoobject.h"
+#include "widget/wtracktableview.h"
 
 class PreviewButtonDelegate : public QStyledItemDelegate
 {
@@ -34,9 +35,11 @@ public:
 
     void updateEditorGeometry(QWidget *editor,
          const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    
+    void getTrackPointer(const QModelIndex &index);
 
 signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group);
+    void loadTrackToPlayer(TrackPointer Track, QString group);
 
 public slots:
     void cellEntered(const QModelIndex &index);
@@ -49,7 +52,7 @@ private:
     QPersistentModelIndex m_currentEditedCellIndex;
     QModelIndex m_index;
     QString m_group;
-    TrackPointer *m_pTrack;
+    TrackPointer m_Track;
     int m_column;
 };
 

@@ -21,10 +21,8 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent) :
         m_pMyWidget->setMouseTracking(true);
         connect(m_pMyWidget, SIGNAL(entered(QModelIndex)),
                               this, SLOT(cellEntered(QModelIndex)));
-         /*
-        connect(this,SIGNAL(loadTrackToPlayer(pTrack, group)),
-         which object?,SIGNAL(loadTrackToPlayer(pTrack,deckGroup)));
-         */
+        
+        connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)), parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
         m_isOneCellInEditMode = false;
         m_group = QString("[PreviewDeck1]");//currently there is only one previewDeck
         m_column=3;
@@ -48,14 +46,20 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     btn->setText("play");
     qDebug() <<"kain88 index.data() = "<<index.data();
     
-    //TODO(kain88) memory leak?
-    // TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-    // m_pTrack = trackModel->getTrack(index);
+    // getTrackPointer(index);
     
     //m_index=index;can't do that since there is no valid copy constructor
+    
     connect(btn,SIGNAL(clicked()),this,SLOT(buttonclicked()));
 
     return btn;
+}
+
+void PreviewButtonDelegate::getTrackPointer(const QModelIndex &index){
+     //TODO(kain88) memory leak?
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(m_pMyWidget->model());
+    // TrackPointer Track = trackModel->getTrack(index);
+    m_Track = trackModel->getTrack(index);
 }
 
 //setEditorData
@@ -111,9 +115,9 @@ QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const 
 void PreviewButtonDelegate::cellEntered(const QModelIndex &index)
 {
 
+        qDebug() << "kain88 cell entered";
     if(index.column()==m_column)
     {
-        // qDebug() << "kain88 cell entered";
         if(m_isOneCellInEditMode)
         {
             m_pMyWidget->closePersistentEditor(m_currentEditedCellIndex);
@@ -132,5 +136,10 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index)
 
 void PreviewButtonDelegate::buttonclicked(){
     qDebug() << "kain88 button clicked";
-    // emit(loadTrackToPlayer(m_pTrack,m_group))
+    QModelIndexList indices = m_pMyWidget->selectionModel()->selectedRows();
+    
+    TrackModel* ptrackModel = dynamic_cast<TrackModel*>(m_pMyWidget->model());
+    QModelIndex index = indices.at(0);
+    TrackPointer Track = ptrackModel->getTrack(index);
+    emit(loadTrackToPlayer(Track,m_group));
 }

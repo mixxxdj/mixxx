@@ -15,6 +15,7 @@
 #include "widget/wtracktableview.h"
 #include "dlgtrackinfo.h"
 #include "soundsourceproxy.h"
+#include "../library/previewbuttondelegate.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -70,6 +71,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
+            
+    setItemDelegate(new PreviewButtonDelegate(this));
 }
 
 WTrackTableView::~WTrackTableView()
@@ -511,7 +514,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
    //only use this for drag and drop if the LeftButton is pressed
    //we need to check for this because PreviewButtonDelegate activates 
    //mousetracking and this function is called everytime the mouse is moved
-   // -- kain88 May 2012
+   //-- kain88 May 2012
    if(pEvent->buttons()!=Qt::LeftButton){
        return;
    }
@@ -546,7 +549,6 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
     drag->exec(Qt::CopyAction);
 }
-
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
