@@ -80,32 +80,32 @@ EksOtus.registerPackets = function() {
 
     // Input controller state packet
     packet = new HIDPacket('control',[0x0,0x35],64);
-    packet.addField('deck','wheel_position',2,'H');
-    packet.addField('deck','jog_wheel',4,'h');
-    packet.addField('hid','timestamp',6,'I');
-    packet.addField('deck1','slider_value',10,'H');
-    packet.addField('deck1','slider_position',12,'H');
-    packet.addField(undefined,'jog_ne',14,'B',EksOtus.corner_wheel);
-    packet.addField('[Playlist]','SelectTrackKnob',15,'B',undefined,255);
-    packet.addField(undefined,'jog_sw',16,'B',EksOtus.corner_wheel);
-    packet.addField(undefined,'jog_nw',17,'B',EksOtus.corner_wheel);
-    packet.addField('deck1','pregain',18,'H',EksOtus.pregain);
-    packet.addField('deck2','pregain',20,'H',EksOtus.pregain);
-    packet.addField('deck1','filterHigh',22,'H');
-    packet.addField('deck2','filterHigh',24,'H');
-    packet.addField('deck1','filterMid',26,'H');
-    packet.addField('deck2','filterMid',28,'H');
-    packet.addField('deck1','filterLow',30,'H');
-    packet.addField('deck2','filterLow',32,'H');
-    packet.addField('[Master]','crossfader',34,'H');
-    packet.addField('[Master]','headphones',36,'H',EksOtus.headphones);
-    packet.addField('[Effects]','trackpad_x',38,'H',EksOtus.xypad);
-    packet.addField('[Effects]','trackpad_y',40,'H',EksOtus.xypad);
-    packet.addField('deck1','slider_pos_1',42,'H',EksOtus.pitchSlider);
-    packet.addField('deck2','slider_pos_2',44,'H',EksOtus.pitchSlider);
+    packet.addControl('deck','wheel_position',2,'H');
+    packet.addControl('deck','jog_wheel',4,'h');
+    packet.addControl('hid','timestamp',6,'I');
+    packet.addControl('deck1','slider_value',10,'H');
+    packet.addControl('deck1','slider_position',12,'H');
+    packet.addControl(undefined,'jog_ne',14,'B',EksOtus.corner_wheel);
+    packet.addControl('[Playlist]','SelectTrackKnob',15,'B',undefined,255);
+    packet.addControl(undefined,'jog_sw',16,'B',EksOtus.corner_wheel);
+    packet.addControl(undefined,'jog_nw',17,'B',EksOtus.corner_wheel);
+    packet.addControl('deck1','pregain',18,'H',EksOtus.pregain);
+    packet.addControl('deck2','pregain',20,'H',EksOtus.pregain);
+    packet.addControl('deck1','filterHigh',22,'H');
+    packet.addControl('deck2','filterHigh',24,'H');
+    packet.addControl('deck1','filterMid',26,'H');
+    packet.addControl('deck2','filterMid',28,'H');
+    packet.addControl('deck1','filterLow',30,'H');
+    packet.addControl('deck2','filterLow',32,'H');
+    packet.addControl('[Master]','crossfader',34,'H');
+    packet.addControl('[Master]','headphones',36,'H',EksOtus.headphones);
+    packet.addControl('[Effects]','trackpad_x',38,'H',EksOtus.xypad);
+    packet.addControl('[Effects]','trackpad_y',40,'H',EksOtus.xypad);
+    packet.addControl('deck1','slider_pos_1',42,'H',EksOtus.pitchSlider);
+    packet.addControl('deck2','slider_pos_2',44,'H',EksOtus.pitchSlider);
     packet.addBitVector(undefined,'mask',46,'I',buttons);
-    packet.addField('hid','packet_number',51,'B');
-    packet.addField('hid','deck_status',52,'B');
+    packet.addControl('hid','packet_number',51,'B');
+    packet.addControl('hid','deck_status',52,'B');
     packet.setIgnored('hid','timestamp',true);
     packet.setIgnored('hid','packet_number',true);
     packet.setIgnored('hid','deck_status',true);
@@ -125,13 +125,13 @@ EksOtus.registerPackets = function() {
 
     // Input packet to receive device firmware version
     packet = new HIDPacket('firmware_version',[0xa,0x4],64,EksOtus.FirmwareVersionResponse);
-    packet.addField('hid','major',2,'B');
-    packet.addField('hid','minor',3,'B');
+    packet.addControl('hid','major',2,'B');
+    packet.addControl('hid','minor',3,'B');
     EksOtus.registerInputPacket(packet);
 
     // Input packet to receive trackpad mode change response
     packet = new HIDPacket('trackpad_mode',[0x5,0x3],64,EksOtus.TrackpadModeResponse);
-    packet.addField('hid','status',2,'B');
+    packet.addControl('hid','status',2,'B');
     EksOtus.registerInputPacket(packet);
 
     // Control packet for left wheel LEDs
@@ -208,12 +208,12 @@ EksOtus.registerPackets = function() {
 
     // Output packet to set trackpad mode
     packet = new HIDPacket('set_trackpad_mode',[0x5,0x3],32);
-    packet.addField('hid','mode',2,'B');
+    packet.addControl('hid','mode',2,'B');
     EksOtus.registerOutputPacket(packet);
 
     // Output packet to set LED control mode
     packet = new HIDPacket('set_ledcontrol_mode',[0x1d,0x3],32);
-    packet.addField('hid','mode',2,'B');
+    packet.addControl('hid','mode',2,'B');
     EksOtus.registerOutputPacket(packet);
 
     // Register functions to scale value
@@ -340,10 +340,6 @@ EksOtus.headphones = function (field) {
         value = EksOtus.plusMinus1Scaler(field.value);
         engine.setValue(field.group,'headMix',value);
     }
-}
-
-EksOtus.SelectTrack = function(field) {
-    print("SELECT TRACK " + field.group + " name " + field.name + " value " + field.value + " delta " + field.delta);
 }
 
 // Control effects or somethig with XY pad
@@ -544,7 +540,7 @@ EksOtus.FirmwareVersionResponse = function(packet,delta) {
     EksOtus.setLEDBlink('deck','deck_switch','amber');
 
     // Indicate we are initialized with a little animation
-    // EksOtus.initWheelAnimation('amber');
+    EksOtus.initWheelAnimation('amber');
 
     script.HIDDebug("EKS " + EksOtus.id +
         " v"+EksOtus.version_major+"."+EksOtus.version_minor+

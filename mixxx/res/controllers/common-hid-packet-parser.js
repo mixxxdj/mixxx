@@ -66,7 +66,7 @@ HIDPacket.prototype.getControlGroup = function(name,create) {
 //           is returned, it is applied, if returns undefined value is
 //           discarded expecting callback already did it's job.
 // max       maximum value for encoder type fields
-HIDPacket.prototype.addField = function(group,name,offset,pack,callback,max) {
+HIDPacket.prototype.addControl = function(group,name,offset,pack,callback,max) {
     var control_group = this.getControlGroup(group,true);
     if (control_group==undefined) {
         script.HIDDebug('ERROR creating HID packet group ' + group);
@@ -87,7 +87,7 @@ HIDPacket.prototype.addField = function(group,name,offset,pack,callback,max) {
     };
 }
 
-HIDPacket.prototype.addBitmaskedField = function(group,name,offset,index,callback,expect) {
+HIDPacket.prototype.addBitmask = function(group,name,offset,index,callback,expect) {
     var control_group = this.getControlGroup(group,true);
     if (control_group==undefined) {
         script.HIDDebug('ERROR creating HID packet group ' + group);
@@ -232,10 +232,8 @@ HIDPacket.prototype.parseBitVector = function(field,value) {
     var bits = new Object();
     var bit;
     var new_value;
-    var bitvector_index = 0;
     for (var name in field.value.bits) {
-        bit = field.value.bits[name];
-        new_value = value>>bitvector_index++&1;
+        new_value = value>>bit.index&1;
         if (new_value!=bit.value) {
             bit.value = new_value;
             bits[name] = bit;
@@ -245,7 +243,7 @@ HIDPacket.prototype.parseBitVector = function(field,value) {
 }
 
 // Fetch specified bit out of a bitmasked value
-HIDPacket.prototype.parseBitMaskedValue = function(field,value) {
+HIDPacket.prototype.parseBitmaskValue = function(field,value) {
     return value>>field.index&1;
 }
 
@@ -301,7 +299,7 @@ HIDPacket.prototype.parse = function(data) {
                 }
                 field.value = value;
             } else if (field.type=='bitmasked') {
-                value = this.parseBitMaskedValue(field,value);
+                value = this.parseBitmaskValue(field,value);
                 if (field.expect!=undefined && value!=field.expect)
                     continue;
                 if (field.ignored!=true) {
