@@ -29,6 +29,20 @@ HIDBitVector.prototype.addBit = function(group,name,index) {
     this[name] = bit;
 }
 
+
+// Add a bit to the HIDBitVector at given bit index
+HIDBitVector.prototype.addLED = function(group,name,index) {
+    var bit = new Object();
+    bit.type = 'led';
+    bit.group = group;
+    bit.name = name;
+    bit.index = index;
+    bit.callback = undefined;
+    bit.value = undefined;
+    bit.blink = undefined;
+    this[name] = bit;
+}
+
 // One HID input/output packet to register to HIDController
 // name     name of packet
 // header   list of bytes to match from beginning of packet
@@ -263,6 +277,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
         // script.HIDDebug("PACKET " + this.name + " registering new bitvector in group " + group + " name " + name);
     }
     control_group[name] = field;
+
 }
 
 // Register a LED control field or bit to output packet
@@ -276,8 +291,18 @@ HIDPacket.prototype.addLEDControl = function(group,name,offset,pack,bitmask,call
         script.HIDDebug("ERROR unknonw LED control pack value " + pack);
         return;
     }
+    var field = this.lookupFieldByOffset(offset,pack);
+    if (field!=undefined) {
+        if (bitmask==undefined) {
+            script.HIDDebug("ERROR trying to overwrite non-bitmask control " + group + " " + name);
+            return;
+        }
+        var bitvector = field.value;
+        bitvector.addBit(group,name,bitmask);
+        return;
+    }
+
     var field = new Object();
-    field.type = 'led';
     field.group = group;
     field.name = name;
     field.offset = offset;
@@ -285,6 +310,27 @@ HIDPacket.prototype.addLEDControl = function(group,name,offset,pack,bitmask,call
     field.bitmask = bitmask;
     field.callback = callback;
     field.blink = undefined;
+
+    if (bitmask==undefined || bitmask==packet_max_value) {
+        field.type = 'led';
+        field.value = undefined;
+        field.delta = undefined;
+        field.mindelta = undefined;
+        // script.HIDDebug("LED CONTROL " + this.name + " registering group " + group + " field " + name);
+    } else {
+        // TODO - accept controls with bitmask < packet_max_value
+        name = 'bitvector_' + offset;
+        field.type = 'bitvector';
+        field.name = name;
+        var bitvector = new HIDBitVector();
+        bitvector.addLED(group,name,bitmask);
+        field.value = bitvector;
+        field.delta = undefined;
+        field.mindelta = undefined;
+        // script.HIDDebug("LED BITVECTOR " + this.name + " registering new bitvector in group " + group + " name " + name);
+    }
+    control_group[name] = field;
+
 }
 
 // Set 'ignored' flag for field to given value (true or false)
