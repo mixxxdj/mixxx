@@ -261,7 +261,6 @@ EksOtus.registerPackets = function() {
 EksOtus.init = function (id) {
     EksOtus.id = id;
     EksOtus.activeDeck = undefined;
-    EksOtus.LEDUpdateInterval = 300;
 
     EksOtus.scratchintervalsPerRev = 256;
     EksOtus.scratchAlpha = 1.0/8;
@@ -461,6 +460,7 @@ EksOtus.deckSwitchDoubleClick = function() {
             EksOtus.setLED('deck','deck_switch','red');
             break;
     }
+    EksOtus.wheelLEDInitAnimation('off');
     script.HIDDebug('Active EKS Otus deck now ' + EksOtus.activeDeck);
 }
 
@@ -523,25 +523,28 @@ EksOtus.setLEDControlMode = function(mode) {
 
 // Silly little function for wheel LEDs to indicate device is initialized
 // Triggers itself with a timer to reverse the LED states to off.
-EksOtus.initWheelAnimation = function (state) {
+EksOtus.wheelLEDInitAnimation = function (state) {
     var i;
     var name = undefined;
     if (state=='off') {
+        print("DISABLE wheel animation");
+        if (EksOtus.initAnimationTimer!=undefined) {
+            print("STOP wheel animation timer");
+            engine.stopTimer(EksOtus.initAnimationTimer);
+            EksOtus.initAnimationTimer = undefined;
+        }
         for (i=EksOtus.WheelLEDCount;i>0;i--) {
             name = 'wheel_' + i;
             EksOtus.setLED('deck',name,state);
         }
-        if (EksOtus.initAnimationTimer!=undefined)
-            engine.stopTimer(EksOtus.initAnimationTimer);
-        EksOtus.initAnimationTimer = undefined;
     } else {
+        print("ENABLE wheel animation");
         for (i=1;i<=EksOtus.WheelLEDCount;i++) {
             name = 'wheel_' + i;
             EksOtus.setLED('deck',name,state);
         }
         EksOtus.initAnimationTimer = engine.beginTimer(
-            500,
-            "EksOtus.initWheelAnimation('off')"
+            1000, "EksOtus.wheelLEDInitAnimation('off')"
         );
     }
 }
@@ -580,11 +583,12 @@ EksOtus.FirmwareVersionResponse = function(packet,delta) {
     // Start blinking 'deck switch' button to indicate we are ready.
     EksOtus.setLEDBlink('deck','deck_switch','amber');
 
-    // Indicate we are initialized with a little animation
-    // EksOtus.initWheelAnimation('amber');
-
     script.HIDDebug("EKS " + EksOtus.id +
         " v"+EksOtus.version_major+"."+EksOtus.version_minor+
         " initialized"
     );
+
+    // Indicate we are initialized with a little animation
+    EksOtus.wheelLEDInitAnimation('amber');
+
 }
