@@ -104,13 +104,13 @@ bool TrackDAO::trackExistsInDatabase(QString absoluteFilePath) {
     return (getTrackId(absoluteFilePath) != -1);
 }
 
-void TrackDAO::saveTrack(TrackPointer track) {
+void TrackDAO::saveTrack(TrackPointer track, bool override_dirty) {
     if (track) {
-        saveTrack(track.data());
+        saveTrack(track.data(), override_dirty);
     }
 }
 
-void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
+void TrackDAO::saveTrack(TrackInfoObject* pTrack, bool override_dirty) {
     if (!pTrack) {
         qWarning() << "TrackDAO::saveTrack() was given NULL track.";
     }
@@ -118,8 +118,8 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
     // If track's id is not -1, then update, otherwise add.
     int trackId = pTrack->getId();
     if (trackId != -1) {
-        if (pTrack->isDirty()) {
-            if (!m_dirtyTracks.contains(trackId)) {
+        if (pTrack->isDirty() || override_dirty) {
+            if (!m_dirtyTracks.contains(trackId) && !override_dirty) {
                 qDebug() << "WARNING: Inconsistent state in TrackDAO. Track is dirty while TrackDAO thinks it is clean.";
             }
 
@@ -138,7 +138,7 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
 		    
 		    updateTrack(pTrack);
         } else {
-            //qDebug() << "TrackDAO::saveTrack. Not Dirty";
+            qDebug() << "TrackDAO::saveTrack. Not Dirty";
             //qDebug() << this << "Dirty tracks remaining:" << m_dirtyTracks.size();
 
             // Q_ASSERT(!m_dirtyTracks.contains(trackId));

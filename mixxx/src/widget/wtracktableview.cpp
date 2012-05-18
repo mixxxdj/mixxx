@@ -279,6 +279,10 @@ void WTrackTableView::createActions() {
     m_pResetPlayedAct = new QAction(tr("Reset Play Count"), this);
     connect(m_pResetPlayedAct, SIGNAL(triggered()),
             this, SLOT(slotResetPlayed()));
+            
+    m_pSyncTags = new QAction(tr("Sync ID3 Tags"), this);
+    connect(m_pSyncTags, SIGNAL(triggered()),
+            this, SLOT(slotSyncTags()));
 
     m_pBpmLockAction = new QAction(tr("Lock BPM"), this);
     m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), this);
@@ -521,6 +525,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
         m_pMenu->addAction(m_pResetPlayedAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_SYNCTAGS)) {
+        m_pMenu->addAction(m_pSyncTags);
     }
     m_pMenu->addAction(m_pFileBrowserAct);
     m_pMenu->addSeparator();
@@ -974,6 +981,37 @@ void WTrackTableView::slotResetPlayed() {
         }
     }
 }
+
+//slot for syncing id3 tags
+void WTrackTableView::slotSyncTags() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+
+    if (trackModel == NULL) {
+        return;
+    }
+    
+    bool warned=false;
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            if (pTrack->isLoaded())
+            {
+                if (!warned) {
+                    QMessageBox::warning(
+                        NULL, tr("Track is Currently Loaded"),
+                        tr("Can't synchronize tags when the track is loaded."));
+                    warned=true;
+                }
+            } else {
+                trackDao.saveTrack(pTrack, true);
+            }
+        }
+    }
+}
+
 
 void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();

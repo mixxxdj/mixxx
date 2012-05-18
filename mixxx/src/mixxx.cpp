@@ -292,7 +292,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
      * see Bug #728197
      * For safety reasons, we deactivate this feature.
      */
-    m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
+    //OWEN EDIT: No!
+    //m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
 
     // library dies in seemingly unrelated qtsql error about not having a
