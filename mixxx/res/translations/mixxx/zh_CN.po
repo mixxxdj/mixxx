@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-17 04:34+0000\n"
+"PO-Revision-Date: 2012-05-17 04:56+0000\n"
 "Last-Translator: yjfhw <yjfhw007@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-17 04:35+0000\n"
+"X-Launchpad-Export-Date: 2012-05-18 04:37+0000\n"
 "X-Generator: Launchpad (build 15259)\n"
 
 #: AutoDJFeature#1
@@ -1350,7 +1350,7 @@ msgstr "Mixxx必须重启已使更改生效"
 
 #: DlgPrefControls#28
 msgid "OpenGL not available"
-msgstr ""
+msgstr "OpenGL不可用"
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
@@ -1588,7 +1588,7 @@ msgstr ""
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
-msgstr ""
+msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
@@ -1750,7 +1750,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "由xwax提供技术支持"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
