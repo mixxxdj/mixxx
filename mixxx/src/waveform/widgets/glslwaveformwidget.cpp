@@ -12,8 +12,8 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
-    WaveformWidgetAbstract(group),
-    QGLWidget(parent) {
+    QGLWidget(parent),
+    WaveformWidgetAbstract(group) {
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();

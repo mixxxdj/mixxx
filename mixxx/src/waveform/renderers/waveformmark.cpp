@@ -7,16 +7,12 @@
 #include <QDebug>
 
 WaveformMark::WaveformMark()
-    : m_pointControl(0) {
+    : m_pointControl(NULL) {
 }
 
 void WaveformMark::setup(const QString& group, const QDomNode& node) {
     QString item = WWidget::selectNodeQString( node, "Control");
     m_pointControl = ControlObject::getControl( ConfigKey(group, item));
-
-    //if there is no control the mark won't be displayed anyway ...
-    if( m_pointControl == 0)
-        return;
 
     m_color = WWidget::selectNodeQString( node, "Color");
     if( m_color == "") {
