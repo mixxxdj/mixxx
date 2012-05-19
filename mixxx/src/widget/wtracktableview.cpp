@@ -74,6 +74,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             
     setItemDelegate(new PreviewButtonDelegate(this));
     // setItemDelegateForColumn(3,new PreviewButtonDelegate(this));
+    //this could work when used in loadTrackModel, but introduces new bugs -.-
 }
 
 WTrackTableView::~WTrackTableView()
