@@ -79,7 +79,7 @@ QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem 
     // Populate the correct colors based on the styling
     //QStyleOptionViewItem newOption = option;
     //initStyleOption(&newOption, index);
-    qDebug() << "kain88 create editor";
+    qDebug() << "kain88 try to create starrating editor";
     if (qVariantCanConvert<StarRating>(index.data())) {
         StarEditor *editor = new StarEditor(parent, option);
         connect(editor, SIGNAL(editingFinished()),

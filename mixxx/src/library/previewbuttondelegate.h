@@ -36,8 +36,6 @@ public:
     void updateEditorGeometry(QWidget *editor,
          const QStyleOptionViewItem &option, const QModelIndex &index) const;
     
-    void getTrackPointer(const QModelIndex &index);
-
 signals:
     void loadTrackToPlayer(TrackPointer Track, QString group);
 

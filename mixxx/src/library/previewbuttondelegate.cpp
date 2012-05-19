@@ -46,27 +46,18 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     btn->setText(qVariantValue<QString>(index.data()));
     qDebug() <<"kain88 index.data() = "<<index.data();
     
-    // getTrackPointer(index);
     
-    //m_index=index;can't do that since there is no valid copy constructor
     
     connect(btn,SIGNAL(clicked()),this,SLOT(buttonclicked()));
 
     return btn;
 }
 
-void PreviewButtonDelegate::getTrackPointer(const QModelIndex &index){
-     //TODO(kain88) memory leak?
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(m_pMyWidget->model());
-    // TrackPointer Track = trackModel->getTrack(index);
-    m_Track = trackModel->getTrack(index);
-}
-
 //setEditorData
 void PreviewButtonDelegate::setEditorData(QWidget *editor,
                                  const QModelIndex &index) const
 {
-    if (qVariantCanConvert<StarRating>(index.data())) {
+    if (index.column()==m_column) {
         QPushButton * btn = qobject_cast<QPushButton *>(editor);
         btn->setProperty("data_value", index.data());
     } else {
@@ -78,7 +69,7 @@ void PreviewButtonDelegate::setEditorData(QWidget *editor,
 void PreviewButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                 const QModelIndex &index) const
 {
-    if (qVariantCanConvert<StarRating>(index.data())) {
+    if (index.column()==m_column) {
         QPushButton *btn = qobject_cast<QPushButton *>(editor);
         model->setData(index, btn->property("data_value"));
     } else {

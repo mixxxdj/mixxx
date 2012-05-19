@@ -73,6 +73,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToCrate(int)));
             
     setItemDelegate(new PreviewButtonDelegate(this));
+    // setItemDelegateForColumn(3,new PreviewButtonDelegate(this));
 }
 
 WTrackTableView::~WTrackTableView()
