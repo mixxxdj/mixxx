@@ -9,6 +9,8 @@
 #include "trackinfoobject.h"
 #include "library/trackmodel.h"
 #include "library/librarytablemodel.h"//Do I really need this???
+#include "controlobjectthreadmain.h"
+#include "controlobject.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent) :
     QStyledItemDelegate(parent)
@@ -42,11 +44,10 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
         qDebug() << "kain88 create the editor on normal cell";
         return QStyledItemDelegate::createEditor(parent, option, index);
     }
+    //Memory leak?
     QPushButton * btn = new QPushButton(parent);
     btn->setText(qVariantValue<QString>(index.data()));
-    qDebug() <<"kain88 index.data() = "<<index.data();
-    
-    
+    // qDebug() <<"kain88 index.data() = "<<index.data();
     
     connect(btn,SIGNAL(clicked()),this,SLOT(buttonclicked()));
 
@@ -128,11 +129,21 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index)
 void PreviewButtonDelegate::buttonclicked(){
     qDebug() << "kain88 button clicked";
     TrackModel* ptrackModel = dynamic_cast<TrackModel*>(m_pMyWidget->model());
-    QModelIndexList indices = m_pMyWidget->selectionModel()->selectedRows();
-    //if no row is selected then indices is empty and Qt crashes
-    if(!indices.empty()){
-        QModelIndex index = indices.at(0);
-        TrackPointer Track = ptrackModel->getTrack(index);
+    QModelIndexList indexes = m_pMyWidget->selectionModel()->selectedIndexes();
+    //if no row is selected then indexes is empty and Qt crashes
+    //ok this is rather strange,if a row is selected at the beginning everything is
+    // fine until i play a song, then i have to select a new row to get it working again
+    ControlObjectThreadMain* playStatus = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_group, "play")));
+    qDebug() << playStatus->get();
+    
+    //check if deck is playing and stop it
+    if(!playStatus->get()){
+        playStatus->slotSet(0);
+    } 
+    if(!indexes.empty()){
+        TrackPointer Track = ptrackModel->getTrack(indexes.at(0));
+        qDebug() << "kain88 Track="<<Track;
+        // qDebug() <<index.row();
         emit(loadTrackToPlayer(Track,m_group));
     }
 }
