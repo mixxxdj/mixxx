@@ -12,8 +12,6 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
-#define NUM_HOT_CUES 37
-
 CueControl::CueControl(const char * _group,
                        ConfigObject<ConfigValue> * _config) :
         EngineControl(_group, _config),

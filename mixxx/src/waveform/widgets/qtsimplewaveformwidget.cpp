@@ -1,27 +1,25 @@
-#include <QPainter>
-#include <QGLContext>
+#include "qtsimplewaveformwidget.h"
 
-#include "glwaveformwidget.h"
+#include <QPainter>
+
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/qtwaveformrendererfilteredsignal.h"
-#include "waveform/renderers/glwaveformrendererfilteredsignal.h"
+#include "waveform/renderers/qtwaveformrenderersimplesignal.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
-#include "sharedglcontext.h"
 
-GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
-        QGLWidget(SharedGLContext::getContext(), parent),
-        WaveformWidgetAbstract(group) {
+QtSimpleWaveformWidget::QtSimpleWaveformWidget( const char* group, QWidget* parent) :
+    WaveformWidgetAbstract(group),
+    QGLWidget(parent) {
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    addRenderer<GLWaveformRendererFilteredSignal>();
+    addRenderer<QtWaveformRendererSimpleSignal>();
     addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
 
@@ -36,21 +34,24 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     init();
 }
 
-GLWaveformWidget::~GLWaveformWidget() {
+QtSimpleWaveformWidget::~QtSimpleWaveformWidget(){
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
 }
 
-void GLWaveformWidget::castToQWidget() {
+void QtSimpleWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLWaveformWidget::paintEvent( QPaintEvent* event) {
+void QtSimpleWaveformWidget::paintEvent( QPaintEvent* event) {
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
     QPainter painter(this);
-    draw(&painter, event);
+    draw(&painter,event);
 }
 
-void GLWaveformWidget::postRender() {
+void QtSimpleWaveformWidget::postRender() {
     QGLWidget::swapBuffers();
 }
