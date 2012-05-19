@@ -81,6 +81,7 @@ protected:
     QVector<WaveformRendererAbstract*> m_rendererStack;
     int m_height;
     int m_width;
+    QColor m_axesColor;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
@@ -106,7 +107,6 @@ protected:
     double m_gain;
     ControlObjectThreadMain* m_trackSamplesControlObject;
     int m_trackSamples;
-
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     QTime* m_timer;

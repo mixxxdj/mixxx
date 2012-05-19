@@ -1,20 +1,19 @@
 #ifndef GLWAVEFORMRENDERERSIGNALSHADER_H
 #define GLWAVEFORMRENDERERSIGNALSHADER_H
 
-#include "waveformrendererabstract.h"
-#include "waveformsignalcolors.h"
+#include "waveformrenderersignalbase.h"
 
 #include <QGLFramebufferObject>
 #include <QGLShaderProgram>
 #include <QtOpenGL>
 
-class GLSLWaveformRendererSignal : public WaveformRendererAbstract {
+class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
 public:
     explicit GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLSLWaveformRendererSignal();
 
-    virtual void init();
-    virtual void setup(const QDomNode& node);
+    virtual void onInit();
+    virtual void onSetup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
     virtual void onSetTrack();
@@ -28,12 +27,9 @@ private:
     void createFrameBuffer();
 
     GLint m_unitQuadListId;
-
     GLuint m_textureId;
 
     int m_loadedWaveform;
-
-    WaveformSignalColors m_colors;
 
     //Frame buffer for two pass rendering
     QGLFramebufferObject* m_signalMaxbuffer;
