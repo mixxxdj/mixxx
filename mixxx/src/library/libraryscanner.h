@@ -29,6 +29,7 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "library/dao/analysisdao.h"
 
 #include "libraryscannerdlg.h"
 #include "trackcollection.h"
@@ -63,6 +64,7 @@ class LibraryScanner : public QThread {
     CueDAO m_cueDao;
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
+    AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
 
     QStringList nameFilters;
