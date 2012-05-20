@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-08 16:57+0000\n"
-"Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
+"PO-Revision-Date: 2012-05-19 10:27+0000\n"
+"Last-Translator: Abu  <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-15 04:38+0000\n"
-"X-Generator: Launchpad (build 15238)\n"
+"X-Launchpad-Export-Date: 2012-05-20 04:36+0000\n"
+"X-Generator: Launchpad (build 15259)\n"
+"X-Language: fi_FI\n"
+"X-Source-Language: C\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -277,7 +279,7 @@ msgstr "Kappale"
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr "Julkaisu"
+msgstr "Levy"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
@@ -895,7 +897,7 @@ msgstr "BPM-syötön nappi"
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
-msgstr ""
+msgstr "Säädä iskuverkkoa"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
@@ -989,7 +991,7 @@ msgstr "Matalien taajuuksien leikkaus"
 #: DlgControllerLearning#54
 msgctxt "DlgControllerLearning#54"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Ohjainlevy"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control (ON/OFF)"
@@ -1159,7 +1161,7 @@ msgstr ""
 
 #: DlgControllerLearning#96
 msgid "Successfully mapped to:"
-msgstr ""
+msgstr "Liitettiin onnistuneesti kohteeseen:"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -1397,7 +1399,7 @@ msgstr ""
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr "Lomake1"
+msgstr "Muoto1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
@@ -1564,7 +1566,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr "Lomake1"
+msgstr "Muoto1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -1606,7 +1608,7 @@ msgstr ""
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr "Lomake1"
+msgstr "Muoto1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
@@ -1681,12 +1683,12 @@ msgstr "Lomake3"
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
-msgstr "Ohjaimia ei ole saatavilla"
+msgstr "Ohjaimia ei havaittu."
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr "Lomake1"
+msgstr "Muoto1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
@@ -2070,7 +2072,7 @@ msgstr "Stereo"
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr "Lomake3"
+msgstr "Malli3"
 
 #: DlgPrefShoutcastDlg#2
 msgid "Enable live broadcasting"
@@ -2099,7 +2101,7 @@ msgstr "Portti"
 
 #: DlgPrefShoutcastDlg#8
 msgid "Login"
-msgstr "Käyttäjätunnus"
+msgstr "Kirjaudu"
 
 #: DlgPrefShoutcastDlg#9
 msgid "Password"
@@ -2107,7 +2109,7 @@ msgstr "Salasana"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Stream settings"
-msgstr "Suoratoiston asetukset"
+msgstr "Lähetysvirran asetukset"
 
 #: DlgPrefShoutcastDlg#11
 msgid "Stream name"
@@ -3586,11 +3588,11 @@ msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr "Tallenna näytepankki"
+msgstr "Tallenna samplepankki"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr "Virhe tallennettaessa näytepankkia"
+msgstr "Virhe tallennettaessa samplepankkia"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
@@ -3598,7 +3600,7 @@ msgstr "Näytepankkia ei voitu tallentaa tiedostoon '%1'."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr "Lataa näytepankki"
+msgstr "Lataa samplepankki"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
@@ -4502,7 +4504,7 @@ msgstr "Lisää levylaukkuun"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr "Lataa näytesoittimeen"
+msgstr "Lataa sampleriin"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
@@ -4694,10 +4696,6 @@ msgstr "(GL)"
 #~ msgid "/mixxx.ogg"
 #~ msgstr "/mixxx.ogg"
 
-#~ msgctxt "DlgPrefRecordDlg#11"
-#~ msgid "Album"
-#~ msgstr "Julkaisu"
-
 #~ msgid "192.168.123.8"
 #~ msgstr "192.168.123.8"
 
@@ -4794,10 +4792,6 @@ msgstr "(GL)"
 #~ msgid "Year"
 #~ msgstr "Vuosi"
 
-#~ msgctxt "RhythmboxPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Julkaisu"
-
 #~ msgctxt "RhythmboxTrackModel#5"
 #~ msgid "Genre"
 #~ msgstr "Tyylilaji"
@@ -4809,10 +4803,6 @@ msgstr "(GL)"
 #~ msgctxt "RhythmboxTrackModel#1"
 #~ msgid "Artist"
 #~ msgstr "Artisti"
-
-#~ msgctxt "RhythmboxTrackModel#3"
-#~ msgid "Album"
-#~ msgstr "Julkaisu"
 
 #~ msgid "1.x.x"
 #~ msgstr "1.x.x"
@@ -5417,15 +5407,6 @@ msgstr "(GL)"
 #~ msgid "Miscellaneous"
 #~ msgstr "Sekalaiset"
 
-#~ msgid ""
-#~ "On older computers, it may take a few seconds before volume normalization is "
-#~ "applied to a new song. You may wish to wait before adjusting the pregain and "
-#~ "volume."
-#~ msgstr ""
-#~ "Vahemmilla tietokoneilla saattaa mennä jonkin aikaa ennen kuin "
-#~ "äänenvoimakkuuden normalisointi on käytössä uudella kappaleella. Odota hetki "
-#~ "ennen kuin säädät esivahvistusta ja äänenvoimakkuutta."
-
 #~ msgid "Reset to Defaults"
 #~ msgstr "Palauta oletukset"
 
@@ -5582,9 +5563,6 @@ msgstr "(GL)"
 #~ msgid "Start Recording your Mix"
 #~ msgstr "Aloita nauhoittamaan miksauksesi"
 
-#~ msgid "Activate live broadcasting"
-#~ msgstr "Aktivoi live lähetys"
-
 #~ msgid "Do your really want to quit?"
 #~ msgstr "Haluatko todella lopettaa?"
 
@@ -5606,9 +5584,6 @@ msgstr "(GL)"
 
 #~ msgid "Add to Auto-DJ Queue"
 #~ msgstr "Lisää Auto-DJ jonoon"
-
-#~ msgid "An unknown error occurred while creating playlist: "
-#~ msgstr "Tapahtui tuntematon virhe luotaessa soittolistaa: "
 
 #~ msgctxt "PlaylistFeature#6"
 #~ msgid "Import Playlist"
@@ -5865,6 +5840,9 @@ msgstr "(GL)"
 #~ msgid "Add to Auto DJ Queue"
 #~ msgstr "Lisää Auto-DJ jonoon"
 
+#~ msgid "Sampler %1"
+#~ msgstr "Näytesoitin %1"
+
 #~ msgctxt "BaseSqlTableModel#9"
 #~ msgid "Comment"
 #~ msgstr "Lisätietoja"
@@ -5901,9 +5879,6 @@ msgstr "(GL)"
 #~ msgid "Form3"
 #~ msgstr "Malli3"
 
-#~ msgid " and end detection. \n"
-#~ msgstr " ja lopettaa haun \n"
-
 #~ msgctxt "DlgPrefPlaylistDlg#1"
 #~ msgid "Form3"
 #~ msgstr "Malli3"
@@ -5915,20 +5890,6 @@ msgstr "(GL)"
 #~ msgctxt "DlgPrefRecordDlg#9"
 #~ msgid "Album"
 #~ msgstr "Levyn nimi"
-
-#~ msgid ""
-#~ "Calculate ReplayGain normalization for songs which are missing ReplayGain "
-#~ "metadata."
-#~ msgstr ""
-#~ "Laske Toistotason normalisoinnin tiedot niille raidoille joilta se vielä "
-#~ "puuttuu."
-
-#~ msgid "Apply volume normalization to loaded songs."
-#~ msgstr "Salli tason normalisointi ladatuille raidoille"
-
-#~ msgctxt "DlgPrefShoutcastDlg#2"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Salli suora lähettäminen nettiradioon"
 
 #~ msgctxt "DlgPrefShoutcastDlg#23"
 #~ msgid "Description"
@@ -5966,16 +5927,6 @@ msgstr "(GL)"
 #~ msgid "Song:"
 #~ msgstr "Kappale:"
 
-#~ msgid ""
-#~ "Support\n"
-#~ "\n"
-#~ "Help translate this application into your language."
-#~ msgstr ""
-#~ "Tuki\n"
-#~ "\n"
-#~ "\n"
-#~ "Auta tämän ohjelman kääntämisessä kielellesi"
-
 #~ msgctxt "BrowseTableModel#8"
 #~ msgid "Comment"
 #~ msgstr "Kommentti"
@@ -6000,15 +5951,6 @@ msgstr "(GL)"
 #~ msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 #~ msgstr ""
 #~ "M3u-soittolista (*.m3u);; m3u8-soittolista (*.m3u8);;Pls-soittolista (*.pls)"
-
-#~ msgid "Mixxx Control"
-#~ msgstr "Mixxx-hallinta"
-
-#~ msgid "Press spacebar to proceed or skip."
-#~ msgstr "Jatka tai ohita painamalla välilyöntiä"
-
-#~ msgid "Sampler %1"
-#~ msgstr "Sampleri"
 
 #~ msgid "Playlist Creation Failed"
 #~ msgstr "Soittolistan luonti epäonnistui"
@@ -6110,3 +6052,62 @@ msgstr "(GL)"
 
 #~ msgid "Waveform display"
 #~ msgstr "Alltomuotonäyttö"
+
+#~ msgid "An unknown error occurred while creating playlist: "
+#~ msgstr "Soittolistaa luotaessa tapahtui tuntematon virhe: "
+
+#~ msgctxt "DlgPrefRecordDlg#11"
+#~ msgid "Album"
+#~ msgstr "Levy"
+
+#~ msgctxt "RhythmboxPlaylistModel#3"
+#~ msgid "Album"
+#~ msgstr "Levy"
+
+#~ msgctxt "RhythmboxTrackModel#3"
+#~ msgid "Album"
+#~ msgstr "Levy"
+
+#~ msgid ""
+#~ "On older computers, it may take a few seconds before volume normalization is "
+#~ "applied to a new song. You may wish to wait before adjusting the pregain and "
+#~ "volume."
+#~ msgstr ""
+#~ "Vahemmilla tietokoneilla saattaa mennä jonkin aikaa ennen kuin "
+#~ "äänenvoimakkuuden tasaus on käytössä uudella kappaleella. Odota hetki ennen "
+#~ "kuin säädät esivahvistusta ja äänenvoimakkuutta."
+
+#~ msgid "Activate live broadcasting"
+#~ msgstr "Ota verkkojulkaisu käyttöön"
+
+#~ msgid " and end detection. \n"
+#~ msgstr " ja lopettaa tunnistuksen. \n"
+
+#~ msgid ""
+#~ "Calculate ReplayGain normalization for songs which are missing ReplayGain "
+#~ "metadata."
+#~ msgstr ""
+#~ "Laske tasn tasauksen replaygain-tiedot niille raidoille joilta se vielä "
+#~ "puuttuu."
+
+#~ msgid "Apply volume normalization to loaded songs."
+#~ msgstr "Salli toistotason tasaus ladatuille raidoille"
+
+#~ msgctxt "DlgPrefShoutcastDlg#2"
+#~ msgid "Enable live broadcasting"
+#~ msgstr "Ota verkkojulkaisu käyttöön"
+
+#~ msgid ""
+#~ "Support\n"
+#~ "\n"
+#~ "Help translate this application into your language."
+#~ msgstr ""
+#~ "Tuki\n"
+#~ "\n"
+#~ "Auta tämän ohjelman suomentamisessa"
+
+#~ msgid "Mixxx Control"
+#~ msgstr "Mixxx-ohjain"
+
+#~ msgid "Press spacebar to proceed or skip."
+#~ msgstr "Jatka tai ohita painamalla välilyöntiä."
