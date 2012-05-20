@@ -16,7 +16,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate
 public:
 
     explicit PreviewButtonDelegate(QObject *parent = 0, int column=0);
-    ~PreviewButtonDelegate();
+    virtual ~PreviewButtonDelegate();
 
     QWidget * createEditor(QWidget *parent,
                             const QStyleOptionViewItem &option,
