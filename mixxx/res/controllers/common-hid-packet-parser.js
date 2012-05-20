@@ -301,6 +301,7 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
     field.callback = callback;
     field.blink = undefined;
 
+    var packet_max_value = Math.pow(2,this.packSizes[field.pack]*8);
     if (bitmask==undefined || bitmask==packet_max_value) {
         field.type = 'led';
         field.value = undefined;
