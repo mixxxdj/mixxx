@@ -303,7 +303,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         //viewer->resize(viewer->size());
         widget->resize(viewer->width(), viewer->height());
         widget->setTrack(pTrack);
-        viewer->setZoom(current_zoom);
+        viewer->setZoom(previousZoom);
     }
 
     m_skipRender = false;
