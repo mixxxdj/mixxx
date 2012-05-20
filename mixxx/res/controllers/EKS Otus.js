@@ -28,7 +28,6 @@ EksOtus.WheelLEDCount = 60;
 EksOtus.ButtonLEDCount = 22;
 EksOtus.SliderLedCount = 20;
 
-
 // Dual deck controller, active deck is not selected by default
 EksOtus.activeDeck = undefined;
 
@@ -53,6 +52,10 @@ EksOtus.init = function (id) {
     EksOtus.registerScalers();
     EksOtus.registerCallbacks();
 
+    EksOtus.toggleButtons = [ 'play', 'pfl', 'keylock',
+        'filterLowKill','filterMidKill', 'filterHighKill'
+    ]
+
     EksOtus.setTrackpadMode(EksOtus.trackpadMode);
     EksOtus.requestFirmwareVersion();
     if (EksOtus.LEDUpdateInterval!=undefined) {
@@ -61,6 +64,7 @@ EksOtus.init = function (id) {
             "EksOtus.updateLEDs(true)"
         );
     }
+
 }
 
 // Device cleanup function
@@ -72,6 +76,11 @@ EksOtus.shutdown = function() {
     EksOtus.setLEDControlMode(2);
     EksOtus.setTrackpadMode(1);
     script.HIDDebug("EKS "+EksOtus.id+" shut down");
+}
+
+// Mandatory default handler for incoming packets
+EksOtus.incomingData = function(data,length) {
+    EksOtus.parsePacket(data,length);
 }
 
 // Register value scaling functions
@@ -94,6 +103,8 @@ EksOtus.registerCallbacks = function() {
     EksOtus.registerInputCallback('control','deck1','pregain',EksOtus.pregain);
     EksOtus.registerInputCallback('control','deck2','pregain',EksOtus.pregain);
     EksOtus.registerInputCallback('control','[Master]','headphones',EksOtus.headphones);
+    EksOtus.registerInputCallback('control','[Master]','beat_align',EksOtus.beat_align);
+
 
     EksOtus.registerInputCallback('control','deck','slider_scale',EksOtus.pitchSlider);
     EksOtus.registerInputCallback('control','deck','slider_value',EksOtus.pitchSlider);
@@ -113,37 +124,51 @@ EksOtus.registerCallbacks = function() {
     EksOtus.registerInputCallback('control','deck','hotcue_4',EksOtus.hotcue);
     EksOtus.registerInputCallback('control','deck','hotcue_5',EksOtus.hotcue);
     EksOtus.registerInputCallback('control','deck','hotcue_6',EksOtus.hotcue);
+
+    EksOtus.registerInputCallback('control','deck','beatloop_1',EksOtus.beatloop);
+    EksOtus.registerInputCallback('control','deck','beatloop_2',EksOtus.beatloop);
+    EksOtus.registerInputCallback('control','deck','beatloop_4',EksOtus.beatloop);
+    EksOtus.registerInputCallback('control','deck','beatloop_8',EksOtus.beatloop);
+
 }
 
 // Jog wheel seek event scaler
-EksOtus.jogScaler = function(value) {
+EksOtus.jogScaler = function(group,name,value) {
     return value/256*3;
 }
 
 // Jog wheel scratch event scaler
-EksOtus.jogScratchScaler = function(value) {
-    if (value>0)
-        return 1;
-    else
-        return -1;
+EksOtus.jogScratchScaler = function(group,name,value) {
+    if (engine.getValue(group,'play')) {
+        if (value>0) return 1;
+        else return -1;
+    } else {
+        // TODO - do different scaling for stopped scratching
+        if (value>0) return 1;
+        else return -1;
+    }
 }
 
-// Volume type values scaled from unsigned short to
-EksOtus.volumeScaler = function(value) {
+// Volume slider scaling for 0..1..5 scaling
+EksOtus.volumeScaler = function(group,name,value) {
     return script.absoluteNonLin(value, 0, 1, 5, 0, 65536);
 }
 
-EksOtus.eqScaler = function(value) {
+// EQ scaling function for 0..1..4 scaling
+EksOtus.eqScaler = function(group,name,value) {
     return script.absoluteNonLin(value, 0, 1, 4, 0, 65536);
 }
 
-EksOtus.plusMinus1Scaler = function(value) {
+// Generic unsigned short to -1..0..1 range scaling
+EksOtus.plusMinus1Scaler = function(group,name,value) {
     if (value<32768)
         return value/32768-1;
     else
         return (value-32768)/32768;
 }
 
+// Rotation of the Otus 'corner' wheels.
+// Note right bottom wheel is library browser encoder and not handled here
 EksOtus.corner_wheel = function(field) {
     // TODO - attach some functionality these corner wheels!
     print("CORNER " + field.name + " delta " + field.delta);
@@ -152,7 +177,7 @@ EksOtus.corner_wheel = function(field) {
 // Hotcues activated with normal press, cleared with shift
 EksOtus.hotcue = function (field) {
     var command;
-    if (field.value==EksOtus.ButtonStates.released)
+    if (field.value==EksOtus.buttonStates.released)
         return;
     if (EksOtus.activeDeck==undefined)
         return;
@@ -166,6 +191,31 @@ EksOtus.hotcue = function (field) {
     engine.setValue(active_group,command,true);
 }
 
+
+// Beatloops activated with normal presses to beatloop_1 - beatloop_8
+EksOtus.beatloop = function (field) {
+    var command;
+    if (field.value==EksOtus.buttonStates.released)
+        return;
+    if (EksOtus.activeDeck==undefined)
+        return;
+    var active_group = EksOtus.resolveGroup(field.group);
+    command = field.name + '_activate';
+    engine.setValue(active_group,command,true);
+}
+
+EksOtus.beat_align = function (field) {
+    if (EksOtus.activeDeck==undefined)
+        return;
+    var active_group = EksOtus.resolveGroup(field.group);
+    if (EksOtus.modifiers['shift']) {
+        // if (field.value==EksOtus.buttonStates.released) return;
+        engine.setValue(active_group,'beats_translate_curpos',field.value);
+    } else {
+        engine.setValue(active_group,'quantize',field.value);
+    }
+}
+
 // Pitch slider modifies track speed directly
 // TODO - make this relative to the touch position
 EksOtus.pitchSlider = function (field) {
@@ -176,7 +226,9 @@ EksOtus.pitchSlider = function (field) {
         if (field.name=='slider_position') {
             if (field.value==0)
                 return;
-            var value = EksOtus.plusMinus1Scaler(field.value);
+            var value = EksOtus.plusMinus1Scaler(
+                active_group,field.name,field.value
+            );
             // print ("PITCH group " + active_group + " name " + field.name + " value " + value);
             engine.setValue(active_group,'rate',value);
         }
@@ -205,7 +257,7 @@ EksOtus.headphones = function (field) {
         value = script.absoluteNonLin(field.value, 0, 1, 5, 0, 65536);
         engine.setValue(field.group,'headVolume',value);
     } else {
-        value = EksOtus.plusMinus1Scaler(field.value);
+        value = EksOtus.plusMinus1Scaler(field.group,field.name,field.value);
         engine.setValue(field.group,'headMix',value);
     }
 }
@@ -290,24 +342,18 @@ EksOtus.wheelLEDInitAnimation = function (state) {
         }
         for (i=EksOtus.WheelLEDCount;i>0;i--) {
             name = 'wheel_' + i;
-            EksOtus.setLED('deck',name,state);
+            EksOtus.setLED('jog',name,state);
         }
     } else {
         print("ENABLE wheel animation");
         for (i=1;i<=EksOtus.WheelLEDCount;i++) {
             name = 'wheel_' + i;
-            EksOtus.setLED('deck',name,state);
+            EksOtus.setLED('jog',name,state);
         }
         EksOtus.initAnimationTimer = engine.beginTimer(
             1000, "EksOtus.wheelLEDInitAnimation('off')"
         );
     }
-}
-
-
-// Mandatory default handler for incoming packets
-EksOtus.incomingData = function(data,length) {
-    EksOtus.parsePacket(data,length);
 }
 
 // Initialize control fields, buttons and LEDs
@@ -345,10 +391,10 @@ EksOtus.registerInputPackets = function() {
     packet.addControl('deck','slider_pos_2',42,'H');
     packet.addControl('deck','slider_pos_1',44,'H');
     packet.addControl('hid','jog_ne_button',46,'I',0);
-    packet.addControl('deck','beat_8',46,'I',1);
-    packet.addControl('deck','beat_4',46,'I',2);
-    packet.addControl('deck','beat_2',46,'I',3);
-    packet.addControl('deck','beat_1',46,'I',4);
+    packet.addControl('deck','beatloop_8',46,'I',1);
+    packet.addControl('deck','beatloop_4',46,'I',2);
+    packet.addControl('deck','beatloop_2',46,'I',3);
+    packet.addControl('deck','beatloop_1',46,'I',4);
     packet.addControl('deck','loop_in',46,'I',5);
     packet.addControl('deck','loop_out',46,'I',6);
     packet.addControl('deck','reloop_exit',46,'I',7);
@@ -358,16 +404,16 @@ EksOtus.registerInputPackets = function() {
     packet.addControl('deck','deck_switch',46,'I',11);
     packet.addControl('deck','pfl',46,'I',12);
     packet.addControl('hid','jog_sw_button',46,'I',13);
-    packet.addControl('deck','stop',46,'I',14);
+    packet.addControl('deck','filterLowKill',46,'I',14);
     packet.addControl('deck','play',46,'I',15);
     packet.addControl('deck','cue_default',46,'I',16);
-    packet.addControl('deck','reverse',46,'I',17);
-    packet.addControl('deck','brake',46,'I',18);
-    packet.addControl('deck','fastforward',46,'I',19);
+    packet.addControl('deck','filterMidKill',46,'I',17);
+    packet.addControl('deck','filterHighKill',46,'I',18);
+    packet.addControl('deck','beat_align',46,'I',19);
     packet.addControl('hid','jog_nw_button',46,'I',20);
     packet.addControl('deck','jog_touch',46,'I',21);
-    packet.addControl('[Effects]','trackpad_left',46,'I',22);
-    packet.addControl('[Effects]','trackpad_right',46,'I',23);
+    packet.addControl('hid','trackpad_left',46,'I',22);
+    packet.addControl('hid','trackpad_right',46,'I',23);
     packet.addControl('deck','hotcue_1',46,'I',24);
     packet.addControl('deck','hotcue_2',46,'I',25);
     packet.addControl('deck','hotcue_3',46,'I',26);
@@ -385,7 +431,7 @@ EksOtus.registerInputPackets = function() {
     packet.setIgnored('hid','deck_status',true);
 
     // Adjust minimum deltas from unstable potentiometers
-    packet.setMinDelta('deck','jog_wheel',8);
+    packet.setMinDelta('deck','jog_wheel',4);
     packet.setMinDelta('deck1','pregain',128);
     packet.setMinDelta('deck2','pregain',128);
     packet.setMinDelta('deck1','filterHigh',128);
@@ -416,12 +462,64 @@ EksOtus.registerOutputPackets = function() {
     var name = undefined;
     var offset = 0;
 
+    // Control packet for button LEDs
+    packet = new HIDPacket('button_leds',[0x16,0x18],32);
+    offset = 2;
+    packet.addLED('hid','jog_ne',offset++,'B');
+    packet.addLED('hid','jog_nw',offset++,'B');
+    packet.addLED('[Playlist]','SelectTrackKnob',offset++,'B');
+    packet.addLED('hid','jog_se',offset++,'B');
+    packet.addLED('deck','beat_8',offset++,'B');
+    packet.addLED('deck','beat_4',offset++,'B');
+    packet.addLED('deck','beat_2',offset++,'B');
+    packet.addLED('deck','beat_1',offset++,'B');
+    packet.addLED('deck','loop_in',offset++,'B');
+    packet.addLED('deck','loop_out',offset++,'B');
+    packet.addLED('deck','reloop',offset++,'B');
+    packet.addLED('modifiers','shift',offset++,'B');
+    packet.addLED('deck','deck_switch',offset++,'B');
+    packet.addLED('hid','trackpad_right',offset++,'B');
+    packet.addLED('hid','trackpad_left',offset++,'B');
+    packet.addLED('deck','pfl',offset++,'B');
+    packet.addLED('deck','quantize',offset++,'B');
+    packet.addLED('deck','play',offset++,'B');
+    packet.addLED('deck','reverse',offset++,'B');
+    packet.addLED('deck','cue_default',offset++,'B');
+    packet.addLED('deck','beats_translate_curpos',offset++,'B');
+    packet.addLED('deck','fastforward',offset++,'B');
+    EksOtus.registerOutputPacket(packet);
+
+    // Slider LEDs
+    packet = new HIDPacket('slider_leds',[0x17,0x16],32);
+    offset = 2;
+    packet.addLED('pitch',"slider_1",offset++,'B');
+    packet.addLED('pitch',"slider_2",offset++,'B');
+    packet.addLED('pitch',"slider_3",offset++,'B');
+    packet.addLED('pitch',"slider_4",offset++,'B');
+    packet.addLED('pitch',"slider_5",offset++,'B');
+    packet.addLED('pitch',"slider_6",offset++,'B');
+    packet.addLED('pitch',"slider_7",offset++,'B');
+    packet.addLED('pitch',"slider_8",offset++,'B');
+    packet.addLED('pitch',"slider_9",offset++,'B');
+    packet.addLED('pitch',"slider_10",offset++,'B');
+    packet.addLED('pitch',"slider_11",offset++,'B');
+    packet.addLED('pitch',"slider_12",offset++,'B');
+    packet.addLED('pitch',"slider_13",offset++,'B');
+    packet.addLED('pitch',"slider_14",offset++,'B');
+    packet.addLED('pitch',"slider_15",offset++,'B');
+    packet.addLED('pitch',"slider_16",offset++,'B');
+    packet.addLED('pitch',"slider_17",offset++,'B');
+    packet.addLED('pitch',"slider_scale_1",offset++,'B');
+    packet.addLED('pitch',"slider_scale_2",offset++,'B');
+    packet.addLED('pitch',"slider_scale_3",offset++,'B');
+    EksOtus.registerOutputPacket(packet);
+
     // Control packet for left wheel LEDs
     packet = new HIDPacket('led_wheel_left',[0x14,0x20],32);
     offset = 2;
     for (var led_index=1;led_index<=EksOtus.WheelLEDCount/2;led_index++) {
         var led_name = 'wheel_' + led_index;
-        packet.addLED('deck',led_name,offset++,'B');
+        packet.addLED('jog',led_name,offset++,'B');
     }
     EksOtus.registerOutputPacket(packet);
 
@@ -430,60 +528,8 @@ EksOtus.registerOutputPackets = function() {
     offset = 2;
     for (var led_index=EksOtus.WheelLEDCount/2+1;led_index<=EksOtus.WheelLEDCount;led_index++) {
         var led_name = 'wheel_' + led_index;
-        packet.addLED('deck',led_name,offset++,'B');
+        packet.addLED('jog',led_name,offset++,'B');
     }
-    EksOtus.registerOutputPacket(packet);
-
-    // Control packet for button LEDs
-    packet = new HIDPacket('button_leds',[0x16,0x18],32);
-    offset = 2;
-    packet.addLED('deck','jog_ne',offset++,'B');
-    packet.addLED('deck','jog_nw',offset++,'B');
-    packet.addLED('deck','jog_sw',offset++,'B');
-    packet.addLED('deck','jog_se',offset++,'B');
-    packet.addLED('deck','beat_8',offset++,'B');
-    packet.addLED('deck','beat_4',offset++,'B');
-    packet.addLED('deck','beat_2',offset++,'B');
-    packet.addLED('deck','beat_1',offset++,'B');
-    packet.addLED('deck','loop_in',offset++,'B');
-    packet.addLED('deck','loop_out',offset++,'B');
-    packet.addLED('deck','reloop',offset++,'B');
-    packet.addLED('deck','eject_right',offset++,'B');
-    packet.addLED('deck','deck_switch',offset++,'B');
-    packet.addLED('deck','trackpad_right',offset++,'B');
-    packet.addLED('deck','trackpad_left',offset++,'B');
-    packet.addLED('deck','eject_left',offset++,'B');
-    packet.addLED('deck','stop',offset++,'B');
-    packet.addLED('deck','play',offset++,'B');
-    packet.addLED('deck','brake',offset++,'B');
-    packet.addLED('deck','cue_default',offset++,'B');
-    packet.addLED('deck','reverse',offset++,'B');
-    packet.addLED('deck','fastforward',offset++,'B');
-    EksOtus.registerOutputPacket(packet);
-
-    // Slider LEDs
-    packet = new HIDPacket('slider_leds',[0x17,0x16],32);
-    offset = 2;
-    packet.addLED('deck',"slider_1",offset++,'B');
-    packet.addLED('deck',"slider_2",offset++,'B');
-    packet.addLED('deck',"slider_3",offset++,'B');
-    packet.addLED('deck',"slider_4",offset++,'B');
-    packet.addLED('deck',"slider_5",offset++,'B');
-    packet.addLED('deck',"slider_6",offset++,'B');
-    packet.addLED('deck',"slider_7",offset++,'B');
-    packet.addLED('deck',"slider_8",offset++,'B');
-    packet.addLED('deck',"slider_9",offset++,'B');
-    packet.addLED('deck',"slider_10",offset++,'B');
-    packet.addLED('deck',"slider_11",offset++,'B');
-    packet.addLED('deck',"slider_12",offset++,'B');
-    packet.addLED('deck',"slider_13",offset++,'B');
-    packet.addLED('deck',"slider_14",offset++,'B');
-    packet.addLED('deck',"slider_15",offset++,'B');
-    packet.addLED('deck',"slider_16",offset++,'B');
-    packet.addLED('deck',"slider_17",offset++,'B');
-    packet.addLED('deck',"slider_scale_1",offset++,'B');
-    packet.addLED('deck',"slider_scale_2",offset++,'B');
-    packet.addLED('deck',"slider_scale_3",offset++,'B');
     EksOtus.registerOutputPacket(packet);
 
     // Output packet to request firmware version

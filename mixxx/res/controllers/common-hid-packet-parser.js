@@ -262,7 +262,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
         field.value = bitvector;
         field.delta = undefined;
         field.mindelta = undefined;
-        // script.HIDDebug("PACKET " + this.name + " registering new bitvector in group " + group + " name " + name);
+        // script.HIDDebug("PACKET " + this.name + " registering new bitvector in " +group+'.'+name);
     }
     control_group[name] = field;
 
@@ -272,7 +272,6 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
 HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
     var control_group = this.lookupGroup(group,true);
     if (control_group==undefined) {
-        script.HIDDebug('ERROR creating HID packet group ' + group);
         return;
     }
     if (!(pack in this.packSizes)) {
@@ -305,7 +304,6 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
         field.value = undefined;
         field.delta = undefined;
         field.mindelta = undefined;
-        // script.HIDDebug("LED CONTROL " + this.name + " registering group " + group + " field " + name);
     } else {
         // TODO - accept controls with bitmask < packet_max_value
         name = 'bitvector_' + offset;
@@ -316,7 +314,6 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
         field.value = bitvector;
         field.delta = undefined;
         field.mindelta = undefined;
-        // script.HIDDebug("LED BITVECTOR " + this.name + " registering new bitvector in group " + group + " name " + name);
     }
     control_group[name] = field;
 
@@ -326,7 +323,7 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
 HIDPacket.prototype.registerCallback = function(group,name,callback) {
     var field = this.lookupField(group,name);
     if (field==undefined) {
-        script.HIDDebug("ERROR in registerCallback: field for group " + group + " name " + name + " not found");
+        script.HIDDebug("ERROR in registerCallback: field for " +group+'.'+name + " not found");
         return;
     }
     if (field.type=='bitvector') {
@@ -335,11 +332,9 @@ HIDPacket.prototype.registerCallback = function(group,name,callback) {
                 continue;
             var bit = field.value[bit_name];
             bit.callback = callback;
-            // script.HIDDebug("Registered callback to bitvector field " + bit.name);
         }
     } else {
         field.callback = callback;
-        // script.HIDDebug("Registered callback to control field " + field.name);
     }
 }
 
@@ -430,8 +425,6 @@ HIDPacket.prototype.parse = function(data) {
                         change = 1;
                         field.delta = value-field.value;
                     }
-                    // script.HIDDebug("ENCODER " + field.name + " delta " + field.delta + " field value " + field.value + " value " + value + " min " + field.min + " field.max " + field.max);
-
                     field.value = value;
                 } else {
                     var change = Math.abs(value-field.value);
@@ -467,7 +460,6 @@ HIDPacket.prototype.send = function() {
             this.pack(packet,field);
         }
     }
-    // script.HIDDebug("Sending " + this.name + " length " + packet.length + " bytes");
     controller.send(packet.data, packet.length, 0);
 }
 
@@ -496,11 +488,8 @@ function HIDController () {
 
     this.modifiers = new Object();
     this.scalers = new Object();
-
     // Toggle buttons
-    this.toggleButtons = [ 'play', 'pfl' ]
-
-    script.HIDDebug("Registered HID Controller object");
+    this.toggleButtons = [ 'play', 'pfl', 'keylock' ]
 }
 
 // Initialize our packet data and callbacks
@@ -613,7 +602,7 @@ HIDController.prototype.updateLEDs = function(from_timer) {
             if (from_timer)
                 this.toggleLEDBlinkState(group_name,led_name);
             if (led.packet==undefined) {
-                script.HIDDebug("Invalid LED, no packet defined");
+                script.HIDDebug("BUG: Invalid LED, no packet defined");
                 continue;
             }
             if (led_packets.indexOf(led.packet)==-1)
@@ -632,7 +621,7 @@ HIDController.prototype.toggleLEDBlinkState = function(group,name) {
     // script.HIDDebug('toggleLEDBlinkState: Resolving LED ' +  group + ' name ' + name);
     var led = this.resolveLED(group,name);
     if (led==undefined) {
-        script.HIDDebug("toggleLEDBlinkState: Unknown LED group " + group + " name " + name);
+        script.HIDDebug("toggleLEDBlinkState: Unknown LED group " +group+'.'+name);
         return;
     }
     var field = led.field;
@@ -648,13 +637,12 @@ HIDController.prototype.toggleLEDBlinkState = function(group,name) {
 // Set LED state to given LEDColors value, disable blinking
 HIDController.prototype.setLED = function(group,name,color) {
     if (!(color in this.LEDColors)) {
-        script.HIDDebug("Invalid LED color color: " + color);
+        script.HIDDebug("Invalid LED color: " + color);
         return;
     }
-    // script.HIDDebug('setLED: Resolving LED ' +  group + ' name ' + name);
     var led = this.resolveLED(group,name);
     if (led==undefined) {
-        script.HIDDebug("setLED: Unknown LED group " + group + " name " + name);
+        script.HIDDebug("setLED: Unknown LED group " +group+'.'+name);
         return;
     }
     var field = led.field;
@@ -665,14 +653,13 @@ HIDController.prototype.setLED = function(group,name,color) {
 
 // Set LED to blink with given color. Reset with setLED(name,'off')
 HIDController.prototype.setLEDBlink = function(group,name,blink_color) {
-    if (blink_color=!undefined && !(blink_color in this.LEDColors)) {
-        script.HIDDebug("setLEDBlink: Invalid LED blink color color: " + color);
+    if (blink_color!=undefined && !(blink_color in this.LEDColors)) {
+        script.HIDDebug("setLEDBlink: Invalid LED blink color: " + color);
         return;
     }
-    // script.HIDDebug('setLEDBlink: Resolving LED ' +  group + ' name ' + name);
     var led = this.resolveLED(group,name);
     if (led==undefined) {
-        script.HIDDebug("setLEDBlink: Unknown LED group " + group + " name " + name);
+        script.HIDDebug("setLEDBlink: Unknown LED group " +group+'.'+name);
         return;
     }
     var field = led.field;
@@ -723,7 +710,6 @@ HIDController.prototype.registerInputPacket = function(input_packet) {
             }
         }
     }
-    script.HIDDebug("Registered input packet " + input_packet.name);
     this.InputPackets[input_packet.name] = input_packet;
 }
 
@@ -738,20 +724,18 @@ HIDController.prototype.registerOutputPacket = function(output_packet) {
             field = output_packet.groups[group][name];
             if (field.type!='led')
                 continue;
-            // script.HIDDebug("Adding LED " + field.group + ' ' + field.name);
             this.addLED(output_packet,field);
         }
     }
     if (this.OutputPackets==undefined)
         this.OutputPackets = new Object();
-    script.HIDDebug("Registered output packet " + output_packet.name);
     this.OutputPackets[output_packet.name] = output_packet;
 }
 
 // Register a modifier function to controller
 HIDController.prototype.registerModifier = function(name) {
     if (name in this.modifiers) {
-        script.HIDDebug("WARNING modifier already registered: " + name);
+        script.HIDDebug("ERROR: modifier already registered: " + name);
         return;
     }
     script.HIDDebug("Registered modifier " + name);
@@ -764,14 +748,12 @@ HIDController.prototype.parsePacket = function(data,length) {
     var changed_data;
 
     if (this.InputPackets==undefined) {
-        script.HIDDebug("No input packets registered");
         return;
     }
 
     for (var name in this.InputPackets) {
         packet = this.InputPackets[name];
         if (packet.length!=length) {
-            script.HIDDebug("Invalid packet length" + packet.length);
             continue;
         }
         // Check for packet header match against data
@@ -810,10 +792,8 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
 
     for (var name in delta) {
         if (this.ignoredControlChanges!=undefined) {
-            if (this.ignoredControlChanges.indexOf(name)!=-1) {
-                // script.HIDDebug('Ignore field ' + name);
+            if (this.ignoredControlChanges.indexOf(name)!=-1)
                 continue;
-            }
         }
         field = delta[name];
         if (field.group==undefined) {
@@ -851,7 +831,6 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
                 }
             }
 
-            // script.HIDDebug("BUTTON processing group " + group + " name " + field.name + " state " + field.value);
             if (field.name=='jog_touch') {
                 if (group!=undefined) {
                     if (field.value==this.buttonStates.pressed) {
@@ -863,7 +842,6 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
                 var active_group = this.resolveGroup(field.group);
 
             } else if (this.toggleButtons.indexOf(field.name)!=-1) {
-                // script.HIDDebug("TOGGLE button " + field.name);
                 if (field.value==this.buttonStates.released)
                     continue;
                 if (engine.getValue(group,field.name)) {
@@ -883,7 +861,6 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
 
         } else if (field.type=='control') {
             if (field.callback!=undefined) {
-                // script.HIDDebug("Calling field callback for " + field.name);
                 value = field.callback(field);
                 continue;
             }
@@ -894,10 +871,8 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
                 continue;
             }
 
-            value = field.value;
             // Verify and resolve group
             group = field.group;
-
             if (HIDTargetGroups.indexOf(group)==-1) {
                 if (this.resolveGroup!=undefined) {
                     group = this.resolveGroup(field.group);
@@ -907,17 +882,14 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
                 }
             }
 
+            value = field.value;
             scaler = this.lookupScalingFunction(name);
-            if (scaler!=undefined) {
-                // script.HIDDebug("Calling value scaler for " + name);
-                value = scaler(value);
-            }
+            if (scaler!=undefined)
+                value = scaler(group,name,value);
 
             if (field.isEncoder==true) {
-                // script.HIDDebug("CONTROL" + " type " + field.type + " group " + group + " name "  + name + " delta " + field.delta);
                 engine.setValue(group,name,field.delta);
             } else {
-                // script.HIDDebug("CONTROL" + " type " + field.type + " group " + group + " name "  + name + " value " + value);
                 engine.setValue(group,name,value);
             }
         }
@@ -928,7 +900,6 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
 HIDController.prototype.setScratchEnabled = function(group,status) {
     var deck = this.resolveDeck(group);
     if (status==true) {
-        // script.HIDDebug("ENABLE scratch in group " + group + " deck " + deck);
         this.isScratchEnabled = true;
         engine.scratchEnable(deck,
             this.scratchintervalsPerRev,
@@ -938,7 +909,6 @@ HIDController.prototype.setScratchEnabled = function(group,status) {
             this.rampedScratchEnable
         );
     } else {
-        // script.HIDDebug("DISABLE scratch in group " + group + " deck " + deck);
         this.isScratchEnabled = false;
         engine.scratchDisable(deck,this.rampedScratchDisable);
     }
@@ -948,28 +918,26 @@ HIDController.prototype.setScratchEnabled = function(group,status) {
 HIDController.prototype.jog_wheel = function(field) {
     var value = field.value;
     var scaler = undefined;
+    var active_group = this.resolveGroup(field.group);
 
     if (this.isScratchEnabled==true) {
-        var deck = this.resolveDeck(this.resolveGroup(field.group));
+        var deck = this.resolveDeck(active_group);
         if (deck==undefined)
             return;
         scaler = this.lookupScalingFunction('jog_scratch');
         if (scaler!=undefined)
-            value = scaler(field.value);
+            value = scaler(active_group,'jog_scratch',value);
         else
             script.HIDDebug("WARNING non jog_scratch scaler, you likely want one");
-        // script.HIDDebug("SCRATCH deck " + deck + " ticks " + value);
         engine.scratchTick(deck,value);
     } else {
-        var active_group = this.resolveGroup(field.group);
         if (active_group==undefined)
             return;
         scaler = this.lookupScalingFunction('jog');
         if (scaler!=undefined)
-            value = scaler(field.value);
+            value = scaler(active_group,'jog',value);
         else
             script.HIDDebug("WARNING non jog scaler, you likely want one");
-        // script.HIDDebug("JOG group " + active_group + " value " + value);
         engine.setValue(active_group,'jog',value);
     }
 }
