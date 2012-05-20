@@ -11,7 +11,7 @@ class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     QtSimpleWaveformWidget(const char* group, QWidget* parent);
     virtual ~QtSimpleWaveformWidget();
 
-    virtual QString getWaveformWidgetName() { return tr("Simple") + " - Qt");}
+    virtual QString getWaveformWidgetName() { return tr("Simple") + " - Qt";}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform;}
 
     virtual bool useOpenGl() const { return true;}

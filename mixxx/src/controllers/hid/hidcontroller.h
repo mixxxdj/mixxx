@@ -90,6 +90,8 @@ class HidController : public Controller {
     int hid_interface_number;
     unsigned short hid_vendor_id;
     unsigned short hid_product_id;
+    unsigned short hid_usage_page;
+    unsigned short hid_usage;
     char* hid_path;
     wchar_t* hid_serial;
     QString hid_manufacturer;
