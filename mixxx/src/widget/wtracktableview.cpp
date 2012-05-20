@@ -165,7 +165,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        QItemDelegate* delegate = track_model->delegateForColumn(i);
+        QAbstractItemDelegate* delegate = track_model->delegateForColumn(i, this);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
