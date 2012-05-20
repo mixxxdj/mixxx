@@ -5,12 +5,12 @@
 #include <QTableView>
 
 #include "previewbuttondelegate.h"
-#include "starrating.h"
 #include "trackinfoobject.h"
 #include "library/trackmodel.h"
 #include "library/librarytablemodel.h"//Do I really need this???
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
+#include "library/previewdeckbuttonhandler.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column) :
     QStyledItemDelegate(parent)
@@ -25,6 +25,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column) :
                               this, SLOT(cellEntered(QModelIndex)));
         
         connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)), parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+        
         m_isOneCellInEditMode = false;
         m_group = QString("[PreviewDeck1]");//currently there is only one previewDeck
         m_column=column;
@@ -49,9 +50,11 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     //Memory leak?
     QPushButton * btn = new QPushButton(parent);
     btn->setText(qVariantValue<QString>(index.data()));
+    PreviewdeckButtonHandler *handle = new PreviewdeckButtonHandler(this,
+                                                    index, m_pMyWidget);
     // qDebug() <<"kain88 index.data() = "<<index.data();
     
-    connect(btn,SIGNAL(clicked()),this,SLOT(buttonclicked()));
+    connect(btn,SIGNAL(clicked()),handle,SLOT(buttonclicked()));
 
     return btn;
 }
