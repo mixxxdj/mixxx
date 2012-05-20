@@ -19,6 +19,8 @@ EksOtus.deckSwitchClickTimer = undefined;
 EksOtus.initAnimationTimer = undefined;
 
 EksOtus.LEDColors = { off: 0x0, red: 0x0f, green: 0xf0, amber: 0xff };
+EksOtus.deckLEDColors = { 1: 'red', 2: 'green', 3: 'red', 4: 'green'}
+
 EksOtus.ignoredControlChanges = [
     'mask','timestamp','packet_number','deck_status', 'wheel_position',
     // These return the Otus slider position scaled by the 'slider scale'
@@ -96,7 +98,7 @@ EksOtus.registerScalers = function() {
 
 // Register input/output field callback functions
 EksOtus.registerCallbacks = function() {
-    EksOtus.registerInputCallback('control','deck','deck_switch',EksOtus.deckSwitch);
+    EksOtus.registerInputCallback('control','hid','deck_switch',EksOtus.deckSwitch);
     EksOtus.registerInputCallback('control','hid','jog_ne',EksOtus.corner_wheel);
     EksOtus.registerInputCallback('control','hid','jog_sw',EksOtus.corner_wheel);
     EksOtus.registerInputCallback('control','hid','jog_nw',EksOtus.corner_wheel);
@@ -302,30 +304,37 @@ EksOtus.deckSwitchDoubleClick = function() {
         engine.stopTimer(EksOtus.deckSwitchClickTimer);
         EksOtus.deckSwitchClickTimer = undefined;
     }
+    if (EksOtus.activeDeck!=undefined)
+        EksOtus.disconnectDeckLEDs();
     switch (EksOtus.activeDeck) {
         case 1:
             EksOtus.activeDeck = 2;
-            EksOtus.setLED('deck','deck_switch','green');
+            EksOtus.setLED('hid','deck_switch','green');
             break;
         case 2:
             EksOtus.activeDeck = 1;
-            EksOtus.setLED('deck','deck_switch','red');
+            EksOtus.setLED('hid','deck_switch','red');
             break;
         case 3:
             EksOtus.activeDeck = 4;
-            EksOtus.setLED('deck','deck_switch','green');
+            EksOtus.setLED('hid','deck_switch','green');
             break;
         case 4:
             EksOtus.activeDeck = 3;
-            EksOtus.setLED('deck','deck_switch','red');
+            EksOtus.setLED('hid','deck_switch','red');
             break;
         case undefined:
             EksOtus.activeDeck = 1;
-            EksOtus.setLED('deck','deck_switch','red');
+            EksOtus.setLED('hid','deck_switch','red');
             break;
     }
-    EksOtus.wheelLEDInitAnimation('off');
+    EksOtus.connectDeckLEDs();
+    this.updateActiveDeckLEDs();
     script.HIDDebug('Active EKS Otus deck now ' + EksOtus.activeDeck);
+}
+
+EksOtus.activeLEDUpdateWrapper = function() {
+    EksOtus.updateActiveDeckLEDs();
 }
 
 // Silly little function for wheel LEDs to indicate device is initialized
@@ -401,7 +410,7 @@ EksOtus.registerInputPackets = function() {
     packet.addControl('deck','slider_scale',46,'I',8);
     packet.addControl('deck','LoadSelectedTrack',46,'I',9);
     packet.addControl('modifiers','shift',46,'I',10);
-    packet.addControl('deck','deck_switch',46,'I',11);
+    packet.addControl('hid','deck_switch',46,'I',11);
     packet.addControl('deck','pfl',46,'I',12);
     packet.addControl('hid','jog_sw_button',46,'I',13);
     packet.addControl('deck','filterLowKill',46,'I',14);
@@ -469,24 +478,24 @@ EksOtus.registerOutputPackets = function() {
     packet.addLED('hid','jog_nw',offset++,'B');
     packet.addLED('[Playlist]','SelectTrackKnob',offset++,'B');
     packet.addLED('hid','jog_se',offset++,'B');
-    packet.addLED('deck','beat_8',offset++,'B');
-    packet.addLED('deck','beat_4',offset++,'B');
-    packet.addLED('deck','beat_2',offset++,'B');
-    packet.addLED('deck','beat_1',offset++,'B');
+    packet.addLED('deck','beatloop_8_enabled',offset++,'B');
+    packet.addLED('deck','beatloop_4_enabled',offset++,'B');
+    packet.addLED('deck','beatloop_2_enabled',offset++,'B');
+    packet.addLED('deck','beatloop_1_enabled',offset++,'B');
     packet.addLED('deck','loop_in',offset++,'B');
     packet.addLED('deck','loop_out',offset++,'B');
-    packet.addLED('deck','reloop',offset++,'B');
+    packet.addLED('deck','reloop_exit',offset++,'B');
     packet.addLED('modifiers','shift',offset++,'B');
-    packet.addLED('deck','deck_switch',offset++,'B');
+    packet.addLED('hid','deck_switch',offset++,'B');
     packet.addLED('hid','trackpad_right',offset++,'B');
     packet.addLED('hid','trackpad_left',offset++,'B');
     packet.addLED('deck','pfl',offset++,'B');
-    packet.addLED('deck','quantize',offset++,'B');
+    packet.addLED('deck','filterLowKill',offset++,'B');
     packet.addLED('deck','play',offset++,'B');
-    packet.addLED('deck','reverse',offset++,'B');
+    packet.addLED('deck','filterMidKill',offset++,'B');
     packet.addLED('deck','cue_default',offset++,'B');
+    packet.addLED('deck','filterHighKill',offset++,'B');
     packet.addLED('deck','beats_translate_curpos',offset++,'B');
-    packet.addLED('deck','fastforward',offset++,'B');
     EksOtus.registerOutputPacket(packet);
 
     // Slider LEDs
@@ -576,7 +585,7 @@ EksOtus.FirmwareVersionResponse = function(packet,delta) {
 
     EksOtus.updateLEDs(false);
     // Start blinking 'deck switch' button to indicate we are ready.
-    EksOtus.setLEDBlink('deck','deck_switch','amber');
+    EksOtus.setLEDBlink('hid','deck_switch','amber');
     script.HIDDebug("EKS " + EksOtus.id +
         " v"+EksOtus.version_major+"."+EksOtus.version_minor+
         " initialized"

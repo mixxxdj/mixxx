@@ -39,6 +39,7 @@ HIDBitVector.prototype.addLED = function(group,name,index) {
     bit.group = group;
     bit.name = name;
     bit.index = index;
+    bit.active_group = undefined;
     bit.callback = undefined;
     bit.value = undefined;
     bit.blink = undefined;
@@ -292,6 +293,7 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
     var field = new Object();
     field.group = group;
     field.name = name;
+    field.active_group = undefined;
     field.pack = pack;
     field.offset = offset;
     field.end_offset = offset + this.packSizes[field.pack];
@@ -483,6 +485,8 @@ function HIDController () {
 
     this.buttonStates = { released: 0, pressed: 1};
     this.LEDColors = {off: 0x0, on: 0x7f};
+    // Override to set specific colors for multicolor button LED per deck
+    this.deckLEDColors = {1: 'on', 2: 'on', 3: 'on', 4: 'on'};
     // Set to value in ms to update LEDs periodically
     this.LEDUpdateInterval = undefined;
 
@@ -511,7 +515,7 @@ HIDController.prototype.resolveDeck = function(group) {
 // Map virtual deck names to real deck group
 HIDController.prototype.resolveGroup = function(group) {
     var channel_name = /\[Channel[0-9]+\]/;
-    if (group!=undefined && group.match(channel_name))
+    if (group!=undefined && group.match(channel_name) )
         return group;
     if (group=='deck' || group==undefined) {
         if (this.activeDeck==undefined)
@@ -613,6 +617,96 @@ HIDController.prototype.updateLEDs = function(from_timer) {
         var packet = led_packets[led_index];
         packet.send();
     }
+}
+
+HIDController.prototype.disconnectDeckLEDs = function() {
+    var virtual_groups = ['deck','deck1','deck2'];
+    for (var group_name in this.ledgroups) {
+        if (virtual_groups.indexOf(group_name)==-1)
+            continue;
+        var group = this.ledgroups[group_name];
+        var active_group = this.resolveGroup(group_name);
+        var active = this.resolveDeck(active_group);
+        if (active==undefined) {
+            script.HIDDebug("Active deck could not resolved for LED " + led_name);
+            return;
+        }
+        if (!(active in this.deckLEDColors)) {
+            script.HIDDebug("Not a valid deckLEDColors deck number index: " + active);
+            return;
+        }
+        var active_color = this.deckLEDColors[active];
+        for (var led_name in group) {
+            engine.connectControl("[Channel"+active+"]",led_name,"EksOtus.activeLEDUpdateWrapper",true);
+        }
+    }
+}
+
+HIDController.prototype.connectDeckLEDs = function() {
+    var virtual_groups = ['deck','deck1','deck2'];
+    for (var group_name in this.ledgroups) {
+        if (virtual_groups.indexOf(group_name)==-1)
+            continue;
+        var group = this.ledgroups[group_name];
+        var active_group = this.resolveGroup(group_name);
+        var active = this.resolveDeck(active_group);
+        if (active==undefined) {
+            script.HIDDebug("Active deck could not resolved for LED " + led_name);
+            return;
+        }
+        if (!(active in this.deckLEDColors)) {
+            script.HIDDebug("Not a valid deckLEDColors deck number index: " + active);
+            return;
+        }
+        var active_color = this.deckLEDColors[active];
+        for (var led_name in group) {
+            engine.connectControl("[Channel"+active+"]",led_name,"EksOtus.activeLEDUpdateWrapper");
+        }
+    }
+}
+
+HIDController.prototype.updateActiveDeckLEDs = function() {
+    print("ACTIVE DECK " + this.activeDeck);
+    var virtual_groups = ['deck','deck1','deck2'];
+    for (var group_name in this.ledgroups) {
+        // Only alter LEDs in virtual groups 'deck', 'deck1' and 'deck2'
+        if (virtual_groups.indexOf(group_name)==-1)
+            continue;
+        script.HIDDebug("Processing virtual LED group " + group_name);
+        var group = this.ledgroups[group_name];
+        var active_group = this.resolveGroup(group_name);
+        var active = this.resolveDeck(active_group);
+        if (active==undefined) {
+            script.HIDDebug("Active deck could not resolved for LED " + led_name);
+            return;
+        }
+        if (!(active in this.deckLEDColors)) {
+            script.HIDDebug("Not a valid deckLEDColors deck number index: " + active);
+            return;
+        }
+        var active_color = this.deckLEDColors[active];
+
+        for (var led_name in group) {
+            var led = group[led_name];
+            var color = undefined;
+            var state = engine.getValue(active_group,led_name);
+            script.HIDDebug("Processing LED " + active_group+'.'+led_name + " state " + state);
+            if (engine.getValue(active_group,led_name)) {
+                script.HIDDebug("SET COLOR " + led_name + " value " + active_color);
+                color = active_color;
+                for (name in led) {
+                    var val = led[name];
+                    print("LED ATTRIBUTE " + name + ' ' + val);
+                }
+            } else {
+                color = this.LEDColors['off'];
+            }
+
+            led.field.value = this.LEDColors[color];
+            led.field.blink = undefined;
+        }
+    }
+    this.updateLEDs();
 }
 
 // Toggle color of a blinking led set by setLedBlink. Called from
