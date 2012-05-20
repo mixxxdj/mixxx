@@ -507,6 +507,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel == NULL) {
+            return;
+        }
+        QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+        bool allowClear = true;
+        for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+            QModelIndex index = selectedTrackIndices.at(i);
+            TrackPointer track = trackModel->getTrack(index);
+            if (track->hasBpmLock()) {
+                allowClear = false;
+            }
+        }
+        m_pClearBeatsAction->setEnabled(allowClear);
         m_pMenu->addAction(m_pClearBeatsAction);
     }
 
@@ -1123,6 +1137,8 @@ void WTrackTableView::slotClearBeats() {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        track->setBeats(BeatsPointer());
+        if (!track->hasBpmLock()) {
+            track->setBeats(BeatsPointer());
+        }
     }
 }
