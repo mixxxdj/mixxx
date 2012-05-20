@@ -1,8 +1,8 @@
 
+// Common HID script debugging function
 script.HIDDebug = function (message) {
     print("HID " + message);
 }
-
 
 // Standard target groups not resolved for controls
 HIDTargetGroups = [
@@ -12,6 +12,9 @@ HIDTargetGroups = [
     '[Microphone]'
 ]
 
+//
+// HID Bit Vector Class
+//
 // Collection of bits in one parsed packet field
 function HIDBitVector () {
     // Attributes here are the 'bits' addressed by HIDBitVector[bit_name]
@@ -29,7 +32,6 @@ HIDBitVector.prototype.addBit = function(group,name,index) {
     this[name] = bit;
 }
 
-
 // Add a bit to the HIDBitVector at given bit index
 HIDBitVector.prototype.addLED = function(group,name,index) {
     var bit = new Object();
@@ -43,6 +45,9 @@ HIDBitVector.prototype.addLED = function(group,name,index) {
     this[name] = bit;
 }
 
+//
+// HID Packet Class
+//
 // One HID input/output packet to register to HIDController
 // name     name of packet
 // header   list of bytes to match from beginning of packet
@@ -70,7 +75,7 @@ HIDPacket.prototype.pack = function(packet,field) {
         }
         return;
     }
-    if (!field.pack in this.packSizes) {
+    if (!(field.pack in this.packSizes)) {
         script.HIDDebug("Error packing field: unknown pack value " + field.pack);
         return;
     }
@@ -93,7 +98,7 @@ HIDPacket.prototype.pack = function(packet,field) {
 HIDPacket.prototype.unpack = function(data,field) {
     var value = 0;
     
-    if (!field.pack in this.packSizes) {
+    if (!(field.pack in this.packSizes)) {
         script.HIDDebug("ERROR parsing packed value: invalid pack format " + field.pack);
         return;
     }
@@ -118,23 +123,7 @@ HIDPacket.prototype.unpack = function(data,field) {
     return value;
 }
 
-// Parse bitvector field values, returning object with the named bits set.
-// Value must be a valid unsigned byte to parse, with enough bits.
-HIDPacket.prototype.parseBitVector = function(field,value) {
-    var bits = new Object();
-    var bit;
-    var new_value;
-    for (var name in field.value) {
-        bit = field.value[name];
-        new_value = value>>bit.index&1;
-        if (new_value!=bit.value) {
-            bit.value = new_value;
-            bits[name] = bit;
-        }
-    }
-    return bits;
-}
-
+// Lookup group matching name. Create group if create is true
 HIDPacket.prototype.lookupGroup = function(name,create) {
     if (this.groups==undefined)
         this.groups = new Object();
@@ -149,7 +138,7 @@ HIDPacket.prototype.lookupGroup = function(name,create) {
 
 // Lookup field matching given offset and pack
 HIDPacket.prototype.lookupFieldByOffset = function(offset,pack) {
-    if (!pack in this.packSizes) {
+    if (!(pack in this.packSizes)) {
         script.HIDDebug("Unknown pack string " + pack);
         return;
     }
@@ -176,10 +165,9 @@ HIDPacket.prototype.lookupFieldByOffset = function(offset,pack) {
     return undefined;
 }
 
-// Return a field by group and name from the packet, or undefined
-// if control could not be found
+// Return a field by group and name from the packet, or undefined if control could not be found
 HIDPacket.prototype.lookupField = function(group,name) {
-    if (!group in this.groups) {
+    if (!(group in this.groups)) {
         script.HIDDebug("PACKET " + this.name + " group not found " + group);
         return undefined;
     }
@@ -221,7 +209,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
         script.HIDDebug('ERROR creating HID packet group ' + group);
         return;
     }
-    if (!pack in this.packSizes) {
+    if (!(pack in this.packSizes)) {
         script.HIDError('Unknown pack value ' + pack);
         return;
     }
@@ -281,13 +269,13 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
 }
 
 // Register a LED control field or bit to output packet
-HIDPacket.prototype.addLEDControl = function(group,name,offset,pack,bitmask,callback) {
+HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
     var control_group = this.lookupGroup(group,true);
     if (control_group==undefined) {
         script.HIDDebug('ERROR creating HID packet group ' + group);
         return;
     }
-    if (!pack in this.packSizes) {
+    if (!(pack in this.packSizes)) {
         script.HIDDebug("ERROR unknonw LED control pack value " + pack);
         return;
     }
@@ -305,6 +293,7 @@ HIDPacket.prototype.addLEDControl = function(group,name,offset,pack,bitmask,call
     var field = new Object();
     field.group = group;
     field.name = name;
+    field.pack = pack;
     field.offset = offset;
     field.end_offset = offset + this.packSizes[field.pack];
     field.bitmask = bitmask;
@@ -333,6 +322,27 @@ HIDPacket.prototype.addLEDControl = function(group,name,offset,pack,bitmask,call
 
 }
 
+// Register a callback to field.
+HIDPacket.prototype.registerCallback = function(group,name,callback) {
+    var field = this.lookupField(group,name);
+    if (field==undefined) {
+        script.HIDDebug("ERROR in registerCallback: field for group " + group + " name " + name + " not found");
+        return;
+    }
+    if (field.type=='bitvector') {
+        for (var bit_name in field.value) {
+            if (bit_name!=name)
+                continue;
+            var bit = field.value[bit_name];
+            bit.callback = callback;
+            // script.HIDDebug("Registered callback to bitvector field " + bit.name);
+        }
+    } else {
+        field.callback = callback;
+        // script.HIDDebug("Registered callback to control field " + field.name);
+    }
+}
+
 // Set 'ignored' flag for field to given value (true or false)
 HIDPacket.prototype.setIgnored = function(group,name,ignored) {
     var field = this.lookupField(group,name);
@@ -357,29 +367,24 @@ HIDPacket.prototype.setMinDelta = function(group,name,mindelta) {
     field.mindelta = mindelta;
 }
 
-// Register a callback to field.
-HIDPacket.prototype.registerCallback = function(group,name,callback) {
-    var field = this.lookupField(group,name);
-    if (field==undefined) {
-        script.HIDDebug("ERROR in registerCallback: field for group " + group + " name " + name + " not found");
-        return;
-    }
-    if (field.type=='bitvector') {
-        for (var bit_name in field.value) {
-            if (bit_name!=name)
-                continue;
-            var bit = field.value[bit_name];
-            bit.callback = callback;
-            // script.HIDDebug("Registered callback to bitvector field " + bit.name);
+// Parse bitvector field values, returning object with the named bits set.
+// Value must be a valid unsigned byte to parse, with enough bits.
+HIDPacket.prototype.parseBitVector = function(field,value) {
+    var bits = new Object();
+    var bit;
+    var new_value;
+    for (var name in field.value) {
+        bit = field.value[name];
+        new_value = value>>bit.index&1;
+        if (new_value!=bit.value) {
+            bit.value = new_value;
+            bits[name] = bit;
         }
-    } else {
-        field.callback = callback;
-        // script.HIDDebug("Registered callback to control field " + field.name);
     }
+    return bits;
 }
 
-// Parse input packet fields from data. Data is expected to be a
-// Packet() received from HID device.
+// Parse input packet fields from data. Data is expected to be a Packet() received from HID device.
 // Returns list of changed fields with new value. BitVectors are returned as
 // objects you can iterate separately.
 HIDPacket.prototype.parse = function(data) {
@@ -466,6 +471,9 @@ HIDPacket.prototype.send = function() {
     controller.send(packet.data, packet.length, 0);
 }
 
+//
+// HID Controller Class
+//
 // HID Controller with packet parser
 function HIDController () {
     this.initialized = false;
@@ -481,7 +489,7 @@ function HIDController () {
     this.scratchRampOnEnable = false;
     this.scratchRampOnDisable = false;
 
-    this.ButtonStates = { released: 0, pressed: 1};
+    this.buttonStates = { released: 0, pressed: 1};
     this.LEDColors = {off: 0x0, on: 0x7f};
     // Set to value in ms to update LEDs periodically
     this.LEDUpdateInterval = undefined;
@@ -491,6 +499,12 @@ function HIDController () {
 
     // Toggle buttons
     this.toggleButtons = [ 'play', 'pfl' ]
+
+    script.HIDDebug("Registered HID Controller object");
+}
+
+// Initialize our packet data and callbacks
+HIDController.prototype.initializePacketData = function() {
 
 }
 
@@ -505,8 +519,7 @@ HIDController.prototype.resolveDeck = function(group) {
     return str.substring(0,str.length-1);
 }
 
-// Map virtual deck names to real deck group, or undefined if name
-// could not be resolved.
+// Map virtual deck names to real deck group
 HIDController.prototype.resolveGroup = function(group) {
     var channel_name = /\[Channel[0-9]+\]/;
     if (group!=undefined && group.match(channel_name))
@@ -527,29 +540,163 @@ HIDController.prototype.resolveGroup = function(group) {
     return undefined;
 }
 
+// Find LED output control matching give group and name
+HIDController.prototype.resolveLED = function(group,name) {
+    if (this.ledgroups==undefined) {
+        this.ledgroups = new Object();
+    }
+    if (!(group in this.ledgroups)) {
+        this.ledgroups[group] = new Object();
+    }
+    var led_group = this.ledgroups[group];
+    if (!(name in led_group))
+        return undefined;
+    return led_group[name];
+}
+
+// Find input packet matching given name
+HIDController.prototype.resolveInputPacket = function(name) {
+    if (!(name in this.InputPackets))
+        return None;
+    return this.InputPackets[name];
+}
+
+// Find output packet matching given name
+HIDController.prototype.resolveOutputPacket = function(name) {
+    if (!(name in this.OutputPackets))
+        return None;
+    return this.OutputPackets[name];
+}
+
 // Lookup scaling function for control
 HIDController.prototype.lookupScalingFunction = function(name,callback) {
-    if (!name in this.scalers)
+    if (!(name in this.scalers))
         return undefined;
     return this.scalers[name];
 }
 
+// Add a LED to controller's list of LEDs.
+// Don't call directly, let HIDPacket.addLED call this.
+HIDController.prototype.addLED = function(packet,field) {
+    var group = field.group;
+    var name = field.name;
+
+    var controller_led = this.resolveLED(group,name);
+    if (controller_led!=undefined) {
+        script.HIDDebug("ERROR Duplicate LED specification for " + group +"." + name);
+        return;
+    }
+    var leds = this.ledgroups;
+    if (!(group in leds)) {
+        script.HIDDebug("ERROR: group was undefined while adding LED");
+        return;
+    }
+    if (!(group in this.ledgroups)) {
+        script.HIDDebug("LED group was not defined when adding LED");
+        return;
+    }
+    var led_group = this.ledgroups[group];
+    var led = new Object();
+    led.packet = packet;
+    led.field = field;
+    led_group[name] = led;
+}
+
+// Update all output packets with LEDs on device to current state.
+// If from_timer is true, you can toggle LED color for blinking
+HIDController.prototype.updateLEDs = function(from_timer) {
+    var led_packets = [];
+    for (var group_name in this.ledgroups) {
+        var group = this.ledgroups[group_name];
+        for (var led_name in group) {
+            var led = group[led_name];
+            if (from_timer)
+                this.toggleLEDBlinkState(group_name,led_name);
+            if (led.packet==undefined) {
+                script.HIDDebug("Invalid LED, no packet defined");
+                continue;
+            }
+            if (led_packets.indexOf(led.packet)==-1)
+                led_packets[led_packets.length] = led.packet;
+        }
+    }
+    for (led_index=0;led_index<led_packets.length;led_index++) {
+        var packet = led_packets[led_index];
+        packet.send();
+    }
+}
+
+// Toggle color of a blinking led set by setLedBlink. Called from
+// updateLEDs timer, if from_timer is true.
+HIDController.prototype.toggleLEDBlinkState = function(group,name) {
+    // script.HIDDebug('toggleLEDBlinkState: Resolving LED ' +  group + ' name ' + name);
+    var led = this.resolveLED(group,name);
+    if (led==undefined) {
+        script.HIDDebug("toggleLEDBlinkState: Unknown LED group " + group + " name " + name);
+        return;
+    }
+    var field = led.field;
+    if (field.blink==undefined)
+        return;
+    if (field.value == this.LEDColors['off']) {
+        field.value = field.blink;
+    } else {
+        field.value = this.LEDColors['off'];
+    }
+}
+
+// Set LED state to given LEDColors value, disable blinking
+HIDController.prototype.setLED = function(group,name,color) {
+    if (!(color in this.LEDColors)) {
+        script.HIDDebug("Invalid LED color color: " + color);
+        return;
+    }
+    // script.HIDDebug('setLED: Resolving LED ' +  group + ' name ' + name);
+    var led = this.resolveLED(group,name);
+    if (led==undefined) {
+        script.HIDDebug("setLED: Unknown LED group " + group + " name " + name);
+        return;
+    }
+    var field = led.field;
+    field.value = this.LEDColors[color];
+    field.blink = undefined;
+    led.packet.send();
+}
+
+// Set LED to blink with given color. Reset with setLED(name,'off')
+HIDController.prototype.setLEDBlink = function(group,name,blink_color) {
+    if (blink_color=!undefined && !(blink_color in this.LEDColors)) {
+        script.HIDDebug("setLEDBlink: Invalid LED blink color color: " + color);
+        return;
+    }
+    // script.HIDDebug('setLEDBlink: Resolving LED ' +  group + ' name ' + name);
+    var led = this.resolveLED(group,name);
+    if (led==undefined) {
+        script.HIDDebug("setLEDBlink: Unknown LED group " + group + " name " + name);
+        return;
+    }
+    var field = led.field;
+    field.value = this.LEDColors[blink_color];
+    field.blink = this.LEDColors[blink_color];
+    led.packet.send();
+}
+
 // Register packet's field callback
 HIDController.prototype.registerInputCallback = function(packet,group,name,callback) {
-    for (var packet_name in this.InputPackets) {
-        if (packet_name!=packet)
-            continue;
-        var input_packet = this.InputPackets[packet_name];
-        // script.HIDDebug("Registering callback to input packet " + input_packet.name);
-        input_packet.registerCallback(group,name,callback);
-        break;
+    var input_packet = this.resolveInputPacket(packet);
+    if (input_packet==undefined) {
+        script.HIDDebug("Input packet not found " + packet);
+        return;
     }
+    script.HIDDebug("Registered callback for " + group+'.'+name + " to input packet " + input_packet.name);
+    input_packet.registerCallback(group,name,callback);
 }
 
 // Register scaling function for a numeric control name
 HIDController.prototype.registerScalingFunction = function(name,callback) {
-    if (!name in this.scalers)
+    if (name in this.scalers)
         return;
+    script.HIDDebug("Registered scaling function for " + name);
     this.scalers[name] = callback;
 }
 
@@ -576,16 +723,8 @@ HIDController.prototype.registerInputPacket = function(input_packet) {
             }
         }
     }
-    // script.HIDDebug("Registered input packet " + input_packet.name);
+    script.HIDDebug("Registered input packet " + input_packet.name);
     this.InputPackets[input_packet.name] = input_packet;
-}
-
-HIDController.prototype.registerModifier = function(name) {
-    if (name in this.modifiers) {
-        script.HIDDebug("WARNING modifier already registered: " + name);
-        return;
-    }
-    this.modifiers[name] = undefined;
 }
 
 // Register output packet type to controller
@@ -599,13 +738,24 @@ HIDController.prototype.registerOutputPacket = function(output_packet) {
             field = output_packet.groups[group][name];
             if (field.type!='led')
                 continue;
+            // script.HIDDebug("Adding LED " + field.group + ' ' + field.name);
             this.addLED(output_packet,field);
         }
     }
     if (this.OutputPackets==undefined)
         this.OutputPackets = new Object();
-    // script.HIDDebug("Registered output packet " + output_packet.name);
+    script.HIDDebug("Registered output packet " + output_packet.name);
     this.OutputPackets[output_packet.name] = output_packet;
+}
+
+// Register a modifier function to controller
+HIDController.prototype.registerModifier = function(name) {
+    if (name in this.modifiers) {
+        script.HIDDebug("WARNING modifier already registered: " + name);
+        return;
+    }
+    script.HIDDebug("Registered modifier " + name);
+    this.modifiers[name] = undefined;
 }
 
 // Parse a received input packet, call processDelta for results
@@ -650,26 +800,6 @@ HIDController.prototype.parsePacket = function(data,length) {
     script.HIDDebug("Received unknown packet of " + length + " bytes");
 }
 
-// STUB for scratch control: you need to
-HIDController.prototype.setScratchEnabled = function(group,status) {
-    var deck = this.resolveDeck(group);
-    if (status==true) {
-        // script.HIDDebug("ENABLE scratch in group " + group + " deck " + deck);
-        this.isScratchEnabled = true;
-        engine.scratchEnable(deck,
-            this.scratchintervalsPerRev,
-            this.scratchRPM,
-            this.scratchAlpha,
-            this.scratchBeta,
-            this.rampedScratchEnable
-        );
-    } else {
-        // script.HIDDebug("DISABLE scratch in group " + group + " deck " + deck);
-        this.isScratchEnabled = false;
-        engine.scratchDisable(deck,this.rampedScratchDisable);
-    }
-}
-
 // Process the Delta (modified fields) group controls from input 
 // control packet if packet name is 'control'.
 // Override in your class for more complicated functionality.
@@ -698,7 +828,7 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
                     script.HIDDebug("Unknown modifier ID" + field.name);
                     continue;
                 }
-                if (field.value==this.ButtonStates.pressed)
+                if (field.value==this.buttonStates.pressed)
                     this.modifiers[field.name] = true;
                 else
                     this.modifiers[field.name] = false;
@@ -724,7 +854,7 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
             // script.HIDDebug("BUTTON processing group " + group + " name " + field.name + " state " + field.value);
             if (field.name=='jog_touch') {
                 if (group!=undefined) {
-                    if (field.value==this.ButtonStates.pressed) {
+                    if (field.value==this.buttonStates.pressed) {
                         this.setScratchEnabled(group,true);
                     } else {
                         this.setScratchEnabled(group,false);
@@ -734,7 +864,7 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
 
             } else if (this.toggleButtons.indexOf(field.name)!=-1) {
                 // script.HIDDebug("TOGGLE button " + field.name);
-                if (field.value==this.ButtonStates.released)
+                if (field.value==this.buttonStates.released)
                     continue;
                 if (engine.getValue(group,field.name)) {
                     if (field.name=='play')
@@ -794,12 +924,25 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
     }
 }
 
-HIDController.prototype.getOutputPacket = function(name) {
-    if (!name in this.OutputPackets)
-        return None;
-    return this.OutputPackets[name];
+// STUB for scratch control: you need to
+HIDController.prototype.setScratchEnabled = function(group,status) {
+    var deck = this.resolveDeck(group);
+    if (status==true) {
+        // script.HIDDebug("ENABLE scratch in group " + group + " deck " + deck);
+        this.isScratchEnabled = true;
+        engine.scratchEnable(deck,
+            this.scratchintervalsPerRev,
+            this.scratchRPM,
+            this.scratchAlpha,
+            this.scratchBeta,
+            this.rampedScratchEnable
+        );
+    } else {
+        // script.HIDDebug("DISABLE scratch in group " + group + " deck " + deck);
+        this.isScratchEnabled = false;
+        engine.scratchDisable(deck,this.rampedScratchDisable);
+    }
 }
-
 
 // Default jog scratching function, override to change implementation
 HIDController.prototype.jog_wheel = function(field) {
@@ -829,131 +972,5 @@ HIDController.prototype.jog_wheel = function(field) {
         // script.HIDDebug("JOG group " + active_group + " value " + value);
         engine.setValue(active_group,'jog',value);
     }
-}
-
-HIDController.prototype.getLEDGroup = function(name,create) {
-    if (this.LEDs==undefined)
-        this.LEDs = new Object();
-    if (name in this.LEDs)
-        return this.LEDs[name];
-    if (!create)
-        return undefined;
-    this.LEDs[name] = new Object();
-    return this.LEDs[name];
-}
-
-// Add a LED to controller's list of LEDs.
-// Don't call directly, let HIDPacket.addLED call this.
-HIDController.prototype.addLED = function(packet,field) {
-    var led_group = this.getLEDGroup(field.group,true);
-    if (led_group==undefined) {
-        script.HIDDebug("ERROR: group was undefined while adding LED");
-        return;
-    }
-    led_group[field.name] = {
-        group: field.group,
-        name: field.name,
-        packet: packet
-    };
-}
-
-
-// Update all output packets with LEDs on device to current state.
-// If from_timer is true, you can toggle LED color for blinking
-HIDController.prototype.updateLEDs = function(from_timer) {
-    var led;
-    var group;
-    var group_name;
-    var led_name;
-    var led_packets = [];
-    var packet;
-
-    for (group_name in this.LEDs) {
-        group = this.LEDs[group_name];
-        for (led_name in group) {
-            led = group[led_name];
-            if (from_timer)
-                this.toggleLEDBlinkState(led);
-            if (led_packets.indexOf(led.packet)==-1) {
-                led_packets[led_packets.length] = led.packet;
-            }
-        }
-    }
-    for (led_index=0;led_index<led_packets.length;led_index++) {
-        packet = led_packets[led_index];
-        packet.send();
-    }
-}
-
-// Toggle color of a blinking led set by setLedBlink. Called from
-// updateLEDs timer, if from_timer is true.
-HIDController.prototype.toggleLEDBlinkState = function(group,name) {
-    led_group = this.getLEDGroup(group);
-    if (led_group==undefined) {
-        // script.HIDDebug("toggleLEDBlinkState: Unknown group: " + group);
-        return;
-    }
-    var led = led_group[name];
-    if (led==undefined) {
-        script.HIDDebug("toggleLEDBlinkState: Unknown LED: " + name);
-        return;
-    }
-    var field = led.packet.groups[group][name];
-    if (field.blink==undefined)
-        return;
-    if (field.value == this.LEDColors['off']) {
-        field.value = field.blink;
-    } else {
-        field.value = this.LEDColors['off'];
-    }
-}
-
-// Set LED state to given LEDColors value, disable blinking
-HIDController.prototype.setLED = function(group,name,color) {
-    led_group = this.getLEDGroup(group);
-    if (led_group==undefined) {
-        script.HIDDebug("toggleLEDBlinkState: Unknown group: " + group);
-        return;
-    }
-    if (led_group==undefined) {
-        script.HIDDebug("setLED: LED group not found: " + group);
-        return;
-    }
-    var led = led_group[name];
-    if (led==undefined) {
-        script.HIDDebug("setLED: Unknown LED: " + name);
-        return;
-    }
-    var field = led.packet.groups[group][name];
-    // Verify color string
-    if ( ! color in this.LEDColors ) {
-        script.HIDDebug("Invalid LED color color: " + color);
-        return;
-    }
-    field.value = this.LEDColors[color];
-    field.blink = undefined;
-    led.packet.send();
-}
-
-// Set LED to blink with given color. Reset with setLED(name,'off')
-HIDController.prototype.setLEDBlink = function(group,name,blink_color) {
-    led_group = this.getLEDGroup(group);
-    if (led_group==undefined) {
-        script.HIDDebug("setLEDBlink: LED group not found: " + group);
-        return;
-    }
-    var led = led_group[name];
-    if (led==undefined) {
-        script.HIDDebug("setLEDBlink: Unknown LED: " + name);
-        return;
-    }
-    var field = led.packet.groups[group][name];
-    if ( blink_color!=undefined && ! blink_color in this.LEDColors ) {
-        script.HIDDebug("Invalid LED blink color: " + blink_color);
-        return;
-    }
-    field.value = this.LEDColors['off'];
-    field.blink = this.LEDColors[blink_color];
-    led.packet.send();
 }
 
