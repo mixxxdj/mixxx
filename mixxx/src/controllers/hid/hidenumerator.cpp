@@ -27,21 +27,27 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
     const int blacklist_len = sizeof(hid_blacklisted)/sizeof(hid_blacklisted[0]);
     for (int bl_index=0;bl_index<blacklist_len;bl_index++) {
         hid_blacklist_t blacklisted = hid_blacklisted[bl_index];
+        // If vendor ids do not match, skip.
         if (cur_dev->vendor_id != blacklisted.vendor_id)
             continue;
+        // If product IDs do not match, skip.
         if (cur_dev->product_id != blacklisted.product_id)
             continue;
+        // If interface number is present and the interface numbers do not
+        // match, skip.
         if (interface_number_valid &&
-            cur_dev->interface_number == blacklisted.interface_number) {
+            cur_dev->interface_number != blacklisted.interface_number) {
             continue;
         }
+        // If usage page is valid and the device usage pages differ, skip.
         if (cur_dev->usage_page != 0 && blacklisted.usage_page != 0 &&
             cur_dev->usage_page != blacklisted.usage_page) {
             continue;
         }
-        if (cur_dev->usage == 0 || blacklisted.usage == 0) {
-            if (cur_dev->usage != blacklisted.usage)
-                continue;
+        // If usage is valid and the device usages differ, skip.
+        if (cur_dev->usage != 0 && blacklisted.usage != 0 &&
+            cur_dev->usage != blacklisted.usage) {
+            continue;
         }
         return true;
     }
