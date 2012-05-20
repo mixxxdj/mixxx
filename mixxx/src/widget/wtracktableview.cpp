@@ -16,6 +16,7 @@
 #include "dlgtrackinfo.h"
 #include "soundsourceproxy.h"
 #include "../library/previewbuttondelegate.h"
+#include "../library/stardelegate.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -71,8 +72,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
-            
-    setItemDelegate(new PreviewButtonDelegate(this));
+    
+    
+    
+    // setItemDelegate(new PreviewButtonDelegate(this));
     // setItemDelegateForColumn(3,new PreviewButtonDelegate(this));
     //this could work when used in loadTrackModel, but introduces new bugs -.-
 }
@@ -168,13 +171,20 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
+        // qDebug() <<i<<'\t'<< model->headerData(i,Qt::Horizontal);
         // Setup delegates according to what the model tells us
         QItemDelegate* delegate = track_model->delegateForColumn(i);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
-        // If delegate is NULL, it will unset the delegate for the column
-        setItemDelegateForColumn(i, delegate);
+        if(qVariantValue<QString>(model->headerData(i,Qt::Horizontal))=="Rating"){
+            setItemDelegateForColumn(i, new StarDelegate(this));
+        } else if (qVariantValue<QString>(model->headerData(i,Qt::Horizontal))=="Title") {
+            setItemDelegateForColumn(i, new PreviewButtonDelegate(this,i));
+        } else {
+            // If delegate is NULL, it will unset the delegate for the column
+            setItemDelegateForColumn(i, delegate);
+        }
         delete old_delegate;
 
         // Show or hide the column based on whether it should be shown or not.
