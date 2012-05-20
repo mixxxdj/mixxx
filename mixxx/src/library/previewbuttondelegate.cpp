@@ -12,7 +12,7 @@
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 
-PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent) :
+PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column) :
     QStyledItemDelegate(parent)
 {
     if(QTableView *tableView = qobject_cast<QTableView *>(parent))
@@ -27,7 +27,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent) :
         connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)), parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
         m_isOneCellInEditMode = false;
         m_group = QString("[PreviewDeck1]");//currently there is only one previewDeck
-        m_column=3;
+        m_column=column;
     }
 }
 
@@ -40,10 +40,12 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
 {
+    /*
     if(index.column()!=m_column){
         qDebug() << "kain88 create the editor on normal cell";
         return QStyledItemDelegate::createEditor(parent, option, index);
     }
+    */
     //Memory leak?
     QPushButton * btn = new QPushButton(parent);
     btn->setText(qVariantValue<QString>(index.data()));
@@ -58,32 +60,38 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
 void PreviewButtonDelegate::setEditorData(QWidget *editor,
                                  const QModelIndex &index) const
 {
-    if (index.column()==m_column) {
+    // if (index.column()==m_column) {
         QPushButton * btn = qobject_cast<QPushButton *>(editor);
         btn->setProperty("data_value", index.data());
+    /*
     } else {
         QStyledItemDelegate::setEditorData(editor, index);
     }
+    */
 }
 
 //setModelData
 void PreviewButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                 const QModelIndex &index) const
 {
-    if (index.column()==m_column) {
+    // if (index.column()==m_column) {
         QPushButton *btn = qobject_cast<QPushButton *>(editor);
         model->setData(index, btn->property("data_value"));
+    /*
     } else {
         QStyledItemDelegate::setModelData(editor, model, index);
     }
+    */
 }
 //paint
 void PreviewButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    /*
     if (index.column()!=m_column) {
         QStyledItemDelegate::paint(painter, option, index);
         return;
     }
+    */
     
     m_pBtn->setGeometry(option.rect);
     m_pBtn->setText(qVariantValue<QString>(index.data()));
@@ -133,10 +141,9 @@ void PreviewButtonDelegate::buttonclicked(){
     //if no row is selected then indexes is empty and Qt crashes
     //ok this is rather strange,if a row is selected at the beginning everything is
     // fine until i play a song, then i have to select a new row to get it working again
-    ControlObjectThreadMain* playStatus = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_group, "play")));
-    qDebug() << playStatus->get();
     
     //check if deck is playing and stop it
+    ControlObjectThreadMain* playStatus = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(m_group, "play")));
     if(!playStatus->get()){
         playStatus->slotSet(0);
     } 
