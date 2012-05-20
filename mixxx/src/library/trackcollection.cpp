@@ -18,7 +18,8 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_playlistDao(m_db),
           m_crateDao(m_db),
           m_cueDao(m_db),
-          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao, pConfig),
+          m_analysisDao(m_db),
+          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao, m_analysisDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {

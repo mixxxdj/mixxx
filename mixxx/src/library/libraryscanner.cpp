@@ -33,7 +33,8 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_cueDao(m_database),
     m_playlistDao(m_database),
     m_crateDao(m_database),
-    m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao),
+    m_analysisDao(m_database),
+    m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao, m_analysisDao),
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "))
@@ -169,11 +170,13 @@ void LibraryScanner::run()
     m_cueDao.setDatabase(m_database);
     m_trackDao.setDatabase(m_database);
     m_playlistDao.setDatabase(m_database);
+    m_analysisDao.setDatabase(m_database);
 
     m_libraryHashDao.initialize();
     m_cueDao.initialize();
     m_trackDao.initialize();
     m_playlistDao.initialize();
+    m_analysisDao.initialize();
 
     m_pCollection->resetLibaryCancellation();
 
