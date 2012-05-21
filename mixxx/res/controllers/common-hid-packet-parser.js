@@ -498,9 +498,7 @@ function HIDController () {
 }
 
 // Initialize our packet data and callbacks
-HIDController.prototype.initializePacketData = function() {
-
-}
+HIDController.prototype.initializePacketData = function() { }
 
 // Return deck number from resolved deck name
 HIDController.prototype.resolveDeck = function(group) {
@@ -673,7 +671,7 @@ HIDController.prototype.updateActiveDeckLEDs = function() {
         // Only alter LEDs in virtual groups 'deck', 'deck1' and 'deck2'
         if (virtual_groups.indexOf(group_name)==-1)
             continue;
-        script.HIDDebug("Processing virtual LED group " + group_name);
+        // script.HIDDebug("Processing virtual LED group " + group_name);
         var group = this.ledgroups[group_name];
         var active_group = this.resolveGroup(group_name);
         var active = this.resolveDeck(active_group);
@@ -691,7 +689,7 @@ HIDController.prototype.updateActiveDeckLEDs = function() {
             var led = group[led_name];
             var color = undefined;
             var state = engine.getValue(active_group,led_name);
-            script.HIDDebug("Processing LED " + active_group+'.'+led_name + " state " + state);
+            // script.HIDDebug("Processing LED " + active_group+'.'+led_name + " state " + state);
             if (engine.getValue(active_group,led_name)) {
                 script.HIDDebug("SET COLOR " + led_name + " value " + active_color);
                 color = active_color;
@@ -770,7 +768,7 @@ HIDController.prototype.registerInputCallback = function(packet,group,name,callb
         script.HIDDebug("Input packet not found " + packet);
         return;
     }
-    script.HIDDebug("Registered callback for " + group+'.'+name + " to input packet " + input_packet.name);
+    // script.HIDDebug("Registered callback for " + group+'.'+name + " to input packet " + input_packet.name);
     input_packet.registerCallback(group,name,callback);
 }
 
@@ -778,7 +776,7 @@ HIDController.prototype.registerInputCallback = function(packet,group,name,callb
 HIDController.prototype.registerScalingFunction = function(name,callback) {
     if (name in this.scalers)
         return;
-    script.HIDDebug("Registered scaling function for " + name);
+    // script.HIDDebug("Registered scaling function for " + name);
     this.scalers[name] = callback;
 }
 
@@ -833,7 +831,7 @@ HIDController.prototype.registerModifier = function(name) {
         script.HIDDebug("ERROR: modifier already registered: " + name);
         return;
     }
-    script.HIDDebug("Registered modifier " + name);
+    // script.HIDDebug("Registered modifier " + name);
     this.modifiers[name] = undefined;
 }
 
