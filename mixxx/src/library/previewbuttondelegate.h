@@ -2,12 +2,10 @@
 #define PREVIEWBUTTONDELEGATE_H
 
 #include <QStyledItemDelegate>
-#include <QWidget>
 #include <QPushButton>
 #include <QTableView>
 
 #include "trackinfoobject.h"
-#include "widget/wtracktableview.h"
 
 class PreviewButtonDelegate : public QStyledItemDelegate
 {
@@ -41,16 +39,12 @@ signals:
 
 public slots:
     void cellEntered(const QModelIndex &index);
-    void buttonclicked();
 
 private:
-    QTableView *m_pMyWidget;
-    QPushButton *m_pBtn;
+    QTableView *m_pTableView;
+    QPushButton *m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
-    QModelIndex m_index;
-    QString m_group;
-    TrackPointer m_Track;
     int m_column;
 };
 

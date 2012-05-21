@@ -231,7 +231,6 @@ void BaseSqlTableModel::select() {
     if (sortColumn < 0) {
         sortColumn = 0;
     }
-    qDebug() <<"kain88  testing"<< fieldIndex(LIBRARYTABLE_PREVIEW) << " "<< sortColumn ;
     // If we were sorting a table column, then secondary sort by id. TODO(rryan)
     // we should look into being able to drop the secondary sort to save time
     // but going for correctness first.
@@ -292,7 +291,6 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
-    qDebug()<<"kain88" << this << "setTable" << tableName << tableColumns << idColumn;
     m_tableName = tableName;
     m_idColumn = idColumn;
     m_tableColumns = tableColumns;
@@ -639,7 +637,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         pTrack->setKey(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_PREVIEW) == column){
-        qDebug() << "kain88 yeah yeah yeah";
+        qDebug() << "kain88 here is place for a preview column";
     }
 }
 
