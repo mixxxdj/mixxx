@@ -32,6 +32,7 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
+#include "engine/enginepassthrough.h"
 #include "library/library.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
@@ -318,6 +319,25 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
 
+#ifdef __VINYLCONTROL__
+    m_pVCManager = new VinylControlManager(this, m_pConfig);
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+
+	// Store the vinyl signal corresponding to the current deck
+	AudioInput vinInput = AudioInput(AudioInput::VINYLCONTROL, 0, deck);
+
+	// Register vinyl signal with EngineMaster as passthrough
+	EnginePassthrough* pPass = new EnginePassthrough("[Passthrough]");
+	m_pEngine->addChannel(pPass);
+	m_pSoundManager->registerInput(vinInput, pPass);
+
+	// Register vinyl signal with VinylControlManager
+        m_pSoundManager->registerInput(vinInput, m_pVCManager);
+    }
+#else
+    m_pVCManager = NULL;
+#endif
+
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
         m_pEngine);
@@ -329,17 +349,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pSoundManager->registerOutput(
             AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
     }
-
-#ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, m_pConfig);
-    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
-        m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
-            m_pVCManager);
-    }
-#else
-    m_pVCManager = NULL;
-#endif
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());

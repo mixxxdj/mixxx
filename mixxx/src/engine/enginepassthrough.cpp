@@ -43,9 +43,9 @@ bool EnginePassthrough::isMaster() {
 }
 
 void EnginePassthrough::onInputConnected(AudioInput input) {
-    if (input.getType() != AudioPath::EXTPASSTHROUGH) {
+    if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
-        qDebug() << "WARNING: EnginePassthrough connected to AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EnginePassthrough connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
     m_sampleBuffer.clear();
@@ -53,20 +53,20 @@ void EnginePassthrough::onInputConnected(AudioInput input) {
 }
 
 void EnginePassthrough::onInputDisconnected(AudioInput input) {
-    if (input.getType() != AudioPath::EXTPASSTHROUGH) {
+    if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
-        qDebug() << "WARNING: EnginePassthrough connected to AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EnginePassthrough connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
+
     m_sampleBuffer.clear();
     m_pEnabled->set(0.0f);
 }
 
 void EnginePassthrough::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
-
-    if (input.getType() != AudioPath::EXTPASSTHROUGH) {
+    if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
-        qDebug() << "WARNING: EnginePassthrough receieved an AudioInput for a non-passthrough type!";
+        qDebug() << "WARNING: EnginePassthrough receieved an AudioInput for a non-vinylcontrol type!";
         return;
     }
 
@@ -100,8 +100,8 @@ void EnginePassthrough::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, c
     Q_UNUSED(pInput);
 
     // If passthrough is enabled, then read into the output buffer. Otherwise,
-    // skip the appropriate number of samples to throw them away.
-    if (m_pPassing->get() > 0.0f) {
+    // Note: Remove true segment from following conditional to allow toggling passthrough	
+    if(true || m_pPassing->get() > 0.0f) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This
