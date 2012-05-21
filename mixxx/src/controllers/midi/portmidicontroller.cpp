@@ -134,18 +134,18 @@ int PortMidiController::close() {
     return 0;
 }
 
-void PortMidiController::poll() {
+bool PortMidiController::poll() {
     // Poll the controller for new data
     int numEvents = 0;
 
     if (m_pInputStream) {
         PmError gotEvents = Pm_Poll(m_pInputStream);
         if (gotEvents == FALSE) {
-            return;
+            return false;
         }
         if (gotEvents < 0) {
             qWarning() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
-            return;
+            return false;
         }
 
         numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
@@ -198,6 +198,7 @@ void PortMidiController::poll() {
             m_cReceiveMsg_index = 0;
         }
     }
+    return numEvents > 0;
 }
 
 void PortMidiController::send(unsigned int word) {
