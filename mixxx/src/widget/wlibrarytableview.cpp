@@ -8,8 +8,6 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wlibrarytableview.h"
-#include "../library/stardelegate.h"
-#include "../library/previewbuttondelegate.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      ConfigObject<ConfigValue>* pConfig,

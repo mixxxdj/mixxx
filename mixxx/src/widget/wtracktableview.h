@@ -48,7 +48,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void addSelectionToPlaylist(int iPlaylistId);
-    void slotLoadToPreviewDeck();
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
     void doSortByColumn(int headerSection);

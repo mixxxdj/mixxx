@@ -5,7 +5,8 @@
 
 class PreviewDeck : public BaseTrackPlayer {
     Q_OBJECT
-	public:
+    public:
+    //reimplement to use enginePreviewDeck instead of engineDeck
     PreviewDeck(QObject* pParent,
             ConfigObject<ConfigValue> *pConfig,
             EngineMaster* pMixingEngine,

@@ -165,5 +165,6 @@ TrackModel::CapabilitiesFlags RhythmboxPlaylistModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOSAMPLER;
+            | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER;
 }

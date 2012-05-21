@@ -117,8 +117,6 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pDuration;
 }
 
-
-
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
 {
     //Disconnect the old track's signals.

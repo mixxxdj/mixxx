@@ -271,6 +271,7 @@ TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
