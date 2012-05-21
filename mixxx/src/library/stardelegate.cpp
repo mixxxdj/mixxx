@@ -79,7 +79,6 @@ QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem 
     // Populate the correct colors based on the styling
     //QStyleOptionViewItem newOption = option;
     //initStyleOption(&newOption, index);
-    qDebug() << "kain88 try to create starrating editor";
     if (qVariantCanConvert<StarRating>(index.data())) {
         StarEditor *editor = new StarEditor(parent, option);
         connect(editor, SIGNAL(editingFinished()),
@@ -99,7 +98,6 @@ void StarDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
     } else {
         QStyledItemDelegate::setEditorData(editor, index);
     }
-    qDebug() << "kain88 set data";
 }
 
 void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
@@ -118,8 +116,6 @@ void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
 void StarDelegate::commitAndCloseEditor()
 {
     StarEditor *editor = qobject_cast<StarEditor *>(sender());
-    qDebug() << "kain88 emit commitData(editor)";
     emit commitData(editor);
-    qDebug() << "kain88 emit closeEditor(editor);";
     emit closeEditor(editor);
 }

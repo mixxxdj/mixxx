@@ -180,7 +180,6 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
-    qDebug() << "kain88 library emmited signal";
     emit(loadTrackToPlayer(pTrack, group));
 }
 

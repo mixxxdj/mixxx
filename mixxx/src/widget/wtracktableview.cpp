@@ -523,7 +523,7 @@ void WTrackTableView::onShow() {
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
-    //emit this signal for previewButtonDelegate
+    //emit this signal so that we know when a cell is entered by the mouse
     QPoint bottomRight = pEvent->pos();
     QPersistentModelIndex index = indexAt(bottomRight);
     if(index.isValid()){

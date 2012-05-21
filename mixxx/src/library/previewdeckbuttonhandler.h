@@ -1,10 +1,13 @@
 #ifndef PREVIEWDECKBUTTONHANDLER_H
 #define PREVIEWDECKBUTTONHANDLER_H
 
-#include <QWidget>
+#include <QObject>
 #include <QTableView>
-#include "trackinfoobject.h"
+
 #include "library/trackmodel.h"
+
+#define PLAYING 1
+#define STOP 0
 
 class PreviewdeckButtonHandler : public QObject 
 {
@@ -12,20 +15,22 @@ class PreviewdeckButtonHandler : public QObject
 
     public :
 
-    PreviewdeckButtonHandler(const QObject *parent,const QModelIndex &index,
-                             QTableView *pTableView);
-    virtual ~PreviewdeckButtonHandler();
-    
-    
-signals:
-    void loadTrackToPlayer(TrackPointer Track, QString group);
+        PreviewdeckButtonHandler(const QObject *parent,
+                                const QModelIndex &index,
+                                QTableView *pTableView);
+        virtual ~PreviewdeckButtonHandler();
 
-public slots:
+
+    signals:
+        void loadTrackToPlayer(TrackPointer Track, QString group);
+
+    public slots:
     void buttonclicked();
     
     private:
         QModelIndex m_index;
         TrackModel *m_pTrackModel;
+        QTableView *m_pTableView;
         QString m_group;
 };
 
