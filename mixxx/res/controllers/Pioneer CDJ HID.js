@@ -315,8 +315,11 @@ PioneerCDJHID.registerInputPackets = function() {
 
     packet.addControl('deck','vinyl_speed',8,'B');
     packet.addControl('deck','browse',10,'B');
-    packet.addControl('deck','pitch',12,'H');
-    packet.addControl('deck','jog_wheel',14,'I');
+    // 0xFC18 to 0x03E8
+    packet.addControl('deck','pitch',12,'h');
+    packet.addControl('deck','jog_wheel',14,'i');
+
+    packet.addControl('deck','needle_search',18,'h');
 
     // Adjust minimum deltas from unstable potentiometers
     packet.setMinDelta('deck','jog_wheel',4);
