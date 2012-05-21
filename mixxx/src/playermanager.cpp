@@ -117,7 +117,6 @@ Sampler* PlayerManager::addSampler() {
 
 PreviewDeck* PlayerManager::addPreviewDeck() {
     PreviewDeck* pPreviewDeck;
-    //not sure what this does
     QString group = groupForLibPreviewPlayer(numPreviewDeck());
 
     // All samplers are in the center
@@ -155,7 +154,7 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
 
 PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDeck()) {
-        qWarning() << "Warning PlayerManager::getDeck() called with invalid index: "
+        qWarning() << "Warning PlayerManager::getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
         return NULL;
     }
@@ -172,7 +171,6 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 }
 
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
-    qDebug() << "load track to player";//context menu event
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
@@ -184,7 +182,6 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
 }
 
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
-    qDebug() << "Load to player";//drag and drop event
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {

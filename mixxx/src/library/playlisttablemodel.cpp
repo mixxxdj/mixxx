@@ -351,6 +351,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER
             | TRACKMODELCAPS_REMOVE;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.

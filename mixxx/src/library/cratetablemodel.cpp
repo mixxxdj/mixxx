@@ -170,6 +170,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER
             | TRACKMODELCAPS_REMOVE;
 
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();

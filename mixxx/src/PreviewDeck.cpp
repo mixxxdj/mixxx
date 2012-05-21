@@ -5,7 +5,6 @@
 #include "engine/clockcontrol.h"
 #include "engine/cuecontrol.h"
 #include "waveform/waveformrenderer.h"
-//#include <QtCore>
 
 PreviewDeck::PreviewDeck(QObject* pParent,
                  ConfigObject<ConfigValue>* pConfig,

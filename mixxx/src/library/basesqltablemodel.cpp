@@ -154,8 +154,8 @@ void BaseSqlTableModel::select() {
     // }
 
     if (sDebug) {
-    }
         qDebug() << this << "select()";
+    }
 
     QTime time;
     time.start();
@@ -231,6 +231,7 @@ void BaseSqlTableModel::select() {
     if (sortColumn < 0) {
         sortColumn = 0;
     }
+    
     // If we were sorting a table column, then secondary sort by id. TODO(rryan)
     // we should look into being able to drop the secondary sort to save time
     // but going for correctness first.
@@ -576,7 +577,6 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     }
     QString location = index.sibling(
         index.row(), fieldIndex("location")).data().toString();
-    qDebug() << "get Track location " <<  location <<endl;
     return location;
 }
 
@@ -584,7 +584,6 @@ void BaseSqlTableModel::tracksChanged(QSet<int> trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
-    qDebug() << this << "trackChanged" << trackIds.size();
     const int numColumns = columnCount();
     foreach (int trackId, trackIds) {
         QLinkedList<int> rows = getTrackRows(trackId);
@@ -637,6 +636,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         pTrack->setKey(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_PREVIEW) == column){
+        //TODO (kain88) add a previewcolumn to the table
         qDebug() << "kain88 here is place for a preview column";
     }
 }

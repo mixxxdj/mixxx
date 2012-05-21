@@ -72,12 +72,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
-    
-    
-    
-    // setItemDelegate(new PreviewButtonDelegate(this));
-    // setItemDelegateForColumn(3,new PreviewButtonDelegate(this));
-    //this could work when used in loadTrackModel, but introduces new bugs -.-
 }
 
 WTrackTableView::~WTrackTableView()
@@ -104,7 +98,7 @@ WTrackTableView::~WTrackTableView()
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    // qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 
@@ -171,7 +165,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
-        // qDebug() <<i<<'\t'<< model->headerData(i,Qt::Horizontal);
         // Setup delegates according to what the model tells us
         QItemDelegate* delegate = track_model->delegateForColumn(i);
         // We need to delete the old delegates, since the docs say the view will
@@ -210,7 +203,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     // Stupid hack that assumes column 0 is never visible, but this is a weak
     // proxy for "there was a saved column sort order"
-    
     if (horizontalHeader()->sortIndicatorSection() > 0) {
         // Sort by the saved sort section and order. This line sorts the
         // TrackModel and in turn generates a select()
@@ -308,7 +300,6 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
 }
 
 void WTrackTableView::loadSelectionToGroup(QString group) {
-    qDebug() << "my message load track yeah" << group;
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         // If the track load override is disabled, check to see if a track is
@@ -318,7 +309,6 @@ void WTrackTableView::loadSelectionToGroup(QString group) {
                 ConfigKey(group, "play"))->get() == 1.0f;
 
             if (groupPlaying){
-                qDebug() << "playing" ;
                 return;
             }
         }
@@ -331,10 +321,6 @@ void WTrackTableView::loadSelectionToGroup(QString group) {
             emit(loadTrackToPlayer(pTrack, group));
         }
     }
-}
-
-void WTrackTableView::slotLoadToPreviewDeck(){
-	std::cerr<<"loaded track into player Qt action" <<std::endl;
 }
 
 void WTrackTableView::slotRemove()
@@ -411,7 +397,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pMenu->addAction(pAction);
                 m_deckMapper.setMapping(pAction, deckGroup);
                 connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
-                //connect(pAction, SIGNAL(triggered()), this, SLOT(slotLoadToPreviewDeck()));
             }
         }
     }
@@ -490,9 +475,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
     }
-    //if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER)) {
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER)) {
     	m_pMenu->addAction(m_pAddToPreviewDeck);
-    //}
+    }
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -539,7 +524,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
-    qDebug() << "MouseMoveEvent";
+    // qDebug() << "MouseMoveEvent";
     // Iterate over selected rows and append each item's location url to a list.
     QList<QUrl> locationUrls;
     QModelIndexList indices = selectionModel()->selectedRows();
@@ -571,7 +556,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {
-    qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+    // qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
@@ -607,7 +592,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
-    qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    // qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {

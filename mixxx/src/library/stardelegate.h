@@ -20,6 +20,7 @@
 #define STARDELEGATE_H
 
 #include <QStyledItemDelegate>
+#include <QTableView>
 
 /*
  * When displaying data in a QListView, QTableView, or QTreeView,
@@ -37,7 +38,7 @@ class StarDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    StarDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
+    StarDelegate(QObject *pParent = 0);
     /** reimplemented from QItemDelegate and is called whenever the view needs to repaint an item **/
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     /** returns an item's preferred size **/
@@ -51,6 +52,12 @@ public:
 
 private slots:
     void commitAndCloseEditor();
+    void cellEntered(const QModelIndex &index);
+
+private:
+    QTableView *m_pTableView;
+    QPersistentModelIndex m_currentEditedCellIndex;
+    bool m_isOneCellInEditMode;
 };
 
 #endif

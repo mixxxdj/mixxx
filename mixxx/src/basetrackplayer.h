@@ -22,7 +22,7 @@ class BaseTrackPlayer : public BasePlayer {
                     AnalyserQueue* pAnalyserQueue,
                     QString group);
     BaseTrackPlayer(QObject* pParent, QString group);
-    ~BaseTrackPlayer();
+    virtual ~BaseTrackPlayer();
 
 
     AnalyserQueue* getAnalyserQueue() const;

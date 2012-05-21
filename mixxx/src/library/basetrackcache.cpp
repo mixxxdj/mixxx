@@ -366,7 +366,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 
     if (!query.exec()) {
         qDebug() << this << "select() error:" << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError() << sortColumn;
+                 << query.executedQuery() << query.lastError();
     }
 
     QSqlRecord record = query.record();

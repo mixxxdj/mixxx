@@ -23,6 +23,14 @@
 #include "stareditor.h"
 #include "starrating.h"
 
+StarDelegate::StarDelegate(QObject *pParent) : QStyledItemDelegate(pParent) {
+
+    m_pTableView =qobject_cast<QTableView *> (pParent);
+    connect(pParent, SIGNAL(entered(QModelIndex)),
+                              this, SLOT(cellEntered(QModelIndex)));
+    m_isOneCellInEditMode = false;
+}
+
 /*
  * The function is invoked once for each item, represented by a QModelIndex object from the model.
  * If the data stored in the item is a StarRating, we paint it use a star editor for displaying;
@@ -119,3 +127,27 @@ void StarDelegate::commitAndCloseEditor()
     emit commitData(editor);
     emit closeEditor(editor);
 }
+
+//cellEntered
+void StarDelegate::cellEntered(const QModelIndex &index)
+{
+    //this slot is called if the mouse pointer enters ANY cell on
+    //the QTableView but the code should only be executed on a button
+    if(qVariantCanConvert<StarRating>(index.data()))
+    {
+        if(m_isOneCellInEditMode)
+        {
+            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+        }
+        m_pTableView->openPersistentEditor(index);
+        m_isOneCellInEditMode = true;
+        m_currentEditedCellIndex = index;
+    } else {
+        if(m_isOneCellInEditMode)
+        {
+            m_isOneCellInEditMode = false;
+            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+        }
+    }
+}
+

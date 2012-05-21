@@ -547,9 +547,7 @@ void WOverview::dropEvent(QDropEvent* event) {
         }
         event->accept();
         emit(trackDropped(name, m_pGroup));
-        qDebug() << "emited track";     
     } else {
-        // qDebug() << "deck is playing";
         event->ignore();
     }
 }

@@ -11,7 +11,7 @@ class Sampler : public BaseTrackPlayer {
             EngineMaster* pMixingEngine,
             EngineChannel::ChannelOrientation defaultOrientation,
             QString group);
-    ~Sampler();
+    virtual ~Sampler();
 };
 
 #endif

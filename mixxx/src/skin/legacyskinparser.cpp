@@ -662,8 +662,6 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     }
     pTabWidget->setMaximumWidth(width);
 
-
-
     QWidget* pLibraryPage = new QWidget(pTabWidget);
 
     QGridLayout* pLibraryPageLayout = new QGridLayout(pLibraryPage);
@@ -685,7 +683,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     pLineEditSearch->setup(node);
 
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
-    vl->setContentsMargins(0,50,0,0); //Fill entire space
+    vl->setContentsMargins(0,50,0,0); //leave space for preview deck
     vl->addWidget(pLineEditSearch);
     vl->addWidget(pLibrarySidebar);
     pLibrarySidebarPage->setLayout(vl);
@@ -821,10 +819,6 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     pTabWidget->setStyleSheet(style);
 
-    qDebug() << " Kain88 message "<< node.nodeName();
-    qDebug() << " Kain88 message "<< node.lastChildElement().previousSiblingElement().previousSiblingElement().nodeName();
-    qDebug() << " Kain88 message "<< node.lastChildElement().previousSiblingElement().nodeName();
-    qDebug() << " Kain88 message "<< node.lastChildElement().nodeName();
     parsePushButton(node.lastChildElement().previousSiblingElement().previousSiblingElement());
     parseOverview(node.lastChildElement().previousSiblingElement());
     parseText(node.lastChildElement());
