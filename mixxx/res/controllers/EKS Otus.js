@@ -8,6 +8,8 @@
 EksOtus = new HIDController();
 
 // Valid values: 1 for mouse mode, 0 for xy-pad mode
+
+EksOtus.activeDeck = 1;
 EksOtus.trackpadMode = 0;
 EksOtus.LEDUpdateInterval = 300;
 EksOtus.version_major = undefined;
@@ -26,18 +28,17 @@ EksOtus.ignoredControlChanges = [
     // These return the Otus slider position scaled by the 'slider scale'
     'slider_pos_1','slider_pos_2', 'slider_value'
 ];
-EksOtus.WheelLEDCount = 60;
-EksOtus.ButtonLEDCount = 22;
-EksOtus.SliderLedCount = 20;
-
-// Dual deck controller, active deck is not selected by default
-EksOtus.activeDeck = undefined;
 
 // Scratch parameters
 EksOtus.scratchintervalsPerRev = 256;
 EksOtus.scratchAlpha = 1.0/8;
 EksOtus.rampedScratchEnable = true;
 EksOtus.rampedScratchEnable = true;
+ 
+// Static variables for HID specs
+EksOtus.WheelLEDCount = 60;
+EksOtus.ButtonLEDCount = 22;
+EksOtus.SliderLedCount = 20;
 
 //
 // Functions to modify be end user
@@ -54,7 +55,8 @@ EksOtus.init = function (id) {
     EksOtus.registerScalers();
     EksOtus.registerCallbacks();
 
-    EksOtus.toggleButtons = [ 'play', 'pfl', 'keylock',
+    EksOtus.toggleButtons = [ 
+        'play', 'pfl', 'keylock',
         'filterLowKill','filterMidKill', 'filterHighKill'
     ]
 
@@ -65,6 +67,13 @@ EksOtus.init = function (id) {
             EksOtus.LEDUpdateInterval,
             "EksOtus.updateLEDs(true)"
         );
+    }
+
+    engine.softTakeover('[Master]','headVolume',true);
+    engine.softTakeover('[Master]','headMix',true);
+    for (var deck in EksOtus.deckLEDColors) {
+        engine.softTakeover('[Channel'+deck+']','pregain',true);
+        engine.softTakeover('[Channel'+deck+']','volume',true);
     }
 
 }
@@ -85,9 +94,16 @@ EksOtus.incomingData = function(data,length) {
     EksOtus.parsePacket(data,length);
 }
 
+// Mandatory LED update callback handler
+EksOtus.activeLEDUpdateWrapper = function() {
+    EksOtus.updateActiveDeckLEDs();
+}
+
 // Register value scaling functions
 EksOtus.registerScalers = function() {
     // Register functions to scale value
+    EksOtus.registerScalingFunction('volume',EksOtus.volumeScaler);
+    EksOtus.registerScalingFunction('pregain',EksOtus.volumeScaler);
     EksOtus.registerScalingFunction('crossfader',EksOtus.plusMinus1Scaler);
     EksOtus.registerScalingFunction('filterLow',EksOtus.eqScaler);
     EksOtus.registerScalingFunction('filterMid',EksOtus.eqScaler);
@@ -100,13 +116,12 @@ EksOtus.registerScalers = function() {
 EksOtus.registerCallbacks = function() {
     EksOtus.registerInputCallback('control','hid','deck_switch',EksOtus.deckSwitch);
     EksOtus.registerInputCallback('control','hid','jog_ne',EksOtus.corner_wheel);
-    EksOtus.registerInputCallback('control','hid','jog_sw',EksOtus.corner_wheel);
-    EksOtus.registerInputCallback('control','hid','jog_nw',EksOtus.corner_wheel);
-    EksOtus.registerInputCallback('control','deck1','pregain',EksOtus.pregain);
-    EksOtus.registerInputCallback('control','deck2','pregain',EksOtus.pregain);
+    EksOtus.registerInputCallback('control','deck1','pregain',EksOtus.volume_pregain);
+    EksOtus.registerInputCallback('control','deck1','rate_encoder',EksOtus.rate_wheel);
+    EksOtus.registerInputCallback('control','deck2','pregain',EksOtus.volume_pregain);
+    EksOtus.registerInputCallback('control','deck2','rate_encoder',EksOtus.rate_wheel);
     EksOtus.registerInputCallback('control','[Master]','headphones',EksOtus.headphones);
-    EksOtus.registerInputCallback('control','[Master]','beat_align',EksOtus.beat_align);
-
+    EksOtus.registerInputCallback('control','deck','beat_align',EksOtus.beat_align);
 
     EksOtus.registerInputCallback('control','deck','slider_scale',EksOtus.pitchSlider);
     EksOtus.registerInputCallback('control','deck','slider_value',EksOtus.pitchSlider);
@@ -169,6 +184,17 @@ EksOtus.plusMinus1Scaler = function(group,name,value) {
         return (value-32768)/32768;
 }
 
+EksOtus.rate_wheel = function(field) {
+    if (EksOtus.activeDeck==undefined)
+        return;
+    var active_group = EksOtus.resolveGroup(field.group);
+    var current = engine.getValue(active_group,'rate');
+    if (field.delta<0)
+        engine.setValue(active_group,'rate',current+0.003);
+    else
+        engine.setValue(active_group,'rate',current-0.003);
+}
+
 // Rotation of the Otus 'corner' wheels.
 // Note right bottom wheel is library browser encoder and not handled here
 EksOtus.corner_wheel = function(field) {
@@ -192,7 +218,6 @@ EksOtus.hotcue = function (field) {
     // print ("HOTCUE group " + active_group + " name " + field.name + " value " + command);
     engine.setValue(active_group,command,true);
 }
-
 
 // Beatloops activated with normal presses to beatloop_1 - beatloop_8
 EksOtus.beatloop = function (field) {
@@ -221,6 +246,8 @@ EksOtus.beat_align = function (field) {
 // Pitch slider modifies track speed directly
 // TODO - make this relative to the touch position
 EksOtus.pitchSlider = function (field) {
+    // Use the top jogs now for pitch
+    return;
     if (EksOtus.activeDeck==undefined)
         return;
     if (EksOtus.modifiers['pitchslider']) {
@@ -237,12 +264,11 @@ EksOtus.pitchSlider = function (field) {
     }
 }
 
-// Use pregain if modifier shift is active, volume otherwise
-EksOtus.pregain = function (field) {
+// Use headphones volume, if modifier shift is active, pre/main mix otherwise
+EksOtus.volume_pregain = function (field) {
     if (EksOtus.activeDeck==undefined)
         return;
     var active_group = EksOtus.resolveGroup(field.group);
-    var value;
     if (EksOtus.modifiers['shift']) {
         value = script.absoluteNonLin(field.value, 0, 1, 5, 0, 65536);
         engine.setValue(active_group,'pregain',value);
@@ -251,10 +277,8 @@ EksOtus.pregain = function (field) {
         engine.setValue(active_group,'volume',value);
     }
 }
-
 // Use headphones volume, if modifier shift is active, pre/main mix otherwise
 EksOtus.headphones = function (field) {
-
     if (EksOtus.modifiers['shift']) {
         value = script.absoluteNonLin(field.value, 0, 1, 5, 0, 65536);
         engine.setValue(field.group,'headVolume',value);
@@ -333,10 +357,6 @@ EksOtus.deckSwitchDoubleClick = function() {
     script.HIDDebug('Active EKS Otus deck now ' + EksOtus.activeDeck);
 }
 
-EksOtus.activeLEDUpdateWrapper = function() {
-    EksOtus.updateActiveDeckLEDs();
-}
-
 // Silly little function for wheel LEDs to indicate device is initialized
 // Triggers itself with a timer to reverse the LED states to off.
 EksOtus.wheelLEDInitAnimation = function (state) {
@@ -365,6 +385,10 @@ EksOtus.wheelLEDInitAnimation = function (state) {
     }
 }
 
+//
+// HID Packet registration details for Otus
+//
+
 // Initialize control fields, buttons and LEDs
 // Group name 'deck' is dynamically modified to active deck, since
 // Otus is a dualdeck controller.
@@ -373,18 +397,16 @@ EksOtus.registerInputPackets = function() {
     var name = undefined;
     var offset = 0;
 
-    // addControl(group,name,offset,pack,bitmask,isEncoder,callback)
-    // Input controller state packet - 'control' is a special name
     packet = new HIDPacket('control',[0x0,0x35],64);
     packet.addControl('deck','wheel_position',2,'H');
     packet.addControl('deck','jog_wheel',4,'h');
     packet.addControl('hid','timestamp',6,'I');
     packet.addControl('deck','slider_value',10,'H');
     packet.addControl('deck','slider_position',12,'H');
-    packet.addControl('hid','jog_ne',14,'B',undefined,true);
+    packet.addControl('deck2','rate_encoder',14,'B',undefined,true);
     packet.addControl('[Playlist]','SelectTrackKnob',15,'B',undefined,true);
     packet.addControl('hid','jog_sw',16,'B',undefined,true);
-    packet.addControl('hid','jog_nw',17,'B',undefined,true);
+    packet.addControl('deck1','rate_encoder',17,'B',undefined,true);
     packet.addControl('deck1','pregain',18,'H');
     packet.addControl('deck2','pregain',20,'H');
     packet.addControl('deck1','filterHigh',22,'H');
@@ -399,7 +421,7 @@ EksOtus.registerInputPackets = function() {
     packet.addControl('[Effects]','trackpad_y',40,'H');
     packet.addControl('deck','slider_pos_2',42,'H');
     packet.addControl('deck','slider_pos_1',44,'H');
-    packet.addControl('hid','jog_ne_button',46,'I',0);
+    packet.addControl('deck2','keylock',46,'I',0);
     packet.addControl('deck','beatloop_8',46,'I',1);
     packet.addControl('deck','beatloop_4',46,'I',2);
     packet.addControl('deck','beatloop_2',46,'I',3);
@@ -419,7 +441,7 @@ EksOtus.registerInputPackets = function() {
     packet.addControl('deck','filterMidKill',46,'I',17);
     packet.addControl('deck','filterHighKill',46,'I',18);
     packet.addControl('deck','beat_align',46,'I',19);
-    packet.addControl('hid','jog_nw_button',46,'I',20);
+    packet.addControl('deck1','keylock',46,'I',20);
     packet.addControl('deck','jog_touch',46,'I',21);
     packet.addControl('hid','trackpad_left',46,'I',22);
     packet.addControl('hid','trackpad_right',46,'I',23);
@@ -434,12 +456,10 @@ EksOtus.registerInputPackets = function() {
     packet.addControl('hid','packet_number',51,'B');
     packet.addControl('hid','deck_status',52,'B');
 
-    // Set certain packet fields as ignored
     packet.setIgnored('hid','timestamp',true);
     packet.setIgnored('hid','packet_number',true);
     packet.setIgnored('hid','deck_status',true);
 
-    // Adjust minimum deltas from unstable potentiometers
     packet.setMinDelta('deck','jog_wheel',4);
     packet.setMinDelta('deck1','pregain',128);
     packet.setMinDelta('deck2','pregain',128);
@@ -453,13 +473,11 @@ EksOtus.registerInputPackets = function() {
     packet.setMinDelta('[Master]','headphones',128);
     EksOtus.registerInputPacket(packet);
 
-    // Input packet to receive device firmware version
     packet = new HIDPacket('firmware_version',[0xa,0x4],64,EksOtus.FirmwareVersionResponse);
     packet.addControl('hid','major',2,'B');
     packet.addControl('hid','minor',3,'B');
     EksOtus.registerInputPacket(packet);
 
-    // Input packet to receive trackpad mode change response
     packet = new HIDPacket('trackpad_mode',[0x5,0x3],64,EksOtus.TrackpadModeResponse);
     packet.addControl('hid','status',2,'B');
     EksOtus.registerInputPacket(packet);
@@ -471,11 +489,10 @@ EksOtus.registerOutputPackets = function() {
     var name = undefined;
     var offset = 0;
 
-    // Control packet for button LEDs
     packet = new HIDPacket('button_leds',[0x16,0x18],32);
     offset = 2;
-    packet.addLED('hid','jog_ne',offset++,'B');
-    packet.addLED('hid','jog_nw',offset++,'B');
+    packet.addLED('deck1','keylock',offset++,'B');
+    packet.addLED('deck2','keylock',offset++,'B');
     packet.addLED('[Playlist]','SelectTrackKnob',offset++,'B');
     packet.addLED('hid','jog_se',offset++,'B');
     packet.addLED('deck','beatloop_8_enabled',offset++,'B');
@@ -498,7 +515,6 @@ EksOtus.registerOutputPackets = function() {
     packet.addLED('deck','beats_translate_curpos',offset++,'B');
     EksOtus.registerOutputPacket(packet);
 
-    // Slider LEDs
     packet = new HIDPacket('slider_leds',[0x17,0x16],32);
     offset = 2;
     packet.addLED('pitch',"slider_1",offset++,'B');
@@ -523,7 +539,6 @@ EksOtus.registerOutputPackets = function() {
     packet.addLED('pitch',"slider_scale_3",offset++,'B');
     EksOtus.registerOutputPacket(packet);
 
-    // Control packet for left wheel LEDs
     packet = new HIDPacket('led_wheel_left',[0x14,0x20],32);
     offset = 2;
     for (var led_index=1;led_index<=EksOtus.WheelLEDCount/2;led_index++) {
@@ -532,7 +547,6 @@ EksOtus.registerOutputPackets = function() {
     }
     EksOtus.registerOutputPacket(packet);
 
-    // Control packet for right wheel LEDs
     packet = new HIDPacket('led_wheel_right',[0x15,0x20],32);
     offset = 2;
     for (var led_index=EksOtus.WheelLEDCount/2+1;led_index<=EksOtus.WheelLEDCount;led_index++) {
@@ -541,16 +555,13 @@ EksOtus.registerOutputPackets = function() {
     }
     EksOtus.registerOutputPacket(packet);
 
-    // Output packet to request firmware version
     packet = new HIDPacket('request_firmware_version',[0xa,0x2],32);
     EksOtus.registerOutputPacket(packet);
 
-    // Output packet to set trackpad mode
     packet = new HIDPacket('set_trackpad_mode',[0x5,0x3],32);
     packet.addControl('hid','mode',2,'B');
     EksOtus.registerOutputPacket(packet);
 
-    // Output packet to set LED control mode
     packet = new HIDPacket('set_ledcontrol_mode',[0x1d,0x3],32);
     packet.addControl('hid','mode',2,'B');
     EksOtus.registerOutputPacket(packet);
@@ -559,9 +570,8 @@ EksOtus.registerOutputPackets = function() {
 // Otus specific output packet to request device firmware version
 EksOtus.requestFirmwareVersion = function() {
     var packet = EksOtus.resolveOutputPacket('request_firmware_version');
-    if (packet==undefined) {
+    if (packet==undefined)
         return;
-    }
     script.HIDDebug("Requesting firmware version " + packet.name);
     packet.send();
 }
@@ -570,12 +580,8 @@ EksOtus.requestFirmwareVersion = function() {
 EksOtus.FirmwareVersionResponse = function(packet,delta) {
     var field_major = packet.lookupField('hid','major');
     var field_minor = packet.lookupField('hid','minor');
-    if (field_major==undefined) {
-        script.HIDDebug("Error parsing field major from packet");
-        return;
-    }
-    if (field_minor==undefined) {
-        script.HIDDebug("Error parsing field minor from packet");
+    if (field_major==undefined || field_minor==undefined) {
+        script.HIDDebug("Error parsing response version packet");
         return;
     }
     EksOtus.initialized=true;
