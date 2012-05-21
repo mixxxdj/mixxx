@@ -36,7 +36,7 @@ class PortMidiController : public MidiController {
   private slots:
     virtual int open();
     virtual int close();
-    virtual void poll();
+    virtual bool poll();
 
   private:
     void send(unsigned int word);
