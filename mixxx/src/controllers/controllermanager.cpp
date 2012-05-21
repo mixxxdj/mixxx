@@ -7,6 +7,7 @@
 
 #include <QSet>
 
+#include "sleepableqthread.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -246,11 +247,15 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
+    bool eventsProcessed(false);
     foreach (Controller* pDevice, m_controllers) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
-            pDevice->poll();
+            eventsProcessed = pDevice->poll() || eventsProcessed;
         }
     }
+    // if we didn't process anything, sleep a bit to avoid burning/hogging
+    // cpu cycles
+    if (!eventsProcessed) SleepableQThread::msleep(1);
 }
 
 QList<QString> ControllerManager::getPresetList(QString extension) {
