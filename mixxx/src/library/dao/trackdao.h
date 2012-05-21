@@ -16,6 +16,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/analysisdao.h"
 #include "trackinfoobject.h"
 #include "util.h"
 
@@ -47,6 +48,7 @@ const QString LIBRARYTABLE_PLAYED = "played";
 const QString LIBRARYTABLE_PREVIEW = "preview";
 const QString LIBRARYTABLE_RATING = "rating";
 const QString LIBRARYTABLE_KEY = "key";
+const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
 const QString TRACKLOCATIONSTABLE_LOCATION = "location";
@@ -63,6 +65,7 @@ class TrackDAO : public QObject, public virtual DAO {
      * synchronized on track metadata change **/
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
+             AnalysisDao& analysisDao,
              ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
@@ -76,6 +79,7 @@ class TrackDAO : public QObject, public virtual DAO {
     int addTrack(QString absoluteFilePath, bool unremove);
     int addTrack(QFileInfo& fileInfo, bool unremove);
     void addTracks(QList<TrackInfoObject*> tracksToAdd, bool unremove);
+    QList<int> addTracks(QList<QFileInfo> fileInfoList, bool unremove);
     void removeTrack(int id);
     void removeTracks(QList<int> ids);
     void unremoveTrack(int trackId);
@@ -84,7 +88,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
-    void markTracksInDirectoryAsVerified(QString directory);
+    void markTracksInDirectoriesAsVerified(QStringList directories);
     void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
@@ -143,6 +147,7 @@ class TrackDAO : public QObject, public virtual DAO {
     CueDAO &m_cueDao;
     PlaylistDAO &m_playlistDao;
     CrateDAO &m_crateDao;
+    AnalysisDao& m_analysisDao;
     ConfigObject<ConfigValue> * m_pConfig;
     mutable QHash<int, TrackWeakPointer> m_tracks;
     mutable QSet<int> m_dirtyTracks;

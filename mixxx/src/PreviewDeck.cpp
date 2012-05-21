@@ -1,18 +1,35 @@
+#include <QtCore>
+#include <QMessageBox>
+
 #include "PreviewDeck.h"
+#include "basetrackplayer.h"
+#include "playerinfo.h"
+
+#include "controlobjectthreadmain.h"
+#include "controlobject.h"
+#include "controlpotmeter.h"
+#include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginePreviewDeck.h"
+#include "engine/enginePreviewDeck.h"
 #include "engine/enginemaster.h"
-#include "engine/clockcontrol.h"
+#include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
-#include "waveform/waveformrenderer.h"
+#include "engine/clockcontrol.h"
+#include "mathstuff.h"
+#include "track/beatgrid.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 PreviewDeck::PreviewDeck(QObject* pParent,
-                 ConfigObject<ConfigValue>* pConfig,
-                 EngineMaster* pMixingEngine,
-                 EngineChannel::ChannelOrientation defaultOrientation,
-                 QString group)
+                                 ConfigObject<ConfigValue> *pConfig,
+                                 EngineMaster* pMixingEngine,
+                                 EngineChannel::ChannelOrientation defaultOrientation,
+                                 QString group)
         : BaseTrackPlayer(pParent, group) {
 
+    // Need to strdup the string because EngineChannel will save the pointer,
+    // but we might get deleted before the EngineChannel. TODO(XXX)
+    // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
     EnginePreviewDeck* pChannel = new EnginePreviewDeck(pSafeGroupName,
@@ -57,21 +74,23 @@ PreviewDeck::PreviewDeck(QObject* pParent,
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
+    // Waveform controls
+    m_pWaveformZoom = new ControlPotmeter(ConfigKey(group, "waveform_zoom"),
+                                          WaveformWidgetRenderer::s_waveformMinZoom,
+                                          WaveformWidgetRenderer::s_waveformMaxZoom);
+    m_pWaveformZoom->set(1.0);
+    m_pWaveformZoom->setStep(1.0);
+    m_pWaveformZoom->setSmallStep(1.0);
+
+    m_pEndOfTrack = new ControlObject(ConfigKey(group,"end_of_track"));
+    m_pEndOfTrack->set(0.);
+
     //BPM of the current song
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "file_bpm")));
 
     m_pReplayGain = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "replaygain")));
-
-    // Create WaveformRenderer last, because it relies on controls created above
-    // (e.g. EngineBuffer)
-
-    m_pWaveformRenderer = new WaveformRenderer(pSafeGroupName);
-    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pWaveformRenderer, SLOT(slotNewTrack(TrackPointer)));
-    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
-            m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
 }
 
 PreviewDeck::~PreviewDeck()

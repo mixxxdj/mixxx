@@ -89,10 +89,6 @@ void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
     m_pTrackModel->moveTrack(sourceIndexSource, destIndexSource);
 }
 
-QItemDelegate* ProxyTrackModel::delegateForColumn(const int i) {
-    return m_pTrackModel->delegateForColumn(i);
-}
-
 TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
     return m_pTrackModel->getCapabilities();
 }

@@ -9,10 +9,11 @@
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
-// QList's are attractive because they pre-allocate an internal buffer that is
-// not free'd after a clear(). The downside is that they do not necessarily
-// store adjecent items in adjacent memory locations.
-typedef QList<double> BeatList;
+class BeatIterator {
+  public:
+    virtual bool hasNext() const = 0;
+    virtual double next() = 0;
+};
 
 // Beats is a pure abstract base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
@@ -27,7 +28,8 @@ class Beats {
         BEATSCAP_ADDREMOVE     = 0x0001,
         BEATSCAP_TRANSLATE     = 0x0002,
         BEATSCAP_SCALE         = 0x0004,
-        BEATSCAP_MOVEBEAT      = 0x0008
+        BEATSCAP_MOVEBEAT      = 0x0008,
+        BEATSCAP_SET           = 0x0010
     };
     typedef int CapabilitiesFlags; // Allows us to do ORing
 
@@ -40,6 +42,9 @@ class Beats {
     // produced this Beats instance. Used by BeatsFactory for associating a
     // given serialization with the version that produced it.
     virtual QString getVersion() const = 0;
+    // A sub-version can be used to represent the preferences used to generate
+    // the beats object.
+    virtual QString getSubVersion() const = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -63,12 +68,14 @@ class Beats {
     // negative values of n. Calling findNthBeat with n=0 is invalid. Calling
     // findNthBeat with n=1 or n=-1 is equivalent to calling findNextBeat and
     // findPrevBeat, respectively. If dSamples refers to the location of a beat,
-    // then dSamples is returned. If no beat can be found, returns -1.<
+    // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
     // Adds to pBeatsList the position in samples of every beat occuring between
-    // startPosition and endPosition
-    virtual void findBeats(double startSample, double stopSample, BeatList* pBeatsList) const = 0;
+    // startPosition and endPosition. BeatIterator must be iterated while
+    // holding a strong references to the Beats object to ensure that the Beats
+    // object is not deleted. Caller takes ownership of the returned BeatIterator;
+    virtual BeatIterator* findBeats(double startSample, double stopSample) const = 0;
 
     // Return whether or not a sample lies between startPosition and endPosition
     virtual bool hasBeatInRange(double startSample, double stopSample) const = 0;
@@ -101,6 +108,10 @@ class Beats {
     // Scale the position of every beat in the song by dScalePercentage. Beats
     // class must have the capability BEATSCAP_SCALE.
     virtual void scale(double dScalePercentage) = 0;
+
+    // Adjust the beats so the global average BPM matches dBpm. Beats class must
+    // have the capability BEATSCAP_SET.
+    virtual void setBpm(double dBpm) = 0;
 };
 
 #endif /* BEATS_H */

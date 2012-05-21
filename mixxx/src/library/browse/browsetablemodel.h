@@ -52,7 +52,6 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     virtual const QString currentSearch() const;
     virtual bool isColumnInternal(int);
     virtual void moveTrack(const QModelIndex&, const QModelIndex&);
-    virtual QItemDelegate* delegateForColumn(const int);
     virtual bool isColumnHiddenByDefault(int column);
     virtual const QList<int>& searchColumns() const;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;

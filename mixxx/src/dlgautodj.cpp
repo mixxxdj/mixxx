@@ -48,8 +48,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                                                  "mixxx.db.model.autodj");
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
-        m_playlistDao.createPlaylist(AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
-        playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        playlistId = m_playlistDao.createPlaylist(AUTODJ_TABLE,
+                                                  PlaylistDAO::PLHT_AUTO_DJ);
     }
     m_pAutoDJTableModel->setPlaylist(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
@@ -107,6 +107,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
+    qDebug() << "~DlgAutoDJ()";
     delete m_pCOPlayPos1;
     delete m_pCOPlayPos2;
     delete m_pCOPlay1;
@@ -116,6 +117,9 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pCORepeat1;
     delete m_pCORepeat2;
     delete m_pCOCrossfader;
+    // Delete m_pTrackTableView before the table model. This is because the
+    // table view saves the header state using the model.
+    delete m_pTrackTableView;
     delete m_pAutoDJTableModel;
 }
 
@@ -229,9 +233,9 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle) {
         if (deck1Playing && deck2Playing) {
             QMessageBox::warning(
                 NULL, tr("Auto-DJ"),
-                tr("One player must be stopped to enable Auto-DJ mode."),
+                tr("One deck must be stopped to enable Auto-DJ mode."),
                 QMessageBox::Ok);
-            qDebug() << "One player must be stopped before enabling Auto DJ mode";
+            qDebug() << "One deck must be stopped before enabling Auto DJ mode";
             pushButtonAutoDJ->setChecked(false);
             return;
         }
@@ -497,6 +501,8 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     if (!nextTrack) {
         // Disable auto DJ and return...
         pushButtonAutoDJ->setChecked(false);
+        // And eject track as "End of auto DJ warning"
+        emit(loadTrack(nextTrack));
         return false;
     }
 

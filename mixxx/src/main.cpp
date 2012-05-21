@@ -15,6 +15,9 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QThread>
+#include <QDir>
+#include <QtDebug>
 #include <qapplication.h>
 #include <qfont.h>
 #include <qstring.h>
@@ -209,8 +212,8 @@ int main(int argc, char * argv[])
                             for sound source plugins in addition to default\n\
                             locations.\n\
 \n\
-    --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
-                            messages it receives and script functions it loads\n\
+    --controllerDebug       Causes Mixxx to display/log all of the controller\n\
+                            data it receives and script functions it loads\n\
 \n\
     --locale LOCALE         Use a custom locale for loading translations\n\
                             (e.g 'fr')\n\

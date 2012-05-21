@@ -94,14 +94,13 @@ bool CrateDAO::isCrateLocked(int crateId) {
 }
 
 bool CrateDAO::deleteCrate(int crateId) {
-    Q_ASSERT(m_database.transaction());
+    ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE crate_id = :id");
     query.bindValue(":id", crateId);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        Q_ASSERT(m_database.rollback());
         return false;
     }
 
@@ -110,10 +109,9 @@ bool CrateDAO::deleteCrate(int crateId) {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        Q_ASSERT(m_database.rollback());
         return false;
     }
-    Q_ASSERT(m_database.commit());
+    transaction.commit();
 
     emit(deleted(crateId));
     return true;
@@ -196,6 +194,37 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     emit(trackAdded(crateId, trackId));
     emit(changed(crateId));
     return true;
+}
+
+
+int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
+
+    int crateAddFails = 0;
+    for (int i = 0; i < trackIdList.size(); ++i) {
+        query.bindValue(":crate_id", crateId);
+        query.bindValue(":track_id", trackIdList.at(i));
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            crateAddFails++;
+            // We must emit only those trackID that were added so we need to
+            // remove the failed ones.
+            trackIdList.removeAt(i);
+        }
+    }
+    transaction.commit();
+
+    // Emitting the trackAdded signals for each trackID outside the transaction
+    foreach(int trackId, trackIdList) {
+        emit(trackAdded(crateId, trackId));
+    }
+
+    emit(changed(crateId));
+
+    // Return the number of tracks successfully added
+    return trackIdList.size();
 }
 
 void CrateDAO::removeTrackFromCrates(int trackId) {

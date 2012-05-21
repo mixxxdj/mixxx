@@ -12,11 +12,10 @@
 #include "library/trackcollection.h"
 #include "treeitem.h"
 
-#define CHILD_MISSING "Missing Songs"
-
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
-        : LibraryFeature(parent) {
+        : LibraryFeature(parent),
+          kMissingTitle(tr("Missing Tracks")) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             // << "library." + LIBRARYTABLE_PREVIEW
@@ -35,7 +34,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_KEY
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "library." + LIBRARYTABLE_BPM
-            << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_BPM_LOCK
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
@@ -84,7 +83,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
 
     TreeItem *rootItem = new TreeItem();
-    TreeItem *childItem = new TreeItem(CHILD_MISSING, CHILD_MISSING,
+    TreeItem *childItem = new TreeItem(kMissingTitle, kMissingTitle,
                                        this, rootItem);
     rootItem->appendChild(childItem);
     m_childModel.setRootItem(rootItem);
@@ -131,8 +130,9 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     /*if (itemName == m_childModel.stringList().at(0))
         emit(showTrackModel(m_pMissingTableModel));
      */
-    if (itemName == CHILD_MISSING)
+    if (itemName == kMissingTitle) {
         emit(showTrackModel(m_pMissingTableModel));
+    }
 }
 
 void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {

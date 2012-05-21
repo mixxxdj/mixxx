@@ -5,7 +5,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
-
+#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
@@ -40,7 +40,8 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
 
     QStringList columns;
     columns << PLAYLISTTRACKSTABLE_TRACKID
-            << PLAYLISTTRACKSTABLE_POSITION;
+            << PLAYLISTTRACKSTABLE_POSITION
+            << PLAYLISTTRACKSTABLE_DATETIMEADDED;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -103,6 +104,35 @@ bool PlaylistTableModel::appendTrack(int trackId) {
 
     select(); //Repopulate the data model.
     return true;
+}
+
+int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int position = index.sibling(index.row(), positionColumn).data().toInt();
+
+    // Handle weird cases like a drag and drop to an invalid index
+    if (position <= 0) {
+        position = rowCount() + 1;
+    }
+
+    QList<QFileInfo> fileInfoList;
+    foreach (QString fileLocation, locations) {
+        fileInfoList.append(QFileInfo(fileLocation));
+    }
+
+    QList<int> trackIds = m_trackDao.addTracks(fileInfoList, true);
+
+    int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
+        trackIds, m_iPlaylistId, position);
+
+    if (tracksAdded > 0) {
+        select();
+    } else if (locations.size() - tracksAdded > 0) {
+        qDebug() << "PlaylistTableModel::addTracks could not add"
+                 << locations.size() - tracksAdded
+                 << "to playlist" << m_iPlaylistId;
+    }
+    return tracksAdded;
 }
 
 TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const {
@@ -185,11 +215,11 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         newPosition = rowCount();
 
     //Start the transaction
-    m_pTrackCollection->getDatabase().transaction();
+    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 
     //Find out the highest position existing in the playlist so we know what
     //position this track should have.
-    QSqlQuery query;
+    QSqlQuery query(m_pTrackCollection->getDatabase());
 
     //Insert the song into the PlaylistTracks table
 
@@ -263,7 +293,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         query.exec(queryString);
     }
 
-    m_pTrackCollection->getDatabase().commit();
+    transaction.commit();
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
@@ -282,7 +312,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
     int currentPosition = currentIndex.sibling(currentIndex.row(), positionColumnIndex).data().toInt();
     int shuffleStartIndex = currentPosition + 1;
 
-    m_pTrackCollection->getDatabase().transaction();
+    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 
     // This is a simple Fisher-Yates shuffling algorithm
     for (int i=numOfTracks-1; i >= shuffleStartIndex; i--)
@@ -304,7 +334,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
             qDebug() << query.lastError();
     }
 
-    m_pTrackCollection->getDatabase().commit();
+    transaction.commit();
     // TODO(XXX) set dirty because someday select() will only do work on dirty.
     select();
 }
@@ -325,6 +355,7 @@ bool PlaylistTableModel::isColumnInternal(int column) {
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_PREVIEW) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
@@ -334,12 +365,10 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
     }
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+       return true;
+    }
     return false;
-}
-
-QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
-    return NULL;
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
@@ -352,7 +381,10 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER
-            | TRACKMODELCAPS_REMOVE;
+            | TRACKMODELCAPS_REMOVE
+            | TRACKMODELCAPS_BPMLOCK
+            | TRACKMODELCAPS_CLEAR_BEATS
+            | TRACKMODELCAPS_RESETPLAYED;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {

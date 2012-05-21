@@ -1,0 +1,437 @@
+<MixxxMIDIPreset mixxxVersion="1.7.0-beta1+" schemaVersion="1" >
+  <info>
+    <name>Mixman DM2 (OS X)</name>
+  </info>
+	<controller id="Mixman DM2" >
+		<scriptfiles>
+			<file functionprefix="DM2" filename="Mixman DM2 (OS X).js" />
+		</scriptfiles>
+		<controls>
+
+<!-- crossfader -->
+			<control>
+				<status>0xe4</status>
+				<group>[Master]</group>
+				<key>crossfader</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+
+<!-- wheels -->
+			<control>
+				<status>0xe0</status>
+				<group>[Channel1]</group>
+				<key>DM2.wheel</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xe1</status>
+				<group>[Channel2]</group>
+				<key>DM2.wheel</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- playlist -->
+			<control>
+				<status>0xb0</status>
+				<midino>0x01</midino>
+				<group>[Channel1]</group>
+				<key>DM2.playlist</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xb0</status>
+				<midino>0x02</midino>
+				<group>[Channel2]</group>
+				<key>DM2.playlist</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x28</midino>
+				<group>[Playlist]</group>
+				<key>DM2.middle</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- play -->
+			<control>
+				<status>0x90</status>
+				<midino>0x27</midino>
+				<group>[Channel1]</group>
+				<key>play</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+			<control>
+				<status>0x90</status>
+				<midino>0x26</midino>
+				<group>[Channel2]</group>
+				<key>play</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+
+<!-- beatsync -->
+			<control>
+				<status>0x90</status>
+				<midino>0x2F</midino>
+				<group>[Channel1]</group>
+				<key>beatsync</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+			<control>
+				<status>0x90</status>
+				<midino>0x30</midino>
+				<group>[Channel2]</group>
+				<key>beatsync</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+
+<!-- headphones (pfl) -->
+			<control>
+				<status>0x90</status>
+				<midino>0x2a</midino>
+				<group>[Channel1]</group>
+				<key>pfl</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+			<control>
+				<status>0x90</status>
+				<midino>0x29</midino>
+				<group>[Channel2]</group>
+				<key>pfl</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+
+<!-- filterHighKill -->
+			<control>
+				<status>0x80</status>
+				<midino>0x1e</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x10</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- filterMidKill -->
+			<control>
+				<status>0x80</status>
+				<midino>0x1d</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x11</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- filterLowKill -->
+			<control>
+				<status>0x80</status>
+				<midino>0x1c</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x12</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- filterHigh -->
+			<control>
+				<status>0xb0</status>
+				<midino>0x03</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xb0</status>
+				<midino>0x04</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- filterMid -->
+			<control>
+				<status>0xb0</status>
+				<midino>0x05</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xb0</status>
+				<midino>0x06</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- filterLow -->
+			<control>
+				<status>0xb0</status>
+				<midino>0x07</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xb0</status>
+				<midino>0x08</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- gain -->
+			<control>
+				<status>0xb0</status>
+				<midino>0x09</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xb0</status>
+				<midino>0x0a</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filter</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- volume -->
+			<control>
+				<status>0xb0</status>
+				<midino>0x0b</midino>
+				<group>[Channel1]</group>
+				<key>DM2.volume</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xb0</status>
+				<midino>0x0c</midino>
+				<group>[Channel2]</group>
+				<key>DM2.volume</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- rate -->
+			<control>
+				<status>0xb0</status>
+				<midino>0x0d</midino>
+				<group>[Channel1]</group>
+				<key>DM2.rate</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0xb0</status>
+				<midino>0x0e</midino>
+				<group>[Channel2]</group>
+				<key>DM2.rate</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+
+
+<!-- flanger -->
+			<control>
+				<status>0x80</status>
+				<midino>0x1F</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x17</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- TODO: does not work -->
+
+<!-- cue_default -->
+			<control>
+				<status>0x80</status>
+				<midino>0x1b</midino>
+				<group>[Channel1]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x13</midino>
+				<group>[Channel2]</group>
+				<key>DM2.filterKill</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- rate_perm_up_small -->
+			<control>
+				<status>0x80</status>
+				<midino>0x18</midino>
+				<group>[Channel1]</group>
+				<key>DM2.trigger</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x16</midino>
+				<group>[Channel2]</group>
+				<key>DM2.trigger</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+<!-- rate_perm_down_small -->
+			<control>
+				<status>0x80</status>
+				<midino>0x1a</midino>
+				<group>[Channel1]</group>
+				<key>DM2.trigger</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<status>0x80</status>
+				<midino>0x14</midino>
+				<group>[Channel2]</group>
+				<key>DM2.trigger</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+
+
+<!-- TODO -->
+
+
+			<control>
+				<status>0x0</status>
+				<midino>0x0</midino>
+				<group>[Channel1]</group>
+				<key>reverse</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+			<control>
+				<status>0x0</status>
+				<midino>0x0</midino>
+				<group>[Channel2]</group>
+				<key>reverse</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+
+			<control>
+				<status>0x0</status>
+				<midino>0x0</midino>
+				<group>[Channel2]</group>
+				<key>cue_simple</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+			<control>
+				<status>0x0</status>
+				<midino>0x0</midino>
+				<group>[Channel1]</group>
+				<key>cue_simple</key>
+				<options>
+					<Normal/>
+				</options>
+			</control>
+
+		</controls>
+	</controller>
+</MixxxMIDIPreset>
+

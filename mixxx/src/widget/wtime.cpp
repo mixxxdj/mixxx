@@ -52,5 +52,8 @@ void WTime::setTimeFormat(QDomNode node) {
 
 void WTime::refreshTime() {
     QTime time = QTime::currentTime();
-    m_pLabel->setText(time.toString(m_sTimeFormat));
+    QString timeString = time.toString(m_sTimeFormat);
+    if (m_pLabel->text() != timeString) {
+        m_pLabel->setText(timeString);
+    }
 }

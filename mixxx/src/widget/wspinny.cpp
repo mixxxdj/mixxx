@@ -6,35 +6,34 @@
 #include "sharedglcontext.h"
 #include "wspinny.h"
 
-WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(SharedGLContext::getContext(), parent),
-    m_pBG(NULL),
-    m_pFG(NULL),
-    m_pGhost(NULL),
-    m_pPlay(NULL),
-    m_pPlayPos(NULL),
-    m_pVisualPlayPos(NULL),
-    m_pDuration(NULL),
-    m_pTrackSamples(NULL),
-    m_pBPM(NULL),
-    m_pScratch(NULL),
-    m_pScratchToggle(NULL),
-    m_pScratchPos(NULL),
-    m_pVinylControlSpeedType(NULL),
-    m_pVinylControlEnabled(NULL),
-    m_bVinylActive(false),
-    m_bSignalActive(true),
-    m_iSize(0),
-    m_iTimerId(0),
-    m_iSignalUpdateTick(0),
-    m_fAngle(0.0f),
-    m_fGhostAngle(0.0f),
-    m_dPausedPosition(0.0f),
-    m_bGhostPlayback(false),
-    m_iStartMouseX(-1),
-    m_iStartMouseY(-1),
-    m_iFullRotations(0),
-    m_dPrevTheta(0.)
-{
+WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
+        : QGLWidget(SharedGLContext::getContext(), parent),
+          m_pBG(NULL),
+          m_pFG(NULL),
+          m_pGhost(NULL),
+          m_pPlay(NULL),
+          m_pPlayPos(NULL),
+          m_pVisualPlayPos(NULL),
+          m_pDuration(NULL),
+          m_pTrackSamples(NULL),
+          m_pBPM(NULL),
+          m_pScratch(NULL),
+          m_pScratchToggle(NULL),
+          m_pScratchPos(NULL),
+          m_pVinylControlSpeedType(NULL),
+          m_pVinylControlEnabled(NULL),
+          m_bVinylActive(false),
+          m_bSignalActive(true),
+          m_iSize(0),
+          m_iSignalUpdateTick(0),
+          m_fAngle(0.0f),
+          m_fGhostAngle(0.0f),
+          m_dPausedPosition(0.0f),
+          m_bGhostPlayback(false),
+          m_iStartMouseX(-1),
+          m_iStartMouseY(-1),
+          m_iFullRotations(0),
+          m_dPrevTheta(0.) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
     m_pVinylControl = NULL;
@@ -261,25 +260,29 @@ void WSpinny::paintEvent(QPaintEvent *e)
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle
    in our polar coordinate system.
    Returns an angle clamped between -180 and 180 degrees. */
-double WSpinny::calculateAngle(double playpos)
-{
-    if (isnan(playpos))
+double WSpinny::calculateAngle(double playpos) {
+    double trackFrames = m_pTrackSamples->get() / 2;
+    double trackSampleRate = m_pTrackSampleRate->get();
+    if (isnan(playpos) || isnan(trackFrames) || isnan(trackSampleRate) ||
+        trackFrames <= 0 || trackSampleRate <= 0) {
         return 0.0f;
+    }
 
-    //Convert playpos to seconds.
-    //double t = playpos * m_pDuration->get();
-    double t = playpos * (m_pTrackSamples->get()/2 /  // Stereo audio!
-                          m_pTrackSampleRate->get());
+    // Convert playpos to seconds.
+    double t = playpos * trackFrames / trackSampleRate;
 
-    if (isnan(t)) //Bad samplerate or number of track samples.
+    // Bad samplerate or number of track samples.
+    if (isnan(t)) {
         return 0.0f;
+    }
 
     //33 RPM is approx. 0.5 rotations per second.
-    double angle = 360*m_dRotationsPerSecond*t;
+    double angle = 360.0 * m_dRotationsPerSecond * t;
     //Clamp within -180 and 180 degrees
     //qDebug() << "pc:" << angle;
     //angle = ((angle + 180) % 360.) - 180;
     //modulo for doubles :)
+    const double originalAngle = angle;
     if (angle > 0)
     {
         int x = (angle+180)/360;
@@ -290,7 +293,11 @@ double WSpinny::calculateAngle(double playpos)
         angle = angle - (360*x);
     }
 
-    Q_ASSERT(angle <= 180 && angle >= -180);
+    if (angle <= -180 || angle > 180) {
+        qDebug() << "Angle clamping failed!" << t << originalAngle << "->" << angle
+                 << "Please file a bug or email mixxx-devel@lists.sourceforge.net";
+        return 0.0;
+    }
     return angle;
 }
 
@@ -315,49 +322,41 @@ int WSpinny::calculateFullRotations(double playpos)
 //Inverse of calculateAngle()
 double WSpinny::calculatePositionFromAngle(double angle)
 {
-    if (isnan(angle))
+    if (isnan(angle)) {
         return 0.0f;
+    }
 
     //33 RPM is approx. 0.5 rotations per second.
-    double t = angle/(360*m_dRotationsPerSecond); //time in seconds
+    double t = angle/(360.0 * m_dRotationsPerSecond); //time in seconds
+
+    double trackFrames = m_pTrackSamples->get() / 2;
+    double trackSampleRate = m_pTrackSampleRate->get();
+    if (isnan(trackFrames) || isnan(trackSampleRate) ||
+        trackFrames <= 0 || trackSampleRate <= 0) {
+        return 0.0f;
+    }
 
     //Convert t from seconds into a normalized playposition value.
     //double playpos = t / m_pDuration->get();
-    double playpos = t / (m_pTrackSamples->get()/2 /  // Stereo audio!
-                          m_pTrackSampleRate->get());
+    double playpos = t * trackSampleRate / trackFrames;
+    if (isnan(playpos)) {
+        return 0.0;
+    }
     return playpos;
 }
 
 /** Update the playback angle saved in the widget and repaint.
     @param playpos A normalized (0.0-1.0) playback position. (Not an angle!)
 */
-void WSpinny::updateAngle(double playpos)
-{
+void WSpinny::updateAngle(double playpos) {
     m_fAngle = calculateAngle(playpos);
-
-    // if we had the timer going, kill it
-    if (m_iTimerId != 0) {
-        killTimer(m_iTimerId);
-        m_iTimerId = 0;
-    }
-    update();
 }
 
-void WSpinny::updateRate(double rate)
-{
+void WSpinny::updateRate(double rate) {
     //if rate is zero, updateAngle won't get called,
     if (rate == 0.0 && m_bVinylActive)
     {
-        if (m_iTimerId == 0)
-        {
-            m_iTimerId = startTimer(10);
-        }
     }
-}
-
-void WSpinny::timerEvent(QTimerEvent *event)
-{
-    update();
 }
 
 //Update the angle using the ghost playback position.
@@ -368,7 +367,6 @@ void WSpinny::updateAngleForGhost()
     double newPlayPos = m_dPausedPosition +
                          (((double)elapsed)/1000.)/duration;
     m_fGhostAngle = calculateAngle(newPlayPos);
-    update();
 }
 
 void WSpinny::updateVinylControlSpeed(double rpm)
@@ -400,13 +398,6 @@ void WSpinny::updateVinylControlEnabled(double enabled)
     else
     {
         m_bVinylActive = false;
-        //don't need the timer anymore
-        if (m_iTimerId != 0)
-        {
-            killTimer(m_iTimerId);
-        }
-        // draw once more to erase signal
-        update();
     }
 #endif
 }
@@ -416,7 +407,6 @@ void WSpinny::invalidateVinylControl()
 #ifdef __VINYLCONTROL__
     m_bVinylActive = false;
     m_pVinylControl = NULL;
-    update();
 #endif
 }
 

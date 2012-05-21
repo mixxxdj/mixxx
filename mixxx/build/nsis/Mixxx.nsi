@@ -221,13 +221,16 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\plugins\soundsource
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*.dll"
 
-  SetOutPath $INSTDIR\keyboard
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
+  SetOutPath $INSTDIR\plugins\vamp
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*.dll"
 
-  ; MIDI mapping tools (mappings are below) & common script file
-  SetOutPath $INSTDIR\midi
-  File /r /x ".svn" /x ".bzr" /x "*.midi.xml" /x "*.js" ${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\*.*
-  File ${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\midi-mappings-scripts.js
+  SetOutPath $INSTDIR\keyboard
+  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
+
+  ; HID/MIDI mapping tools (mappings are below) & common script file
+  SetOutPath $INSTDIR\controllers
+  File /r /x ".svn" /x ".bzr" /x "*.xml" /x "*.js" ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.*
+  File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\common-controller-scripts.js
 
   ; Common skin files
   SetOutPath "$INSTDIR\skins"
@@ -261,75 +264,81 @@ Section "Translations" SecTranslations
     File /r ${QTDIR}\translations\qt_*.qm
 SectionEnd
 
-SectionGroup "MIDI controller mappings" SecControllerMappings
+SectionGroup "HID/MIDI controller mappings" SecControllerMappings
 
   SectionGroup "Certified mappings" SecCertifiedMappings
 
 	Section "American Audio VMS4"
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\American Audio VMS4.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\American-Audio-VMS4-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\American Audio VMS4.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\American-Audio-VMS4-scripts.js"
 	SectionEnd
-	
+
 	Section "Hercules DJ Console Mk2"
-      SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Console Mk2.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules-DJ-Console-Mk2-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Console Mk2.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules-DJ-Console-Mk2-scripts.js"
 	SectionEnd
 
 	Section "Hercules DJ Console RMX"
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Console RMX.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules-DJ-Console-RMX-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Console RMX.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules-DJ-Console-RMX-scripts.js"
 	SectionEnd
 
 	Section "Hercules DJ Control MP3 e2"
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Control MP3 e2.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Control MP3 e2-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Control MP3 e2.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Hercules DJ Control MP3 e2-scripts.js"
 	SectionEnd
 
 	Section "Stanton SCS.3d"
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.3d.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS3d-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.3d.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS3d-scripts.js"
 	SectionEnd
 
 	Section "Stanton SCS.3m"
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.3m.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS3m-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.3m.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS3m-scripts.js"
 	SectionEnd
 
-    Section "Stanton SCS.1d" SecSCS1d
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.1d.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS1d-scripts.js"
+	Section "Stanton SCS.1d" SecSCS1d
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.1d.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS1d-scripts.js"
 	SectionEnd
 
 	Section "Stanton SCS.1m" SecSCS1m
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.1m.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS1m-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton SCS.1m.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Stanton-SCS1m-scripts.js"
+	SectionEnd
+
+	Section "Vestax VCI-400" SecVCI400
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Vestax VCI-400.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\Vestax-VCI-400-scripts.js"
 	SectionEnd
 
 	Section "DJ TechTools MIDIFighter"
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\DJTechTools MIDI Fighter.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\DJTechTools-MIDIFighter-scripts.js"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\DJTechTools MIDI Fighter.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\DJTechTools-MIDIFighter-scripts.js"
 	SectionEnd
 
 	Section "M-Audio X-Session Pro"
-	  SetOutPath $INSTDIR\midi
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\M-Audio_Xsession_pro.midi.xml"
+	  SetOutPath $INSTDIR\controllers
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\M-Audio_Xsession_pro.midi.xml"
 	SectionEnd
 
   SectionGroupEnd
 
   Section "Community-supported mappings" SecCommunityMappings
-    SetOutPath $INSTDIR\midi
-	File ${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\*.midi.xml
-	File ${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\*.js
+    SetOutPath $INSTDIR\controllers
+        File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.xml
+	File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.js
   SectionEnd
 
 SectionGroupEnd
@@ -415,7 +424,7 @@ SectionEnd
   LangString DESC_SecTranslations ${LANG_ENGLISH} "Translations for all available languages"
 
   ; Controller mapping descriptions
-  LangString DESC_SecControllerMappings ${LANG_ENGLISH} "Mappings that enable popular MIDI controllers to be used with Mixxx"
+  LangString DESC_SecControllerMappings ${LANG_ENGLISH} "Mappings that enable popular HID/MIDI controllers to be used with Mixxx"
   LangString DESC_SecCertifiedMappings ${LANG_ENGLISH} "Mappings developed and supported by the Mixxx team."
   LangString DESC_SecCommunityMappings ${LANG_ENGLISH} "User-developed mappings that the Mixxx team is unable to directly support. Please visit the Mixxx forum for help with these: http://mixxx.org/forums/"
   LangString DESC_SecSCS1d ${LANG_ENGLISH} "Mapping for the Stanton SCS.1d. DaRouter must be closed to use it."
@@ -493,101 +502,104 @@ Section "Uninstall"
   RMDir "$INSTDIR\sqldrivers"
   Delete $INSTDIR\plugins\soundsource\*
   RMDir "$INSTDIR\plugins\soundsource"
+  Delete $INSTDIR\plugins\vamp\*
+  RMDir "$INSTDIR\plugins\vamp"
   Delete $INSTDIR\plugins\*
   RMDir "$INSTDIR\plugins"
   Delete $INSTDIR\translations\*
   RMDir "$INSTDIR\translations"
 
   ; Remove keyboard mappings
-  Delete $INSTDIR\keyboard\Standard.kbd.cfg
-  Delete $INSTDIR\keyboard\Old-pre1.10.0.kbd.cfg
+  ; TODO(XXX): Only delete files that were not changed since install
+  ; Custom Keyboard mappings should be placed in Custom.kbd.cfg in user folder
+  Delete $INSTDIR\keyboard\*.kbd.cfg
   RMDir "$INSTDIR\keyboard" ; No /r flag means remove the directory only if it's empty
 
   ; Remove midi mappings/scripts that we may have installed
   ; TODO: Only delete files that were not changed since install
-  ; Get this list with dir /b /s <build_dir>\res\midi >> filestodelete.txt  and creative search & replace
-  Delete "$INSTDIR\midi\Akai MPD24.midi.xml"
-  Delete "$INSTDIR\midi\American Audio RADIUS 2000 CH1.midi.xml"
-  Delete "$INSTDIR\midi\American Audio RADIUS 2000 CH2.midi.xml"
-  Delete "$INSTDIR\midi\American-Audio-RADIUS-2000-scripts.js"
-  Delete "$INSTDIR\midi\American Audio VMS4.midi.xml"
-  Delete "$INSTDIR\midi\American-Audio-VMS4-scripts.js"
-  Delete "$INSTDIR\midi\Behringer BCD3000.midi.xml"
-  Delete "$INSTDIR\midi\Behringer-BCD3000-scripts.js"
-  Delete "$INSTDIR\midi\BindableConfigKeys.txt"
-  Delete "$INSTDIR\midi\convertToXMLSchemaV1.php"
-  Delete "$INSTDIR\midi\DJ-Tech i-Mix Reload.midi.xml"
-  Delete "$INSTDIR\midi\DJ-Tech-i-Mix-Reload-scripts.js"
-  Delete "$INSTDIR\midi\DJTechTools MIDI Fighter.midi.xml"
-  Delete "$INSTDIR\midi\DJTechTools-MIDIFighter-scripts.js"
-  Delete "$INSTDIR\midi\Evolution_Xsession.midi.xml"
-  Delete "$INSTDIR\midi\FaderFoxDJ2.midi.xml"
-  Delete "$INSTDIR\midi\format.txt"
-  Delete "$INSTDIR\midi\Hercules DJ Console Mac Edition.midi.xml"
-  Delete "$INSTDIR\midi\Hercules DJ Console Mk2.midi.xml"
-  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk2-scripts.js"
-  Delete "$INSTDIR\midi\Hercules DJ Console Mk4.midi.xml"
-  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk4-scripts.js"
-  Delete "$INSTDIR\midi\Hercules DJ Console RMX Advanced.midi.xml"
-  Delete "$INSTDIR\midi\Hercules DJ Console RMX.midi.xml"
-  Delete "$INSTDIR\midi\Hercules-DJ-Console-RMX-scripts.js"
-  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2.midi.xml"
-  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2-scripts.js"
-  Delete "$INSTDIR\midi\Hercules DJ Control MP3.midi.xml"
-  Delete "$INSTDIR\midi\Hercules-DJ-Control-MP3-scripts.js"
-  Delete "$INSTDIR\midi\Hercules DJ Control Steel.midi.xml"
-  Delete "$INSTDIR\midi\Hercules-DJ-Control-Steel-scripts.js"
-  Delete "$INSTDIR\midi\Ion Discover DJ.midi.xml"
-  Delete "$INSTDIR\midi\Ion-Discover-DJ-scripts.js"
-  Delete "$INSTDIR\midi\M-Audio_Xponent.midi.xml"
-  Delete "$INSTDIR\midi\M-Audio-Xponent-scripts.js"
-  Delete "$INSTDIR\midi\M-Audio_Xsession_pro.midi.xml"
-  Delete "$INSTDIR\midi\Midi-Keyboard.midi.xml"
-  Delete "$INSTDIR\midi\midi-mappings-scripts.js"
-  Delete "$INSTDIR\midi\MidiTech-MidiControl.midi.xml"
-  Delete "$INSTDIR\midi\Mixman DM2 (Linux).js"
-  Delete "$INSTDIR\midi\Mixman DM2 (Linux).midi.xml"
-  Delete "$INSTDIR\midi\Mixman DM2 (OS X).js"
-  Delete "$INSTDIR\midi\Mixman DM2 (OS X).midi.xml"
-  Delete "$INSTDIR\midi\Mixman DM2 (Windows).midi.xml"
-  Delete "$INSTDIR\midi\Numark MIXTRACK.midi.xml"
-  Delete "$INSTDIR\midi\Numark-MixTrack-scripts.js"
-  Delete "$INSTDIR\midi\Numark NS7.midi.xml"
-  Delete "$INSTDIR\midi\Numark-NS7-scripts.js"
-  Delete "$INSTDIR\midi\Numark Total Control.midi.xml"
-  Delete "$INSTDIR\midi\Numark-Total-Control-scripts.js"
-  Delete "$INSTDIR\midi\Pioneer CDJ-2000.midi.xml"
-  Delete "$INSTDIR\midi\Pioneer-CDJ-2000-scripts.js"
-  Delete "$INSTDIR\midi\Pioneer CDJ-350 Ch1.midi.xml"
-  Delete "$INSTDIR\midi\Pioneer CDJ-350 Ch2.midi.xml"
-  Delete "$INSTDIR\midi\Pioneer-CDJ-350-scripts.js"
-  Delete "$INSTDIR\midi\Pioneer CDJ-850.midi.xml"
-  Delete "$INSTDIR\midi\Pioneer-CDJ-850-scripts.js"
-  Delete "$INSTDIR\midi\Reloop Digital Jockey 2 Controller Edition.midi.xml"
-  Delete "$INSTDIR\midi\Reloop-Digital-Jockey2-Controller-scripts.js"
-  Delete "$INSTDIR\midi\Stanton SCS.1d.midi.xml"
-  Delete "$INSTDIR\midi\Stanton-SCS1d-scripts.js"
-  Delete "$INSTDIR\midi\Stanton SCS.1m.midi.xml"
-  Delete "$INSTDIR\midi\Stanton-SCS1m-scripts.js"
-  Delete "$INSTDIR\midi\Stanton SCS.3d.midi.xml"
-  Delete "$INSTDIR\midi\Stanton-SCS3d-scripts.js"
-  Delete "$INSTDIR\midi\Stanton SCS.3m.midi.xml"
-  Delete "$INSTDIR\midi\Stanton-SCS3m-scripts.js"
-  Delete "$INSTDIR\midi\TrakProDJ iPad.midi.xml"
-  Delete "$INSTDIR\midi\TrakProDJ-iPad-scripts.js"
-  Delete "$INSTDIR\midi\us428.midi.xml"
-  Delete "$INSTDIR\midi\Vestax Spin.midi.xml"
-  Delete "$INSTDIR\midi\Vestax-Spin-scripts.js"
-  Delete "$INSTDIR\midi\Vestax Typhoon.midi.xml"
-  Delete "$INSTDIR\midi\Vestax-Typhoon-scripts.js"
-  Delete "$INSTDIR\midi\Vestax VCI-100.midi.xml"
-  Delete "$INSTDIR\midi\Vestax-VCI-100-scripts.js"
-  Delete "$INSTDIR\midi\Vestax VCI-400.midi.xml"
-  Delete "$INSTDIR\midi\Vestax-VCI-400-scripts.js"
-  Delete "$INSTDIR\midi\Wireless DJ App.midi.xml"
-  Delete "$INSTDIR\midi\Wireless-DJ-scripts.js"
-  ;Delete $INSTDIR\midi\*.* ; Avoid this since it will delete customized files too
-  RMDir "$INSTDIR\midi"
+  ; Get this list with dir /b /s <build_dir>\res\controllers >> filestodelete.txt  and creative search & replace
+  Delete "$INSTDIR\controllers\Akai MPD24.midi.xml"
+  Delete "$INSTDIR\controllers\American Audio RADIUS 2000 CH1.midi.xml"
+  Delete "$INSTDIR\controllers\American Audio RADIUS 2000 CH2.midi.xml"
+  Delete "$INSTDIR\controllers\American-Audio-RADIUS-2000-scripts.js"
+  Delete "$INSTDIR\controllers\American Audio VMS4.midi.xml"
+  Delete "$INSTDIR\controllers\American-Audio-VMS4-scripts.js"
+  Delete "$INSTDIR\controllers\Behringer BCD3000.midi.xml"
+  Delete "$INSTDIR\controllers\Behringer-BCD3000-scripts.js"
+  Delete "$INSTDIR\controllers\BindableConfigKeys.txt"
+  Delete "$INSTDIR\controllers\convertToXMLSchemaV1.php"
+  Delete "$INSTDIR\controllers\DJ-Tech i-Mix Reload.midi.xml"
+  Delete "$INSTDIR\controllers\DJ-Tech-i-Mix-Reload-scripts.js"
+  Delete "$INSTDIR\controllers\DJTechTools MIDI Fighter.midi.xml"
+  Delete "$INSTDIR\controllers\DJTechTools-MIDIFighter-scripts.js"
+  Delete "$INSTDIR\controllers\Evolution_Xsession.midi.xml"
+  Delete "$INSTDIR\controllers\FaderFoxDJ2.midi.xml"
+  Delete "$INSTDIR\controllers\format.txt"
+  Delete "$INSTDIR\controllers\Hercules DJ Console Mac Edition.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules DJ Console Mk2.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk2-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJ Console Mk4.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk4-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJ Console RMX Advanced.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules DJ Console RMX.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJ-Console-RMX-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJ Control MP3 e2.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules DJ Control MP3 e2-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJ Control MP3.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJ-Control-MP3-scripts.js"
+  Delete "$INSTDIR\controllers\Hercules DJ Control Steel.midi.xml"
+  Delete "$INSTDIR\controllers\Hercules-DJ-Control-Steel-scripts.js"
+  Delete "$INSTDIR\controllers\Ion Discover DJ.midi.xml"
+  Delete "$INSTDIR\controllers\Ion-Discover-DJ-scripts.js"
+  Delete "$INSTDIR\controllers\M-Audio_Xponent.midi.xml"
+  Delete "$INSTDIR\controllers\M-Audio-Xponent-scripts.js"
+  Delete "$INSTDIR\controllers\M-Audio_Xsession_pro.midi.xml"
+  Delete "$INSTDIR\controllers\Midi-Keyboard.midi.xml"
+  Delete "$INSTDIR\controllers\common-controller-scripts.js"
+  Delete "$INSTDIR\controllers\MidiTech-MidiControl.midi.xml"
+  Delete "$INSTDIR\controllers\Mixman DM2 (Linux).js"
+  Delete "$INSTDIR\controllers\Mixman DM2 (Linux).midi.xml"
+  Delete "$INSTDIR\controllers\Mixman DM2 (OS X).js"
+  Delete "$INSTDIR\controllers\Mixman DM2 (OS X).midi.xml"
+  Delete "$INSTDIR\controllers\Mixman DM2 (Windows).midi.xml"
+  Delete "$INSTDIR\controllers\Numark MIXTRACK.midi.xml"
+  Delete "$INSTDIR\controllers\Numark-MixTrack-scripts.js"
+  Delete "$INSTDIR\controllers\Numark NS7.midi.xml"
+  Delete "$INSTDIR\controllers\Numark-NS7-scripts.js"
+  Delete "$INSTDIR\controllers\Numark Total Control.midi.xml"
+  Delete "$INSTDIR\controllers\Numark-Total-Control-scripts.js"
+  Delete "$INSTDIR\controllers\Pioneer CDJ-2000.midi.xml"
+  Delete "$INSTDIR\controllers\Pioneer-CDJ-2000-scripts.js"
+  Delete "$INSTDIR\controllers\Pioneer CDJ-350 Ch1.midi.xml"
+  Delete "$INSTDIR\controllers\Pioneer CDJ-350 Ch2.midi.xml"
+  Delete "$INSTDIR\controllers\Pioneer-CDJ-350-scripts.js"
+  Delete "$INSTDIR\controllers\Pioneer CDJ-850.midi.xml"
+  Delete "$INSTDIR\controllers\Pioneer-CDJ-850-scripts.js"
+  Delete "$INSTDIR\controllers\Reloop Digital Jockey 2 Controller Edition.midi.xml"
+  Delete "$INSTDIR\controllers\Reloop-Digital-Jockey2-Controller-scripts.js"
+  Delete "$INSTDIR\controllers\Stanton SCS.1d.midi.xml"
+  Delete "$INSTDIR\controllers\Stanton-SCS1d-scripts.js"
+  Delete "$INSTDIR\controllers\Stanton SCS.1m.midi.xml"
+  Delete "$INSTDIR\controllers\Stanton-SCS1m-scripts.js"
+  Delete "$INSTDIR\controllers\Stanton SCS.3d.midi.xml"
+  Delete "$INSTDIR\controllers\Stanton-SCS3d-scripts.js"
+  Delete "$INSTDIR\controllers\Stanton SCS.3m.midi.xml"
+  Delete "$INSTDIR\controllers\Stanton-SCS3m-scripts.js"
+  Delete "$INSTDIR\controllers\TrakProDJ iPad.midi.xml"
+  Delete "$INSTDIR\controllers\TrakProDJ-iPad-scripts.js"
+  Delete "$INSTDIR\controllers\us428.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax Spin.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax-Spin-scripts.js"
+  Delete "$INSTDIR\controllers\Vestax Typhoon.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax-Typhoon-scripts.js"
+  Delete "$INSTDIR\controllers\Vestax VCI-100.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax-VCI-100-scripts.js"
+  Delete "$INSTDIR\controllers\Vestax VCI-400.midi.xml"
+  Delete "$INSTDIR\controllers\Vestax-VCI-400-scripts.js"
+  Delete "$INSTDIR\controllers\Wireless DJ App.midi.xml"
+  Delete "$INSTDIR\controllers\Wireless-DJ-scripts.js"
+  ;Delete $INSTDIR\controllers\*.* ; Avoid this since it will delete customized files too
+  RMDir "$INSTDIR\controllers"
 
   ; Remove promos
   Delete $INSTDIR\promo\${PRODUCT_VERSION}\*.*

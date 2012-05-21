@@ -17,7 +17,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "SETLOGHOME", "qrc:/html/setlogs.html") {
+                              "SETLOGHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog");
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
@@ -37,11 +37,12 @@ SetlogFeature::SetlogFeature(QObject* parent,
         set_log_name = set_log_name_format.arg(++i);
     }
 
+    qDebug() << "Creating session history playlist name:" << set_log_name;
     m_playlistId = m_playlistDao.createPlaylist(set_log_name,
                                                 PlaylistDAO::PLHT_SET_LOG);
 
     if (m_playlistId == -1) {
-        qDebug() << "Playlist Creation Failed";
+        qDebug() << "Setlog playlist Creation Failed";
         qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
     }
 
@@ -62,11 +63,11 @@ SetlogFeature::~SetlogFeature() {
 }
 
 QVariant SetlogFeature::title() {
-    return tr("Set Logs");
+    return tr("History");
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_setlog.png");
+    return QIcon(":/images/library/ic_library_history.png");
 }
 
 void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
@@ -166,7 +167,7 @@ QModelIndex SetlogFeature::constructChildModel(int selected_id)
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
         if (playlist_id == m_playlistId) {
-            item->setIcon(QIcon(":/images/library/ic_library_setlog_current.png"));
+            item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
         } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
             item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
         } else {
@@ -228,7 +229,6 @@ void SetlogFeature::slotJoinWithPrevious() {
                 m_playlistDao.deletePlaylist(currentPlaylistId);
                 slotPlaylistTableChanged(previousPlaylistId); // For moving selection
                 emit(showTrackModel(m_pPlaylistTableModel));
-                emit(featureUpdated());
             }
         }
     }
@@ -260,4 +260,45 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
                                                 m_playlistId);
         }
     }
+}
+
+void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_SET_LOG ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        m_playlistTableModel.select();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
+
+        if (type != PlaylistDAO::PLHT_UNKNOWN) {
+            // Switch the view to the playlist.
+            m_pPlaylistTableModel->setPlaylist(playlistId);
+            // Update selection
+            emit(featureSelect(this, m_lastRightClickedIndex));
+        }
+    }
+}
+
+
+QString SetlogFeature::getRootViewHtml() const {
+    QString playlistsTitle = tr("History");
+    QString playlistsSummary = tr("The history section automatically keeps a list of tracks you play in your DJ sets.");
+    QString playlistsSummary2 = tr("This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.");
+    QString playlistsSummary3 = tr("Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.");
+    QString playlistsSummary4 = tr("You can join the current history session with a previous one by right-clicking and selecting \"Join with previous\".");
+
+    QString html;
+    html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
+    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
+    html.append(QString("<p>%1</p>").arg(playlistsSummary));
+    html.append(QString("<p>%1</p>").arg(playlistsSummary2));
+    html.append(QString("<p>%1</p>").arg(playlistsSummary3));
+    html.append(QString("<p>%1</p>").arg(playlistsSummary4));
+    html.append("</td></tr></table>");
+    return html;
 }

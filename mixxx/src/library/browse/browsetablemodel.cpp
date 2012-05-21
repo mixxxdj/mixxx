@@ -143,10 +143,6 @@ bool BrowseTableModel::isColumnHiddenByDefault(int) {
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
 }
 
-QItemDelegate* BrowseTableModel::delegateForColumn(const int) {
-    return NULL;
-}
-
 void BrowseTableModel::removeTrack(const QModelIndex& index) {
     if (!index.isValid()) {
         return;

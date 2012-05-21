@@ -20,7 +20,7 @@ class BasePlaylistFeature : public LibraryFeature {
     BasePlaylistFeature(QObject* parent,
                         ConfigObject<ConfigValue>* pConfig,
                         TrackCollection* pTrackCollection,
-                        QString rootViewName, QString rootViewUrl);
+                        QString rootViewName);
     virtual ~BasePlaylistFeature();
 
     TreeItemModel* getChildModel();
@@ -49,7 +49,7 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
-    void slotPlaylistTableChanged(int playlistId);
+    virtual void slotPlaylistTableChanged(int playlistId) = 0;
 
   protected:
     virtual QModelIndex constructChildModel(int selected_id) = 0;
@@ -74,8 +74,9 @@ class BasePlaylistFeature : public LibraryFeature {
     TreeItemModel m_childModel;
 
   private:
+    virtual QString getRootViewHtml() const = 0;
+
     QString m_rootViewName;
-    QString m_rootViewUrl;
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

@@ -12,8 +12,6 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
-#define NUM_HOT_CUES 37
-
 CueControl::CueControl(const char * _group,
                        ConfigObject<ConfigValue> * _config) :
         EngineControl(_group, _config),
@@ -35,7 +33,7 @@ CueControl::CueControl(const char * _group,
     m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
 
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
-    m_pCueMode = new ControlObject(ConfigKey(_group,"cue_mode"));
+    m_pCueMode = new ControlObject(ConfigKey(_group, "cue_mode"));
     m_pCuePoint->set(-1);
 
     m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));

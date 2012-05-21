@@ -6,6 +6,7 @@
 
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
+#include "controlpotmeter.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
@@ -15,9 +16,8 @@
 #include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
 #include "mathstuff.h"
-#include "waveform/waveformrenderer.h"
 #include "track/beatgrid.h"
-#include "track/beatfactory.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,
@@ -77,22 +77,23 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
+    // Waveform controls
+    m_pWaveformZoom = new ControlPotmeter(ConfigKey(group, "waveform_zoom"),
+                                          WaveformWidgetRenderer::s_waveformMinZoom,
+                                          WaveformWidgetRenderer::s_waveformMaxZoom);
+    m_pWaveformZoom->set(1.0);
+    m_pWaveformZoom->setStep(1.0);
+    m_pWaveformZoom->setSmallStep(1.0);
+
+    m_pEndOfTrack = new ControlObject(ConfigKey(group,"end_of_track"));
+    m_pEndOfTrack->set(0.);
+
     //BPM of the current song
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "file_bpm")));
 
     m_pReplayGain = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "replaygain")));
-
-    // Create WaveformRenderer last, because it relies on controls created above
-    // (e.g. EngineBuffer)
-
-    m_pWaveformRenderer = new WaveformRenderer(pSafeGroupName);
-    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pWaveformRenderer, SLOT(slotNewTrack(TrackPointer)));
-    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
-            m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
-
 }
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, QString group):
@@ -107,13 +108,14 @@ BaseTrackPlayer::~BaseTrackPlayer()
         m_pLoadedTrack.clear();
     }
 
+    delete m_pWaveformZoom;
+    delete m_pEndOfTrack;
     delete m_pCuePoint;
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
     delete m_pPlayPosition;
     delete m_pBPM;
     delete m_pReplayGain;
-    delete m_pWaveformRenderer;
     delete m_pDuration;
 }
 
@@ -170,7 +172,11 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
 }
 
 void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
-    qDebug() << "Failed to load track" << track->getLocation() << reason;
+    if (track != NULL) {
+        qDebug() << "Failed to load track" << track->getLocation() << reason;
+    } else {
+        qDebug() << "Failed to load track (NULL track object)" << reason;
+    }
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
 }
@@ -208,28 +214,9 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     // m_pLoadedTrack->setPlayedAndUpdatePlaycount(true); // Actually the song is loaded but not played
 
-    // Generate waveform summary
-    //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.
-    // TODO(rryan) : fix this crap -- the waveform renderers should be owned by
-    // Player so they can just set this directly or something.
-    ControlObjectThreadMain* pVisualResampleCO = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(getGroup(),"VisualResample")));
-    m_pLoadedTrack->setVisualResampleRate(pVisualResampleCO->get());
-    delete pVisualResampleCO;
-
-    //Update the BPM and duration values that are stored in ControlObjects
+    // Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());
-
-    float track_bpm = m_pLoadedTrack->getBpm();
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
-
-    if (!m_pLoadedTrack->getBeats() && track_bpm > 0) {
-        // This track has no beats object but has a non-zero BPM. Create a
-        // fixed-size beatgrid for it.
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(m_pLoadedTrack,
-                                                        track_bpm, 0.0f);
-        m_pLoadedTrack->setBeats(pBeats);
-    }
-
     m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
@@ -260,10 +247,6 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
 AnalyserQueue* BaseTrackPlayer::getAnalyserQueue() const {
     return m_pAnalyserQueue;
-}
-
-WaveformRenderer* BaseTrackPlayer::getWaveformRenderer() const {
-    return m_pWaveformRenderer;
 }
 
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {

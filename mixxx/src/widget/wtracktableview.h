@@ -41,16 +41,21 @@ class WTrackTableView : public WLibraryTableView {
 
   private slots:
     void slotRemove();
+    void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
     void slotSendToAutoDJ();
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
+    void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
     void doSortByColumn(int headerSection);
+    void slotLockBpm();
+    void slotUnlockBpm();
+    void slotClearBeats();
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -59,6 +64,7 @@ class WTrackTableView : public WLibraryTableView {
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
+    void lockBpm(bool lock);
 
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging, this overwrites the mouseMoveEvent from 
@@ -101,8 +107,19 @@ class WTrackTableView : public WLibraryTableView {
     // Remove from table
     QAction *m_pRemoveAct;
 
+    // Reset the played count of selected track or tracks
+    QAction* m_pResetPlayedAct;
+
     // Show track-editor action
     QAction *m_pPropertiesAct;
+    QAction *m_pFileBrowserAct;
+
+    // BPM Lock feature
+    QAction *m_pBpmLockAction;
+    QAction *m_pBpmUnlockAction;
+
+    // Clear track beats
+    QAction* m_pClearBeatsAction;
 };
 
 #endif

@@ -37,7 +37,7 @@ class SoundSourceWV : public SoundSource {
   unsigned long filelength;
   WavpackContext * filewvc;	//works as a file handle to access the wv file.
   int32_t tempbuffer[WV_BUF_LENGTH];	//hax ! legacy from cmus. this is 64k*4bytes.
-
+  void format_samples(int, char *, int32_t *, uint32_t);
 };
 
 

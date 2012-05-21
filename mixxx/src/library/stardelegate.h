@@ -33,8 +33,7 @@
  * If we need to support custom data types, or want to customize the rendering or the editing for
  * existing data types, we can subclass QAbstractItemDelegate or QItemDelegate or QStyledItemDelegate
  */
-class StarDelegate : public QStyledItemDelegate
-{
+class StarDelegate : public QStyledItemDelegate {
     Q_OBJECT
 
 public:
@@ -50,7 +49,7 @@ public:
     /** called when editing is finished, to commit data from the editor to the model: **/
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;  
 
-private slots:
+  private slots:
     void commitAndCloseEditor();
     void cellEntered(const QModelIndex &index);
 

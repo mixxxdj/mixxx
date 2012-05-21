@@ -16,6 +16,7 @@ const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
 const QString PLAYLISTTRACKSTABLE_LOCATION = "location";
 const QString PLAYLISTTRACKSTABLE_ARTIST = "artist";
 const QString PLAYLISTTRACKSTABLE_TITLE = "title";
+const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = "pl_datetime_added";
 
 class PlaylistDAO : public QObject, public virtual DAO {
     Q_OBJECT
@@ -44,7 +45,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isPlaylistLocked(int playlistId);
     /** Append a list of tracks to a playlist */
     void appendTracksToPlaylist(QList<int> trackIds, int playlistId);
-    /** Append a track  to a playlist */
+    /** Append a track to a playlist */
     void appendTrackToPlaylist(int trackId, int playlistId);
     /** Find out how many playlists exist. */
     unsigned int playlistCount();
@@ -60,12 +61,16 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isHidden(int playlistId);
     // Returns the HiddenType of playlistId
     HiddenType getHiddenType(int playlistId);
+    // Returns the maximum position of the given playlist
+    int getMaxPosition(int playlistId);
     /** Remove a track from all playlists */
     void removeTrackFromPlaylists(int trackId);
     /** Remove a track from a playlist */
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
-    void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
+    bool insertTrackIntoPlaylist(int trackId, int playlistId, int position);
+    /** Inserts a list of tracks into playlist*/
+    int insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, int position);
     /** Add a playlist to the Auto-DJ Queue */
     void addToAutoDJQueue(int playlistId, bool bTop);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
