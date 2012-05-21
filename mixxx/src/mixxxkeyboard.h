@@ -40,14 +40,14 @@ public:
     /** Event filter */
     bool eventFilter(QObject *obj, QEvent *e);
 
+    void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
 private:
-    bool kbdPress(QKeySequence k, bool release, bool autoRepeat);
-    /** Returns a valid QKeySequency with modifier keys from a QKeyEvent */
+    /** Returns a valid QString with modifier keys from a QKeyEvent */
     QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
-    QList<int> m_qActiveKeyList;
+    QList<QPair<int, ConfigKey*> > m_qActiveKeyList;
     /** Pointer to keyboard config object */
     ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
 };

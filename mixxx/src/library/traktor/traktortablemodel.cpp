@@ -4,6 +4,7 @@
 
 #include "library/trackcollection.h"
 #include "library/traktor/traktortablemodel.h"
+#include "library/stardelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 
@@ -70,12 +71,6 @@ TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const {
         pTrack->setYear(year);
         pTrack->setGenre(genre);
         pTrack->setBpm(bpm);
-
-        // If the track has a BPM, then give it a static beatgrid.
-        if (bpm > 0) {
-            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
-            pTrack->setBeats(pBeats);
-        }
     }
     return pTrack;
 }
@@ -118,4 +113,11 @@ TrackModel::CapabilitiesFlags TraktorTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER
             | TRACKMODELCAPS_LOADTOSAMPLER;
+}
+
+QAbstractItemDelegate* TraktorTableModel::delegateForColumn(const int i, QObject* pParent) {
+    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
+        return new StarDelegate(pParent);
+    }
+    return NULL;
 }

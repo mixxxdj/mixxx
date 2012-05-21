@@ -39,8 +39,12 @@ public:
 
   private slots:
     void slotPlayingDeckChanged(int deck);
+    void slotPlaylistTableChanged(int playlistId);
+
 
   private:
+    virtual QString getRootViewHtml() const;
+
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
 };

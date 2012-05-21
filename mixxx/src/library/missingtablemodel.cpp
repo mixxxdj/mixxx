@@ -4,7 +4,7 @@
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
-
+#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
@@ -116,7 +116,8 @@ void MissingTableModel::slotSearch(const QString& searchText) {
 bool MissingTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
-        column == fieldIndex(LIBRARYTABLE_PREVIEW) ||
+        //column == fieldIndex(LIBRARYTABLE_PREVIEW) ||
+        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
@@ -133,11 +134,6 @@ bool MissingTableModel::isColumnHiddenByDefault(int column) {
 /** Override flags from BaseSqlModel since we don't want edit this model */
 Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
-}
-
-QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
-    return NULL;
 }
 
 TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {

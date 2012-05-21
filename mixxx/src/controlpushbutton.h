@@ -19,27 +19,40 @@
 #define CONTROLPUSHBUTTON_H
 
 #include "controlobject.h"
+#include "controllers/midi/midimessage.h"
 #include "defs.h"
+#include <QTimer>
 
 /**
   *@author Tue and Ken Haste Andersen
   */
 
-class ControlPushButton : public ControlObject
-{
+class ControlPushButton : public ControlObject {
     Q_OBJECT
-public:
+  public:
+    enum ButtonMode {
+         PUSH,
+         TOGGLE,
+         POWERWINDOW
+    };
+    static const int kPowerWindowTimeMillis;
+
     ControlPushButton(ConfigKey key);
-    ~ControlPushButton();
-    void setToggleButton(bool bIsToggleButton);
+    virtual ~ControlPushButton();
+
+    inline ButtonMode getButtonMode() const {
+        return m_buttonMode;
+    }
+    void setButtonMode(enum ButtonMode mode);
     void setStates(int num_states);
 
-protected:
-    void setValueFromMidi(MidiCategory c, double v);
+  protected:
+    void setValueFromMidi(MidiOpCode o, double v);
 
-private:
-    bool m_bIsToggleButton;
+  private:
+    enum ButtonMode m_buttonMode;
     int m_iNoStates;
+    QTimer m_pushTimer;
 };
 
 #endif

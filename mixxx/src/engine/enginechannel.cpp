@@ -24,7 +24,7 @@ EngineChannel::EngineChannel(const char* pGroup,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : m_group(pGroup) {
     m_pPFL = new ControlPushButton(ConfigKey(m_group, "pfl"));
-    m_pPFL->setToggleButton(true);
+    m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation = new ControlObject(ConfigKey(m_group, "orientation"));
     m_pOrientation->set(defaultOrientation);
 }

@@ -59,7 +59,8 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : Contro
 
     m_dValueRange = m_dMaxValue-m_dMinValue;
 
-    m_dValue = 1.;
+    m_dValue = 1.0;
+    m_dDefaultValue = 1.0;
 }
 
 double ControlLogpotmeter::getValueFromWidget(double dValue)
@@ -112,7 +113,8 @@ double ControlLogpotmeter::GetMidiValue()
     return midival;
 }
 
-void ControlLogpotmeter::setValueFromMidi(MidiCategory, double v) {
+void ControlLogpotmeter::setValueFromMidi(MidiOpCode o, double v) {
+    Q_UNUSED(o);
   //    m_dValue = m_dMinValue + (v/127.)*m_dValueRange;
     m_dValue = getValueFromWidget(v);
     //    qDebug() << "SetValueFromMidiValue : " << m_dValue;

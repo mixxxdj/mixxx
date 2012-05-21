@@ -20,13 +20,14 @@
 
 #include "ui_dlgprefcontrolsdlg.h"
 #include "configobject.h"
-#include "mixxx.h"
 
 class QWidget;
 class ControlObjectThreadMain;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
+class MixxxApp;
+class ControlObject;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -39,6 +40,7 @@ public:
                     SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
                     ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefControls();
+
 public slots:
     void slotUpdate();
     void slotSetRateRange(int pos);
@@ -47,7 +49,6 @@ public slots:
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
-    void slotSetVisuals(int pos);
     void slotSetTooltips(int pos);
     void slotSetSkin(int);
     void slotSetScheme(int);
@@ -59,10 +60,32 @@ public slots:
     void slotSetCueRecall(int);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
+    void slotSetLocale(int);
     void slotApply();
+
+    void slotSetFrameRate(int frameRate);
+    void slotSetWaveformType(int index);
+    void slotSetDefaultZoom(int index);
+    void slotSetZoomSynchronization(bool checked);
+    void slotSetVisualGainAll(double gain);
+    void slotSetVisualGainLow(double gain);
+    void slotSetVisualGainMid(double gain);
+    void slotSetVisualGainHigh(double gain);
+
+    virtual void onShow();
+    virtual void onHide();
+
+protected:
+    void timerEvent(QTimerEvent *);
+
+private:
+    void initWaveformControl();
+    void notifyRebootNecessary();
+
 private:
     /** Pointer to ConfigObject */
     ConfigObject<ConfigValue> *m_pConfig;
+    int m_timer;
     ControlObject* m_pControlPositionDisplay;
     QList<ControlObjectThreadMain*> m_cueControls;
     QList<ControlObjectThreadMain*> m_rateControls;

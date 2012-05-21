@@ -739,6 +739,29 @@ CONFIG(script) {
     DEFINES += __MIDISCRIPT__
 }
 
+CONFIG(Vamp) {
+DEFINES += __VAMP__
+INCLUDEPATH += $$BASE_DIR/lib/vamp
+HEADERS += $$BASE_DIR/src/vamp/vampanalyser.h \
+    $$BASE_DIR/src/analyservamptest.h \
+    $$BASE_DIR/src/analyservampkeytest.h \
+    $$BASE_DIR/lib/vamp/vamp/vamp.h \
+    $$BASE_DIR/lib/vamp/vamp-hostsdk/hostguard.h \
+SOURCES += $$BASE_DIR/src/vamp/vampanalyser.cpp \
+    $$BASE_DIR/src/analyservamptest.cpp \
+    $$BASE_DIR/src/analyservampkeytest.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginLoader.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/RealTime.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-sdk/PluginAdapter.cpp \
+	$$BASE_DIR/lib/vamp/src/vamp-sdk/RealTime.cpp
+}
+
 CONFIG(tonal) {
 #    DEFINES +=
     HEADERS += $$BASE_DIR/src/tonal/ChordCorrelator.hxx \

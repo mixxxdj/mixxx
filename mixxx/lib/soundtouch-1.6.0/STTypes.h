@@ -95,7 +95,7 @@ namespace soundtouch
         /// routines compiled for whatever reason, you may disable these optimizations 
         /// to make the library compile.
 
-        #define SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS     1
+        // #define SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS     1
 
     #endif
 

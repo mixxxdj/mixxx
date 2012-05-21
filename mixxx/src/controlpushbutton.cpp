@@ -17,42 +17,56 @@
 
 #include "controlpushbutton.h"
 
+// static
+const int ControlPushButton::kPowerWindowTimeMillis = 300;
+
 /* -------- ------------------------------------------------------
    Purpose: Creates a new simulated latching push-button.
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(ConfigKey key) :
-    ControlObject(key, false) {
-    m_bIsToggleButton = false;
-    m_iNoStates = 2;
+        ControlObject(key, false),
+        m_buttonMode(PUSH),
+        m_iNoStates(2) {
 }
 
-ControlPushButton::~ControlPushButton()
-{
+ControlPushButton::~ControlPushButton() {
 }
 
-//Tell this PushButton whether or not it's a "toggle" push button...
-void ControlPushButton::setToggleButton(bool bIsToggleButton)
-{
+// Tell this PushButton how to act on rising and falling edges
+void ControlPushButton::setButtonMode(enum ButtonMode mode) {
     //qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
-    m_bIsToggleButton = bIsToggleButton;
+    m_buttonMode = mode;
 }
 
-void ControlPushButton::setStates(int num_states)
-{
+void ControlPushButton::setStates(int num_states) {
     m_iNoStates = num_states;
 }
 
-void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
-{
+void ControlPushButton::setValueFromMidi(MidiOpCode o, double v) {
+    // keyboard events are handled by this function as well
     //if (m_bMidiSimulateLatching)
 
     //qDebug() << "bMidiSimulateLatching is true!";
     // Only react on NOTE_ON midi events if simulating latching...
 
-    //qDebug() << c << v;
+    //qDebug() << o << v;
 
-    if (m_bIsToggleButton) { //This block makes push-buttons act as toggle buttons.
+    // This block makes push-buttons act as toggle buttons.
+    if (m_buttonMode == POWERWINDOW && m_iNoStates == 2) {
+         if (o == MIDI_NOTE_ON) {
+             if (v > 0.) {
+                 m_dValue = !m_dValue;
+                 m_pushTimer.setSingleShot(true);
+                 m_pushTimer.start(kPowerWindowTimeMillis);
+             }
+         } else if (o == MIDI_NOTE_OFF) {
+             if (!m_pushTimer.isActive()) {
+                 m_dValue = 0.0;
+             }
+         }
+    } else if (m_buttonMode == TOGGLE) {
+        // This block makes push-buttons act as toggle buttons.
         if (m_iNoStates > 2) { //multistate button
             if (v > 0.) { //looking for NOTE_ON doesn't seem to work...
                 m_dValue++;
@@ -60,16 +74,16 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
                     m_dValue = 0;
             }
         } else {
-            if (c == NOTE_ON) {
+            if (o == MIDI_NOTE_ON) {
                 if (v > 0.) {
                     m_dValue = !m_dValue;
                 }
             }
         }
     } else { //Not a toggle button (trigger only when button pushed)
-        if (c == NOTE_ON) {
+        if (o == MIDI_NOTE_ON) {
             m_dValue = v;
-        } else if (c == NOTE_OFF) {
+        } else if (o == MIDI_NOTE_OFF) {
             m_dValue = 0.0;
         }
     }

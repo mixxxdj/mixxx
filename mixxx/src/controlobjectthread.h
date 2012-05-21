@@ -69,9 +69,9 @@ public slots:
       * Thread safe, blocking. */
     void slotSet(double v);
 
-	// The danger signal! This is for safety in wierd shutdown scenarios where the
-	// ControlObject dies to avoid segfaults.
-	void slotParentDead();
+    // The danger signal! This is for safety in wierd shutdown scenarios where the
+    // ControlObject dies to avoid segfaults.
+    void slotParentDead();
 
 signals:
     void valueChanged(double);

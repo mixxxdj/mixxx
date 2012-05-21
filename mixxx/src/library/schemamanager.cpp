@@ -5,7 +5,8 @@
 #include <QtDebug>
 
 #include "library/schemamanager.h"
-#include "widget/wwidget.h"
+#include "library/queryutil.h"
+#include "xmlparse.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
@@ -41,7 +42,7 @@ bool SchemaManager::upgradeToSchemaVersion(ConfigObject<ConfigValue>* config,
     QString schemaFilename = config->getConfigPath();
     schemaFilename.append("schema.xml");
     qDebug() << "Loading schema" << schemaFilename;
-    QDomElement schemaRoot = WWidget::openXMLFile(schemaFilename, "schema");
+    QDomElement schemaRoot = XmlParse::openXMLFile(schemaFilename, "schema");
 
     QDomNodeList revisions = schemaRoot.childNodes();
 
@@ -96,7 +97,7 @@ bool SchemaManager::upgradeToSchemaVersion(ConfigObject<ConfigValue>* config,
         qDebug() << "Applying version" << thisTarget << ":"
                  << description.trimmed();
 
-        db.transaction();
+        ScopedTransaction transaction(db);
 
         // TODO(XXX) We can't have semicolons in schema.xml for anything other
         // than statement separators.
@@ -123,12 +124,12 @@ bool SchemaManager::upgradeToSchemaVersion(ConfigObject<ConfigValue>* config,
             currentVersion = thisTarget;
             settings.setValue(SETTINGS_VERSION_STRING, thisTarget);
             settings.setValue(SETTINGS_MINCOMPATIBLE_STRING, minCompatibleVersion);
-            db.commit();
+            transaction.commit();
         } else {
             success = false;
             qDebug() << "Failed to move from version" << currentVersion
                      << "to version" << thisTarget;
-            db.rollback();
+            transaction.rollback();
             break;
         }
     }

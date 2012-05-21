@@ -5,6 +5,7 @@
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
+#include "library/stardelegate.h"
 
 #include "mixxxutils.cpp"
 
@@ -64,6 +65,15 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
+int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    QList<QFileInfo> fileInfoList;
+    foreach (QString fileLocation, locations) {
+        fileInfoList.append(QFileInfo(fileLocation));
+    }
+    QList<int> trackIds = m_trackDao.addTracks(fileInfoList, true);
+    return trackIds.size();
+}
+
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const {
     int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
@@ -120,6 +130,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
         (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
         (column == fieldIndex(LIBRARYTABLE_PREVIEW)) ||
+        (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
         (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
         return true;
@@ -133,10 +144,6 @@ bool LibraryTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
-    return NULL;
-}
-
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_RECEIVEDROPS
@@ -147,5 +154,8 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER
-            | TRACKMODELCAPS_REMOVE;
+            | TRACKMODELCAPS_REMOVE
+            | TRACKMODELCAPS_BPMLOCK
+            | TRACKMODELCAPS_CLEAR_BEATS
+            | TRACKMODELCAPS_RESETPLAYED;
 }
