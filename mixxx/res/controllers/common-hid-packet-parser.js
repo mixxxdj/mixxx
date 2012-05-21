@@ -24,18 +24,20 @@ function HIDBitVector () {
 HIDBitVector.prototype.addBit = function(group,name,index) {
     var bit = new Object();
     bit.type = 'button';
+    bit.id = group+'.'+name;
     bit.group = group;
     bit.name = name;
     bit.index = index;
     bit.callback = undefined;
     bit.value = undefined;
-    this[name] = bit;
+    this[bit.id] = bit;
 }
 
 // Add a bit to the HIDBitVector at given bit index
 HIDBitVector.prototype.addLED = function(group,name,index) {
     var bit = new Object();
     bit.type = 'led';
+    bit.id = group+'.'+name;
     bit.group = group;
     bit.name = name;
     bit.index = index;
@@ -43,7 +45,7 @@ HIDBitVector.prototype.addLED = function(group,name,index) {
     bit.callback = undefined;
     bit.value = undefined;
     bit.blink = undefined;
-    this[name] = bit;
+    this[bit.id] = bit;
 }
 
 //
@@ -69,8 +71,8 @@ function HIDPacket (name,header,length,callback) {
 // Pack a field to the packet
 HIDPacket.prototype.pack = function(packet,field) {
     if (field.type=='bitvector') {
-        for (bit_name in field.value) {
-            var bit = field.value[bit_name];
+        for (bit_id in field.value) {
+            var bit = field.value[bit_id];
             var bit_offset = field.offset+bit.index%8;
             packet.data[bit_offset] += bit.value<<bit.index%8;
         }
@@ -155,10 +157,9 @@ HIDPacket.prototype.lookupFieldByOffset = function(offset,pack) {
     var field = undefined;
     for (var group_name in this.groups) {
         group = this.groups[group_name];
-        for (var field_name in group) {
-            field = group[field_name];
+        for (var field_id in group) {
+            field = group[field_id];
             if (field.offset>=offset && end_offset<=field.end_offset) {
-                // script.HIDDebug("LOOKUP OFFSET match field " + field_name + " offset " + field.offset +'-' + field.end_offset + " to " + offset  +'-'+ end_offset);
                 return field;
             }
         }
@@ -173,18 +174,19 @@ HIDPacket.prototype.lookupField = function(group,name) {
         return undefined;
     }
     var control_group = this.groups[group];
-    if (name in control_group)
-        return control_group[name];
+    var id = group+'.'+name;
+    if (id in control_group)
+        return control_group[id];
 
-    for (group_name in this.groups) {
+    for (var group_name in this.groups) {
         var control_group = this.groups[group_name];
-        for (field_name in control_group) {
-            var field = control_group[field_name];
+        for (field_id in control_group) {
+            var field = control_group[field_id];
             if (field.type!='bitvector')
                 continue
-            for (bit_name in field.value) {
-                var bit = field.value[bit_name];
-                if (bit.name==name) {
+            for (bit_id in field.value) {
+                var bit = field.value[bit_id];
+                if (bit.id==id) {
                     return field;
                 }
             }
@@ -228,6 +230,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
 
     // Add new field to packet
     field = new Object();
+    field.id = group+'.'+name;    
     field.group = group;
     field.name = name;
     field.pack = pack;
@@ -236,6 +239,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
     field.bitmask = bitmask;
     field.isEncoder = isEncoder;
     field.callback = undefined;
+    field.sof_takeover = false;
     field.ignored = false;
 
     var packet_max_value = Math.pow(2,this.packSizes[field.pack]*8);
@@ -252,20 +256,20 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
         field.value = undefined;
         field.delta = 0;
         field.mindelta = 0;
-        // script.HIDDebug("PACKET " + this.name + " registering group " + group + " field " + name);
     } else {
         // TODO - accept controls with bitmask < packet_max_value
-        name = 'bitvector_' + offset;
+        field_name = 'bitvector_' + offset;
         field.type = 'bitvector';
-        field.name = name;
+        field.name = field_name;
+        field.id = group+'.'+field_name;
         var bitvector = new HIDBitVector();
         bitvector.addBit(group,name,bitmask);
         field.value = bitvector;
         field.delta = undefined;
+        field.sof_takeover = undefined;
         field.mindelta = undefined;
-        // script.HIDDebug("PACKET " + this.name + " registering new bitvector in " +group+'.'+name);
     }
-    control_group[name] = field;
+    control_group[field.id] = field;
 
 }
 
@@ -291,6 +295,7 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
     }
 
     var field = new Object();
+    field.id = group+'.'+name;
     field.group = group;
     field.name = name;
     field.active_group = undefined;
@@ -311,6 +316,7 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
         // TODO - accept controls with bitmask < packet_max_value
         name = 'bitvector_' + offset;
         field.type = 'bitvector';
+        field.id = group+'.'+name;
         field.name = name;
         var bitvector = new HIDBitVector();
         bitvector.addLED(group,name,bitmask);
@@ -318,22 +324,23 @@ HIDPacket.prototype.addLED = function(group,name,offset,pack,bitmask,callback) {
         field.delta = undefined;
         field.mindelta = undefined;
     }
-    control_group[name] = field;
+    control_group[field.id] = field;
 
 }
 
 // Register a callback to field.
 HIDPacket.prototype.registerCallback = function(group,name,callback) {
     var field = this.lookupField(group,name);
+    var id = group+'.'+name;
     if (field==undefined) {
         script.HIDDebug("ERROR in registerCallback: field for " +group+'.'+name + " not found");
         return;
     }
     if (field.type=='bitvector') {
-        for (var bit_name in field.value) {
-            if (bit_name!=name)
+        for (var bit_id in field.value) {
+            var bit = field.value[bit_id];
+            if (bit_id!=id)
                 continue;
-            var bit = field.value[bit_name];
             bit.callback = callback;
         }
     } else {
@@ -371,12 +378,12 @@ HIDPacket.prototype.parseBitVector = function(field,value) {
     var bits = new Object();
     var bit;
     var new_value;
-    for (var name in field.value) {
-        bit = field.value[name];
+    for (var bit_id in field.value) {
+        bit = field.value[bit_id];
         new_value = value>>bit.index&1;
         if (new_value!=bit.value) {
             bit.value = new_value;
-            bits[name] = bit;
+            bits[bit_id] = bit;
         }
     }
     return bits;
@@ -392,14 +399,14 @@ HIDPacket.prototype.parse = function(data) {
     var field_name;
     var bit;
 
-    for (group_name in this.groups) {
+    for (var group_name in this.groups) {
         group = this.groups[group_name];
-        for (field_name in group) {
-            var field = group[field_name];
+        for (field_id in group) {
+            var field = group[field_id];
 
             var value = this.unpack(data,field);
             if (value == undefined) {
-                script.HIDDebug("Error parsing packet field value for " + group_name + ' ' + field_name);
+                script.HIDDebug("Error parsing packet field value for " + field_id);
                 return;
             }
 
@@ -456,10 +463,10 @@ HIDPacket.prototype.send = function() {
         packet.data[header_byte] = this.header[header_byte];
     }
 
-    for (group_name in this.groups) {
+    for (var group_name in this.groups) {
         group = this.groups[group_name];
-        for (var name in group) {
-            var field = group[name];
+        for (var field_id in group) {
+            var field = group[field_id];
             this.pack(packet,field);
         }
     }
@@ -534,6 +541,7 @@ HIDController.prototype.resolveGroup = function(group) {
 
 // Find LED output control matching give group and name
 HIDController.prototype.resolveLED = function(group,name) {
+    var led_id = group+'.'+name;
     if (this.ledgroups==undefined) {
         this.ledgroups = new Object();
     }
@@ -541,9 +549,9 @@ HIDController.prototype.resolveLED = function(group,name) {
         this.ledgroups[group] = new Object();
     }
     var led_group = this.ledgroups[group];
-    if (!(name in led_group))
+    if (!(led_id in led_group))
         return undefined;
-    return led_group[name];
+    return led_group[led_id];
 }
 
 // Find input packet matching given name
@@ -588,10 +596,11 @@ HIDController.prototype.addLED = function(packet,field) {
         return;
     }
     var led_group = this.ledgroups[group];
+    var led_id = group+'.'+name;
     var led = new Object();
     led.packet = packet;
     led.field = field;
-    led_group[name] = led;
+    led_group[led_id] = led;
 }
 
 // Update all output packets with LEDs on device to current state.
@@ -600,10 +609,10 @@ HIDController.prototype.updateLEDs = function(from_timer) {
     var led_packets = [];
     for (var group_name in this.ledgroups) {
         var group = this.ledgroups[group_name];
-        for (var led_name in group) {
-            var led = group[led_name];
+        for (var led_id in group) {
+            var led = group[led_id];
             if (from_timer)
-                this.toggleLEDBlinkState(group_name,led_name);
+                this.toggleLEDBlinkState(group_name,led.field.name);
             if (led.packet==undefined) {
                 script.HIDDebug("BUG: Invalid LED, no packet defined");
                 continue;
@@ -635,8 +644,9 @@ HIDController.prototype.disconnectDeckLEDs = function() {
             return;
         }
         var active_color = this.deckLEDColors[active];
-        for (var led_name in group) {
-            engine.connectControl("[Channel"+active+"]",led_name,"EksOtus.activeLEDUpdateWrapper",true);
+        for (var led_id in group) {
+            var led = group[led_id];
+            engine.connectControl("[Channel"+active+"]",led.field.name,"EksOtus.activeLEDUpdateWrapper",true);
         }
     }
 }
@@ -658,14 +668,14 @@ HIDController.prototype.connectDeckLEDs = function() {
             return;
         }
         var active_color = this.deckLEDColors[active];
-        for (var led_name in group) {
-            engine.connectControl("[Channel"+active+"]",led_name,"EksOtus.activeLEDUpdateWrapper");
+        for (var led_id in group) {
+            var led = group[led_id];
+            engine.connectControl("[Channel"+active+"]",led.field.name,"EksOtus.activeLEDUpdateWrapper");
         }
     }
 }
 
 HIDController.prototype.updateActiveDeckLEDs = function() {
-    print("ACTIVE DECK " + this.activeDeck);
     var virtual_groups = ['deck','deck1','deck2'];
     for (var group_name in this.ledgroups) {
         // Only alter LEDs in virtual groups 'deck', 'deck1' and 'deck2'
@@ -685,18 +695,12 @@ HIDController.prototype.updateActiveDeckLEDs = function() {
         }
         var active_color = this.deckLEDColors[active];
 
-        for (var led_name in group) {
-            var led = group[led_name];
+        for (var led_id in group) {
+            var led = group[led_id];
             var color = undefined;
-            var state = engine.getValue(active_group,led_name);
-            // script.HIDDebug("Processing LED " + active_group+'.'+led_name + " state " + state);
-            if (engine.getValue(active_group,led_name)) {
-                script.HIDDebug("SET COLOR " + led_name + " value " + active_color);
+            var state = engine.getValue(active_group,led.field.name);
+            if (engine.getValue(active_group,led.field.name)) {
                 color = active_color;
-                for (name in led) {
-                    var val = led[name];
-                    print("LED ATTRIBUTE " + name + ' ' + val);
-                }
             } else {
                 color = this.LEDColors['off'];
             }
@@ -790,11 +794,11 @@ HIDController.prototype.registerInputPacket = function(input_packet) {
         this.InputPackets = new Object();
     // Find modifiers and other special cases from packet fields
     for (group in input_packet.groups) {
-        for (name in input_packet.groups[group]) {
-            field = input_packet.groups[group][name];
+        for (var field_id in input_packet.groups[group]) {
+            field = input_packet.groups[group][field_id];
             if (field.type=='bitvector') {
-                for (var bit_name in field.value) {
-                    var bit = field.value[bit_name];
+                for (var bit_id in field.value) {
+                    var bit = field.value[bit_id];
                     if (bit.group=='modifiers') {
                         // Register modifier name
                         this.registerModifier(bit.name);
@@ -813,8 +817,8 @@ HIDController.prototype.registerOutputPacket = function(output_packet) {
     var field;
     // Find LEDs from packet by 'led' type
     for (group in output_packet.groups) {
-        for (name in output_packet.groups[group]) {
-            field = output_packet.groups[group][name];
+        for (var field_id in output_packet.groups[group]) {
+            field = output_packet.groups[group][field_id];
             if (field.type!='led')
                 continue;
             this.addLED(output_packet,field);
@@ -897,7 +901,7 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
         }
         if (field.type=='button') {
             if (group=='modifiers') {
-                if (!field.name in this.modifiers) {
+                if (!field.id in this.modifiers) {
                     script.HIDDebug("Unknown modifier ID" + field.name);
                     continue;
                 }
