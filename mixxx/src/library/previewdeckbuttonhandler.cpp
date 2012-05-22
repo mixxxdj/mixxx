@@ -31,4 +31,5 @@ void PreviewdeckButtonHandler::buttonclicked(){
     //get TrackPointer and emit signal to load track
     TrackPointer Track = pTrackModel->getTrack(m_index);
     emit(loadTrackToPlayer(Track,m_group));
+	playStatus->slotSet(PLAYING);
 }

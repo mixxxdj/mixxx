@@ -12,7 +12,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column) :
         m_pTableView = tableView;
         m_pButton = new QPushButton("...", m_pTableView);
         m_pButton->hide();
-        m_pTableView->setMouseTracking(true);
+        // m_pTableView->setMouseTracking(true);
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
                               this, SLOT(cellEntered(QModelIndex)));
 
