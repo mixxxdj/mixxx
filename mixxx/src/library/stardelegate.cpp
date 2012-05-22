@@ -65,7 +65,8 @@ void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     }
 
     StarRating starRating = qVariantValue<StarRating>(index.data());
-    starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly);
+    starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly,
+                        newOption.state & QStyle::State_Selected);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -85,10 +86,11 @@ QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelInd
 QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,const QModelIndex &index) const
 {
     // Populate the correct colors based on the styling
-    //QStyleOptionViewItem newOption = option;
-    //initStyleOption(&newOption, index);
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
     if (qVariantCanConvert<StarRating>(index.data())) {
-        StarEditor *editor = new StarEditor(parent, option);
+        StarEditor *editor = new StarEditor(parent, option , 
+                                            newOption.state & QStyle::State_Selected);
         connect(editor, SIGNAL(editingFinished()),
         this, SLOT(commitAndCloseEditor()));
         return editor;

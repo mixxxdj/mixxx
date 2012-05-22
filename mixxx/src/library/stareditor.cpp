@@ -35,12 +35,14 @@
  * QWidget's auto-fill background feature to obtain an opaque background.
  * (Without the call, the view's background would shine through the editor.)
  */
-StarEditor::StarEditor(QWidget *parent, const QStyleOptionViewItem &option)
+StarEditor::StarEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                        bool isSelected)
         : QWidget(parent)
 {
     setPalette(option.palette);
     setMouseTracking(true);
     setAutoFillBackground(true);
+    m_isSelected=isSelected;
 }
 
 QSize StarEditor::sizeHint() const
@@ -54,7 +56,8 @@ QSize StarEditor::sizeHint() const
 void StarEditor::paintEvent(QPaintEvent *)
  {
     QPainter painter(this);
-    m_starRating.paint(&painter, rect(), palette(), StarRating::Editable);
+    m_starRating.paint(&painter, rect(), palette(), StarRating::Editable,
+                        m_isSelected);
  }
 /*
  * In the mouse event handler, we call setStarCount() on

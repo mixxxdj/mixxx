@@ -36,7 +36,8 @@ class StarEditor : public QWidget
 	Q_OBJECT
 
 public:
-    StarEditor(QWidget *parent, const QStyleOptionViewItem& option);
+    StarEditor(QWidget *parent, const QStyleOptionViewItem& option,
+                bool isSelected);
 
     QSize sizeHint() const;
     void setStarRating(const StarRating &starRating) {
@@ -56,6 +57,7 @@ private:
     int starAtPosition(int x);
 
     StarRating m_starRating;
+    bool m_isSelected;
 };
 
 #endif
