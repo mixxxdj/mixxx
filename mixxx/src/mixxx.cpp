@@ -327,11 +327,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 	AudioInput vinInput = AudioInput(AudioInput::VINYLCONTROL, 0, deck);
 
 	// Register vinyl signal with EngineMaster as passthrough
-	EnginePassthrough* pPass = new EnginePassthrough("[Passthrough]");
-	m_pEngine->addChannel(pPass);
-	m_pSoundManager->registerInput(vinInput, pPass);
+        const char* deckGroup = strdup(PlayerManager::groupForDeck(deck).toAscii().constData());
+        EnginePassthrough* pPass = new EnginePassthrough("[Passthrough]", deckGroup);
+        m_pEngine->addChannel(pPass);
+        m_pSoundManager->registerInput(vinInput, pPass);
 
-	// Register vinyl signal with VinylControlManager
+        // Register vinyl signal with VinylControlManager
         m_pSoundManager->registerInput(vinInput, m_pVCManager);
     }
 #else

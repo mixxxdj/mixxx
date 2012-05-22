@@ -9,7 +9,7 @@
 #include "configobject.h"
 #include "sampleutil.h"
 
-EnginePassthrough::EnginePassthrough(const char* pGroup)
+EnginePassthrough::EnginePassthrough(const char* pGroup, const char* pDeckGroup)
         : EngineChannel(pGroup, EngineChannel::CENTER),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
@@ -20,6 +20,36 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
     m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_pPregain = new EnginePregain(pGroup);
+    m_pFilter = new EngineFilterBlock(pGroup);
+    m_pFlanger = new EngineFlanger(pGroup);
+    m_pClipping = new EngineClipping(pGroup);
+    m_pVUMeter = new EngineVuMeter(pGroup);
+
+    // Connect pregain controls
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "pregain"), ConfigKey(pGroup, "pregain"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "replaygain"), ConfigKey(pGroup, "replaygain"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "total_gain"), ConfigKey(pGroup, "total_gain"));
+
+    // Connect filter controls
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "filterLow"), ConfigKey(pGroup, "filterLow"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "filterLowKill"), ConfigKey(pGroup, "filterLowKill"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "filterMid"), ConfigKey(pGroup, "filterMid"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "filterMidKill"), ConfigKey(pGroup, "filterMidKill"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "filterHigh"), ConfigKey(pGroup, "filterHigh"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "filterHighKill"), ConfigKey(pGroup, "filterHighKill"));
+
+    // Connect flanger controls
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "flanger"), ConfigKey(pGroup, "flanger"));
+
+    // Connect clipper controls
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "PeakIndicator"), ConfigKey(pGroup, "PeakIndicator"));
+
+    // Connect vu meter controls
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "VuMeter"), ConfigKey(pGroup, "VuMeter"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "VuMeterL"), ConfigKey(pGroup, "VuMeterL"));
+    ControlObject::connectControls(ConfigKey(pDeckGroup, "VuMeterR"), ConfigKey(pGroup, "VuMeterR"));
 }
 
 EnginePassthrough::~EnginePassthrough() {
@@ -27,6 +57,12 @@ EnginePassthrough::~EnginePassthrough() {
     SampleUtil::free(m_pConversionBuffer);
     delete m_pEnabled;
     delete m_pPassing;
+
+    delete m_pClipping;
+    delete m_pVUMeter;
+    delete m_pFlanger;
+    delete m_pFilter;
+    delete m_pPregain;
 }
 
 bool EnginePassthrough::isActive() {
@@ -118,4 +154,16 @@ void EnginePassthrough::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, c
     m_clipping.process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_vuMeter.process(pOut, pOut, iBufferSize);
+
+    // Apply pregain
+    m_pPregain->process(pOut, pOut, iBufferSize);
+    // Filter the channel with EQs
+    m_pFilter->process(pOut, pOut, iBufferSize);
+    // Apply flanger
+    m_pFlanger->process(pOut, pOut, iBufferSize);
+
+    // Apply clipping
+    m_pClipping->process(pOut, pOut, iBufferSize);
+    // Update VU meter
+    m_pVUMeter->process(pOut, pOut, iBufferSize);
 }

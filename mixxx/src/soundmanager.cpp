@@ -248,12 +248,11 @@ void SoundManager::closeDevices()
         // Need to tell all registered AudioDestinations for this AudioInput
         // that the input was disconnected.
         if (m_registeredDestinations.contains(in)) {
-            // Modified 05-20-12 : mattmik : Allow for multiple AudioInput connections
             QList<AudioDestination*> destList = m_registeredDestinations.values(in);
             AudioDestination* dest;
-            foreach(dest, destList)
+            foreach(dest, destList) {
                         dest->onInputDisconnected(in);
-            //m_registeredDestinations[in]->onInputDisconnected(in);
+            }
         }
 
         short *buffer = m_inputBuffers[in];
@@ -416,12 +415,11 @@ int SoundManager::setupDevices()
             // Check if any AudioDestination is registered for this AudioInput,
             // and call the onInputConnected method.
             if (m_registeredDestinations.contains(in)) {
-		// Modified 05-20-12 : mattmik : Allow for multiple AudioInput connections
-		QList<AudioDestination*> destList = m_registeredDestinations.values(in);
-		AudioDestination* dest;
-		foreach(dest, destList)
-			dest->onInputConnected(in);
-                //m_registeredDestinations[in]->onInputConnected(in);
+                QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+                AudioDestination* dest;
+                foreach(dest, destList) {
+                    dest->onInputConnected(in);
+                }
             }
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
@@ -690,19 +688,13 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
             short* pInputBuffer = m_inputBuffers[in];
 
             if (m_registeredDestinations.contains(in)) {
-
-		// Modified 05-20-12 : mattmik : Allow for multiple AudioInput connections
-		QList<AudioDestination*> destList = m_registeredDestinations.values(in);
-		AudioDestination* dest;
-		foreach(dest, destList) {
-			 if(dest)
-				dest->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
-		}
-
-                //AudioDestination* destination = m_registeredDestinations[in];
-                //if (destination) {
-                //    destination->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
-                //}
+                QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+                AudioDestination* dest;
+                foreach(dest, destList) {
+                    if(dest) {
+                        dest->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
+                    }
+                }
             }
         }
     }
@@ -725,9 +717,7 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
         qDebug() << "WARNING: AudioInput already registered!";
     }
 
-    // Modified 05-20-12 : mattmik : Allow for multiple AudioInput connections
     m_registeredDestinations.insertMulti(input, dest);
-    //m_registeredDestinations[input] = dest;
 
     emit(inputRegistered(input, dest));
 }

@@ -10,6 +10,11 @@
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
 #include "engine/enginevumeter.h"
+
+#include "engine/enginepregain.h"
+#include "engine/enginefilterblock.h"
+#include "engine/engineflanger.h"
+
 #include "soundmanagerutil.h"
 
 // EnginePassthrough is an EngineChannel that implements a mixing source whose
@@ -17,7 +22,7 @@
 class EnginePassthrough : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EnginePassthrough(const char *pGroup);
+    EnginePassthrough(const char *pGroup, const char* pDeckGroup);
     virtual ~EnginePassthrough();
 
     bool isActive();
@@ -46,6 +51,12 @@ class EnginePassthrough : public EngineChannel, public AudioDestination {
     ControlPushButton *m_pPassing;
     CSAMPLE *m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
+
+    EngineClipping* m_pClipping;
+    EnginePregain* m_pPregain;
+    EngineFilterBlock* m_pFilter;
+    EngineFlanger* m_pFlanger;
+    EngineVuMeter* m_pVUMeter;
 };
 
 #endif /* ENGINEPASSTHROUGH_H */
