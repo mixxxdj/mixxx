@@ -1166,6 +1166,17 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 }
 
 /*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables spinback effect for the channel
+    Input:   deck, activate/deactivate, factor (optional), 
+             delay (optional), rate (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::spinback(int deck, bool activate, float factor, int delay, float rate) {
+	// defaults for args set in header file
+	brake(deck, activate, factor, delay, rate);
+}
+
+/*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables brake/spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional), 
              delay (optional), rate (optional)

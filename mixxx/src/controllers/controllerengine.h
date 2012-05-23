@@ -59,7 +59,8 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-    Q_INVOKABLE void brake(int deck, bool activate, float factor=0.9, int delay=0, float rate=1.0);
+    Q_INVOKABLE void brake(int deck, bool activate, float factor=0.95, int delay=0, float rate=1.0);
+    Q_INVOKABLE void spinback(int deck, bool activate, float factor=0.8, int delay=5, float rate=-10.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);
