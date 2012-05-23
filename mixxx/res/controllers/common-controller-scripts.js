@@ -169,11 +169,21 @@ script.deckSpinbackBrake = function(group, activate, factor, delay, rate) {
 
 		engine.setValue(group, 'scratch2_enable', activate ? 1 : 0);
 
-		// setup timer and send first scratch2 'tick' if activating
-
 		if (activate) {
+			// save keylock status and disable it
+			if ((script.deckSpinbackBrakeData[group].keylock = engine.getValue(group, "keylock")) > 0) {
+				engine.setValue(group, "keylock", 0);
+			}
+
+			// setup timer and send first scratch2 'tick' if activating
 			script.deckSpinbackBrakeData[group].timer = engine.beginTimer(50, 'script.deckSpinbackBrake("' + group + '")');
 			engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
+		}
+
+		// re-enable keylock if needed
+
+		else if (script.deckSpinbackBrakeData[group].keylock) {
+			engine.setValue(group, "keylock", 1);
 		}
 	}
 	else {
