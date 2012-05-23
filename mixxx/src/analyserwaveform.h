@@ -22,14 +22,11 @@ class AnalysisDao;
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
-inline double scaleSignal(double invalue)
-{
-    if (invalue == 0.0)
-    {
+inline CSAMPLE scaleSignal(CSAMPLE invalue) {
+    if (invalue == 0.0) {
         return 0;
-    }
-    else
-    {
+    } else {
+        //return invalue;
         return pow(invalue, 0.316);
     }
 }

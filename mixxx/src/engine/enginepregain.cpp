@@ -67,7 +67,6 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
     m_fReplayGainCorrection=1;
-    fGain = fGain/2;
     if(fReplayGain*fEnableReplayGain != 0)
     {
         // Here is the point, when ReplayGain Analyser takes its action, suggested gain changes from 0 to a nonzero value

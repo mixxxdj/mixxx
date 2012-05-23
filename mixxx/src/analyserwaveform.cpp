@@ -182,6 +182,10 @@ void AnalyserWaveform::destroyFilters() {
     }
 }
 
+inline CSAMPLE square(CSAMPLE x) {
+    return x * x;
+}
+
 void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     if (m_skipProcessing || !m_waveform || !m_waveformSummary)
         return;
@@ -211,11 +215,11 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     cmaxAll[Right] = 0;
     
     for( int i = 0; i < bufferLength; i+=2) {
-        //Take max value, not average of data
-        CSAMPLE cover[2] = {buffer[i]*buffer[i] , buffer[i+1]*buffer[i+1]};
-        CSAMPLE clow[2] =  { m_buffers[ Low][i]*m_buffers[ Low][i], m_buffers[ Low][i+1]*m_buffers[ Low][i+1] };
-        CSAMPLE cmid[2] =  { m_buffers[ Mid][i]*m_buffers[ Mid][i], m_buffers[ Mid][i+1]*m_buffers[ Mid][i+1] };
-        CSAMPLE chigh[2] = { m_buffers[High][i]*m_buffers[High][i], m_buffers[High][i+1]*m_buffers[High][i+1] };
+        // Take max RMS value, not average of data
+        CSAMPLE cover[2] = { square(buffer[i]), square(buffer[i+1]) };
+        CSAMPLE clow[2] =  { square(m_buffers[ Low][i]), square(m_buffers[ Low][i+1]) };
+        CSAMPLE cmid[2] =  { square(m_buffers[ Mid][i]), square(m_buffers[ Mid][i+1]) };
+        CSAMPLE chigh[2] = { square(m_buffers[High][i]), square(m_buffers[High][i+1]) };
         
         cmaxAll[Left] = math_max(cmaxAll[Left], cover[Left]);
         cmaxAll[Right] = math_max(cmaxAll[Right], cover[Right]);
@@ -357,14 +361,14 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
     QMutexLocker waveformLocker(m_waveform->getMutex());
     // Force completion to waveform size
     m_waveform->setCompletion(m_waveform->getDataSize());
-    m_waveform->setVersion(WAVEFORM_2_VERSION);
-    m_waveform->setDescription("Waveform 2.0");
+    m_waveform->setVersion(WaveformFactory::getPreferredWaveformVersion());
+    m_waveform->setDescription(WaveformFactory::getPreferredWaveformDescription());
 
     QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
     // Force completion to waveform size
     m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
-    m_waveformSummary->setVersion(WAVEFORMSUMMARY_2_VERSION);
-    m_waveformSummary->setDescription("Waveform Summary 2.0");
+    m_waveformSummary->setVersion(WaveformFactory::getPreferredWaveformSummaryVersion());
+    m_waveformSummary->setDescription(WaveformFactory::getPreferredWaveformSummaryDescription());
 
 
 #ifdef TEST_HEAT_MAP
