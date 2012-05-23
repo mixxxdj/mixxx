@@ -113,7 +113,7 @@ script.midiPitch = function (LSB, MSB, status) {
    Output:  None
    -------- ------------------------------------------------------ */
 
-script.deckSpinback = function(group, activate, factor, delay, rate) {
+script.spinback = function(group, activate, factor, delay, rate) {
 	if (factor == undefined) factor = 0.8;
 	if (delay == undefined) delay = 5;
 	if (rate == undefined) rate = -10;
@@ -127,7 +127,7 @@ script.deckSpinback = function(group, activate, factor, delay, rate) {
    Output:  None
    -------- ------------------------------------------------------ */
 
-script.deckBrake = function(group, activate, factor, delay, rate) {
+script.brake = function(group, activate, factor, delay, rate) {
 	if (factor == undefined) factor = 0.95;
 	if (delay == undefined) delay = 0;
 	if (rate == undefined) rate = 1;
