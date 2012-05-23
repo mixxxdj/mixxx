@@ -41,6 +41,10 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_rampTo.resize(kDecks);
     m_ramp.resize(kDecks);
     m_pitchFilter.resize(kDecks);
+	m_brakeFactor.resize(kDecks);
+	m_brakeDelay.resize(kDecks);
+	m_brakeRate.resize(kDecks);
+	m_brakeKeylock.resize(kDecks);
 
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
@@ -906,6 +910,12 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
+    // See if this is a brake timer
+    if (m_brakeTimers.contains(timerId)) {
+        brakeProcess(timerId);
+        return;
+    }
+
     if (!m_timers.contains(timerId)) {
         qWarning() << "Timer" << timerId << "fired but there's no function mapped to it!";
         return;
@@ -1153,4 +1163,79 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     } else {
         m_st.disable(pControl);
     }
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables brake/spinback effect for the channel
+    Input:   deck, activate/deactivate, factor (optional), 
+	         delay (optional), rate (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::brake(int deck, bool activate, float factor, int delay, float rate) {
+    QString group = QString("[Channel%1]").arg(deck);
+
+	// kill timer when both enabling or disabling
+	int timerId = m_brakeTimers.key(deck);
+	killTimer(timerId);
+	m_brakeTimers.remove(timerId);
+
+	// store the new values for this spinback/brake effect
+	m_brakeFactor[deck] = factor;
+	m_brakeDelay[deck] = delay;
+	m_brakeRate[deck] = rate;
+
+	// enable/disable scratch2 mode
+	ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
+	if (cot != NULL) {
+		cot->slotSet(activate ? 1 : 0);
+	}
+
+	if (activate) {
+		// save current keylock status and disable
+		cot = getControlObjectThread(group, "keylock");
+		if (cot != NULL) {
+			m_brakeKeylock[deck] = cot->get();
+			cot->slotSet(0);
+		}
+
+		// setup timer and send first scratch2 'tick' 
+    	int timerId = startTimer(50);
+		m_brakeTimers[timerId] = deck;
+
+		cot = getControlObjectThread(group, "scratch2");
+		if (cot != NULL) {
+			cot->slotSet(m_brakeRate[deck]);
+		}
+	}
+	else {
+		// re-enable keylock if needed
+		if (m_brakeKeylock[deck]) {
+			cot = getControlObjectThread(group, "keylock");
+			if (cot != NULL) {
+				cot->slotSet(1);
+			}
+		}
+	}
+}
+
+/* -------- ------------------------------------------------------
+    Purpose: Called via timer to implement brake/spinback effect
+    Input:   ID of timer for this deck
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::brakeProcess(int timerId) {
+    int deck = m_brakeTimers[timerId];
+    QString group = QString("[Channel%1]").arg(deck);
+
+	ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
+	if (cot != NULL) {
+		cot->slotSet(m_brakeRate[deck]);
+	}
+
+	if (m_brakeDelay[deck] > 0) {
+		m_brakeDelay[deck]--;
+	}
+	else {
+		m_brakeRate[deck] *= m_brakeFactor[deck];
+	}
 }
