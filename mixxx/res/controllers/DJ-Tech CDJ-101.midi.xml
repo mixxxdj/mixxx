@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1">
+    <info>
+        <name>DJTech CDJ 101</name>
+        <author>zestoi</author>
+        <description>Select midi channel 1 or 2 on the CDJ101 to select which deck to control in Mixxx. Hold down the push encoder for additional controls.</description>
+    </info>
+    <controller id="DJ-Tech CDJ-101">
+		<scriptfiles>
+			<file filename="DJ-Tech-CDJ-101-scripts.js" functionprefix="DJTechCDJ101"/>
+		</scriptfiles>
+
+        <controls>
+
+			<!-- midi channel 1 for deck 1 -->
+
+			<!-- play/cue -->
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DJTechCDJ101.play</key>
+                <status>0x90</status>
+                <midino>0x2a</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DJTechCDJ101.cue</key>
+                <status>0x90</status>
+                <midino>0x2b</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+			<!-- jog -->
+
+            <control>
+                <group>[Channel1]</group>
+                <status>0x90</status>
+                <midino>0x20</midino>
+				<key>DJTechCDJ101.jogtouch</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <status>0xb0</status>
+                <midino>0x35</midino>
+				<key>DJTechCDJ101.jogouter</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <status>0xb0</status>
+                <midino>0x36</midino>
+				<key>DJTechCDJ101.jogtop</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+			<!-- pitch -->
+
+            <control>
+                <status>0xe0</status>
+                <group>[Channel1]</group>
+				<key>DJTechCDJ101.pitch</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+			<!-- track browse/load -->
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DJTechCDJ101.push</key>
+                <status>0x90</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DJTechCDJ101.browse</key>
+                <status>0xB0</status>
+                <midino>0x38</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+			<!-- midi channel 2 for deck 2 -->
+
+			<!-- play/cue -->
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DJTechCDJ101.play</key>
+                <status>0x91</status>
+                <midino>0x2a</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DJTechCDJ101.cue</key>
+                <status>0x91</status>
+                <midino>0x2b</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+			<!-- jog -->
+
+            <control>
+                <group>[Channel2]</group>
+                <status>0x91</status>
+                <midino>0x20</midino>
+				<key>DJTechCDJ101.jogtouch</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <status>0xb1</status>
+                <midino>0x35</midino>
+				<key>DJTechCDJ101.jogouter</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <status>0xb1</status>
+                <midino>0x36</midino>
+				<key>DJTechCDJ101.jogtop</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+			<!-- pitch -->
+
+            <control>
+                <status>0xe1</status>
+                <group>[Channel2]</group>
+				<key>DJTechCDJ101.pitch</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+			<!-- track browse/load -->
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DJTechCDJ101.push</key>
+                <status>0x91</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DJTechCDJ101.browse</key>
+                <status>0xB1</status>
+                <midino>0x38</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+        </controls>
+
+    </controller>
+</MixxxControllerPreset>

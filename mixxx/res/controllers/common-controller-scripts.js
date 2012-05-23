@@ -82,7 +82,7 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
 
 
 script.pitch = function (LSB, MSB, status) {
-    script.midiPitch(LSB, MSB, status);
+    return script.midiPitch(LSB, MSB, status);
 }
 
 /* -------- ------------------------------------------------------
