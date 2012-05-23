@@ -26,7 +26,6 @@ class MissingTableModel : public BaseSqlTableModel {
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private slots:
