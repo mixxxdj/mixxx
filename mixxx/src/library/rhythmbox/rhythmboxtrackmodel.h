@@ -43,6 +43,7 @@ class RhythmboxTrackModel : public BaseSqlTableModel {
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
   private slots:
     void slotSearch(const QString& searchText);

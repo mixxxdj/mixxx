@@ -11,6 +11,8 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 
+#define NUM_HOT_CUES 37
+
 class ControlObject;
 class ControlPushButton;
 class Cue;

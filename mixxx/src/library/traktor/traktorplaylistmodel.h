@@ -25,6 +25,7 @@ class TraktorPlaylistModel : public BaseSqlTableModel {
     virtual bool isColumnHiddenByDefault(int column);
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     void setPlaylist(QString path_name);
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
   private slots:
     void slotSearch(const QString& searchText);

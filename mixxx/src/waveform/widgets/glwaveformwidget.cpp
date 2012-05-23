@@ -4,6 +4,7 @@
 #include "glwaveformwidget.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/qtwaveformrendererfilteredsignal.h"
 #include "waveform/renderers/glwaveformrendererfilteredsignal.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
@@ -13,8 +14,8 @@
 #include "sharedglcontext.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
-    WaveformWidgetAbstract(group),
-    QGLWidget(SharedGLContext::getContext(), parent) {
+        QGLWidget(SharedGLContext::getContext(), parent),
+        WaveformWidgetAbstract(group) {
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
