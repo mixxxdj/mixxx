@@ -100,8 +100,13 @@ NovationLaunchpad = {
 
 			this.flanger("1," + (offset + 0), 1, group, 0.5, 1500000, 333);
 			this.flanger("1," + (offset + 1), 1, group, 1, 500000, 666);
-			this.gator("1," + (offset + 2),  1, group, 4, 0.7);
-			this.gator("1," + (offset + 3),  1, group, 8, 0.7);
+			this.gator("1," + (offset + 2),  1, group, 8, 0.7);
+
+			// spinback effect
+
+			this.button("1," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
+				script.deckSpinback(g, v > 0);
+			});
 
 			// instant loops 
 
@@ -136,9 +141,11 @@ NovationLaunchpad = {
 
 			this.button("3," + (offset + 2), "all", 1, 'hi_green', 'lo_green', group, "reloop_exit");
 
-			// reverse mode
+			// brake effect
 
-			this.button("3," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "reverse");
+			this.button("3," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
+				script.deckBrake(g, v > 0);
+			});
 
 			// led feedback for loop in/out buttons to show loop status
 
