@@ -106,6 +106,90 @@ script.midiPitch = function (LSB, MSB, status) {
     return rate;
 }
 
+/* -------- ------------------------------------------------------
+     script.deckSpinback
+   Purpose: Activate or disable a spinback effect on the chosen deck
+   Input:   group, enable/disable, [delay], [factor], [inital rate]
+   Output:  None
+   -------- ------------------------------------------------------ */
+
+script.deckSpinback = function(group, activate, factor, delay, rate) {
+	if (factor == undefined) factor = 0.8;
+	if (delay == undefined) delay = 5;
+	if (rate == undefined) rate = -10;
+	script.deckSpinbackBrake(group, activate, factor, delay, rate);
+}
+
+/* -------- ------------------------------------------------------
+     script.deckBrake
+   Purpose: Activate or disable a brake effect on the chosen deck
+   Input:   group, enable/disable, [delay], [factor], [inital rate]
+   Output:  None
+   -------- ------------------------------------------------------ */
+
+script.deckBrake = function(group, activate, factor, delay, rate) {
+	if (factor == undefined) factor = 0.95;
+	if (delay == undefined) delay = 0;
+	if (rate == undefined) rate = 1;
+	script.deckSpinbackBrake(group, activate, factor, delay, rate);
+}
+
+/* -------- ------------------------------------------------------
+     script.deckSpinbackBrake
+   Purpose: Activate or disable a spinback or brake effect on the 
+            chosen deck
+   Input:   group, enable/disable, delay, scaling factor, inital rate
+   Output:  None
+   -------- ------------------------------------------------------ */
+
+script.deckSpinbackBrakeData = {};
+
+script.deckSpinbackBrake = function(group, activate, factor, delay, rate) {
+	if (activate != undefined) {
+
+		// store the current settings
+
+		if (script.deckSpinbackBrakeData[group] == undefined) {
+			script.deckSpinbackBrakeData[group] = { timer: null, delay: delay, factor: factor, rate: rate };
+		}
+		else {
+			script.deckSpinbackBrakeData[group].delay = delay;
+			script.deckSpinbackBrakeData[group].factor = factor;
+			script.deckSpinbackBrakeData[group].rate = rate;
+		}
+
+		// kill timer when both enabling or disabling
+
+		if (script.deckSpinbackBrakeData[group].timer != null) {
+			engine.stopTimer(script.deckSpinbackBrakeData[group].timer);
+			script.deckSpinbackBrakeData[group].timer = null;
+		}
+
+		// enable/disable scratch2 mode
+
+		engine.setValue(group, 'scratch2_enable', activate ? 1 : 0);
+
+		// setup timer and send first scratch2 'tick' if activating
+
+		if (activate) {
+			script.deckSpinbackBrakeData[group].timer = engine.beginTimer(50, 'script.deckSpinbackBrake("' + group + '")');
+			engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
+		}
+	}
+	else {
+		// being called from a timer
+
+		engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
+
+		if (script.deckSpinbackBrakeData[group].delay > 0) {
+			script.deckSpinbackBrakeData[group].delay--;
+		}
+		else {
+			script.deckSpinbackBrakeData[group].rate *= script.deckSpinbackBrakeData[group].factor;
+		}
+	}
+}
+
 // bpm - Used for tapping the desired BPM for a deck
 function bpm() {}
 
@@ -115,7 +199,7 @@ bpm.tap = [];   // Tap sample values
 /* -------- ------------------------------------------------------
         bpm.tapButton
    Purpose: Sets the bpm of the track on a deck by tapping the beats.
-            This only works if the track's original BPM value is correct.
+            his only works if the track's original BPM value is correct.
             Call this each time the tap button is pressed.
    Input:   Mixxx deck to adjust
    Output:  -
