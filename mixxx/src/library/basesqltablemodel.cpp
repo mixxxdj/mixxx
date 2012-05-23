@@ -439,15 +439,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (qVariantCanConvert<int>(value))
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
-                // Convert to a bool. Not really that useful since it gets
-                // converted right back to a QVariant
-                value = (value == "true") ? true : false;
+                value = value.toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
                 value = value.toDateTime();
             } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
                 value = value.toDateTime().time();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
-                value = (value == "true") ? true : false;
+                value = value.toBool();
             }
             break;
         case Qt::EditRole:

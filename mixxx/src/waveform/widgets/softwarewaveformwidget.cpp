@@ -8,6 +8,7 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererfilteredsignal.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 
 SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* parent) :
@@ -15,11 +16,11 @@ SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* pare
     QWidget(parent) {
 
     addRenderer<WaveformRenderBackground>();
+    addRenderer<WaveformRendererEndOfTrack>();
+    addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRendererFilteredSignal>();
-    addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMark>();
-    addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRenderBeat>();
 
     init();

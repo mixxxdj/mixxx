@@ -40,9 +40,26 @@ void VampAnalyser::initializePluginPaths() {
     QString applicationPath = QCoreApplication::applicationDirPath();
 #ifdef __WINDOWS__
     QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
-        pathElements << winVampPath.absolutePath().replace("/","\\");
+    if (winVampPath.exists()) {
+        qDebug() << applicationPath << "exists";
     }
+    if (QFile::exists(applicationPath + "/plugins/vamp/libmixxxminimal.dll")) {
+        qDebug() << applicationPath + "/plugins/vamp/libmixxxminimal.dll" << "exists";
+    } else {
+        qDebug() << applicationPath + "/plugins/vamp/libmixxxminimal.dll" << "does not exist";
+    }
+    if (winVampPath.cd("plugins")) {
+        qDebug() << winVampPath.absolutePath() << "exists";
+        if (winVampPath.cd("vamp")) {
+            qDebug() << winVampPath.absolutePath() << "exists";
+            pathElements << winVampPath.absolutePath().replace("/","\\");
+        } else {
+            qDebug() << winVampPath.absolutePath() << "does not exist";
+        }
+    } else {
+        qDebug() << winVampPath.absolutePath() << "does not exist";
+    }
+
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
     pathElements << applicationPath +"/../Plugins";

@@ -22,6 +22,7 @@ public:
 private:
     void generateMarkPixmap(WaveformMark& mark);
 
+    WaveformMark m_defaultMark;
     std::vector<WaveformMark> m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

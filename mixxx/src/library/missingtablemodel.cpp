@@ -4,7 +4,7 @@
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
-
+#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
@@ -135,8 +135,10 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
+QAbstractItemDelegate* MissingTableModel::delegateForColumn(const int i, QObject* pParent) {
+    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
+        return new StarDelegate(pParent);
+    }
     return NULL;
 }
 

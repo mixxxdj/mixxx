@@ -38,22 +38,20 @@ void HidReader::run() {
 }
 
 HidController::HidController(const hid_device_info deviceInfo) {
-
     // Copy required variables from deviceInfo, which will be freed after
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
     hid_product_id = deviceInfo.product_id;
-    if (deviceInfo.interface_number==-1) {
+    hid_interface_number = deviceInfo.interface_number;
+    if (hid_interface_number == -1) {
         // OS/X and windows don't use interface numbers, but usage_page/usage
         hid_usage_page = deviceInfo.usage_page;
         hid_usage = deviceInfo.usage;
-        hid_interface_number = -1;
     } else {
         // Linux hidapi does not set value for usage_page or usage and uses
         // interface number to identify subdevices
         hid_usage_page = 0;
         hid_usage = 0;
-        hid_interface_number = deviceInfo.interface_number;
     }
 
 #ifdef __LINUX__
@@ -64,7 +62,6 @@ HidController::HidController(const hid_device_info deviceInfo) {
     strncpy(hid_path, deviceInfo.path, hid_path_len);
     hid_path[hid_path_len] = '\0';
 #endif
-
     // TODO: Verify that this is the correct thing to do and allows a device
     //  with a null serial number to be used
     if (deviceInfo.serial_number!=NULL) {
@@ -74,8 +71,6 @@ HidController::HidController(const hid_device_info deviceInfo) {
         hid_serial = new wchar_t[1];
         hid_serial[0] = '\0';
     }
-
-    // TODO: we have a crash here when strings are invalid or NULL
     hid_manufacturer = QString::fromWCharArray(
         deviceInfo.manufacturer_string,
         wcslen(deviceInfo.manufacturer_string)
