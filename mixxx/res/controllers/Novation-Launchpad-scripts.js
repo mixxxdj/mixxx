@@ -296,7 +296,7 @@ NovationLaunchpad = {
 	//
 
 	flanger: function(name, page, group, depth, period, delay) {
-		this.button(name, "all", page, 'hi_red', 'lo_red', group, "flanger", function(g, name, v) {
+		this.button(name, "all", page, 'hi_amber', 'lo_amber', group, "flanger", function(g, name, v) {
 			if (v > 0) {
 				engine.setValue("[Flanger]", "lfoDepth", depth);
 				engine.setValue("[Flanger]", "lfoPeriod", period);
