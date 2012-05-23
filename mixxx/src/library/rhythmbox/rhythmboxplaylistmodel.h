@@ -43,7 +43,6 @@ class RhythmboxPlaylistModel : public BaseSqlTableModel {
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     void setPlaylist(QString path_name);
     TrackModel::CapabilitiesFlags getCapabilities() const;
-    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
   private slots:
     void slotSearch(const QString& searchText);

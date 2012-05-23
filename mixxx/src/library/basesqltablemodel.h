@@ -53,6 +53,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual void setLibraryPrefix(QString sPrefix);
     virtual int getTrackId(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,
