@@ -18,6 +18,13 @@ PioneerCDJHID.deckSwitchClickTimer = undefined;
 
 PioneerCDJHID.LEDColors = { off: 0x0, on: 0x01 }
 
+PioneerCDJHID.beatLoopSizeMap = { 
+    beatloop_2: '8', beatloop_2_shift: '0.5',
+    beatloop_4: '4', beatloop_4_shift: '0.25',
+    beatloop_8: '2', beatloop_8_shift: '0.125',
+    beatloop_16: '1', beatloop_16_shift: '0.0625'
+}
+
 PioneerCDJHID.ignoredControlChanges = [ ];
 PioneerCDJHID.WheelLEDCount = 0;
 PioneerCDJHID.ButtonLEDCount = 22;
@@ -25,7 +32,7 @@ PioneerCDJHID.ButtonLEDCount = 22;
 PioneerCDJHID.activeDeck = 1;
 
 // Scratch parameters
-PioneerCDJHID.scratchintervalsPerRev = 256;
+PioneerCDJHID.scratchintervalsPerRev = 1024;
 PioneerCDJHID.scratchAlpha = 1.0/8;
 PioneerCDJHID.rampedScratchEnable = true;
 PioneerCDJHID.rampedScratchEnable = true;
@@ -37,14 +44,18 @@ PioneerCDJHID.rampedScratchEnable = true;
 // Initialize device state
 PioneerCDJHID.init = function (id) {
     PioneerCDJHID.id = id;
-    PioneerCDJHID.updateLEDs();
 
     PioneerCDJHID.registerInputPackets();
     PioneerCDJHID.registerOutputPackets();
     PioneerCDJHID.registerScalers();
     PioneerCDJHID.registerCallbacks();
 
-    PioneerCDJHID.toggleButtons = [ 'play', 'keylock' ]
+    PioneerCDJHID.initializeHIDMode();
+    PioneerCDJHID.updateLEDs();
+
+    PioneerCDJHID.toggleButtons = [ 'play', 'keylock', 'pfl' ]
+    engine.softTakeover('[Channel1]','pregain',true);
+    engine.softTakeover('[Channel2]','pregain',true);
 
     if (PioneerCDJHID.LEDUpdateInterval!=undefined) {
         PioneerCDJHID.LEDTimer = engine.beginTimer(
@@ -56,13 +67,17 @@ PioneerCDJHID.init = function (id) {
 
 // Device cleanup function
 PioneerCDJHID.shutdown = function() {
-    if (EksOtus.LEDTimer!=undefined) {
-        engine.stopTimer(EksOtus.LEDTimer);
-        EksOtus.LEDTimer = undefined;
+    if (PioneerCDJHID.LEDTimer!=undefined) {
+        engine.stopTimer(PioneerCDJHID.LEDTimer);
+        PioneerCDJHID.LEDTimer = undefined;
     }
-    EksOtus.setLEDControlMode(2);
-    EksOtus.setTrackpadMode(1);
-    script.HIDDebug("EKS "+EksOtus.id+" shut down");
+    script.HIDDebug("Pioneer CDJ Deck "+PioneerCDJHID.id+" shut down");
+}
+
+PioneerCDJHID.initializeHIDMode = function() {
+    var packet = PioneerCDJHID.OutputPackets['request_hid_mode'];
+    script.HIDDebug("Sending HID mode init packet");
+    packet.send();
 }
 
 // Mandatory default handler for incoming packets
@@ -70,52 +85,56 @@ PioneerCDJHID.incomingData = function(data,length) {
     PioneerCDJHID.parsePacket(data,length);
 }
 
+PioneerCDJHID.ignore = function(field) { }
+PioneerCDJHID.dump = function(field) {
+    script.HIDDebug(
+        'Field  ' + field.id 
+        + ' value ' + field.value 
+        + ' delta ' + field.delta
+    );
+}
+
 // Register value scaling functions
 PioneerCDJHID.registerScalers = function() {
     // Register functions to scale value
-    PioneerCDJHID.registerScalingFunction('crossfader',PioneerCDJHID.plusMinus1Scaler);
+    PioneerCDJHID.registerScalingFunction('rate',PioneerCDJHID.pitchScaler);
+    PioneerCDJHID.registerScalingFunction('pregain',PioneerCDJHID.pregainScaler);
     PioneerCDJHID.registerScalingFunction('jog',PioneerCDJHID.jogScaler);
-    PioneerCDJHID.registerScalingFunction('jog_scratch',PioneerCDJHID.jogScratchScaler);
+    PioneerCDJHID.registerScalingFunction('jog_scratch',PioneerCDJHID.jogPositionDelta);
 }
 
 // Register input/output field callback functions
 PioneerCDJHID.registerCallbacks = function() {
-    // PioneerCDJHID.registerInputCallback('control','hid','deck_switch',PioneerCDJHID.deckSwitch);
-    // PioneerCDJHID.registerInputCallback('control','[Master]','beat_align',PioneerCDJHID.beat_align);
-
-    // PioneerCDJHID.registerInputCallback('control','deck','slider_scale',PioneerCDJHID.pitchSlider);
-    // PioneerCDJHID.registerInputCallback('control','deck','slider_value',PioneerCDJHID.pitchSlider);
-    // PioneerCDJHID.registerInputCallback('control','deck','slider_position',PioneerCDJHID.pitchSlider);
-    // PioneerCDJHID.registerInputCallback('control','deck','slider_pos_1',PioneerCDJHID.pitchSlider);
-    // PioneerCDJHID.registerInputCallback('control','deck','slider_pos_2',PioneerCDJHID.pitchSlider);
-
-    // PioneerCDJHID.registerInputCallback('control','deck','beatloop_1',PioneerCDJHID.beatloop);
-    // PioneerCDJHID.registerInputCallback('control','deck','beatloop_2',PioneerCDJHID.beatloop);
-    // PioneerCDJHID.registerInputCallback('control','deck','beatloop_4',PioneerCDJHID.beatloop);
-    // PioneerCDJHID.registerInputCallback('control','deck','beatloop_8',PioneerCDJHID.beatloop);
+    PioneerCDJHID.registerInputCallback('control','hid','deck_switch',PioneerCDJHID.deckSwitch);
+    PioneerCDJHID.registerInputCallback('control','deck','beatloop_16',PioneerCDJHID.beatloop);
+    PioneerCDJHID.registerInputCallback('control','deck','beatloop_8',PioneerCDJHID.beatloop);
+    PioneerCDJHID.registerInputCallback('control','deck','beatloop_4',PioneerCDJHID.beatloop);
+    PioneerCDJHID.registerInputCallback('control','deck','beatloop_2',PioneerCDJHID.beatloop);
+    PioneerCDJHID.registerInputCallback('control','deck','jog_direction',PioneerCDJHID.ignore);
+    PioneerCDJHID.registerInputCallback('control','deck','jog_move',PioneerCDJHID.ignore);
+    PioneerCDJHID.registerInputCallback('control','deck','jog_ticks',PioneerCDJHID.ignore);
+    PioneerCDJHID.registerInputCallback('control','deck','needle_search',PioneerCDJHID.dump);
 
 }
 
 // Jog wheel seek event scaler
 PioneerCDJHID.jogScaler = function(group,name,value) {
-    return value/256*3;
+    return value/6;
 }
 
 // Jog wheel scratch event scaler
-PioneerCDJHID.jogScratchScaler = function(group,name,value) {
-    if (engine.getValue(group,'play')) {
-        if (value>0) return 1;
-        else return -1;
-    } else {
-        // TODO - do different scaling for stopped scratching
-        if (value>0) return 1;
-        else return -1;
-    }
+PioneerCDJHID.jogPositionDelta = function(group,name,value) {
+    return value/3; 
 }
 
-// Volume slider scaling for 0..1..5 scaling
-PioneerCDJHID.volumeScaler = function(group,name,value) {
-    return script.absoluteNonLin(value, 0, 1, 5, 0, 65536);
+// Pitch on CDJ sends -1000 to 1000, reset at 0, swap direction
+PioneerCDJHID.pitchScaler = function(gruop,name,value) {
+    return -(value/1000);
+}
+
+// Volume slider scaling for 0..1..5 scaling from 0-255
+PioneerCDJHID.pregainScaler = function(group,name,value) {
+    return script.absoluteNonLin(value, 0, 1, 5, 0, 256);
 }
 
 // Generic unsigned short to -1..0..1 range scaling
@@ -126,66 +145,31 @@ PioneerCDJHID.plusMinus1Scaler = function(group,name,value) {
         return (value-32768)/32768;
 }
 
-// Hotcues activated with normal press, cleared with shift
-PioneerCDJHID.hotcue = function (field) {
-    var command;
-    if (field.value==PioneerCDJHID.buttonStates.released)
-        return;
-    if (PioneerCDJHID.activeDeck==undefined)
-        return;
-
+PioneerCDJHID.seek_fwd = function (field) {
     var active_group = PioneerCDJHID.resolveGroup(field.group);
-    if (PioneerCDJHID.modifiers['shift']) {
-        command = field.name + '_clear';
-    } else {
-        command = field.name + '_activate';
-    }
-    // print ("HOTCUE group " + active_group + " name " + field.name + " value " + command);
-    engine.setValue(active_group,command,true);
+    if (field.value==PioneerCDJHID.buttonStates.released)
+        engine.setValue(active_group,'fwd',false);
+    if (field.value==PioneerCDJHID.buttonStates.pressed)
+        engine.setValue(active_group,'fwd',true);
 }
 
-
-// Beatloops activated with normal presses to beatloop_1 - beatloop_8
+// Hotcues activated with normal press, cleared with shift
 PioneerCDJHID.beatloop = function (field) {
     var command;
     if (field.value==PioneerCDJHID.buttonStates.released)
         return;
     if (PioneerCDJHID.activeDeck==undefined)
         return;
-    var active_group = PioneerCDJHID.resolveGroup(field.group);
-    command = field.name + '_activate';
-    engine.setValue(active_group,command,true);
-}
 
-PioneerCDJHID.beat_align = function (field) {
-    if (PioneerCDJHID.activeDeck==undefined)
-        return;
     var active_group = PioneerCDJHID.resolveGroup(field.group);
-    if (PioneerCDJHID.modifiers['shift']) {
-        // if (field.value==PioneerCDJHID.buttonStates.released) return;
-        engine.setValue(active_group,'beats_translate_curpos',field.value);
+    if (PioneerCDJHID.modifiers['beatloop_size']) {
+        size = PioneerCDJHID.beatLoopSizeMap[field.name+'_shift'] ;
     } else {
-        engine.setValue(active_group,'quantize',field.value);
+        size = PioneerCDJHID.beatLoopSizeMap[field.name];
     }
-}
-
-// Pitch slider modifies track speed directly
-// TODO - make this relative to the touch position
-PioneerCDJHID.pitchSlider = function (field) {
-    if (PioneerCDJHID.activeDeck==undefined)
-        return;
-    if (PioneerCDJHID.modifiers['pitchslider']) {
-        var active_group = PioneerCDJHID.resolveGroup(field.group);
-        if (field.name=='slider_position') {
-            if (field.value==0)
-                return;
-            var value = PioneerCDJHID.plusMinus1Scaler(
-                active_group,field.name,field.value
-            );
-            // print ("PITCH group " + active_group + " name " + field.name + " value " + value);
-            engine.setValue(active_group,'rate',value);
-        }
-    }
+    var command = 'beatloop_' + size + '_toggle';
+    print ("BEATLOOP SIZE" + active_group + " name " + command);
+    engine.setValue(active_group,command,true);
 }
 
 // Use pregain if modifier shift is active, volume otherwise
@@ -205,8 +189,7 @@ PioneerCDJHID.pregain = function (field) {
 
 // Function called when the special 'Deck Switch' button is pressed
 PioneerCDJHID.deckSwitch = function(field) {
-    if (PioneerCDJHID.initialized==false)
-        return;
+    script.HIDDebug('DECK SWITCH pressed');
     if (field.value == PioneerCDJHID.buttonStates.released) {
         if (PioneerCDJHID.deckSwitchClicked==false) {
             PioneerCDJHID.deckSwitchClicked=true;
@@ -262,7 +245,7 @@ PioneerCDJHID.deckSwitchDoubleClick = function() {
     }
     PioneerCDJHID.connectDeckLEDs();
     this.updateActiveDeckLEDs();
-    script.HIDDebug('Active EKS Otus deck now ' + PioneerCDJHID.activeDeck);
+    script.HIDDebug('Active CDJ deck now ' + PioneerCDJHID.activeDeck);
 }
 
 PioneerCDJHID.activeLEDUpdateWrapper = function() {
@@ -280,49 +263,53 @@ PioneerCDJHID.registerInputPackets = function() {
     // addControl(group,name,offset,pack,bitmask,isEncoder,callback)
     // Input controller state packet - 'control' is a special name
     packet = new HIDPacket('control',[],20);
-    packet.addControl('deck','previous',0,'B',2);
-    packet.addControl('deck','next',0,'B',3);
-    packet.addControl('deck','seek_back',0,'B',4);
-    packet.addControl('deck','seek_forward',0,'B',5);
-    packet.addControl('deck','cue',0,'B',6);
+    packet.addControl('hid','deck_switch',0,'B',0);
+    packet.addControl('[Playlist]','SelectPrevTrack',0,'B',2);
+
+    packet.addControl('[Playlist]','SelectNextTrack',0,'B',3);
+    packet.addControl('deck','back',0,'B',4);
+    packet.addControl('deck','fwd',0,'B',5);
+    packet.addControl('deck','cue_default',0,'B',6);
     packet.addControl('deck','play',0,'B',7);
 
     packet.addControl('deck','reloop_exit',1,'B',5);
-    packet.addControl('deck','cue_out',1,'B',6);
-    packet.addControl('deck','cue_in',1,'B',7);
+    packet.addControl('deck','loop_out',1,'B',6);
+    packet.addControl('deck','loop_in',1,'B',7);
 
     packet.addControl('deck','tempo_mode',2,'B',3);
-    packet.addControl('deck','cue_delete',2,'B',4);
-    packet.addControl('deck','cue_previous',2,'B',5);
-    packet.addControl('deck','cue_next',2,'B',6);
-    packet.addControl('deck','cue_memory',2,'B',7);
+    packet.addControl('deck','keylock',2,'B',4);
+    packet.addControl('deck','loop_halve',2,'B',5);
+    packet.addControl('deck','loop_double',2,'B',6);
+    packet.addControl('deck','quantize',2,'B',7);
 
-    packet.addControl('deck','jog_mode',3,'B',1);
-    packet.addControl('deck','master_tempo',3,'B',3);
-    packet.addControl('deck','tempo',3,'B',4);
-    packet.addControl('deck','browse_push',3,'B',5);
+    packet.addControl('deck','pfl',3,'B',1);
+    packet.addControl('deck','beatsync',3,'B',3);
+    packet.addControl('deck','beats_translate_curpos',3,'B',4);
+    packet.addControl('deck','LoadSelectedTrack',3,'B',5);
 
-    packet.addControl('deck','beat_select',4,'B',3);
-    packet.addControl('deck','hotcue_16',4,'B',4);
-    packet.addControl('deck','hotcue_8',4,'B',5);
-    packet.addControl('deck','hotcue_4',4,'B',6);
-    packet.addControl('deck','hotcue_2',4,'B',7);
+    packet.addControl('modifiers','beatloop_size',4,'B',3);
+    packet.addControl('deck','beatloop_16',4,'B',4);
+    packet.addControl('deck','beatloop_8',4,'B',5);
+    packet.addControl('deck','beatloop_4',4,'B',6);
+    packet.addControl('deck','beatloop_2',4,'B',7);
 
     packet.addControl('deck','reverse',7,'B',0);
-    packet.addControl('deck','jog_touch_1',7,'B',5);
-    packet.addControl('deck','jog_touch_2',7,'B',6);
-    packet.addControl('deck','jog_touch_3',7,'B',7);
+    packet.addControl('deck','jog_touch',7,'B',5);
+    packet.addControl('deck','jog_direction',7,'B',6);
+    packet.addControl('deck','jog_move',7,'B',7);
 
-    packet.addControl('deck','vinyl_speed',8,'B');
-    packet.addControl('deck','browse',10,'B');
+    packet.addControl('deck','pregain',8,'B');
+    packet.addControl('[Playlist]','SelectTrackKnob',10,'H',undefined,true);
     // 0xFC18 to 0x03E8
-    packet.addControl('deck','pitch',12,'h');
-    packet.addControl('deck','jog_wheel',14,'i');
+    packet.addControl('deck','rate',12,'h');
+    packet.addControl('deck','jog_wheel',14,'h',undefined,true);
+    packet.addControl('deck','jog_ticks',16,'h');
 
     packet.addControl('deck','needle_search',18,'h');
 
     // Adjust minimum deltas from unstable potentiometers
-    packet.setMinDelta('deck','jog_wheel',4);
+    // packet.setMinDelta('deck','pitch',4);
+    // packet.setMinDelta('deck','jog_ticks',4);
     PioneerCDJHID.registerInputPacket(packet);
 }
 
@@ -332,13 +319,16 @@ PioneerCDJHID.registerOutputPackets = function() {
     var name = undefined;
     var offset = 0;
 
+    // Control packet to initialize HID mode on CDJ
+    packet = new HIDPacket('request_hid_mode',[0x1],0x20);
+    packet.addControl('hid','mode',0,'B',1);
+    PioneerCDJHID.registerOutputPacket(packet);
+
     // Control packet for button LEDs
     packet = new HIDPacket('button_leds',[],20);
-
     packet.addLED('deck','previous',0,'B',2);
     packet.addLED('deck','next',0,'B',3);
     packet.addLED('deck','cue',0,'B',6);
-    packet.addLED('deck','cue',0,'B',7);
     PioneerCDJHID.registerOutputPacket(packet);
 
 }
