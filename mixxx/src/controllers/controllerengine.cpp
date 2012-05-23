@@ -1168,11 +1168,11 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables brake/spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional), 
-	         delay (optional), rate (optional)
+             delay (optional), rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, float factor, int delay, float rate) {
-    QString group = QString("[Channel%1]").arg(deck);
+	QString group = QString("[Channel%1]").arg(deck);
 
 	// kill timer when both enabling or disabling
 	int timerId = m_brakeTimers.key(deck);
@@ -1199,7 +1199,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, int delay, f
 		}
 
 		// setup timer and send first scratch2 'tick' 
-    	int timerId = startTimer(50);
+		int timerId = startTimer(50);
 		m_brakeTimers[timerId] = deck;
 
 		cot = getControlObjectThread(group, "scratch2");
