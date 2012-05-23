@@ -22,11 +22,13 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    CueDAO& cueDao,
                    PlaylistDAO& playlistDao,
                    CrateDAO& crateDao,
+                   AnalysisDao& analysisDao,
                    ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_crateDao(crateDao),
+          m_analysisDao(analysisDao),
           m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE) {
 }
@@ -442,6 +444,7 @@ void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd, bool unremove) {
         }
         int trackId = query.lastInsertId().toInt();
         pTrack->setId(trackId);
+        m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
         pTrack->setDirty(false);
         tracksAddedSet.insert(trackId);
@@ -854,6 +857,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 
     //qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
     time.start();
+    m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
     transaction.commit();
 

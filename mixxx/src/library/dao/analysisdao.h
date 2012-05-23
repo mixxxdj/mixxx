@@ -47,6 +47,8 @@ class AnalysisDao : public DAO {
     bool deleteAnalysis(int analysisId);
     bool deleteAnalysesForTrack(int trackId);
 
+    void saveTrackAnalyses(TrackInfoObject* pTrack);
+
   private:
     bool saveWaveform(const TrackInfoObject& tio,
                       const Waveform& waveform,

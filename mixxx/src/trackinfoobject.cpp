@@ -107,7 +107,6 @@ void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
     m_sLocation = fileInfo.absoluteFilePath();
     m_sDirectory = fileInfo.absolutePath();
     m_iLength = fileInfo.size();
-    m_bExists = fileInfo.exists();
 }
 
 void TrackInfoObject::initialize(bool parseHeader) {
@@ -295,7 +294,10 @@ QDateTime TrackInfoObject::getCreateDate() const
 bool TrackInfoObject::exists()  const
 {
     QMutexLocker lock(&m_qMutex);
-    return m_bExists;
+    // return here a fresh calculated value to be sure 
+    // the file is not deleted or gone with an USB-Stick 
+    // because it will probably stop the Auto-DJ
+    return QFile::exists(m_sLocation);
 }
 
 float TrackInfoObject::getReplayGain() const

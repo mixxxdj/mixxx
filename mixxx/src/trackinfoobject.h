@@ -304,8 +304,6 @@ private:
     QString m_sDirectory;
     // Length of track in bytes
     int m_iLength;
-    // Flag which indicates whether the file exists or not.
-    bool m_bExists;
 
     /** Metadata */
     /** Album */

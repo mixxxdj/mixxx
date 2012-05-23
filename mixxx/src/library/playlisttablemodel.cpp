@@ -5,7 +5,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
-
+#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
@@ -370,8 +370,10 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
+QAbstractItemDelegate* PlaylistTableModel::delegateForColumn(const int i, QObject* pParent) {
+    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
+        return new StarDelegate(pParent);
+    }
     return NULL;
 }
 

@@ -37,7 +37,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
     virtual void shuffleTracks(const QModelIndex& currentIndex);
 
-    QItemDelegate* delegateForColumn(const int i);
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pObject);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private slots:

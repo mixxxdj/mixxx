@@ -46,7 +46,6 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     m_pRateDir = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
 
-    setAttribute(Qt::WA_ForceUpdatesDisabled);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     m_zoomZoneWidth = 20;

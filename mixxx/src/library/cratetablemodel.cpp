@@ -9,7 +9,7 @@
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-
+#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
@@ -182,7 +182,7 @@ bool CrateTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-QItemDelegate* CrateTableModel::delegateForColumn(int i) {
+QAbstractItemDelegate* CrateTableModel::delegateForColumn(const int i, QObject* pParent) {
     return NULL;
 }
 

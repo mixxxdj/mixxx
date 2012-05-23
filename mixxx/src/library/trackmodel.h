@@ -87,8 +87,9 @@ class TrackModel {
         Q_UNUSED(sourceIndex);
         Q_UNUSED(destIndex);
     }
-    virtual QItemDelegate* delegateForColumn(const int i) {
+    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) {
         Q_UNUSED(i);
+        Q_UNUSED(pParent);
         return NULL;
     }
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {

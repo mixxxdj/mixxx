@@ -16,6 +16,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/analysisdao.h"
 #include "trackinfoobject.h"
 #include "util.h"
 
@@ -63,6 +64,7 @@ class TrackDAO : public QObject, public virtual DAO {
      * synchronized on track metadata change **/
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
+             AnalysisDao& analysisDao,
              ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
@@ -144,6 +146,7 @@ class TrackDAO : public QObject, public virtual DAO {
     CueDAO &m_cueDao;
     PlaylistDAO &m_playlistDao;
     CrateDAO &m_crateDao;
+    AnalysisDao& m_analysisDao;
     ConfigObject<ConfigValue> * m_pConfig;
     mutable QHash<int, TrackWeakPointer> m_tracks;
     mutable QSet<int> m_dirtyTracks;

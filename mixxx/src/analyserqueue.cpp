@@ -26,9 +26,7 @@ AnalyserQueue::AnalyserQueue() : m_aq(),
     m_qm(),
     m_qwait(),
     m_exit(false),
-    m_aiCheckPriorities(false)
-{
-
+    m_aiCheckPriorities(false) {
 }
 
 int AnalyserQueue::numQueuedTracks()
