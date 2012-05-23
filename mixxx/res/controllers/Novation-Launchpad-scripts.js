@@ -105,7 +105,7 @@ NovationLaunchpad = {
 			// spinback effect
 
 			this.button("1," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
-				script.deckSpinback(g, v > 0);
+				script.spinback(g, v > 0);
 			});
 
 			// instant loops 
@@ -144,7 +144,7 @@ NovationLaunchpad = {
 			// brake effect
 
 			this.button("3," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
-				script.deckBrake(g, v > 0);
+				script.brake(g, v > 0);
 			});
 
 			// led feedback for loop in/out buttons to show loop status
