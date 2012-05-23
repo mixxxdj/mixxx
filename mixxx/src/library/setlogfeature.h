@@ -47,7 +47,7 @@ public:
 
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
-    int m_iLastPlayedTrack;
+    int m_iLastPlayedTrack[4]; //TODO: change for n-decks
 };
 
 #endif /* SETLOGFEATURE_H */
