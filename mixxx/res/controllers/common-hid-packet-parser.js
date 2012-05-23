@@ -213,7 +213,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
         return;
     }
     if (!(pack in this.packSizes)) {
-        script.HIDError('Unknown pack value ' + pack);
+        script.HIDDebug('Unknown pack value ' + pack);
         return;
     }
 
@@ -981,12 +981,14 @@ HIDController.prototype.processIncomingPacket = function(packet,delta) {
 
             value = field.value;
             scaler = this.lookupScalingFunction(name);
-            if (scaler!=undefined)
-                value = scaler(group,name,value);
-
             if (field.isEncoder==true) {
-                engine.setValue(group,name,field.delta);
+                var field_delta = field.delta;
+                if (scaler!=undefined)
+                   field_delta = scaler(group,name,field_delta);
+                engine.setValue(group,name,field_delta);
             } else {
+                if (scaler!=undefined)
+                   value = scaler(group,name,value);
                 engine.setValue(group,name,value);
             }
         }
@@ -1013,9 +1015,13 @@ HIDController.prototype.setScratchEnabled = function(group,status) {
 
 // Default jog scratching function, override to change implementation
 HIDController.prototype.jog_wheel = function(field) {
-    var value = field.value;
     var scaler = undefined;
     var active_group = this.resolveGroup(field.group);
+    var value = undefined;
+    if (field.isEncoder)
+        value = field.delta;
+    else
+        value = field.value;
 
     if (this.isScratchEnabled==true) {
         var deck = this.resolveDeck(active_group);
