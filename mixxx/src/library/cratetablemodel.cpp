@@ -9,7 +9,6 @@
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
@@ -180,10 +179,6 @@ bool CrateTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
-}
-
-QAbstractItemDelegate* CrateTableModel::delegateForColumn(const int i, QObject* pParent) {
-    return NULL;
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
