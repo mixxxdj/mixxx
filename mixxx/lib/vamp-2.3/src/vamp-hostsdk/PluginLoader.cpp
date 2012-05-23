@@ -46,7 +46,6 @@
 #include <cstring>
 
 #ifdef _WIN32
-#define UNICODE
 #include <windows.h>
 #include <tchar.h>
 #define PLUGIN_SUFFIX "dll"
