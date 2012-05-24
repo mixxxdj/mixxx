@@ -610,7 +610,7 @@ PluginLoader::Impl::listFiles(string dir, string extension)
 #ifdef UNICODE
     int len = expression.length(); // cannot be more wchars than length in bytes of utf8 string
     wchar_t *buffer = new wchar_t[len];
-    int rv = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), len, buffer, len);
+    int rv = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), -1, buffer, len);
     if (rv <= 0) {
         cerr << "Vamp::HostExt::PluginLoader: Unable to convert wildcard path \""
              << expression << "\" to wide characters" << endl;
