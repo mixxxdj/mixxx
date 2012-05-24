@@ -54,24 +54,24 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
     if (AllocConsole()) {
         SetConsoleTitleA("Mixxx Debug Messages");
 
-        //fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
-        //fp = _fdopen(fd, "w");
-        fp = fopen("stdout.txt", "w");
+        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
+        fp = _fdopen(fd, "w");
+        //fp = fopen("stdout.txt", "w");
 
-        std::ofstream file;
-        file.open ("cout.txt");
-        std::cout.rdbuf(file.rdbuf());
+        // std::ofstream file;
+        // file.open ("cout.txt");
+        // std::cout.rdbuf(file.rdbuf());
 
         *stdout = *fp;
         setvbuf(stdout, NULL, _IONBF, 0);
 
-        //fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
-        //fp = _fdopen(fd, "w");
-        fp = fopen("stderr.txt", "w");
+        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
+        fp = _fdopen(fd, "w");
+        //fp = fopen("stderr.txt", "w");
 
-        std::ofstream file2;
-        file2.open ("cerr.txt");
-        std::cerr.rdbuf(file2.rdbuf());
+        // std::ofstream file2;
+        // file2.open ("cerr.txt");
+        // std::cerr.rdbuf(file2.rdbuf());
 
         *stderr = *fp;
         setvbuf(stderr, NULL, _IONBF, 0);
