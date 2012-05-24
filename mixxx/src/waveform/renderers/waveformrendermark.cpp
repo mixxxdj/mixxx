@@ -11,10 +11,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-#include "engine/cuecontrol.h"
-#include <set>
 
-#include <QTextStream>
 
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -24,53 +21,8 @@ void WaveformRenderMark::init() {
 }
 
 void WaveformRenderMark::setup( const QDomNode& node) {
-    m_defaultMark = WaveformMark();
-    m_marks.clear();
-    m_marks.reserve(NUM_HOT_CUES);
-
-    std::set<QString> hotCutSet;
-    bool hasDefaultMark = false;
-
-    QDomNode child = node.firstChild();
-    while (!child.isNull()) {
-        if (child.nodeName() == "DefaultMark") {
-            m_defaultMark.setup( m_waveformRenderer->getGroup(), child);
-            hasDefaultMark = true;
-        } else if (child.nodeName() == "Mark") {
-            m_marks.push_back(WaveformMark());
-            WaveformMark& mark = m_marks.back();
-            mark.setup( m_waveformRenderer->getGroup(), child);
-            //garante uniqueness even if there is misdesigned skin
-            std::pair<std::set<QString>::iterator, bool> insertion;
-            insertion = hotCutSet.insert(mark.m_pointControl->getKey().item);
-            if( !insertion.second) {
-                qWarning() << "WaveformRenderMark::setup - redefinition of "
-                           << mark.m_pointControl->getKey().item;
-                m_marks.resize( m_marks.size() - 1);
-            }
-        }
-        child = child.nextSibling();
-    }
-
-    //check if there is a default mark and compare declared
-    //and to create all missing hot_cues
-    if(hasDefaultMark) {
-        for( int i = 1; i < NUM_HOT_CUES; i++) {
-            QString hotCueControlItem = "hotcue_" + QString::number(i) + "_position";
-            std::pair<std::set<QString>::iterator, bool> insertion;
-            insertion = hotCutSet.insert(hotCueControlItem);
-            if( insertion.second) {
-                //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                m_marks.push_back(m_defaultMark);
-                WaveformMark& mark = m_marks.back();
-                mark.m_pointControl = ControlObject::getControl(
-                            ConfigKey(m_waveformRenderer->getGroup(), hotCueControlItem));
-                mark.m_text = QString(" HOTCUE %1 ").arg(i);
-            }
-        }
-    }
+    m_marks.setup(m_waveformRenderer->getGroup(),node);
 }
-
 
 void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
     painter->save();
@@ -227,7 +179,7 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         painter.setPen(QColor(0,0,0,0));
         painter.setBrush(QBrush(triangleColor));
 
-        //vRicne: again don't ask about the +-0.1 0.5 ...
+        //vRince: again don't ask about the +-0.1 0.5 ...
         // just to make it nice in Qt ...
 
         QPolygonF triangle;
