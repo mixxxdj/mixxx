@@ -41,9 +41,9 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_rampTo.resize(kDecks);
     m_ramp.resize(kDecks);
     m_pitchFilter.resize(kDecks);
-	m_rampFactor.resize(kDecks);
-	m_brakeActive.resize(kDecks);
-	m_brakeKeylock.resize(kDecks);
+    m_rampFactor.resize(kDecks);
+    m_brakeActive.resize(kDecks);
+    m_brakeKeylock.resize(kDecks);
 
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
@@ -948,8 +948,8 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     m_dx[deck] = 1/intervalsPerSecond;
     m_intervalAccumulator[deck] = 0;
     m_ramp[deck] = false;
-	m_rampFactor[deck] = 0.001;
-	m_brakeActive[deck] = false;
+    m_rampFactor[deck] = 0.001;
+    m_brakeActive[deck] = false;
 
     QString group = QString("[Channel%1]").arg(deck);
 
@@ -1037,7 +1037,7 @@ void ControllerEngine::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
     QString group = QString("[Channel%1]").arg(deck);
     PitchFilter* filter = m_pitchFilter[deck];
-	float pitch = filter->currentPitch();
+    float pitch = filter->currentPitch();
 
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
@@ -1047,7 +1047,7 @@ void ControllerEngine::scratchProcess(int timerId) {
     // Give the filter a data point:
 
     // If we're ramping to end scratching, feed fixed data
-	if (m_ramp[deck]) {
+    if (m_ramp[deck]) {
         filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
     } else {
         //  This will (and should) be 0 if no net ticks have been accumulated
@@ -1069,7 +1069,7 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     //if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
     if ((m_ramp[deck] && fabs(m_rampTo[deck]-filter->currentPitch()) <= 0.00001)
-		|| (m_brakeActive[deck] && ((pitch > 0.0 &&  filter->currentPitch() < 0.0) || (pitch < 0.0 &&  filter->currentPitch() > 0.0)))) {
+        || (m_brakeActive[deck] && ((pitch > 0.0 &&  filter->currentPitch() < 0.0) || (pitch < 0.0 &&  filter->currentPitch() > 0.0)))) {
 
         // Not ramping no mo'
         m_ramp[deck] = false;
@@ -1176,8 +1176,8 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(int deck, bool activate, float factor, float rate) {
-	// defaults for args set in header file
-	brake(deck, activate, factor, rate);
+    // defaults for args set in header file
+    brake(deck, activate, factor, rate);
 }
 
 /*  -------- ------------------------------------------------------
@@ -1187,59 +1187,59 @@ void ControllerEngine::spinback(int deck, bool activate, float factor, float rat
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, float factor, float rate) {
-	QString group = QString("[Channel%1]").arg(deck);
+    QString group = QString("[Channel%1]").arg(deck);
 
-	// kill timer when both enabling or disabling
-	int timerId = m_scratchTimers.key(deck);
-	killTimer(timerId);
-	m_scratchTimers.remove(timerId);
+    // kill timer when both enabling or disabling
+    int timerId = m_scratchTimers.key(deck);
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
 
-	// enable/disable scratch2 mode
-	ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
-	if (cot != NULL) {
-		cot->slotSet(activate ? 1 : 0);
-	}
+    // enable/disable scratch2 mode
+    ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
+    if (cot != NULL) {
+        cot->slotSet(activate ? 1 : 0);
+    }
 
-	// used in scratchProcess for the different timer behaviour we need
-	m_brakeActive[deck] = activate;
+    // used in scratchProcess for the different timer behaviour we need
+    m_brakeActive[deck] = activate;
 
-	if (activate) {
-		// store the new values for this spinback/brake effect
-		m_rampFactor[deck] = rate * factor * -1.0;
-		m_rampTo[deck] = 1.0;
+    if (activate) {
+        // store the new values for this spinback/brake effect
+        m_rampFactor[deck] = rate * factor * -1.0;
+        m_rampTo[deck] = 1.0;
 
-		// save current keylock status and disable
-		cot = getControlObjectThread(group, "keylock");
-		if (cot != NULL) {
-			m_brakeKeylock[deck] = cot->get();
-			cot->slotSet(0);
-		}
+        // save current keylock status and disable
+        cot = getControlObjectThread(group, "keylock");
+        if (cot != NULL) {
+            m_brakeKeylock[deck] = cot->get();
+            cot->slotSet(0);
+        }
 
-		// setup timer and send first scratch2 'tick' 
-		int timerId = startTimer(50);
-		m_scratchTimers[timerId] = deck;
+        // setup timer and send first scratch2 'tick' 
+        int timerId = startTimer(50);
+        m_scratchTimers[timerId] = deck;
 
-		cot = getControlObjectThread(group, "scratch2");
-		if (cot != NULL) {
-			cot->slotSet(rate);
-		}
+        cot = getControlObjectThread(group, "scratch2");
+        if (cot != NULL) {
+            cot->slotSet(rate);
+        }
 
-		// setup the filter
-		PitchFilter* filter = m_pitchFilter[deck];
-		if (filter != NULL) {
-        	m_pitchFilter[deck]->init(0.001, rate);
-		}
+        // setup the filter
+        PitchFilter* filter = m_pitchFilter[deck];
+        if (filter != NULL) {
+            m_pitchFilter[deck]->init(0.001, rate);
+        }
 
-		// activate the ramping in scratchProcess()
-		m_ramp[deck] = true;    
-	}
-	else {
-		// re-enable keylock if needed
-		if (m_brakeKeylock[deck]) {
-			cot = getControlObjectThread(group, "keylock");
-			if (cot != NULL) {
-				cot->slotSet(1);
-			}
-		}
-	}
+        // activate the ramping in scratchProcess()
+        m_ramp[deck] = true;    
+    }
+    else {
+        // re-enable keylock if needed
+        if (m_brakeKeylock[deck]) {
+            cot = getControlObjectThread(group, "keylock");
+            if (cot != NULL) {
+                cot->slotSet(1);
+            }
+        }
+    }
 }
