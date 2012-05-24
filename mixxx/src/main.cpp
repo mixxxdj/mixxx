@@ -35,14 +35,13 @@
 #include "qsplashscreen.h"
 #include "errordialoghandler.h"
 #include "defs_version.h"
-#include <iostream>
-#include <fstream>
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
 #endif
 
 #ifdef __WINDOWS__
+#ifdef DEBUGCONSOLE
 #include <io.h> // Debug Console
 #include <windows.h>
 
@@ -56,27 +55,18 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 
         fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
         fp = _fdopen(fd, "w");
-        //fp = fopen("stdout.txt", "w");
-
-        // std::ofstream file;
-        // file.open ("cout.txt");
-        // std::cout.rdbuf(file.rdbuf());
 
         *stdout = *fp;
         setvbuf(stdout, NULL, _IONBF, 0);
 
         fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
         fp = _fdopen(fd, "w");
-        //fp = fopen("stderr.txt", "w");
-
-        // std::ofstream file2;
-        // file2.open ("cerr.txt");
-        // std::cerr.rdbuf(file2.rdbuf());
 
         *stderr = *fp;
         setvbuf(stderr, NULL, _IONBF, 0);
     }
 }
+#endif // DEBUGCONSOLE
 #endif // __WINDOWS__
 
 QApplication *a;
@@ -161,7 +151,9 @@ int main(int argc, char * argv[])
 
 
 #ifdef __WINDOWS__
+  #ifdef DEBUGCONSOLE
     InitDebugConsole();
+  #endif
 #endif
     qInstallMsgHandler(MessageHandler);
 
