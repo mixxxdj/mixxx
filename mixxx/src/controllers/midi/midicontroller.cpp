@@ -334,17 +334,24 @@ void MidiController::receive(unsigned char status, unsigned char control,
     if (options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(p);
-        if (m_st.ignore(p, newValue, true)) {
-            return;
-        }
     }
 
     ControlObject::sync();
     if (opCode == MIDI_PITCH_BEND) {
-        // Absolute CO value is calculated above on Pitch messages (-1..1)
+        // Absolute value is calculated above on Pitch messages (-1..1)
+        if (options.soft_takeover) {
+            if (m_st.ignore(p, newValue, false)) {
+                return;
+            }
+        }
         p->queueFromThread(newValue);
     }
     else {
+        if (options.soft_takeover) {
+            if (m_st.ignore(p, newValue, true)) {
+                return;
+            }
+        }
         p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
 }
