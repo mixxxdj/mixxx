@@ -188,34 +188,12 @@
 								<Size>210,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
+								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
 									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
+									<Text> %1 </Text>
+								</DefaultMark>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -692,34 +670,12 @@
 								<Size>210,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
+								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
 									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
+									<Text> %1 </Text>
+								</DefaultMark>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1196,34 +1152,12 @@
 								<Size>210,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
+								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
 									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
+									<Text> %1 </Text>
+								</DefaultMark>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1700,34 +1634,12 @@
 								<Size>210,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
-								<Mark>
-									<Control>hotcue_1_position</Control>
-									<Text>1</Text>
+								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
 									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_2_position</Control>
-									<Text>2</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_3_position</Control>
-									<Text>3</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
-								<Mark>
-									<Control>hotcue_4_position</Control>
-									<Text>4</Text>
-									<Align>bottom</Align>
-									<Color>#00FF00</Color>
-									<TextColor>#FFFFFF</TextColor>
-								</Mark>
+									<Text> %1 </Text>
+								</DefaultMark>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -2500,6 +2412,12 @@
 						<MarkerColor>#00FF00</MarkerColor>
 						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<DefaultMark>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+							<Text> %1 </Text>
+						</DefaultMark>
 						<MarkRange>
 							<StartControl>loop_start_position</StartControl>
 							<EndControl>loop_end_position</EndControl>
@@ -2509,17 +2427,15 @@
 						</MarkRange>
 						<Mark>
 							<Control>loop_start_position</Control>
-							<Pixmap>marker_loop_in1.png</Pixmap>
-							<Text>LOOP IN</Text>
-							<Align>top</Align>
+							<Text>IN</Text>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
 						<Mark>
 							<Control>loop_end_position</Control>
-							<Pixmap>marker_loop_out1.png</Pixmap>
-							<Text>LOOP OUT</Text>
-							<Align>top</Align>
+							<Text>OUT</Text>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2527,272 +2443,11 @@
 						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
 							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-						These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-						represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
-						Current skins uses up to 6 buttons per channel.
 						-->
 						<Mark>
-							<Control>hotcue_1_position</Control>
-							<Pixmap>marker_hotcue1_1.png</Pixmap>
-							<Text> HOTCUE 1 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_2_position</Control>
-							<Pixmap>marker_hotcue1_2.png</Pixmap>
-							<Text> HOTCUE 2 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_3_position</Control>
-							<Pixmap>marker_hotcue1_3.png</Pixmap>
-							<Text> HOTCUE 3 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_4_position</Control>
-							<Pixmap>marker_hotcue1_4.png</Pixmap>
-							<Text> HOTCUE 4 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_5_position</Control>
-							<Text> HOTCUE 5 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_6_position</Control>
-							<Text> HOTCUE 6 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_7_position</Control>
-							<Text> HOTCUE 7 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_8_position</Control>
-							<Text> HOTCUE 8 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_9_position</Control>
-							<Text> HOTCUE 9 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_10_position</Control>
-							<Text> HOTCUE 10 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_11_position</Control>
-							<Text> HOTCUE 11 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_12_position</Control>
-							<Text> HOTCUE 12 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_13_position</Control>
-							<Text> HOTCUE 13 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_14_position</Control>
-							<Text> HOTCUE 14 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_15_position</Control>
-							<Text> HOTCUE 15 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_16_position</Control>
-							<Text> HOTCUE 16 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_17_position</Control>
-							<Text> HOTCUE 17 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_18_position</Control>
-							<Text> HOTCUE 18 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_19_position</Control>
-							<Text> HOTCUE 19 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_20_position</Control>
-							<Text> HOTCUE 20 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_21_position</Control>
-							<Text> HOTCUE 21 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_22_position</Control>
-							<Text> HOTCUE 22 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_23_position</Control>
-							<Text> HOTCUE 23 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_24_position</Control>
-							<Text> HOTCUE 24 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_25_position</Control>
-							<Text> HOTCUE 25 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_26_position</Control>
-							<Text> HOTCUE 26 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_27_position</Control>
-							<Text> HOTCUE 27 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_28_position</Control>
-							<Text> HOTCUE 28 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_29_position</Control>
-							<Text> HOTCUE 29 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_30_position</Control>
-							<Text> HOTCUE 30 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_31_position</Control>
-							<Text> HOTCUE 31 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_32_position</Control>
-							<Text> HOTCUE 32 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_33_position</Control>
-							<Text> HOTCUE 33 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_34_position</Control>
-							<Text> HOTCUE 34 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_35_position</Control>
-							<Text> HOTCUE 35 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_36_position</Control>
-							<Text> HOTCUE 36 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-
-						<Mark>
 							<Control>cue_point</Control>
-							<Pixmap>marker_cue1.png</Pixmap>
-							<Text> CUE </Text>
-							<Align>center</Align>
+							<Text>CUE</Text>
+							<Align>top</Align>
 							<Color>#FF001C</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2812,6 +2467,12 @@
 						<MarkerColor>#00FF00</MarkerColor>
 						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<DefaultMark>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+							<Text> %1 </Text>
+						</DefaultMark>
 						<MarkRange>
 							<StartControl>loop_start_position</StartControl>
 							<EndControl>loop_end_position</EndControl>
@@ -2821,17 +2482,15 @@
 						</MarkRange>
 						<Mark>
 							<Control>loop_start_position</Control>
-							<Pixmap>marker_loop_in1.png</Pixmap>
-							<Text>LOOP IN</Text>
-							<Align>top</Align>
+							<Text>IN</Text>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
 						<Mark>
 							<Control>loop_end_position</Control>
-							<Pixmap>marker_loop_out1.png</Pixmap>
-							<Text>LOOP OUT</Text>
-							<Align>top</Align>
+							<Text>OUT</Text>
+							<Align>bottom</Align>
 							<Color>#00FF00</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -2839,272 +2498,11 @@
 						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
 							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-						These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-						represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
-						Current skins uses up to 6 buttons per channel.
 						-->
 						<Mark>
-							<Control>hotcue_1_position</Control>
-							<Pixmap>marker_hotcue1_1.png</Pixmap>
-							<Text> HOTCUE 1 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_2_position</Control>
-							<Pixmap>marker_hotcue1_2.png</Pixmap>
-							<Text> HOTCUE 2 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_3_position</Control>
-							<Pixmap>marker_hotcue1_3.png</Pixmap>
-							<Text> HOTCUE 3 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_4_position</Control>
-							<Pixmap>marker_hotcue1_4.png</Pixmap>
-							<Text> HOTCUE 4 </Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_5_position</Control>
-							<Text> HOTCUE 5 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_6_position</Control>
-							<Text> HOTCUE 6 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_7_position</Control>
-							<Text> HOTCUE 7 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_8_position</Control>
-							<Text> HOTCUE 8 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_9_position</Control>
-							<Text> HOTCUE 9 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_10_position</Control>
-							<Text> HOTCUE 10 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_11_position</Control>
-							<Text> HOTCUE 11 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_12_position</Control>
-							<Text> HOTCUE 12 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_13_position</Control>
-							<Text> HOTCUE 13 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_14_position</Control>
-							<Text> HOTCUE 14 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_15_position</Control>
-							<Text> HOTCUE 15 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_16_position</Control>
-							<Text> HOTCUE 16 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_17_position</Control>
-							<Text> HOTCUE 17 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_18_position</Control>
-							<Text> HOTCUE 18 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_19_position</Control>
-							<Text> HOTCUE 19 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_20_position</Control>
-							<Text> HOTCUE 20 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_21_position</Control>
-							<Text> HOTCUE 21 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_22_position</Control>
-							<Text> HOTCUE 22 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_23_position</Control>
-							<Text> HOTCUE 23 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_24_position</Control>
-							<Text> HOTCUE 24 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_25_position</Control>
-							<Text> HOTCUE 25 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_26_position</Control>
-							<Text> HOTCUE 26 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_27_position</Control>
-							<Text> HOTCUE 27 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_28_position</Control>
-							<Text> HOTCUE 28 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_29_position</Control>
-							<Text> HOTCUE 29 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_30_position</Control>
-							<Text> HOTCUE 30 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_31_position</Control>
-							<Text> HOTCUE 31 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_32_position</Control>
-							<Text> HOTCUE 32 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_33_position</Control>
-							<Text> HOTCUE 33 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_34_position</Control>
-							<Text> HOTCUE 34 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_35_position</Control>
-							<Text> HOTCUE 35 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>hotcue_36_position</Control>
-							<Text> HOTCUE 36 </Text>
-							<Align>center</Align>
-							<Color>#AE5CFF</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-
-						<Mark>
 							<Control>cue_point</Control>
-							<Pixmap>marker_cue1.png</Pixmap>
-							<Text> CUE </Text>
-							<Align>center</Align>
+							<Text>CUE</Text>
+							<Align>top</Align>
 							<Color>#FF001C</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
@@ -4359,6 +3757,12 @@
 				<SignalColor>#FBC400</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
+				<DefaultMark>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+					<Text> %1 </Text>
+				</DefaultMark>
 				<MarkRange>
 					<StartControl>loop_start_position</StartControl>
 					<EndControl>loop_end_position</EndControl>
@@ -4371,34 +3775,6 @@
 					<Text>C</Text>
 					<Align>top</Align>
 					<Color>#FF001C</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_1_position</Control>
-					<Text>1</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_2_position</Control>
-					<Text>2</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_3_position</Control>
-					<Text>3</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_4_position</Control>
-					<Text>4</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
 					<TextColor>#FFFFFF</TextColor>
 				</Mark>
 				<Connection>
@@ -5276,6 +4652,12 @@
 				<SignalColor>#FB9A00</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
+				<DefaultMark>
+					<Align>bottom</Align>
+					<Color>#00FF00</Color>
+					<TextColor>#FFFFFF</TextColor>
+					<Text> %1 </Text>
+				</DefaultMark>
 				<MarkRange>
 					<StartControl>loop_start_position</StartControl>
 					<EndControl>loop_end_position</EndControl>
@@ -5288,34 +4670,6 @@
 					<Text>C</Text>
 					<Align>top</Align>
 					<Color>#FF001C</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_1_position</Control>
-					<Text>1</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_2_position</Control>
-					<Text>2</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_3_position</Control>
-					<Text>3</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_4_position</Control>
-					<Text>4</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
 					<TextColor>#FFFFFF</TextColor>
 				</Mark>
 				<Connection>
