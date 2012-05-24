@@ -541,7 +541,7 @@ PluginLoader::Impl::loadLibrary(string path)
     void *handle = 0;
 #ifdef _WIN32
 #ifdef UNICODE
-    int len = path.length(); // cannot be more wchars than length in bytes of utf8 string
+    int len = path.length() + 1; // cannot be more wchars than length in bytes of utf8 string
     wchar_t *buffer = new wchar_t[len];
     int rv = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), len, buffer, len);
     if (rv <= 0) {
@@ -608,7 +608,7 @@ PluginLoader::Impl::listFiles(string dir, string extension)
     string expression = dir + "\\*." + extension;
     std::cerr << "listFiles expression " << expression << std::endl;
 #ifdef UNICODE
-    int len = expression.length(); // cannot be more wchars than length in bytes of utf8 string
+    int len = expression.length() + 1; // cannot be more wchars than length in bytes of utf8 string
     wchar_t *buffer = new wchar_t[len];
     int rv = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), len, buffer, len);
     if (rv <= 0) {
