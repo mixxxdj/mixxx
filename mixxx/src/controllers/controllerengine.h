@@ -59,8 +59,8 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-    Q_INVOKABLE void brake(int deck, bool activate, float factor=0.95, int delay=0, float rate=1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, float factor=0.8, int delay=5, float rate=-10.0);
+    Q_INVOKABLE void brake(int deck, bool activate, float factor=0.9, float rate=1.0);
+    Q_INVOKABLE void spinback(int deck, bool activate, float factor=1.8, float rate=-10.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);
@@ -105,7 +105,6 @@ class ControllerEngine : public QObject {
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
-    void brakeProcess(int timerId);
 
     Controller* m_pController;
     bool m_bDebug;
@@ -120,11 +119,11 @@ class ControllerEngine : public QObject {
     ByteArrayClass *m_pBaClass;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
-    QVarLengthArray<int> m_intervalAccumulator, m_brakeDelay, m_brakeKeylock;
-    QVarLengthArray<float> m_dx, m_rampTo, m_brakeFactor, m_brakeRate;
-    QVarLengthArray<bool> m_ramp;
+    QVarLengthArray<int> m_intervalAccumulator, m_rampDelay, m_brakeKeylock;
+    QVarLengthArray<float> m_dx, m_rampTo, m_rampFactor;
+    QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<PitchFilter*> m_pitchFilter;
-    QHash<int, int> m_scratchTimers, m_brakeTimers;
+    QHash<int, int> m_scratchTimers;
 };
 
 #endif
