@@ -11,28 +11,28 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-19 20:53+0000\n"
-"Last-Translator: Eddieduce <eddieduce@yahoo.com>\n"
+"PO-Revision-Date: 2012-05-23 08:47+0000\n"
+"Last-Translator: Mariano Noguera <bangkokdjs@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-20 04:36+0000\n"
-"X-Generator: Launchpad (build 15259)\n"
+"X-Launchpad-Export-Date: 2012-05-24 10:36+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Agregar a Lista Auto DJ (Final)"
+msgstr "Añadir a la cola de Auto DJ (al final)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Agregar a Lista Auto DJ (Inicio)"
+msgstr "Añadir a la cola de Auto DJ (al principio)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -42,12 +42,12 @@ msgstr "Importar Lista de Reproducción"
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "Error Creando Lista de Reproducción"
+msgstr "Falló la creación de la lista de reproducción"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Un error se produjo creando lista de reproducción: "
+msgstr "Se produjo un error desconocido al crear la lista de reproducción: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -56,17 +56,17 @@ msgstr "Lista de reproducción nueva"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Agregar a lista de Auto DJ (final)"
+msgstr "Añadir a la cola de Auto DJ (al final)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Agregar a lista de Auto DJ (Inicio)"
+msgstr "Añadir a la cola de Auto DJ (al principio)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Remover"
+msgstr "Quitar"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
@@ -881,7 +881,7 @@ msgstr "Expulsar la pista"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Orientación de la mezcla (ej. izquierda, derecha, centro)"
 
 #: DlgControllerLearning#29
 msgid "BPM and Sync"
@@ -1868,11 +1868,11 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show iTunes Library"
-msgstr ""
+msgstr "Mostrar la librería de ITunes"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Show Traktor Library"
-msgstr ""
+msgstr "Mostrar la librería de Traktor"
 
 #: DlgPrefPlaylistDlg#13
 msgctxt "DlgPrefPlaylistDlg#13"
@@ -2974,7 +2974,7 @@ msgstr "Pregunta"
 
 #: GLSLWaveformWidget#1
 msgid "Filtered (experimental)"
-msgstr ""
+msgstr "Filtrado (experimental)"
 
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
@@ -3038,7 +3038,7 @@ msgstr "Cancelar"
 
 #: MidiController#1
 msgid "MixxxControl not found"
-msgstr ""
+msgstr "No se ha podido encontrar MixxxControl"
 
 #: MidiController#2
 msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
@@ -3061,6 +3061,8 @@ msgid ""
 "* Make sure the MixxxControl you're trying to use actually exists. Visit "
 "this wiki page for a complete list:"
 msgstr ""
+"*Asegúrese que exista el MixxxControl que está tratando de usar . Visite "
+"esta página wiki para la lista completa:"
 
 #: MixxxApp#1
 msgid "Mixxx "
@@ -3608,7 +3610,7 @@ msgstr "Unir con anterior"
 
 #: SetlogFeature#2
 msgid "History"
-msgstr ""
+msgstr "Historial"
 
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
@@ -3655,7 +3657,7 @@ msgstr ""
 
 #: Tooltips#2
 msgid "Reset to default value."
-msgstr ""
+msgstr "Restablecer a valores predeterminados"
 
 #: Tooltips#3
 msgid "Left-click"
@@ -3704,7 +3706,7 @@ msgstr ""
 
 #: Tooltips#14
 msgid "Gain"
-msgstr ""
+msgstr "Ganancia"
 
 #: Tooltips#15
 msgid "Adjusts the pre-fader gain of the track (to avoid clipping)."
@@ -3760,7 +3762,7 @@ msgstr ""
 
 #: Tooltips#28
 msgid "Adjusts the volume of the selected channel."
-msgstr ""
+msgstr "Ajusta el volumen del canal seleccionado."
 
 #: Tooltips#29
 msgid "Master Volume"
@@ -3782,7 +3784,7 @@ msgstr ""
 
 #: Tooltips#33
 msgid "Balance"
-msgstr ""
+msgstr "Balance"
 
 #: Tooltips#34
 msgid "Adjusts the left/right channel balance on the master output."
@@ -3790,7 +3792,7 @@ msgstr ""
 
 #: Tooltips#35
 msgid "Headphone Volume"
-msgstr ""
+msgstr "Volumen de los auriculares"
 
 #: Tooltips#36
 msgid "Adjusts the headphone output volume."
@@ -3806,7 +3808,7 @@ msgstr ""
 
 #: Tooltips#39
 msgid "Mix Orientation"
-msgstr ""
+msgstr "Orientación de la mezcla"
 
 #: Tooltips#40
 msgid "Set the channel's mix orientation."
@@ -3850,7 +3852,7 @@ msgstr ""
 
 #: Tooltips#49
 msgid "Adjusts the microphone volume."
-msgstr ""
+msgstr "Ajusta el volumen del micrófono."
 
 #: Tooltips#50
 msgid "Microphone Talk-Over"
@@ -3990,7 +3992,7 @@ msgstr ""
 
 #: Tooltips#84
 msgid "Adjust Beatgrid"
-msgstr ""
+msgstr "Ajustar Beatgrid"
 
 #: Tooltips#85
 msgid ""
