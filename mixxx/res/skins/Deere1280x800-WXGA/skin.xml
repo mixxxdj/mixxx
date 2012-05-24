@@ -4204,7 +4204,7 @@
 
 			<!--
 			**********************************************
-			Button - Quantize
+			Button - Quantize <ConfigKey>[Channel1],quantize</ConfigKey>
 			**********************************************
 			-->
 			<PushButton>
@@ -4223,7 +4223,7 @@
 				</State>
 				<Pos>364,193</Pos>
 				<Connection>
-					<ConfigKey>[Channel1],quantize</ConfigKey>
+					<ConfigKey>[Channel1],passthrough</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
@@ -5469,7 +5469,7 @@
 				</State>
 				<Pos>364,193</Pos>
 				<Connection>
-					<ConfigKey>[Channel2],quantize</ConfigKey>
+					<ConfigKey>[Channel2],passthrough</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>

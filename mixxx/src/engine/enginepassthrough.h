@@ -47,9 +47,9 @@ class EnginePassthrough : public EngineChannel, public AudioDestination {
   private:
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
-    ControlObject *m_pEnabled;
-    ControlPushButton *m_pPassing;
-    CSAMPLE *m_pConversionBuffer;
+    ControlObject* m_pEnabled;
+    ControlPushButton* m_pPassing;
+    CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 
     EngineClipping* m_pClipping;

@@ -137,7 +137,7 @@ void EnginePassthrough::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, c
 
     // If passthrough is enabled, then read into the output buffer. Otherwise,
     // Note: Remove true segment from following conditional to allow toggling passthrough	
-    if(true || m_pPassing->get() > 0.0f) {
+    if(m_pPassing->get() > 0.0f) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
             // Buffer underflow. There aren't getting samples fast enough. This
