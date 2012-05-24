@@ -610,7 +610,7 @@ PluginLoader::Impl::listFiles(string dir, string extension)
 #ifdef UNICODE
     int len = expression.length(); // cannot be more wchars than length in bytes of utf8 string
     wchar_t *buffer = new wchar_t[len];
-    int rv = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), -1, buffer, len);
+    int rv = MultiByteToWideChar(CP_UTF8, 0, expression.c_str(), len, buffer, len);
     if (rv <= 0) {
         cerr << "Vamp::HostExt::PluginLoader: Unable to convert wildcard path \""
              << expression << "\" to wide characters" << endl;
@@ -631,7 +631,7 @@ PluginLoader::Impl::listFiles(string dir, string extension)
         int wlen = wcslen(fn);
         int maxlen = wlen * 6;
         char *conv = new char[maxlen];
-        int rv = WideCharToMultiByte(CP_UTF8, 0, fn, wlen, conv, maxlen, 0, 0);
+        int rv = WideCharToMultiByte(CP_UTF8, 0, fn, -1, conv, maxlen, 0, 0);
         if (rv > 0) {
             cerr << "listFiles UNICODE found:" << data.cFileName << " conv " << conv << std::endl;
             files.push_back(conv);
