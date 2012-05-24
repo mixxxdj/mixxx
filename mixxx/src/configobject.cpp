@@ -203,6 +203,16 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k)
     return get(k)->val->value;
 }
 
+template <class ValueType>
+QString ConfigObject<ValueType>::getValueString(ConfigKey k, const QString& default_string)
+{
+    QString ret = get(k)->val->value;
+    if (ret.isEmpty()) {
+        return default_string;
+    }
+    return ret;
+}
+
 template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
@@ -218,6 +228,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
+        text.setCodec("UTF-8");
 
         while (!text.atEnd())
         {
@@ -287,6 +298,8 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
     else
     {
         QTextStream stream(&file);
+        stream.setCodec("UTF-8");
+
         QString grp = "";
 
         QListIterator<ConfigOption<ValueType>* > iterator(list);

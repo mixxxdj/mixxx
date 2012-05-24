@@ -165,7 +165,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        QItemDelegate* delegate = track_model->delegateForColumn(i);
+        QAbstractItemDelegate* delegate = track_model->delegateForColumn(i, this);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
@@ -261,6 +261,10 @@ void WTrackTableView::createActions() {
     connect(m_pPropertiesAct, SIGNAL(triggered()),
             this, SLOT(slotShowTrackInfo()));
 
+    m_pFileBrowserAct = new QAction(tr("Open in file browser"), this);
+    connect(m_pFileBrowserAct, SIGNAL(triggered()),
+            this, SLOT(slotOpenInFileBrowser()));
+
     m_pAutoDJAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
 
@@ -333,6 +337,33 @@ void WTrackTableView::slotRemove()
             trackModel->removeTracks(indices);
         }
     }
+}
+
+void WTrackTableView::slotOpenInFileBrowser() {
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel)
+        return;
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    QSet<QString> dirs;
+    foreach (QModelIndex index, indices) {
+        if (!index.isValid())
+            continue;
+
+        QFileInfo file(trackModel->getTrackLocation(index));
+
+        if (!file.exists()) {
+            continue;
+        }
+
+        const QString directory = file.dir().absolutePath();
+        if (dirs.contains(directory))
+          continue;
+        dirs.insert(directory);
+        QDesktopServices::openUrl(QUrl::fromLocalFile(directory));
+    }
+
 }
 
 void WTrackTableView::slotShowTrackInfo() {
@@ -476,6 +507,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel == NULL) {
+            return;
+        }
+        QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+        bool allowClear = true;
+        for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+            QModelIndex index = selectedTrackIndices.at(i);
+            TrackPointer track = trackModel->getTrack(index);
+            if (track->hasBpmLock()) {
+                allowClear = false;
+            }
+        }
+        m_pClearBeatsAction->setEnabled(allowClear);
         m_pMenu->addAction(m_pClearBeatsAction);
     }
 
@@ -491,6 +536,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
         m_pMenu->addAction(m_pResetPlayedAct);
     }
+    m_pMenu->addAction(m_pFileBrowserAct);
     m_pMenu->addSeparator();
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
@@ -1094,6 +1140,8 @@ void WTrackTableView::slotClearBeats() {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        track->setBeats(BeatsPointer());
+        if (!track->hasBpmLock()) {
+            track->setBeats(BeatsPointer());
+        }
     }
 }

@@ -148,8 +148,8 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
 }
 
 bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
-   Q_UNUSED(column);
-   return false;
+    Q_UNUSED(column);
+    return false;
 }
 
 TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {

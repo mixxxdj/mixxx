@@ -1,0 +1,167 @@
+Deere , Skin for Mixxx 1.11.x
+www.mixxx.org
+Copyright (C) 2010-2012 jus ; jus@justmail.de
+This file is part of the "Deere" Skin for Mixxx
+"Deere" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+http://creativecommons.org/licenses/by-sa/3.0/
+
+You are free:
+to Share - to copy, distribute and transmit the work
+to Remix - to adapt the work
+
+Under the following conditions:
+Attribution - You must attribute the work in the manner specified by the author or licensor
+(but not in any way that suggests that they endorse you or your use of the work).
+
+Share Alike - If you alter, transform, or build upon this work, you may distribute
+the resulting work only under the same or similar license to this one.
+
+CHANGELOG
+v1.11.0.03	(08/05/2012)
+* Feature: Removed individual Tooltip text, tooltip now use a <TooltipId>, available IDs are in src/skin/tooltips.cpp
+  This allows tooltips translation and makes skin more coherent and maintenance easier 
+
+v1.11.0.02	(04/05/2012)
+* Update: Apply styles to spinbox in AutoDJ tab
+
+v1.11.0.01	(01/05/2012)
+* Feature: Support <Mark> (Hot)Cue and <MarkRange> Loop marker in waveform <Overview>, lp:507215
+  Note that only Hotcues 1-4 are currently customizable for [Channel$] & [Samplers$]
+* Feature: Support <EndOfTrackColor> notification within the last seconds of a track in waveform & waveform overview, lp:661443
+  Note that this feature currently only works for regular decks [Channel$] but not for sampler decks [Sampler$]
+* Feature: Support temporary EQ kill switches too instead of toggle only, lp:918470
+* Feature: Support microphone toggle button too instead of push-to-talk only, lp:876139
+* Update: Tooltips for EQ kill & microphone buttons
+* Remove: <HfcColor>, the horizontal line`s color in the waveform , obsolete in Mixxx 1.11+
+* Remove: <ProgressColor> & <ProgressAlpha> for track analysis progress visualization in waveform overview , obsolete in Mixxx 1.11+
+
+v1.10.0.18	(25/04/2012)
+* Update: Tooltips for waveform (Pitch bend on right click)
+* Change: Use global QToolTip style declaration instead of one per node
+
+v1.10.0.17	(22/12/2011)
+* Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800
+
+v1.10.0.16	(14/12/2011)
+* Update: Unify word choice in tooltips, replaces "player" with "deck", lp:879084
+
+v1.10.0.15	(05/12/2011)
+* Fix: Changed stylesheets for tooltip so that they are not cut off anymore on Windows,
+  working around a QT issue, lp:712718
+
+v1.10.0.14	(26/11/2011)
+* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization
+  in waveform overview, lp:803740
+
+v1.10.0.13	(02/11/2011)
+* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly
+
+v1.10.0.12	(29/10/2011)
+* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
+
+v1.10.0.11	(16/10/2011)
+* Update: Tooltips for spinning vinyl, waveform (overview) due to changes in functionality
+
+v1.10.0.10	(01/06/2011)
+* Feature: Added BPM display & BPM tap button to samplers
+
+v1.10.0.09	(13/05/2011)
+* Feature: Added spinning vinyl widget
+
+v1.10.0.08	(12/05/2011)
+* Feature: Added mix orientation for microphone
+* Update: Vinylcontrol & microphone widget positioning & graphics
+* Update: Vinylcontrol indicator positioning & graphics
+* Update: Tabs to show/hide widgets positioning & graphics
+
+v1.10.0.07	(03/05/2011)
+* Update: Graphics for more consistent look
+* Update: Use 64 pictures for smooth knob animation (derived from 128 midi note numbers)
+* Update: Moved knobs and style elements to subfolders
+
+v1.10.0.06	(30/04/2011)
+* Feature: Added UI elements for samplers
+* Update: Stylesheets
+
+v1.10.0.05	(26/04/2011)
+* Feature: Added Mixxx 1.10.0 features
+  Microphone,Sampler,Beatloop,Vinyl control widgets
+* Feature: Added tabs to show/hide the new widgets
+
+v1.10.0.04	(12/04/2011)
+* Added Mixxx 1.10.0 feature:
+  Skin uses WidgetGroups positioning now
+  WidgetGroups allow to make a group of relatively positioned widgets, useful for easy resizing
+  http://mixxx.org/wiki/doku.php/creating_skins#widgetgroup
+
+v1.10.0.03	(29/03/2011)
+* Added Mixxx 1.10.0 feature:
+  EmitOnDownPress double-skin connection block replaced with EmitOnPressAndRelease
+
+v1.10.0.02	(29/03/2011)
+* Reworked most of the graphics for crisper look and in preparation for functional upgrades
+* Added Mixxx 1.10.0 feature:
+  Custom backgrounds for waveform & waveform overview
+
+v1.10.0.01	(21/03/2011)
+* Introduce new version number scheme for skins that follows the target Mixxx versioning
+  <Mixxx.major>.<Mixxx.minor>.<Mixxx.patch>.<Skin.patch>
+* Added Mixxx 1.10.0 feature:
+  Tracks duration can be displayed independent from tracks remaining time using Trackproperty
+* Updated text positioning & tooltips accordingly
+
+v1.09.1	(13/03/2011)
+* Added Mixxx 1.9.1 feature: Expanded to support 36 hot cues
+
+v1.09	(20/02/2011)
+* Changed Playing position tooltips to reflect new toggle functionality
+
+v1.08	(14/12/2010)
+* Added custom images for splitter in library
+* Added custom images for branch triangle in treeview
+* Added visual feedback when searchbox has focus
+
+v1.07	(02/12/2010)
+* Added custom images for checkboxes in library
+* Updated styles
+
+v1.06	(19/11/2010)
+* Added Mixxx 1.9 features: Keylock & Repeat buttons
+* Changed graphics for VUmeters to a more brighter variant
+* Deleted end-of-track mode buttons
+
+v1.05	(20/09/2010)
+* Added stylesheet support for library & tooltips
+
+v1.04	(16/09/2010)
+* Added support for up to 32 Hotcues with MIDI-controllers
+* Hotcue buttons now reflect its toggle state
+
+v1.03	(14/09/2010)
+* Corrected errors in (Hot)cues resulting in unexpected behavior
+* Reloop button now reflect its toggle state
+
+v1.02	(13/09/2010)
+* Change skin license to Creative Commons Attribution-ShareAlike 3.0 Unported
+  Skin now DFSG-compatible see http://wiki.debian.org/DebianFreeSoftwareGuidelines
+* Major Tooltips overhaul, they provide more helpful informations now
+
+v1.01	(10/09/2010)
+* (Hot)Cue marker now drawn on top of loop overlay for better visibility
+* Fine-tuning on various VUmeter keys
+* Changed reverse & forward buttons order following standard
+- Removed some orphaned keys no longer in Mixxx codebase
+
+v1.00	(04/07/2010)
+* Version bump
+* some alignment & positioning corrections
+* some buttons fine tuned
+* changed (hot)cue button colors
++ added dark background color for waveform overviews
+- "Preview" watermark removed
+
+v0.81b	(18/02/2010)
++ Hotcues preview the Cue when the deck is stopped
+
+v0.80b	(07/02/2010)
+Initial Developer Preview for Mixxx 1.8.x

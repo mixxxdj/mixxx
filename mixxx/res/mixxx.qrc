@@ -22,6 +22,8 @@
         <file>images/library/ic_library_browse.png</file>
         <file>images/library/ic_library_crates.png</file>
         <file>images/library/ic_library_drag_and_drop.png</file>
+        <file>images/library/ic_library_history_current.png</file>
+        <file>images/library/ic_library_history.png</file>
         <file>images/library/ic_library_itunes.png</file>
         <file>images/library/ic_library_library.png</file>
         <file>images/library/ic_library_locked.png</file>
@@ -29,11 +31,9 @@
         <file>images/library/ic_library_prepare.png</file>
         <file>images/library/ic_library_selector.png</file>
         <file>images/library/ic_library_promotracks.png</file>
+        <file>images/library/ic_library_recordings.png</file>
         <file>images/library/ic_library_rhythmbox.png</file>
         <file>images/library/ic_library_traktor.png</file>
-        <file>images/library/ic_library_recordings.png</file>
-        <file>images/library/ic_library_setlog.png</file>
-        <file>images/library/ic_library_setlog_current.png</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_ast.qm</file>
         <file>translations/mixxx_bg.qm</file>
@@ -78,6 +78,7 @@
         <file>translations/mixxx_sl.qm</file>
         <file>translations/mixxx_sr.qm</file>
         <file>translations/mixxx_sv.qm</file>
+        <file>translations/mixxx_te.qm</file>
         <file>translations/mixxx_tr.qm</file>
         <file>translations/mixxx_uk.qm</file>
         <file>translations/mixxx_uz.qm</file>

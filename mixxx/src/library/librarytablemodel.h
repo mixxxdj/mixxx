@@ -30,7 +30,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
 
-    QItemDelegate* delegateForColumn(const int i);
+
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
 

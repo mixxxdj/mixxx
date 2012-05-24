@@ -11,6 +11,8 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
+
+
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
@@ -19,22 +21,10 @@ void WaveformRenderMark::init() {
 }
 
 void WaveformRenderMark::setup( const QDomNode& node) {
-    m_marks.clear();
-    m_marks.reserve(37); //36 hot cues + 1 cue
-
-    QDomNode child = node.firstChild();
-    while (!child.isNull()) {
-        if (child.nodeName() == "Mark") {
-            m_marks.push_back(WaveformMark());
-            WaveformMark& mark = m_marks.back();
-            mark.setup( m_waveformRenderer->getGroup(), child);
-        }
-        child = child.nextSibling();
-    }
+    m_marks.setup(m_waveformRenderer->getGroup(),node);
 }
 
-
-void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event) {
+void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
     painter->save();
 
     /*
@@ -47,7 +37,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event) {
 
     painter->setWorldMatrixEnabled(false);
 
-    for( int i = 0; i < m_marks.size(); i++) {
+    for( unsigned int i = 0; i < m_marks.size(); i++) {
         WaveformMark& mark = m_marks[i];
 
         if( !mark.m_pointControl)
@@ -139,7 +129,7 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         QColor rectColor = mark.m_color;
         rectColor.setAlpha(50);
         rectColor.darker(140);
-        painter.setPen(rectColor);
+        painter.setPen(mark.m_color);
         painter.setBrush(QBrush(rectColor));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
 
@@ -189,7 +179,7 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         painter.setPen(QColor(0,0,0,0));
         painter.setBrush(QBrush(triangleColor));
 
-        //vRicne: again don't ask about the +-0.1 0.5 ...
+        //vRince: again don't ask about the +-0.1 0.5 ...
         // just to make it nice in Qt ...
 
         QPolygonF triangle;

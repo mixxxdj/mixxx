@@ -17,9 +17,6 @@ class GLSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     virtual bool useOpenGl() const { return true;}
     virtual bool useOpenGLShaders() const { return false;}
 
-    //reimplemet it to discard use of rate adjust
-    virtual void updateVisualSamplingPerPixel();
-
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);

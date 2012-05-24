@@ -3,43 +3,23 @@
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 
-#include "widget/wwidget.h"
-#include "trackinfoobject.h"
+#include "waveform/waveformwidgetfactory.h"
 
-#include <QLinearGradient>
+#include <qgl.h>
 
-GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract( waveformWidgetRenderer) {
+GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
+        WaveformWidgetRenderer* waveformWidgetRenderer)
+    : WaveformRendererSignalBase(waveformWidgetRenderer) {
 
 }
 
 GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal(){
 }
 
-void GLWaveformRendererSimpleSignal::init(){
+void GLWaveformRendererSimpleSignal::onInit() {
 }
 
-void GLWaveformRendererSimpleSignal::setup(const QDomNode &node){
-    m_colors.setup(node);
-
-    QString alignString = WWidget::selectNodeQString(node, "Align");
-    if (alignString == "bottom") {
-        m_alignment = Qt::AlignBottom;
-    } else if (alignString == "top") {
-        m_alignment = Qt::AlignTop;
-    } else {
-        m_alignment = Qt::AlignCenter;
-    }
-
-    QColor signalColor = m_colors.getSignalColor();
-    signalColor.setAlphaF(0.8);
-
-    QColor bornderColor = m_colors.getSignalColor().lighter(125);
-    bornderColor.setAlphaF(0.5);
-    m_borderPen.setColor(bornderColor);
-    m_borderPen.setWidthF(1.25);
-
-    m_brush = QBrush(signalColor);
+void GLWaveformRendererSimpleSignal::onSetup(const QDomNode &node){
 }
 
 inline void setPoint(QPointF& point, qreal x, qreal y) {
@@ -69,160 +49,115 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         return;
     }
 
-    painter->save();
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
-    painter->setRenderHint(QPainter::Antialiasing);
-    painter->resetTransform();
+    const int firstIndex = int(firstVisualIndex+0.5);
+    firstVisualIndex = firstIndex - firstIndex%2;
 
-    if (m_alignment == Qt::AlignTop) {
-        painter->translate(0.0,0.0);
-        painter->scale(1.0,2.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
-    } else if (m_alignment == Qt::AlignBottom) {
-        painter->translate(0.0,m_waveformRenderer->getHeight());
-        painter->scale(1.0,2.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
-    } else {
-        painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
-        painter->scale(1.0,1.0*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
-    }
+    const int lastIndex = int(lastVisualIndex+0.5);
+    lastVisualIndex = lastIndex + lastIndex%2;
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
-    int pointIndex = 0;
-    setPoint(m_polygon[pointIndex], 0.0, 0.0);
-    pointIndex++;
+    // save the GL state set for QPainter
+    painter->beginNativePainting();
 
-    const double offset = firstVisualIndex;
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Represents the # of waveform data points per horizontal pixel.
-    const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+    const QColor& color = m_colors.getSignalColor();
 
-    // The number of visual samples that should be represented within one pixel
-    // given our current zoom level (this shoud be an dinterger in the 'simple' version
-    const double visualSamplePerPixel = m_waveformRenderer->getVisualSamplePerPixel();
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
 
-    //NOTE(vrince) Please help me find a better name for "channelSeparation"
-    //this variable stand for merged channel ... 1 = merged & 2 = separated
-    int channelSeparation = 2;
-    if (m_alignment != Qt::AlignCenter)
-        channelSeparation = 1;
+    float maxAll[2];
 
-    for (int channel = 0; channel < channelSeparation; ++channel) {
-        int startPixel = 0;
-        int endPixel = m_waveformRenderer->getWidth() - 1;
-        int delta = 1;
-        double direction = 1.0;
+    glPushMatrix();
 
-        //Reverse display for merged bottom channel
-        if (m_alignment == Qt::AlignBottom)
-            direction = -1.0;
+    if( m_alignment == Qt::AlignCenter) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
-        if (channel == 1) {
-            startPixel = m_waveformRenderer->getWidth() - 1;
-            endPixel = 0;
-            delta = -1;
-            direction = -1.0;
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
-            // After preparing the first channel, insert the pivot point.
-            setPoint(m_polygon[pointIndex], m_waveformRenderer->getWidth(), 0.0);
-            pointIndex++;
+        glScalef(1.f,2.f*visualGain*m_waveformRenderer->getGain(),1.f);
+
+        glLineWidth(1.0);
+        glDisable(GL_LINE_SMOOTH);
+
+        //draw reference line
+        glBegin(GL_LINES); {
+            glColor4f(m_axesColor.redF(),m_axesColor.greenF(),m_axesColor.blueF(),m_axesColor.alphaF());
+            glVertex2f(firstVisualIndex,0);
+            glVertex2f(lastVisualIndex,0);
         }
+        glEnd();
 
-        for (int x = startPixel;
-             (startPixel < endPixel) ? (x <= endPixel) : (x >= endPixel);
-             x += delta) {
+        glLineWidth(1.1);
+        glEnable(GL_LINE_SMOOTH);
 
-            // TODO(rryan) remove before 1.11 release. I'm seeing crashes
-            // sometimes where the pointIndex is very very large. It hasn't come
-            // back since adding locking, but I'm leaving this so that we can
-            // get some info about it before crashing. (The crash usually
-            // corrupts a lot of the stack).
-            if (pointIndex > 2*m_waveformRenderer->getWidth()+2) {
-                qDebug() << "OUT OF CONTROL"
-                         << 2*m_waveformRenderer->getWidth()+2
-                         << dataSize
-                         << channel << pointIndex << x;
+        glBegin(GL_LINES); {
+            for( int visualIndex = firstVisualIndex;
+                 visualIndex < lastVisualIndex;
+                 visualIndex += 2) {
+
+                if( visualIndex < 0)
+                    continue;
+
+                if( visualIndex > dataSize - 1)
+                    break;
+
+                maxAll[0] = (float)data[visualIndex].filtered.all;
+                maxAll[1] = (float)data[visualIndex+1].filtered.all;
+                glColor4f(color.redF(),color.greenF(),color.blueF(),0.9);
+                glVertex2f(visualIndex,maxAll[0]);
+                glVertex2f(visualIndex,-1.f*maxAll[1]);
             }
-
-            // Width of the x position in visual indices.
-            const double xSampleWidth = gain * x;
-
-            // Effective visual index of x
-            const double xVisualSampleIndex = xSampleWidth + offset;
-
-            // Our current pixel (x) corresponds to a number of visual samples
-            // (visualSamplerPerPixel) in our waveform object. We take the max of
-            // all the data points on either side of xVisualSampleIndex within a
-            // window of 'maxSamplingRange' visual samples to measure the maximum
-            // data point contained by this pixel.
-            double maxSamplingRange = gain / 2.0;
-
-            // Since xVisualSampleIndex is in visual-samples (e.g. R,L,R,L) we want
-            // to check +/- maxSamplingRange frames, not samples. To do this, divide
-            // xVisualSampleIndex by 2. Since frames indices are integers, we round
-            // to the nearest integer by adding 0.5 before casting to int.
-            int visualFrameStart = int(xVisualSampleIndex / 2.0 - maxSamplingRange + 0.5);
-            int visualFrameStop = int(xVisualSampleIndex / 2.0 + maxSamplingRange + 0.5);
-
-            // If the entire sample range is off the screen then don't calculate a
-            // point for this pixel.
-            const int lastVisualFrame = dataSize / 2 - 1;
-            if (visualFrameStop < 0 || visualFrameStart > lastVisualFrame) {
-                setPoint(m_polygon[pointIndex], x, 0.0);
-                pointIndex++;
-                continue;
-            }
-
-            // We now know that some subset of [visualFrameStart,
-            // visualFrameStop] lies within the valid range of visual
-            // frames. Clamp visualFrameStart/Stop to within [0,
-            // lastVisualFrame].
-            visualFrameStart = math_max(math_min(lastVisualFrame, visualFrameStart), 0);
-            visualFrameStop = math_max(math_min(lastVisualFrame, visualFrameStop), 0);
-
-            int visualIndexStart = visualFrameStart * 2 + channel;
-            int visualIndexStop = visualFrameStop * 2 + channel;
-
-            // if (x == m_waveformRenderer->getWidth() / 2) {
-            //     qDebug() << "audioVisualRatio" << waveform->getAudioVisualRatio();
-            //     qDebug() << "visualSampleRate" << waveform->getVisualSampleRate();
-            //     qDebug() << "audioSamplesPerVisualPixel" << waveform->getAudioSamplesPerVisualSample();
-            //     qDebug() << "visualSamplePerPixel" << visualSamplePerPixel;
-            //     qDebug() << "xSampleWidth" << xSampleWidth;
-            //     qDebug() << "xVisualSampleIndex" << xVisualSampleIndex;
-            //     qDebug() << "maxSamplingRange" << maxSamplingRange;;
-            //     qDebug() << "Sampling pixel " << x << "over [" << visualIndexStart << visualIndexStop << "]";
-            // }
-
-            unsigned char maxAll = 0;
-
-            for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
-                 i += channelSeparation) {
-                const WaveformData& waveformData = *(data + i);
-                unsigned char all = waveformData.filtered.all;
-                maxAll = math_max(maxAll, all);
-            }
-
-            setPoint(m_polygon[pointIndex], x, (float)maxAll*direction);
-            pointIndex++;
         }
+        glEnd();
+    } else { //top || bottom
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        if( m_alignment == Qt::AlignBottom)
+            glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
+        else
+            glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
+
+        glLineWidth(1.1);
+        glEnable(GL_LINE_SMOOTH);
+
+        glBegin(GL_LINES); {
+            for( int visualIndex = firstVisualIndex;
+                 visualIndex < lastVisualIndex;
+                 visualIndex += 2) {
+
+                if( visualIndex < 0)
+                    continue;
+
+                if( visualIndex > dataSize - 1)
+                    break;
+
+                maxAll[0] = (float)data[visualIndex].filtered.all;
+                maxAll[1] = (float)data[visualIndex+1].filtered.all;
+                glColor4f(color.redF(),color.greenF(),color.blueF(),0.8);
+                glVertex2f(float(visualIndex),0.f);
+                glVertex2f(float(visualIndex),math_max(maxAll[0],maxAll[1]));
+            }
+        }
+        glEnd();
     }
 
-    //If channel are not displayed separatly we nne to close the loop properly
-    if (channelSeparation == 1) {
-        setPoint(m_polygon[pointIndex], m_waveformRenderer->getWidth(), 0.0);
-        pointIndex++;
-    }
+    glPopMatrix();
 
-    painter->setPen(m_borderPen);
-    painter->setBrush(m_brush);
+    glDisable(GL_BLEND);
 
-    painter->drawPolygon(&m_polygon[0], pointIndex);
-
-    painter->restore();
+    painter->endNativePainting();
 }
 
-void GLWaveformRendererSimpleSignal::onResize() {
-    m_polygon.resize(2*m_waveformRenderer->getWidth()+2);
-}
 

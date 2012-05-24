@@ -67,6 +67,7 @@ void DlgPrefBeats::loadSettings(){
     if(m_pconfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID))==QString("")) {
         setDefaults();
+        slotApply();    // Write to config file so AnalyzerBeats can get the data
         return;
     }
 
@@ -226,6 +227,7 @@ void DlgPrefBeats::populate() {
             this, SLOT(pluginSelected(int)));
     VampPluginLoader *loader = VampPluginLoader::getInstance();
     std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
+    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
     for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
         Plugin *plugin = loader->loadPlugin(plugins[iplugin], 48000);
         //TODO: find a way to add beat trackers only
@@ -235,6 +237,7 @@ void DlgPrefBeats::populate() {
                 QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
                                             + QString::number(ioutput);
                 QString displaynametext = QString::fromStdString(plugin->getName());
+                qDebug() << "Plugin output displayname:" << displayname << displaynametext;
                 bool goodones = ((displayname.contains("mixxxbpmdetection")||
                                   displayname.contains("qm-tempotracker:0"))||
                                  displayname.contains("beatroot:0")||

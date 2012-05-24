@@ -14,7 +14,7 @@ AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
     m_pDetector = NULL;
 }
 
-void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     Q_UNUSED(totalSamples);
     m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
@@ -31,7 +31,9 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
         //                                    defaultrange ? MIN_BPM : m_iMinBpm,
         //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
+        return true;
     }
+    return false;
 }
 
 void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
@@ -42,6 +44,16 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
     //qDebug() << "AnalyserBPM::process() processing " << iLen << " samples";
 
     m_pDetector->inputSamples(pIn, iLen/2);
+}
+
+void AnalyserBPM::cleanup(TrackPointer tio)
+{
+    Q_UNUSED(tio);
+    if(m_pDetector != NULL)
+    {
+        delete m_pDetector;
+        m_pDetector = NULL;
+    }
 }
 
 void AnalyserBPM::finalise(TrackPointer tio) {

@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>448</width>
-    <height>615</height>
+    <width>466</width>
+    <height>500</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Track Editor</string>
@@ -18,58 +24,27 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QLabel" name="lblSong">
-     <property name="font">
-      <font>
-       <weight>75</weight>
-       <bold>true</bold>
-       <underline>true</underline>
-      </font>
-     </property>
-     <property name="text">
-      <string>Track:</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolBox" name="toolbox">
+    <widget class="QTabWidget" name="tabWidget">
      <property name="minimumSize">
       <size>
        <width>0</width>
        <height>400</height>
       </size>
      </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="pgTrack">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>409</width>
-        <height>454</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>Track Information (Click to Expand)</string>
+     <widget class="QWidget" name="tab_1">
+      <attribute name="title">
+       <string>Summary</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Title:</string>
-           </property>
-           <property name="buddy">
-            <cstring>txtTrackName</cstring>
            </property>
           </widget>
          </item>
@@ -81,9 +56,6 @@
            <property name="text">
             <string>Artist:</string>
            </property>
-           <property name="buddy">
-            <cstring>txtArtist</cstring>
-           </property>
           </widget>
          </item>
          <item row="1" column="1" colspan="3">
@@ -94,77 +66,58 @@
            <property name="text">
             <string>Album:</string>
            </property>
-           <property name="buddy">
-            <cstring>txtAlbum</cstring>
-           </property>
           </widget>
          </item>
          <item row="2" column="1" colspan="3">
           <widget class="QLineEdit" name="txtAlbum"/>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label_8">
+          <widget class="QLabel" name="label_9">
            <property name="text">
-            <string>Date:</string>
-           </property>
-           <property name="buddy">
-            <cstring>txtYear</cstring>
+            <string>Genre:</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtYear"/>
-         </item>
          <item row="4" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Composer:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1" colspan="3">
+          <widget class="QLineEdit" name="txtComposer"/>
+         </item>
+         <item row="3" column="1" colspan="3">
+          <widget class="QLineEdit" name="txtGenre"/>
+         </item>
+         <item row="5" column="2">
           <widget class="QLabel" name="label_10">
            <property name="text">
             <string>Track #:</string>
            </property>
           </widget>
          </item>
+         <item row="5" column="3">
+          <widget class="QLineEdit" name="txtTrackNumber"/>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="txtYear"/>
+         </item>
          <item row="5" column="0">
-          <widget class="QLabel" name="label_9">
+          <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>Genre:</string>
-           </property>
-           <property name="buddy">
-            <cstring>txtGenre</cstring>
+            <string>Year</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtGenre"/>
+         <item row="6" column="1">
+          <widget class="QLineEdit" name="txtKey"/>
          </item>
          <item row="6" column="0">
-          <widget class="QLabel" name="label_11">
+          <widget class="QLabel" name="label_12">
            <property name="text">
-            <string>Composer:</string>
-           </property>
-           <property name="buddy">
-            <cstring>txtComposer</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtComposer"/>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Filename:</string>
-           </property>
-           <property name="buddy">
-            <cstring>txtFilepath</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtFilepath">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
+            <string>Key</string>
            </property>
           </widget>
          </item>
@@ -178,70 +131,170 @@
          <item row="8" column="1">
           <widget class="QLabel" name="txtDuration">
            <property name="text">
-            <string>3:00</string>
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>
-         <item row="9" column="2">
+         <item row="8" column="2">
           <widget class="QLabel" name="Type">
            <property name="text">
-            <string>File Type:</string>
+            <string>Filetype:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="3">
+          <widget class="QLabel" name="txtType">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>BPM:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QLabel" name="txtBpm">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>
          <item row="9" column="3">
-          <widget class="QLabel" name="txtType">
+          <widget class="QLabel" name="txtBitrate">
            <property name="text">
-            <string>77</string>
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>
-         <item row="10" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Comments:</string>
-           </property>
-           <property name="buddy">
-            <cstring>txtComment</cstring>
+         <item row="12" column="0" colspan="4">
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
-         <item row="10" column="1" colspan="3">
+         <item row="11" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Location:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1" colspan="3">
           <widget class="QTextEdit" name="txtComment">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>80</height>
+            </size>
+           </property>
            <property name="tabChangesFocus">
             <bool>true</bool>
            </property>
           </widget>
          </item>
-         <item row="4" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtTrackNumber"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
-         <item>
+         <item row="13" column="1" colspan="3">
           <widget class="QPushButton" name="btnReloadFromFile">
            <property name="text">
             <string>Reload track metadata from file.</string>
            </property>
           </widget>
          </item>
+         <item row="11" column="1" colspan="3">
+          <widget class="QLabel" name="txtLocation">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1" colspan="3">
+          <widget class="QLabel" name="txtFilepath">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Filename:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Comments:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="2">
+          <widget class="QLabel" name="Type_2">
+           <property name="text">
+            <string>Bitrate:</string>
+           </property>
+          </widget>
+         </item>
         </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="pgBpm">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>378</width>
-        <height>149</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>Track BPM</string>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>BPM</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
@@ -254,9 +307,6 @@
               <widget class="QLabel" name="labelBpm">
                <property name="text">
                 <string>Track BPM: </string>
-               </property>
-               <property name="buddy">
-                <cstring>spinBpm</cstring>
                </property>
               </widget>
              </item>
@@ -279,15 +329,40 @@
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QPushButton" name="bpmDouble">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
-                <string>x2</string>
+                <string>Double BPM</string>
                </property>
               </widget>
              </item>
              <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <widget class="QPushButton" name="bpmHalve">
+               <property name="minimumSize">
+                <size>
+                 <width>125</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
-                <string>/2</string>
+                <string>Halve BPM</string>
                </property>
               </widget>
              </item>
@@ -338,20 +413,9 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="pgCue">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>258</width>
-        <height>144</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>Track Cuepoints</string>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Cuepoints</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -381,16 +445,41 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QPushButton" name="btnCueActivate">
+          <widget class="QPushButton" name="btnCueDelete">
+           <property name="minimumSize">
+            <size>
+             <width>125</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
-            <string>Activate Cue</string>
+            <string>Delete Cue</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnCueDelete">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnCueActivate">
+           <property name="minimumSize">
+            <size>
+             <width>125</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
-            <string>Delete Cue</string>
+            <string>Activate Cue</string>
            </property>
           </widget>
          </item>
@@ -404,13 +493,73 @@
     <layout class="QHBoxLayout" name="buttonLayout">
      <item>
       <widget class="QPushButton" name="btnPrev">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>95</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
-        <string>&lt;&lt; &amp;Prev</string>
+        <string>&amp;Previous</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnNext">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>&amp;Next</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>&amp;Cancel</string>
+       </property>
+       <property name="default">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnApply">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string>&amp;Apply</string>
        </property>
@@ -419,28 +568,35 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="btnCancel">
-       <property name="text">
-        <string>&amp;Cancel</string>
-       </property>
-       <property name="shortcut">
-        <string>Alt+O</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnNext">
-       <property name="text">
-        <string>&amp;Next &gt;&gt;</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>txtTrackName</tabstop>
+  <tabstop>txtArtist</tabstop>
+  <tabstop>txtAlbum</tabstop>
+  <tabstop>txtGenre</tabstop>
+  <tabstop>txtComposer</tabstop>
+  <tabstop>txtYear</tabstop>
+  <tabstop>txtTrackNumber</tabstop>
+  <tabstop>txtKey</tabstop>
+  <tabstop>txtComment</tabstop>
+  <tabstop>btnReloadFromFile</tabstop>
+  <tabstop>btnPrev</tabstop>
+  <tabstop>btnNext</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>btnApply</tabstop>
+  <tabstop>spinBpm</tabstop>
+  <tabstop>bpmDouble</tabstop>
+  <tabstop>bpmHalve</tabstop>
+  <tabstop>bpmTap</tabstop>
+  <tabstop>cueTable</tabstop>
+  <tabstop>btnCueDelete</tabstop>
+  <tabstop>btnCueActivate</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

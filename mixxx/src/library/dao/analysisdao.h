@@ -31,11 +31,11 @@ class AnalysisDao : public DAO {
         QByteArray data;
     };
 
-    AnalysisDao(const QSqlDatabase& database);
+    AnalysisDao(QSqlDatabase& database);
     virtual ~AnalysisDao();
 
     virtual void initialize();
-    void setDatabase(const QSqlDatabase& database);
+    void setDatabase(QSqlDatabase& database);
 
     bool getWaveform(TrackInfoObject& tio);
     bool saveWaveform(const TrackInfoObject& tio);
@@ -46,6 +46,8 @@ class AnalysisDao : public DAO {
     bool saveAnalysis(AnalysisInfo* analysis);
     bool deleteAnalysis(int analysisId);
     bool deleteAnalysesForTrack(int trackId);
+
+    void saveTrackAnalyses(TrackInfoObject* pTrack);
 
   private:
     bool saveWaveform(const TrackInfoObject& tio,
