@@ -745,7 +745,7 @@ void MixxxApp::initActions()
     m_pFileLoadTracklist->setShortcut(tr("Ctrl+L"));
     m_pFileLoadTracklist->setShortcutContext(Qt::ApplicationShortcut);
         
-    QString loadTrackText = tr("Load track to Deck %1");
+    QString loadTrackText = tr("Load Track to Deck %1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
     QString openText = tr("Open");
 
@@ -789,7 +789,7 @@ void MixxxApp::initActions()
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
-    QString createPlaylistTitle = tr("Add &new playlist");
+    QString createPlaylistTitle = tr("Add &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
     m_pPlaylistsNew->setShortcut(tr("Ctrl+N"));
@@ -799,7 +799,7 @@ void MixxxApp::initActions()
     connect(m_pPlaylistsNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreatePlaylist()));
 
-    QString createCrateTitle = tr("Add new &crate");
+    QString createCrateTitle = tr("Add New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
     m_pCratesNew->setShortcut(tr("Ctrl+Shift+N"));
@@ -827,7 +827,7 @@ void MixxxApp::initActions()
     connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsFullScreen(bool)));
 
-    QString keyboardShortcutTitle = tr("Enable &keyboard shortcuts");
+    QString keyboardShortcutTitle = tr("Enable &Keyboard Shortcuts");
     QString keyboardShortcutText = tr("Toggles keyboard shortcuts on or off");
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
@@ -880,7 +880,7 @@ void MixxxApp::initActions()
     m_pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
     connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
 
-    QString translateTitle = tr("&Translate this application");
+    QString translateTitle = tr("&Translate This Application");
     QString translateText = tr("Help translate this application into your language.");
     m_pHelpTranslation = new QAction(translateTitle, this);
     m_pHelpTranslation->setStatusTip(translateText);
@@ -931,7 +931,7 @@ void MixxxApp::initActions()
 #endif
 
 #ifdef __SHOUTCAST__
-    QString shoutcastTitle = tr("Enable live &broadcasting");
+    QString shoutcastTitle = tr("Enable Live &Broadcasting");
     QString shoutcastText = tr("Stream your mixes to a shoutcast or icecast server");
     m_pOptionsShoutcast = new QAction(shoutcastTitle, this);
     m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
