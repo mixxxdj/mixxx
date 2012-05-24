@@ -107,44 +107,60 @@ script.midiPitch = function (LSB, MSB, status) {
 }
 
 /* -------- ------------------------------------------------------
-     script.deckSpinback
+     script.spinbackDefault
+   Purpose: wrapper around spinback() that can be directly mapped 
+            from xml for a spinback effect
+   Input:   channel, control, value, status, group
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.spinbackDefault = function(channel, control, value, status, group) {
+    var deck = parseInt(group.substring(8,9));
+    var activate = ((status & 0xF0) == 0x90 || value > 0);
+	script.spinback(deck, activate);
+}
+
+/* -------- ------------------------------------------------------
+     script.brakeDefault
+   Purpose: wrapper around brake() that can be directly mapped 
+            from xml for a brake effect
+   Input:   channel, control, value, status, group
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.brakeDefault = function(channel, control, value, status, group) {
+    var deck = parseInt(group.substring(8,9));
+    var activate = ((status & 0xF0) == 0x90 || value > 0);
+	script.brake(deck, activate);
+}
+
+/* -------- ------------------------------------------------------
+     script.spinback
    Purpose: Activate or disable a spinback effect on the chosen deck
    Input:   group, enable/disable, [delay], [factor], [inital rate]
    Output:  None
    -------- ------------------------------------------------------ */
-
-script.spinback = function(group, activate, factor, delay, rate) {
+script.spinback = function(group, activate, factor, rate, delay) {
 	if (factor == undefined) factor = 0.8;
-	if (delay == undefined) delay = 5;
 	if (rate == undefined) rate = -10;
-	script.deckSpinbackBrake(group, activate, factor, delay, rate);
+	if (delay == undefined) delay = 5;
+	script.deckSpinbackBrake(group, activate, factor, rate, delay);
 }
 
 /* -------- ------------------------------------------------------
-     script.deckBrake
+     script.brake
    Purpose: Activate or disable a brake effect on the chosen deck
    Input:   group, enable/disable, [delay], [factor], [inital rate]
    Output:  None
    -------- ------------------------------------------------------ */
-
-script.brake = function(group, activate, factor, delay, rate) {
+script.brake = function(group, activate, factor, rate, delay) {
 	if (factor == undefined) factor = 0.95;
-	if (delay == undefined) delay = 0;
 	if (rate == undefined) rate = 1;
-	script.deckSpinbackBrake(group, activate, factor, delay, rate);
+	if (delay == undefined) delay = 0;
+	script.deckSpinbackBrake(group, activate, factor, rate, delay);
 }
-
-/* -------- ------------------------------------------------------
-     script.deckSpinbackBrake
-   Purpose: Activate or disable a spinback or brake effect on the 
-            chosen deck
-   Input:   group, enable/disable, delay, scaling factor, inital rate
-   Output:  None
-   -------- ------------------------------------------------------ */
 
 script.deckSpinbackBrakeData = {};
 
-script.deckSpinbackBrake = function(group, activate, factor, delay, rate) {
+script.deckSpinbackBrake = function(group, activate, factor, rate, delay) {
 	if (activate != undefined) {
 
 		// store the current settings
