@@ -15,7 +15,9 @@ void WaveformMarkSet::setup( const QString& group, const QDomNode& node) {
 
     m_defaultMark = WaveformMark();
     m_marks.clear();
+#if QT_VERSION >= 0x040700
     m_marks.reserve(NUM_HOT_CUES);
+#endif
 
     std::set<QString> hotCutSet;
     bool hasDefaultMark = false;
