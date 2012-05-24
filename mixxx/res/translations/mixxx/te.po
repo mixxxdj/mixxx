@@ -1,25 +1,25 @@
-# Chinese (Simplified) translation for mixxx
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Telugu translation for mixxx
+# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the mixxx package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-17 04:56+0000\n"
-"Last-Translator: yjfhw <yjfhw007@gmail.com>\n"
-"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"PO-Revision-Date: 2012-05-10 03:47+0000\n"
+"Last-Translator: Praveen Illa <mail2ipn@gmail.com>\n"
+"Language-Team: Telugu <te@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-18 04:37+0000\n"
-"X-Generator: Launchpad (build 15259)\n"
+"X-Launchpad-Export-Date: 2012-05-15 04:41+0000\n"
+"X-Generator: Launchpad (build 15238)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "自动切换曲目"
+msgstr "ఆటో డీజె"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -29,7 +29,7 @@ msgstr ""
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "添加至自动曲目队列（顶部）"
+msgstr ""
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -48,65 +48,65 @@ msgstr ""
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "新建播放列表"
+msgstr "కొత్త పాటలజాబితా"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "添加至自动曲目队列（底部）"
+msgstr ""
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "添加至自动曲目队列（顶部）"
+msgstr ""
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "移除"
+msgstr "తీసివేయు"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "重命名"
+msgstr "పేరుమార్చు"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr "锁定"
+msgstr "తాళంవేయి"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "导入播放列表"
+msgstr "పాటలజాబితాను దిగుమతిచేయి"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "导出播放列表"
+msgstr "పాటలజాబితాను ఎగుమతిచేయి"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "重命名播放列表"
+msgstr ""
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "新建播放列表名称："
+msgstr "కొత్త పాటలజాబితా పేరు:"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "重命名播放列表失败"
+msgstr "పాటలజాబితా పేరుమార్చుటలో విఫలమైంది"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "使用该名称的播放列表已存在。"
+msgstr ""
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "播放列表名称不能为空。"
+msgstr ""
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr "播放列表名称："
+msgstr "పాటలజాబితా పేరు:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
@@ -121,7 +121,7 @@ msgstr ""
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "播放列表文件(*.m3u *.m3u8 *.pls *.csv)"
+msgstr ""
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -129,85 +129,83 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"M3U 播放列表(*.m3u);;M3U8 播放列表(*.m3u8);;PLS 播放列表(*.pls);;文本 CSV "
-"(*.csv);;可读文本(*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "已播放"
+msgstr ""
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "歌手"
+msgstr "కళాకారి"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr "标题"
+msgstr "శీర్షిక"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "专辑"
+msgstr "ఆల్బమ్"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "流派"
+msgstr "సాహిత్యం"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr "作曲家"
+msgstr "స్వరకర్త"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr "年份"
+msgstr "సంవత్సరం"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr "类型"
+msgstr "రకం"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr "位置"
+msgstr "స్థానము"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr "注释"
+msgstr "వ్యాఖ్య"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr "持续时间"
+msgstr "నిడివి"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
-msgstr "评分"
+msgstr "రేటింగు"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr "比特率"
+msgstr "బిట్‌రేటు"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr "BPM"
+msgstr "బిపియమ్"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr "音轨 #"
+msgstr "ట్రాక్ #"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
-msgstr "加入日期"
+msgstr "జతచేయబడిన తేదీ"
 
 #: BaseSqlTableModel#17
 msgid "#"
@@ -215,20 +213,20 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr "时间戳"
+msgstr "కాలముద్ర"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr "音调"
+msgstr "కీ"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
-msgstr "BPM 锁定"
+msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "无法播放"
+msgstr ""
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
@@ -240,15 +238,15 @@ msgstr ""
 
 #: BrowseFeature#3
 msgid "Quick Links"
-msgstr "快速链接"
+msgstr ""
 
 #: BrowseFeature#4
 msgid "Devices"
-msgstr "设备"
+msgstr "పరికరాలు"
 
 #: BrowseFeature#5
 msgid "Removable Devices"
-msgstr "可移动设备"
+msgstr "తీసివేయదగు పరికరాలు"
 
 #: BrowseFeature#6
 msgid ""
@@ -258,81 +256,81 @@ msgstr ""
 
 #: BrowseFeature#7
 msgid "Browse"
-msgstr "浏览"
+msgstr "విహరించు (_B)"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr "文件名"
+msgstr "దస్త్రంపేరు"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr "艺术家"
+msgstr "కళాకారి"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr "歌曲标题"
+msgstr "శీర్షిక"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr "专辑"
+msgstr "ఆల్బమ్"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "曲号"
+msgstr "ట్రాక్ #"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr "年份"
+msgstr "సంవత్సరం"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "音乐类型"
+msgstr "సాహిత్యం"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr "编曲"
+msgstr "స్వరకర్త"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr "备注"
+msgstr "వ్యాఖ్య"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr "持续时间"
+msgstr "నిడివి"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr "BPM"
+msgstr "బిపియమ్"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr "音调"
+msgstr "కీ"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr "类型"
+msgstr "రకం"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr "比特率"
+msgstr "బిట్‌రేటు"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr "位置"
+msgstr "స్థానము"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
@@ -342,29 +340,29 @@ msgstr ""
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
-msgstr "不能加载下列文件，因为该文件正被Mixxx或其它软件使用。"
+msgstr ""
 
 #: BrowseTableModel#18
 msgid "Warning: This will permanently delete the following files:"
-msgstr "警告：这将永久删除下列文件："
+msgstr ""
 
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "你确定将这些文件从计算机中删除？"
+msgstr ""
 
 #: BrowseTableModel#20
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
-msgstr "不能删除下列文件，因为该文件正被Mixxx或其它软件使用："
+msgstr ""
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "不能更新文件元数据"
+msgstr ""
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr "文件 %2: %3 第 %1 行发生未知错误"
+msgstr ""
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
@@ -372,11 +370,11 @@ msgstr ""
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr "控制器脚本错误"
+msgstr ""
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr "您所使用的一个控制器无法正常工作。"
+msgstr ""
 
 #: ControllerEngine#5
 msgid ""
@@ -385,125 +383,123 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
-"<html>(该脚本代码需修改。)<br>当前，您可以选择<ul><li>在可能遇到程序工作不稳定的情况的前提下，于本次操作中忽略此错误；</li><li"
-">尝试通过重启控制器进行恢复。</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr "对话框(Dialog)"
+msgstr ""
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr "输入"
+msgstr ""
 
 #: ControllerMappingDlg#3
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
-msgstr "下列工具箱仍在开发中，本版本Mixxx中留空。"
+msgstr ""
 
 #: ControllerMappingDlg#4
 msgid "Controls"
-msgstr "控制"
+msgstr "నియంత్రణలు"
 
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr "新增"
+msgstr "జతచేయి"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr "移除"
+msgstr "తీసివేయు"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr "学习向导"
+msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr "全部清除"
+msgstr ""
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr "输出"
+msgstr "అవుట్‌పుట్"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
-msgstr "输出"
+msgstr ""
 
 #: ControllerMappingDlg#11
 msgid "Clear All"
-msgstr "全部清除"
+msgstr ""
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "新建分类列表"
+msgstr ""
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "删除"
+msgstr "తీసివేయు"
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "重命名"
+msgstr "పేరుమార్చు"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr "锁定"
+msgstr "తాళంవేయి"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "导入播放列表"
+msgstr "పాటలజాబితాను దిగుమతిచేయి"
 
 #: CrateFeature#6
 msgid "Crates"
-msgstr "分类列表"
+msgstr ""
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr "导入分类列表"
+msgstr ""
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr "导出分类列表"
+msgstr ""
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr "解锁"
+msgstr ""
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr "分类列表名："
+msgstr ""
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "在创建分类列表时发生未知错误 "
+msgstr ""
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr "重命名分类列表"
+msgstr ""
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr "新分类列表名"
+msgstr ""
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "重命名分类列表失败"
+msgstr ""
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "播放列表文件(*.m3u *.m3u8 *.pls *.csv)"
+msgstr ""
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -511,108 +507,106 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"M3U 播放列表(*.m3u);;M3U8 播放列表(*.m3u8);;PLS 播放列表(*.pls);;文本 CSV "
-"(*.csv);;可读文本(*.txt)"
 
 #: CrateFeature#17
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
-msgstr "你可以把要DJ的音乐放进分类列表。"
+msgstr ""
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
-msgstr "为你的下场表演、最喜爱的音轨和最常用的歌曲新建分类列表吧！"
+msgstr ""
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr "随心所欲管理音乐，就用分类列表！"
+msgstr ""
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
-msgstr "分类列表不能命名为空"
+msgstr ""
 
 #: CrateFeature#21
 msgid "Creating Crate Failed"
-msgstr "创建分类列表失败"
+msgstr ""
 
 #: CrateFeature#22
 msgid "A crate by that name already exists."
-msgstr "已有相同分类列表名"
+msgstr ""
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr "关于 Mixxx"
+msgstr ""
 
 #: DlgAboutDlg#2
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr "<a href=\"http://mixxx.org/\">官方网站</a>"
+msgstr ""
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr "自动DJ"
+msgstr ""
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr "要启动自动DJ模式必须停止一个控制台。"
+msgstr ""
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
-msgstr "关闭自动切换曲目"
+msgstr ""
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr "对自动DJ播放列表随机排序"
+msgstr ""
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr "随机排序"
+msgstr ""
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr "跳至自动DJ播放列表下一曲"
+msgstr ""
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr "跳过该音轨"
+msgstr ""
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr "过渡至下条音轨"
+msgstr ""
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr "现在淡出"
+msgstr ""
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr "决定转换持续时长。"
+msgstr ""
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr "秒"
+msgstr ""
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr "秒"
+msgstr ""
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr "自动DJ开关"
+msgstr ""
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
-msgstr "开启自动切换曲目"
+msgstr ""
 
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr "管理"
+msgstr ""
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr "节拍检测设置"
+msgstr ""
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -623,23 +617,23 @@ msgstr ""
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr "启用BPM及节拍检测设置"
+msgstr ""
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
-msgstr "选择分析器"
+msgstr ""
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr "节拍分析器："
+msgstr ""
 
 #: DlgBeatsDlg#6
 msgid "Choose between different algorithms to detect beats."
-msgstr "选择其他算法检测节拍"
+msgstr ""
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
-msgstr "分析器设置"
+msgstr ""
 
 #: DlgBeatsDlg#8
 msgid ""
@@ -650,7 +644,7 @@ msgstr ""
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
-msgstr "启用快速分析（用于老旧电脑，精度可能降低）"
+msgstr ""
 
 #: DlgBeatsDlg#10
 msgid ""
@@ -662,7 +656,7 @@ msgstr ""
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
-msgstr "假定拍子恒定（推荐）"
+msgstr ""
 
 #: DlgBeatsDlg#12
 msgid ""
@@ -690,49 +684,49 @@ msgstr ""
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
 msgid "BPM Range"
-msgstr "BPM 范围"
+msgstr ""
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr "最小值："
+msgstr ""
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr "最大值："
+msgstr ""
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr "重置为默认值"
+msgstr ""
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "BPM方案"
+msgstr ""
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "方案名称："
+msgstr ""
 
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
 msgid "BPM Range"
-msgstr "BPM 范围"
+msgstr ""
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr "最大值"
+msgstr ""
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "最小值"
+msgstr ""
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Track"
-msgstr "分析整条音轨"
+msgstr ""
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr "控制器学习向导"
+msgstr ""
 
 #: DlgControllerLearning#2
 msgid ""
@@ -743,7 +737,7 @@ msgstr ""
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr "完成"
+msgstr ""
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
@@ -751,41 +745,41 @@ msgstr ""
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
-msgstr "选择控制器"
+msgstr ""
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
-msgstr "控制台 %1"
+msgstr ""
 
 #: DlgControllerLearning#7
 msgctxt "DlgControllerLearning#7"
 msgid "Sampler %1"
-msgstr "采样器 %1"
+msgstr ""
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr "重设为默认值"
+msgstr ""
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr "混音器"
+msgstr ""
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
 msgid "Crossfader"
-msgstr "平滑转换器"
+msgstr ""
 
 #: DlgControllerLearning#11
 msgid "Master volume"
-msgstr "主音量"
+msgstr ""
 
 #: DlgControllerLearning#12
 msgid "Master balance"
-msgstr "主声道均衡"
+msgstr ""
 
 #: DlgControllerLearning#13
 msgid "Headphone volume"
-msgstr "耳机音量"
+msgstr ""
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
@@ -793,7 +787,7 @@ msgstr ""
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr "传输"
+msgstr ""
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
@@ -801,19 +795,19 @@ msgstr ""
 
 #: DlgControllerLearning#17
 msgid "Play button"
-msgstr "播放按钮"
+msgstr ""
 
 #: DlgControllerLearning#18
 msgid "Volume fader"
-msgstr "音量衰减器"
+msgstr ""
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
-msgstr "快退按钮"
+msgstr ""
 
 #: DlgControllerLearning#20
 msgid "Fast forward button"
-msgstr "快进按钮"
+msgstr ""
 
 #: DlgControllerLearning#21
 msgid "Jump to start of track"
@@ -833,7 +827,7 @@ msgstr ""
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
-msgstr "耳机监听键"
+msgstr ""
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
@@ -865,7 +859,7 @@ msgstr ""
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr "节拍同步（拍子和位相）"
+msgstr ""
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
@@ -1125,21 +1119,21 @@ msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr "缺失音频插件下载器"
+msgstr ""
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr "BPM 侦测设置"
+msgstr ""
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr "BPM 侦测"
+msgstr ""
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr "开启 BPM 侦测"
+msgstr ""
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Tracks BPM on Import"
@@ -1147,24 +1141,24 @@ msgstr ""
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr "写入 BPM 到 ID3 标签"
+msgstr ""
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr "如果 BPM  可以被检测但不在指定范围"
+msgstr ""
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr "允许 BPM 超出设定范围"
+msgstr ""
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr "BPM 模式"
+msgstr ""
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr "新增"
+msgstr ""
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
@@ -1172,19 +1166,19 @@ msgstr ""
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr "删除"
+msgstr ""
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr "默认值"
+msgstr ""
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr "错误"
+msgstr ""
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr "无法打开文件 %1"
+msgstr ""
 
 #: DlgPrefController#1
 msgctxt "DlgPrefController#1"
@@ -1210,7 +1204,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#3
 msgid "Enabled"
-msgstr "已启用"
+msgstr ""
 
 #: DlgPrefControllerDlg#4
 msgid ""
@@ -1219,7 +1213,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#5
 msgid "Load Preset:"
-msgstr "导入预设"
+msgstr ""
 
 #: DlgPrefControllerDlg#6
 msgid "Loaded Preset:"
@@ -1240,7 +1234,7 @@ msgstr ""
 
 #: DlgPrefControls#2
 msgid "Remaining"
-msgstr "剩余时间"
+msgstr ""
 
 #: DlgPrefControls#3
 msgid "Don't load tracks into a playing deck"
@@ -1281,7 +1275,7 @@ msgstr ""
 
 #: DlgPrefControls#11
 msgid "This skin does not support schemes"
-msgstr "该皮肤不支持色彩方案"
+msgstr ""
 
 #: DlgPrefControls#12
 msgid "6%"
@@ -1297,7 +1291,7 @@ msgstr ""
 
 #: DlgPrefControls#15
 msgid "10%"
-msgstr "10%"
+msgstr ""
 
 #: DlgPrefControls#16
 msgid "Load tracks into a playing deck"
@@ -1305,39 +1299,39 @@ msgstr ""
 
 #: DlgPrefControls#17
 msgid "20%"
-msgstr "20%"
+msgstr ""
 
 #: DlgPrefControls#18
 msgid "30%"
-msgstr "30%"
+msgstr ""
 
 #: DlgPrefControls#19
 msgid "40%"
-msgstr "40%"
+msgstr ""
 
 #: DlgPrefControls#20
 msgid "50%"
-msgstr "50%"
+msgstr ""
 
 #: DlgPrefControls#21
 msgid "60%"
-msgstr "60%"
+msgstr ""
 
 #: DlgPrefControls#22
 msgid "70%"
-msgstr "70%"
+msgstr ""
 
 #: DlgPrefControls#23
 msgid "80%"
-msgstr "80%"
+msgstr ""
 
 #: DlgPrefControls#24
 msgid "90%"
-msgstr "90%"
+msgstr ""
 
 #: DlgPrefControls#25
 msgid "Up increases speed"
-msgstr "向上速度增加"
+msgstr ""
 
 #: DlgPrefControls#26
 msgctxt "DlgPrefControls#26"
@@ -1346,32 +1340,32 @@ msgstr ""
 
 #: DlgPrefControls#27
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr "Mixxx必须重启已使更改生效"
+msgstr ""
 
 #: DlgPrefControls#28
 msgid "OpenGL not available"
-msgstr "OpenGL不可用"
+msgstr ""
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr "表单１"
+msgstr ""
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr "皮肤"
+msgstr ""
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
-msgstr "方案"
+msgstr ""
 
 #: DlgPrefControlsDlg#4
 msgid "Position display"
-msgstr "位置显示"
+msgstr ""
 
 #: DlgPrefControlsDlg#5
 msgid "Tool tips"
-msgstr "工具提示"
+msgstr ""
 
 #: DlgPrefControlsDlg#6
 msgctxt "DlgPrefControlsDlg#6"
@@ -1385,11 +1379,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
-msgstr "音高/速率滑动范围"
+msgstr ""
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider direction"
-msgstr "音高/速率滑动方向"
+msgstr ""
 
 #: DlgPrefControlsDlg#10
 msgid "Track load behaviour"
@@ -1417,7 +1411,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent Pitch/Rate Buttons"
-msgstr "音高/速率固定按钮"
+msgstr ""
 
 #: DlgPrefControlsDlg#17
 msgid "Displays which OpenGL version is supported by the current platform."
@@ -1429,19 +1423,19 @@ msgstr ""
 
 #: DlgPrefControlsDlg#19
 msgid "Left click"
-msgstr "左击"
+msgstr ""
 
 #: DlgPrefControlsDlg#20
 msgid "Right click"
-msgstr "右击"
+msgstr ""
 
 #: DlgPrefControlsDlg#21
 msgid "%"
-msgstr "%"
+msgstr ""
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "临时音高/速率按钮"
+msgstr ""
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
@@ -1522,7 +1516,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr "表单１"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -1530,15 +1524,15 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr "缓慢过渡"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr "快速切换"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr "恒定输出功率"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
@@ -1550,11 +1544,11 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr "线性"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
-msgstr "对数"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
@@ -1576,11 +1570,11 @@ msgstr ""
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr "文本标签1"
+msgstr ""
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
-msgstr "16 Hz"
+msgstr ""
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
@@ -1588,7 +1582,7 @@ msgstr ""
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
-msgstr "20.05 kHz"
+msgstr ""
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
@@ -1685,7 +1679,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr "150"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
@@ -1710,7 +1704,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr "秒"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
@@ -1725,12 +1719,12 @@ msgstr ""
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr "绝对模式"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr "相对模式"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1750,7 +1744,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr "由xwax提供技术支持"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
@@ -1761,23 +1755,23 @@ msgstr ""
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr "选择音乐库目录"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#1
 msgid "Audio File Formats"
-msgstr "音频文件格式"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#2
 msgid "Additional Format Plugins:"
-msgstr "更多格式插件"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#3
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#4
 msgid "Loaded Plugins:"
-msgstr "已加载插件"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#5
 msgctxt "DlgPrefPlaylistDlg#5"
@@ -1795,11 +1789,11 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
-msgstr "启动时重新扫描音乐库"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
-msgstr "请尽量使用相对路径来导出播放列表"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#10
 msgid "Show Rhythmbox Library"
@@ -1825,11 +1819,11 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#15
 msgid "Music Directory:"
-msgstr "音乐目录:"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#16
 msgid "Built-in"
-msgstr "内置"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#17
 msgid "Available Online..."
@@ -1879,19 +1873,19 @@ msgstr ""
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
-msgstr "品质"
+msgstr ""
 
 #: DlgPrefRecordDlg#7
 msgid "High"
-msgstr "高"
+msgstr ""
 
 #: DlgPrefRecordDlg#8
 msgid "Low"
-msgstr "低"
+msgstr ""
 
 #: DlgPrefRecordDlg#9
 msgid "Tags"
-msgstr "标签"
+msgstr ""
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
@@ -1900,7 +1894,7 @@ msgstr ""
 
 #: DlgPrefRecordDlg#11
 msgid "Author"
-msgstr "作者"
+msgstr ""
 
 #: DlgPrefRecordDlg#12
 msgctxt "DlgPrefRecordDlg#12"
@@ -1914,7 +1908,7 @@ msgstr ""
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
-msgstr "创建一个CUE文件"
+msgstr ""
 
 #: DlgPrefRecordDlg#15
 msgid "File Splitting"
@@ -1968,7 +1962,7 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr "分贝"
+msgstr ""
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
@@ -1977,32 +1971,32 @@ msgstr ""
 
 #: DlgPrefShoutcast#1
 msgid "Icecast 2"
-msgstr "Icecast 2"
+msgstr ""
 
 #: DlgPrefShoutcast#2
 msgid "Shoutcast"
-msgstr "Shoutcast"
+msgstr ""
 
 #: DlgPrefShoutcast#3
 msgid "Icecast 1"
-msgstr "Icecast 1"
+msgstr ""
 
 #: DlgPrefShoutcast#4
 msgid "MP3"
-msgstr "MP3"
+msgstr ""
 
 #: DlgPrefShoutcast#5
 msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
+msgstr ""
 
 #: DlgPrefShoutcast#6
 msgid "Stereo"
-msgstr "立体声"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr "表单3"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#2
 msgid "Enable live broadcasting"
@@ -2015,11 +2009,11 @@ msgstr ""
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr "类型："
+msgstr ""
 
 #: DlgPrefShoutcastDlg#5
 msgid "Mount"
-msgstr "挂载"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#6
 msgid "Host"
@@ -2027,7 +2021,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#7
 msgid "Port"
-msgstr "端口"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#8
 msgid "Login"
@@ -2051,11 +2045,11 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#13
 msgid "Website"
-msgstr "主页"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#14
 msgid "http://www.mixxx.org"
-msgstr "http://www.mixxx.org"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#15
 msgid "Description"
@@ -2105,7 +2099,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#23
 msgid "Channels"
-msgstr "通道"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#24
 msgid "Custom metadata"
@@ -2138,11 +2132,11 @@ msgstr ""
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
-msgstr "%1 赫兹"
+msgstr ""
 
 #: DlgPrefSound#3
 msgid "a device"
-msgstr "一个设备"
+msgstr ""
 
 #: DlgPrefSound#4
 msgid "An unknown error occurred"
@@ -2168,15 +2162,15 @@ msgstr ""
 
 #: DlgPrefSound#9
 msgid "Configuration error"
-msgstr "配置错误"
+msgstr ""
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
-msgstr "声音API"
+msgstr ""
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr "采样率"
+msgstr ""
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -2198,7 +2192,7 @@ msgstr ""
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr "输入"
+msgstr ""
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
@@ -2212,7 +2206,7 @@ msgstr ""
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr "应用"
+msgstr ""
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -2247,7 +2241,7 @@ msgstr ""
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr "输入"
+msgstr ""
 
 #: DlgPrefVinylDlg#3
 msgctxt "DlgPrefVinylDlg#3"
@@ -2286,7 +2280,7 @@ msgstr ""
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
-msgstr "150"
+msgstr ""
 
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
@@ -2311,7 +2305,7 @@ msgstr ""
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr "应用"
+msgstr ""
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
@@ -2321,7 +2315,7 @@ msgstr ""
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr "秒"
+msgstr ""
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
@@ -2364,7 +2358,7 @@ msgstr ""
 
 #: DlgPreferences#2
 msgid "Sound Hardware"
-msgstr "声音硬件"
+msgstr ""
 
 #: DlgPreferences#3
 msgid "Controllers"
@@ -2377,7 +2371,7 @@ msgstr ""
 
 #: DlgPreferences#5
 msgid "Interface"
-msgstr "接口"
+msgstr ""
 
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
@@ -2423,7 +2417,7 @@ msgstr ""
 
 #: DlgPreferencesDlg#2
 msgid "1"
-msgstr "1"
+msgstr ""
 
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
@@ -2436,7 +2430,7 @@ msgstr ""
 
 #: DlgPrepare#3
 msgid "New"
-msgstr "新建"
+msgstr ""
 
 #: DlgPrepare#4
 msgid "Shows all tracks in the library."
@@ -2444,11 +2438,11 @@ msgstr ""
 
 #: DlgPrepare#5
 msgid "All"
-msgstr "全部"
+msgstr ""
 
 #: DlgPrepare#6
 msgid "Progress"
-msgstr "进度"
+msgstr ""
 
 #: DlgPrepare#7
 msgid "Selects all tracks in the table below."
@@ -2456,7 +2450,7 @@ msgstr ""
 
 #: DlgPrepare#8
 msgid "Select All"
-msgstr "全部选中"
+msgstr ""
 
 #: DlgPrepare#9
 msgid ""
@@ -2471,7 +2465,7 @@ msgstr ""
 
 #: DlgPrepare#11
 msgid "Stop Analysis"
-msgstr "停止分析"
+msgstr ""
 
 #: DlgPrepare#12
 msgid "Analyzing %1%"
@@ -2484,11 +2478,11 @@ msgstr ""
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr "状态:"
+msgstr ""
 
 #: DlgRecording#3
 msgid "Start Recording"
-msgstr "开始录制"
+msgstr ""
 
 #: DlgRecording#4
 msgid "Start recording here ..."
@@ -2496,7 +2490,7 @@ msgstr ""
 
 #: DlgRecording#5
 msgid "Stop Recording"
-msgstr "停止录制"
+msgstr ""
 
 #: DlgRecording#6
 msgid "Recording to file: "
@@ -2508,7 +2502,7 @@ msgstr ""
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr "音轨编辑器"
+msgstr ""
 
 #: DlgTrackInfo#2
 msgid "Summary"
@@ -2516,15 +2510,15 @@ msgstr ""
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr "标题："
+msgstr ""
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr "艺术家："
+msgstr ""
 
 #: DlgTrackInfo#5
 msgid "Album:"
-msgstr "专辑："
+msgstr ""
 
 #: DlgTrackInfo#6
 msgid "Track #:"
@@ -2532,7 +2526,7 @@ msgstr ""
 
 #: DlgTrackInfo#7
 msgid "Genre:"
-msgstr "流派："
+msgstr ""
 
 #: DlgTrackInfo#8
 msgid "Composer:"
@@ -2554,7 +2548,7 @@ msgstr ""
 
 #: DlgTrackInfo#12
 msgid "BPM:"
-msgstr "BPM："
+msgstr ""
 
 #: DlgTrackInfo#13
 msgid "Location:"
@@ -2562,7 +2556,7 @@ msgstr ""
 
 #: DlgTrackInfo#14
 msgid "Filename:"
-msgstr "文件名："
+msgstr ""
 
 #: DlgTrackInfo#15
 msgid "Bitrate:"
@@ -2595,7 +2589,7 @@ msgstr ""
 
 #: DlgTrackInfo#22
 msgid "Duration:"
-msgstr "持续时间："
+msgstr ""
 
 #: DlgTrackInfo#23
 msgid "Comments:"
@@ -2615,7 +2609,7 @@ msgstr ""
 
 #: DlgTrackInfo#27
 msgid "Hint: Use the Library Analyze view to run BPM detection."
-msgstr "提示: 使用音乐库分析视图运行 BPM 检测。"
+msgstr ""
 
 #: DlgTrackInfo#28
 msgid "Cue Id"
@@ -2714,7 +2708,7 @@ msgstr ""
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
-msgstr "Mixxx遇到一个问题"
+msgstr ""
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
@@ -2819,7 +2813,7 @@ msgstr ""
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
-msgstr "致命错误"
+msgstr ""
 
 #: ErrorDialogHandler#2
 msgid "Critical error"
@@ -2827,7 +2821,7 @@ msgstr ""
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr "警示"
+msgstr ""
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
@@ -2836,7 +2830,7 @@ msgstr ""
 
 #: ErrorDialogHandler#5
 msgid "Question"
-msgstr "问题"
+msgstr ""
 
 #: GLSLWaveformWidget#1
 msgid "Filtered (experimental)"
@@ -2854,15 +2848,15 @@ msgstr ""
 
 #: ITunesFeature#1
 msgid "iTunes"
-msgstr "iTunes"
+msgstr ""
 
 #: ITunesFeature#2
 msgid "Select your iTunes library"
-msgstr "选择你的 iTunes 音乐库"
+msgstr ""
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr "（加载）iTunes"
+msgstr ""
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2926,11 +2920,11 @@ msgstr ""
 
 #: MixxxApp#1
 msgid "Mixxx "
-msgstr "Mixxx "
+msgstr ""
 
 #: MixxxApp#2
 msgid "Mixxx"
-msgstr "Mixxx"
+msgstr ""
 
 #: MixxxApp#3
 msgctxt "MixxxApp#3"
@@ -2980,7 +2974,7 @@ msgstr ""
 
 #: MixxxApp#13
 msgid "Exit"
-msgstr "退出"
+msgstr ""
 
 #: MixxxApp#14
 msgid "No Output Devices"
@@ -3014,11 +3008,11 @@ msgstr ""
 
 #: MixxxApp#21
 msgid "Ctrl+O"
-msgstr "Ctrl+O"
+msgstr ""
 
 #: MixxxApp#22
 msgid "Ctrl+Shift+O"
-msgstr "Ctrl+Shift+O"
+msgstr ""
 
 #: MixxxApp#23
 msgid "&Exit"
@@ -3030,7 +3024,7 @@ msgstr ""
 
 #: MixxxApp#25
 msgid "Ctrl+Q"
-msgstr "Ctrl+Q"
+msgstr ""
 
 #: MixxxApp#26
 msgid "&Rescan Library"
@@ -3046,7 +3040,7 @@ msgstr ""
 
 #: MixxxApp#29
 msgid "Ctrl+N"
-msgstr "Ctrl+N"
+msgstr ""
 
 #: MixxxApp#30
 msgid "Add new &crate"
@@ -3066,7 +3060,7 @@ msgstr ""
 
 #: MixxxApp#34
 msgid "F11"
-msgstr "F11"
+msgstr ""
 
 #: MixxxApp#35
 msgid "&Preferences"
@@ -3078,7 +3072,7 @@ msgstr ""
 
 #: MixxxApp#37
 msgid "Ctrl+P"
-msgstr "Ctrl+P"
+msgstr ""
 
 #: MixxxApp#38
 msgid "&About"
@@ -3106,15 +3100,15 @@ msgstr ""
 
 #: MixxxApp#44
 msgid "Ctrl+Y"
-msgstr "Ctrl+Y"
+msgstr ""
 
 #: MixxxApp#45
 msgid "Ctrl+U"
-msgstr "Ctrl+U"
+msgstr ""
 
 #: MixxxApp#46
 msgid "Ctrl+L"
-msgstr "Ctrl+L"
+msgstr ""
 
 #: MixxxApp#47
 msgid "&Record Mix"
@@ -3122,7 +3116,7 @@ msgstr ""
 
 #: MixxxApp#48
 msgid "Ctrl+R"
-msgstr "Ctrl+R"
+msgstr ""
 
 #: MixxxApp#49
 msgid "Create a new playlist"
@@ -3186,7 +3180,7 @@ msgstr ""
 
 #: MixxxApp#64
 msgid "&File"
-msgstr "文件(&F)"
+msgstr ""
 
 #: MixxxApp#65
 msgid "Ctrl+Shift+N"
@@ -3206,7 +3200,7 @@ msgstr ""
 
 #: MixxxApp#69
 msgid "&Options"
-msgstr "选项(&O)"
+msgstr ""
 
 #: MixxxApp#70
 msgid "&Library"
@@ -3218,7 +3212,7 @@ msgstr ""
 
 #: MixxxApp#72
 msgid "&Help"
-msgstr "帮助(&H)"
+msgstr ""
 
 #: MixxxApp#73
 msgid "&Vinyl Control"
@@ -3389,7 +3383,7 @@ msgstr ""
 
 #: QObject#3
 msgid "Headphones"
-msgstr "耳机"
+msgstr ""
 
 #: QObject#4
 msgid "Deck"
@@ -3419,7 +3413,7 @@ msgstr ""
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
-msgstr "Rhythmbox"
+msgstr ""
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
@@ -4278,7 +4272,7 @@ msgstr ""
 
 #: TraktorFeature#1
 msgid "Traktor"
-msgstr "Traktor"
+msgstr ""
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
@@ -4296,7 +4290,7 @@ msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
-msgstr "Ctrl+F"
+msgstr ""
 
 #: WSearchLineEdit#2
 msgid "Esc"
@@ -4386,515 +4380,18 @@ msgstr ""
 msgid "(GL)"
 msgstr ""
 
-#~ msgid "You don't have permission to view this folder."
-#~ msgstr "你没有权限查看此目录"
-
-#~ msgid "Permission Denied"
-#~ msgstr "权限不足"
-
-#~ msgid "Add tracks to the queue below..."
-#~ msgstr "添加歌曲到队列"
-
-#~ msgid "BPM Range"
-#~ msgstr "BPM 范围"
-
-#~ msgid "Skip"
-#~ msgstr "跳过"
-
-#~ msgid "Next"
-#~ msgstr "下一首"
-
-#~ msgid "Previous"
-#~ msgstr "上一首"
-
-#~ msgctxt "BaseSqlTableModel#8"
-#~ msgid "Location"
-#~ msgstr "路径"
-
-#~ msgctxt "BaseSqlTableModel#17"
-#~ msgid "Key"
-#~ msgstr "调"
-
-#~ msgctxt "BaseSqlTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "BaseSqlTableModel#14"
-#~ msgid "Track #"
-#~ msgstr "曲号"
-
-#~ msgctxt "BaseSqlTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "比特率"
-
-#~ msgctxt "BrowseTableModel#10"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "BrowseTableModel#11"
-#~ msgid "Key"
-#~ msgstr "调"
-
-#~ msgid "Desktop"
-#~ msgstr "桌面"
-
-#~ msgid "Home"
-#~ msgstr "主目录"
-
-#~ msgid "Music"
-#~ msgstr "音乐"
-
-#~ msgid "Documents"
-#~ msgstr "文档"
-
-#~ msgctxt "BrowseTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "歌长"
-
-#~ msgctxt "BrowseTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "评论"
-
-#~ msgctxt "BrowseTableModel#13"
-#~ msgid "Bitrate"
-#~ msgstr "比特率"
-
-#~ msgctxt "BrowseTableModel#14"
-#~ msgid "Location"
-#~ msgstr "路径"
-
-#~ msgid "Next >>"
-#~ msgstr "下一步 >>"
-
-#~ msgid "<< Prev"
-#~ msgstr "上一步"
-
-#~ msgctxt "DlgBpmTapDlg#3"
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgctxt "DlgBpmTapDlg#8"
-#~ msgid "BPM Detection"
-#~ msgstr "BPM 探测"
-
-#~ msgid "Alt+P"
-#~ msgstr "Alt+P"
-
-#~ msgid "Alt+G"
-#~ msgstr "Alt+G"
-
-#~ msgctxt "DlgBpmTapDlg#20"
-#~ msgid "Artist:"
-#~ msgstr "艺术家："
-
-#~ msgctxt "DlgBpmTapDlg#19"
-#~ msgid "Title:"
-#~ msgstr "歌曲标题："
-
-#~ msgctxt "DlgBpmTapDlg#25"
-#~ msgid "File Type:"
-#~ msgstr "文件格式："
-
-#~ msgid "iPod"
-#~ msgstr "iPod"
-
-#~ msgid "kbps"
-#~ msgstr "kbps"
-
-#~ msgctxt "DlgPrefRecordDlg#9"
-#~ msgid "Album"
-#~ msgstr "专辑"
-
-#~ msgid "/mixxx.ogg"
-#~ msgstr "/mixxx.ogg"
-
-#~ msgid "192.168.123.8"
-#~ msgstr "192.168.123.8"
-
-#~ msgid "8000"
-#~ msgstr "8000"
-
-#~ msgctxt "DlgPrefShoutcastDlg#29"
-#~ msgid "Bitrate"
-#~ msgstr "比特率"
-
-#~ msgid "320 kbps"
-#~ msgstr "320 kbps"
-
-#~ msgctxt "DlgPrefShoutcastDlg#25"
-#~ msgid "Genre"
-#~ msgstr "曲风"
-
-#~ msgid "48 kbps"
-#~ msgstr "48 kbps"
-
-#~ msgid "64 kbps"
-#~ msgstr "64 kbps"
-
-#~ msgid "96 kbps"
-#~ msgstr "96 kbps"
-
-#~ msgid "80 kbps"
-#~ msgstr "80 kbps"
-
-#~ msgid "256 kbps"
-#~ msgstr "256 kbps"
-
-#~ msgid "224 kbps"
-#~ msgstr "224 kbps"
-
-#~ msgid "192 kbps"
-#~ msgstr "192 kbps"
-
-#~ msgid "160 kbps"
-#~ msgstr "160 kbps"
-
-#~ msgid "128 kbps"
-#~ msgstr "128 kbps"
-
-#~ msgid "112 kbps"
-#~ msgstr "112 kbps"
-
-#~ msgctxt "DlgPrefShoutcastDlg#50"
-#~ msgid "Title"
-#~ msgstr "歌曲标题"
-
-#~ msgctxt "DlgPrefShoutcastDlg#48"
-#~ msgid "Artist"
-#~ msgstr "艺术家"
-
-#~ msgctxt "DlgPreferences#8"
-#~ msgid "BPM Detection"
-#~ msgstr "BPM 探测"
-
-#~ msgctxt "DlgTrackInfo#9"
-#~ msgid "Filename:"
-#~ msgstr "文件名称："
-
-#~ msgctxt "DlgTrackInfo#4"
-#~ msgid "Artist:"
-#~ msgstr "艺术家："
-
-#~ msgctxt "DlgTrackInfo#3"
-#~ msgid "Title:"
-#~ msgstr "歌曲标题："
-
-#~ msgid "/2"
-#~ msgstr "/2"
-
-#~ msgid "x2"
-#~ msgstr "x2"
-
-#~ msgctxt "DlgTrackInfo#11"
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgctxt "DlgTrackInfo#13"
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgctxt "DlgTrackInfo#12"
-#~ msgid "File Type:"
-#~ msgstr "文件格式："
-
-#~ msgctxt "DlgTrackInfo#33"
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgid "Ctrl+I"
-#~ msgstr "Ctrl+I"
-
-#~ msgid "Ctrl+C"
-#~ msgstr "Ctrl+C"
-
-#~ msgid "1.x.x"
-#~ msgstr "1.x.x"
-
-#~ msgid "Shuffle playlist"
-#~ msgstr "随机播放列表"
-
-#~ msgctxt "DlgBpmTapDlg#1"
-#~ msgid "Track Editor"
-#~ msgstr "音轨编辑器"
-
-#~ msgid "8% (Technics SL1210)"
-#~ msgstr "8% (Technics SL1210)"
-
-#~ msgid "Export"
-#~ msgstr "导出"
-
-#~ msgid "Date:"
-#~ msgstr "日期:"
-
-#~ msgid "&About..."
-#~ msgstr "关于(&A)..."
-
-#~ msgctxt "PlaylistFeature#6"
-#~ msgid "Import Playlist"
-#~ msgstr "导入播放列表"
-
-#~ msgid "Export..."
-#~ msgstr "导出..."
-
-#~ msgid "File"
-#~ msgstr "文件"
-
-#~ msgid "Import..."
-#~ msgstr "导入..."
-
-#~ msgctxt "BaseSqlTableModel#7"
-#~ msgid "Type"
-#~ msgstr "类型"
-
-#~ msgctxt "BaseSqlTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "时长"
-
-#~ msgctxt "BrowseTableModel#12"
-#~ msgid "Type"
-#~ msgstr "类型："
-
-#~ msgctxt "DlgAutoDJ#3"
-#~ msgid "Manage"
-#~ msgstr "管理"
-
-#~ msgid "&Close"
-#~ msgstr "关闭(&C)"
-
-#~ msgctxt "DlgBpmSchemeDlg#6"
-#~ msgid "Analyze Entire Song"
-#~ msgstr "分析整首歌曲"
-
-#~ msgid "BPM Editor (Click to Expand)"
-#~ msgstr "BPM编辑器(点击展开)"
-
-#~ msgid "to"
-#~ msgstr "到"
-
-#~ msgctxt "DlgBpmTapDlg#14"
-#~ msgid "Analyze Entire Song"
-#~ msgstr "分析整首歌曲"
-
-#~ msgctxt "DlgBpmTapDlg#22"
-#~ msgid "Filename:"
-#~ msgstr "文件名："
-
-#~ msgctxt "DlgBpmTapDlg#21"
-#~ msgid "Comments:"
-#~ msgstr "注释："
-
-#~ msgid "Play Time:"
-#~ msgstr "播放时间："
-
-#~ msgctxt "DlgBpmTapDlg#18"
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "音轨信息"
-
-#~ msgctxt "DlgMidiLearning#4"
-#~ msgid "MIDI Learning Wizard"
-#~ msgstr "MIDI 新手入门"
-
-#~ msgid "Welcome to the MIDI Learning Wizard"
-#~ msgstr "欢迎来到 MIDI 新手入门"
-
-#~ msgid "MIDI learning complete!"
-#~ msgstr "MIDI 学习向导结束!"
-
-#~ msgid "BPM Range:"
-#~ msgstr "PBM 范围"
-
-#~ msgid "Begin"
-#~ msgstr "开始"
-
-#~ msgctxt "DlgPrefBPMDlg#10"
-#~ msgid "Edit"
-#~ msgstr "编辑"
-
-#~ msgctxt "DlgBpmTapDlg#23"
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgctxt "DlgBpmTapDlg#26"
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgctxt "DlgPrefPlaylistDlg#15"
-#~ msgid "Library"
-#~ msgstr "音乐库"
-
 #~ msgctxt "BrowseFeature#4"
 #~ msgid "Mixxx Library"
-#~ msgstr "Mixxx 音乐库"
+#~ msgstr "మిక్స్ లైబ్రరీ"
 
-#~ msgctxt "BrowseTableModel#15"
-#~ msgid "Mixxx Library"
-#~ msgstr "Mixxx 音乐库"
+#~ msgid "Desktop"
+#~ msgstr "డెస్క్‍టాప్"
 
-#~ msgctxt "DlgPreferences#3"
-#~ msgid "Library"
-#~ msgstr "音乐库"
+#~ msgid "Home"
+#~ msgstr "నివాసము"
 
-#~ msgid "Down increases speed (Technics SL1210)"
-#~ msgstr "向下速度增加 (Technics SL1210)"
+#~ msgid "Music"
+#~ msgstr "సంగీతం"
 
-#~ msgid "Detect Song BPM on Import"
-#~ msgstr "导入歌曲时检测 BPM"
-
-#~ msgctxt "DlgPrefControlsDlg#8"
-#~ msgid "Off"
-#~ msgstr "关闭"
-
-#~ msgid "Waveform display"
-#~ msgstr "波形显示"
-
-#~ msgctxt "DlgPrefControlsDlg#7"
-#~ msgid "On"
-#~ msgstr "打开"
-
-#~ msgid "BPM Scheme:"
-#~ msgstr "BPM 方案"
-
-#~ msgctxt "DlgBpmTapDlg#4"
-#~ msgid "Song:"
-#~ msgstr "歌曲："
-
-#~ msgctxt "DlgPrefControls#14"
-#~ msgid "Information"
-#~ msgstr "信息"
-
-#~ msgctxt "DlgPrefCrossfaderDlg#10"
-#~ msgid "Reset"
-#~ msgstr "重置"
-
-#~ msgctxt "CrateFeature#15"
-#~ msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-#~ msgstr "播放列表文件 (*.m3u *.m3u8 *.pls)"
-
-#~ msgctxt "BaseSqlTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "备注"
-
-#~ msgctxt "BaseSqlTableModel#6"
-#~ msgid "Year"
-#~ msgstr "年份"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "分析整首歌曲"
-
-#~ msgid "Preset Files (*.midi.xml)"
-#~ msgstr "预设文件（*.midi, xml）"
-
-#~ msgid "Overwrite existing mapping?"
-#~ msgstr "覆盖现存映射？"
-
-#~ msgctxt "DlgPrefMidiBindings#1"
-#~ msgid "None"
-#~ msgstr "无"
-
-#~ msgid "Apply MIDI device settings?"
-#~ msgstr "运用MIDI设备的设置？"
-
-#~ msgctxt "DlgPrefEQDlg#10"
-#~ msgid "Reset"
-#~ msgstr "重设"
-
-#~ msgid "Output:"
-#~ msgstr "输出："
-
-#~ msgctxt "DlgPrefMidiBindingsDlg#8"
-#~ msgid "Add"
-#~ msgstr "添加"
-
-#~ msgctxt "DlgPrefMidiBindingsDlg#9"
-#~ msgid "Remove"
-#~ msgstr "移除"
-
-#~ msgid "MIDI Input"
-#~ msgstr "MIDI输入"
-
-#~ msgid "Choose iPod mount point"
-#~ msgstr "选择iPod的挂载点"
-
-#~ msgid "Choose No to use the existing iPod @ "
-#~ msgstr "使用现有的iPod "
-
-#~ msgid " or to continue to search for other iPods. \n"
-#~ msgstr " 或者继续搜索其他iPods \n"
-
-#~ msgid "Choose Yes to use the newly found iPod @ "
-#~ msgstr "使用用新找到的iPod，选择是@ "
-
-#~ msgid ""
-#~ "Mixxx has detected another iPod. \n"
-#~ "\n"
-#~ msgstr ""
-#~ "Mixxx检测到另一个iPod \n"
-#~ "\n"
-
-#~ msgid "Multiple iPods Detected"
-#~ msgstr "检测到多个iPod，选择否"
-
-#~ msgid "Browse..."
-#~ msgstr "浏览..."
-
-#~ msgid "iPod mountpoint"
-#~ msgstr "iPod挂载点"
-
-#~ msgctxt "DlgPrefPlaylistDlg#7"
-#~ msgid "Miscellaneous"
-#~ msgstr "杂项"
-
-#~ msgid "Detect"
-#~ msgstr "检测"
-
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Title"
-#~ msgstr "标题"
-
-#~ msgctxt "DlgPrefRecordDlg#2"
-#~ msgid "Encoding"
-#~ msgstr "编码"
-
-#~ msgctxt "DlgPrefReplayGainDlg#11"
-#~ msgid "Reset"
-#~ msgstr "重设"
-
-#~ msgctxt "DlgPrefShoutcastDlg#23"
-#~ msgid "Description"
-#~ msgstr "描述"
-
-#~ msgid "Output"
-#~ msgstr "输出"
-
-#~ msgid "MIDI Controllers"
-#~ msgstr "MIDI控制器"
-
-#~ msgctxt "DlgPrepare#6"
-#~ msgid "Analyze"
-#~ msgstr "分析"
-
-#~ msgid "Song:"
-#~ msgstr "曲目："
-
-#~ msgid "File Type:"
-#~ msgstr "文件类型："
-
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "音轨信息（点击展开）"
-
-#~ msgctxt "MidiInputMappingTableModel#6"
-#~ msgid "Description"
-#~ msgstr "描述"
-
-#~ msgctxt "DlgPrefMidiBindingsDlg#1"
-#~ msgid "Dialog"
-#~ msgstr "对话框"
-
-#~ msgid "Press spacebar to proceed or skip."
-#~ msgstr "按空格键继续或跳过。"
-
-#~ msgid "Playlist Creation Failed"
-#~ msgstr "播放列表创建失败"
-
-#~ msgid "An unknown error occurred while creating playlist: "
-#~ msgstr "创建播放列表时发生未知错误： "
+#~ msgid "Documents"
+#~ msgstr "పత్రాలు"
