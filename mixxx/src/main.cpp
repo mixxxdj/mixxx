@@ -43,7 +43,6 @@
 #endif
 
 #ifdef __WINDOWS__
-#ifdef DEBUGCONSOLE
 #include <io.h> // Debug Console
 #include <windows.h>
 
@@ -78,7 +77,6 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
         setvbuf(stderr, NULL, _IONBF, 0);
     }
 }
-#endif // DEBUGCONSOLE
 #endif // __WINDOWS__
 
 QApplication *a;
@@ -163,9 +161,7 @@ int main(int argc, char * argv[])
 
 
 #ifdef __WINDOWS__
-  #ifdef DEBUGCONSOLE
     InitDebugConsole();
-  #endif
 #endif
     qInstallMsgHandler(MessageHandler);
 
