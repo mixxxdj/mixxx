@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "sharedglcontext.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrenderersimplesignal.h"
@@ -11,9 +12,9 @@
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 
-GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* parent) :
-    WaveformWidgetAbstract(group),
-    QGLWidget(parent) {
+GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* parent)
+    : QGLWidget(SharedGLContext::getContext(), parent),
+      WaveformWidgetAbstract(group) {
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
