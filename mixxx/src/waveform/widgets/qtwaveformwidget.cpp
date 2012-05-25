@@ -13,10 +13,9 @@
 #include <QPainter>
 #include <QGLContext>
 
-QtWaveformWidget::QtWaveformWidget( const char* group, QWidget* parent) :
-        QGLWidget(SharedGLContext::getContext(), parent),
-        WaveformWidgetAbstract(group) {
-
+QtWaveformWidget::QtWaveformWidget( const char* group, QWidget* parent)
+        : QGLWidget(SharedGLContext::getContext(), parent),
+          WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
