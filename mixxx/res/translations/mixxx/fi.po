@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-14 15:35-0400\n"
+"POT-Creation-Date: 2012-05-24 15:59+0200\n"
 "PO-Revision-Date: 2012-05-19 10:27+0000\n"
 "Last-Translator: Abu  <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-20 04:36+0000\n"
-"X-Generator: Launchpad (build 15259)\n"
+"X-Launchpad-Export-Date: 2012-05-25 04:34+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 "X-Language: fi_FI\n"
 "X-Source-Language: C\n"
 
@@ -2976,8 +2976,13 @@ msgid "Question"
 msgstr "Kysymys"
 
 #: GLSLWaveformWidget#1
-msgid "Filtered (experimental)"
-msgstr "Suodatettu (kokeellinen)"
+msgctxt "GLSLWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
+#: GLSLWaveformWidget#2
+msgid "experimental"
+msgstr ""
 
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
@@ -3024,6 +3029,50 @@ msgstr ""
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
 msgstr "Vedä esiasetus luettelosta ja pudota se tänne"
+
+#: LegacySkinParser#1
+msgid "activate"
+msgstr ""
+
+#: LegacySkinParser#2
+msgid "toggle"
+msgstr ""
+
+#: LegacySkinParser#3
+msgid "right"
+msgstr ""
+
+#: LegacySkinParser#4
+msgid "left"
+msgstr ""
+
+#: LegacySkinParser#5
+msgid "right small"
+msgstr ""
+
+#: LegacySkinParser#6
+msgid "left small"
+msgstr ""
+
+#: LegacySkinParser#7
+msgid "up"
+msgstr ""
+
+#: LegacySkinParser#8
+msgid "down"
+msgstr ""
+
+#: LegacySkinParser#9
+msgid "up small"
+msgstr ""
+
+#: LegacySkinParser#10
+msgid "down small"
+msgstr ""
+
+#: LegacySkinParser#11
+msgid "Shortcut"
+msgstr ""
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
@@ -3154,152 +3203,152 @@ msgid "Continue"
 msgstr "Jatka"
 
 #: MixxxApp#18
+msgid "Load Track to Deck %1"
+msgstr ""
+
+#: MixxxApp#19
+msgid "Add &New Playlist"
+msgstr ""
+
+#: MixxxApp#20
+msgid "Add New &Crate"
+msgstr ""
+
+#: MixxxApp#21
+msgid "Enable &Keyboard Shortcuts"
+msgstr ""
+
+#: MixxxApp#22
 msgid "Load track to Deck %1"
 msgstr "Lataa kappale dekkiin %1"
 
-#: MixxxApp#19
+#: MixxxApp#23
 msgid "Loads a track in deck %1"
 msgstr "Lataa valitun kappaleen dekkiin %1"
 
-#: MixxxApp#20
+#: MixxxApp#24
 msgid "Open"
 msgstr "Avaa"
 
-#: MixxxApp#21
+#: MixxxApp#25
 msgid "Ctrl+O"
 msgstr "Ctrl+O"
 
-#: MixxxApp#22
+#: MixxxApp#26
 msgid "Ctrl+Shift+O"
 msgstr "Ctrl+Shift+O"
 
-#: MixxxApp#23
+#: MixxxApp#27
 msgid "&Exit"
 msgstr "&Sulje"
 
-#: MixxxApp#24
+#: MixxxApp#28
 msgid "Quits Mixxx"
 msgstr "Sulkee mixxx:in"
 
-#: MixxxApp#25
+#: MixxxApp#29
 msgid "Ctrl+Q"
 msgstr "Ctrl+Q"
 
-#: MixxxApp#26
+#: MixxxApp#30
 msgid "&Rescan Library"
 msgstr "&Etsi musiikkikokoelman muutoksia"
 
-#: MixxxApp#27
+#: MixxxApp#31
 msgid "Rescans library folders for changes to tracks."
 msgstr "Etsii muutoksia kappaleisiin musiikkikirjaston kansioissa."
 
-#: MixxxApp#28
-msgid "Add &new playlist"
-msgstr "Lisää &uusi soittolista"
-
-#: MixxxApp#29
+#: MixxxApp#32
 msgid "Ctrl+N"
 msgstr "Ctrl+N"
 
-#: MixxxApp#30
-msgid "Add new &crate"
-msgstr "Lisää uusi &levylaukku"
-
-#: MixxxApp#31
+#: MixxxApp#33
 msgid "Deck %1 is currently playing a track."
 msgstr "Dekki %1 soittaa kappaletta."
 
-#: MixxxApp#32
+#: MixxxApp#34
 msgid "Are you sure you want to load a new track?"
 msgstr "Haluatko varmasti ladata uuden kappaleen?"
 
-#: MixxxApp#33
+#: MixxxApp#35
 msgid "&Full Screen"
 msgstr "K&okoruututila"
 
-#: MixxxApp#34
+#: MixxxApp#36
 msgid "F11"
 msgstr "F11"
 
-#: MixxxApp#35
+#: MixxxApp#37
 msgid "&Preferences"
 msgstr "&Asetukset"
 
-#: MixxxApp#36
+#: MixxxApp#38
 msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr "Muokkaa ohjelman asetuksia (toistoa, MIDI-ohjaimia jne.)"
 
-#: MixxxApp#37
+#: MixxxApp#39
 msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
-#: MixxxApp#38
+#: MixxxApp#40
 msgid "&About"
 msgstr "&Tietoja"
 
-#: MixxxApp#39
+#: MixxxApp#41
 msgid "&Community Support"
 msgstr "&Mixxx-yhteisö (englanniksi)"
 
-#: MixxxApp#40
+#: MixxxApp#42
 msgid "Get help with Mixxx"
 msgstr "Pyydä apua Mixxx:in kanssa"
 
-#: MixxxApp#41
+#: MixxxApp#43
 msgid "&User Manual"
 msgstr "&Käyttöohje"
 
-#: MixxxApp#42
+#: MixxxApp#44
 msgid "Send Us &Feedback"
 msgstr "Lähetä meille &palautetta"
 
-#: MixxxApp#43
-msgid "&Translate this application"
-msgstr "&Käännä tätä ohjelmaa kielellesi"
-
-#: MixxxApp#44
+#: MixxxApp#45
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#45
+#: MixxxApp#46
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#46
+#: MixxxApp#47
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#47
+#: MixxxApp#48
 msgid "&Record Mix"
 msgstr "N&auhoita miksaus"
 
-#: MixxxApp#48
+#: MixxxApp#49
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#49
+#: MixxxApp#50
 msgid "Create a new playlist"
 msgstr "Luo uusi soittolista"
 
-#: MixxxApp#50
+#: MixxxApp#51
 msgid "Create a new crate"
 msgstr "Luo uusi levylaukku"
 
-#: MixxxApp#51
+#: MixxxApp#52
 msgid "Ctrl+Shift+F"
 msgstr "Ctrl+Shift+F"
 
-#: MixxxApp#52
+#: MixxxApp#53
 msgid "Enable Vinyl Control &1"
 msgstr "Ota ohjainlevy &1 käyttöön"
 
-#: MixxxApp#53
+#: MixxxApp#54
 msgid "Enable Vinyl Control &2"
 msgstr "Ota ohjainlevy &2 käyttöön"
-
-#: MixxxApp#54
-msgid "Enable live &broadcasting"
-msgstr "Käynnistä &verkkojulkaisu"
 
 #: MixxxApp#55
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
@@ -3346,38 +3395,42 @@ msgid "Ctrl+Shift+N"
 msgstr ""
 
 #: MixxxApp#66
-msgid "Enable &keyboard shortcuts"
-msgstr "Ota &pikanäppäimet käyttöön"
-
-#: MixxxApp#67
 msgid "Toggles keyboard shortcuts on or off"
 msgstr "Määrittää ovatko pikanäppäimet käytössä"
 
-#: MixxxApp#68
+#: MixxxApp#67
 msgid "Ctrl+`"
 msgstr ""
 
+#: MixxxApp#68
+msgid "&Translate This Application"
+msgstr ""
+
 #: MixxxApp#69
+msgid "Enable Live &Broadcasting"
+msgstr ""
+
+#: MixxxApp#70
 msgid "&Options"
 msgstr "&Valinnat"
 
-#: MixxxApp#70
+#: MixxxApp#71
 msgid "&Library"
 msgstr "&Kokoelma"
 
-#: MixxxApp#71
+#: MixxxApp#72
 msgid "&View"
 msgstr "&Näytä"
 
-#: MixxxApp#72
+#: MixxxApp#73
 msgid "&Help"
 msgstr "&Ohje"
 
-#: MixxxApp#73
+#: MixxxApp#74
 msgid "&Vinyl Control"
 msgstr "&Levyohjain"
 
-#: MixxxApp#74
+#: MixxxApp#75
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3385,39 +3438,39 @@ msgstr ""
 "Sisääntulojen laitteita ei ole valittu.\n"
 "Valitse äänikorttisi äänilaitteiden asetuksista."
 
-#: MixxxApp#75
+#: MixxxApp#76
 msgid "Mixxx %1 Development Team"
 msgstr "Mixxx %1 kehitystiimi"
 
-#: MixxxApp#76
+#: MixxxApp#77
 msgid "With contributions from:"
 msgstr "Avustajina ovat toimineet:"
 
-#: MixxxApp#77
+#: MixxxApp#78
 msgid "And special thanks to:"
 msgstr "Lisäkiitokset seuraaville henkilöille:"
 
-#: MixxxApp#78
+#: MixxxApp#79
 msgid "Past Developers"
 msgstr "Aikaisemmat kehittäjät"
 
-#: MixxxApp#79
+#: MixxxApp#80
 msgid "Past Contributors"
 msgstr "Aikaisemmat avustajat"
 
-#: MixxxApp#80
+#: MixxxApp#81
 msgid "Error in skin file"
 msgstr "Virhe teematiedostossa"
 
-#: MixxxApp#81
+#: MixxxApp#82
 msgid "The selected skin cannot be loaded."
 msgstr "Valittua teemaa ei voi ladata."
 
-#: MixxxApp#82
+#: MixxxApp#83
 msgid "OpenGL Direct Rendering"
 msgstr "OpenGL-suorapiirto"
 
-#: MixxxApp#83
+#: MixxxApp#84
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3428,11 +3481,11 @@ msgid ""
 "not be present, but you should<br>not experience degraded performance."
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#85
 msgid "Confirm Exit"
 msgstr "Varmista lopetus"
 
-#: MixxxApp#85
+#: MixxxApp#86
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Dekki soittaa kappaletta. Suljetaanko Mixxx?"
 
@@ -3578,6 +3631,16 @@ msgstr "Läpisyöttö"
 msgid "Unknown path type %1"
 msgstr "Tuntematon polkutyyppi %1"
 
+#: QtSimpleWaveformWidget#1
+msgctxt "QtSimpleWaveformWidget#1"
+msgid "Simple"
+msgstr ""
+
+#: QtWaveformWidget#1
+msgctxt "QtWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
 #: RecordingFeature#1
 msgid "Recordings"
 msgstr "Nauhoitukset"
@@ -3667,6 +3730,10 @@ msgstr ""
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
 msgstr "Suodatettu"
+
+#: SoftwareWaveformWidget#2
+msgid "Software"
+msgstr ""
 
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
@@ -4512,11 +4579,11 @@ msgid "Remove"
 msgstr "Poista"
 
 #: WTrackTableView#5
-msgid "Properties..."
-msgstr "Ominaisuudet..."
+msgid "Properties"
+msgstr ""
 
 #: WTrackTableView#6
-msgid "Open in file browser"
+msgid "Open in File Browser"
 msgstr ""
 
 #: WTrackTableView#7
@@ -4719,6 +4786,9 @@ msgstr "(GL)"
 #~ msgctxt "DlgPrefShoutcastDlg#48"
 #~ msgid "Artist"
 #~ msgstr "Artisti"
+
+#~ msgid "Properties..."
+#~ msgstr "Ominaisuudet..."
 
 #~ msgid "OK"
 #~ msgstr "Hyväksy"
@@ -5915,6 +5985,9 @@ msgstr "(GL)"
 #~ msgid "Description"
 #~ msgstr "Kuvaus"
 
+#~ msgid "&Translate this application"
+#~ msgstr "&Käännä tätä ohjelmaa kielellesi"
+
 #~ msgid ""
 #~ "Support\n"
 #~ "\n"
@@ -6049,6 +6122,15 @@ msgstr "(GL)"
 
 #~ msgid "Track BPM"
 #~ msgstr "Tempo  (BPM)"
+
+#~ msgid "Add &new playlist"
+#~ msgstr "Lisää &uusi soittolista"
+
+#~ msgid "Add new &crate"
+#~ msgstr "Lisää uusi &levylaukku"
+
+#~ msgid "Enable live &broadcasting"
+#~ msgstr "Käynnistä &verkkojulkaisu"
 
 #~ msgid "Waveform display"
 #~ msgstr "Alltomuotonäyttö"
