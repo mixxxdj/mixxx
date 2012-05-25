@@ -33,13 +33,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     radioOgg = 0;
     radioAiff= 0;
     radioWav = 0;
-
-
     setupUi(this);
 
-    recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in defs_recording.h
-
-
+    //See RECORD_* #defines in defs_recording.h
+    recordControl = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(RECORDING_PREF_KEY, "status")));
 
 #ifdef __SHOUTCAST__
     radioOgg = new QRadioButton("Ogg Vorbis");

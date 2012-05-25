@@ -16,10 +16,10 @@
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 
-TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
-        LibraryFeature(parent),
-        m_pTrackCollection(pTrackCollection),
-        m_cancelImport(false) {
+TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
+        : BaseExternalLibraryFeature(parent, pTrackCollection),
+          m_pTrackCollection(pTrackCollection),
+          m_cancelImport(false) {
     QString tableName = "traktor_library";
     QString idColumn = "id";
     QStringList columns;
@@ -45,17 +45,16 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
     m_title = tr("Traktor");
-    if (!m_database.isOpen()) {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "TRAKTOR_SCANNER");
-        m_database.setHostName("localhost");
-        m_database.setDatabaseName(MIXXX_DB_PATH);
-        m_database.setUserName("mixxx");
-        m_database.setPassword("mixxx");
 
-        //Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
-        }
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "TRAKTOR_SCANNER");
+    m_database.setHostName("localhost");
+    m_database.setDatabaseName(MIXXX_DB_PATH);
+    m_database.setUserName("mixxx");
+    m_database.setPassword("mixxx");
+
+    //Open the database connection in this thread.
+    if (!m_database.open()) {
+        qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
     connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
 }
@@ -68,6 +67,12 @@ TraktorFeature::~TraktorFeature() {
         delete m_pTraktorTableModel;
     if(m_pTraktorPlaylistModel)
         delete m_pTraktorPlaylistModel;
+}
+
+BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(QString playlist) {
+    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection);
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 QVariant TraktorFeature::title() {
@@ -129,27 +134,25 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-void TraktorFeature::onRightClick(const QPoint& globalPos) {
-}
-
-void TraktorFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
-}
-
 bool TraktorFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool TraktorFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 bool TraktorFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
-bool TraktorFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
+bool TraktorFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
@@ -660,4 +663,5 @@ void TraktorFeature::onTrackCollectionLoaded() {
 
 void TraktorFeature::onLazyChildExpandation(const QModelIndex &index) {
     // Nothing to do because the childmodel is not of lazy nature.
+    Q_UNUSED(index);
 }

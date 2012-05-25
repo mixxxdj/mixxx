@@ -8,6 +8,7 @@ using namespace mixxx::track;
 
 Waveform::Waveform(const QByteArray data)
         : m_id(-1),
+          m_bDirty(true),
           m_numChannels(2),
           m_dataSize(0),
           m_audioSamplesPerVisualSample(0),
@@ -133,6 +134,7 @@ void Waveform::readByteArray(const QByteArray data) {
         m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
     }
     m_completion = m_dataSize;
+    m_bDirty = false;
 }
 
 void Waveform::reset() {
@@ -143,6 +145,7 @@ void Waveform::reset() {
     m_visualSampleRate = 0;
     m_audioVisualRatio = 0;
     m_data.clear();
+    m_bDirty = true;
 }
 
 void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
@@ -159,18 +162,21 @@ void Waveform::allocateForAudioSamples(int audioSamples) {
     numberOfVisualSamples += numberOfVisualSamples%2;
     assign(numberOfVisualSamples, 0);
     setCompletion(0);
+    m_bDirty = true;
 }
 
 void Waveform::resize(int size) {
     m_dataSize = size;
     int textureSize = computeTextureSize(size);
     m_data.resize(textureSize);
+    m_bDirty = true;
 }
 
 void Waveform::assign(int size, int value) {
     m_dataSize = size;
     int textureSize = computeTextureSize(size);
     m_data.assign(textureSize, value);
+    m_bDirty = true;
 }
 
 int Waveform::computeTextureSize(int size) {

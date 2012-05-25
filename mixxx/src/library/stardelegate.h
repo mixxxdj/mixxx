@@ -32,12 +32,10 @@
  * If we need to support custom data types, or want to customize the rendering or the editing for
  * existing data types, we can subclass QAbstractItemDelegate or QItemDelegate or QStyledItemDelegate
  */
-class StarDelegate : public QStyledItemDelegate
-{
+class StarDelegate : public QStyledItemDelegate {
     Q_OBJECT
-
-public:
-    StarDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
+  public:
+    StarDelegate(QObject *parent = 0) : QStyledItemDelegate(parent) {}
     /** reimplemented from QItemDelegate and is called whenever the view needs to repaint an item **/
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     /** eturns an item's preferred size **/
@@ -49,7 +47,7 @@ public:
     /** called when editing is finished, to commit data from the editor to the model: **/
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
-private slots:
+  private slots:
     void commitAndCloseEditor();
 };
 

@@ -278,10 +278,15 @@ void BasePlaylistFeature::slotExportPlaylist() {
     }
 
     qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    // Open a dialog to let the user choose the file location for playlist export.
+    // By default, the directory is set to the OS's Music directory and the file
+    // name to the playlist name.
+    QString playlist_filename = m_lastRightClickedIndex.data().toString();
+    QString music_directory = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
     QString file_location = QFileDialog::getSaveFileName(
         NULL,
         tr("Export Playlist"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        music_directory.append("/").append(playlist_filename),
         tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
            "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.

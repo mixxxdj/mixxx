@@ -18,9 +18,8 @@ const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
 
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : LibraryFeature(parent),
+        : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
-          m_database(pTrackCollection->getDatabase()),
           m_cancelImport(false) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
@@ -47,19 +46,16 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    if (!m_database.isOpen()) {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "ITUNES_SCANNER");
-        m_database.setHostName("localhost");
-        m_database.setDatabaseName(MIXXX_DB_PATH);
-        m_database.setUserName("mixxx");
-        m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::addDatabase("QSQLITE", "ITUNES_SCANNER");
+    m_database.setHostName("localhost");
+    m_database.setDatabaseName(MIXXX_DB_PATH);
+    m_database.setUserName("mixxx");
+    m_database.setPassword("mixxx");
 
-        //Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
-        }
+    //Open the database connection in this thread.
+    if (!m_database.open()) {
+        qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
-
     connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
 }
 
@@ -69,6 +65,12 @@ ITunesFeature::~ITunesFeature() {
     m_future.waitForFinished();
     delete m_pITunesTrackModel;
     delete m_pITunesPlaylistModel;
+}
+
+BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
+    ITunesPlaylistModel* pModel = new ITunesPlaylistModel(this, m_pTrackCollection);
+    pModel->setPlaylist(playlist);
+    return pModel;
 }
 
 bool ITunesFeature::isSupported() {
@@ -159,6 +161,7 @@ TreeItemModel* ITunesFeature::getChildModel() {
 }
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
+    BaseExternalLibraryFeature::onRightClick(globalPos);
     QMenu menu;
     QAction useDefault(tr("Use Default Library"), &menu);
     QAction chooseNew(tr("Choose Library..."), &menu);
@@ -182,22 +185,25 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
     }
 }
 
-void ITunesFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-}
-
 bool ITunesFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool ITunesFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 bool ITunesFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool ITunesFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
@@ -626,4 +632,6 @@ void ITunesFeature::onTrackCollectionLoaded(){
 
 void ITunesFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
+    Q_UNUSED(index);
 }
+
