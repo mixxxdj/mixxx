@@ -671,7 +671,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
     QScriptValue function;
 
     if (cobj == NULL) {
-        qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
+        qWarning() << "ControllerEngine: script connecting [" << group << "," << name
                    << "], which is non-existent. ignoring.";
         return QScriptValue();
     }
@@ -797,7 +797,7 @@ void ControllerEngine::slotValueChanged(double value) {
 
     ControlObject* sender = (ControlObject*)this->sender();
     if(sender == NULL) {
-        qWarning() << "MidiScriptEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
+        qWarning() << "ControllerEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         return;
     }
     ConfigKey key = sender->getKey();
@@ -825,7 +825,7 @@ void ControllerEngine::slotValueChanged(double value) {
             args << QScriptValue(key.item);
             QScriptValue result = conn.function.call(conn.context, args);
             if (result.isError()) {
-                qWarning()<< "MidiScriptEngine: Call to callback" << conn.id
+                qWarning()<< "ControllerEngine: Call to callback" << conn.id
                           << "resulted in an error:" << result.toString();
             }
             else {
@@ -834,7 +834,7 @@ void ControllerEngine::slotValueChanged(double value) {
         }
     }
     else {
-        qWarning() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
+        qWarning() << "ControllerEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
     }
 }
 
