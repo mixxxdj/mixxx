@@ -17,14 +17,10 @@
 #include "plugins/BeatTrack.h"
 #include "plugins/BarBeatTrack.h"
 //#include "plugins/MixxxBpmDetection.h"
-#include "plugins/replaygain.h"
-
 
 static Vamp::PluginAdapter<BeatTracker> beatTrackerAdapter;
 static Vamp::PluginAdapter<BarBeatTracker> barBeatTrackPluginAdapter;
 //static Vamp::PluginAdapter<MixxxBpmDetection> MixxxBpmDetection;
-static Vamp::PluginAdapter<ReplayGain> ReplayGain;
-
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -35,8 +31,6 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     case  0: return beatTrackerAdapter.getDescriptor();
     case  1: return barBeatTrackPluginAdapter.getDescriptor();
     //case  2: return MixxxBpmDetection.getDescriptor();
-    case  2: return ReplayGain.getDescriptor();
-
     default: return 0;
     }
 }

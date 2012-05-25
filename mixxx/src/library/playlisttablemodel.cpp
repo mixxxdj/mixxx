@@ -5,7 +5,6 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
-
 #include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
@@ -368,11 +367,6 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
        return true;
     }
     return false;
-}
-
-QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
-    return NULL;
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {

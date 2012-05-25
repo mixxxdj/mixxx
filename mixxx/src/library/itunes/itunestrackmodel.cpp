@@ -108,3 +108,4 @@ TrackModel::CapabilitiesFlags ITunesTrackModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }
+

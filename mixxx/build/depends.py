@@ -214,7 +214,7 @@ class FidLib(Dependence):
 class ReplayGain(Dependence):
 
     def sources(self, build):
-        return ["#lib/replaygain/replaygain_analysis.c"]
+        return ["#lib/replaygain/replaygain.cpp"]
 
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
@@ -454,14 +454,13 @@ class MixxxCore(Feature):
                    "recording/recordingmanager.cpp",
 
                    # External Library Features
+                   "library/baseexternallibraryfeature.cpp",
                    "library/rhythmbox/rhythmboxfeature.cpp",
                    "library/rhythmbox/rhythmboxtrackmodel.cpp",
                    "library/rhythmbox/rhythmboxplaylistmodel.cpp",
-
                    "library/itunes/itunesfeature.cpp",
                    "library/itunes/itunestrackmodel.cpp",
                    "library/itunes/itunesplaylistmodel.cpp",
-
                    "library/traktor/traktorfeature.cpp",
                    "library/traktor/traktortablemodel.cpp",
                    "library/traktor/traktorplaylistmodel.cpp",
@@ -522,20 +521,30 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformrenderbeat.cpp",
                    "waveform/renderers/waveformrendererendoftrack.cpp",
                    "waveform/renderers/waveformrendererpreroll.cpp",
+
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
-                   "waveform/renderers/glslwaveformrenderersignal.cpp",
-                   "waveform/renderers/waveformsignalcolors.cpp",
                    "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/glslwaveformrenderersignal.cpp",
+
+                   "waveform/renderers/waveformsignalcolors.cpp",
+
+                   "waveform/renderers/waveformrenderersignalbase.cpp",
                    "waveform/renderers/waveformmark.cpp",
+                   "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
-                   "waveform/widgets/glwaveformwidget.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
                    "waveform/widgets/softwarewaveformwidget.cpp",
-                   "waveform/widgets/glslwaveformwidget.cpp",
+                   "waveform/widgets/qtwaveformwidget.cpp",
+                   "waveform/widgets/qtsimplewaveformwidget.cpp",
+                   "waveform/widgets/glwaveformwidget.cpp",
                    "waveform/widgets/glsimplewaveformwidget.cpp",
+
+                   "waveform/widgets/glslwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",

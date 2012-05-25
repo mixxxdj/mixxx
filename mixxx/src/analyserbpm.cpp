@@ -46,6 +46,16 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
     m_pDetector->inputSamples(pIn, iLen/2);
 }
 
+void AnalyserBPM::cleanup(TrackPointer tio)
+{
+    Q_UNUSED(tio);
+    if(m_pDetector != NULL)
+    {
+        delete m_pDetector;
+        m_pDetector = NULL;
+    }
+}
+
 void AnalyserBPM::finalise(TrackPointer tio) {
     // Check if BPM detection is enabled
     if(m_pDetector == NULL) {

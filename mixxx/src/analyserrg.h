@@ -11,6 +11,8 @@
 #include "analyser.h"
 #include "configobject.h"
 
+class ReplayGain;
+
 class AnalyserGain : public Analyser {
   public:
     AnalyserGain(ConfigObject<ConfigValue> *_config);
@@ -18,13 +20,15 @@ class AnalyserGain : public Analyser {
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
+    void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 
   private:
-    int m_iStepControl;
+    bool m_bStepControl;
     ConfigObject<ConfigValue> *m_pConfigReplayGain;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
+    ReplayGain *m_pReplayGain;
     int m_iBufferSize;
 };
 

@@ -33,9 +33,10 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_cueDao(m_database),
     m_playlistDao(m_database),
     m_crateDao(m_database),
-    m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao),
-    //Don't initialize m_database here, we need to do it in run() so the DB conn is in
-    //the right thread.
+    m_analysisDao(m_database),
+    m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao, m_analysisDao),
+    // Don't initialize m_database here, we need to do it in run() so the DB
+    // conn is in the right thread.
     nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "))
 {
 
@@ -118,16 +119,22 @@ LibraryScanner::~LibraryScanner()
     foreach(dir, deletedDirs) {
         m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
     }
-
     transaction.commit();
 
-    //Close our database connection
-    Q_ASSERT(!m_database.rollback()); //Rollback any uncommitted transaction
     //The above is an ASSERT because there should never be an outstanding
     //transaction when this code is called. If there is, it means we probably
     //aren't committing a transaction somewhere that should be.
-    if (m_database.isOpen())
+    if (m_database.isOpen()) {
+        qDebug() << "Closing database" << m_database.connectionName();
+
+        // Rollback any uncommitted transaction
+        if (m_database.rollback()) {
+            qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
+                     << "There is a logic error somewhere.";
+        }
+        // Close our database connection
         m_database.close();
+    }
 
     qDebug() << "LibraryScanner destroyed";
 }
@@ -163,11 +170,13 @@ void LibraryScanner::run()
     m_cueDao.setDatabase(m_database);
     m_trackDao.setDatabase(m_database);
     m_playlistDao.setDatabase(m_database);
+    m_analysisDao.setDatabase(m_database);
 
     m_libraryHashDao.initialize();
     m_cueDao.initialize();
     m_trackDao.initialize();
     m_playlistDao.initialize();
+    m_analysisDao.initialize();
 
     m_pCollection->resetLibaryCancellation();
 

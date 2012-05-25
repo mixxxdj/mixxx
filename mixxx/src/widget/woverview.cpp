@@ -100,25 +100,11 @@ void WOverview::setup(QDomNode node) {
     m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
 
     //setup hotcues and cue and loop(s)
-    m_marks.clear();
-    m_marks.reserve(5); //5 hot cues + 1 cue
-
-    m_markRanges.clear();
-    m_markRanges.reserve(1); // one loop for the moment
+    m_marks.setup(m_pGroup,node);
 
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
-        if (child.nodeName() == "Mark") {
-            m_marks.push_back(WaveformMark());
-            WaveformMark& mark = m_marks.back();
-            mark.setup( m_pGroup, child);
-
-            connect( mark.m_pointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkChanged(double)));
-            connect( mark.m_pointControl, SIGNAL(valueChangedFromEngine(double)),
-                     this, SLOT(onMarkChanged(double)));
-
-        } else if (child.nodeName() == "MarkRange") {
+        if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
             WaveformMarkRange& markRange = m_markRanges.back();
             markRange.setup( m_pGroup, child);
@@ -141,8 +127,8 @@ void WOverview::setup(QDomNode node) {
         child = child.nextSibling();
     }
 
-    //qDebug() << "WOverview : m_marks" << m_marks.size();
-    //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+    qDebug() << "WOverview : m_marks" << m_marks.size();
+    qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
 
     //init waveform pixmap
     //waveform pixmap twice the heigth of the viewport to be scalable by total_gain

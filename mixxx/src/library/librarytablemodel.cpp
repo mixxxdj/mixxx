@@ -142,9 +142,7 @@ bool LibraryTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
-    return NULL;
-}
+
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE

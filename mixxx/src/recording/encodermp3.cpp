@@ -86,8 +86,7 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     QStringList libnames;
     QString libname = "";
 #ifdef __LINUX__
-    libnames << "/usr/lib/libmp3lame.so.0";
-    libnames << "/usr/lib/libmp3lame.so";
+       libnames << "mp3lame";
 #elif __WINDOWS__
     libnames << "lame_enc.dll";
 #elif __APPLE__
@@ -97,7 +96,7 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
 #endif
 
     foreach (QString libname, libnames) {
-        m_library = new QLibrary(libname);
+        m_library = new QLibrary(libname, 0);
         if (m_library->load())
             break;
         delete m_library;
