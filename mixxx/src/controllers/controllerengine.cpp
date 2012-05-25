@@ -90,7 +90,7 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
         if ( prefix.isValid() && prefix.isObject()) {
             
             QScriptValue init = prefix.property(function);
-            if (init.isValid()) {
+            if (init.isValid() && init.isFunction()) {
                 if (m_bDebug) {
                     qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
                 }
