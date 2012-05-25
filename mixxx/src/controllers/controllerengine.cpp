@@ -358,7 +358,7 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject, QScriptValue fun
 
     // If it's not a function, we're done.
     if (!functionObject.isFunction()) {
-        return true;
+        return false;
     }
 
     // If it does happen to be a function, call it.
