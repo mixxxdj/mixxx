@@ -686,7 +686,6 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
         cb.id = callback.toString();
         
         if(disconnect) {
-            cb.key = key;
             disconnectControl(cb);
             return QScriptValue(TRUE);
         }
