@@ -3,6 +3,7 @@
 #ifndef SETLOGFEATURE_H
 #define SETLOGFEATURE_H
 
+#include <QLinkedList>
 #include <QSqlTableModel>
 #include <QAction>
 
@@ -45,9 +46,9 @@ public:
   private:
     virtual QString getRootViewHtml() const;
 
+    QLinkedList<TrackPointer> m_recentTracks;
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
-    int m_iLastPlayedTrack[4]; //TODO: change for n-decks
 };
 
 #endif /* SETLOGFEATURE_H */

@@ -24,10 +24,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
        
-    for (int i=0; i<4; i++) {     
-        m_iLastPlayedTrack[i]=-1;
-    }
-
     //create a new playlist for today
     QString set_log_name_format;
     QString set_log_name;
@@ -246,21 +242,35 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (!currentPlayingTrack) {
             return;
         }
-        int currentPlayingTrackId = currentPlayingTrack->getId();
+
+        // Remove the track from the recent tracks list if it's present and put
+        // at the front of the list.
+        bool track_played_recently = m_recentTracks.removeOne(currentPlayingTrack);
+        m_recentTracks.push_front(currentPlayingTrack);
+
+        // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
+        const int kRecentTrackWindow = 6;
+        while (m_recentTracks.size() > kRecentTrackWindow) {
+            m_recentTracks.pop_back();
+        }
+
+        // If the track was recently played, don't increment the playcount or
+        // add it to the history.
+        if (track_played_recently) {
+            return;
+        }
+
+        // If the track is not present in the recent tracks list, mark it
+        // played and update its playcount.
+        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
+
         // We can only add tracks that are Mixxx library tracks, not external
         // sources.
+        int currentPlayingTrackId = currentPlayingTrack->getId();
         if (currentPlayingTrackId < 0) {
             return;
         }
         
-        if (currentPlayingTrackId == m_iLastPlayedTrack[deck-1]) {
-            return;
-        }
-        m_iLastPlayedTrack[deck-1] = currentPlayingTrackId;
-
-        // Here the song is realy played, not only loaded.
-        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
-
         if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
             // View needs a refresh
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
