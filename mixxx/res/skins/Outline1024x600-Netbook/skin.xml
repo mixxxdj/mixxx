@@ -1797,12 +1797,12 @@
 		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_beatloop1_8_over.png</Pressed>
+			<Pressed>btn_beatloop1_8.png</Pressed>
 			<Unpressed>btn_beatloop1_8.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_beatloop1_8.png</Pressed>
+			<Pressed>btn_beatloop1_8_over.png</Pressed>
 			<Unpressed>btn_beatloop1_8_over.png</Unpressed>
 		</State>
 		<Pos>79,127</Pos>
