@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-23 12:40+0000\n"
+"POT-Creation-Date: 2012-05-24 15:59+0200\n"
+"PO-Revision-Date: 2012-05-24 17:20+0000\n"
 "Last-Translator: Eugene Marshal <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-24 10:36+0000\n"
+"X-Launchpad-Export-Date: 2012-05-25 04:36+0000\n"
 "X-Generator: Launchpad (build 15288)\n"
 
 #: AutoDJFeature#1
@@ -145,7 +145,7 @@ msgstr "Исполнитель"
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr "Заголовок"
+msgstr "Название"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
@@ -180,7 +180,7 @@ msgstr "Расположение"
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr "Комментарий"
+msgstr "Описание"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
@@ -194,12 +194,12 @@ msgstr "Оценка"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr "Битрейт"
+msgstr "Частота бит"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr "BPM"
+msgstr "Уд./мин."
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
@@ -225,7 +225,7 @@ msgstr "Ключ"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
-msgstr "Блокирование BPM"
+msgstr "Блокирование уд./мин."
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -245,11 +245,11 @@ msgstr "Быстрые ссылки"
 
 #: BrowseFeature#4
 msgid "Devices"
-msgstr "Носители"
+msgstr "Устройства"
 
 #: BrowseFeature#5
 msgid "Removable Devices"
-msgstr "Съемные носители"
+msgstr "Съемные накопители"
 
 #: BrowseFeature#6
 msgid ""
@@ -295,7 +295,7 @@ msgstr "Год"
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "Стиль"
+msgstr "Жанр"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
@@ -305,7 +305,7 @@ msgstr "Композитор"
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr "Комментарий"
+msgstr "Описание"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
@@ -315,7 +315,7 @@ msgstr "Длительность"
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr "BPM"
+msgstr "Уд./мин."
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -330,7 +330,7 @@ msgstr "Тип"
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr "Битрейт"
+msgstr "Частота бит"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
@@ -367,7 +367,7 @@ msgstr ""
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "Не получилось обновить мэта-информацию файла."
+msgstr "Невозможно обновить файл метаданных."
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -380,7 +380,7 @@ msgstr ""
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr "Ошибка срипта контроллера"
+msgstr "Ошибка сценария контроллера"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
@@ -393,9 +393,9 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
-"<html>(Код скрипта должен быть исправлен.)<br>Пока Вы "
-"можете:<ul><li>игнорировать эту ошибку в данной сессии, но Вы можете "
-"столкнуться с аномальным поведением</li><li>Попытайтесь исправить ошибку "
+"<html>(Код сценария должен быть исправлен.)<br>Пока вы "
+"можете:<ul><li>игнорировать эту ошибку в этом сеансе, но вы можете "
+"столкнуться с неправильным поведением</li><li>Попытайтесь исправить ошибку "
 "переконфигурированием своего контроллера</li></ul></html>"
 
 #: ControllerMappingDlg#1
@@ -432,7 +432,7 @@ msgstr "Удалить"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr "Мастер Обучения"
+msgstr "Мастер обучения"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
@@ -441,7 +441,7 @@ msgstr "Очистить все"
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr "Вывод"
+msgstr "Выход"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
@@ -453,7 +453,7 @@ msgstr "Очистить всё"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Создать список"
+msgstr "Создать контейнер"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -531,16 +531,21 @@ msgstr ""
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Контейнеры помогают вам организовать музыку с которой вам предстоит работать."
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Создайте контейнер для вашего следующего концерта, добавив избранные дорожки "
+"в стиле электрохаус или для наиболее востребованных песен."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
 msgstr ""
+"Контейнеры позволяют вам организовать вашу  музыку способом, который вы "
+"предпочитаете!"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
@@ -2956,7 +2961,12 @@ msgid "Question"
 msgstr "Вопрос"
 
 #: GLSLWaveformWidget#1
-msgid "Filtered (experimental)"
+msgctxt "GLSLWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
+#: GLSLWaveformWidget#2
+msgid "experimental"
 msgstr ""
 
 #: GLSimpleWaveformWidget#1
@@ -3004,6 +3014,50 @@ msgstr ""
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
 msgstr "Перенесите сюда схему из списка"
+
+#: LegacySkinParser#1
+msgid "activate"
+msgstr ""
+
+#: LegacySkinParser#2
+msgid "toggle"
+msgstr ""
+
+#: LegacySkinParser#3
+msgid "right"
+msgstr ""
+
+#: LegacySkinParser#4
+msgid "left"
+msgstr ""
+
+#: LegacySkinParser#5
+msgid "right small"
+msgstr ""
+
+#: LegacySkinParser#6
+msgid "left small"
+msgstr ""
+
+#: LegacySkinParser#7
+msgid "up"
+msgstr ""
+
+#: LegacySkinParser#8
+msgid "down"
+msgstr ""
+
+#: LegacySkinParser#9
+msgid "up small"
+msgstr ""
+
+#: LegacySkinParser#10
+msgid "down small"
+msgstr ""
+
+#: LegacySkinParser#11
+msgid "Shortcut"
+msgstr ""
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
@@ -3127,153 +3181,153 @@ msgid "Continue"
 msgstr "Продолжить"
 
 #: MixxxApp#18
-msgid "Load track to Deck %1"
+msgid "Load Track to Deck %1"
 msgstr ""
 
 #: MixxxApp#19
-msgid "Loads a track in deck %1"
+msgid "Add &New Playlist"
 msgstr ""
 
 #: MixxxApp#20
+msgid "Add New &Crate"
+msgstr ""
+
+#: MixxxApp#21
+msgid "Enable &Keyboard Shortcuts"
+msgstr ""
+
+#: MixxxApp#22
+msgid "Load track to Deck %1"
+msgstr ""
+
+#: MixxxApp#23
+msgid "Loads a track in deck %1"
+msgstr ""
+
+#: MixxxApp#24
 msgid "Open"
 msgstr "Открыть"
 
-#: MixxxApp#21
+#: MixxxApp#25
 msgid "Ctrl+O"
 msgstr "Ctrl+О"
 
-#: MixxxApp#22
+#: MixxxApp#26
 msgid "Ctrl+Shift+O"
 msgstr "Ctrl+Shift+O"
 
-#: MixxxApp#23
+#: MixxxApp#27
 msgid "&Exit"
 msgstr "&Выйти"
 
-#: MixxxApp#24
+#: MixxxApp#28
 msgid "Quits Mixxx"
 msgstr ""
 
-#: MixxxApp#25
+#: MixxxApp#29
 msgid "Ctrl+Q"
 msgstr "Ctrl+Q"
 
-#: MixxxApp#26
+#: MixxxApp#30
 msgid "&Rescan Library"
 msgstr "&Обновить библиотеку"
 
-#: MixxxApp#27
+#: MixxxApp#31
 msgid "Rescans library folders for changes to tracks."
 msgstr ""
 
-#: MixxxApp#28
-msgid "Add &new playlist"
-msgstr "Создать &новый список воспроизведения"
-
-#: MixxxApp#29
+#: MixxxApp#32
 msgid "Ctrl+N"
 msgstr "Ctrl+Н"
 
-#: MixxxApp#30
-msgid "Add new &crate"
-msgstr "Добавить новый &контейнер"
-
-#: MixxxApp#31
+#: MixxxApp#33
 msgid "Deck %1 is currently playing a track."
 msgstr ""
 
-#: MixxxApp#32
+#: MixxxApp#34
 msgid "Are you sure you want to load a new track?"
 msgstr "Вы действительно хотите загрузить новую дорожку?"
 
-#: MixxxApp#33
+#: MixxxApp#35
 msgid "&Full Screen"
 msgstr "&Во весь экран"
 
-#: MixxxApp#34
+#: MixxxApp#36
 msgid "F11"
 msgstr "F11"
 
-#: MixxxApp#35
+#: MixxxApp#37
 msgid "&Preferences"
 msgstr "&Параметры"
 
-#: MixxxApp#36
+#: MixxxApp#38
 msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr ""
 "Изменить настройки Mixxx (например, воспроизведения, MIDI, управления)"
 
-#: MixxxApp#37
+#: MixxxApp#39
 msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
-#: MixxxApp#38
+#: MixxxApp#40
 msgid "&About"
 msgstr "&Сведения о программе"
 
-#: MixxxApp#39
+#: MixxxApp#41
 msgid "&Community Support"
 msgstr "Поддержка &сообщества"
 
-#: MixxxApp#40
+#: MixxxApp#42
 msgid "Get help with Mixxx"
 msgstr ""
 
-#: MixxxApp#41
+#: MixxxApp#43
 msgid "&User Manual"
 msgstr "&Руководство пользователя"
 
-#: MixxxApp#42
+#: MixxxApp#44
 msgid "Send Us &Feedback"
 msgstr "Обратная &связь"
 
-#: MixxxApp#43
-msgid "&Translate this application"
-msgstr "&Перевести это приложение"
-
-#: MixxxApp#44
+#: MixxxApp#45
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#45
+#: MixxxApp#46
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#46
+#: MixxxApp#47
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#47
+#: MixxxApp#48
 msgid "&Record Mix"
 msgstr "&Записать микс"
 
-#: MixxxApp#48
+#: MixxxApp#49
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#49
+#: MixxxApp#50
 msgid "Create a new playlist"
 msgstr "Создать список воспроизведения"
 
-#: MixxxApp#50
+#: MixxxApp#51
 msgid "Create a new crate"
 msgstr "Создать новый контейнер"
 
-#: MixxxApp#51
+#: MixxxApp#52
 msgid "Ctrl+Shift+F"
 msgstr "Ctrl+Shift+F"
 
-#: MixxxApp#52
+#: MixxxApp#53
 msgid "Enable Vinyl Control &1"
 msgstr "Активировать контроль винила &1"
 
-#: MixxxApp#53
+#: MixxxApp#54
 msgid "Enable Vinyl Control &2"
 msgstr "Активировать контроль винила &2"
-
-#: MixxxApp#54
-msgid "Enable live &broadcasting"
-msgstr "Активировать прямую &трансляцию"
 
 #: MixxxApp#55
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
@@ -3322,38 +3376,42 @@ msgid "Ctrl+Shift+N"
 msgstr ""
 
 #: MixxxApp#66
-msgid "Enable &keyboard shortcuts"
-msgstr ""
-
-#: MixxxApp#67
 msgid "Toggles keyboard shortcuts on or off"
 msgstr ""
 
-#: MixxxApp#68
+#: MixxxApp#67
 msgid "Ctrl+`"
 msgstr ""
 
+#: MixxxApp#68
+msgid "&Translate This Application"
+msgstr ""
+
 #: MixxxApp#69
+msgid "Enable Live &Broadcasting"
+msgstr ""
+
+#: MixxxApp#70
 msgid "&Options"
 msgstr "&Параметры"
 
-#: MixxxApp#70
+#: MixxxApp#71
 msgid "&Library"
 msgstr "&Библиотека"
 
-#: MixxxApp#71
+#: MixxxApp#72
 msgid "&View"
 msgstr "&Вид"
 
-#: MixxxApp#72
+#: MixxxApp#73
 msgid "&Help"
 msgstr "&Справка"
 
-#: MixxxApp#73
+#: MixxxApp#74
 msgid "&Vinyl Control"
 msgstr "&Kонтроль винилa"
 
-#: MixxxApp#74
+#: MixxxApp#75
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3362,39 +3420,39 @@ msgstr ""
 "Пожалуйста, выберите вашу звуковую карту(-ы) в настройках звукового "
 "оборудования."
 
-#: MixxxApp#75
+#: MixxxApp#76
 msgid "Mixxx %1 Development Team"
 msgstr "Команда разработки Mixxx %1"
 
-#: MixxxApp#76
+#: MixxxApp#77
 msgid "With contributions from:"
 msgstr "При участии:"
 
-#: MixxxApp#77
+#: MixxxApp#78
 msgid "And special thanks to:"
 msgstr "Особые благодарности:"
 
-#: MixxxApp#78
+#: MixxxApp#79
 msgid "Past Developers"
 msgstr "Бывшие разработчики"
 
-#: MixxxApp#79
+#: MixxxApp#80
 msgid "Past Contributors"
 msgstr "Бывшие соавторы"
 
-#: MixxxApp#80
+#: MixxxApp#81
 msgid "Error in skin file"
 msgstr ""
 
-#: MixxxApp#81
+#: MixxxApp#82
 msgid "The selected skin cannot be loaded."
 msgstr ""
 
-#: MixxxApp#82
+#: MixxxApp#83
 msgid "OpenGL Direct Rendering"
 msgstr ""
 
-#: MixxxApp#83
+#: MixxxApp#84
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3405,11 +3463,11 @@ msgid ""
 "not be present, but you should<br>not experience degraded performance."
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#85
 msgid "Confirm Exit"
 msgstr "Подтвердите выход"
 
-#: MixxxApp#85
+#: MixxxApp#86
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 "В данный момент дека используется для воспроизведения. Выйти из Mixxx?"
@@ -3548,6 +3606,16 @@ msgstr "Пересылка"
 msgid "Unknown path type %1"
 msgstr "Неизвестный тип размещение %1"
 
+#: QtSimpleWaveformWidget#1
+msgctxt "QtSimpleWaveformWidget#1"
+msgid "Simple"
+msgstr ""
+
+#: QtWaveformWidget#1
+msgctxt "QtWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
 #: RecordingFeature#1
 msgid "Recordings"
 msgstr "Записи"
@@ -3629,6 +3697,10 @@ msgstr ""
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
+msgstr ""
+
+#: SoftwareWaveformWidget#2
+msgid "Software"
 msgstr ""
 
 #: Tooltips#1
@@ -4471,12 +4543,12 @@ msgid "Remove"
 msgstr "Удалить"
 
 #: WTrackTableView#5
-msgid "Properties..."
-msgstr "Свойства..."
+msgid "Properties"
+msgstr ""
 
 #: WTrackTableView#6
-msgid "Open in file browser"
-msgstr "Открыть в обозревателе файлов"
+msgid "Open in File Browser"
+msgstr ""
 
 #: WTrackTableView#7
 msgid "Add to Auto-DJ Queue (bottom)"
@@ -5129,6 +5201,9 @@ msgstr "(GL)"
 #~ "Эти сведения не будут использоваться для личностной идентификации, для связи "
 #~ "с вами, для рекламы и в любом другом случае, который может побеспокоить "
 #~ "вас.\n"
+
+#~ msgid "Add &new playlist"
+#~ msgstr "Создать &новый список воспроизведения"
 
 #~ msgid "&Load Song (Player 2)..."
 #~ msgstr "&Загрузить композицию (Проигрыватель 2)..."
@@ -5834,6 +5909,9 @@ msgstr "(GL)"
 #~ msgid "Add to Auto DJ Queue"
 #~ msgstr "Добавить в очередь автоматического диджеинга"
 
+#~ msgid "Properties..."
+#~ msgstr "Свойства..."
+
 #~ msgid "Sampler %1"
 #~ msgstr "Сэмплер %1"
 
@@ -6025,6 +6103,9 @@ msgstr "(GL)"
 #~ msgid "Song:"
 #~ msgstr "Композиция:"
 
+#~ msgid "&Translate this application"
+#~ msgstr "&Перевести это приложение"
+
 #~ msgid "Track Information (Click to Expand)"
 #~ msgstr "Сведения о дорожке (Щёлкните, чтобы развернуть)"
 
@@ -6102,6 +6183,9 @@ msgstr "(GL)"
 #~ msgctxt "MixxxApp#9"
 #~ msgid "Choose music library directory"
 #~ msgstr "Выберите папку музыкальной библиотеки"
+
+#~ msgid "Add new &crate"
+#~ msgstr "Добавить новый &контейнер"
 
 #~ msgid "&Audio Beat Marks"
 #~ msgstr "&Обозначение ритма"
@@ -6205,6 +6289,9 @@ msgstr "(GL)"
 
 #~ msgid "Load Song (Player &2)..."
 #~ msgstr "Загрузить трек (Плеер &2)..."
+
+#~ msgid "Enable live &broadcasting"
+#~ msgstr "Активировать прямую &трансляцию"
 
 #~ msgid "Pitch control slider for Sampler %1"
 #~ msgstr "Ползунок изменения темпа для Семплера %1"

@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-14 20:10+0000\n"
+"POT-Creation-Date: 2012-05-24 15:59+0200\n"
+"PO-Revision-Date: 2012-05-24 14:36+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-15 04:38+0000\n"
-"X-Generator: Launchpad (build 15238)\n"
+"X-Launchpad-Export-Date: 2012-05-25 04:34+0000\n"
+"X-Generator: Launchpad (build 15288)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -2993,8 +2993,13 @@ msgid "Question"
 msgstr "Frage"
 
 #: GLSLWaveformWidget#1
-msgid "Filtered (experimental)"
-msgstr "Gefiltert (experimental)"
+msgctxt "GLSLWaveformWidget#1"
+msgid "Filtered"
+msgstr "Gefiltert"
+
+#: GLSLWaveformWidget#2
+msgid "experimental"
+msgstr "Experimentell"
 
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
@@ -3041,6 +3046,50 @@ msgstr ""
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
 msgstr "Eine Voreinstellung aus der Liste hierher ziehen und ablegen"
+
+#: LegacySkinParser#1
+msgid "activate"
+msgstr "aktivieren"
+
+#: LegacySkinParser#2
+msgid "toggle"
+msgstr "umschalten"
+
+#: LegacySkinParser#3
+msgid "right"
+msgstr "rechts"
+
+#: LegacySkinParser#4
+msgid "left"
+msgstr "links"
+
+#: LegacySkinParser#5
+msgid "right small"
+msgstr "wenig rechts"
+
+#: LegacySkinParser#6
+msgid "left small"
+msgstr "wenig links"
+
+#: LegacySkinParser#7
+msgid "up"
+msgstr "hoch"
+
+#: LegacySkinParser#8
+msgid "down"
+msgstr "runter"
+
+#: LegacySkinParser#9
+msgid "up small"
+msgstr "wenig hoch"
+
+#: LegacySkinParser#10
+msgid "down small"
+msgstr "wenig runter"
+
+#: LegacySkinParser#11
+msgid "Shortcut"
+msgstr "Tastenkombination"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
@@ -3175,153 +3224,153 @@ msgid "Continue"
 msgstr "Weiter"
 
 #: MixxxApp#18
-msgid "Load track to Deck %1"
+msgid "Load Track to Deck %1"
 msgstr "Titel in Deck %1 laden"
 
 #: MixxxApp#19
+msgid "Add &New Playlist"
+msgstr "&Neue Wiedergabeliste erstellen"
+
+#: MixxxApp#20
+msgid "Add New &Crate"
+msgstr "Neue &Plattenkiste hinzufügen"
+
+#: MixxxApp#21
+msgid "Enable &Keyboard Shortcuts"
+msgstr "&Tastenkombinationen aktivieren"
+
+#: MixxxApp#22
+msgid "Load track to Deck %1"
+msgstr "Titel in Deck %1 laden"
+
+#: MixxxApp#23
 msgid "Loads a track in deck %1"
 msgstr "Lädt einen Titel in Deck %1"
 
-#: MixxxApp#20
+#: MixxxApp#24
 msgid "Open"
 msgstr "Öffnen"
 
-#: MixxxApp#21
+#: MixxxApp#25
 msgid "Ctrl+O"
 msgstr "Strg+O"
 
-#: MixxxApp#22
+#: MixxxApp#26
 msgid "Ctrl+Shift+O"
 msgstr "Strg+Umschalt+O"
 
-#: MixxxApp#23
+#: MixxxApp#27
 msgid "&Exit"
 msgstr "&Beenden"
 
-#: MixxxApp#24
+#: MixxxApp#28
 msgid "Quits Mixxx"
 msgstr "Beendet Mixxx"
 
-#: MixxxApp#25
+#: MixxxApp#29
 msgid "Ctrl+Q"
 msgstr "Strg+Q"
 
-#: MixxxApp#26
+#: MixxxApp#30
 msgid "&Rescan Library"
 msgstr "&Bibliothek erneut einlesen"
 
-#: MixxxApp#27
+#: MixxxApp#31
 msgid "Rescans library folders for changes to tracks."
 msgstr "Liest die Bilbliothek für Änderungen an Titeln erneut ein."
 
-#: MixxxApp#28
-msgid "Add &new playlist"
-msgstr "&Neue Wiedergabeliste erstellen"
-
-#: MixxxApp#29
+#: MixxxApp#32
 msgid "Ctrl+N"
 msgstr "Strg+N"
 
-#: MixxxApp#30
-msgid "Add new &crate"
-msgstr "Neue &Plattenkiste hinzufügen"
-
-#: MixxxApp#31
+#: MixxxApp#33
 msgid "Deck %1 is currently playing a track."
 msgstr "Deck %1 spielt derzeit einen Titel."
 
-#: MixxxApp#32
+#: MixxxApp#34
 msgid "Are you sure you want to load a new track?"
 msgstr "Möchten Sie wirklich einen neuen Titel laden?"
 
-#: MixxxApp#33
+#: MixxxApp#35
 msgid "&Full Screen"
 msgstr "&Vollbild"
 
-#: MixxxApp#34
+#: MixxxApp#36
 msgid "F11"
 msgstr "F11"
 
-#: MixxxApp#35
+#: MixxxApp#37
 msgid "&Preferences"
 msgstr "&Einstellungen"
 
-#: MixxxApp#36
+#: MixxxApp#38
 msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr ""
 "Mixxx Einstellungen verändern (z.B. Wiedergabe, MIDI, Steuerelemente)"
 
-#: MixxxApp#37
+#: MixxxApp#39
 msgid "Ctrl+P"
 msgstr "Strg+P"
 
-#: MixxxApp#38
+#: MixxxApp#40
 msgid "&About"
 msgstr "&Über"
 
-#: MixxxApp#39
+#: MixxxApp#41
 msgid "&Community Support"
 msgstr "&Community Unterstützung"
 
-#: MixxxApp#40
+#: MixxxApp#42
 msgid "Get help with Mixxx"
 msgstr "Hilfe zu Mixxx erhalten"
 
-#: MixxxApp#41
+#: MixxxApp#43
 msgid "&User Manual"
 msgstr "&Benutzerhandbuch"
 
-#: MixxxApp#42
+#: MixxxApp#44
 msgid "Send Us &Feedback"
 msgstr "Senden Sie uns Ihre &Meinung"
 
-#: MixxxApp#43
-msgid "&Translate this application"
-msgstr "Diese Anwendung &übersetzen"
-
-#: MixxxApp#44
+#: MixxxApp#45
 msgid "Ctrl+Y"
 msgstr "Strg+Y"
 
-#: MixxxApp#45
+#: MixxxApp#46
 msgid "Ctrl+U"
 msgstr "Strg+U"
 
-#: MixxxApp#46
+#: MixxxApp#47
 msgid "Ctrl+L"
 msgstr "Strg+L"
 
-#: MixxxApp#47
+#: MixxxApp#48
 msgid "&Record Mix"
 msgstr "&Mix aufnehmen"
 
-#: MixxxApp#48
+#: MixxxApp#49
 msgid "Ctrl+R"
 msgstr "Strg+R"
 
-#: MixxxApp#49
+#: MixxxApp#50
 msgid "Create a new playlist"
 msgstr "Neue Wiedergabeliste erstellen"
 
-#: MixxxApp#50
+#: MixxxApp#51
 msgid "Create a new crate"
 msgstr "Neue Plattenkiste erstellen"
 
-#: MixxxApp#51
+#: MixxxApp#52
 msgid "Ctrl+Shift+F"
 msgstr "Strg+Umschalt+F"
 
-#: MixxxApp#52
+#: MixxxApp#53
 msgid "Enable Vinyl Control &1"
 msgstr "Vinyl-Steuerung &1 aktivieren"
 
-#: MixxxApp#53
+#: MixxxApp#54
 msgid "Enable Vinyl Control &2"
 msgstr "Vinyl-Steuerung &2 aktivieren"
-
-#: MixxxApp#54
-msgid "Enable live &broadcasting"
-msgstr "&Liveübertragung aktivieren"
 
 #: MixxxApp#55
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
@@ -3369,38 +3418,42 @@ msgid "Ctrl+Shift+N"
 msgstr "Strg+Umschalt+N"
 
 #: MixxxApp#66
-msgid "Enable &keyboard shortcuts"
-msgstr "&Tastenkombinationen aktivieren"
-
-#: MixxxApp#67
 msgid "Toggles keyboard shortcuts on or off"
 msgstr "Tastenkombinationen ein-/ausschalten"
 
-#: MixxxApp#68
+#: MixxxApp#67
 msgid "Ctrl+`"
 msgstr "Strg+`"
 
+#: MixxxApp#68
+msgid "&Translate This Application"
+msgstr "Diese Anwendung &übersetzen"
+
 #: MixxxApp#69
+msgid "Enable Live &Broadcasting"
+msgstr "&Liveübertragung aktivieren"
+
+#: MixxxApp#70
 msgid "&Options"
 msgstr "&Optionen"
 
-#: MixxxApp#70
+#: MixxxApp#71
 msgid "&Library"
 msgstr "&Bibliothek"
 
-#: MixxxApp#71
+#: MixxxApp#72
 msgid "&View"
 msgstr "&Ansicht"
 
-#: MixxxApp#72
+#: MixxxApp#73
 msgid "&Help"
 msgstr "&Hilfe"
 
-#: MixxxApp#73
+#: MixxxApp#74
 msgid "&Vinyl Control"
 msgstr "&Vinyl-Steuerung"
 
-#: MixxxApp#74
+#: MixxxApp#75
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3409,39 +3462,39 @@ msgstr ""
 "Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-"
 "Hardware-Einstellungen aus."
 
-#: MixxxApp#75
+#: MixxxApp#76
 msgid "Mixxx %1 Development Team"
 msgstr "Mixxx %1 Entwicklerteam"
 
-#: MixxxApp#76
+#: MixxxApp#77
 msgid "With contributions from:"
 msgstr "Mit Beiträgen von:"
 
-#: MixxxApp#77
+#: MixxxApp#78
 msgid "And special thanks to:"
 msgstr "Und besonderen Dank an:"
 
-#: MixxxApp#78
+#: MixxxApp#79
 msgid "Past Developers"
 msgstr "Frühere Entwickler"
 
-#: MixxxApp#79
+#: MixxxApp#80
 msgid "Past Contributors"
 msgstr "Frühere Mitwirkende"
 
-#: MixxxApp#80
+#: MixxxApp#81
 msgid "Error in skin file"
 msgstr "Fehler in Skin-Datei"
 
-#: MixxxApp#81
+#: MixxxApp#82
 msgid "The selected skin cannot be loaded."
 msgstr "Das gewählte Skin kann nicht geladen werden."
 
-#: MixxxApp#82
+#: MixxxApp#83
 msgid "OpenGL Direct Rendering"
 msgstr "Direktes Rendern mit OpenGL"
 
-#: MixxxApp#83
+#: MixxxApp#84
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3461,11 +3514,11 @@ msgstr ""
 "Renden möglicherweise nicht vorhanden, Sie sollen<br>aber keine verminderte "
 "Leistung erleben."
 
-#: MixxxApp#84
+#: MixxxApp#85
 msgid "Confirm Exit"
 msgstr "Beenden bestätigen"
 
-#: MixxxApp#85
+#: MixxxApp#86
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Ein Deck spielt derzeit. Mixxx beenden?"
 
@@ -3611,6 +3664,16 @@ msgstr "Weiterleiten"
 msgid "Unknown path type %1"
 msgstr "Unbekannter Pfad-Typ %1"
 
+#: QtSimpleWaveformWidget#1
+msgctxt "QtSimpleWaveformWidget#1"
+msgid "Simple"
+msgstr "Einfach"
+
+#: QtWaveformWidget#1
+msgctxt "QtWaveformWidget#1"
+msgid "Filtered"
+msgstr "Gefiltert"
+
 #: RecordingFeature#1
 msgid "Recordings"
 msgstr "Aufnahmen"
@@ -3704,6 +3767,10 @@ msgstr ""
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
 msgstr "Gefiltert"
+
+#: SoftwareWaveformWidget#2
+msgid "Software"
+msgstr "Software"
 
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
@@ -4595,11 +4662,11 @@ msgid "Remove"
 msgstr "Entfernen"
 
 #: WTrackTableView#5
-msgid "Properties..."
-msgstr "Eigenschaften..."
+msgid "Properties"
+msgstr "Eigenschaften"
 
 #: WTrackTableView#6
-msgid "Open in file browser"
+msgid "Open in File Browser"
 msgstr "Im Dateibrowser öffnen"
 
 #: WTrackTableView#7
@@ -4667,6 +4734,9 @@ msgstr "(GL)"
 
 #~ msgid "Finito!"
 #~ msgstr "Fertig!"
+
+#~ msgid "Properties..."
+#~ msgstr "Eigenschaften..."
 
 #~ msgctxt "DlgAutoDJ#3"
 #~ msgid "Manage"
@@ -5204,6 +5274,9 @@ msgstr "(GL)"
 
 #~ msgid "Signal Quality"
 #~ msgstr "Signal Qualität"
+
+#~ msgid "Add &new playlist"
+#~ msgstr "&Neue Wiedergabeliste erstellen"
 
 #~ msgid "Opens a song in player 2"
 #~ msgstr "Titel in Player 2 laden"
@@ -6303,6 +6376,9 @@ msgstr "(GL)"
 #~ msgid "&Load Song (Player 2)..."
 #~ msgstr "&Titel laden (Player 2)..."
 
+#~ msgid "Add new &crate"
+#~ msgstr "Neue &Plattenkiste hinzufügen"
+
 #~ msgid ""
 #~ "New crate\n"
 #~ "\n"
@@ -6432,6 +6508,12 @@ msgstr "(GL)"
 
 #~ msgid "Load Song (Player &2)..."
 #~ msgstr "Titel laden (Player &2)..."
+
+#~ msgid "Enable live &broadcasting"
+#~ msgstr "&Liveübertragung aktivieren"
+
+#~ msgid "&Translate this application"
+#~ msgstr "Diese Anwendung &übersetzen"
 
 #~ msgctxt "DlgPrefRecordDlg#10"
 #~ msgid "Miscellaneous"
