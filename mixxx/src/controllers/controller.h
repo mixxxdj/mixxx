@@ -32,8 +32,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual QString presetExtension();
     inline QString defaultPreset();
 
-    virtual void bindScriptFunctions();
-
     void setPreset(const ControllerPreset& preset) {
         // We don't know the specific type of the preset so we need to ask
         // the preset to call our visitor methods with its type.
@@ -121,9 +119,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline void setControlToLearn(MixxxControl control) {
         m_controlToLearn = control;
     }
-
-    // Script functions for binding
-    QHash<QString, QScriptValue> m_scriptBindings;
 
   private slots:
     virtual int open() = 0;

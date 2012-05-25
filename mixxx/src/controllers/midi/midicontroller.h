@@ -29,8 +29,6 @@ class MidiController : public Controller {
     virtual QString presetExtension();
     inline QString defaultPreset();
 
-    virtual void bindScriptFunctions();
-
     virtual ControllerPresetPointer getPreset() const {
         MidiControllerPreset* pClone = new MidiControllerPreset();
         *pClone = m_preset;
