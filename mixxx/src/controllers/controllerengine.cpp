@@ -118,7 +118,7 @@ QScriptValue ControllerEngine::resolveFunction(QString function) const {
     
     for (int i = 0; i < parts.size(); i++) {
         object = object.property(parts.at(i));
-        if (!object.isValid())
+        if (!object.isValid() || !object.isFunction())
             return QScriptValue();
     }
     
