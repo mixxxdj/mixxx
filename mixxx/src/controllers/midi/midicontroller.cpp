@@ -284,7 +284,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
             return;
         }
 
-        QScriptValue function = m_scriptBindings.value(mc.item());
+        QScriptValue function = pEngine->resolveFunction(mc.item());
         QScriptValueList args;
         args << QScriptValue(status & 0x0F);
         args << QScriptValue(control);
@@ -354,28 +354,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
             }
         }
         p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
-    }
-}
-
-void MidiController::bindScriptFunctions() {
-    qDebug() << "Binding MIDI Script Functions";
-    const ControllerEngine* pEngine = getEngine();
-    const MidiControllerPreset* pPreset = (MidiControllerPreset*)preset();
-    QHash<uint16_t, QPair<MixxxControl, MidiOptions> >::const_iterator mapping;
-    for (mapping = pPreset->mappings.constBegin(); mapping != pPreset->mappings.constEnd(); ++mapping) {
-        QPair<MixxxControl, MidiOptions> cfg = mapping.value();
-        MixxxControl mc = cfg.first;
-        MidiOptions options = cfg.second;
-
-        if (options.script) {
-            QScriptValue binding = pEngine->resolveFunction(mc.item());
-            if (!binding.isValid() || !binding.isFunction()) {
-                qWarning() << "Controller: unable to resolve function:" << mc.item();
-                continue;
-            }
-            qDebug() << "MidiController::binding" << mc.item();
-            m_scriptBindings.insert(mc.item(), binding);
-        }
     }
 }
 
@@ -527,10 +505,10 @@ void MidiController::receive(QByteArray data) {
     // Custom script handler
     if (options.script) {
         ControllerEngine* pEngine = getEngine();
-        QScriptValue function = m_scriptBindings.value(mc.item());
         if (pEngine == NULL) {
             return;
         }
+        QScriptValue function = pEngine->resolveFunction(mc.item());
         if (!pEngine->execute(function, data)) {
             qDebug() << "MidiController: Invalid script function" << mc.item();
         }

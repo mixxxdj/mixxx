@@ -70,16 +70,13 @@ void Controller::applyPreset(QString configPath) {
 
     // Load the script code into the engine
     if (m_pEngine != NULL) {
-        if (m_scriptBindings.isEmpty() && pPreset->scriptFileNames.isEmpty()) {
+        if (pPreset->scriptFileNames.isEmpty()) {
             qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         }
         else {
-            if (m_scriptBindings.isEmpty()) {
-                m_pEngine->loadScriptFiles(configPath, pPreset->scriptFileNames);
-            }
+            m_pEngine->loadScriptFiles(configPath, pPreset->scriptFileNames);
             m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
         }
-        bindScriptFunctions();
     } else {
         qWarning() << "Controller::applyPreset(): No engine exists!";
     }
@@ -137,34 +134,10 @@ void Controller::receive(const QByteArray data) {
         if (function!="") {
             function.append(".incomingData");
 
-            QScriptValue incomingData = m_scriptBindings.value(function);
+            QScriptValue incomingData = m_pEngine->resolveFunction(function);
             if (!m_pEngine->execute(incomingData, data)) {
                 qWarning() << "Controller: Invalid script function" << function;
             }
-        }
-    }
-}
-
-void Controller::bindScriptFunctions() {
-    if (m_pEngine == NULL) {
-    // qWarning() << "Controller::receive called with no active engine!";
-        // Don't complain, since this will always show after closing a device as
-        //  queued signals flush out
-        return;
-    }
-
-    QListIterator<QString> prefixIt(m_pEngine->getScriptFunctionPrefixes());
-    while (prefixIt.hasNext()) {
-        QString function = prefixIt.next();
-        if (function!="") {
-            function.append(".incomingData");
-
-            QScriptValue incomingData = m_pEngine->resolveFunction(function);
-            if (!incomingData.isValid() || !incomingData.isFunction()) {
-                qWarning() << "Controller: unable to resolve function:" << function;
-                continue;
-            }
-            m_scriptBindings.insert(function, incomingData);
         }
     }
 }
