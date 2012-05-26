@@ -114,8 +114,8 @@ script.midiPitch = function (LSB, MSB, status) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.spinbackDefault = function(channel, control, value, status, group) {
-    var activate = ((status & 0xF0) == 0x90 || value > 0);
-    script.spinback(group, activate);
+	// disable on note-off or zero value note/cc
+    script.spinback(group, ((status & 0xF0) != 0x80 && value > 0));
 }
 
 /* -------- ------------------------------------------------------
@@ -126,8 +126,8 @@ script.spinbackDefault = function(channel, control, value, status, group) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.brakeDefault = function(channel, control, value, status, group) {
-    var activate = ((status & 0xF0) == 0x90 || value > 0);
-    script.brake(group, activate);
+	// disable on note-off or zero value note/cc
+    script.brake(group, ((status & 0xF0) != 0x80 && value > 0));
 }
 
 /* -------- ------------------------------------------------------
