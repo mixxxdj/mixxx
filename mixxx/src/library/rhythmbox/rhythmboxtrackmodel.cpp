@@ -110,3 +110,10 @@ TrackModel::CapabilitiesFlags RhythmboxTrackModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }
+
+QAbstractItemDelegate* RhythmboxTrackModel::delegateForColumn(const int i, QObject* pParent) {
+    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
+        return new StarDelegate(pParent);
+    }
+    return NULL;
+}
