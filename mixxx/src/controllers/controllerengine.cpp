@@ -1074,13 +1074,15 @@ void ControllerEngine::scratchProcess(int timerId) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        // Clear scratch2_enable unless brake mode
+        // Clear scratch2_enable unless brake mode where we just set scratch2 to 0.0
         if (m_brakeActive[deck]) {
-            cot->slotSet(0.0);
+            if (cot != NULL) {
+                cot->slotSet(0.0);
+            }
         }
         else {
             cot = getControlObjectThread(group, "scratch2_enable");
-                if(cot != NULL) {
+            if(cot != NULL) {
                 cot->slotSet(0);
             }
         }
