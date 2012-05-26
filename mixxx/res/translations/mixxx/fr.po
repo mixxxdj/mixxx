@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-05-15 09:04+0000\n"
+"PO-Revision-Date: 2012-05-25 07:27+0000\n"
 "Last-Translator: Maxime MARAIS <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:34+0000\n"
+"X-Launchpad-Export-Date: 2012-05-26 04:43+0000\n"
 "X-Generator: Launchpad (build 15288)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -3003,11 +3003,11 @@ msgstr "Question"
 #: GLSLWaveformWidget#1
 msgctxt "GLSLWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Filtré"
 
 #: GLSLWaveformWidget#2
 msgid "experimental"
-msgstr ""
+msgstr "expérimental"
 
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
@@ -3057,19 +3057,19 @@ msgstr "Cliquez sur un preset depuis la liste & déposez le ici"
 
 #: LegacySkinParser#1
 msgid "activate"
-msgstr ""
+msgstr "activer"
 
 #: LegacySkinParser#2
 msgid "toggle"
-msgstr ""
+msgstr "activer/désactiver"
 
 #: LegacySkinParser#3
 msgid "right"
-msgstr ""
+msgstr "droite"
 
 #: LegacySkinParser#4
 msgid "left"
-msgstr ""
+msgstr "gauche"
 
 #: LegacySkinParser#5
 msgid "right small"
@@ -3081,11 +3081,11 @@ msgstr ""
 
 #: LegacySkinParser#7
 msgid "up"
-msgstr ""
+msgstr "haut"
 
 #: LegacySkinParser#8
 msgid "down"
-msgstr ""
+msgstr "bas"
 
 #: LegacySkinParser#9
 msgid "up small"
@@ -3097,7 +3097,7 @@ msgstr ""
 
 #: LegacySkinParser#11
 msgid "Shortcut"
-msgstr ""
+msgstr "Raccourci"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
@@ -3231,19 +3231,19 @@ msgstr "Continuer"
 
 #: MixxxApp#18
 msgid "Load Track to Deck %1"
-msgstr ""
+msgstr "Charger le Morceau sur la Platine %1"
 
 #: MixxxApp#19
 msgid "Add &New Playlist"
-msgstr ""
+msgstr "Ajouter &Nouvelle Liste de Lecture"
 
 #: MixxxApp#20
 msgid "Add New &Crate"
-msgstr ""
+msgstr "Ajouter Nouveau Ba&c"
 
 #: MixxxApp#21
 msgid "Enable &Keyboard Shortcuts"
-msgstr ""
+msgstr "Activer les Raccourcis Clavier (&K)"
 
 #: MixxxApp#22
 msgid "Load track to Deck %1"
@@ -3436,11 +3436,11 @@ msgstr "Ctrl+`"
 
 #: MixxxApp#68
 msgid "&Translate This Application"
-msgstr ""
+msgstr "&Traduire Cette Application"
 
 #: MixxxApp#69
 msgid "Enable Live &Broadcasting"
-msgstr ""
+msgstr "Activer la Diffusion en Direct (&Broadcast)"
 
 #: MixxxApp#70
 msgid "&Options"
@@ -3676,12 +3676,12 @@ msgstr "Chemin inconnu type %1"
 #: QtSimpleWaveformWidget#1
 msgctxt "QtSimpleWaveformWidget#1"
 msgid "Simple"
-msgstr ""
+msgstr "Simple"
 
 #: QtWaveformWidget#1
 msgctxt "QtWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Filtré"
 
 #: RecordingFeature#1
 msgid "Recordings"
@@ -3778,7 +3778,7 @@ msgstr "Filtré"
 
 #: SoftwareWaveformWidget#2
 msgid "Software"
-msgstr ""
+msgstr "Logiciel"
 
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
@@ -4680,11 +4680,11 @@ msgstr "Supprimer"
 
 #: WTrackTableView#5
 msgid "Properties"
-msgstr ""
+msgstr "Propriètés"
 
 #: WTrackTableView#6
 msgid "Open in File Browser"
-msgstr ""
+msgstr "Ouvrir le Navigateur de Fichiers"
 
 #: WTrackTableView#7
 msgid "Add to Auto-DJ Queue (bottom)"
