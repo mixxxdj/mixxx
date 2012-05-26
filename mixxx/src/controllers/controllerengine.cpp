@@ -110,7 +110,11 @@ Purpose: Resolves a function name to a QScriptValue including
 Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::resolveFunction(QString function) const {
+QScriptValue ControllerEngine::resolveFunction(QString function, bool useCache) const {
+    if (useCache && m_scriptValueCache.contains(function)) {
+        return m_scriptValueCache.value(function);
+    }
+
     QScriptValue object = m_pEngine->globalObject();
     QStringList parts = function.split(".");
 
@@ -123,7 +127,7 @@ QScriptValue ControllerEngine::resolveFunction(QString function) const {
     if (!object.isFunction()) {
         return QScriptValue();
     }
-
+    m_scriptValueCache[function] = object;
     return object;
 }
 

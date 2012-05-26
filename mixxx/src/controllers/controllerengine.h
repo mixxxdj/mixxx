@@ -46,7 +46,7 @@ class ControllerEngineConnectionScriptValue : public QObject {
     }
     QString readId() const { return this->conn.id; }
     Q_INVOKABLE void disconnect();
-    
+
   private:
    ControllerEngineConnection conn;
 };
@@ -75,7 +75,7 @@ class ControllerEngine : public QObject {
     }
 
     /** Resolve a function name to a QScriptValue. */
-    QScriptValue resolveFunction(QString function) const;
+    QScriptValue resolveFunction(QString function, bool useCache) const;
     /** Look up registered script function prefixes */
     QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
     /** Disconnect a ControllerEngineConnection */
@@ -174,6 +174,7 @@ class ControllerEngine : public QObject {
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<PitchFilter*> m_pitchFilter;
     QHash<int, int> m_scratchTimers;
+    mutable QHash<QString, QScriptValue> m_scriptValueCache;
 };
 
 #endif
