@@ -41,6 +41,7 @@ NovationLaunchpad = {
 		this.vfader = self.vfader;
 		this.vumeter = self.vumeter;
 		this.vumeter_toggle = self.vumeter_toggle;
+		this.playlist = self.playlist;
 
 		//
 		// map the midi config into something more useful
@@ -78,8 +79,8 @@ NovationLaunchpad = {
 
 		// track navigation
 
-		this.button("up", "press", 0, 'hi_yellow', 'lo_yellow', "[Playlist]", "SelectPrevTrack");
-		this.button("down", "press", 0, 'hi_yellow', 'lo_yellow', "[Playlist]", "SelectNextTrack");
+		this.playlist("up", 0, "SelectPrevTrack");
+		this.playlist("down", 0, "SelectNextTrack");
 		this.button("left", "press", 0, 'hi_yellow', 'lo_yellow', "[Playlist]", "SelectPrevPlaylist");
 		this.button("right", "press", 0, 'hi_yellow', 'lo_yellow', "[Playlist]", "SelectNextPlaylist");
 
@@ -100,12 +101,17 @@ NovationLaunchpad = {
 
 			this.flanger("1," + (offset + 0), 1, group, 0.5, 1500000, 333);
 			this.flanger("1," + (offset + 1), 1, group, 1, 500000, 666);
-			this.gator("1," + (offset + 2),  1, group, 8, 0.7);
 
 			// spinback effect
 
-			this.button("1," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
+			this.button("1," + (offset + 2), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
 				script.spinback(g, v > 0);
+			});
+
+			// brake effect
+
+			this.button("1," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
+				script.brake(g, v > 0);
 			});
 
 			// instant loops 
@@ -141,11 +147,9 @@ NovationLaunchpad = {
 
 			this.button("3," + (offset + 2), "all", 1, 'hi_green', 'lo_green', group, "reloop_exit");
 
-			// brake effect
+			// gator effect
 
-			this.button("3," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
-				script.brake(g, v > 0);
-			});
+			this.gator("3," + (offset + 3),  1, group, 8, 0.7);
 
 			// led feedback for loop in/out buttons to show loop status
 
@@ -259,8 +263,12 @@ NovationLaunchpad = {
 		}
 	},
 
+	//
+	// gator effect using high eq kill
+	//
+
 	gator: function(name, page, group, rate, depth) {
-		this.button(name, "all", page, 'hi_green', 'lo_green', group, "", function(g, n, v) {
+		this.button(name, "all", page, 'hi_red', 'lo_red', group, "", function(g, n, v) {
 			var self = NovationLaunchpad;
 			if (typeof(self.gator_timer) != undefined && self.gator_timer != null) {
 				engine.stopTimer(self.gator_timer);
@@ -317,6 +325,29 @@ NovationLaunchpad = {
 				}
 			}
 		});
+	},
+
+	//
+	// track scrolling
+	//
+
+	playlist: function(name, page, action) {
+		this.button(name, "all", page, 'hi_yellow', 'lo_yellow', "[Playlist]", action, function(g, n, v) {
+			var self = NovationLaunchpad;
+			if (typeof(self.playlist_timer) != undefined && self.playlist_timer != null) {
+				engine.stopTimer(self.playlist_timer);
+				self.playlist_timer = null;
+			}
+
+			if (v > 0) {
+				engine.setValue("[Playlist]", action, 1);
+				self.playlist_timer = engine.beginTimer(this.shift > 0 ? 30 : 150, 'NovationLaunchpad.process_playlist("' + action + '")');
+			}
+		});
+	},
+
+	process_playlist: function(name) {
+		engine.setValue("[Playlist]", name, 1);
 	},
 
 	//
