@@ -243,15 +243,19 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
             return;
         }
 
-        // Remove the track from the recent tracks list if it's present and put
-        // at the front of the list.
-        bool track_played_recently = m_recentTracks.removeOne(currentPlayingTrack);
-        m_recentTracks.push_front(currentPlayingTrack);
+        int currentPlayingTrackId = currentPlayingTrack->getId();
+        bool track_played_recently = false;
+        if (currentPlayingTrackId >= 0) {
+            // Remove the track from the recent tracks list if it's present and put
+            // at the front of the list.
+            track_played_recently = m_recentTracks.removeOne(currentPlayingTrackId);
+            m_recentTracks.push_front(currentPlayingTrackId);
 
-        // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
-        const int kRecentTrackWindow = 6;
-        while (m_recentTracks.size() > kRecentTrackWindow) {
-            m_recentTracks.pop_back();
+            // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
+            const int kRecentTrackWindow = 6;
+            while (m_recentTracks.size() > kRecentTrackWindow) {
+                m_recentTracks.pop_back();
+            }
         }
 
         // If the track was recently played, don't increment the playcount or
@@ -266,7 +270,6 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
 
         // We can only add tracks that are Mixxx library tracks, not external
         // sources.
-        int currentPlayingTrackId = currentPlayingTrack->getId();
         if (currentPlayingTrackId < 0) {
             return;
         }
