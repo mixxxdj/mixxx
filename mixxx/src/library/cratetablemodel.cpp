@@ -9,7 +9,6 @@
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)

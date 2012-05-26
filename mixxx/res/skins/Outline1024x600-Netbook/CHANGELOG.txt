@@ -16,6 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.05	(25/05/2012)
+* Fix: Support beatloop_X_toggle and beatloop_X_enabled controls instead of the deprecated beatloop_x, lp:1000829 & lp:902641
+  This fixes beatloop GUI buttons to start the loop again on button up
+  Fix: beatloop_8 button show now the correct graphic on state change
+
+v1.11.0.04	(24/05/2012)
+* Feature: Support <DefaultMark> cue style that define any non explicitly defined ones, lp:994647
+  This allows to view all 36 Hotcues in the waveform (Overview) without the need to declare each of them individually.
+
 v1.11.0.03	(08/05/2012)
 * Feature: Removed individual Tooltip text, tooltip now use a <TooltipId>, available IDs are in src/skin/tooltips.cpp
   This allows tooltips translation and makes skin more coherent and maintenance easier 

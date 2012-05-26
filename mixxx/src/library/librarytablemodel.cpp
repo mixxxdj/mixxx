@@ -5,7 +5,6 @@
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-#include "library/stardelegate.h"
 
 #include "mixxxutils.cpp"
 

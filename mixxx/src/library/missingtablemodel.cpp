@@ -4,7 +4,6 @@
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
-#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
