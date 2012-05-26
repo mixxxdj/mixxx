@@ -154,6 +154,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
         disconnect(m_pLoadedTrack.data(), 0, m_pReplayGain, 0);
 
         // Causes the track's data to be saved back to the library database.
+        qDebug() << "kain88 emit unloadingTrack";
         emit(unloadingTrack(m_pLoadedTrack));
     }
 
@@ -168,6 +169,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
             m_pReplayGain, SLOT(slotSet(double)));
 
     //Request a new track from the reader
+    qDebug() << "kain88 emit loadTrack";
     emit(loadTrack(track));
 }
 

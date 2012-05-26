@@ -376,3 +376,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
         return false;
     }
 }
+
+QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+    return NULL;
+}
+
