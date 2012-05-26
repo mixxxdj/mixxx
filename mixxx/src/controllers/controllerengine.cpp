@@ -1205,8 +1205,8 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampFactor[deck] = rate * factor * -1.0;
-        m_rampTo[deck] = 1.0;
+        m_rampFactor[deck] = rate * factor / 100000; // approx 1 second for a factor of 1
+        m_rampTo[deck] = -1.0;
 
         // save current keylock status and disable
         cot = getControlObjectThread(group, "keylock");
@@ -1216,7 +1216,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
         }
 
         // setup timer and send first scratch2 'tick' 
-        int timerId = startTimer(50);
+        int timerId = startTimer(1);
         m_scratchTimers[timerId] = deck;
 
         cot = getControlObjectThread(group, "scratch2");
