@@ -41,6 +41,9 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_rampTo.resize(kDecks);
     m_ramp.resize(kDecks);
     m_pitchFilter.resize(kDecks);
+    m_rampFactor.resize(kDecks);
+    m_brakeActive.resize(kDecks);
+    m_brakeKeylock.resize(kDecks);
 
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
@@ -945,6 +948,8 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     m_dx[deck] = 1/intervalsPerSecond;
     m_intervalAccumulator[deck] = 0;
     m_ramp[deck] = false;
+    m_rampFactor[deck] = 0.001;
+    m_brakeActive[deck] = false;
 
     QString group = QString("[Channel%1]").arg(deck);
 
@@ -1030,24 +1035,27 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
-    PitchFilter* filter = m_pitchFilter[deck];
     QString group = QString("[Channel%1]").arg(deck);
-
+    PitchFilter* filter = m_pitchFilter[deck];
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
         return;
     }
 
+    const float oldPitch = filter->currentPitch();
+
     // Give the filter a data point:
 
     // If we're ramping to end scratching, feed fixed data
     if (m_ramp[deck]) {
-        filter->observation(m_rampTo[deck]*0.001);
+        filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
     } else {
         //  This will (and should) be 0 if no net ticks have been accumulated
         //  (i.e. the wheel is stopped)
         filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
     }
+
+    const float newPitch = filter->currentPitch();
 
     // Actually do the scratching
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
@@ -1059,17 +1067,26 @@ void ControllerEngine::scratchProcess(int timerId) {
     m_intervalAccumulator[deck] = 0;
 
     // If we're ramping and the current pitch is really close to the rampTo
-    // value, end scratching
+    // value or we're in brake mode and have crossed over the zero value, end scratching
 
     //if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
-    if (m_ramp[deck] && fabs(m_rampTo[deck]-filter->currentPitch()) <= 0.00001) {
+    if ((m_ramp[deck] && fabs(m_rampTo[deck] - newPitch) <= 0.00001) ||
+        (m_brakeActive[deck] && (
+            (oldPitch > 0.0 && newPitch < 0.0) ||
+            (oldPitch < 0.0 && newPitch > 0.0)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        // Clear scratch2_enable
-        cot = getControlObjectThread(group, "scratch2_enable");
-        if(cot != NULL) {
-            cot->slotSet(0);
+        // Clear scratch2_enable unless brake mode where we just set scratch2 to 0.0
+        if (m_brakeActive[deck]) {
+            if (cot != NULL) {
+                cot->slotSet(0.0);
+            }
+        } else {
+            cot = getControlObjectThread(group, "scratch2_enable");
+            if(cot != NULL) {
+                cot->slotSet(0);
+            }
         }
 
         // Remove timer
@@ -1077,6 +1094,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         m_scratchTimers.remove(timerId);
 
         m_dx[deck] = 0.0;
+        m_brakeActive[deck] = false;
     }
 }
 
@@ -1152,5 +1170,80 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
         m_st.enable(pControl);
     } else {
         m_st.disable(pControl);
+    }
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables spinback effect for the channel
+    Input:   deck, activate/deactivate, factor (optional),
+             delay (optional), rate (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::spinback(int deck, bool activate, float factor, float rate) {
+    // defaults for args set in header file
+    brake(deck, activate, factor, rate);
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables brake/spinback effect for the channel
+    Input:   deck, activate/deactivate, factor (optional),
+             delay (optional), rate (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::brake(int deck, bool activate, float factor, float rate) {
+    QString group = QString("[Channel%1]").arg(deck);
+
+    // kill timer when both enabling or disabling
+    int timerId = m_scratchTimers.key(deck);
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
+
+    // enable/disable scratch2 mode
+    ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
+    if (cot != NULL) {
+        cot->slotSet(activate ? 1 : 0);
+    }
+
+    // used in scratchProcess for the different timer behaviour we need
+    m_brakeActive[deck] = activate;
+
+    if (activate) {
+        // store the new values for this spinback/brake effect
+        m_rampFactor[deck] = rate * factor / 100000; // approx 1 second for a factor of 1
+        m_rampTo[deck] = -1.0;
+
+        // save current keylock status and disable
+        cot = getControlObjectThread(group, "keylock");
+        if (cot != NULL) {
+            m_brakeKeylock[deck] = cot->get();
+            cot->slotSet(0);
+        }
+
+        // setup timer and send first scratch2 'tick'
+        int timerId = startTimer(1);
+        m_scratchTimers[timerId] = deck;
+
+        cot = getControlObjectThread(group, "scratch2");
+        if (cot != NULL) {
+            cot->slotSet(rate);
+        }
+
+        // setup the filter
+        PitchFilter* filter = m_pitchFilter[deck];
+        if (filter != NULL) {
+            m_pitchFilter[deck]->init(0.001, rate);
+        }
+
+        // activate the ramping in scratchProcess()
+        m_ramp[deck] = true;
+    }
+    else {
+        // re-enable keylock if needed
+        if (m_brakeKeylock[deck]) {
+            cot = getControlObjectThread(group, "keylock");
+            if (cot != NULL) {
+                cot->slotSet(1);
+            }
+        }
     }
 }
