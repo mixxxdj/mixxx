@@ -114,9 +114,8 @@ script.midiPitch = function (LSB, MSB, status) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.spinbackDefault = function(channel, control, value, status, group) {
-    var deck = parseInt(group.substring(8,9));
     var activate = ((status & 0xF0) == 0x90 || value > 0);
-	script.spinback(deck, activate);
+    script.spinback(group, activate);
 }
 
 /* -------- ------------------------------------------------------
@@ -127,9 +126,8 @@ script.spinbackDefault = function(channel, control, value, status, group) {
    Output:  none
    -------- ------------------------------------------------------ */
 script.brakeDefault = function(channel, control, value, status, group) {
-    var deck = parseInt(group.substring(8,9));
     var activate = ((status & 0xF0) == 0x90 || value > 0);
-	script.brake(deck, activate);
+    script.brake(group, activate);
 }
 
 /* -------- ------------------------------------------------------
@@ -139,10 +137,10 @@ script.brakeDefault = function(channel, control, value, status, group) {
    Output:  None
    -------- ------------------------------------------------------ */
 script.spinback = function(group, activate, factor, rate, delay) {
-	if (factor == undefined) factor = 0.8;
-	if (rate == undefined) rate = -10;
-	if (delay == undefined) delay = 5;
-	script.deckSpinbackBrake(group, activate, factor, rate, delay);
+    if (factor == undefined) factor = 0.8;
+    if (rate == undefined) rate = -10;
+    if (delay == undefined) delay = 5;
+    script.deckSpinbackBrake(group, activate, factor, rate, delay);
 }
 
 /* -------- ------------------------------------------------------
@@ -152,68 +150,69 @@ script.spinback = function(group, activate, factor, rate, delay) {
    Output:  None
    -------- ------------------------------------------------------ */
 script.brake = function(group, activate, factor, rate, delay) {
-	if (factor == undefined) factor = 0.95;
-	if (rate == undefined) rate = 1;
-	if (delay == undefined) delay = 0;
-	script.deckSpinbackBrake(group, activate, factor, rate, delay);
+    if (factor == undefined) factor = 0.95;
+    if (rate == undefined) rate = 1;
+    if (delay == undefined) delay = 0;
+    script.deckSpinbackBrake(group, activate, factor, rate, delay);
 }
 
 script.deckSpinbackBrakeData = {};
 
 script.deckSpinbackBrake = function(group, activate, factor, rate, delay) {
-	if (activate != undefined) {
 
-		// store the current settings
+    if (activate != undefined) {
 
-		if (script.deckSpinbackBrakeData[group] == undefined) {
-			script.deckSpinbackBrakeData[group] = { timer: null, delay: delay, factor: factor, rate: rate };
-		}
-		else {
-			script.deckSpinbackBrakeData[group].delay = delay;
-			script.deckSpinbackBrakeData[group].factor = factor;
-			script.deckSpinbackBrakeData[group].rate = rate;
-		}
+        // store the current settings
 
-		// kill timer when both enabling or disabling
+        if (script.deckSpinbackBrakeData[group] == undefined) {
+            script.deckSpinbackBrakeData[group] = { timer: null, delay: delay, factor: factor, rate: rate };
+        }
+        else {
+            script.deckSpinbackBrakeData[group].delay = delay;
+            script.deckSpinbackBrakeData[group].factor = factor;
+            script.deckSpinbackBrakeData[group].rate = rate;
+        }
 
-		if (script.deckSpinbackBrakeData[group].timer != null) {
-			engine.stopTimer(script.deckSpinbackBrakeData[group].timer);
-			script.deckSpinbackBrakeData[group].timer = null;
-		}
+        // kill timer when both enabling or disabling
 
-		// enable/disable scratch2 mode
+        if (script.deckSpinbackBrakeData[group].timer != null) {
+            engine.stopTimer(script.deckSpinbackBrakeData[group].timer);
+            script.deckSpinbackBrakeData[group].timer = null;
+        }
 
-		engine.setValue(group, 'scratch2_enable', activate ? 1 : 0);
+        // enable/disable scratch2 mode
 
-		if (activate) {
-			// save keylock status and disable it
-			if ((script.deckSpinbackBrakeData[group].keylock = engine.getValue(group, "keylock")) > 0) {
-				engine.setValue(group, "keylock", 0);
-			}
+        engine.setValue(group, 'scratch2_enable', activate ? 1 : 0);
 
-			// setup timer and send first scratch2 'tick' if activating
-			script.deckSpinbackBrakeData[group].timer = engine.beginTimer(50, 'script.deckSpinbackBrake("' + group + '")');
-			engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
-		}
+        if (activate) {
+            // save keylock status and disable it
+            if ((script.deckSpinbackBrakeData[group].keylock = engine.getValue(group, "keylock")) > 0) {
+                engine.setValue(group, "keylock", 0);
+            }
 
-		// re-enable keylock if needed
+            // setup timer and send first scratch2 'tick' if activating
+            script.deckSpinbackBrakeData[group].timer = engine.beginTimer(50, 'script.deckSpinbackBrake("' + group + '")');
+            engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
+        }
 
-		else if (script.deckSpinbackBrakeData[group].keylock) {
-			engine.setValue(group, "keylock", 1);
-		}
-	}
-	else {
-		// being called from a timer
+        // re-enable keylock if needed
 
-		engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
+        else if (script.deckSpinbackBrakeData[group].keylock) {
+            engine.setValue(group, "keylock", 1);
+        }
+    }
+    else {
+        // being called from a timer
 
-		if (script.deckSpinbackBrakeData[group].delay > 0) {
-			script.deckSpinbackBrakeData[group].delay--;
-		}
-		else {
-			script.deckSpinbackBrakeData[group].rate *= script.deckSpinbackBrakeData[group].factor;
-		}
-	}
+        engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
+
+        if (script.deckSpinbackBrakeData[group].delay > 0) {
+            script.deckSpinbackBrakeData[group].delay--;
+        }
+        else {
+            script.deckSpinbackBrakeData[group].rate *= script.deckSpinbackBrakeData[group].factor;
+        }
+    }
 }
 
 // bpm - Used for tapping the desired BPM for a deck
@@ -225,7 +224,7 @@ bpm.tap = [];   // Tap sample values
 /* -------- ------------------------------------------------------
         bpm.tapButton
    Purpose: Sets the bpm of the track on a deck by tapping the beats.
-            his only works if the track's original BPM value is correct.
+            This only works if the track's original BPM value is correct.
             Call this each time the tap button is pressed.
    Input:   Mixxx deck to adjust
    Output:  -

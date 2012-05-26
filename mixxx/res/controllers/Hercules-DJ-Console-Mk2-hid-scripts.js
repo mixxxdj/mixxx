@@ -17,6 +17,9 @@ HerculesMk2Hid.beatjump_size = 8;
 HerculesMk2Hid.kills = [ { filterHighKill: 0, filterMidKill: 0, filterLowKill: 0 }, { filterHighKill: 0, filterMidKill: 0, filterLowKill: 0 } ];
 HerculesMk2Hid.loop_lengths = [ 0.25, 0.5, 1 ]; // edit to loop size needed
 HerculesMk2Hid.kill_order = [ "filterHighKill", "filterMidKill", "filterLowKill" ]; // edit if needed
+HerculesMk2Hid.scratch_enabled = { "[Channel1]": false, "[Channel2]": false };
+HerculesMk2Hid.jog_skip =  { "[Channel1]": true, "[Channel2]": true };
+HerculesMk2Hid.shift = false; // either autobeat button
 
 //
 // the actual mapping is defined in this function
@@ -41,7 +44,7 @@ HerculesMk2Hid.init = function() {
 
 	c.capture("play", "press", function(g, e, v) { engine.setValue(g, e, !engine.getValue(g, e)); });
 	c.capture("cue_default", "all", function(g, e, v) { engine.setValue(g, e, v); });
-	c.capture("beatsync", "all", function(g, e, v) { engine.setValue(g, e, v); });
+	c.capture("beatsync", "all", function(g, e, v) { HerculesMk2Hid.shift = v > 0; engine.setValue(g, e, v); });
 
 	c.capture("volume", "all", function(g, e, v) { engine.setValue(g, e, v / 256); });
 	c.capture("filterHigh", "all", function(g, e, v) { engine.setValue(g, e, v / 128); });
@@ -49,9 +52,28 @@ HerculesMk2Hid.init = function() {
 	c.capture("filterLow", "all", function(g, e, v) { engine.setValue(g, e, v / 128); });
 
 	c.capture("jog", "all", function(g, e, v, ctrl) { 
-		if (engine.getValue(g, "play")) {
+		// skip initial jog values
+		if (HerculesMk2Hid.jog_skip[g]) {
+			HerculesMk2Hid.jog_skip[g] = false;
+			return;
+		}
+
+		// scratch mode
+		if (HerculesMk2Hid.scratch_enabled[g]) {
+			engine.scratchTick(parseInt(g.substring(8,9)), ctrl.relative);
+		}
+
+		// fine jog mode when playing
+		else if (engine.getValue(g, "play")) {
 			engine.setValue(g, e, ctrl.relative/2); 
 		}
+
+		// track browsing when shift held (sync) and not playing
+		else if (HerculesMk2Hid.shift) {
+			engine.setValue("[Playlist]", "SelectTrackKnob", ctrl.relative);
+		}
+
+		// normal jog mode when not playing
 		else {
 			engine.setValue(g, e, ctrl.relative); 
 		}
@@ -61,20 +83,20 @@ HerculesMk2Hid.init = function() {
 	// double up pitch bend buttons as beatjumps when the track is stopped
 	//
 
-	c.capture("pitchbend_down", "press", function(g, e, v) { 
+	c.capture("pitchbend_down", "all", function(g, e, v) { 
 		if (engine.getValue(g, "play") == 0) {
-			c.beatjump(g, -1 * c.beatjump_size); 
+			engine.setValue(g, "back", v > 0 ? 1 : 0);
 		}
-		else {
+		else if (v > 0) {
 			engine.setValue(g, "jog", -3);
 		}
 	});
 
-	c.capture("pitchbend_up", "press", function(g, e, v) { 
+	c.capture("pitchbend_up", "all", function(g, e, v) { 
 		if (engine.getValue(g, "play") == 0) {
-			c.beatjump(g, c.beatjump_size); 
+			engine.setValue(g, "fwd", v > 0 ? 1 : 0);
 		}
-		else {
+		else if (v > 0) {
 			engine.setValue(g, "jog", 3);
 		}
 	});
@@ -123,7 +145,7 @@ HerculesMk2Hid.init = function() {
 	*/
 
 	//
-	// tempo encoder and use the beatlock button to reset the tempo
+	// tempo encoder 
 	//
 
 	c.capture("rate", "all", function(g, e, v, ctrl) { 
@@ -132,9 +154,22 @@ HerculesMk2Hid.init = function() {
 		engine.setValue(g, e, rate);
 	});
 
-	c.capture("beatlock", "all", function(g, e, v) { 
-		engine.setValue(g, "rate", 0); 
-		c.send(g, e, v); // led
+	//
+	// enable/disable scratching with the beatlock buttons (as jogs are non touch sensitive)
+	//
+
+	c.capture("beatlock", "press", function(g, e, v) { 
+
+		HerculesMk2Hid.scratch_enabled[g] = !HerculesMk2Hid.scratch_enabled[g];
+		
+		if (HerculesMk2Hid.scratch_enabled[g]) {
+			engine.scratchEnable(parseInt(g.substring(8,9)), 64, 45, 0.125, 0.125/32);
+		}
+		else {
+			engine.scratchDisable(parseInt(g.substring(8,9)));
+		}
+
+		c.send(g, e, HerculesMk2Hid.scratch_enabled[g] ? 1 : 0);
 	});
 
 	//
@@ -163,9 +198,9 @@ HerculesMk2Hid.init = function() {
 		}
 	});
 
-	c.capture("layer_btn1", "press", function(g, e, v) { c.layer_btn(g, e, v); });
-	c.capture("layer_btn2", "press", function(g, e, v) { c.layer_btn(g, e, v); });
-	c.capture("layer_btn3", "press", function(g, e, v) { c.layer_btn(g, e, v); });
+	c.capture("layer_btn1", "all", function(g, e, v) { c.layer_btn(g, e, v); });
+	c.capture("layer_btn2", "all", function(g, e, v) { c.layer_btn(g, e, v); });
+	c.capture("layer_btn3", "all", function(g, e, v) { c.layer_btn(g, e, v); });
 
 	//
 	// headphone cue
@@ -210,7 +245,7 @@ HerculesMk2Hid.init = function() {
 }
 
 //
-// map the 6 buttons that control either flanger, hotcues or loops
+// map the 6 buttons that control either effects, hotcues, loops or kills
 //
 
 HerculesMk2Hid.layer_btn = function(g, e, v) {
@@ -218,20 +253,31 @@ HerculesMk2Hid.layer_btn = function(g, e, v) {
 	var btn = parseInt(e.substring(9,10));
 	switch (HerculesMk2Hid.layer[deck-1]) {
 		case "fx":
-			engine.setValue("[Flanger]", "lfoDepth", 0.3333*btn); 
-			engine.setValue("[Flanger]", "lfoPeriod", 500000*btn); // 50000..2000000
-			engine.setValue("[Flanger]", "lfoDelay", 3333*btn); // 50..10000
-			engine.setValue(g, "flanger", !engine.getValue(g, 'flanger')); 
+			switch (btn) {
+				case 1:
+					engine.setValue("[Flanger]", "lfoDepth", 1);
+					engine.setValue("[Flanger]", "lfoPeriod", 500000);
+					engine.setValue("[Flanger]", "lfoDelay", 666);
+					engine.setValue(g, "flanger", v > 0);
+					break;
+				case 2:
+					script.spinback(g, v > 0);
+					break;
+				case 3:
+					script.brake(g, v > 0);
+			}
 			break;
 		case "hotcue":
-			engine.setValue(g, "hotcue_" + btn + "_activate", 1);
+			engine.setValue(g, "hotcue_" + btn + "_activate", v > 0 ? 1 : 0);
 			break;
 		case "loop":
 			var len = HerculesMk2Hid.loop_lengths[btn-1];
 			engine.setValue(g, "beatloop_" + len + "_toggle", 1);
 			break;
 		case 'kill':
-			engine.setValue(g, HerculesMk2Hid.kill_order[btn-1], !engine.getValue(g, HerculesMk2Hid.kill_order[btn-1]));
+			if (v > 0) {
+				engine.setValue(g, HerculesMk2Hid.kill_order[btn-1], !engine.getValue(g, HerculesMk2Hid.kill_order[btn-1]));
+			}
 	}
 }
 
@@ -252,7 +298,7 @@ HerculesMk2Hid.scroll_tracks = function(g, e, v) {
 	if (v > 0) {
 		engine.setValue("[Playlist]", e == "track_next_a" ? "SelectNextTrack" : "SelectPrevTrack", 1);
 		if (!HerculesMk2Hid.scroll_timer) {
-			HerculesMk2Hid.scroll_timer = engine.beginTimer(200, 'HerculesMk2Hid.scroll_tracks("[Playlist]","' + e + '",' + v + ')');
+			HerculesMk2Hid.scroll_timer = engine.beginTimer(150, 'HerculesMk2Hid.scroll_tracks("[Playlist]","' + e + '",' + v + ')');
 		}
 	}
 	else {
