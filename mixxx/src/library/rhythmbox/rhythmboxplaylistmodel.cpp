@@ -4,7 +4,6 @@
 
 #include "library/trackcollection.h"
 #include "library/rhythmbox/rhythmboxplaylistmodel.h"
-#include "library/stardelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 
@@ -162,11 +161,4 @@ TrackModel::CapabilitiesFlags RhythmboxPlaylistModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOLIBPREVIEWPLAYER;
-}
-
-QAbstractItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i, QObject* pParent) {
-    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
-        return new StarDelegate(pParent);
-    }
-    return NULL;
 }

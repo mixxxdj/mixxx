@@ -4,7 +4,6 @@
 
 #include "library/trackcollection.h"
 #include "library/traktor/traktorplaylistmodel.h"
-#include "library/stardelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 

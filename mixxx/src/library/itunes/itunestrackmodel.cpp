@@ -4,7 +4,6 @@
 
 #include "library/itunes/itunestrackmodel.h"
 #include "library/trackcollection.h"
-#include "library/stardelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 

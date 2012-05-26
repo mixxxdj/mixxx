@@ -10,8 +10,6 @@
 #include "library/stardelegate.h"
 #include "library/starrating.h"
 #include "library/previewbuttondelegate.h"
-#include "library/trackcollection.h"
-#include "library/queryutil.h"
 #include "mixxxutils.cpp"
 
 const bool sDebug = false;
