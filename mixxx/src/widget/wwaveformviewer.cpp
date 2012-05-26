@@ -20,6 +20,7 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
           m_pGroup(group),
           m_pConfig(pConfig) {
     setAcceptDrops(true);
+    m_sPrefix = "";
 
     m_bScratching = false;
     m_bBending = false;

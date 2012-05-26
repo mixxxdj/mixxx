@@ -404,6 +404,8 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 
     setupWidget(node, overviewWidget);
     overviewWidget->setup(node);
+    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
+    overviewWidget->setLibraryPrefix(prefix);
     setupConnections(node, overviewWidget);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());

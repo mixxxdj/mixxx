@@ -32,6 +32,8 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
     : WWidget(parent),
       m_pGroup(pGroup),
       m_pConfig(pConfig) {
+      
+    m_sPrefix = "";
 
     m_sampleDuration = 0;
     m_iPos = 0;
@@ -625,3 +627,12 @@ void WOverview::dropEvent(QDropEvent* event) {
         event->ignore();
     }
 }
+
+void WOverview::setLibraryPrefix(QString sPrefix)
+{
+	m_sPrefix = "";
+	m_sPrefix = sPrefix;
+	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
+		m_sPrefix.chop(1);
+}
+

@@ -40,6 +40,7 @@ public:
     WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
+    void setLibraryPrefix(QString sPrefix);
 
     QColor getMarkerColor();
 
@@ -90,6 +91,7 @@ private:
     double m_totalGain;
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;
+    QString m_sPrefix;
 
     Waveform* m_waveform;
     QPixmap m_waveformPixmap;
