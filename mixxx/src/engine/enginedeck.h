@@ -49,6 +49,8 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual EngineBuffer* getEngineBuffer();
 
     virtual bool isActive();
+    virtual bool isPFL();
+    virtual bool isMaster();
 
     // Begin vinyl passthrough methods
 
@@ -67,6 +69,9 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // Return whether or not passthrough is active
     bool isPassthroughActive();
 
+  public slots:
+    void slotPassingToggle(double v);
+
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pBuffer;
@@ -81,6 +86,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     ControlPushButton* m_pPassing;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
+    bool m_bPassthroughIsActive;
 };
 
 #endif

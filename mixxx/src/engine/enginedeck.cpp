@@ -33,7 +33,7 @@ EngineDeck::EngineDeck(const char* group,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
-          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
+          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough_enabled"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
@@ -41,6 +41,13 @@ EngineDeck::EngineDeck(const char* group,
     // Set up passthrough utilities
     m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
     m_pConversionBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
+
+    // Set up passthrough toggle button
+    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pPassing, SIGNAL(valueChanged(double)),
+            this, SLOT(slotPassingToggle(double)),
+            Qt::DirectConnection);
+    m_bPassthroughIsActive = false;
 
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
@@ -106,7 +113,20 @@ bool EngineDeck::isActive() {
     return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
 }
 
+bool EngineDeck::isPFL() {
+    return true;
+}
+
+bool EngineDeck::isMaster() {
+    return true;
+}
+
 void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
+
+    // Skip receiving audio input if passthrough is not active
+    if (!m_bPassthroughIsActive)
+        return;
+
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck receieved an AudioInput for a non-vinylcontrol type!";
@@ -130,11 +150,11 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
 
     // TODO(rryan) (or bkgood?) do we need to verify the input is the one we asked for? Oh well.
     unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, nFrames*2);
-    if (samplesWritten < nFrames*2 && samplesWritten != 0) {
+    if (samplesWritten < nFrames*2) {
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the deck spits out samples just as fast as they
         // come in, right?
-        Q_ASSERT(false);
+   	Q_ASSERT(false);
     }
 }
 
@@ -145,7 +165,6 @@ void EngineDeck::onInputConnected(AudioInput input) {
         return;
     }
     m_sampleBuffer.clear();
-    m_pPassing->set(0.0f);
 }
 
 void EngineDeck::onInputDisconnected(AudioInput input) {
@@ -154,12 +173,19 @@ void EngineDeck::onInputDisconnected(AudioInput input) {
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
-
     m_sampleBuffer.clear();
-    m_pPassing->set(0.0f);
 }
 
 bool EngineDeck::isPassthroughActive() {
-    return (m_pPassing->get() > 0.0 && !m_sampleBuffer.isEmpty());
+    return (m_bPassthroughIsActive && !m_sampleBuffer.isEmpty());
+}
+
+void EngineDeck::slotPassingToggle(double v) {
+    if (v > 0) {
+        m_bPassthroughIsActive = true;
+    }
+    else {
+        m_bPassthroughIsActive = false;
+    }
 }
 

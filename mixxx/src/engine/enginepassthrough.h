@@ -2,6 +2,8 @@
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // unapologetically copied from enginemicrophone.h from RJ
 
+// Deprecated!!! - 05-25-12 mattmik
+
 #ifndef ENGINEPASSTHROUGH_H
 #define ENGINEPASSTHROUGH_H
 

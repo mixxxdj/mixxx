@@ -2,6 +2,8 @@
 // created 4/8/2011 by Bill Good (bkgood@gmail.com)
 // shameless stolen from enginemicrophone.cpp (from RJ)
 
+// Deprecated!!! - 05-25-12 mattmik
+
 #include <QtDebug>
 
 #include "engine/enginepassthrough.h"
