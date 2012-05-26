@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1">
+	<info>
+		<name>DJTech DJM 101</name>
+		<author>zestoi</author>
+		<description>Mapping with full led feedback for the DJTech DJM 101</description>
+	</info>
+    <controller id="DJM-101">
+		<scriptfiles>
+			<file filename="DJ-Tech-DJM-101-scripts.js" functionprefix="DJTechDJM101"/>
+		</scriptfiles>
+        <controls>
+
+			<!-- global controls -->
+
+            <control>
+                <group>[Master]</group>
+                <key>headVolume</key>
+                <status>0xB0</status>
+                <midino>0x45</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB0</status>
+                <midino>0x44</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+			<!-- master/pfl vumeter select -->
+
+            <control>
+                <group>[Master]</group>
+                <status>0x90</status>
+                <midino>0x24</midino>
+				<key>DJTechDJM101.vumeter_select_master</key>
+				<options>
+					<Script-Binding/>
+				</options>
+            </control>
+
+            <control>
+                <group>[Master]</group>
+                <status>0x90</status>
+                <midino>0x23</midino>
+				<key>DJTechDJM101.vumeter_select_pfl</key>
+				<options>
+					<Script-Binding/>
+				</options>
+            </control>
+
+            <control>
+                <group>[Master]</group>
+                <key>volume</key>
+                <status>0xB0</status>
+                <midino>0x43</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB0</status>
+                <midino>0x40</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+			<!-- channel 1 -->
+
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <status>0xB0</status>
+                <midino>0x48</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <status>0xB0</status>
+                <midino>0x41</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+			<!-- channel 1 eq -->
+
+            <control>
+                <group>[Channel1]</group>
+                <key>filterHigh</key>
+                <status>0xB0</status>
+                <midino>0x4A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterMid</key>
+                <status>0xB0</status>
+                <midino>0x4E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterLow</key>
+                <status>0xB0</status>
+                <midino>0x4C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+			<!-- channel 2 -->
+
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <status>0xB0</status>
+                <midino>0x4F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <status>0xB0</status>
+                <midino>0x42</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+			<!-- channel 2 eq -->
+
+            <control>
+                <group>[Channel2]</group>
+                <key>filterHigh</key>
+                <status>0xB0</status>
+                <midino>0x4D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterMid</key>
+                <status>0xB0</status>
+                <midino>0x4B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterLow</key>
+                <status>0xB0</status>
+                <midino>0x49</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+        </controls>
+		<outputs/>
+    </controller>
+</MixxxControllerPreset>
