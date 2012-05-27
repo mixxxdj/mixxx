@@ -3,6 +3,7 @@
 #ifndef SETLOGFEATURE_H
 #define SETLOGFEATURE_H
 
+#include <QLinkedList>
 #include <QSqlTableModel>
 #include <QAction>
 
@@ -45,6 +46,7 @@ public:
   private:
     virtual QString getRootViewHtml() const;
 
+    QLinkedList<int> m_recentTracks;
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
 };

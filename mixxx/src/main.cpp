@@ -35,8 +35,6 @@
 #include "qsplashscreen.h"
 #include "errordialoghandler.h"
 #include "defs_version.h"
-#include <iostream>
-#include <fstream>
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -55,24 +53,14 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
     if (AllocConsole()) {
         SetConsoleTitleA("Mixxx Debug Messages");
 
-        //fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
-        //fp = _fdopen(fd, "w");
-        fp = fopen("stdout.txt", "w");
-
-        std::ofstream file;
-        file.open ("cout.txt");
-        std::cout.rdbuf(file.rdbuf());
+        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
+        fp = _fdopen(fd, "w");
 
         *stdout = *fp;
         setvbuf(stdout, NULL, _IONBF, 0);
 
-        //fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
-        //fp = _fdopen(fd, "w");
-        fp = fopen("stderr.txt", "w");
-
-        std::ofstream file2;
-        file2.open ("cerr.txt");
-        std::cerr.rdbuf(file2.rdbuf());
+        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
+        fp = _fdopen(fd, "w");
 
         *stderr = *fp;
         setvbuf(stderr, NULL, _IONBF, 0);

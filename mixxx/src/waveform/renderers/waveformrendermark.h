@@ -2,7 +2,7 @@
 #define WAVEFORMRENDERMARK_H
 
 #include "waveform/renderers/waveformrendererabstract.h"
-#include "waveformmark.h"
+#include "waveformmarkset.h"
 
 #include <QPixmap>
 #include <vector>
@@ -22,8 +22,7 @@ public:
 private:
     void generateMarkPixmap(WaveformMark& mark);
 
-    WaveformMark m_defaultMark;
-    std::vector<WaveformMark> m_marks;
+    WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
 

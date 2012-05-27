@@ -8,6 +8,7 @@
 #include "library/basesqltablemodel.h"
 
 #include "library/starrating.h"
+#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 const bool sDebug = false;
@@ -738,4 +739,11 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
     }
     mimeData->setUrls(urls);
     return mimeData;
+}
+
+QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
+        return new StarDelegate(pParent);
+    }
+    return NULL;
 }

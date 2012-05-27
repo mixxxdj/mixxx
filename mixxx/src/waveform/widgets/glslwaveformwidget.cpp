@@ -10,10 +10,11 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
+#include "sharedglcontext.h"
 
-GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
-    QGLWidget(parent),
-    WaveformWidgetAbstract(group) {
+GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent)
+        : QGLWidget(SharedGLContext::getContext(), parent),
+          WaveformWidgetAbstract(group) {
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
