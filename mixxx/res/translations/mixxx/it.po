@@ -6,13 +6,13 @@ msgstr ""
 "Project-Id-Version: Mixxx\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-04-23 13:00+0000\n"
-"Last-Translator: Guybrush88 <Unknown>\n"
+"PO-Revision-Date: 2012-05-26 15:59+0000\n"
+"Last-Translator: Sergio Zanchetta <primes2h@ubuntu.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:35+0000\n"
+"X-Launchpad-Export-Date: 2012-05-27 04:37+0000\n"
 "X-Generator: Launchpad (build 15288)\n"
 
 #: AutoDJFeature#1
@@ -22,41 +22,41 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Aggiungi a fine coda in «Auto DJ»"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Aggiungi a inizio coda in «Auto DJ»"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importa playlist"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Errore nella creazione della playlist"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Errore sconosciuto durante la creazione della playlist: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Nuova scaletta"
+msgstr "Nuova playlist"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Aggiungi a fine coda in «Auto DJ»"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Aggiungi a inizio coda in «Auto DJ»"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -76,50 +76,50 @@ msgstr "Blocca"
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Importa scaletta"
+msgstr "Importa playlist"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Esporta scaletta"
+msgstr "Esporta playlist"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Rinomina scaletta"
+msgstr "Rinomina playlist"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "Nome della nuova scaletta:"
+msgstr "Nome della nuova playlist:"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "Rinominazione playlist fallita"
+msgstr "Errore nella rinomina della playlist"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "Esiste già una scaletta con lo stesso nome."
+msgstr "Esiste già una playlist con lo stesso nome."
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "Una scaletta non può avere un nome vuoto"
+msgstr "Il nome della playlist non può essere vuoto."
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr "Nome scaletta:"
+msgstr "Nome playlist:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Errore nella creazione della playlist"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Errore sconosciuto durante la creazione della playlist: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "File delle scalette (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "File della playlist (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -127,6 +127,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;CSV "
+"testuale (*.csv);;Testo leggibile (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -155,7 +157,7 @@ msgstr "Genere"
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr "Compositore"
+msgstr "Autore"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
