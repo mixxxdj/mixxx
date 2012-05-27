@@ -25,6 +25,8 @@ NovationLaunchpad = {
 		this.vumeters = [];
 
 		var self = NovationLaunchpad;
+		self.instance = this;
+
 		this.colors = self.colors();
 		this.capture = self.capture;
 		this.feedback = self.feedback;
@@ -105,13 +107,13 @@ NovationLaunchpad = {
 			// spinback effect
 
 			this.button("1," + (offset + 2), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
-				script.spinback(g, v > 0);
+				engine.spinback(parseInt(g.substring(8,9)), v > 0);
 			});
 
 			// brake effect
 
 			this.button("1," + (offset + 3), "all", 1, 'hi_red', 'lo_red', group, "", function(g, n, v) {
-				script.brake(g, v > 0);
+				engine.brake(parseInt(g.substring(8,9)), v > 0);
 			});
 
 			// instant loops 
@@ -369,11 +371,15 @@ NovationLaunchpad = {
 	//
 
 	feedbackData: function(v, g, e) {
-		this.feedback_cache[g + e] = v;
-		if (this.feedbacks[g + e] != undefined) {
-			for (func in this.feedbacks[g + e]) {
-				if (typeof(this.feedbacks[g + e][func]) == "function") {
-					this.feedbacks[g + e][func](this, g, e, v);
+		if (NovationLaunchpad.instance == undefined) {
+			return;
+		}
+		var self = NovationLaunchpad.instance;
+		self.feedback_cache[g + e] = v;
+		if (self.feedbacks[g + e] != undefined) {
+			for (func in self.feedbacks[g + e]) {
+				if (typeof(self.feedbacks[g + e][func]) == "function") {
+					self.feedbacks[g + e][func](self, g, e, v);
 				}
 			}
 		}
