@@ -16,7 +16,7 @@
 
 // #include <QScriptSyntaxCheckResult>
 
-// Used for id's inside controlConnection objects 
+// Used for id's inside controlConnection objects
 // (closure compatible version of connectControl)
 #include <QUuid>
 
@@ -45,6 +45,9 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_rampTo.resize(kDecks);
     m_ramp.resize(kDecks);
     m_pitchFilter.resize(kDecks);
+    m_rampFactor.resize(kDecks);
+    m_brakeActive.resize(kDecks);
+    m_brakeKeylock.resize(kDecks);
 
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
@@ -78,53 +81,53 @@ Purpose: Calls the same method on a list of JS Objects
 Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
-void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes, QString function, QScriptValueList args)
-{
-    QListIterator<QString> prefixIt(scriptFunctionPrefixes);
+void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
+                                             QString function, QScriptValueList args) {
     const QScriptValue global = m_pEngine->globalObject();
-    
-    while (prefixIt.hasNext()) {
-        QString prefixName = prefixIt.next();
+
+    foreach (QString prefixName, scriptFunctionPrefixes) {
         QScriptValue prefix = global.property(prefixName);
-        
-        if ( prefix.isValid() && prefix.isObject()) {
-            
-            QScriptValue init = prefix.property(function);
-            if (init.isValid() && init.isFunction()) {
-                if (m_bDebug) {
-                    qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
-                }
-                init.call(QScriptValue(), args);
-            }
-            else {
-                qWarning() << "ControllerEngine:" << prefixName << "has no" << function << " method";
-            }
-        }
-        else {
+        if (!prefix.isValid() || !prefix.isObject()) {
             qWarning() << "ControllerEngine: No" << prefixName << "object in script";
+            continue;
         }
+
+        QScriptValue init = prefix.property(function);
+        if (!init.isValid() || !init.isFunction()) {
+            qWarning() << "ControllerEngine:" << prefixName << "has no" << function << " method";
+            continue;
+        }
+        if (m_bDebug) {
+            qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
+        }
+        init.call(QScriptValue(), args);
     }
 }
 
 /* -------- ------------------------------------------------------
-Purpose: Resolves a function name to a QScriptValue including 
+Purpose: Resolves a function name to a QScriptValue including
             OBJECT.Function calls
 Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::resolveFunction(QString function) const {
+QScriptValue ControllerEngine::resolveFunction(QString function, bool useCache) const {
+    if (useCache && m_scriptValueCache.contains(function)) {
+        return m_scriptValueCache.value(function);
+    }
+
     QScriptValue object = m_pEngine->globalObject();
     QStringList parts = function.split(".");
-    
+
     for (int i = 0; i < parts.size(); i++) {
         object = object.property(parts.at(i));
         if (!object.isValid())
             return QScriptValue();
     }
 
-    if (!object.isFunction())
+    if (!object.isFunction()) {
         return QScriptValue();
-
+    }
+    m_scriptValueCache[function] = object;
     return object;
 }
 
@@ -146,7 +149,7 @@ void ControllerEngine::gracefulShutdown() {
 
     // Call each script's shutdown function if it exists
     callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
-    
+
     // Prevents leaving decks in an unstable state
     //  if the controller is shut down while scratching
     QHashIterator<int, int> i(m_scratchTimers);
@@ -404,7 +407,7 @@ bool ControllerEngine::execute(QScriptValue functionObject, QScriptValueList arg
         qDebug() << "ControllerEngine::execute: No script engine exists!";
         return false;
     }
-    
+
     //qDebug() << "Calling MIDI Script Function";
     if (!functionObject.isFunction()) {
         qDebug() << "Not a function";
@@ -667,19 +670,19 @@ void ControllerEngine::trigger(QString group, QString name) {
                 script function name, true if you want to disconnect
    Output:  true if successful
    -------- ------------------------------------------------------ */
-QScriptValue ControllerEngine::connectControl(QString group, QString name, QScriptValue callback, bool disconnect) {
+QScriptValue ControllerEngine::connectControl(QString group, QString name,
+                                              QScriptValue callback, bool disconnect) {
     ConfigKey key(group, name);
-    ControlObject* cobj = ControlObject::getControl(key);
-    ControllerEngineConnection conn;
+    ControlObjectThread* cot = getControlObjectThread(group, name);
     QScriptValue function;
 
-    if (cobj == NULL) {
+    if (cot == NULL) {
         qWarning() << "ControllerEngine: script connecting [" << group << "," << name
                    << "], which is non-existent. ignoring.";
         return QScriptValue();
     }
 
-    if(m_pEngine == NULL) {
+    if (m_pEngine == NULL) {
         return QScriptValue(FALSE);
     }
 
@@ -687,8 +690,8 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
         ControllerEngineConnection cb;
         cb.key = key;
         cb.id = callback.toString();
-        
-        if(disconnect) {
+
+        if (disconnect) {
             disconnectControl(cb);
             return QScriptValue(TRUE);
         }
@@ -696,17 +699,16 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
         function = m_pEngine->evaluate(callback.toString());
         if (checkException() || !function.isFunction()) {
             return QScriptValue(FALSE);
-        }
+        } else if (m_connectedControls.contains(key, cb)) {
+            // Do not allow multiple connections to named functions
 
-        // Do not allow multiple connections to named functions
-        else if (m_connectedControls.contains(key, cb)) {
             // Return a wrapper to the conn
-            QHash<ConfigKey, ControllerEngineConnection>::iterator i = 
+            QHash<ConfigKey, ControllerEngineConnection>::iterator i =
                 m_connectedControls.find(key);
-            
+
             ControllerEngineConnection conn = i.value();
             return m_pEngine->newQObject(
-                        new ControllerEngineConnectionScriptValue(conn), 
+                        new ControllerEngineConnectionScriptValue(conn),
                         QScriptEngine::ScriptOwnership
                     );
         }
@@ -718,9 +720,9 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
     else if (callback.isQObject()) {
         QObject *qobject = callback.toQObject();
         const QMetaObject *qmeta = qobject->metaObject();
-        
+
         if (!strcmp(qmeta->className(), "ControllerEngineConnectionScriptValue")) {
-            ControllerEngineConnectionScriptValue *proxy = 
+            ControllerEngineConnectionScriptValue *proxy =
                 (ControllerEngineConnectionScriptValue *)qobject;
             proxy->disconnect();
         }
@@ -731,10 +733,10 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
     }
 
     if (function.isFunction()) {
-    	qDebug() << "Connection:" << group << name;
-        connect(cobj, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotValueChanged(double)),
-                    Qt::QueuedConnection);
+        qDebug() << "Connection:" << group << name;
+        connect(cot, SIGNAL(valueChanged(double)),
+                this, SLOT(slotValueChanged(double)),
+                Qt::QueuedConnection);
 
         ControllerEngineConnection conn;
         conn.key = key;
@@ -753,7 +755,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
 
         m_connectedControls.insert(key, conn);
         return m_pEngine->newQObject(
-                    new ControllerEngineConnectionScriptValue(conn), 
+                    new ControllerEngineConnectionScriptValue(conn),
                     QScriptEngine::ScriptOwnership
                 );
     }
@@ -768,7 +770,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
    Output:  true if successful
    -------- ------------------------------------------------------ */
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
-    ControlObject* cobj = ControlObject::getControl(ConfigKey(conn.key.group, conn.key.item));
+    ControlObjectThread* cot = getControlObjectThread(conn.key.group, conn.key.item);
 
     if(m_pEngine == NULL) {
         return;
@@ -778,17 +780,16 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
         m_connectedControls.remove(conn.key, conn);
         // Only disconnect the signal if there are no other instances of this control using it
         if (!m_connectedControls.contains(conn.key)) {
-            this->disconnect(cobj, SIGNAL(valueChanged(double)),
-                            this, SLOT(slotValueChanged(double)));
+            disconnect(cot, SIGNAL(valueChanged(double)),
+                       this, SLOT(slotValueChanged(double)));
         }
-    }
-    else {
+    } else {
         qWarning() << "Could not Disconnect connection" << conn.id;
     }
 }
 
 void ControllerEngineConnectionScriptValue::disconnect() {
-    this->conn.ce->disconnectControl(this->conn);
+    conn.ce->disconnectControl(conn);
 }
 
 /**-------- ------------------------------------------------------
@@ -796,18 +797,23 @@ void ControllerEngineConnectionScriptValue::disconnect() {
    fires off the appropriate script function.
    -------- ------------------------------------------------------ */
 void ControllerEngine::slotValueChanged(double value) {
-
-    ControlObject* sender = (ControlObject*)this->sender();
-    if(sender == NULL) {
+    ControlObjectThread* senderCOT = dynamic_cast<ControlObjectThread*>(sender());
+    if (senderCOT == NULL) {
         qWarning() << "ControllerEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         return;
     }
-    ConfigKey key = sender->getKey();
+
+    ControlObject* pSenderCO = senderCOT->getControlObject();
+    if (pSenderCO == NULL) {
+        qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
+        return;
+    }
+    ConfigKey key = pSenderCO->getKey();
 
     qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
 
-    if(m_connectedControls.contains(key)) {
-        QHash<ConfigKey, ControllerEngineConnection>::iterator iter = 
+    if (m_connectedControls.contains(key)) {
+        QHash<ConfigKey, ControllerEngineConnection>::iterator iter =
             m_connectedControls.find(key);
         QList<ControllerEngineConnection> conns;
 
@@ -829,13 +835,11 @@ void ControllerEngine::slotValueChanged(double value) {
             if (result.isError()) {
                 qWarning()<< "ControllerEngine: Call to callback" << conn.id
                           << "resulted in an error:" << result.toString();
-            }
-            else {
+            } else {
             	qDebug() << "Called Connection for" << conn.id;
             }
         }
-    }
-    else {
+    } else {
         qWarning() << "ControllerEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
     }
 }
@@ -975,7 +979,6 @@ const QStringList ControllerEngine::getErrors(QString filename) {
    -------- ------------------------------------------------------ */
 int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
                                  bool oneShot) {
-
     if (!timerCallback.isFunction() && !timerCallback.isString()) {
         qWarning() << "Invalid timer callback provided to beginTimer."
                    << "Valid callbacks are strings and functions.";
@@ -987,6 +990,7 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
                    << "ms is too short. Setting to the minimum of 20ms.";
         interval = 20;
     }
+
     // This makes use of every QObject's internal timer mechanism. Nice, clean,
     // and simple. See http://doc.trolltech.com/4.6/qobject.html#startTimer for
     // details
@@ -1096,6 +1100,8 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     m_dx[deck] = 1/intervalsPerSecond;
     m_intervalAccumulator[deck] = 0;
     m_ramp[deck] = false;
+    m_rampFactor[deck] = 0.001;
+    m_brakeActive[deck] = false;
 
     QString group = QString("[Channel%1]").arg(deck);
 
@@ -1181,24 +1187,27 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
-    PitchFilter* filter = m_pitchFilter[deck];
     QString group = QString("[Channel%1]").arg(deck);
-
+    PitchFilter* filter = m_pitchFilter[deck];
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
         return;
     }
 
+    const float oldPitch = filter->currentPitch();
+
     // Give the filter a data point:
 
     // If we're ramping to end scratching, feed fixed data
     if (m_ramp[deck]) {
-        filter->observation(m_rampTo[deck]*0.001);
+        filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
     } else {
         //  This will (and should) be 0 if no net ticks have been accumulated
         //  (i.e. the wheel is stopped)
         filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
     }
+
+    const float newPitch = filter->currentPitch();
 
     // Actually do the scratching
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
@@ -1210,17 +1219,26 @@ void ControllerEngine::scratchProcess(int timerId) {
     m_intervalAccumulator[deck] = 0;
 
     // If we're ramping and the current pitch is really close to the rampTo
-    // value, end scratching
+    // value or we're in brake mode and have crossed over the zero value, end scratching
 
     //if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
-    if (m_ramp[deck] && fabs(m_rampTo[deck]-filter->currentPitch()) <= 0.00001) {
+    if ((m_ramp[deck] && fabs(m_rampTo[deck] - newPitch) <= 0.00001) ||
+        (m_brakeActive[deck] && (
+            (oldPitch > 0.0 && newPitch < 0.0) ||
+            (oldPitch < 0.0 && newPitch > 0.0)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        // Clear scratch2_enable
-        cot = getControlObjectThread(group, "scratch2_enable");
-        if(cot != NULL) {
-            cot->slotSet(0);
+        // Clear scratch2_enable unless brake mode where we just set scratch2 to 0.0
+        if (m_brakeActive[deck]) {
+            if (cot != NULL) {
+                cot->slotSet(0.0);
+            }
+        } else {
+            cot = getControlObjectThread(group, "scratch2_enable");
+            if(cot != NULL) {
+                cot->slotSet(0);
+            }
         }
 
         // Remove timer
@@ -1228,6 +1246,7 @@ void ControllerEngine::scratchProcess(int timerId) {
         m_scratchTimers.remove(timerId);
 
         m_dx[deck] = 0.0;
+        m_brakeActive[deck] = false;
     }
 }
 
@@ -1303,5 +1322,80 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
         m_st.enable(pControl);
     } else {
         m_st.disable(pControl);
+    }
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables spinback effect for the channel
+    Input:   deck, activate/deactivate, factor (optional),
+             delay (optional), rate (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::spinback(int deck, bool activate, float factor, float rate) {
+    // defaults for args set in header file
+    brake(deck, activate, factor, rate);
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables brake/spinback effect for the channel
+    Input:   deck, activate/deactivate, factor (optional),
+             delay (optional), rate (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::brake(int deck, bool activate, float factor, float rate) {
+    QString group = QString("[Channel%1]").arg(deck);
+
+    // kill timer when both enabling or disabling
+    int timerId = m_scratchTimers.key(deck);
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
+
+    // enable/disable scratch2 mode
+    ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
+    if (cot != NULL) {
+        cot->slotSet(activate ? 1 : 0);
+    }
+
+    // used in scratchProcess for the different timer behaviour we need
+    m_brakeActive[deck] = activate;
+
+    if (activate) {
+        // store the new values for this spinback/brake effect
+        m_rampFactor[deck] = rate * factor / 100000; // approx 1 second for a factor of 1
+        m_rampTo[deck] = -1.0;
+
+        // save current keylock status and disable
+        cot = getControlObjectThread(group, "keylock");
+        if (cot != NULL) {
+            m_brakeKeylock[deck] = cot->get();
+            cot->slotSet(0);
+        }
+
+        // setup timer and send first scratch2 'tick'
+        int timerId = startTimer(1);
+        m_scratchTimers[timerId] = deck;
+
+        cot = getControlObjectThread(group, "scratch2");
+        if (cot != NULL) {
+            cot->slotSet(rate);
+        }
+
+        // setup the filter
+        PitchFilter* filter = m_pitchFilter[deck];
+        if (filter != NULL) {
+            m_pitchFilter[deck]->init(0.001, rate);
+        }
+
+        // activate the ramping in scratchProcess()
+        m_ramp[deck] = true;
+    }
+    else {
+        // re-enable keylock if needed
+        if (m_brakeKeylock[deck]) {
+            cot = getControlObjectThread(group, "keylock");
+            if (cot != NULL) {
+                cot->slotSet(1);
+            }
+        }
     }
 }

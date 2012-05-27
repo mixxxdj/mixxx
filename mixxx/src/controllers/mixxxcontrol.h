@@ -2,11 +2,8 @@
 #define MIXXXCONTROL_H
 
 #include <QDebug>
-
 #include <QVariant>
-#include <QScriptValue>
 #include "controlobject.h"
-
 
 class MixxxControl {
     public:
@@ -21,10 +18,6 @@ class MixxxControl {
         QString group() const { return m_sGroup; };
         QString item() const { return m_sItem; };
         QString description() const { return m_sDescription; };
-
-        QScriptValue getScriptFunction() const { return m_scriptFunction; };
-        void setScriptFunction(QScriptValue func) { m_scriptFunction = func; };
-
         ControlObject* getControlObject() const {
             return ControlObject::getControl(ConfigKey(m_sGroup, m_sItem));
         };
@@ -38,7 +31,6 @@ class MixxxControl {
         QString m_sGroup;
         QString m_sItem;
         QString m_sDescription;
-        QScriptValue m_scriptFunction;
 };
 
 inline bool operator<(const MixxxControl &first, const MixxxControl &second)
@@ -65,4 +57,3 @@ QDebug operator<<(QDebug dbg, MixxxControl& control)
 }*/
 
 #endif
-

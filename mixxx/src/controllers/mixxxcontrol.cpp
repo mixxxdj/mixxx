@@ -1,12 +1,6 @@
 #include <QtCore>
 #include <QtXml>
 
-#include "mixxxcontrol.h"
-
-#ifdef __MIDISCRIPT__
-#include <QScriptValue>
-#endif
-
 #include "controllers/mixxxcontrol.h"
 
 MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_item,
@@ -14,7 +8,6 @@ MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_it
         : m_sGroup(controlobject_group),
           m_sItem(controlobject_item),
           m_sDescription(controlobject_description) {
-    m_scriptFunction = QScriptValue();
 }
 
 /** Constructor that deserializes a MixxxControl object from a <control> or <output>

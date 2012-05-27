@@ -284,14 +284,13 @@ void MidiController::receive(unsigned char status, unsigned char control,
             return;
         }
 
-        QScriptValue function = pEngine->resolveFunction(mc.item());
         QScriptValueList args;
         args << QScriptValue(status & 0x0F);
         args << QScriptValue(control);
         args << QScriptValue(value);
         args << QScriptValue(status);
         args << QScriptValue(mc.group());
-
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
         pEngine->execute(function, args);
         return;
     }
@@ -508,7 +507,7 @@ void MidiController::receive(QByteArray data) {
         if (pEngine == NULL) {
             return;
         }
-        QScriptValue function = pEngine->resolveFunction(mc.item());
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
         if (!pEngine->execute(function, data)) {
             qDebug() << "MidiController: Invalid script function" << mc.item();
         }
