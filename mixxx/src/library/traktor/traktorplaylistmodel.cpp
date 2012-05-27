@@ -4,7 +4,6 @@
 
 #include "library/trackcollection.h"
 #include "library/traktor/traktorplaylistmodel.h"
-#include "library/stardelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 
@@ -163,11 +162,4 @@ TrackModel::CapabilitiesFlags TraktorPlaylistModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
-}
-
-QAbstractItemDelegate* TraktorPlaylistModel::delegateForColumn(const int i, QObject* pParent) {
-    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
-        return new StarDelegate(pParent);
-    }
-    return NULL;
 }

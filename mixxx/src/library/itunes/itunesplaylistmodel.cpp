@@ -4,7 +4,6 @@
 
 #include "library/trackcollection.h"
 #include "library/itunes/itunesplaylistmodel.h"
-#include "library/stardelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 
@@ -163,9 +162,3 @@ TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
-QAbstractItemDelegate* ITunesPlaylistModel::delegateForColumn(const int i, QObject* pParent) {
-    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
-        return new StarDelegate(pParent);
-    }
-    return NULL;
-}
