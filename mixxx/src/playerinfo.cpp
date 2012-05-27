@@ -115,7 +115,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         if ((fvol = m_listCOVolume[chan]->get()) == 0.0 )
             continue;
 
-        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0);
+        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0, false);
 
         // Orientation goes: left is 0, center is 1, right is 2.
         // Leave math out of it...
