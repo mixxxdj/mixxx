@@ -44,7 +44,7 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
                 continue;
             }
         } 
-        // Check by usage_page and usage combination
+        // Blacklist entry based on usage_page and usage (both required)
         if (blacklisted.usage_page != 0 && blacklisted.usage != 0) {
             // Skip matching for devices with no usage_page/usage info.
             if (cur_dev->usage_page == 0 && cur_dev->usage == 0)
