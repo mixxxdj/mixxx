@@ -46,7 +46,6 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     m_pRateDir = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
 
-    setAttribute(Qt::WA_ForceUpdatesDisabled);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     m_zoomZoneWidth = 20;
@@ -153,7 +152,8 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/){
 
 void WWaveformViewer::wheelEvent(QWheelEvent *event) {
     if (m_waveformWidget) {
-        if (event->x() > width() - m_zoomZoneWidth) {
+        //NOTE: (vrince) to limit the zoom action area uncomment the following line
+        //if (event->x() > width() - m_zoomZoneWidth) {
             if (event->delta() > 0) {
                 //qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
                 onZoomChange(m_waveformWidget->getZoomFactor()+1);
@@ -162,7 +162,7 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
                 //qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
                 onZoomChange(m_waveformWidget->getZoomFactor()-1);
             }
-        }
+        //}
     }
 }
 

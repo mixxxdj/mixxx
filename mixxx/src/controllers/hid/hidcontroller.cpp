@@ -42,17 +42,16 @@ HidController::HidController(const hid_device_info deviceInfo) {
     // this class is initialized by caller.
     hid_vendor_id = deviceInfo.vendor_id;
     hid_product_id = deviceInfo.product_id;
-    if (deviceInfo.interface_number==-1) {
+    hid_interface_number = deviceInfo.interface_number;
+    if (hid_interface_number == -1) {
         // OS/X and windows don't use interface numbers, but usage_page/usage
         hid_usage_page = deviceInfo.usage_page;
         hid_usage = deviceInfo.usage;
-        hid_interface_number = -1;
     } else {
         // Linux hidapi does not set value for usage_page or usage and uses
         // interface number to identify subdevices
         hid_usage_page = 0;
         hid_usage = 0;
-        hid_interface_number = deviceInfo.interface_number;
     }
 
 #ifdef __LINUX__

@@ -30,6 +30,7 @@
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/analysisdao.h"
 
 class TrackInfoObject;
 
@@ -78,6 +79,7 @@ class TrackCollection : public QObject
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
     CueDAO m_cueDao;
+    AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     const QRegExp m_supportedFileExtensionsRegex;
     /** Flag to raise when library scan should be cancelled */
