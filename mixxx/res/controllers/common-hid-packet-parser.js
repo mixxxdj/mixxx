@@ -61,7 +61,7 @@ HIDBitVector.prototype.addLED = function(group,name,index) {
 //          and is received. If packet callback is set, the
 //          packet is not parsed by delta functions.
 //          callback is not meaningful for output packets
-function HIDPacket (name,header,length,callback) {
+function HIDPacket(name,header,length,callback) {
     this.name = name;
     this.header = header;
     this.length = length;
@@ -412,10 +412,9 @@ HIDPacket.prototype.parseBitVector = function(field,value) {
     for (var bit_id in field.value) {
         bit = field.value[bit_id];
         new_value = value>>bit.index&1;
-        if (new_value!=bit.value) {
-            bit.value = new_value;
+        if (bit.value!=undefined && bit.value!=new_value)
             bits[bit_id] = bit;
-        }
+        bit.value = new_value;
     }
     return bits;
 }
@@ -446,18 +445,17 @@ HIDPacket.prototype.parse = function(data) {
             }
 
             if (field.type=='bitvector') {
-                var bits = this.parseBitVector(field,value);
-                for (bit in bits) {
-                    bit_value = bits[bit];
-                    field_changes[bit] = bit_value;;
-                }
+				// Bitvector deltas are checked in parseBitVector
+                var changed_bits = this.parseBitVector(field,value);
+                for (bit_name in changed_bits) 
+                    field_changes[bit_name] = changed_bits[bit_name];
 
             } else if (field.type=='control') {
                 if (field.value==value)
                     continue;
                 if (field.ignored==true || field.value==undefined) {
                     field.value = value;
-                    continue
+                    continue;
                 }
                 if (field.isEncoder) {
                     if (field.value==field.max && value==field.min) {
@@ -646,14 +644,6 @@ HIDController.prototype.resolveOutputPacket = function(name) {
     if (!(name in this.OutputPackets))
         return undefined;
     return this.OutputPackets[name];
-}
-
-// Lookup scaling function for control
-// Returns undefined if function is not registered.
-HIDController.prototype.lookupScalingFunction = function(name,callback) {
-    if (!(name in this.scalers))
-        return undefined;
-    return this.scalers[name];
 }
 
 // Add a LED to controller's list of LEDs.
@@ -870,6 +860,14 @@ HIDController.prototype.registerScalingFunction = function(name,callback) {
     if (name in this.scalers)
         return;
     this.scalers[name] = callback;
+}
+
+// Lookup scaling function for control
+// Returns undefined if function is not registered.
+HIDController.prototype.lookupScalingFunction = function(name,callback) {
+    if (!(name in this.scalers))
+        return undefined;
+    return this.scalers[name];
 }
 
 // Register input packet type to controller.
