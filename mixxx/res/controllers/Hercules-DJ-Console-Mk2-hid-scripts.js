@@ -467,7 +467,6 @@ HerculesMk2Hid.capture = function(name, values, func) {
 //
 
 HerculesMk2Hid.feedback = function(g, e, f) {
-	print("CONNECT: " + g + e);
 	engine.connectControl(g, e, "HerculesMk2Hid.feedbackData");
 	if (HerculesMk2Hid.feedbacks[g + e] == undefined) {
 		HerculesMk2Hid.feedbacks[g + e] = [];
