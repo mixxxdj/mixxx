@@ -617,6 +617,14 @@ void WOverview::dropEvent(QDropEvent* event) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();
+        //total OWEN hack: because we strip out the library prefix
+        //in the view, we have to add it back here again to properly receive
+        //drops
+        if (!QFile(name).exists())
+        {
+        	if(QFile(m_sPrefix+"/"+name).exists())
+        		name = m_sPrefix+"/"+name;
+        }
         //If the file is on a network share, try just converting the URL to a string...
         if (name == "") {
             name = url.toString();
