@@ -1632,6 +1632,7 @@
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_beatloop1_1.png</Pressed>
@@ -1644,15 +1645,21 @@
 		</State>
 		<Pos>7,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],beatloop_1</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel1],beatloop_1_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_beatloop2_1.png</Pressed>
@@ -1665,15 +1672,21 @@
 		</State>
 		<Pos>915,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],beatloop_1</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel2],beatloop_1_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_beatloop1_2.png</Pressed>
@@ -1686,15 +1699,21 @@
 		</State>
 		<Pos>31,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],beatloop_2</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel1],beatloop_2_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_beatloop2_2.png</Pressed>
@@ -1707,15 +1726,21 @@
 		</State>
 		<Pos>939,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],beatloop_2</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel2],beatloop_2_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_beatloop1_4.png</Pressed>
@@ -1728,15 +1753,21 @@
 		</State>
 		<Pos>55,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],beatloop_4</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel1],beatloop_4_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_beatloop2_4.png</Pressed>
@@ -1749,36 +1780,48 @@
 		</State>
 		<Pos>963,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],beatloop_4</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel2],beatloop_4_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_beatloop1_8_over.png</Pressed>
+			<Pressed>btn_beatloop1_8.png</Pressed>
 			<Unpressed>btn_beatloop1_8.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_beatloop1_8.png</Pressed>
+			<Pressed>btn_beatloop1_8_over.png</Pressed>
 			<Unpressed>btn_beatloop1_8_over.png</Unpressed>
 		</State>
 		<Pos>79,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],beatloop_8</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel1],beatloop_8_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_8_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>beatloop</TooltipId>
 		<Style></Style>
 		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_beatloop2_8_over.png</Pressed>
@@ -1791,9 +1834,14 @@
 		</State>
 		<Pos>986,127</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],beatloop_8</ConfigKey>
-			<EmitOnPress>true</EmitOnPress>
+			<ConfigKey>[Channel2],beatloop_8_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_8_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
 		</Connection>
 	</PushButton>
 

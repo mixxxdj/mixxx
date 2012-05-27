@@ -18,8 +18,6 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/mixxxcontrol.h"
 
-#include <QScriptValue>
-
 class Controller : public QObject, ControllerPresetVisitor {
     Q_OBJECT
   public:
@@ -119,6 +117,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline void setControlToLearn(MixxxControl control) {
         m_controlToLearn = control;
     }
+
 
   private slots:
     virtual int open() = 0;
