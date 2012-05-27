@@ -4,7 +4,6 @@
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
-
 #include "mixxxutils.cpp"
 
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
@@ -133,11 +132,6 @@ bool MissingTableModel::isColumnHiddenByDefault(int column) {
 /** Override flags from BaseSqlModel since we don't want edit this model */
 Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
-}
-
-QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
-    return NULL;
 }
 
 TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {

@@ -11,7 +11,6 @@ class WaveformMark
 {
 public:
     WaveformMark();
-
     void setup( const QString& group, const QDomNode& node);
 
 private:
@@ -24,6 +23,7 @@ private:
     QString m_pixmapPath;
     QPixmap m_pixmap;
 
+    friend class WaveformMarkSet;
     friend class WaveformRenderMark;
     friend class WOverview;
 };

@@ -114,6 +114,8 @@ void RecordingManager::setRecordingDir() {
         // Save default preference value
         m_pConfig->set(ConfigKey("[Recording]", "Directory"),
                        recordDir.absolutePath());
+    } else {
+        recordDir.setPath(userRecordings);
     }
 
     if (!recordDir.exists()) {

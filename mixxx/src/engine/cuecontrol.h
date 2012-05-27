@@ -11,6 +11,8 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 
+#define NUM_HOT_CUES 37
+
 class ControlObject;
 class ControlPushButton;
 class Cue;
@@ -36,6 +38,7 @@ class HotcueControl : public QObject {
   private slots:
     void slotHotcueSet(double v);
     void slotHotcueGoto(double v);
+    void slotHotcueGotoAndPlay(double v);
     void slotHotcueGotoAndStop(double v);
     void slotHotcueActivate(double v);
     void slotHotcueActivatePreview(double v);
@@ -45,6 +48,7 @@ class HotcueControl : public QObject {
   signals:
     void hotcueSet(HotcueControl* pHotcue, double v);
     void hotcueGoto(HotcueControl* pHotcue, double v);
+    void hotcueGotoAndPlay(HotcueControl* pHotcue, double v);
     void hotcueGotoAndStop(HotcueControl* pHotcue, double v);
     void hotcueActivate(HotcueControl* pHotcue, double v);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
@@ -65,6 +69,7 @@ class HotcueControl : public QObject {
     // Hotcue button controls
     ControlObject* m_hotcueSet;
     ControlObject* m_hotcueGoto;
+    ControlObject* m_hotcueGotoAndPlay;
     ControlObject* m_hotcueGotoAndStop;
     ControlObject* m_hotcueActivate;
     ControlObject* m_hotcueActivatePreview;
@@ -92,6 +97,7 @@ class CueControl : public EngineControl {
     void trackCuesUpdated();
     void hotcueSet(HotcueControl* pControl, double v);
     void hotcueGoto(HotcueControl* pControl, double v);
+    void hotcueGotoAndPlay(HotcueControl* pControl, double v);
     void hotcueGotoAndStop(HotcueControl* pControl, double v);
     void hotcueActivate(HotcueControl* pControl, double v);
     void hotcueActivatePreview(HotcueControl* pControl, double v);
@@ -100,12 +106,13 @@ class CueControl : public EngineControl {
 
     void cueSet(double v);
     void cueGoto(double v);
+    void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
     void cueSimple(double v);
     void cuePreview(double v);
     void cueCDJ(double v);
     void cueDefault(double v);
-    void cuePlay(double v);
+    void playFromCuePreview(double v);
 
   private:
     // These methods are not thread safe, only call them when the lock is held.
@@ -134,6 +141,7 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
     ControlPushButton* m_pCueGoto;
+    ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
 

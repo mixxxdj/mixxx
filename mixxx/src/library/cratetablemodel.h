@@ -35,7 +35,6 @@ class CrateTableModel : public BaseSqlTableModel {
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
     TrackModel::CapabilitiesFlags getCapabilities() const;
-    virtual QItemDelegate* delegateForColumn(const int i);
 
   private slots:
     void slotSearch(const QString& searchText);
