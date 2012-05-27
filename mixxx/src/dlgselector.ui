@@ -99,9 +99,23 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBoxHarmonicKey">
+      <widget class="QCheckBox" name="checkBoxKey4th">
        <property name="text">
-        <string>HarmonicKey</string>
+        <string>Perfect 4th</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxKey5th">
+       <property name="text">
+        <string>Perfect 5th</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxKeyRelative">
+       <property name="text">
+        <string>Relative Key</string>
        </property>
       </widget>
      </item>

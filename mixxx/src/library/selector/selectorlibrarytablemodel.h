@@ -20,14 +20,17 @@ class SelectorLibraryTableModel : public LibraryTableModel
     virtual void search(const QString& searchText);
     virtual bool isColumnInternal(int column);
     virtual int rowCount();
+	void active(bool value);
 
   public slots:
     void filterByGenre(bool value);
     void filterByBpm(bool value, int range);
     void filterByYear(bool value);
     void filterByRating(bool value);
-    void filterByKey(bool value);
-    void filterByHarmonicKey(bool value);
+	void filterByKey(bool value);
+	void filterByKey4th(bool value);
+	void filterByKey5th(bool value);
+	void filterByKeyRelative(bool value);
 
     /*
     void updateFilter(
@@ -49,6 +52,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void doSearch(const QString& searchText);
   private:
 
+    bool m_bActive;
     void updateFilterText();
     QString adjustPitchBy(QString pitch, int change);
     void setRate();
@@ -59,18 +63,20 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterYear;
     bool m_bFilterRating;
     bool m_bFilterKey;
-    bool m_bFilterHarmonicKey;
+    bool m_bFilterKey4th;
+    bool m_bFilterKey5th;
+    bool m_bFilterKeyRelative;
 
     QStringList m_semitoneList;
     QStringList m_majors;
     QStringList m_minors;
 
     QString m_pChannel;
-    QString m_filtersText;
+    QString m_filterString;
     TrackPointer m_pLoadedTrack;
     ControlObjectThreadMain* m_channelBpm;
     void initializeHarmonicsData();
-    QString getHarmonicKeys(QStringList key1, QStringList key2, QString key) const;
+    QString getHarmonicKeys(QString key) const;
 
 };
 

@@ -41,7 +41,9 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     void filterByYear();
     void filterByRating();
     void filterByKey();
-    void filterByHarmonicKey();
+    void filterByKey4th();
+    void filterByKey5th();
+    void filterByKeyRelative();
     void installEventFilter(QObject* pFilter);
     void slotFiltersChanged();
 

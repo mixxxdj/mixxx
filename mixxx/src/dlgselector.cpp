@@ -33,23 +33,26 @@ DlgSelector::DlgSelector(QWidget* parent,
     m_pSelectorLibraryTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
     connect(checkBoxGenre, SIGNAL(clicked()),
-            this,  SLOT(filterByGenre()));
+            this, SLOT(filterByGenre()));
     connect(checkBoxBpm, SIGNAL(clicked()),
-            this,  SLOT(filterByBpm()));
+            this, SLOT(filterByBpm()));
     connect(checkBoxYear, SIGNAL(clicked()),
-            this,  SLOT(filterByYear()));
+            this, SLOT(filterByYear()));
     connect(checkBoxRating, SIGNAL(clicked()),
-            this,  SLOT(filterByRating()));
+            this, SLOT(filterByRating()));
     connect(checkBoxKey, SIGNAL(clicked()),
-            this,  SLOT(filterByKey()));
-    connect(checkBoxHarmonicKey, SIGNAL(clicked()),
-            this,  SLOT(filterByHarmonicKey()));
+            this, SLOT(filterByKey()));
+    connect(checkBoxKey4th, SIGNAL(clicked()),
+            this, SLOT(filterByKey4th()));
+    connect(checkBoxKey5th, SIGNAL(clicked()),
+            this, SLOT(filterByKey5th()));
+    connect(checkBoxKeyRelative, SIGNAL(clicked()),
+            this, SLOT(filterByKeyRelative()));
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
-            this,  SLOT(spinBoxBpmRangeChanged(int)));
+            this, SLOT(spinBoxBpmRangeChanged(int)));
     connect(m_pSelectorLibraryTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
-            this,
-            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+            this, SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
 
     connect(m_pSelectorLibraryTableModel,
             SIGNAL(doSearch(const QItemSelection &, const QItemSelection&)),
@@ -67,16 +70,13 @@ DlgSelector::~DlgSelector() {
 void DlgSelector::onShow()
 {
     qDebug() << "DlgSelector::onShow()";
-
+    m_pSelectorLibraryTableModel->active(true);
 }
 
 void DlgSelector::onHide()
 {
     qDebug() << "DlgSelector::onHide()";
-    // disconnect the old pitch slider
-    //if (m_pSelectorLibraryTableModel) {
-    //    m_pSelectorLibraryTableModel->disconnect(this);
-    //}
+    m_pSelectorLibraryTableModel->active(false);
 }
 
 void DlgSelector::setup(QDomNode node)
@@ -115,7 +115,8 @@ void DlgSelector::moveSelection(int delta) {
     m_pSelectorLibraryTableView->moveSelection(delta);
 }
 
-void DlgSelector::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
+void DlgSelector::tableSelectionChanged(const QItemSelection& selected, 
+	const QItemSelection& deselected)
 {
 }
 
@@ -155,9 +156,19 @@ void DlgSelector::filterByKey()
     m_pSelectorLibraryTableModel->filterByKey(checkBoxKey->isChecked());
 }
 
-void DlgSelector::filterByHarmonicKey()
+void DlgSelector::filterByKey4th()
 {
-    m_pSelectorLibraryTableModel->filterByHarmonicKey(checkBoxHarmonicKey->isChecked());
+    m_pSelectorLibraryTableModel->filterByKey4th(checkBoxKey4th->isChecked());
+}
+
+void DlgSelector::filterByKey5th()
+{
+    m_pSelectorLibraryTableModel->filterByKey5th(checkBoxKey5th->isChecked());
+}
+
+void DlgSelector::filterByKeyRelative()
+{
+    m_pSelectorLibraryTableModel->filterByKeyRelative(checkBoxKeyRelative->isChecked());
 }
 
 void DlgSelector::installEventFilter(QObject* pFilter) {

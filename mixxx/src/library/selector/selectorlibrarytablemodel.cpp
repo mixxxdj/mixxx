@@ -34,9 +34,12 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_bFilterYear = false;
     m_bFilterRating = false;
     m_bFilterKey = false;
-    m_bFilterHarmonicKey = false;
-    m_filtersText = "";
+    m_bFilterKey4th = false;
+    m_bFilterKey5th = false;
+    m_bFilterKeyRelative = false;
+    m_filterString = "";
     m_channelBpm = NULL;
+    m_bActive = false;
     m_rate = 0;
 
     initializeHarmonicsData();
@@ -54,13 +57,16 @@ int SelectorLibraryTableModel::rowCount() {
     return BaseSqlTableModel::rowCount();
 }
 
+void SelectorLibraryTableModel::active(bool value) {
+    m_bActive = value;
+}
+
 void SelectorLibraryTableModel::filterByGenre(bool value) {
     m_bFilterGenre = value;
     updateFilterText();
 }
 
 void SelectorLibraryTableModel::filterByBpm(bool value, int range) {
-    //qDebug() << "filterByBpm bpm = " << value << " range = " << range;
     m_bFilterBpm = value;
     m_iFilterBpmRange = range;
     updateFilterText();
@@ -81,15 +87,24 @@ void SelectorLibraryTableModel::filterByKey(bool value) {
     updateFilterText();
 }
 
-void SelectorLibraryTableModel::filterByHarmonicKey(bool value) {
-    m_bFilterHarmonicKey = value;
+void SelectorLibraryTableModel::filterByKey4th(bool value) {
+    m_bFilterKey4th = value;
+    updateFilterText();
+}
+
+void SelectorLibraryTableModel::filterByKey5th(bool value) {
+    m_bFilterKey5th = value;
+    updateFilterText();
+}
+
+void SelectorLibraryTableModel::filterByKeyRelative(bool value) {
+    m_bFilterKeyRelative = value;
     updateFilterText();
 }
 
 // PRIVATE SLOTS
 
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
-
     m_pChannel = QString("[Channel%1]").arg(deck);
 
     // disconnect the old pitch slider
@@ -110,27 +125,25 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
 
 
 void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
-    qDebug() << "setRate() slotChannel1BpmChanged = " << value;
     setRate();
     updateFilterText();
 }
 
 void SelectorLibraryTableModel::slotFiltersChanged() {
-    //qDebug() << "slotFiltersChanged()";
+	if (!m_bActive) return;
     slotSearch(QString());
 }
 
 void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
-    qDebug() << "slotSearch()" << searchText << "," << m_filtersText;
-    BaseSqlTableModel::search(searchText, m_filtersText);
+    BaseSqlTableModel::search(searchText, m_filterString);
 }
 
 // PRIVATE METHODS
 
 void SelectorLibraryTableModel::updateFilterText() {
-    QStringList filters;
-
+	if (!m_bActive) return;
     if (m_pLoadedTrack) {
+		QStringList filters;
 
         // Genre
         if (m_bFilterGenre) {
@@ -169,48 +182,20 @@ void SelectorLibraryTableModel::updateFilterText() {
         // Keys
 
         // calculate the new pitch
-        // const int semitonesPerOctave = 12;
+        const int semitonesPerOctave = 12;
         float frequencyRatio = currentBpm / trackBpm;
-        float semitoneOffset = 12 * log(frequencyRatio) / log(2);
-
+        float semitoneOffset = semitonesPerOctave * log(frequencyRatio) / log(2);
         QString trackKey = adjustPitchBy(m_pLoadedTrack->getKey(), semitoneOffset);
 
-
-        QStringList keyfilters;
-        // Key
-        if (m_bFilterKey) {
-            if (trackKey!="")
-                keyfilters << QString("Key == '%1'").arg(trackKey);
-        }
-
-        // Harmonic Key
-        if (m_bFilterHarmonicKey) {
-            QString hKeys;
-
-            // determine major or minor key "m" 
-            if (trackKey.contains("m", Qt::CaseInsensitive)) {
-                hKeys = getHarmonicKeys(m_minors,m_majors,trackKey);
-            } else {
-                hKeys = getHarmonicKeys(m_majors,m_minors,trackKey);
-            }
-            
-            if (hKeys!="")
-                keyfilters << QString("Key in (%1)").arg(hKeys);
-
-        }
-
-        if (keyfilters.count()>0)
-            filters << QString("(%1)").arg(keyfilters.join(" OR "));
-
-        QString text = filters.join(" AND ");
-     
-
-        if (m_filtersText != text) {
-            qDebug() << "updateFilterText() filters changed: " << text;
-            m_filtersText = text;
+		QString hKeys = getHarmonicKeys(trackKey);
+		if (hKeys!="")
+            filters << QString("Key in (%1)").arg(hKeys);
+                    
+        QString filterString = filters.join(" AND ");
+        if (m_filterString != filterString) {
+            m_filterString = filterString;
             emit(filtersChanged());
         }
-
 
     }
 
@@ -226,48 +211,57 @@ void SelectorLibraryTableModel::setRate() {
         ControlObject::getControl(ConfigKey(m_pChannel, "rate_dir")));
 
     if (rateSlider != NULL && rateRange != NULL && rateDirection != NULL) {
-        //qDebug() << "setRate() rateSlider = " << rateSlider->get();
-        //qDebug() << "setRate() rateRange = " << rateRange->get();
-        //qDebug() << "setRate() rateDirection = " << rateDirection->get();
         m_rate = (1 + rateSlider->get() * rateRange->get() * rateDirection->get());        
     }
 }
 
 void SelectorLibraryTableModel::search(const QString& searchText) {
-    // qDebug() << "SelectorLibraryTableModel::search()" << searchText
-    //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
-QString SelectorLibraryTableModel::getHarmonicKeys(QStringList keys1, QStringList keys2, QString key) const {
-    int index = keys1.indexOf(key);
+QString SelectorLibraryTableModel::getHarmonicKeys(QString trackKey) const {
+	// determine major or minor key "m"
+	bool isMinor = trackKey.contains("m", Qt::CaseInsensitive);
+
+	QStringList keys1 = (isMinor ? m_minors : m_majors);
+	QStringList keys2 = (isMinor ? m_majors : m_minors);
+	
+    int index = keys1.indexOf(trackKey);
     int len = keys1.count();
     if (index < 0) return QString("");
     int lower = index-1;
     if (lower < 0) lower += len; 
     int upper = index+1;
     if (upper >= len) upper -= len; 
-    //qDebug() << "getHarmonicKeys index = " << index;
-    //qDebug() << "getHarmonicKeys lower = " << lower;
-    //qDebug() << "getHarmonicKeys upper = " << upper;
-    //qDebug() << "getHarmonicKeys len = " << len;
-    return QString("'%1','%2','%3'").arg(keys1[lower],keys2[index],keys1[upper]);
+
+	QStringList keyfilters;
+	// Tonic Key
+	if (m_bFilterKey)
+		keyfilters << QString("'%1'").arg(trackKey);
+	// Perfect Fourth (Sub Dominant)
+	if (m_bFilterKey4th)
+		keyfilters << QString("'%1'").arg(keys1[lower]);
+	// Perfect Fifth (Dominant)
+	if (m_bFilterKey5th)
+		keyfilters << QString("'%1'").arg(keys1[upper]);
+	// Relative Minor/Major
+    if (m_bFilterKeyRelative)
+		keyfilters << QString("'%1'").arg(keys2[index]);
+    
+    return keyfilters.join(",");
 }
 
 QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
     if (pitch == "") return pitch;
 
-    //qDebug() << "adjustPitchBy pitch = " << pitch;
     int position = m_semitoneList.indexOf(pitch);
-    if (position<0){
-      //  qDebug() << "Pitch " << pitch << " not found in config.";
+    if (position<0)
         return pitch;
-    }
 
     int newpos = position + (change * 2);
-    if (newpos >= 24) {
+    if (newpos >= 24)
         newpos = newpos - 24;
-    }
+
     QString newpitch = m_semitoneList.at(newpos);
     return newpitch;
 }
@@ -304,56 +298,56 @@ void SelectorLibraryTableModel::initializeHarmonicsData() {
             m_semitoneList = QString("C,Cm,Db,Dbm,D,Dm,Eb,Ebm,E,Em,F,Fm,Gb,Gbm,G,Gm,Ab,Abm,A,Am,Bb,Bbm,B,Bm").split(",");
         }
     */
-/*
-    // OK notation
-    m_majors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("d,");
-    m_minors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("m,");
-    m_semitoneList = QString("1d,10m,8d,5m,3d,12m,10d,7m,5d,2m,12d,9m,7d,4m,2d,11m,9d,6m,4d,1m,11d,8m,6d,Bm").split(",");
-*/
+	/*
+		// OK notation
+		m_majors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("d,");
+		m_minors = QString("1,2,3,4,5,6,7,8,9,10,11,12").split("m,");
+		m_semitoneList = QString("1d,10m,8d,5m,3d,12m,10d,7m,5d,2m,12d,9m,7d,4m,2d,11m,9d,6m,4d,1m,11d,8m,6d,Bm").split(",");
+	*/
 
-/*
-QHash<QString, QStringList> hash;
+	/*
+	QHash<QString, QStringList> hash;
 
-hash["1d"] = "C";
-hash["2d"] = "G";
-hash["3d"] = "D";
-hash["4d"] = "A";
-hash["5d"] = "E";
-hash["6d"] = "B";
-hash["7d"] = "F#,Gb";
-hash["8d"] = "C#,Db";
-hash["9d"] = "G#,Ab";
-hash["10d"] = "D#,Eb";
-hash["11d"] = "A#,Bb";
-hash["12d"] = "F";
+	hash["1d"] = "C";
+	hash["2d"] = "G";
+	hash["3d"] = "D";
+	hash["4d"] = "A";
+	hash["5d"] = "E";
+	hash["6d"] = "B";
+	hash["7d"] = "F#,Gb";
+	hash["8d"] = "C#,Db";
+	hash["9d"] = "G#,Ab";
+	hash["10d"] = "D#,Eb";
+	hash["11d"] = "A#,Bb";
+	hash["12d"] = "F";
 
-hash["1m"] = "Am";
-hash["2m"] = "Em";
-hash["3m"] = "Bm";
-hash["4m"] = "F#m,Gbm";
-hash["5m"] = "C#m,Dbm";
-hash["6m"] = "G#m,Abm";
-hash["7m"] = "D#m,Ebm";
-hash["8m"] = "A#m,Bbm";
-hash["9m"] = "Fm";
-hash["10m"] = "Cm";
-hash["11m"] = "Gm";
-hash["12m"] = "Dm";
+	hash["1m"] = "Am";
+	hash["2m"] = "Em";
+	hash["3m"] = "Bm";
+	hash["4m"] = "F#m,Gbm";
+	hash["5m"] = "C#m,Dbm";
+	hash["6m"] = "G#m,Abm";
+	hash["7m"] = "D#m,Ebm";
+	hash["8m"] = "A#m,Bbm";
+	hash["9m"] = "Fm";
+	hash["10m"] = "Cm";
+	hash["11m"] = "Gm";
+	hash["12m"] = "Dm";
 
-//                majors    minors
-hash["1"] =     { "C",      "Am"        };
-hash["2"] =     { "G",      "Em"        };
-hash["3"] =     { "D",      "Bm"        };
-hash["4"] =     { "A",      "F#m,Gbm"   };
-hash["5"] =     { "E",      "C#m,Dbm"   };
-hash["6"] =     { "B",      "G#m,Abm"   };
-hash["7"] =     { "F#,Gb",  "D#m,Ebm"   };
-hash["8"] =     { "C#,Db",  "A#m,Bbm"   };
-hash["9"] =     { "G#,Ab",  "Fm"        };
-hash["10"] =    { "D#,Eb",  "Cm"        };
-hash["11"] =    { "A#,Bb",  "Gm"        };
-hash["12"] =    { "F",      "Dm"        };
+	//                majors    minors
+	hash["1"] =     { "C",      "Am"        };
+	hash["2"] =     { "G",      "Em"        };
+	hash["3"] =     { "D",      "Bm"        };
+	hash["4"] =     { "A",      "F#m,Gbm"   };
+	hash["5"] =     { "E",      "C#m,Dbm"   };
+	hash["6"] =     { "B",      "G#m,Abm"   };
+	hash["7"] =     { "F#,Gb",  "D#m,Ebm"   };
+	hash["8"] =     { "C#,Db",  "A#m,Bbm"   };
+	hash["9"] =     { "G#,Ab",  "Fm"        };
+	hash["10"] =    { "D#,Eb",  "Cm"        };
+	hash["11"] =    { "A#,Bb",  "Gm"        };
+	hash["12"] =    { "F",      "Dm"        };
 
-*/
+	*/
 
 }
