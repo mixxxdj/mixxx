@@ -17,6 +17,8 @@
 
 #include "controlpushbutton.h"
 
+#include <QDebug>
+
 // static
 const int ControlPushButton::kPowerWindowTimeMillis = 300;
 
@@ -54,13 +56,13 @@ void ControlPushButton::setValueFromMidi(MidiOpCode o, double v) {
 
     // This block makes push-buttons act as toggle buttons.
     if (m_buttonMode == POWERWINDOW && m_iNoStates == 2) {
-         if (o == MIDI_NOTE_ON) {
+         //if (o == MIDI_NOTE_ON) {
              if (v > 0.) {
                  m_dValue = !m_dValue;
                  m_pushTimer.setSingleShot(true);
                  m_pushTimer.start(kPowerWindowTimeMillis);
-             }
-         } else if (o == MIDI_NOTE_OFF) {
+          //   }
+         } else { // if (o == MIDI_NOTE_OFF) {
              if (!m_pushTimer.isActive()) {
                  m_dValue = 0.0;
              }
@@ -74,20 +76,20 @@ void ControlPushButton::setValueFromMidi(MidiOpCode o, double v) {
                     m_dValue = 0;
             }
         } else {
-            if (o == MIDI_NOTE_ON) {
+            //if (o == MIDI_NOTE_ON) {
                 if (v > 0.) {
                     m_dValue = !m_dValue;
                 }
-            }
+            //}
         }
     } else { //Not a toggle button (trigger only when button pushed)
-        if (o == MIDI_NOTE_ON) {
+        //if (o == MIDI_NOTE_ON) {
             m_dValue = v;
-        } else if (o == MIDI_NOTE_OFF) {
-            m_dValue = 0.0;
-        }
+        //} else if (o == MIDI_NOTE_OFF) {
+        //    qDebug() << "toggle6";
+        //    m_dValue = 0.0;
+        //}
     }
-
     emit(valueChanged(m_dValue));
 }
 
