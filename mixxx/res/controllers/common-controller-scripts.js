@@ -130,7 +130,7 @@ script.midiPitch = function (LSB, MSB, status) {
    Input:   channel, control, value, status, group
    Output:  none
    -------- ------------------------------------------------------ */
-script.spinback= function(channel, control, value, status, group) {
+script.spinback = function(channel, control, value, status, group) {
     // disable on note-off or zero value note/cc
     engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
 }
@@ -143,7 +143,7 @@ script.spinback= function(channel, control, value, status, group) {
    Input:   channel, control, value, status, group
    Output:  none
    -------- ------------------------------------------------------ */
-script.brake= function(channel, control, value, status, group) {
+script.brake = function(channel, control, value, status, group) {
     // disable on note-off or zero value note/cc
     engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
 }
