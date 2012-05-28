@@ -60,8 +60,9 @@ void PreviewButtonDelegate::setEditorData(QWidget *editor,
 void PreviewButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                 const QModelIndex &index) const
 {
-    QPushButton *btn = qobject_cast<QPushButton *>(editor);
-    model->setData(index, btn->property("data_value"));
+    Q_UNUSED(editor);
+    Q_UNUSED(model);
+    Q_UNUSED(index);
 }
 //paint
 void PreviewButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
