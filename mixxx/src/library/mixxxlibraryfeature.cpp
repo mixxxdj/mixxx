@@ -18,7 +18,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
           kMissingTitle(tr("Missing Tracks")) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
-            // << "library." + LIBRARYTABLE_PREVIEW
+            //has to be up here otherwise Played and TimesPlayed are not show
+            << "library." + LIBRARYTABLE_PREVIEW
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
             << "library." + LIBRARYTABLE_ARTIST
