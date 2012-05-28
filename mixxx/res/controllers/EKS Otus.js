@@ -66,7 +66,7 @@ EksOtus.init = function (id) {
     EksOtus.registerCallbacks();
 
     EksOtus.toggleButtons = [ 
-        'play', 'pfl', 'keylock',
+        'play', 'pfl', 'keylock', 
         'filterLowKill','filterMidKill', 'filterHighKill'
     ]
 
@@ -187,9 +187,9 @@ EksOtus.jogScratchScaler = function(group,name,value) {
     var ticks = undefined;
     if (engine.getValue(group,'play')) {
         if (value>0) 
-            ticks = 1;
+            ticks = value/64;
         else 
-            ticks = -1;
+            ticks = value/64;
     } else {
         // TODO - do different scaling for stopped scratching
         if (value>0) 
@@ -376,7 +376,11 @@ EksOtus.beat_align = function (field) {
         // if (field.value==EksOtus.buttonStates.released) return;
         engine.setValue(active_group,'beats_translate_curpos',field.value);
     } else {
-        engine.setValue(active_group,'quantize',field.value);
+        if (field.value!=0)
+            if (!engine.getValue(active_group,'quantize'))
+                engine.setValue(active_group,'quantize',true);
+            else
+                engine.setValue(active_group,'quantize',false);
     }
 }
 
@@ -536,38 +540,38 @@ EksOtus.registerInputPackets = function() {
     packet.addControl('hid','trackpad_y',40,'H');
     packet.addControl('deck','slider_pos_2',42,'H');
     packet.addControl('deck','slider_pos_1',44,'H');
-    packet.addControl('deck2','keylock',46,'I',0);
-    packet.addControl('deck','beatloop_8',46,'I',1);
-    packet.addControl('deck','beatloop_4',46,'I',2);
-    packet.addControl('deck','beatloop_2',46,'I',3);
-    packet.addControl('deck','beatloop_1',46,'I',4);
-    packet.addControl('deck','loop_in',46,'I',5);
-    packet.addControl('deck','loop_out',46,'I',6);
-    packet.addControl('deck','reloop_exit',46,'I',7);
-    packet.addControl('deck','slider_scale',46,'I',8);
-    packet.addControl('deck','LoadSelectedTrack',46,'I',9);
-    packet.addControl('modifiers','shift',46,'I',10);
-    packet.addControl('hid','deck_switch',46,'I',11);
-    packet.addControl('deck','pfl',46,'I',12);
-    packet.addControl('hid','jog_sw_button',46,'I',13);
-    packet.addControl('deck','filterLowKill',46,'I',14);
-    packet.addControl('deck','play',46,'I',15);
-    packet.addControl('deck','cue_default',46,'I',16);
-    packet.addControl('deck','filterMidKill',46,'I',17);
-    packet.addControl('deck','filterHighKill',46,'I',18);
-    packet.addControl('deck','beat_align',46,'I',19);
-    packet.addControl('deck1','keylock',46,'I',20);
-    packet.addControl('deck','jog_touch',46,'I',21);
-    packet.addControl('hid','trackpad_left',46,'I',22);
-    packet.addControl('hid','trackpad_right',46,'I',23);
-    packet.addControl('deck','hotcue_1',46,'I',24);
-    packet.addControl('deck','hotcue_2',46,'I',25);
-    packet.addControl('deck','hotcue_3',46,'I',26);
-    packet.addControl('deck','hotcue_4',46,'I',27);
-    packet.addControl('deck','hotcue_5',46,'I',28);
-    packet.addControl('deck','hotcue_6',46,'I',29);
-    packet.addControl('modifiers','pitchslider',46,'I',30)
-    packet.addControl('hid','touch_trackpad',46,'I',31);
+    packet.addControl('deck2','keylock',46,'I',0x1);
+    packet.addControl('deck','beatloop_8',46,'I',0x2);
+    packet.addControl('deck','beatloop_4',46,'I',0x4);
+    packet.addControl('deck','beatloop_2',46,'I',0x8);
+    packet.addControl('deck','beatloop_1',46,'I',0x10);
+    packet.addControl('deck','loop_in',46,'I',0x20);
+    packet.addControl('deck','loop_out',46,'I',0x40);
+    packet.addControl('deck','reloop_exit',46,'I',0x80);
+    packet.addControl('deck','slider_scale',46,'I',0x100);
+    packet.addControl('deck','LoadSelectedTrack',46,'I',0x200);
+    packet.addControl('modifiers','shift',46,'I',0x400);
+    packet.addControl('hid','deck_switch',46,'I',0x800);
+    packet.addControl('deck','pfl',46,'I',0x1000);
+    packet.addControl('hid','jog_sw_button',46,'I',0x2000);
+    packet.addControl('deck','filterLowKill',46,'I',0x4000);
+    packet.addControl('deck','play',46,'I',0x8000);
+    packet.addControl('deck','cue_default',46,'I',0x10000);
+    packet.addControl('deck','filterMidKill',46,'I',0x20000);
+    packet.addControl('deck','filterHighKill',46,'I',0x40000);
+    packet.addControl('deck','beat_align',46,'I',0x80000);
+    packet.addControl('deck1','keylock',46,'I',0x100000);
+    packet.addControl('deck','jog_touch',46,'I',0x200000);
+    packet.addControl('hid','trackpad_left',46,'I',0x400000);
+    packet.addControl('hid','trackpad_right',46,'I',0x800000);
+    packet.addControl('deck','hotcue_1',46,'I',0x1000000);
+    packet.addControl('deck','hotcue_2',46,'I',0x2000000);
+    packet.addControl('deck','hotcue_3',46,'I',0x4000000);
+    packet.addControl('deck','hotcue_4',46,'I',0x8000000);
+    packet.addControl('deck','hotcue_5',46,'I',0x10000000);
+    packet.addControl('deck','hotcue_6',46,'I',0x20000000);
+    packet.addControl('modifiers','pitchslider',46,'I',0x40000000)
+    packet.addControl('hid','touch_trackpad',46,'I',0x80000000);
     packet.addControl('hid','packet_number',51,'B');
     packet.addControl('hid','deck_status',52,'B');
 
@@ -627,7 +631,7 @@ EksOtus.registerOutputPackets = function() {
     packet.addLED('deck','filterMidKill',offset++,'B');
     packet.addLED('deck','cue_default',offset++,'B');
     packet.addLED('deck','filterHighKill',offset++,'B');
-    packet.addLED('deck','beats_translate_curpos',offset++,'B');
+    packet.addLED('deck','quantize',offset++,'B');
     EksOtus.registerOutputPacket(packet);
 
     packet = new HIDPacket('slider_leds',[0x17,0x16],32);
