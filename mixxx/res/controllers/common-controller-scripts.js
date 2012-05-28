@@ -62,13 +62,17 @@ script.midiDebug = function (channel, control, value, status, group) {
           " status: 0x" + status.toString(16) + " group: " + group);
 }
 
-// Used to control a generic Mixxx control setting (low..high) from an absolute control
+// DEPRECATED -- use script.absoluteLin() instead
 script.absoluteSlider = function (group, key, value, low, high, min, max) {
+    engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
+}
+
+// Returns a value for a linear Mixxx control (like Volume: 0..1) from an absolute control
+script.absoluteLin = function (value, low, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
-    print("min="+max);
-    if (value==max) engine.setValue(group, key, high);
-    else engine.setValue(group, key, (((high - low) / max) * value) + low);
+    if (value==max) return high;
+    else return ((((high - low) / max) * value) + low);
 }
 
 // Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control
@@ -76,13 +80,25 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
     var center = (max-min)/2;
-    if (value<=center) return value/(center/(mid-low));
-    else return 1+(value-center)/(center/(high-mid));
+    if (value==center || value==Math.round(center))
+        return mid;
+    if (value<center)
+        return low+(value/(center/(mid-low)));
+    return mid+((value-center)/(center/(high-mid)));
 }
-
 
 script.pitch = function (LSB, MSB, status) {
     return script.midiPitch(LSB, MSB, status);
+}
+
+script.crossfaderCurve = function (value, min, max) {
+    if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
+        // Constant Power
+        engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0.5, 0.962, min, max));
+    } else {
+        // Additive
+        engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, 2, min, max));
+    }
 }
 
 /* -------- ------------------------------------------------------
