@@ -1,16 +1,15 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-14 15:35-0400\n"
+"POT-Creation-Date: 2012-05-24 15:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Translate Toolkit 1.5.3\n"
+"X-Generator: Translate Toolkit 1.9.0\n"
 
 # The size of the file which has been stored during the current recording in megabytes (MB)
 #: :#1
@@ -2828,7 +2827,12 @@ msgid "Question"
 msgstr ""
 
 #: GLSLWaveformWidget#1
-msgid "Filtered (experimental)"
+msgctxt "GLSLWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
+#: GLSLWaveformWidget#2
+msgid "experimental"
 msgstr ""
 
 #: GLSimpleWaveformWidget#1
@@ -2873,6 +2877,50 @@ msgstr ""
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
+msgstr ""
+
+#: LegacySkinParser#1
+msgid "activate"
+msgstr ""
+
+#: LegacySkinParser#2
+msgid "toggle"
+msgstr ""
+
+#: LegacySkinParser#3
+msgid "right"
+msgstr ""
+
+#: LegacySkinParser#4
+msgid "left"
+msgstr ""
+
+#: LegacySkinParser#5
+msgid "right small"
+msgstr ""
+
+#: LegacySkinParser#6
+msgid "left small"
+msgstr ""
+
+#: LegacySkinParser#7
+msgid "up"
+msgstr ""
+
+#: LegacySkinParser#8
+msgid "down"
+msgstr ""
+
+#: LegacySkinParser#9
+msgid "up small"
+msgstr ""
+
+#: LegacySkinParser#10
+msgid "down small"
+msgstr ""
+
+#: LegacySkinParser#11
+msgid "Shortcut"
 msgstr ""
 
 #: LibraryScannerDlg#1
@@ -2989,151 +3037,151 @@ msgid "Continue"
 msgstr ""
 
 #: MixxxApp#18
-msgid "Load track to Deck %1"
+msgid "Load Track to Deck %1"
 msgstr ""
 
 #: MixxxApp#19
-msgid "Loads a track in deck %1"
+msgid "Add &New Playlist"
 msgstr ""
 
 #: MixxxApp#20
-msgid "Open"
+msgid "Add New &Crate"
 msgstr ""
 
 #: MixxxApp#21
-msgid "Ctrl+O"
+msgid "Enable &Keyboard Shortcuts"
 msgstr ""
 
 #: MixxxApp#22
-msgid "Ctrl+Shift+O"
+msgid "Load track to Deck %1"
 msgstr ""
 
 #: MixxxApp#23
-msgid "&Exit"
+msgid "Loads a track in deck %1"
 msgstr ""
 
 #: MixxxApp#24
-msgid "Quits Mixxx"
+msgid "Open"
 msgstr ""
 
 #: MixxxApp#25
-msgid "Ctrl+Q"
+msgid "Ctrl+O"
 msgstr ""
 
 #: MixxxApp#26
-msgid "&Rescan Library"
+msgid "Ctrl+Shift+O"
 msgstr ""
 
 #: MixxxApp#27
-msgid "Rescans library folders for changes to tracks."
+msgid "&Exit"
 msgstr ""
 
 #: MixxxApp#28
-msgid "Add &new playlist"
+msgid "Quits Mixxx"
 msgstr ""
 
 #: MixxxApp#29
-msgid "Ctrl+N"
+msgid "Ctrl+Q"
 msgstr ""
 
 #: MixxxApp#30
-msgid "Add new &crate"
+msgid "&Rescan Library"
 msgstr ""
 
 #: MixxxApp#31
-msgid "Deck %1 is currently playing a track."
+msgid "Rescans library folders for changes to tracks."
 msgstr ""
 
 #: MixxxApp#32
-msgid "Are you sure you want to load a new track?"
+msgid "Ctrl+N"
 msgstr ""
 
 #: MixxxApp#33
-msgid "&Full Screen"
+msgid "Deck %1 is currently playing a track."
 msgstr ""
 
 #: MixxxApp#34
-msgid "F11"
+msgid "Are you sure you want to load a new track?"
 msgstr ""
 
 #: MixxxApp#35
-msgid "&Preferences"
+msgid "&Full Screen"
 msgstr ""
 
 #: MixxxApp#36
-msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
+msgid "F11"
 msgstr ""
 
 #: MixxxApp#37
-msgid "Ctrl+P"
+msgid "&Preferences"
 msgstr ""
 
 #: MixxxApp#38
-msgid "&About"
+msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr ""
 
 #: MixxxApp#39
-msgid "&Community Support"
+msgid "Ctrl+P"
 msgstr ""
 
 #: MixxxApp#40
-msgid "Get help with Mixxx"
+msgid "&About"
 msgstr ""
 
 #: MixxxApp#41
-msgid "&User Manual"
+msgid "&Community Support"
 msgstr ""
 
 #: MixxxApp#42
-msgid "Send Us &Feedback"
+msgid "Get help with Mixxx"
 msgstr ""
 
 #: MixxxApp#43
-msgid "&Translate this application"
+msgid "&User Manual"
 msgstr ""
 
 #: MixxxApp#44
-msgid "Ctrl+Y"
+msgid "Send Us &Feedback"
 msgstr ""
 
 #: MixxxApp#45
-msgid "Ctrl+U"
+msgid "Ctrl+Y"
 msgstr ""
 
 #: MixxxApp#46
-msgid "Ctrl+L"
+msgid "Ctrl+U"
 msgstr ""
 
 #: MixxxApp#47
-msgid "&Record Mix"
+msgid "Ctrl+L"
 msgstr ""
 
 #: MixxxApp#48
-msgid "Ctrl+R"
+msgid "&Record Mix"
 msgstr ""
 
 #: MixxxApp#49
-msgid "Create a new playlist"
+msgid "Ctrl+R"
 msgstr ""
 
 #: MixxxApp#50
-msgid "Create a new crate"
+msgid "Create a new playlist"
 msgstr ""
 
 #: MixxxApp#51
-msgid "Ctrl+Shift+F"
+msgid "Create a new crate"
 msgstr ""
 
 #: MixxxApp#52
-msgid "Enable Vinyl Control &1"
+msgid "Ctrl+Shift+F"
 msgstr ""
 
 #: MixxxApp#53
-msgid "Enable Vinyl Control &2"
+msgid "Enable Vinyl Control &1"
 msgstr ""
 
 #: MixxxApp#54
-msgid "Enable live &broadcasting"
+msgid "Enable Vinyl Control &2"
 msgstr ""
 
 #: MixxxApp#55
@@ -3181,76 +3229,80 @@ msgid "Ctrl+Shift+N"
 msgstr ""
 
 #: MixxxApp#66
-msgid "Enable &keyboard shortcuts"
-msgstr ""
-
-#: MixxxApp#67
 msgid "Toggles keyboard shortcuts on or off"
 msgstr ""
 
-#: MixxxApp#68
+#: MixxxApp#67
 msgid "Ctrl+`"
 msgstr ""
 
+#: MixxxApp#68
+msgid "&Translate This Application"
+msgstr ""
+
 #: MixxxApp#69
-msgid "&Options"
+msgid "Enable Live &Broadcasting"
 msgstr ""
 
 #: MixxxApp#70
-msgid "&Library"
+msgid "&Options"
 msgstr ""
 
 #: MixxxApp#71
-msgid "&View"
+msgid "&Library"
 msgstr ""
 
 #: MixxxApp#72
-msgid "&Help"
+msgid "&View"
 msgstr ""
 
 #: MixxxApp#73
-msgid "&Vinyl Control"
+msgid "&Help"
 msgstr ""
 
 #: MixxxApp#74
+msgid "&Vinyl Control"
+msgstr ""
+
+#: MixxxApp#75
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
 
-#: MixxxApp#75
+#: MixxxApp#76
 msgid "Mixxx %1 Development Team"
 msgstr ""
 
-#: MixxxApp#76
+#: MixxxApp#77
 msgid "With contributions from:"
 msgstr ""
 
-#: MixxxApp#77
+#: MixxxApp#78
 msgid "And special thanks to:"
 msgstr ""
 
-#: MixxxApp#78
+#: MixxxApp#79
 msgid "Past Developers"
 msgstr ""
 
-#: MixxxApp#79
+#: MixxxApp#80
 msgid "Past Contributors"
 msgstr ""
 
-#: MixxxApp#80
+#: MixxxApp#81
 msgid "Error in skin file"
 msgstr ""
 
-#: MixxxApp#81
+#: MixxxApp#82
 msgid "The selected skin cannot be loaded."
 msgstr ""
 
-#: MixxxApp#82
+#: MixxxApp#83
 msgid "OpenGL Direct Rendering"
 msgstr ""
 
-#: MixxxApp#83
+#: MixxxApp#84
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3261,11 +3313,11 @@ msgid ""
 "not be present, but you should<br>not experience degraded performance."
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#85
 msgid "Confirm Exit"
 msgstr ""
 
-#: MixxxApp#85
+#: MixxxApp#86
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
@@ -3401,6 +3453,16 @@ msgstr ""
 msgid "Unknown path type %1"
 msgstr ""
 
+#: QtSimpleWaveformWidget#1
+msgctxt "QtSimpleWaveformWidget#1"
+msgid "Simple"
+msgstr ""
+
+#: QtWaveformWidget#1
+msgctxt "QtWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
 #: RecordingFeature#1
 msgid "Recordings"
 msgstr ""
@@ -3482,6 +3544,10 @@ msgstr ""
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
+msgstr ""
+
+#: SoftwareWaveformWidget#2
+msgid "Software"
 msgstr ""
 
 #: Tooltips#1
@@ -4314,11 +4380,11 @@ msgid "Remove"
 msgstr ""
 
 #: WTrackTableView#5
-msgid "Properties..."
+msgid "Properties"
 msgstr ""
 
 #: WTrackTableView#6
-msgid "Open in file browser"
+msgid "Open in File Browser"
 msgstr ""
 
 #: WTrackTableView#7

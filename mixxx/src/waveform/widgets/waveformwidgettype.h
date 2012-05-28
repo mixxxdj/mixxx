@@ -5,8 +5,10 @@ class WaveformWidgetType {
   public:
     enum Type {
         EmptyWaveform = 0,
-        SimpleSoftwareWaveform, //TODO
+        SoftwareSimpleWaveform, //TODO
         SoftwareWaveform, //TODO
+        QtSimpleWaveform, //TODO
+        QtWaveform,
         GLSimpleWaveform,
         GLWaveform,
         GLSLWaveform,

@@ -27,9 +27,9 @@ void SoftTakeover::enable(ControlObject* control) {
     if (control == NULL) {
         return;
     }
-    // Store current time
+    // Initialize times
     if (!m_times.contains(control)) {
-        m_times.insert(control, currentTimeMsecs());
+        m_times.insert(control, 0);
     }
     // Store current MixxxControl value
     if (!m_prevValues.contains(control)) {
@@ -92,7 +92,14 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
         }
 
         uint currentTime = currentTimeMsecs();
-        if (fabs(difference)>threshold &&
+        // We will get a sudden jump if we don't ignore the first value.
+        if (m_times.value(control) == 0) {
+            ignore = true;
+            // Change the stored time (but keep it far away from the current time)
+            //  so this block doesn't run again.
+            m_times.insert(control, 1);
+        }
+        else if (fabs(difference)>threshold &&
             fabs(prevDiff)>threshold && sameSide &&
             (currentTime - m_times.value(control)) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
             ignore = true;

@@ -22,7 +22,7 @@
 #include "widget/wwidget.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
-#include "waveform/renderers/waveformmark.h"
+#include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
 
 /**
@@ -117,7 +117,7 @@ private:
     QColor m_endOfTrackColor;
 
     WaveformSignalColors m_signalColors;
-    std::vector<WaveformMark> m_marks;
+    WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 
     /** coefficient value-position linear transposition */
