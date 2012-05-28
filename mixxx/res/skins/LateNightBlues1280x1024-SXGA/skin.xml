@@ -18,7 +18,11 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
-	v1.10.0.18	(25/04/2012)
+	v1.10.0.14	(28/05/2012)
+	*Fix: Swap Delay & LFO knobs for Flanger FX in LateNight skins skin.xml.
+	 The order is now like in other skins (e.g. Deere) and GUI labels actually match functionality. Fix lp:1004826
+
+	v1.10.0.13	(25/04/2012)
 	* Update: Tooltips for waveform (Pitch bend on right click)
 	* Change: Use global QToolTip style declaration instead of one per node
 
@@ -3541,13 +3545,13 @@
 					**********************************************
 					-->
 					<Knob>
-						<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<Tooltip>Flanger LFO period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>15,9</Pos>
 						<Connection>
-							<ConfigKey>[Flanger],lfoDelay</ConfigKey>
+							<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
 						</Connection>
 					</Knob>
 					<Knob>
@@ -3561,13 +3565,13 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<Tooltip>Flanger LFO period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>170,9</Pos>
 						<Connection>
-							<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+							<ConfigKey>[Flanger],lfoDelay</ConfigKey>
 						</Connection>
 					</Knob>
 				</Children>
