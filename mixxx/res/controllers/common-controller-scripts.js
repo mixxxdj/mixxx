@@ -123,112 +123,29 @@ script.midiPitch = function (LSB, MSB, status) {
 }
 
 /* -------- ------------------------------------------------------
-     script.spinbackDefault
-   Purpose: wrapper around spinback() that can be directly mapped 
+     script.spinback
+   Purpose: wrapper around engine.spinback() that can be directly mapped 
             from xml for a spinback effect
+            e.g: <key>script.spinback</key>
    Input:   channel, control, value, status, group
    Output:  none
    -------- ------------------------------------------------------ */
-script.spinbackDefault = function(channel, control, value, status, group) {
+script.spinback= function(channel, control, value, status, group) {
     // disable on note-off or zero value note/cc
     engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
 }
 
 /* -------- ------------------------------------------------------
-     script.brakeDefault
-   Purpose: wrapper around brake() that can be directly mapped 
+     script.brake
+   Purpose: wrapper around engine.brake() that can be directly mapped 
             from xml for a brake effect
+            e.g: <key>script.brake</key>
    Input:   channel, control, value, status, group
    Output:  none
    -------- ------------------------------------------------------ */
-script.brakeDefault = function(channel, control, value, status, group) {
+script.brake= function(channel, control, value, status, group) {
     // disable on note-off or zero value note/cc
     engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
-}
-
-/* -------- ------------------------------------------------------
-     script.spinback
-   Purpose: Activate or disable a spinback effect on the chosen deck
-   Input:   group, enable/disable, [delay], [factor], [inital rate]
-   Output:  None
-   -------- ------------------------------------------------------ */
-script.spinback = function(group, activate, factor, rate, delay) {
-    if (factor == undefined) factor = 0.8;
-    if (rate == undefined) rate = -10;
-    if (delay == undefined) delay = 5;
-    script.deckSpinbackBrake(group, activate, factor, rate, delay);
-}
-
-/* -------- ------------------------------------------------------
-     script.brake
-   Purpose: Activate or disable a brake effect on the chosen deck
-   Input:   group, enable/disable, [delay], [factor], [inital rate]
-   Output:  None
-   -------- ------------------------------------------------------ */
-script.brake = function(group, activate, factor, rate, delay) {
-    if (factor == undefined) factor = 0.95;
-    if (rate == undefined) rate = 1;
-    if (delay == undefined) delay = 0;
-    script.deckSpinbackBrake(group, activate, factor, rate, delay);
-}
-
-script.deckSpinbackBrakeData = {};
-
-script.deckSpinbackBrake = function(group, activate, factor, rate, delay) {
-
-    if (activate != undefined) {
-
-        // store the current settings
-
-        if (script.deckSpinbackBrakeData[group] == undefined) {
-            script.deckSpinbackBrakeData[group] = { timer: null, delay: delay, factor: factor, rate: rate };
-        }
-        else {
-            script.deckSpinbackBrakeData[group].delay = delay;
-            script.deckSpinbackBrakeData[group].factor = factor;
-            script.deckSpinbackBrakeData[group].rate = rate;
-        }
-
-        // kill timer when both enabling or disabling
-
-        if (script.deckSpinbackBrakeData[group].timer != null) {
-            engine.stopTimer(script.deckSpinbackBrakeData[group].timer);
-            script.deckSpinbackBrakeData[group].timer = null;
-        }
-
-        // enable/disable scratch2 mode
-
-        engine.setValue(group, 'scratch2_enable', activate ? 1 : 0);
-
-        if (activate) {
-            // save keylock status and disable it
-            if ((script.deckSpinbackBrakeData[group].keylock = engine.getValue(group, "keylock")) > 0) {
-                engine.setValue(group, "keylock", 0);
-            }
-
-            // setup timer and send first scratch2 'tick' if activating
-            script.deckSpinbackBrakeData[group].timer = engine.beginTimer(50, 'script.deckSpinbackBrake("' + group + '")');
-            engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
-        }
-
-        // re-enable keylock if needed
-
-        else if (script.deckSpinbackBrakeData[group].keylock) {
-            engine.setValue(group, "keylock", 1);
-        }
-    }
-    else {
-        // being called from a timer
-
-        engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
-
-        if (script.deckSpinbackBrakeData[group].delay > 0) {
-            script.deckSpinbackBrakeData[group].delay--;
-        }
-        else {
-            script.deckSpinbackBrakeData[group].rate *= script.deckSpinbackBrakeData[group].factor;
-        }
-    }
 }
 
 // bpm - Used for tapping the desired BPM for a deck
