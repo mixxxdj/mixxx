@@ -263,40 +263,40 @@ PioneerCDJHID.registerInputPackets = function() {
     // addControl(group,name,offset,pack,bitmask,isEncoder,callback)
     // Input controller state packet - 'control' is a special name
     packet = new HIDPacket('control',[],20);
-    packet.addControl('hid','deck_switch',0,'B',0);
-    packet.addControl('[Playlist]','SelectPrevTrack',0,'B',2);
+    packet.addControl('hid','deck_switch',0,'B',0x1);
+    packet.addControl('[Playlist]','SelectPrevTrack',0,'B',0x4);
 
-    packet.addControl('[Playlist]','SelectNextTrack',0,'B',3);
-    packet.addControl('deck','back',0,'B',4);
-    packet.addControl('deck','fwd',0,'B',5);
-    packet.addControl('deck','cue_default',0,'B',6);
-    packet.addControl('deck','play',0,'B',7);
+    packet.addControl('[Playlist]','SelectNextTrack',0,'B',0x8);
+    packet.addControl('deck','back',0,'B',0x10);
+    packet.addControl('deck','fwd',0,'B',0x20);
+    packet.addControl('deck','cue_default',0,'B',0x40);
+    packet.addControl('deck','play',0,'B',0x80);
 
-    packet.addControl('deck','reloop_exit',1,'B',5);
-    packet.addControl('deck','loop_out',1,'B',6);
-    packet.addControl('deck','loop_in',1,'B',7);
+    packet.addControl('deck','reloop_exit',1,'B',0x20);
+    packet.addControl('deck','loop_out',1,'B',0x40);
+    packet.addControl('deck','loop_in',1,'B',0x80);
 
-    packet.addControl('deck','tempo_mode',2,'B',3);
-    packet.addControl('deck','keylock',2,'B',4);
-    packet.addControl('deck','loop_halve',2,'B',5);
-    packet.addControl('deck','loop_double',2,'B',6);
-    packet.addControl('deck','quantize',2,'B',7);
+    packet.addControl('deck','tempo_mode',2,'B',0x8);
+    packet.addControl('deck','keylock',2,'B',0x10);
+    packet.addControl('deck','loop_halve',2,'B',0x20);
+    packet.addControl('deck','loop_double',2,'B',0x40);
+    packet.addControl('deck','quantize',2,'B',0x80);
 
-    packet.addControl('deck','pfl',3,'B',1);
-    packet.addControl('deck','beatsync',3,'B',3);
-    packet.addControl('deck','beats_translate_curpos',3,'B',4);
-    packet.addControl('deck','LoadSelectedTrack',3,'B',5);
+    packet.addControl('deck','pfl',3,'B',0x2);
+    packet.addControl('deck','beatsync',3,'B',0x8);
+    packet.addControl('deck','beats_translate_curpos',3,'B',0x10);
+    packet.addControl('deck','LoadSelectedTrack',3,'B',0x20);
 
-    packet.addControl('modifiers','beatloop_size',4,'B',3);
-    packet.addControl('deck','beatloop_16',4,'B',4);
-    packet.addControl('deck','beatloop_8',4,'B',5);
-    packet.addControl('deck','beatloop_4',4,'B',6);
-    packet.addControl('deck','beatloop_2',4,'B',7);
+    packet.addControl('modifiers','beatloop_size',4,'B',0x8);
+    packet.addControl('deck','beatloop_16',4,'B',0x10);
+    packet.addControl('deck','beatloop_8',4,'B',0x20);
+    packet.addControl('deck','beatloop_4',4,'B',0x40);
+    packet.addControl('deck','beatloop_2',4,'B',0x80);
 
-    packet.addControl('deck','reverse',7,'B',0);
-    packet.addControl('deck','jog_touch',7,'B',5);
-    packet.addControl('deck','jog_direction',7,'B',6);
-    packet.addControl('deck','jog_move',7,'B',7);
+    packet.addControl('deck','reverse',7,'B',0x1);
+    packet.addControl('deck','jog_touch',7,'B',0x20);
+    packet.addControl('deck','jog_direction',7,'B',0x40);
+    packet.addControl('deck','jog_move',7,'B',0x80);
 
     packet.addControl('deck','pregain',8,'B');
     packet.addControl('[Playlist]','SelectTrackKnob',10,'H',undefined,true);
