@@ -10,7 +10,8 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column) :
     if(QTableView *tableView = qobject_cast<QTableView *>(parent))
     {
         m_pTableView = tableView;
-        m_pButton = new QPushButton("...", m_pTableView);
+        m_pButton = new QPushButton("", m_pTableView);
+        m_pButton->setIcon(QIcon("res/monkey_off_16x16.png"));
         m_pButton->hide();
         // m_pTableView->setMouseTracking(true);
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
@@ -38,8 +39,8 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     Q_UNUSED(option);
     //TODO(kain88) Memory leak or does Qt take care about that for us?
     QPushButton * btn = new QPushButton(parent);
-    btn->setText(qVariantValue<QString>(index.data()));
-
+    // btn->setText(qVariantValue<QString>(index.data()));
+    btn->setIcon(QIcon("res/monkey_off_16x16.png"));
     //the handle will emit the signal to load the track
     PreviewdeckButtonHandler *phandle = new PreviewdeckButtonHandler(this,
                                                     index, m_pTableView);
@@ -68,7 +69,7 @@ void PreviewButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
 void PreviewButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     m_pButton->setGeometry(option.rect);
-    m_pButton->setText(qVariantValue<QString>(index.data()));
+    //m_pButton->setText(qVariantValue<QString>(index.data()));
     if (option.state == QStyle::State_Selected)
                     painter->fillRect(option.rect, option.palette.highlight());
     QPixmap map = QPixmap::grabWidget(m_pButton);
@@ -82,7 +83,8 @@ void PreviewButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOp
 }
 
 QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
-    return QStyledItemDelegate::sizeHint(option, index);
+    // return QStyledItemDelegate::sizeHint(option, index);
+    return m_pButton->sizeHint();
 }
 
 //cellEntered
