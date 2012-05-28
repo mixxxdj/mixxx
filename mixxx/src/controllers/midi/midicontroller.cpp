@@ -290,8 +290,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         args << QScriptValue(value);
         args << QScriptValue(status);
         args << QScriptValue(mc.group());
-
-        pEngine->execute(mc.item(), args);
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
+        pEngine->execute(function, args);
         return;
     }
 
@@ -309,14 +309,24 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     // compute 14-bit number for pitch bend messages
     if (opCode == MIDI_PITCH_BEND) {
-        unsigned int ivalue;
+        int ivalue;
         ivalue = (value << 7) | control;
 
         currMixxxControlValue = p->get();
 
         // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
-        newValue = (ivalue-8192)/8191;
-        // computeValue not done on pitch messages because it all assumes 7-bit numbers
+        if (options.invert) {
+            newValue = 0x2000-ivalue;
+            if (newValue < 0) newValue--;
+        }
+        else {
+            newValue = ivalue-0x2000;
+            if (newValue > 0) newValue++;
+        }
+        // TODO: use getMin() and getMax() to make this divisor work with all COs
+        newValue /= 0x2000; // FIXME: hard-coded for -1.0..1.0
+
+        // computeValue not (yet) done on pitch messages because it all assumes 7-bit numbers
     } else {
         newValue = computeValue(options, currMixxxControlValue, value);
     }
@@ -324,13 +334,26 @@ void MidiController::receive(unsigned char status, unsigned char control,
     if (options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(p);
-        if (m_st.ignore(p, newValue, true)) {
-            return;
-        }
     }
 
     ControlObject::sync();
-    p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+    if (opCode == MIDI_PITCH_BEND) {
+        // Absolute value is calculated above on Pitch messages (-1..1)
+        if (options.soft_takeover) {
+            if (m_st.ignore(p, newValue, false)) {
+                return;
+            }
+        }
+        p->queueFromThread(newValue);
+    }
+    else {
+        if (options.soft_takeover) {
+            if (m_st.ignore(p, newValue, true)) {
+                return;
+            }
+        }
+        p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+    }
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
@@ -484,7 +507,8 @@ void MidiController::receive(QByteArray data) {
         if (pEngine == NULL) {
             return;
         }
-        if (!pEngine->execute(mc.item(), data)) {
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
+        if (!pEngine->execute(function, data)) {
             qDebug() << "MidiController: Invalid script function" << mc.item();
         }
         return;
@@ -497,3 +521,4 @@ void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, uns
             (((unsigned int)byte1) << 8) | status;
     send(word);
 }
+

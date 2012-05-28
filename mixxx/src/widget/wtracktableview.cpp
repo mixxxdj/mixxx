@@ -165,7 +165,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        QItemDelegate* delegate = track_model->delegateForColumn(i);
+        QAbstractItemDelegate* delegate = track_model->delegateForColumn(i, this);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
@@ -257,11 +257,11 @@ void WTrackTableView::createActions() {
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
-    m_pPropertiesAct = new QAction(tr("Properties..."), this);
+    m_pPropertiesAct = new QAction(tr("Properties"), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()),
             this, SLOT(slotShowTrackInfo()));
 
-    m_pFileBrowserAct = new QAction(tr("Open in file browser"), this);
+    m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
@@ -507,6 +507,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel == NULL) {
+            return;
+        }
+        QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+        bool allowClear = true;
+        for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+            QModelIndex index = selectedTrackIndices.at(i);
+            TrackPointer track = trackModel->getTrack(index);
+            if (track->hasBpmLock()) {
+                allowClear = false;
+            }
+        }
+        m_pClearBeatsAction->setEnabled(allowClear);
         m_pMenu->addAction(m_pClearBeatsAction);
     }
 
@@ -1123,6 +1137,8 @@ void WTrackTableView::slotClearBeats() {
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-        track->setBeats(BeatsPointer());
+        if (!track->hasBpmLock()) {
+            track->setBeats(BeatsPointer());
+        }
     }
 }

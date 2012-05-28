@@ -521,20 +521,30 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformrenderbeat.cpp",
                    "waveform/renderers/waveformrendererendoftrack.cpp",
                    "waveform/renderers/waveformrendererpreroll.cpp",
+
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
-                   "waveform/renderers/glslwaveformrenderersignal.cpp",
-                   "waveform/renderers/waveformsignalcolors.cpp",
                    "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/glslwaveformrenderersignal.cpp",
+
+                   "waveform/renderers/waveformsignalcolors.cpp",
+
+                   "waveform/renderers/waveformrenderersignalbase.cpp",
                    "waveform/renderers/waveformmark.cpp",
+                   "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
-                   "waveform/widgets/glwaveformwidget.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
                    "waveform/widgets/softwarewaveformwidget.cpp",
-                   "waveform/widgets/glslwaveformwidget.cpp",
+                   "waveform/widgets/qtwaveformwidget.cpp",
+                   "waveform/widgets/qtsimplewaveformwidget.cpp",
+                   "waveform/widgets/glwaveformwidget.cpp",
                    "waveform/widgets/glsimplewaveformwidget.cpp",
+
+                   "waveform/widgets/glslwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
