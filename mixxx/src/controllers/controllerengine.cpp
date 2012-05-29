@@ -100,7 +100,7 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
         if (m_bDebug) {
             qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
         }
-        init.call(QScriptValue(), args);
+        init.call(prefix, args);
     }
 }
 
@@ -245,22 +245,12 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 void ControllerEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
     m_scriptFunctionPrefixes = scriptFunctionPrefixes;
 
-    foreach (QString prefix, m_scriptFunctionPrefixes) {
-        if (prefix == "") {
-            continue;
-        }
-        QString initMethod = QString("%1.init").arg(prefix);
-        if (m_bDebug) {
-            qDebug() << "ControllerEngine: Executing" << initMethod;
-        }
+    QScriptValueList args;
+    args << QScriptValue(m_pController->getName());
+    args << QScriptValue(m_bDebug);
 
-        QScriptValueList args;
-        args << QScriptValue(m_pController->getName());
-        args << QScriptValue(m_bDebug);
-        if (!execute(initMethod, args)) {
-            qWarning() << "ControllerEngine: No" << initMethod << "function in script";
-        }
-    }
+    // Call the init method for all the prefixes.
+    callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
     emit(initialized());
 }
@@ -742,8 +732,15 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
         conn.key = key;
         conn.ce = this;
         conn.function = function;
+
         QScriptContext *ctxt = m_pEngine->currentContext();
-        conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+        // Our current context is a function call to engine.connectControl. We
+        // want to grab the 'this' from the caller's context, so we walk up the
+        // stack.
+        if (ctxt) {
+            ctxt = ctxt->parentContext();
+            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+        }
 
         if (callback.isString()) {
             conn.id = callback.toString();
