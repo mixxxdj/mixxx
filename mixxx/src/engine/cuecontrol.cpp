@@ -163,9 +163,7 @@ void CueControl::detachCue(int hotCue) {
 void CueControl::loadTrack(TrackPointer pTrack) {
     Q_ASSERT(pTrack);
 
-    qDebug() << "kain88 loadTrack before mutex";
     QMutexLocker lock(&m_mutex);
-    qDebug() << "kain88 loadTrack after mutex";
     if (m_pLoadedTrack)
         unloadTrack(m_pLoadedTrack);
 
@@ -210,9 +208,7 @@ void CueControl::loadTrack(TrackPointer pTrack) {
 }
 
 void CueControl::unloadTrack(TrackPointer pTrack) {
-    qDebug() << "kain88 unloadTrack before mutex";
     QMutexLocker lock(&m_mutex);
-    qDebug() << "kain88 unloadTrack after mutex";
 
     disconnect(pTrack.data(), 0, this, 0);
     for (int i = 0; i < m_iNumHotCues; ++i) {

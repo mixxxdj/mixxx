@@ -39,7 +39,6 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     Q_UNUSED(option);
     //TODO(kain88) Memory leak or does Qt take care about that for us?
     QPushButton * btn = new QPushButton(parent);
-    // btn->setText(qVariantValue<QString>(index.data()));
     btn->setIcon(QIcon("res/monkey_off_16x16.png"));
     //the handle will emit the signal to load the track
     PreviewdeckButtonHandler *phandle = new PreviewdeckButtonHandler(this,
@@ -68,8 +67,8 @@ void PreviewButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
 //paint
 void PreviewButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     m_pButton->setGeometry(option.rect);
-    //m_pButton->setText(qVariantValue<QString>(index.data()));
     if (option.state == QStyle::State_Selected)
                     painter->fillRect(option.rect, option.palette.highlight());
     QPixmap map = QPixmap::grabWidget(m_pButton);
@@ -83,7 +82,8 @@ void PreviewButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOp
 }
 
 QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const{
-    // return QStyledItemDelegate::sizeHint(option, index);
+    Q_UNUSED(option);
+    Q_UNUSED(index);
     return m_pButton->sizeHint();
 }
 
