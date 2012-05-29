@@ -38,17 +38,19 @@ EngineDeck::EngineDeck(const char* group,
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
 
-    // Set up passthrough utilities
+    // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
     m_pConversionBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_bPassthroughIsActive = false;
+    m_bPassthroughWasActive = false;
 
     // Set up passthrough toggle button
     m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pPassing, SIGNAL(valueChanged(double)),
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
-    m_bPassthroughIsActive = false;
 
+    // Set up additional engines
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
     m_pFlanger = new EngineFlanger(group);
@@ -75,6 +77,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
 
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
+    // Feed the incoming audio through if passthrough is active
     if (isPassthroughActive()) {
         int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
         if (samplesRead < iBufferSize) {
@@ -83,14 +86,25 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
             // as we consume them, right?
             Q_ASSERT(false);
         }
+
+        m_bPassthroughWasActive = true;
+
     } else {
-        SampleUtil::applyGain(pOut, 0.0, iBufferSize);
-        m_sampleBuffer.skip(iBufferSize);
+
+        // If passthrough is no longer enabled, zero out the buffer
+        if (m_bPassthroughWasActive) {
+            SampleUtil::applyGain(pOut, 0.0, iBufferSize);
+            m_sampleBuffer.skip(iBufferSize);
+            m_bPassthroughWasActive = false;
+            return;
+        }
 
         // Process the raw audio
         m_pBuffer->process(0, pOut, iBufferSize);
         // Emulate vinyl sounds
         m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+
+        m_bPassthroughWasActive = false;
     }
 
     // Apply pregain
@@ -110,6 +124,10 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
 }
 
 bool EngineDeck::isActive() {
+    if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
+        return true;
+    }
+
     return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
 }
 
@@ -124,8 +142,9 @@ bool EngineDeck::isMaster() {
 void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
 
     // Skip receiving audio input if passthrough is not active
-    if (!m_bPassthroughIsActive)
+    if (!m_bPassthroughIsActive) {
         return;
+    }
 
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!

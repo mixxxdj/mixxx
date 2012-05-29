@@ -87,6 +87,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
     bool m_bPassthroughIsActive;
+    bool m_bPassthroughWasActive;
 };
 
 #endif
