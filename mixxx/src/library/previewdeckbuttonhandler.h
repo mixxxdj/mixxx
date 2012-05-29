@@ -29,9 +29,7 @@ class PreviewdeckButtonHandler : public QObject
     
     private:
         QModelIndex m_index;
-        TrackModel *m_pTrackModel;
         QTableView *m_pTableView;
-        QString m_group;
 };
 
 #endif

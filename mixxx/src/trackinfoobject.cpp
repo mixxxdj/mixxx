@@ -470,11 +470,7 @@ QString TrackInfoObject::getArtist()  const
 
 void TrackInfoObject::setArtist(QString s)
 {
-    qDebug() <<"kain88 trackinfoobject setArtist before lock";
-    qDebug() <<s;
-    qDebug() <<"kain88 trackinfoobject setArtist before lock"<<&m_qMutex;
     QMutexLocker lock(&m_qMutex);
-    qDebug() <<"kain88 trackinfoobject setArtist after lock";
     s = s.trimmed();
     bool dirty = m_sArtist != s;
     m_sArtist = s;

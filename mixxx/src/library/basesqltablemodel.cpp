@@ -663,8 +663,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         pTrack->setKey(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_PREVIEW) == column){
-        //TODO (kain88) add a previewcolumn to the table
-        //qDebug() << "kain88 here is place for a preview column";
+        //kain88 --  this column gets no value
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLock(value.toBool());
     }
