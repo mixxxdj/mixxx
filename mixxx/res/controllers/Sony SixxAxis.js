@@ -118,9 +118,9 @@ SonySixxAxis.left_bend = function(field) {
     if (controller.modifierIsSet('shift_left')) 
         return;
     if (field.name=='pressure_top_left') 
-        SonySixxAxis.jog_bend('deck1','up',field);
-    if (field.name=='pressure_bottom_left') 
         SonySixxAxis.jog_bend('deck1','down',field);
+    if (field.name=='pressure_bottom_left') 
+        SonySixxAxis.jog_bend('deck1','up',field);
 }
 
 SonySixxAxis.right_bend = function(field) {
@@ -128,9 +128,9 @@ SonySixxAxis.right_bend = function(field) {
     if (controller.modifierIsSet('shift_right')) 
         return;
     if (field.name=='pressure_top_right')
-        SonySixxAxis.jog_bend('deck2','up',field);
-    if (field.name=='pressure_bottom_right')
         SonySixxAxis.jog_bend('deck2','down',field);
+    if (field.name=='pressure_bottom_right')
+        SonySixxAxis.jog_bend('deck2','up',field);
 }
 
 SonySixxAxis.jog_bend = function(group,direction,field) {
