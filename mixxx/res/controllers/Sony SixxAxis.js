@@ -83,6 +83,16 @@ SonySixxAxis.registerCallbacks = function(id) {
     controller.enableBitAutoRepeat("hid","pressure_bottom_right");
     controller.registerInputCallback("control","hid","pressure_top_right",SonySixxAxis.right_bend);
     controller.enableBitAutoRepeat("hid","pressure_top_right");
+
+    // Callbacks for jog controls
+    controller.registerInputCallback("control","hid","jog_left_y",SonySixxAxis.left_jog);
+    controller.enableBitAutoRepeat("hid","jog_left_y");
+    controller.registerInputCallback("control","hid","jog_right_y",SonySixxAxis.right_jog);
+    controller.enableBitAutoRepeat("hid","jog_right_y");
+
+    controller.registerInputCallback("control","hid","jog_left_x",SonySixxAxis.left_jog);
+    controller.registerInputCallback("control","hid","jog_right_x",SonySixxAxis.right_jog);
+
 };
 
 SonySixxAxis.play = function(field) {
@@ -111,6 +121,45 @@ SonySixxAxis.front_right = function(field) {
         engine.setValue('[Playlist]','SelectPrevTrack',true);
     if (field.name=='button_bottom_right') 
         engine.setValue('[Playlist]','SelectNextTrack',true);
+}
+
+SonySixxAxis.left_jog = function(field) {
+    var controller = SonySixxAxis.controller;
+    var group = controller.resolveGroup('deck1');
+    if (group==undefined)
+        return;
+    if (field.name=='jog_left_y') {
+        if (field.delta<=0) 
+            return;
+        old_value = engine.getValue(group,'rate');
+        if (field.value<115)
+            engine.setValue(group,'rate',old_value+0.005);
+        else if (field.value>135)
+            engine.setValue(group,'rate',old_value-0.005);
+    }
+    if (field.name=='jog_left_x') {
+
+    }
+}
+
+SonySixxAxis.right_jog = function(field) {
+    var controller = SonySixxAxis.controller;
+    var group = controller.resolveGroup('deck2');
+    var old_value = undefined;
+    if (group==undefined)
+        return;
+    if (field.name=='jog_right_y') {
+        if (field.delta<=0) 
+            return;
+        old_value = engine.getValue(group,'rate');
+        if (field.value<115)
+            engine.setValue(group,'rate',old_value+0.005);
+        else if (field.value>135)
+            engine.setValue(group,'rate',old_value-0.005);
+    }
+    if (field.name=='jog_right_x') {
+
+    }
 }
 
 SonySixxAxis.left_bend = function(field) {
