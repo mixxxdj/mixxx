@@ -33,21 +33,28 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
         // If product IDs do not match, skip.
         if (cur_dev->product_id != blacklisted.product_id)
             continue;
-        // If interface number is present and the interface numbers do not
-        // match, skip.
-        if (interface_number_valid &&
-            cur_dev->interface_number != blacklisted.interface_number) {
-            continue;
-        }
-        // If usage page is valid and the device usage pages differ, skip.
-        if (cur_dev->usage_page != 0 && blacklisted.usage_page != 0 &&
-            cur_dev->usage_page != blacklisted.usage_page) {
-            continue;
-        }
-        // If usage is valid and the device usages differ, skip.
-        if (cur_dev->usage != 0 && blacklisted.usage != 0 &&
-            cur_dev->usage != blacklisted.usage) {
-            continue;
+        // Blacklist entry based on interface number
+        if (blacklisted.interface_number != -1) {
+            // Skip matching for devices without usage info.
+            if (!interface_number_valid)
+                continue;
+            // If interface number is present and the interface numbers do not
+            // match, skip.
+            if (cur_dev->interface_number != blacklisted.interface_number) {
+                continue;
+            }
+        } 
+        // Blacklist entry based on usage_page and usage (both required)
+        if (blacklisted.usage_page != 0 && blacklisted.usage != 0) {
+            // Skip matching for devices with no usage_page/usage info.
+            if (cur_dev->usage_page == 0 && cur_dev->usage == 0)
+                continue;
+            // If usage_page is different, skip.
+            if (cur_dev->usage_page != blacklisted.usage_page)
+                continue;
+            // If usage is different, skip.
+            if (cur_dev->usage != blacklisted.usage)
+                continue;
         }
         return true;
     }

@@ -100,7 +100,7 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
         if (m_bDebug) {
             qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
         }
-        init.call(QScriptValue(), args);
+        init.call(prefix, args);
     }
 }
 
@@ -164,6 +164,9 @@ void ControllerEngine::gracefulShutdown() {
         }
     }
 
+    // Clear the Script Value cache
+    m_scriptValueCache.clear();
+
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
@@ -219,6 +222,8 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
     qDebug() << "ControllerEngine: Loading & evaluating all script code";
 
+    m_lastConfigPath = configPath;
+
     // scriptPaths holds the paths to search in when we're looking for scripts
     QList<QString> scriptPaths;
     scriptPaths.append(USER_PRESETS_PATH);
@@ -233,7 +238,35 @@ void ControllerEngine::loadScriptFiles(QString configPath,
         }
     }
 
+    connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
+            this, SLOT(scriptHasChanged(QString)));
+
     emit(initialized());
+}
+
+// Slot to run when a script file has changed
+void ControllerEngine::scriptHasChanged(QString scriptFilename) {
+    qDebug() << "ControllerEngine: Reloading Scripts";
+    ControllerPresetPointer pPreset = m_pController->getPreset();
+
+    disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
+               this, SLOT(scriptHasChanged(QString)));
+
+    gracefulShutdown();
+
+    // Delete the script engine, first clearing the pointer so that
+    // other threads will not get the dead pointer after we delete it.
+    if (m_pEngine != NULL) {
+        QScriptEngine *engine = m_pEngine;
+        m_pEngine = NULL;
+        engine->deleteLater();
+    }
+
+    initializeScriptEngine();
+    loadScriptFiles(m_lastConfigPath, pPreset->scriptFileNames);
+
+    qDebug() << "Re-initializing scripts";
+    initializeScripts(pPreset->scriptFunctionPrefixes);
 }
 
 /* -------- ------------------------------------------------------
@@ -245,22 +278,12 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 void ControllerEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
     m_scriptFunctionPrefixes = scriptFunctionPrefixes;
 
-    foreach (QString prefix, m_scriptFunctionPrefixes) {
-        if (prefix == "") {
-            continue;
-        }
-        QString initMethod = QString("%1.init").arg(prefix);
-        if (m_bDebug) {
-            qDebug() << "ControllerEngine: Executing" << initMethod;
-        }
+    QScriptValueList args;
+    args << QScriptValue(m_pController->getName());
+    args << QScriptValue(m_bDebug);
 
-        QScriptValueList args;
-        args << QScriptValue(m_pController->getName());
-        args << QScriptValue(m_bDebug);
-        if (!execute(initMethod, args)) {
-            qWarning() << "ControllerEngine: No" << initMethod << "function in script";
-        }
-    }
+    // Call the init method for all the prefixes.
+    callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
     emit(initialized());
 }
@@ -742,8 +765,15 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
         conn.key = key;
         conn.ce = this;
         conn.function = function;
+
         QScriptContext *ctxt = m_pEngine->currentContext();
-        conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+        // Our current context is a function call to engine.connectControl. We
+        // want to grab the 'this' from the caller's context, so we walk up the
+        // stack.
+        if (ctxt) {
+            ctxt = ctxt->parentContext();
+            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+        }
 
         if (callback.isString()) {
             conn.id = callback.toString();
@@ -868,6 +898,8 @@ bool ControllerEngine::evaluate(QString scriptName, QList<QString> scriptPaths) 
             filename = scriptPathDir.absoluteFilePath(scriptName);
             input.setFileName(filename);
             if (input.exists())  {
+                qDebug() << "ControllerEngine: Watching JS File:" << filename;
+                m_scriptWatcher.addPath(filename);
                 break;
             }
         }
