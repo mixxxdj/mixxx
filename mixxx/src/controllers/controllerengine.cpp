@@ -164,6 +164,9 @@ void ControllerEngine::gracefulShutdown() {
         }
     }
 
+    // Clear the Script Value cache
+    m_scriptValueCache.clear();
+
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
@@ -219,6 +222,8 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
     qDebug() << "ControllerEngine: Loading & evaluating all script code";
 
+    m_lastConfigPath = configPath;
+
     // scriptPaths holds the paths to search in when we're looking for scripts
     QList<QString> scriptPaths;
     scriptPaths.append(USER_PRESETS_PATH);
@@ -233,7 +238,35 @@ void ControllerEngine::loadScriptFiles(QString configPath,
         }
     }
 
+    connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
+            this, SLOT(scriptHasChanged(QString)));
+
     emit(initialized());
+}
+
+// Slot to run when a script file has changed
+void ControllerEngine::scriptHasChanged(QString scriptFilename) {
+    qDebug() << "ControllerEngine: Reloading Scripts";
+    ControllerPresetPointer pPreset = m_pController->getPreset();
+
+    disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
+               this, SLOT(scriptHasChanged(QString)));
+
+    gracefulShutdown();
+
+    // Delete the script engine, first clearing the pointer so that
+    // other threads will not get the dead pointer after we delete it.
+    if (m_pEngine != NULL) {
+        QScriptEngine *engine = m_pEngine;
+        m_pEngine = NULL;
+        engine->deleteLater();
+    }
+
+    initializeScriptEngine();
+    loadScriptFiles(m_lastConfigPath, pPreset->scriptFileNames);
+
+    qDebug() << "Re-initializing scripts";
+    initializeScripts(pPreset->scriptFunctionPrefixes);
 }
 
 /* -------- ------------------------------------------------------
@@ -865,6 +898,8 @@ bool ControllerEngine::evaluate(QString scriptName, QList<QString> scriptPaths) 
             filename = scriptPathDir.absoluteFilePath(scriptName);
             input.setFileName(filename);
             if (input.exists())  {
+                qDebug() << "ControllerEngine: Watching JS File:" << filename;
+                m_scriptWatcher.addPath(filename);
                 break;
             }
         }
