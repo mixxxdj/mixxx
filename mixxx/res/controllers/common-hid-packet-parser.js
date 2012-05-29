@@ -1079,7 +1079,6 @@ HIDController.prototype.linkControl = function(group,name,m_group,m_name) {
             return;
         }
     }
-    script.HIDDebug("Linking field " +field.id+ " to " + m_group+'.'+m_name);
     field.id = m_group+'.'+m_name;
     field.group = m_group;
     field.name = m_name;
