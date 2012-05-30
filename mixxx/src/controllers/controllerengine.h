@@ -11,6 +11,7 @@
 #include <QEvent>
 #include <QtScript>
 #include <QMessageBox>
+#include <QFileSystemWatcher>
 
 #include "configobject.h"
 #include "controllers/pitchfilter.h"
@@ -124,6 +125,7 @@ class ControllerEngine : public QObject {
                          QList<QString> scriptFileNames);
     void initializeScripts(const QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown();
+    void scriptHasChanged(QString);
 
   signals:
     void initialized();
@@ -175,6 +177,9 @@ class ControllerEngine : public QObject {
     QVarLengthArray<PitchFilter*> m_pitchFilter;
     QHash<int, int> m_scratchTimers;
     mutable QHash<QString, QScriptValue> m_scriptValueCache;
+    // Filesystem watcher for script auto-reload
+    QFileSystemWatcher m_scriptWatcher;
+    QString m_lastConfigPath;
 };
 
 #endif
