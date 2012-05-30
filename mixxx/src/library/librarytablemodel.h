@@ -29,7 +29,6 @@ class LibraryTableModel : public BaseSqlTableModel {
     virtual int addTracks(const QModelIndex& index, QList<QString> locations);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
-
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
 

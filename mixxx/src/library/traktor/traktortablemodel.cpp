@@ -85,9 +85,7 @@ void TraktorTableModel::slotSearch(const QString& searchText) {
 }
 
 bool TraktorTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID)) {
-        return true;
-    }
+    Q_UNUSED(column);
     return false;
 }
 

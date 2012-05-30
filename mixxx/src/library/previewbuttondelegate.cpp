@@ -11,17 +11,18 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column) :
     {
         m_pTableView = tableView;
         m_pButton = new QPushButton("", m_pTableView);
-        m_pButton->setIcon(QIcon("res/monkey_off_16x16.png"));
+        m_pButton->setIcon(QIcon("res/btn_play_sampler.png"));
         m_pButton->hide();
         // m_pTableView->setMouseTracking(true);
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
-                              this, SLOT(cellEntered(QModelIndex)));
+                this, SLOT(cellEntered(QModelIndex)));
 
         //TODO(kain88) right now this assumes the parent is wtracktableview
         //and therefore this works, it should check before the connection 
         //is made and raise an error if not
-        connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)), parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-        
+        connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)), 
+                parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+
         m_isOneCellInEditMode = false;
         m_column=column;
     }
@@ -31,7 +32,7 @@ PreviewButtonDelegate::~PreviewButtonDelegate()
 {
     delete m_pButton;
 }
-//createEditor
+
 QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
         const QStyleOptionViewItem &option,
         const QModelIndex &index) const
@@ -39,7 +40,7 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     Q_UNUSED(option);
     //TODO(kain88) Memory leak or does Qt take care about that for us?
     QPushButton * btn = new QPushButton(parent);
-    btn->setIcon(QIcon("res/monkey_off_16x16.png"));
+    btn->setIcon(QIcon("res/btn_play_sampler.png"));
     //the handle will emit the signal to load the track
     PreviewdeckButtonHandler *phandle = new PreviewdeckButtonHandler(this,
                                                     index, m_pTableView);
@@ -48,15 +49,13 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     return btn;
 }
 
-//setEditorData
 void PreviewButtonDelegate::setEditorData(QWidget *editor,
                                  const QModelIndex &index) const
 {
-    QPushButton * btn = qobject_cast<QPushButton *>(editor);
-    btn->setProperty("data_value", index.data());
+    Q_UNUSED(editor);
+    Q_UNUSED(index);
 }
 
-//setModelData
 void PreviewButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                 const QModelIndex &index) const
 {
@@ -64,17 +63,17 @@ void PreviewButtonDelegate::setModelData(QWidget *editor, QAbstractItemModel *mo
     Q_UNUSED(model);
     Q_UNUSED(index);
 }
-//paint
+
 void PreviewButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(index);
     m_pButton->setGeometry(option.rect);
     if (option.state == QStyle::State_Selected)
-                    painter->fillRect(option.rect, option.palette.highlight());
+                    painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(m_pButton);
     painter->drawPixmap(option.rect.x(),option.rect.y(),map);
 }
-//updateGeometry
+
 void PreviewButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(index);
@@ -87,7 +86,6 @@ QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const 
     return m_pButton->sizeHint();
 }
 
-//cellEntered
 void PreviewButtonDelegate::cellEntered(const QModelIndex &index)
 {
     //this slot is called if the mouse pointer enters ANY cell on

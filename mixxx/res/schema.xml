@@ -327,13 +327,4 @@ METADATA
       ALTER TABLE Library ADD COLUMN bpm_lock INTEGER DEFAULT 0;
       ALTER TABLE Library ADD COLUMN beats_sub_version TEXT DEFAULT '';
     </sql>
-  </revision>
-  <revision version="18" min_compatible="3">
-    <description>
-      add nonsense column for previewdeck Button
-    </description>
-    <sql>
-      ALTER TABLE Library ADD COLUMN preview TEXT DEFAULT 'foo';
-    </sql>
-  </revision>
 </schema>
