@@ -209,7 +209,6 @@ void CueControl::loadTrack(TrackPointer pTrack) {
 
 void CueControl::unloadTrack(TrackPointer pTrack) {
     QMutexLocker lock(&m_mutex);
-
     disconnect(pTrack.data(), 0, this, 0);
     for (int i = 0; i < m_iNumHotCues; ++i) {
         detachCue(i);
@@ -236,7 +235,7 @@ void CueControl::unloadTrack(TrackPointer pTrack) {
         }
         loadCue->setPosition(cuePoint);
     }
-    // lock.unlock();
+
     m_pLoadedTrack.clear();
 }
 

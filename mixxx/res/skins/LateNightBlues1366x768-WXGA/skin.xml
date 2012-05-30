@@ -2927,13 +2927,13 @@
 					**********************************************
 					-->
 					<Knob>
-						<TooltipId>lfoDelay</TooltipId>
+						<TooltipId>lfoPeriod</TooltipId>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>15,9</Pos>
 						<Connection>
-							<ConfigKey>[Flanger],lfoDelay</ConfigKey>
+							<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
 						</Connection>
 					</Knob>
 					<Knob>
@@ -2947,13 +2947,13 @@
 						</Connection>
 					</Knob>
 					<Knob>
-						<TooltipId>lfoPeriod</TooltipId>
+						<TooltipId>lfoDelay</TooltipId>
 						<Style></Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>170,9</Pos>
 						<Connection>
-							<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+							<ConfigKey>[Flanger],lfoDelay</ConfigKey>
 						</Connection>
 					</Knob>
 				</Children>
