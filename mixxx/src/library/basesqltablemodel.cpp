@@ -75,7 +75,7 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Key"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM_LOCK),
                   Qt::Horizontal, tr("BPM Lock"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_PREVIEW),
+    setHeaderData(fieldIndex(LIBRARYTABLE_ID),
                   Qt::Horizontal, tr(""));
 }
 
@@ -666,8 +666,6 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         pTrack->setKey(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_PREVIEW) == column){
-        //kain88 --  this column gets no value
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLock(value.toBool());
     }
@@ -752,7 +750,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
-    } else if (i == fieldIndex(LIBRARYTABLE_PREVIEW)){
+    } else if (i == fieldIndex(LIBRARYTABLE_ID)){
         return new PreviewButtonDelegate(pParent,i);
     }
     return NULL;

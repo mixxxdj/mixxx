@@ -84,9 +84,7 @@ void ITunesTrackModel::slotSearch(const QString& searchText) {
 }
 
 bool ITunesTrackModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID)) {
-        return true;
-    }
+    Q_UNUSED(column);
     return false;
 }
 

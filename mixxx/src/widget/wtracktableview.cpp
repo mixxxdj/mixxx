@@ -180,10 +180,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             horizontalHeader()->hideSection(i);
         }
         /* If Mixxx starts the first time or the header states have been cleared
-        * due to database schema evolution we gonna hide all columns that may
-        * contain a potential large number of NULL values.  This will hide the
-        * key colum by default unless the user brings it to front
-        */
+         * due to database schema evolution we gonna hide all columns that may
+         * contain a potential large number of NULL values.  This will hide the
+         * key colum by default unless the user brings it to front
+         */
         if (track_model->isColumnHiddenByDefault(i) &&
             !header->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
@@ -201,7 +201,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // Sort by the saved sort section and order. This line sorts the
         // TrackModel and in turn generates a select()
         horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
-                                            horizontalHeader()->sortIndicatorOrder());
+                                             horizontalHeader()->sortIndicatorOrder());
     } else {
         // No saved order is present. Use the TrackModel's default sort order.
         int sortColumn = track_model->defaultSortColumn();
@@ -246,8 +246,8 @@ void WTrackTableView::disableSorting() {
     // We have to manually do this because setSortingEnabled(false) does not
     // properly disconnect the signals for some reason.
     disconnect(horizontalHeader(),
-            SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-            this, SLOT(doSortByColumn(int)));
+               SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+               this, SLOT(doSortByColumn(int)));
     horizontalHeader()->setSortIndicatorShown(false);
 }
 
@@ -368,7 +368,7 @@ void WTrackTableView::slotOpenInFileBrowser() {
 
         const QString directory = file.dir().absolutePath();
         if (dirs.contains(directory))
-        continue;
+            continue;
         dirs.insert(directory);
         QDesktopServices::openUrl(QUrl::fromLocalFile(directory));
     }
@@ -430,9 +430,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 QString deckGroup = QString("[Channel%1]").arg(i);
                 bool deckPlaying = ControlObject::getControl(
-                    ConfigKey(deckGroup, "play"))->get() == 1.0f;
+                                    ConfigKey(deckGroup, "play"))->get() == 1.0f;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
-                    ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
+                                    ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
@@ -628,7 +628,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {
-    // qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+    //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
@@ -657,14 +657,14 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 }
 
 /** Drag move event, happens when a dragged item hovers over the track table view...
-*  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
-*  -- Albert June 8/08
-*/
+ *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
+ *  -- Albert June 8/08
+ */
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
-    // qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {
@@ -796,7 +796,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                             selectedRows[i] = selectedRows[i] - 1;
                         }
                         else if ((selectedRows[i] < movedRow) &&
-                                (destIndex.row() < selectedRows[i])) {
+                                 (destIndex.row() < selectedRows[i])) {
                             selectedRows[i] = selectedRows[i] + 1;
                         }
                     }
@@ -807,7 +807,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 for (int i = 0; i < selectedRowCount; i++)
                 {
                     this->selectionModel()->select(model()->index(firstRowToSelect + i, 0),
-                                                QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                                                   QItemSelectionModel::Select | QItemSelectionModel::Rows);
                 }
 
             }
@@ -865,8 +865,8 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                     for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
                         this->selectionModel()->select(model()->index(i, 0),
-                                                    QItemSelectionModel::Select |
-                                                    QItemSelectionModel::Rows);
+                                                       QItemSelectionModel::Select |
+                                                       QItemSelectionModel::Rows);
 
                     }
                 }

@@ -32,7 +32,7 @@ void CrateTableModel::setCrate(int crateId) {
     QSqlQuery query(m_pTrackCollection->getDatabase());
     FieldEscaper escaper(m_pTrackCollection->getDatabase());
     QStringList columns;
-    columns << CRATETRACKSTABLE_TRACKID;
+    columns << "id" ;
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -49,6 +49,7 @@ void CrateTableModel::setCrate(int crateId) {
                  CRATETRACKSTABLE_TRACKID,
                  CRATETRACKSTABLE_CRATEID,
                  QString::number(crateId));
+    qDebug() << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -168,7 +169,6 @@ void CrateTableModel::slotSearch(const QString& searchText) {
 bool CrateTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(CRATETRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
-        column == fieldIndex(LIBRARYTABLE_PREVIEW) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {

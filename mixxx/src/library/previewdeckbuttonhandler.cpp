@@ -25,6 +25,8 @@ void PreviewdeckButtonHandler::buttonclicked(){
     TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
     
     ControlObjectThreadMain* playStatus = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[PreviewDeck1]", "play")));
+    
+    qDebug() << playStatus->get();
     if (playStatus->get()==PLAYING){
         playStatus->slotSet(STOP);
     }

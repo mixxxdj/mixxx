@@ -36,10 +36,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
     EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
-                                        pConfig, defaultOrientation);
+                                          pConfig, defaultOrientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
-    
+
     ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);
 
