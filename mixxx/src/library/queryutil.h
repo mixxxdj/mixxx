@@ -1,4 +1,4 @@
-    #ifndef QUERYUTIL_H
+#ifndef QUERYUTIL_H
 #define QUERYUTIL_H
 
 #include <QtDebug>

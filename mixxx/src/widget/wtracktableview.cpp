@@ -17,14 +17,14 @@
 #include "soundsourceproxy.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
-                                ConfigObject<ConfigValue> * pConfig,
-                                TrackCollection* pTrackCollection)
+                                 ConfigObject<ConfigValue> * pConfig,
+                                 TrackCollection* pTrackCollection)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
-                                    WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
-        m_pConfig(pConfig),
-        m_pTrackCollection(pTrackCollection),
-        m_searchThread(this) {
+                                      WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection),
+          m_searchThread(this) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
     m_pTrackInfo = new DlgTrackInfo(NULL);
@@ -98,7 +98,7 @@ WTrackTableView::~WTrackTableView()
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    // qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 
@@ -106,9 +106,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     Q_ASSERT(track_model);
 
     /* If the model has not changed
-    * there's no need to exchange the headers
-    * this will cause a small GUI freeze
-    */
+     * there's no need to exchange the headers
+     * this will cause a small GUI freeze
+     */
     if (getTrackModel() == track_model) {
         // Re-sort the table even if the track model is the same. This triggers
         // a select() if the table is dirty.
@@ -142,16 +142,16 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // QHeaderView to the WTrackTableView, it is automatically deleted.
     QHeaderView* tempHeader = new QHeaderView(Qt::Horizontal, this);
     /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
-    * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
-    * For some reason this will cause 4 select statements in series
-    * from which 3 are redundant --> expensive at all
-    *
-    * Sorting columns, however, is possible because we
-    * enable clickable sorting indicators some lines below.
-    * Furthermore, we connect signal 'sortIndicatorChanged'.
-    *
-    * Fixes Bug #672762
-    */
+     * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
+     * For some reason this will cause 4 select statements in series
+     * from which 3 are redundant --> expensive at all
+     *
+     * Sorting columns, however, is possible because we
+     * enable clickable sorting indicators some lines below.
+     * Furthermore, we connect signal 'sortIndicatorChanged'.
+     *
+     * Fixes Bug #672762
+     */
 
     setSortingEnabled(false);
     setHorizontalHeader(tempHeader);

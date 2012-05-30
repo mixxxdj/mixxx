@@ -239,7 +239,7 @@ void BaseSqlTableModel::select() {
     if (sortColumn < 0) {
         sortColumn = 0;
     }
-    
+
     // If we were sorting a table column, then secondary sort by id. TODO(rryan)
     // we should look into being able to drop the secondary sort to save time
     // but going for correctness first.
@@ -522,6 +522,9 @@ bool BaseSqlTableModel::setData(
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
     TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    if (!pTrack) {
+        return false;
+    }
     setTrackValueForColumn(pTrack, column, value);
 
     // Do not save the track here. Changing the track dirties it and the caching
@@ -611,6 +614,7 @@ void BaseSqlTableModel::tracksChanged(QSet<int> trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
+
     const int numColumns = columnCount();
     foreach (int trackId, trackIds) {
         QLinkedList<int> rows = getTrackRows(trackId);

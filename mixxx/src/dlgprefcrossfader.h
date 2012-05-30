@@ -22,10 +22,6 @@
 #include "configobject.h"
 #include "controlobjectthread.h"
 
-#define MIXXX_XFADER_SLOWFADE   "SlowFade"
-#define MIXXX_XFADER_FASTCUT    "FastCut"
-#define MIXXX_XFADER_CONSTPWR   "ConstantPower"
-
 #define MIXXX_XFADER_STEEPNESS_COEFF 8.0f
 
 class QWidget;
@@ -57,11 +53,9 @@ private:
 	QGraphicsScene *m_pxfScene;
 
 	/** X-fader values */
-	double m_transform, m_cal;
-	
-	/** X-fader mode*/
-	QString m_xFaderMode;
+    double m_xFaderMode, m_transform, m_cal;
 
+    ControlObjectThread m_COTMode;
     ControlObjectThread m_COTCurve;
     ControlObjectThread m_COTCalibration;
 };
