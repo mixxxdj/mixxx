@@ -91,6 +91,12 @@ script.pitch = function (LSB, MSB, status) {
     return script.midiPitch(LSB, MSB, status);
 }
 
+/* -------- ------------------------------------------------------
+     script.crossfaderCurve
+   Purpose: Adjusts the cross-fader's curve using a hardware control
+   Input:   Current value of the hardware control, min and max values for that control
+   Output:  none
+   -------- ------------------------------------------------------ */
 script.crossfaderCurve = function (value, min, max) {
     if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
         // Constant Power
@@ -98,6 +104,39 @@ script.crossfaderCurve = function (value, min, max) {
     } else {
         // Additive
         engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, 2, min, max));
+    }
+}
+
+/* -------- ------------------------------------------------------
+     script.loopMove
+   Purpose: Moves the current loop by the specified number of beats (default 1/2)
+            in the specified direction (positive is forwards and is the default)
+            If the current loop length is shorter than the requested move distance,
+            it's only moved a distance equal to its length.
+   Input:   MixxxControl group, direction to move, number of beats to move
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.loopMove = function (group,direction,numberOfBeats) {
+    if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
+    var beatLength = (60*2) / engine.getValue(group, "bpm")
+        * engine.getValue(group, "track_samplerate");   // The *2 is for stereo
+    var oldStart = engine.getValue(group,"loop_start_position");
+    var oldEnd = engine.getValue(group,"loop_end_position");
+    var loopLength = oldEnd - oldStart;
+    var moveAmount = beatLength*numberOfBeats;
+    // If the loop length is shorter than the amount requested to move, only move
+    //  the loop length to stay contiguous
+    if (loopLength<moveAmount) moveAmount = loopLength;
+    if (direction<0) {
+        // Backwards
+        engine.setValue(group,"loop_start_position",oldStart-moveAmount);
+        engine.setValue(group,"loop_end_position",oldEnd-moveAmount);
+    }
+    else {
+        // Forwards
+        engine.setValue(group,"loop_end_position",oldEnd+moveAmount);
+        engine.setValue(group,"loop_start_position",oldStart+moveAmount);
+
     }
 }
 
