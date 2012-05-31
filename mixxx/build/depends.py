@@ -374,6 +374,7 @@ class MixxxCore(Feature):
                    "controllers/controllerlearningeventfilter.cpp",
                    "controllers/controllermanager.cpp",
                    "controllers/controllerpresetfilehandler.cpp",
+                   "controllers/controllerpresetinfo.cpp",
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
