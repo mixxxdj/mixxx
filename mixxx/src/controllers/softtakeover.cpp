@@ -12,6 +12,7 @@
 #include "controllers/softtakeover.h"
 #include "controlpotmeter.h"
 
+// static
 uint SoftTakeover::currentTimeMsecs() {
     QDateTime currDT = QDateTime::currentDateTime();
 
