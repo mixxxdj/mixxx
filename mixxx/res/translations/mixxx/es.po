@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-05-29 20:18+0000\n"
-"Last-Translator: DarioFreije <dario2004@gmail.com>\n"
+"PO-Revision-Date: 2012-05-31 03:08+0000\n"
+"Last-Translator: Leo Combes <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-30 05:18+0000\n"
-"X-Generator: Launchpad (build 15316)\n"
+"X-Launchpad-Export-Date: 2012-05-31 04:33+0000\n"
+"X-Generator: Launchpad (build 15322)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -902,7 +902,7 @@ msgstr "Ajustar cuadrícula de tempo"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
-msgstr ""
+msgstr "Activar el modo de cuantización"
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
@@ -926,7 +926,7 @@ msgstr ""
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
-msgstr ""
+msgstr "Deslizador del control de pitch"
 
 #: DlgControllerLearning#39
 msgid "Adjust rate up (fine)"
@@ -1000,7 +1000,7 @@ msgstr "Alternar el control de vinilo (Prendido/Apagado)"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
-msgstr ""
+msgstr "Cambiar el modo de preescucha del control de vinilo (OFF/ONE/HOT)"
 
 #: DlgControllerLearning#57
 msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
@@ -1454,11 +1454,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#14
 msgid "Temporary rate change when left-clicking"
-msgstr ""
+msgstr "Cambio de velocidad temporal con click izquierdo"
 
 #: DlgPrefControlsDlg#15
 msgid "Temporary rate change when right-clicking"
-msgstr ""
+msgstr "Cambio de velocidad temporal con click derecho"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent Pitch/Rate Buttons"
@@ -1470,7 +1470,7 @@ msgstr "Muestra qué versión de OpenGL es soportada por la plataforma actual."
 
 #: DlgPrefControlsDlg#18
 msgid "Displays the actual frame rate."
-msgstr ""
+msgstr "Muestra la tasa de refresco actual"
 
 #: DlgPrefControlsDlg#19
 msgid "Left click"
@@ -1517,11 +1517,11 @@ msgstr "Tipo de Visualización"
 
 #: DlgPrefControlsDlg#29
 msgid "Permanent rate change when left-clicking"
-msgstr ""
+msgstr "Cambio de velocidad permanente con click izquierdo"
 
 #: DlgPrefControlsDlg#30
 msgid "Permanent rate change when right-clicking"
-msgstr ""
+msgstr "Cambio de velocidad permanente con click derecho"
 
 #: DlgPrefControlsDlg#31
 msgid ""
@@ -2318,7 +2318,7 @@ msgstr "Latencia"
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr "Ningún"
+msgstr "Ninguno"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
@@ -3114,6 +3114,8 @@ msgid ""
 "The MIDI output message 0x%1 0x%2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"El mensaje de salida MIDI 0x%1 0x%2 no será obligatorio.\n"
+"(Clic en Ver Detalles para consejos)"
 
 #: MidiController#4
 msgid ""
@@ -3226,7 +3228,7 @@ msgstr "Agregar Nueva &Caja"
 
 #: MixxxApp#21
 msgid "Enable &Keyboard Shortcuts"
-msgstr ""
+msgstr "Activar Atajos de &Teclado"
 
 #: MixxxApp#22
 msgid "Load track to Deck %1"
@@ -3348,7 +3350,7 @@ msgstr "Crear una nueva lista de reproducción"
 
 #: MixxxApp#51
 msgid "Create a new crate"
-msgstr "Crear un novo caixón"
+msgstr "Crear un nuevo cajón"
 
 #: MixxxApp#52
 msgid "Ctrl+Shift+F"
@@ -3805,7 +3807,7 @@ msgstr ""
 
 #: Tooltips#11
 msgid "Drag with mouse to make temporary pitch adjustments."
-msgstr ""
+msgstr "Arrastre con el ratón para hacer los ajustes temporales de pitch."
 
 #: Tooltips#12
 msgid "Spinning Vinyl"
@@ -4000,7 +4002,7 @@ msgstr ""
 
 #: Tooltips#58
 msgid "Sets the pitch lower in small steps."
-msgstr ""
+msgstr "Establece el pitch más bajo en pequeños pasos."
 
 #: Tooltips#59
 msgid "Raise Pitch Temporary (Nudge)"
@@ -4020,11 +4022,12 @@ msgstr ""
 
 #: Tooltips#63
 msgid "Holds the pitch lower while active."
-msgstr ""
+msgstr "Mantiene el pitch más bajo cuando está activo."
 
 #: Tooltips#64
 msgid "Holds the pitch lower (small amount) while active."
 msgstr ""
+"Mantiene el tono más bajo (en pequeña cantidad) mientras está activo."
 
 #: Tooltips#65
 msgid "Low EQ"
