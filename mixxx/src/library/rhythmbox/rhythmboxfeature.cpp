@@ -100,9 +100,8 @@ void RhythmboxFeature::activate() {
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit (featureIsLoading(this));
     }
-    else
-        emit(showTrackModel(m_pRhythmboxTrackModel));
 
+    emit(showTrackModel(m_pRhythmboxTrackModel));
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {

@@ -102,6 +102,7 @@ void PlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 void PlaylistFeature::activate() {
     emit(showPage(QUrl("qrc:/html/playlists.html")));
     emit(switchToView("PLAYLISTHOME"));
+    emit(restoreSearch(QString())); // Null String disables search box
 }
 
 void PlaylistFeature::activateChild(const QModelIndex& index) {
