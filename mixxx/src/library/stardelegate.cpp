@@ -23,6 +23,14 @@
 #include "stareditor.h"
 #include "starrating.h"
 
+StarDelegate::StarDelegate(QObject *pParent)
+        : QStyledItemDelegate(pParent),
+          m_isOneCellInEditMode(false) {
+    m_pTableView = qobject_cast<QTableView *>(pParent);
+    connect(pParent, SIGNAL(entered(QModelIndex)),
+            this, SLOT(cellEntered(QModelIndex)));
+}
+
 /*
  * The function is invoked once for each item, represented by a QModelIndex object from the model.
  * If the data stored in the item is a StarRating, we paint it use a star editor for displaying;
@@ -57,7 +65,8 @@ void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     }
 
     StarRating starRating = qVariantValue<StarRating>(index.data());
-    starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly);
+    starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly,
+                     newOption.state & QStyle::State_Selected);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -77,13 +86,13 @@ QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelInd
 QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,const QModelIndex &index) const
 {
     // Populate the correct colors based on the styling
-    //QStyleOptionViewItem newOption = option;
-    //initStyleOption(&newOption, index);
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
 
     if (qVariantCanConvert<StarRating>(index.data())) {
-        StarEditor *editor = new StarEditor(parent, option);
+        StarEditor *editor = new StarEditor(parent, newOption);
         connect(editor, SIGNAL(editingFinished()),
-        this, SLOT(commitAndCloseEditor()));
+                this, SLOT(commitAndCloseEditor()));
         return editor;
     } else {
         return QStyledItemDelegate::createEditor(parent, option, index);
@@ -110,13 +119,32 @@ void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
         QStyledItemDelegate::setModelData(editor, model, index);
     }
 }
+
 /*
  * When the user is done editing, we emit commitData() and closeEditor() (both declared in QAbstractItemDelegate),
  * to tell the model that there is edited data and to inform the view that the editor is no longer needed.
  */
-void StarDelegate::commitAndCloseEditor()
-{
+void StarDelegate::commitAndCloseEditor() {
     StarEditor *editor = qobject_cast<StarEditor *>(sender());
     emit commitData(editor);
     emit closeEditor(editor);
 }
+
+//cellEntered
+void StarDelegate::cellEntered(const QModelIndex &index) {
+    // This slot is called if the mouse pointer enters ANY cell on the
+    // QTableView but the code should only be executed on a column with a
+    // StarRating.
+    if (qVariantCanConvert<StarRating>(index.data())) {
+        if (m_isOneCellInEditMode) {
+            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+        }
+        m_pTableView->openPersistentEditor(index);
+        m_isOneCellInEditMode = true;
+        m_currentEditedCellIndex = index;
+    } else if (m_isOneCellInEditMode) {
+        m_isOneCellInEditMode = false;
+        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+    }
+}
+
