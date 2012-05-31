@@ -1298,16 +1298,16 @@ HIDController.prototype.processControl = function(field) {
     }
 
     value = field.value;
-    scaler = this.lookupScalingFunction(name);
+    scaler = this.lookupScalingFunction(field.name);
     if (field.isEncoder==true) {
         var field_delta = field.delta;
         if (scaler!=undefined)
-            field_delta = scaler(group,name,field_delta);
-        engine.setValue(group,name,field_delta);
+            field_delta = scaler(group,field.name,field_delta);
+        engine.setValue(group,field.name,field_delta);
     } else {
         if (scaler!=undefined)
-            value = scaler(group,name,value);
-        engine.setValue(group,name,value);
+            value = scaler(group,field.name,value);
+        engine.setValue(group,field.name,value);
     }
 }
 
