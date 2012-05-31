@@ -48,6 +48,8 @@ class MidiController : public Controller {
         return m_preset.isMappable();
     }
 
+    virtual bool matchPreset(const PresetInfo& preset);
+
   protected:
     Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
     // Alias for send()

@@ -46,7 +46,7 @@ public:
   private:
     virtual QString getRootViewHtml() const;
 
-    QLinkedList<TrackPointer> m_recentTracks;
+    QLinkedList<int> m_recentTracks;
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
 };

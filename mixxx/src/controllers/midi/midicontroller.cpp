@@ -56,6 +56,11 @@ void MidiController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
+bool MidiController::matchPreset(const PresetInfo& preset) {
+    // Product info mapping not implemented for MIDI devices yet
+    return false;
+}
+
 bool MidiController::savePreset(const QString fileName) const {
     MidiControllerPresetFileHandler handler;
     return handler.save(m_preset, getName(), fileName);
@@ -290,8 +295,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         args << QScriptValue(value);
         args << QScriptValue(status);
         args << QScriptValue(mc.group());
-
-        pEngine->execute(mc.item(), args);
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
+        pEngine->execute(function, args);
         return;
     }
     
@@ -507,7 +512,8 @@ void MidiController::receive(QByteArray data) {
         if (pEngine == NULL) {
             return;
         }
-        if (!pEngine->execute(mc.item(), data)) {
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
+        if (!pEngine->execute(function, data)) {
             qDebug() << "MidiController: Invalid script function" << mc.item();
         }
         return;
@@ -520,3 +526,4 @@ void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, uns
             (((unsigned int)byte1) << 8) | status;
     send(word);
 }
+

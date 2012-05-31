@@ -62,13 +62,17 @@ script.midiDebug = function (channel, control, value, status, group) {
           " status: 0x" + status.toString(16) + " group: " + group);
 }
 
-// Used to control a generic Mixxx control setting (low..high) from an absolute control
+// DEPRECATED -- use script.absoluteLin() instead
 script.absoluteSlider = function (group, key, value, low, high, min, max) {
+    engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
+}
+
+// Returns a value for a linear Mixxx control (like Volume: 0..1) from an absolute control
+script.absoluteLin = function (value, low, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
-    print("min="+max);
-    if (value==max) engine.setValue(group, key, high);
-    else engine.setValue(group, key, (((high - low) / max) * value) + low);
+    if (value==max) return high;
+    else return ((((high - low) / max) * value) + low);
 }
 
 // Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control
@@ -76,13 +80,64 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
     var center = (max-min)/2;
-    if (value<=center) return value/(center/(mid-low));
-    else return 1+(value-center)/(center/(high-mid));
+    if (value==center || value==Math.round(center))
+        return mid;
+    if (value<center)
+        return low+(value/(center/(mid-low)));
+    return mid+((value-center)/(center/(high-mid)));
 }
 
-
 script.pitch = function (LSB, MSB, status) {
-    script.midiPitch(LSB, MSB, status);
+    return script.midiPitch(LSB, MSB, status);
+}
+
+/* -------- ------------------------------------------------------
+     script.crossfaderCurve
+   Purpose: Adjusts the cross-fader's curve using a hardware control
+   Input:   Current value of the hardware control, min and max values for that control
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.crossfaderCurve = function (value, min, max) {
+    if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
+        // Constant Power
+        engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0.5, 0.962, min, max));
+    } else {
+        // Additive
+        engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, 2, min, max));
+    }
+}
+
+/* -------- ------------------------------------------------------
+     script.loopMove
+   Purpose: Moves the current loop by the specified number of beats (default 1/2)
+            in the specified direction (positive is forwards and is the default)
+            If the current loop length is shorter than the requested move distance,
+            it's only moved a distance equal to its length.
+   Input:   MixxxControl group, direction to move, number of beats to move
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.loopMove = function (group,direction,numberOfBeats) {
+    if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
+    var beatLength = (60*2) / engine.getValue(group, "bpm")
+        * engine.getValue(group, "track_samplerate");   // The *2 is for stereo
+    var oldStart = engine.getValue(group,"loop_start_position");
+    var oldEnd = engine.getValue(group,"loop_end_position");
+    var loopLength = oldEnd - oldStart;
+    var moveAmount = beatLength*numberOfBeats;
+    // If the loop length is shorter than the amount requested to move, only move
+    //  the loop length to stay contiguous
+    if (loopLength<moveAmount) moveAmount = loopLength;
+    if (direction<0) {
+        // Backwards
+        engine.setValue(group,"loop_start_position",oldStart-moveAmount);
+        engine.setValue(group,"loop_end_position",oldEnd-moveAmount);
+    }
+    else {
+        // Forwards
+        engine.setValue(group,"loop_end_position",oldEnd+moveAmount);
+        engine.setValue(group,"loop_start_position",oldStart+moveAmount);
+
+    }
 }
 
 /* -------- ------------------------------------------------------
@@ -104,6 +159,32 @@ script.midiPitch = function (LSB, MSB, status) {
     var rate = (value-8192)/8191;
 //     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", value="+value+", rate="+rate);
     return rate;
+}
+
+/* -------- ------------------------------------------------------
+     script.spinback
+   Purpose: wrapper around engine.spinback() that can be directly mapped 
+            from xml for a spinback effect
+            e.g: <key>script.spinback</key>
+   Input:   channel, control, value, status, group
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.spinback = function(channel, control, value, status, group) {
+    // disable on note-off or zero value note/cc
+    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
+}
+
+/* -------- ------------------------------------------------------
+     script.brake
+   Purpose: wrapper around engine.brake() that can be directly mapped 
+            from xml for a brake effect
+            e.g: <key>script.brake</key>
+   Input:   channel, control, value, status, group
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.brake = function(channel, control, value, status, group) {
+    // disable on note-off or zero value note/cc
+    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
 }
 
 // bpm - Used for tapping the desired BPM for a deck
