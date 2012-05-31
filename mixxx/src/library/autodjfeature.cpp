@@ -23,6 +23,7 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()) {
+	m_pAutoDJView = NULL;
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -36,19 +37,19 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
-void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
+void AutoDJFeature::bindWidget(WLibrarySidebar* /*sidebarWidget*/,
                                WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
 
-    DlgAutoDJ* pAutoDJView = new DlgAutoDJ(libraryWidget,
+    m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                            m_pConfig,
                                            m_pTrackCollection,
                                            keyboard);
-    pAutoDJView->installEventFilter(keyboard);
-    libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
-    connect(pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
+    m_pAutoDJView->installEventFilter(keyboard);
+    libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
+    connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 }
 
@@ -59,18 +60,17 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     //emit(showTrackModel(m_pAutoDJTableModelProxy));
-    emit(switchToView("Auto DJ"));
+    emit(switchToView(m_sAutoDJViewName));
 }
 
-void AutoDJFeature::activateChild(const QModelIndex& index) {
-
+void AutoDJFeature::activateChild(const QModelIndex& /*index*/) {
 }
 
-void AutoDJFeature::onRightClick(const QPoint& globalPos) {
+void AutoDJFeature::onRightClick(const QPoint& /*globalPos*/) {
 }
 
-void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
+void AutoDJFeature::onRightClickChild(const QPoint& /*globalPos*/,
+                                            QModelIndex /*index*/) {
 }
 
 bool AutoDJFeature::dropAccept(QUrl url) {
@@ -98,12 +98,18 @@ bool AutoDJFeature::dropAccept(QUrl url) {
     }
 
     // TODO(XXX) No feedback on whether this worked.
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
+    if( m_pAutoDJView ){
+    	m_pAutoDJView->appendTrack(trackId);
+    }
+    else{
+    	int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    	m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
+    }
+
     return true;
 }
 
-bool AutoDJFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool AutoDJFeature::dropAcceptChild(const QModelIndex& /*index*/, QUrl /*url*/) {
     return false;
 }
 
@@ -112,10 +118,10 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
 
-bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
+bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& /*index*/,
+                                              QUrl /*url*/) {
     return false;
 }
-void AutoDJFeature::onLazyChildExpandation(const QModelIndex &index){
+void AutoDJFeature::onLazyChildExpandation(const QModelIndex& /*index*/){
     //Nothing to do because the childmodel is not of lazy nature.
 }

@@ -112,19 +112,19 @@ QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 }
 
 int BrowseTableModel::getTrackId(const QModelIndex& index) const {
-   Q_UNUSED(index);
-   // We can't implement this as it stands.
+    Q_UNUSED(index);
+    // We can't implement this as it stands.
     return -1;
 }
 
 const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
-   Q_UNUSED(trackId);
-   // We can't implement this as it stands.
-   return QLinkedList<int>();
+    Q_UNUSED(trackId);
+    // We can't implement this as it stands.
+    return QLinkedList<int>();
 }
 
 void BrowseTableModel::search(const QString& searchText) {
-   Q_UNUSED(searchText);
+    Q_UNUSED(searchText);
 }
 
 const QString BrowseTableModel::currentSearch() const {
@@ -215,7 +215,7 @@ bool BrowseTableModel::addTrack(const QModelIndex& index, QString location)
 {
     Q_UNUSED(index);
     Q_UNUSED(location);
-   return false;
+    return false;
 }
 
 QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
@@ -318,7 +318,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value, 
 {
     Q_UNUSED(role);
 
-   if(!index.isValid())
+    if(!index.isValid())
         return false;
     qDebug() << "BrowseTableModel::setData(" << index.data() << ")";
     int row = index.row();

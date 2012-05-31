@@ -50,6 +50,8 @@ class CrateDAO : public QObject, public virtual DAO {
     void changed(int crateId);
     void trackAdded(int crateId, int trackId);
     void trackRemoved(int crateId, int trackId);
+    void renamed(int crateId);
+    void lockChanged(int crateId);
 
   private:
     QSqlDatabase& m_database;
