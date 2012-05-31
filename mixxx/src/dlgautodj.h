@@ -35,32 +35,30 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
 
   public slots:
     void shufflePlaylist(bool buttonChecked);
-	void skipNext(bool buttonChecked);
-	void fadeNow(bool buttonChecked);
+    void skipNext(bool buttonChecked);
+    void fadeNow(bool buttonChecked);
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
     void player1PlayChanged(double value);
     void player2PlayChanged(double value);
-    void transitionValueChanged(int value);
 
   signals:
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group);
 
   private:
-	enum ADJstates
-    {
-      ADJ_IDLE = 0,
-      ADJ_P1FADING,
-      ADJ_P2FADING,
-      ADJ_ENABLE_P1LOADED,
-	  ADJ_ENABLE_P1PLAYING
+    enum ADJstates {
+        ADJ_IDLE = 0,
+        ADJ_P1FADING,
+        ADJ_P2FADING,
+        ADJ_ENABLE_P1LOADED,
+        ADJ_ENABLE_P1PLAYING
     };
 
-	TrackPointer getNextTrackFromQueue();
+    TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
-	bool removePlayingTrackFromQueue(QString group);
+    bool removePlayingTrackFromQueue(QString group);
 
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
@@ -68,14 +66,14 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     PlaylistTableModel* m_pAutoDJTableModel;
     PlaylistDAO& m_playlistDao;
     bool m_bAutoDJEnabled;
-    bool m_bNextTrackAlreadyLoaded; /** Makes our Auto DJ logic assume the
-                                        next track that should be played is
-                                        already loaded. We need this flag to
-                                        make our first-track-gets-loaded-but-
-                                        not-removed-from-the-queue behaviour
-                                        work. */
+
+    // Makes our Auto DJ logic assume the next track that should be played is
+    // already loaded. We need this flag to make our
+    // first-track-gets-loaded-but- not-removed-from-the-queue behaviour work.
+    bool m_bNextTrackAlreadyLoaded;
+
     bool m_bFadeNow;
-	enum ADJstates m_eState;
+    enum ADJstates m_eState;
     float m_posThreshold1;
     float m_posThreshold2;
     float m_fadeDuration1;
@@ -106,7 +104,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
 
 
 #define _blah if ((QDate::currentDate().day() == 1) && (QDate::currentDate().month() == 4)) \
-             pushButtonAutoDJ->setText("\x45\x6e\x61\x62\x6c\x65\x20\x50\x65\x65" \
+        pushButtonAutoDJ->setText("\x45\x6e\x61\x62\x6c\x65\x20\x50\x65\x65" \
                                   "\x20\x42\x72\x65\x61\x6b\x20\x4d\x6f\x64\x65")
 
 
