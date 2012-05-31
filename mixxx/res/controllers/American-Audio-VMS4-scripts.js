@@ -94,7 +94,6 @@ VMS4.Button.prototype.setLed = function(ledState) {
 
 VMS4.Deck = Deck;
 VMS4.Deck.jogMsb = 0x00;
-VMS4.Deck.scratchMode = false;
 VMS4.Deck.scratchncue = false;
 VMS4.Deck.hotCueDeleted = false;
 VMS4.Deck.keylockButton = false;
@@ -206,7 +205,6 @@ VMS4.Deck.prototype.effectSelectPressHandler = function(value) {
 VMS4.Deck.prototype.jogTouchHandler = function(value) {
    if(value == ButtonState.pressed) {
       engine.scratchEnable(this.deckNumber, 3000, 45, 1.0/8, (1.0/8)/32);
-      this.scratchMode = true;
       // Recall the cue point if in "scratch & cue" mode only when playing
       if (this.scratchncue && engine.getValue(this.group,"play")==1) {
           engine.setValue(this.group,"cue_goto",1);
@@ -214,7 +212,6 @@ VMS4.Deck.prototype.jogTouchHandler = function(value) {
       }
    } else {
       engine.scratchDisable(this.deckNumber);
-      this.scratchMode = false;
    }
 }
 
@@ -230,7 +227,7 @@ VMS4.Deck.prototype.jogMove = function(lsbValue) {
          offset = offset + 16384;
       }
 
-      if(this.scratchMode) {
+      if(engine.isScratching(this.deckNumber)) {
          engine.scratchTick(this.deckNumber, offset);
       } else {
          engine.setValue(this.group,"jog", offset / 40.0);

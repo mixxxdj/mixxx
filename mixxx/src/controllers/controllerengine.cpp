@@ -41,6 +41,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
 
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
+    m_lastMovement.resize(kDecks);
     m_dx.resize(kDecks);
     m_rampTo.resize(kDecks);
     m_ramp.resize(kDecks);
@@ -431,7 +432,6 @@ bool ControllerEngine::execute(QScriptValue functionObject, QScriptValueList arg
         return false;
     }
 
-    //qDebug() << "Calling MIDI Script Function";
     if (!functionObject.isFunction()) {
         qDebug() << "Not a function";
         return false;
@@ -840,7 +840,7 @@ void ControllerEngine::slotValueChanged(double value) {
     }
     ConfigKey key = pSenderCO->getKey();
 
-    qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
+//     qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
 
     if (m_connectedControls.contains(key)) {
         QHash<ConfigKey, ControllerEngineConnection>::iterator iter =
@@ -865,8 +865,6 @@ void ControllerEngine::slotValueChanged(double value) {
             if (result.isError()) {
                 qWarning()<< "ControllerEngine: Call to callback" << conn.id
                           << "resulted in an error:" << result.toString();
-            } else {
-            	qDebug() << "Called Connection for" << conn.id;
             }
         }
     } else {
@@ -1034,7 +1032,7 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
-        qWarning() << "MIDI Script timer could not be created";
+        qWarning() << "Script timer could not be created";
     } else if (m_bDebug) {
         if (oneShot)
             qDebug() << "Starting one-shot timer:" << timerId;
@@ -1209,6 +1207,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
+    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1230,9 +1229,14 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // Give the filter a data point:
 
-    // If we're ramping to end scratching, feed fixed data
-    if (m_ramp[deck]) {
+    // If we're ramping to end scratching
+    //  and the wheel hasn't been turned very recently (spinback after lift-off,)
+    //  feed fixed data
+    if (m_ramp[deck] &&
+        ((SoftTakeover::currentTimeMsecs() - m_lastMovement[deck]) > 0)) {
         filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
+        // Once this code path is run, latch so it always runs until reset
+//         m_lastMovement[deck] += 1000;
     } else {
         //  This will (and should) be 0 if no net ticks have been accumulated
         //  (i.e. the wheel is stopped)
@@ -1243,9 +1247,10 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // Actually do the scratching
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
-    if(cot != NULL) {
-        cot->slotSet(filter->currentPitch());
+    if(cot == NULL) {
+        return; // abort and maybe it'll work on the next pass
     }
+    cot->slotSet(filter->currentPitch());
 
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
@@ -1263,14 +1268,16 @@ void ControllerEngine::scratchProcess(int timerId) {
 
         // Clear scratch2_enable unless brake mode where we just set scratch2 to 0.0
         if (m_brakeActive[deck]) {
-            if (cot != NULL) {
-                cot->slotSet(0.0);
+            if(cot == NULL) {
+                return; // abort and maybe it'll work on the next pass
             }
+            cot->slotSet(0.0);
         } else {
             cot = getControlObjectThread(group, "scratch2_enable");
-            if(cot != NULL) {
-                cot->slotSet(0);
+            if(cot == NULL) {
+                return; // abort and maybe it'll work on the next pass
             }
+            cot->slotSet(0);
         }
 
         // Remove timer
@@ -1311,7 +1318,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
                 rate = cot->get();
             }
 
-            // Get the pitch slider directions
+            // Get the pitch slider direction
             cot = getControlObjectThread(group, "rate_dir");
             if (cot != NULL && cot->get() == -1) {
                 rate = -rate;
@@ -1336,7 +1343,19 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         }
     }
 
+    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
+}
+
+/* -------- ------------------------------------------------------
+    Purpose: Tells if the specified deck is currently scratching
+             (Scripts need this to implement spinback-after-lift-off)
+    Input:   Virtual deck to inquire about
+    Output:  True if so
+    -------- ------------------------------------------------------ */
+bool ControllerEngine::isScratching(int deck) {
+    QString group = QString("[Channel%1]").arg(deck);
+    return getValue(group,"scratch2_enable")>0;
 }
 
 /*  -------- ------------------------------------------------------
