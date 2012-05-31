@@ -92,7 +92,7 @@ private:
 #ifdef __PORTAUDIO__
     bool m_paInitialized;
     unsigned int m_jackSampleRate;
-#endif
+#endif    
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
 

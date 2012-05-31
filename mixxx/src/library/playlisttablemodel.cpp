@@ -5,7 +5,6 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
-
 #include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
@@ -66,6 +65,11 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
 }
 
+int PlaylistTableModel::getPlaylistId()
+{
+    return m_iPlaylistId;
+}
+
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();
@@ -94,6 +98,16 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     return true;
 }
 
+bool PlaylistTableModel::appendTrack(int trackId) {
+    if (trackId < 0) {
+        return false;
+    }
+
+    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
+
+    select(); //Repopulate the data model.
+    return true;
+}
 
 int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
     const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
@@ -336,6 +350,7 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
 }
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
+	Q_UNUSED(i);
     return NULL;
 }
 
