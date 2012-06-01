@@ -14,6 +14,7 @@
 
 #include "controllers/controllerengine.h"
 #include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/mixxxcontrol.h"
@@ -54,6 +55,9 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline QString getName() const {
         return m_sDeviceName;
     }
+    inline QString getCategory() const {
+        return m_sDeviceCategory;
+    }
     inline bool debugging() const {
         return m_bDebug;
     }
@@ -61,6 +65,8 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline bool isLearning() const {
         return m_bLearning;
     }
+
+    virtual bool matchPreset(const PresetInfo& preset) = 0;
 
   signals:
     void learnedMessage(QString message);
@@ -102,6 +108,9 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline void setDeviceName(QString deviceName) {
         m_sDeviceName = deviceName;
     }
+    inline void setDeviceCategory(QString deviceCategory) {
+        m_sDeviceCategory = deviceCategory;
+    }
     inline void setOutputDevice(bool outputDevice) {
         m_bIsOutputDevice = outputDevice;
     }
@@ -141,6 +150,8 @@ class Controller : public QObject, ControllerPresetVisitor {
 
     // Verbose and unique device name suitable for display.
     QString m_sDeviceName;
+    // Verbose and unique description of device type, defaults to empty
+    QString m_sDeviceCategory;
     // Flag indicating if this device supports output (receiving data from
     // Mixxx)
     bool m_bIsOutputDevice;

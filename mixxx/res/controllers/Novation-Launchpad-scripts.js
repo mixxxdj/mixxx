@@ -25,6 +25,8 @@ NovationLaunchpad = {
 		this.vumeters = [];
 
 		var self = NovationLaunchpad;
+		self.instance = this; // needed for incoming data from the launchpad
+
 		this.colors = self.colors();
 		this.capture = self.capture;
 		this.feedback = self.feedback;
@@ -153,10 +155,11 @@ NovationLaunchpad = {
 
 			// led feedback for loop in/out buttons to show loop status
 
-			this.feedback(group, "loop_enabled", function(self, g, e, value) {
-				var offset = g == "[Channel1]" ? 0 : 4; // ????
-				self.send("3," + (offset + 0), self.colors[value > 0 ? 'hi_green' : 'lo_green'], page);
-				self.send("3," + (offset + 1), self.colors[value > 0 ? 'hi_green' : 'lo_green'], page);
+			engine.connectControl(group, "loop_enabled", function(value, g, e) {
+				var offset = g == "[Channel1]" ? 0 : 4; // value not closed
+				this.send("3," + (offset + 0), this.colors[value > 0 ? 'hi_green' : 'lo_green'], 1);
+				this.send("3," + (offset + 1), this.colors[value > 0 ? 'hi_green' : 'lo_green'], 1);
+				this.feedback_cache[g + e] = value;
 			});
 
 			// hotcues or needle drop with shift2 pressed
@@ -185,10 +188,11 @@ NovationLaunchpad = {
 			this.toggle("7," + (offset + 0), "press", 1, 'hi_yellow', 'lo_red', group, "play");
 
 			// flash play button when near end of track
-			this.feedback(group, "playposition", function(self, g, e, value) {
+			engine.connectControl(group, "playposition", function(value, g, e) {
 				if (value > 0.9 && engine.getValue(g, "play") > 0) {
-					self.send(g == "[Channel1]" ? "7,0" : "7,4", self.colors['flash_hi_red'], 1);
+					this.send(g == "[Channel1]" ? "7,0" : "7,4", this.colors['flash_hi_red'], 1);
 				}
+				this.feedback_cache[g + e] = value;
 			});
 			
 			// sync or move beatgrid when shift is pressed
@@ -233,15 +237,23 @@ NovationLaunchpad = {
 	},
 
 	//
+	// empty shutdown method
+	//
+
+	shutdown: function() {
+	},
+
+	//
 	// convert incoming midi to a 'name' and call callbacks (if any)
 	//
 
 	incomingData: function(channel, control, value, status, group) {
-		if ((name = this.control2name["" + status + control]) != undefined) {
-			if (this.callbacks[name] != undefined) {
-				var callbacks = this.callbacks[name];
+		var me = NovationLaunchpad.instance;
+		if ((name = me.control2name["" + status + control]) != undefined) {
+			if (me.callbacks[name] != undefined) {
+				var callbacks = me.callbacks[name];
 				for (var i=0; i<callbacks.length; i++) {
-					if ((callbacks[i][1] == 0 || callbacks[i][1] == this.page) && typeof(callbacks[i][2]) == 'function') {
+					if ((callbacks[i][1] == 0 || callbacks[i][1] == me.page) && typeof(callbacks[i][2]) == 'function') {
 
 						//
 						// check we need to call for this value change: all, press, release
@@ -255,7 +267,7 @@ NovationLaunchpad = {
 							// call a callback function for this control
 							//
 
-							callbacks[i][2](this, group, name, value);
+							callbacks[i][2].call(me, group, name, value);
 						}
 					}
 				}
@@ -351,35 +363,6 @@ NovationLaunchpad = {
 	},
 
 	//
-	// map a callback to an event from mixxx
-	//
-
-	feedback: function(g, e, f) {
-		if (g != "" && e != "") {
-			engine.connectControl(g, e, "NovationLaunchpad.feedbackData");
-			if (this.feedbacks[g + e] == undefined) {
-				this.feedbacks[g + e] = [];
-			}
-			this.feedbacks[g + e].push(f);
-		}
-	},
-
-	//
-	// call callbacks from mixxx events
-	//
-
-	feedbackData: function(v, g, e) {
-		this.feedback_cache[g + e] = v;
-		if (this.feedbacks[g + e] != undefined) {
-			for (func in this.feedbacks[g + e]) {
-				if (typeof(this.feedbacks[g + e][func]) == "function") {
-					this.feedbacks[g + e][func](this, g, e, v);
-				}
-			}
-		}
-	},
-
-	//
 	// map a callback to a launchpad button name
 	//
 
@@ -414,25 +397,27 @@ NovationLaunchpad = {
 
 		// launchpad => mixxx
 
-		this.capture(name, "all", page, function(self, g, name, value) {
+		this.capture(name, "all", page, function(g, name, value) {
+
 			if (callback == undefined) {
 				engine.setValue(group, event, value);
 			}
 			else if (typeof(callback) == "function") {
 				if (values == "all" || (values == "press" && value > 0) || (values == "release" && value == 0)) {
-					callback(group, event, value);
+					callback.call(this, group, event, value);
 				}
 			}
 
 			if (values == "all" || (values == "press" && value > 0) || (values == "release" && value == 0)) {
-				self.send(name, self.colors[value > 0 ? on_color : off_color], page);
+				this.send(name, this.colors[value > 0 ? on_color : off_color], page);
 			}
 		});
 
 		// mixxx => launchpad
 
-		this.feedback(group, event, function(self, g, e, value) {
-			self.send(name, self.colors[value > 0 ? on_color : off_color], page);
+		engine.connectControl(group, event, function(value, g, e) {
+			this.send(name, this.colors[value > 0 ? on_color : off_color], page);
+			this.feedback_cache[g + e] = value;
 		});
 
 		// init led
@@ -445,27 +430,28 @@ NovationLaunchpad = {
 	//
 
 	toggle:  function(name, values, page, on_color, off_color, group, event, callback) {
-		this.capture(name, "press", page, function(self, g, name, value) {
-			if (typeof(self.toggle_cache[page][name]) == "undefined") {
-				self.toggle_cache[page][name] = 0;
+		this.capture(name, "press", page, function(g, name, value) {
+			if (typeof(this.toggle_cache[page][name]) == "undefined") {
+				this.toggle_cache[page][name] = 0;
 			}
-			self.toggle_cache[page][name] = self.toggle_cache[page][name] == 0 ? 1 : 0;
+			this.toggle_cache[page][name] = this.toggle_cache[page][name] == 0 ? 1 : 0;
 
 			if (callback == undefined) {
-				engine.setValue(group, event, self.toggle_cache[page][name]);
+				engine.setValue(group, event, this.toggle_cache[page][name]);
 			}
 			else if (typeof(callback) == "function") {
-				callback(group, event, self.toggle_cache[page][name]);
+				callback.call(this, group, event, this.toggle_cache[page][name]);
 			}
 
-			self.send(name, self.colors[self.toggle_cache[page][name] > 0 ? on_color : off_color], page);
+			this.send(name, this.colors[this.toggle_cache[page][name] > 0 ? on_color : off_color], page);
 		});
 
 		// mixxx => launchpad
 
-		this.feedback(group, event, function(self, g, e, value) {
-			self.send(name, self.colors[value > 0 ? on_color : off_color], page);
-			self.toggle_cache[page][name] = value > 0 ? 1 : 0;
+		engine.connectControl(group, event, function(value, g, e) {
+			this.send(name, this.colors[value > 0 ? on_color : off_color], page);
+			this.toggle_cache[page][name] = value > 0 ? 1 : 0;
+			this.feedback_cache[g + e] = value;
 		});
 
 		// init led
@@ -478,11 +464,14 @@ NovationLaunchpad = {
 	//
 
 	hotcue: function(name, page, group, num) {
-		this.capture(name, "press", page, function(self, g, name, value) {
-			if (self.shift2) {
+
+		// launchpad => mixxx
+
+		this.capture(name, "press", page, function(g, name, value) {
+			if (this.shift2) {
 				engine.setValue(group, "playposition", (num-1)/8);
 			}
-			else if (self.shift) {
+			else if (this.shift) {
 				engine.setValue(group, "hotcue_" + num + "_clear", 1);
 			}
 			else {
@@ -490,8 +479,11 @@ NovationLaunchpad = {
 			}
 		});
 
-		this.feedback(group, "hotcue_" + num + "_enabled", function(self, g, e, value) { 
-			self.send(name, self.colors[value > 0 ? 'hi_red' : 'black'], page);
+		// mixxx => launchpad
+
+		engine.connectControl(group, "hotcue_" + num + "_enabled", function(value, g, e) { 
+			this.send(name, this.colors[value > 0 ? 'hi_red' : 'black'], page);
+			this.feedback_cache[g + e] = value;
 		});
 	},
 
@@ -538,8 +530,8 @@ NovationLaunchpad = {
 		// launchpad => mixxx
 
 		for (var btn=0; btn<nbtns; btn++) {
-			this.capture((y-btn)+","+x, "press", page, function(self, g, name, value) {
-				var cap = name.match(/^(\d+),\d+/);
+			this.capture((y-btn)+","+x, "press", page, function(g, name, value) {
+				var cap = name.match(/^(\d+),\d+/); // value not closed
 				var num = y - cap[1] + 1;
 				engine.setValue(group, action, incr * num);
 			});
@@ -548,15 +540,16 @@ NovationLaunchpad = {
 
 		// mixxx => launchpad
 
-		this.feedback(group, action, function(self, g, e, value) { 
+		engine.connectControl(group, action, function(value, g, e) { 
 			for (btn=0; btn<nbtns; btn++) {
 				if (value > btn*incr) {
-					self.send((y-btn)+","+x, self.colors[on_color], page);
+					this.send((y-btn)+","+x, this.colors[on_color], page);
 				}
 				else {
-					self.send((y-btn)+","+x, self.colors[off_color], page);
+					this.send((y-btn)+","+x, this.colors[off_color], page);
 				}
 			}
+			this.feedback_cache[g + e] = value;
 		});
 	},
 
@@ -567,17 +560,18 @@ NovationLaunchpad = {
 	vumeter: function(y, x, page, nbtns, on_color, off_color, group, action) {
 		var incr = 1 / nbtns;
 		this.vumeters.push([ y, x, page, nbtns, on_color, off_color, group, action ]);
-		this.feedback(group, action, function(self, g, e, value) { 
-			if (self.vumeter_shift > 0) {
+		engine.connectControl(group, action, function(value, g, e) { 
+			if (this.vumeter_shift > 0) {
 				for (btn=0; btn<nbtns; btn++) {
 					if (value > btn*incr) {
-						self.send((y-btn)+","+x, self.colors[on_color], page);
+						this.send((y-btn)+","+x, this.colors[on_color], page);
 					}
 					else {
-						self.send((y-btn)+","+x, self.colors[off_color], page);
+						this.send((y-btn)+","+x, this.colors[off_color], page);
 					}
 				}
 			}
+			this.feedback_cache[g + e] = value;
 		});
 	},
 

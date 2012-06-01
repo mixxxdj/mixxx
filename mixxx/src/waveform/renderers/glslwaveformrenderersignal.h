@@ -24,7 +24,7 @@ public:
 
 private:
     void createGeometry();
-    void createFrameBuffer();
+    void createFrameBuffers();
 
     GLint m_unitQuadListId;
     GLuint m_textureId;
@@ -32,12 +32,14 @@ private:
     int m_loadedWaveform;
 
     //Frame buffer for two pass rendering
+    bool m_frameBuffersValid;
     QGLFramebufferObject* m_signalMaxbuffer;
     QGLFramebufferObject* m_framebuffer;
 
     int m_signalFrameBufferRatio;
 
     //shaders
+    bool m_shardersValid;
     QGLShaderProgram* m_signalMaxShaderProgram;
     QGLShaderProgram* m_frameShaderProgram;
 };

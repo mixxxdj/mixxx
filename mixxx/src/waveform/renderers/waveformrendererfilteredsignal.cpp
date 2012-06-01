@@ -92,7 +92,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
 
     const float heightFactor = m_alignment == Qt::AlignCenter
-            ? 2.0*allGain*halfHeight/255.0
+            ? allGain*halfHeight/255.0
             : allGain*m_waveformRenderer->getHeight()/255.0;
 
     //draw reference line

@@ -41,6 +41,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
 
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
+    m_lastMovement.resize(kDecks);
     m_dx.resize(kDecks);
     m_rampTo.resize(kDecks);
     m_ramp.resize(kDecks);
@@ -100,7 +101,7 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
         if (m_bDebug) {
             qDebug() << "ControllerEngine: Executing" << prefixName << "." << function;
         }
-        init.call(QScriptValue(), args);
+        init.call(prefix, args);
     }
 }
 
@@ -164,6 +165,9 @@ void ControllerEngine::gracefulShutdown() {
         }
     }
 
+    // Clear the Script Value cache
+    m_scriptValueCache.clear();
+
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
@@ -219,6 +223,8 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
     qDebug() << "ControllerEngine: Loading & evaluating all script code";
 
+    m_lastConfigPath = configPath;
+
     // scriptPaths holds the paths to search in when we're looking for scripts
     QList<QString> scriptPaths;
     scriptPaths.append(USER_PRESETS_PATH);
@@ -233,7 +239,35 @@ void ControllerEngine::loadScriptFiles(QString configPath,
         }
     }
 
+    connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
+            this, SLOT(scriptHasChanged(QString)));
+
     emit(initialized());
+}
+
+// Slot to run when a script file has changed
+void ControllerEngine::scriptHasChanged(QString scriptFilename) {
+    qDebug() << "ControllerEngine: Reloading Scripts";
+    ControllerPresetPointer pPreset = m_pController->getPreset();
+
+    disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
+               this, SLOT(scriptHasChanged(QString)));
+
+    gracefulShutdown();
+
+    // Delete the script engine, first clearing the pointer so that
+    // other threads will not get the dead pointer after we delete it.
+    if (m_pEngine != NULL) {
+        QScriptEngine *engine = m_pEngine;
+        m_pEngine = NULL;
+        engine->deleteLater();
+    }
+
+    initializeScriptEngine();
+    loadScriptFiles(m_lastConfigPath, pPreset->scriptFileNames);
+
+    qDebug() << "Re-initializing scripts";
+    initializeScripts(pPreset->scriptFunctionPrefixes);
 }
 
 /* -------- ------------------------------------------------------
@@ -245,22 +279,12 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 void ControllerEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
     m_scriptFunctionPrefixes = scriptFunctionPrefixes;
 
-    foreach (QString prefix, m_scriptFunctionPrefixes) {
-        if (prefix == "") {
-            continue;
-        }
-        QString initMethod = QString("%1.init").arg(prefix);
-        if (m_bDebug) {
-            qDebug() << "ControllerEngine: Executing" << initMethod;
-        }
+    QScriptValueList args;
+    args << QScriptValue(m_pController->getName());
+    args << QScriptValue(m_bDebug);
 
-        QScriptValueList args;
-        args << QScriptValue(m_pController->getName());
-        args << QScriptValue(m_bDebug);
-        if (!execute(initMethod, args)) {
-            qWarning() << "ControllerEngine: No" << initMethod << "function in script";
-        }
-    }
+    // Call the init method for all the prefixes.
+    callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args);
 
     emit(initialized());
 }
@@ -408,7 +432,6 @@ bool ControllerEngine::execute(QScriptValue functionObject, QScriptValueList arg
         return false;
     }
 
-    //qDebug() << "Calling MIDI Script Function";
     if (!functionObject.isFunction()) {
         qDebug() << "Not a function";
         return false;
@@ -742,8 +765,15 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
         conn.key = key;
         conn.ce = this;
         conn.function = function;
+
         QScriptContext *ctxt = m_pEngine->currentContext();
-        conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+        // Our current context is a function call to engine.connectControl. We
+        // want to grab the 'this' from the caller's context, so we walk up the
+        // stack.
+        if (ctxt) {
+            ctxt = ctxt->parentContext();
+            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+        }
 
         if (callback.isString()) {
             conn.id = callback.toString();
@@ -810,7 +840,7 @@ void ControllerEngine::slotValueChanged(double value) {
     }
     ConfigKey key = pSenderCO->getKey();
 
-    qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
+//     qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
 
     if (m_connectedControls.contains(key)) {
         QHash<ConfigKey, ControllerEngineConnection>::iterator iter =
@@ -835,8 +865,6 @@ void ControllerEngine::slotValueChanged(double value) {
             if (result.isError()) {
                 qWarning()<< "ControllerEngine: Call to callback" << conn.id
                           << "resulted in an error:" << result.toString();
-            } else {
-            	qDebug() << "Called Connection for" << conn.id;
             }
         }
     } else {
@@ -868,6 +896,8 @@ bool ControllerEngine::evaluate(QString scriptName, QList<QString> scriptPaths) 
             filename = scriptPathDir.absoluteFilePath(scriptName);
             input.setFileName(filename);
             if (input.exists())  {
+                qDebug() << "ControllerEngine: Watching JS File:" << filename;
+                m_scriptWatcher.addPath(filename);
                 break;
             }
         }
@@ -1002,7 +1032,7 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
-        qWarning() << "MIDI Script timer could not be created";
+        qWarning() << "Script timer could not be created";
     } else if (m_bDebug) {
         if (oneShot)
             qDebug() << "Starting one-shot timer:" << timerId;
@@ -1177,6 +1207,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
+    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1198,9 +1229,14 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // Give the filter a data point:
 
-    // If we're ramping to end scratching, feed fixed data
-    if (m_ramp[deck]) {
+    // If we're ramping to end scratching
+    //  and the wheel hasn't been turned very recently (spinback after lift-off,)
+    //  feed fixed data
+    if (m_ramp[deck] &&
+        ((SoftTakeover::currentTimeMsecs() - m_lastMovement[deck]) > 0)) {
         filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
+        // Once this code path is run, latch so it always runs until reset
+//         m_lastMovement[deck] += 1000;
     } else {
         //  This will (and should) be 0 if no net ticks have been accumulated
         //  (i.e. the wheel is stopped)
@@ -1211,9 +1247,10 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // Actually do the scratching
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
-    if(cot != NULL) {
-        cot->slotSet(filter->currentPitch());
+    if(cot == NULL) {
+        return; // abort and maybe it'll work on the next pass
     }
+    cot->slotSet(filter->currentPitch());
 
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
@@ -1231,14 +1268,16 @@ void ControllerEngine::scratchProcess(int timerId) {
 
         // Clear scratch2_enable unless brake mode where we just set scratch2 to 0.0
         if (m_brakeActive[deck]) {
-            if (cot != NULL) {
-                cot->slotSet(0.0);
+            if(cot == NULL) {
+                return; // abort and maybe it'll work on the next pass
             }
+            cot->slotSet(0.0);
         } else {
             cot = getControlObjectThread(group, "scratch2_enable");
-            if(cot != NULL) {
-                cot->slotSet(0);
+            if(cot == NULL) {
+                return; // abort and maybe it'll work on the next pass
             }
+            cot->slotSet(0);
         }
 
         // Remove timer
@@ -1279,7 +1318,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
                 rate = cot->get();
             }
 
-            // Get the pitch slider directions
+            // Get the pitch slider direction
             cot = getControlObjectThread(group, "rate_dir");
             if (cot != NULL && cot->get() == -1) {
                 rate = -rate;
@@ -1304,7 +1343,19 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         }
     }
 
+    m_lastMovement[deck] = SoftTakeover::currentTimeMsecs();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
+}
+
+/* -------- ------------------------------------------------------
+    Purpose: Tells if the specified deck is currently scratching
+             (Scripts need this to implement spinback-after-lift-off)
+    Input:   Virtual deck to inquire about
+    Output:  True if so
+    -------- ------------------------------------------------------ */
+bool ControllerEngine::isScratching(int deck) {
+    QString group = QString("[Channel%1]").arg(deck);
+    return getValue(group,"scratch2_enable")>0;
 }
 
 /*  -------- ------------------------------------------------------

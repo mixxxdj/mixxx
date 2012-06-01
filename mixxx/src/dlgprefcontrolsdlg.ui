@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>519</width>
-    <height>694</height>
+    <height>698</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -268,7 +268,7 @@
       </widget>
      </item>
      <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale" />
+      <widget class="QComboBox" name="ComboBoxLocale"/>
      </item>
     </layout>
    </item>
@@ -573,6 +573,25 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <widget class="QLabel" name="waveformTypeLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Display type</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>waveformTypeComboBox</cstring>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="2" colspan="4">
        <widget class="QComboBox" name="waveformTypeComboBox"/>
       </item>
@@ -722,26 +741,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="waveformTypeLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Display type</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>waveformTypeComboBox</cstring>
-        </property>
-       </widget>
+      <item row="4" column="2" colspan="2">
+       <widget class="QComboBox" name="defaultZoomComboBox"/>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="defaultZoomLabel">
         <property name="text">
          <string>Default zoom</string>
@@ -754,10 +757,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2" colspan="2">
-       <widget class="QComboBox" name="defaultZoomComboBox"/>
-      </item>
-      <item row="3" column="4" colspan="2">
+      <item row="4" column="4" colspan="2">
        <widget class="QCheckBox" name="synchronizeZoomCheckBox">
         <property name="toolTip">
          <string>Synchronize zoom level across all waveform displays.</string>
@@ -767,7 +767,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="openGlStatusLabel">
         <property name="toolTip">
          <string/>
@@ -780,7 +780,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="2" colspan="4">
+      <item row="5" column="2" colspan="4">
        <widget class="QLabel" name="openGlStatusIcon">
         <property name="toolTip">
          <string>Displays which OpenGL version is supported by the current platform.</string>
@@ -800,10 +800,17 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="5" column="1">
        <widget class="QLabel" name="dummySpacerLabel">
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2" colspan="4">
+       <widget class="QCheckBox" name="normalizeOverviewCheckBox">
+        <property name="text">
+         <string>Normalize Overview</string>
         </property>
        </widget>
       </item>
