@@ -46,6 +46,12 @@ CueControl::CueControl(const char * _group,
             this, SLOT(cueGoto(double)),
             Qt::DirectConnection);
 
+    m_pCueGotoAndPlay =
+            new ControlPushButton(ConfigKey(_group, "cue_gotoandplay"));
+    connect(m_pCueGotoAndPlay, SIGNAL(valueChanged(double)),
+            this, SLOT(cueGotoAndPlay(double)),
+            Qt::DirectConnection);
+
     m_pCueGotoAndStop =
             new ControlPushButton(ConfigKey(_group, "cue_gotoandstop"));
     connect(m_pCueGotoAndStop, SIGNAL(valueChanged(double)),
@@ -73,7 +79,7 @@ CueControl::CueControl(const char * _group,
             Qt::DirectConnection);
 
     connect(m_pPlayButton, SIGNAL(valueChanged(double)),
-            this, SLOT(cuePlay(double)),
+            this, SLOT(playFromCuePreview(double)),
             Qt::DirectConnection);
 }
 
@@ -82,6 +88,7 @@ CueControl::~CueControl() {
     delete m_pCueMode;
     delete m_pCueSet;
     delete m_pCueGoto;
+    delete m_pCueGotoAndPlay;
     delete m_pCueGotoAndStop;
     delete m_pCueSimple;
     delete m_pCuePreview;
@@ -105,6 +112,9 @@ void CueControl::createControls() {
                 Qt::DirectConnection);
         connect(pControl, SIGNAL(hotcueGoto(HotcueControl*, double)),
                 this, SLOT(hotcueGoto(HotcueControl*, double)),
+                Qt::DirectConnection);
+        connect(pControl, SIGNAL(hotcueGotoAndPlay(HotcueControl*, double)),
+                this, SLOT(hotcueGotoAndPlay(HotcueControl*, double)),
                 Qt::DirectConnection);
         connect(pControl, SIGNAL(hotcueGotoAndStop(HotcueControl*, double)),
                 this, SLOT(hotcueGotoAndStop(HotcueControl*, double)),
@@ -363,6 +373,28 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
     }
 }
 
+void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
+    if (!v)
+        return;
+    
+    QMutexLocker lock(&m_mutex);
+    if (!m_pLoadedTrack)
+        return;
+    
+    Cue* pCue = pControl->getCue();
+    
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+    
+    if (pCue) {
+        int position = pCue->getPosition();
+        if (position != -1) {
+            emit(seekAbs(position));
+            m_pPlayButton->set(1.0);
+        }
+    }
+}
+
 void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
     //qDebug() << "CueControl::hotcueActivate" << v;
 
@@ -551,19 +583,24 @@ void CueControl::cueGoto(double v)
         return;
 
     QMutexLocker lock(&m_mutex);
-    // Set cue point if play is not pressed
+    // Seek to cue point
+    double cuePoint = m_pCuePoint->get();
+
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+
+    emit(seekAbs(cuePoint));
+}
+
+void CueControl::cueGotoAndPlay(double v)
+{
+    if (!v)
+        return;
+    cueGoto(v);
+    QMutexLocker lock(&m_mutex);
+    // Start playing if not already
     if (m_pPlayButton->get()==0.) {
-        // Set the cue point and play
-        cueSet(v);
         m_pPlayButton->set(1.0);
-    } else {
-        // Seek to cue point
-        double cuePoint = m_pCuePoint->get();
-
-        // Need to unlock before emitting any signals to prevent deadlock.
-        lock.unlock();
-
-        emit(seekAbs(cuePoint));
     }
 }
 
@@ -626,7 +663,7 @@ void CueControl::cueCDJ(double v) {
      * If pressed while playing, stop playback and go to cue.
      * If pressed while stopped and at cue, play while pressed.
      * If pressed while stopped and not at cue, set new cue point.
-     * If play is pressed while holding cue, the deck is now playing. (Handled in cuePlay().)
+     * If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
      */
 
     QMutexLocker lock(&m_mutex);
@@ -672,12 +709,12 @@ void CueControl::cueCDJ(double v) {
     }
     else {
         // Re-trigger the play button value so controllers get the correct one
-        // after cuePlay() changes it.
+        // after playFromCuePreview() changes it.
         m_pPlayButton->set(m_pPlayButton->get());
     }
 }
 
-void CueControl::cuePlay(double v) {
+void CueControl::playFromCuePreview(double v) {
     Q_UNUSED(v);
 
     QMutexLocker lock(&m_mutex);
@@ -738,6 +775,11 @@ HotcueControl::HotcueControl(const char* pGroup, int i)
             this, SLOT(slotHotcueGoto(double)),
             Qt::DirectConnection);
 
+    m_hotcueGotoAndPlay = new ControlPushButton(keyForControl(i, "gotoandplay"));
+    connect(m_hotcueGotoAndPlay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotHotcueGotoAndPlay(double)),
+            Qt::DirectConnection);
+
     m_hotcueGotoAndStop = new ControlPushButton(keyForControl(i, "gotoandstop"));
     connect(m_hotcueGotoAndStop, SIGNAL(valueChanged(double)),
             this, SLOT(slotHotcueGotoAndStop(double)),
@@ -764,6 +806,7 @@ HotcueControl::~HotcueControl() {
     delete m_hotcueEnabled;
     delete m_hotcueSet;
     delete m_hotcueGoto;
+    delete m_hotcueGotoAndPlay;
     delete m_hotcueGotoAndStop;
     delete m_hotcueActivate;
     delete m_hotcueActivatePreview;
@@ -776,6 +819,10 @@ void HotcueControl::slotHotcueSet(double v) {
 
 void HotcueControl::slotHotcueGoto(double v) {
     emit(hotcueGoto(this, v));
+}
+
+void HotcueControl::slotHotcueGotoAndPlay(double v) {
+    emit(hotcueGotoAndPlay(this, v));
 }
 
 void HotcueControl::slotHotcueGotoAndStop(double v) {

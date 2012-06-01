@@ -91,8 +91,8 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         //QFont font("Bitstream Vera Sans");
         //QFont font("Helvetica");
         QFont font; // Uses the application default
-        font.setPointSize(8);
-        font.setStretch(80);
+        font.setPointSize(10);
+        font.setStretch(100);
 
         QFontMetrics metrics(font);
 
@@ -105,8 +105,8 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         wordRect.setWidth( wordRect.width() + (wordRect.width())%2);
         //even wodrrect to have an event pixmap >> draw the line in the middle !
 
-        labelRectWidth = wordRect.width() + 2*marginX + 1;
-        labelRectHeight = wordRect.height() + 2*marginY + 1;
+        labelRectWidth = wordRect.width() + 2*marginX + 4;
+        labelRectHeight = wordRect.height() + 2*marginY + 4 ;
 
         //vRince all the 0.5 stuff produce nicer rounded rectangle ... I don't know why !
         QRectF labelRect(0.5,0.5,(float)labelRectWidth - 0.5f,(float)labelRectHeight - 0.5f);
@@ -127,22 +127,22 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
 
         //draw the label rect
         QColor rectColor = mark.m_color;
-        rectColor.setAlpha(50);
-        rectColor.darker(140);
+        rectColor.setAlpha(150);
+        rectColor.darker(200);
         painter.setPen(mark.m_color);
         painter.setBrush(QBrush(rectColor));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
 
         //draw text
         painter.setBrush(QBrush(QColor(0,0,0,0)));
-        font.setWeight(40);
+        font.setWeight(75);
         painter.setFont(font);
         painter.setPen(mark.m_textColor);
         painter.drawText(labelRect, Qt::AlignCenter, mark.m_text);
 
         //draw line
         QColor lineColor = mark.m_color;
-        lineColor.setAlpha(140);
+        lineColor.setAlpha(200);
         painter.setPen(lineColor);
 
         float middle = mark.m_pixmap.width()/2;

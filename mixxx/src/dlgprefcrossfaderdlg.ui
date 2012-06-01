@@ -27,7 +27,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QRadioButton" name="radioButtonSlowFade">
+       <widget class="QRadioButton" name="radioButtonAdditive">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -35,14 +35,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Slow fade</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="radioButtonFastCut">
-        <property name="text">
-         <string>Fast cut</string>
+         <string>Slow fade/Fast cut (additive)</string>
         </property>
        </widget>
       </item>
@@ -196,8 +189,7 @@
       </item>
      </layout>
      <zorder>radioButtonConstantPower</zorder>
-     <zorder>radioButtonFastCut</zorder>
-     <zorder>radioButtonSlowFade</zorder>
+     <zorder>radioButtonAdditive</zorder>
     </widget>
    </item>
    <item>

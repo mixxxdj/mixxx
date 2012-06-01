@@ -739,7 +739,7 @@ QString buildWhatsThis(QString title, QString text) {
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-    QString loadTrackText = tr("Load track to Deck %1");
+    QString loadTrackText = tr("Load Track to Deck %1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
     QString openText = tr("Open");
 
@@ -783,7 +783,7 @@ void MixxxApp::initActions()
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
-    QString createPlaylistTitle = tr("Add &new playlist");
+    QString createPlaylistTitle = tr("Add &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
     m_pPlaylistsNew->setShortcut(tr("Ctrl+N"));
@@ -793,7 +793,7 @@ void MixxxApp::initActions()
     connect(m_pPlaylistsNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreatePlaylist()));
 
-    QString createCrateTitle = tr("Add new &crate");
+    QString createCrateTitle = tr("Add New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
     m_pCratesNew->setShortcut(tr("Ctrl+Shift+N"));
@@ -821,7 +821,7 @@ void MixxxApp::initActions()
     connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsFullScreen(bool)));
 
-    QString keyboardShortcutTitle = tr("Enable &keyboard shortcuts");
+    QString keyboardShortcutTitle = tr("Enable &Keyboard Shortcuts");
     QString keyboardShortcutText = tr("Toggles keyboard shortcuts on or off");
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
@@ -874,7 +874,7 @@ void MixxxApp::initActions()
     m_pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
     connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
 
-    QString translateTitle = tr("&Translate this application");
+    QString translateTitle = tr("&Translate This Application");
     QString translateText = tr("Help translate this application into your language.");
     m_pHelpTranslation = new QAction(translateTitle, this);
     m_pHelpTranslation->setStatusTip(translateText);
@@ -919,7 +919,7 @@ void MixxxApp::initActions()
 #endif
 
 #ifdef __SHOUTCAST__
-    QString shoutcastTitle = tr("Enable live &broadcasting");
+    QString shoutcastTitle = tr("Enable Live &Broadcasting");
     QString shoutcastText = tr("Stream your mixes to a shoutcast or icecast server");
     m_pOptionsShoutcast = new QAction(shoutcastTitle, this);
     m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
@@ -1092,12 +1092,17 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
          //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
          //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
+#ifdef __LINUX__
+        // Fix for "No menu bar with ubuntu unity in full screen mode" Bug #885890
+        // Not for Mac OS because the native menu bar will unhide when moving
+        // the mouse to the top of screen
         menuBar()->setNativeMenuBar(false);
+#endif
         showFullScreen();
     } else {
         showNormal();
-        menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
 #ifdef __LINUX__
+        menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
         //move(m_winpos);
 #endif
     }
@@ -1474,11 +1479,13 @@ void MixxxApp::rebootMixxxView() {
 
     WaveformWidgetFactory::instance()->start();
 
-    // Set native menu bar. Fixes issue on OSX where menu bar went away after a
-    // skin change.
-#if __APPLE__
-    menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
+#ifdef __APPLE__
+    // Original the following line fixes issue on OSX where menu bar went away
+    // after a skin change. It was original surrounded by #if __OSX__
+    // Now it seems it causes the opposite see Bug #1000187
+    //menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
 #endif
+
     qDebug() << "rebootMixxxView DONE";
 }
 
