@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "analyserwaveform.h"
+#include "engine/engineobject.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilteriir.h"
 #include "library/trackcollection.h"
@@ -85,6 +86,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 missingWaveform && !loadedWaveform) {
                 Waveform* pLoadedWaveform =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
+
                 if (pLoadedWaveform && pLoadedWaveform->isValid()) {
                     m_waveform = pLoadedWaveform;
                     loadedWaveform = true;
@@ -148,7 +150,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     const double mainSummaryRatio = m_waveform->getVisualSampleRate() / m_waveformSummary->getVisualSampleRate();
     const int summaryStrideLength = ceil(mainSummaryRatio);
     m_strideSummary.init(summaryStrideLength);
-    m_strideSummary.m_convertionFactor /= (double)mainSummaryRatio;
+    m_strideSummary.m_conversionFactor /= (double)mainSummaryRatio;
 
     m_currentStride = 0;
     m_currentSummaryStride = 0;
@@ -166,9 +168,13 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
 void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
     //TODO: (vRince) bind this with *actual* filter values ...
-    m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
-    m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
-    m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
+    // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
+    // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
+    // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
+    m_filter[Low] = new EngineFilterIIR(bessel_lowpass4, 4);
+    m_filter[Mid] = new EngineFilterIIR(bessel_bandpass, 8);
+    m_filter[High] = new EngineFilterIIR(bessel_highpass4, 4);
+
 }
 
 void AnalyserWaveform::destroyFilters() {
@@ -195,16 +201,45 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
     m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
+    CSAMPLE cmaxLow[2];
+    cmaxLow[Left] = 0;
+    cmaxLow[Right] = 0;
+    CSAMPLE cmaxBand[2];
+    cmaxBand[Left] = 0;
+    cmaxBand[Right] = 0;
+    CSAMPLE cmaxHigh[2];
+    cmaxHigh[Left] = 0;
+    cmaxHigh[Right] = 0;
+    CSAMPLE cmaxAll[2];
+    cmaxAll[Left] = 0;
+    cmaxAll[Right] = 0;
+
     for( int i = 0; i < bufferLength; i+=2) {
-        //accumulate signal power of the stride
-        m_stride.m_overallData[Right] += buffer[i]*buffer[i];
-        m_stride.m_overallData[ Left] += buffer[i+1]*buffer[i+1];
-        m_stride.m_filteredData[Right][ Low] += m_buffers[ Low][i  ]*m_buffers[ Low][i];
-        m_stride.m_filteredData[ Left][ Low] += m_buffers[ Low][i+1]*m_buffers[ Low][i+1];
-        m_stride.m_filteredData[Right][ Mid] += m_buffers[ Mid][i  ]*m_buffers[ Mid][i];
-        m_stride.m_filteredData[ Left][ Mid] += m_buffers[ Mid][i+1]*m_buffers[ Mid][i+1];
-        m_stride.m_filteredData[Right][High] += m_buffers[High][i  ]*m_buffers[High][i];
-        m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];
+        // Take max value, not average of data
+        CSAMPLE cover[2] = { fabs(buffer[i]), fabs(buffer[i+1]) };
+        CSAMPLE clow[2] =  { fabs(m_buffers[ Low][i]), fabs(m_buffers[ Low][i+1]) };
+        CSAMPLE cmid[2] =  { fabs(m_buffers[ Mid][i]), fabs(m_buffers[ Mid][i+1]) };
+        CSAMPLE chigh[2] = { fabs(m_buffers[High][i]), fabs(m_buffers[High][i+1]) };
+
+        cmaxAll[Left] = math_max(cmaxAll[Left], cover[Left]);
+        cmaxAll[Right] = math_max(cmaxAll[Right], cover[Right]);
+        cmaxLow[Left] = math_max(cmaxLow[Left], clow[Left]);
+        cmaxLow[Right] = math_max(cmaxLow[Right], clow[Right]);
+        cmaxBand[Left] = math_max(cmaxBand[Left], cmid[Left]);
+        cmaxBand[Right] = math_max(cmaxBand[Right], cmid[Right]);
+        cmaxHigh[Left] = math_max(cmaxHigh[Left], chigh[Left]);
+        cmaxHigh[Right] = math_max(cmaxHigh[Right], chigh[Right]);
+
+        // This is for if you want to experiment with averaging instead of
+        // maxing.
+        // m_stride.m_overallData[Right] += buffer[i]*buffer[i];
+        // m_stride.m_overallData[ Left] += buffer[i+1]*buffer[i+1];
+        // m_stride.m_filteredData[Right][ Low] += m_buffers[ Low][i  ]*m_buffers[ Low][i];
+        // m_stride.m_filteredData[ Left][ Low] += m_buffers[ Low][i+1]*m_buffers[ Low][i+1];
+        // m_stride.m_filteredData[Right][ Mid] += m_buffers[ Mid][i  ]*m_buffers[ Mid][i];
+        // m_stride.m_filteredData[ Left][ Mid] += m_buffers[ Mid][i+1]*m_buffers[ Mid][i+1];
+        // m_stride.m_filteredData[Right][High] += m_buffers[High][i  ]*m_buffers[High][i];
+        // m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];
 
         if( m_stride.m_position >= m_stride.m_length) {
             if (m_currentStride + ChannelCount > m_waveformDataSize) {
@@ -212,17 +247,27 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
                 return;
             }
 
+            // Record the max across this stride.
+            m_stride.m_overallData[Left] = cmaxAll[Left];
+            m_stride.m_overallData[Right] = cmaxAll[Right];
+            m_stride.m_filteredData[ Left][ Low] = cmaxLow[Left];
+            m_stride.m_filteredData[Right][ Low] = cmaxLow[Right];
+            m_stride.m_filteredData[ Left][ Mid] = cmaxBand[Left];
+            m_stride.m_filteredData[Right][ Mid] = cmaxBand[Right];
+            m_stride.m_filteredData[ Left][High] = cmaxHigh[Left];
+            m_stride.m_filteredData[Right][High] = cmaxHigh[Right];
+
             m_stride.store(m_waveformData + m_currentStride);
 
-            //summary
-            m_strideSummary.m_overallData[Right] += m_stride.m_overallData[Right];
-            m_strideSummary.m_overallData[ Left] += m_stride.m_overallData[ Left];
-            m_strideSummary.m_filteredData[Right][ Low] += m_stride.m_filteredData[Right][ Low];
+            // summary is an average of the maxes
+            m_strideSummary.m_overallData[Left] += m_stride.m_overallData[ Left];
+            m_strideSummary.m_overallData[Right] += m_stride.m_overallData[ Right];
             m_strideSummary.m_filteredData[ Left][ Low] += m_stride.m_filteredData[ Left][ Low];
-            m_strideSummary.m_filteredData[Right][ Mid] += m_stride.m_filteredData[Right][ Mid];
+            m_strideSummary.m_filteredData[Right][ Low] += m_stride.m_filteredData[Right][ Low];
             m_strideSummary.m_filteredData[ Left][ Mid] += m_stride.m_filteredData[ Left][ Mid];
-            m_strideSummary.m_filteredData[Right][High] += m_stride.m_filteredData[Right][High];
+            m_strideSummary.m_filteredData[Right][ Mid] += m_stride.m_filteredData[Right][ Mid];
             m_strideSummary.m_filteredData[ Left][High] += m_stride.m_filteredData[ Left][High];
+            m_strideSummary.m_filteredData[Right][High] += m_stride.m_filteredData[Right][High];
 
             //NOTE: (vrince) test save main max in summary
             /*
@@ -272,18 +317,27 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
                 m_strideSummary.store(m_waveformSummaryData + m_currentSummaryStride);
                 m_strideSummary.reset();
 
-                /*
-                qDebug() << "m_strideSummary"
+
+/*                qDebug() << "m_strideSummary"
                          << (m_waveformSummaryData + m_currentSummaryStride)->filtered.all
                          << (m_waveformSummaryData + m_currentSummaryStride)->filtered.low
                          << (m_waveformSummaryData + m_currentSummaryStride)->filtered.mid
-                         << (m_waveformSummaryData + m_currentSummaryStride)->filtered.high;
-                         */
+                         << (m_waveformSummaryData + m_currentSummaryStride)->filtered.high;*/
+
 
                 m_currentSummaryStride += 2;
             }
             m_strideSummary.m_position += 2;
             m_stride.reset();
+            cmaxAll[Left] = 0;
+            cmaxAll[Right] = 0;
+            cmaxLow[Left] = 0;
+            cmaxLow[Right] = 0;
+            cmaxBand[Left] = 0;
+            cmaxBand[Right] = 0;
+            cmaxHigh[Left] = 0;
+            cmaxHigh[Right] = 0;
+
             m_currentStride += 2;
         }
         m_stride.m_position += 2;
@@ -318,14 +372,14 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
     QMutexLocker waveformLocker(m_waveform->getMutex());
     // Force completion to waveform size
     m_waveform->setCompletion(m_waveform->getDataSize());
-    m_waveform->setVersion(WAVEFORM_2_VERSION);
-    m_waveform->setDescription("Waveform 2.0");
+    m_waveform->setVersion(WaveformFactory::getPreferredWaveformVersion());
+    m_waveform->setDescription(WaveformFactory::getPreferredWaveformDescription());
 
     QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
     // Force completion to waveform size
     m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
-    m_waveformSummary->setVersion(WAVEFORMSUMMARY_2_VERSION);
-    m_waveformSummary->setDescription("Waveform Summary 2.0");
+    m_waveformSummary->setVersion(WaveformFactory::getPreferredWaveformSummaryVersion());
+    m_waveformSummary->setDescription(WaveformFactory::getPreferredWaveformSummaryDescription());
 
 
 #ifdef TEST_HEAT_MAP

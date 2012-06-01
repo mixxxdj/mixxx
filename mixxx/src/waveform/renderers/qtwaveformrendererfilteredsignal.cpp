@@ -296,15 +296,16 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
 
+    double heightGain = visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0;
     if (m_alignment == Qt::AlignTop) {
-        painter->translate(0.0,0.0);
-        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->translate(0.0, 0.0);
+        painter->scale(1.0, heightGain);
     } else if (m_alignment == Qt::AlignBottom) {
-        painter->translate(0.0,m_waveformRenderer->getHeight());
-        painter->scale(1.0,2.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->translate(0.0, m_waveformRenderer->getHeight());
+        painter->scale(1.0, heightGain);
     } else {
-        painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
-        painter->scale(1.0,1.0*visualGain*m_waveformRenderer->getGain()*(double)m_waveformRenderer->getHeight()/255.0);
+        painter->translate(0.0, m_waveformRenderer->getHeight()/2.0);
+        painter->scale(1.0, 0.5*heightGain);
     }
 
     //draw reference line
