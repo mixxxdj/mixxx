@@ -29,7 +29,7 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
         //return pow(invalue, 2 * 0.5);
         return invalue;
     } else {
-        return pow(invalue, 2 * 0.316);
+        return pow(invalue, 2.0f * 0.316f);
     }
 }
 
