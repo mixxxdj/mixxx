@@ -131,6 +131,7 @@ public:
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
+    void slotControlSlip(double);
 
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
@@ -206,11 +207,19 @@ private:
     /** Used in update of playpos slider */
     int m_iSamplesCalculated;
     int m_iUiSlowTick;
-
+    
+    /** The location where the track would have been had slip not been engaged */
+    double m_dSlipPosition;
+    /** Saved value of rate for slip mode */
+    double m_dSlipRate;
+    /** Slip Status */
+    bool m_bSlipEnabled;
+    
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton, *playSyncButton;
+    ControlPushButton *m_pSlipButton;
     ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
 

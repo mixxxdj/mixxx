@@ -150,6 +150,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(endButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlEnd(double)),
             Qt::DirectConnection);
+            
+    m_pSlipButton = new ControlPushButton(ConfigKey(group, "slip_enabled"));
+    m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pSlipButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlSlip(double)),
+            Qt::DirectConnection);
+    connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlSlip(double)),
+            Qt::DirectConnection);
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
@@ -178,7 +187,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pRepeat = new ControlPushButton(ConfigKey(group, "repeat"));
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
-
+    
 #ifdef __VINYLCONTROL__
     //a midi knob to tweak the vinyl pitch for decks with crappy sliders
     m_pVinylPitchTweakKnob = new ControlPotmeter(ConfigKey(_group, "vinylpitchtweak"), -0.005, 0.005);
@@ -512,6 +521,27 @@ void EngineBuffer::slotControlStop(double v)
     }
 }
 
+void EngineBuffer::slotControlSlip(double v)
+{
+    bool enabled = v > 0.0;
+    if (enabled == m_bSlipEnabled) {
+        return;
+    }
+    
+    m_bSlipEnabled = enabled;
+    
+    if (enabled) {
+        m_dSlipPosition = filepos_play;
+        m_dSlipRate = rate_old;
+    }
+    else
+    {
+        //TODO(owen) assuming that looping will get cancelled properly
+        slotControlSeekAbs(m_dSlipPosition);
+    }
+}
+
+
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
     Q_ASSERT(even(iBufferSize));
@@ -544,6 +574,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                                              &is_scratching);
 
         //qDebug() << "rate" << rate << " paused" << paused;
+        
+        // Update the slipped position
+        if (m_bSlipEnabled) {
+            m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
+        }
+        
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
