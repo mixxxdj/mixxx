@@ -4267,6 +4267,11 @@
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 						</Connection>
 						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_0.25_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+						<Connection>
 							<ConfigKey>[Channel1],beatloop_0.25_enabled</ConfigKey>
 							<ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
@@ -5257,6 +5262,11 @@
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_0.25_activate</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_0.25_enabled</ConfigKey>
