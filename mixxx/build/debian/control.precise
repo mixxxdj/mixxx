@@ -1,0 +1,23 @@
+Source: mixxx
+Section: sound
+Priority: optional
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+XSBC-Original-Maintainer: RJ Ryan <rryan@mixxx.org>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, docbook-to-man, libglu1-mesa-dev, libqt4-opengl-dev | libqt4-dev (>= 4.6.0), scons, libjack-dev, portaudio19-dev, libid3tag0-dev, libmad0-dev, libogg-dev, libsndfile1-dev, libasound2-dev, libvorbis-dev, libsoundtouch1-dev, libmp4v2-dev, libfaad-dev, libportmidi-dev, libtag1-dev, libshout-dev, vamp-plugin-sdk, libprotobuf-dev, protobuf-compiler, libusb-1.0-0-dev
+Standards-Version: 3.7.3
+
+Package: mixxx
+Section: sound
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-opengl, libqt4-svg, libqt4-xmlpatterns, libqt4-webkit, libqt4-sql, libqt4-sql-sqlite
+Recommends: libmp3lame0
+Suggests: pdf-viewer
+Replaces: mixxx-data
+Description: Digital DJ interface
+ Mixxx allows DJs to perform live mixes with their digital music library. A
+ robust mixing engine including filters, gains, a crossfader, and pitch control
+ are provided. Mixxx also features BPM detection to help DJs find the tempo of
+ songs in their library.
+ .
+ Mixxx works with ALSA, JACK, and OSS, and supports many popular DJ controllers
+ including the Hercules MK2 and M-Audio X-Session Pro.

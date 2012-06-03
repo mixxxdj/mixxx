@@ -91,6 +91,12 @@ script.pitch = function (LSB, MSB, status) {
     return script.midiPitch(LSB, MSB, status);
 }
 
+/* -------- ------------------------------------------------------
+     script.crossfaderCurve
+   Purpose: Adjusts the cross-fader's curve using a hardware control
+   Input:   Current value of the hardware control, min and max values for that control
+   Output:  none
+   -------- ------------------------------------------------------ */
 script.crossfaderCurve = function (value, min, max) {
     if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
         // Constant Power
@@ -98,6 +104,39 @@ script.crossfaderCurve = function (value, min, max) {
     } else {
         // Additive
         engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, 2, min, max));
+    }
+}
+
+/* -------- ------------------------------------------------------
+     script.loopMove
+   Purpose: Moves the current loop by the specified number of beats (default 1/2)
+            in the specified direction (positive is forwards and is the default)
+            If the current loop length is shorter than the requested move distance,
+            it's only moved a distance equal to its length.
+   Input:   MixxxControl group, direction to move, number of beats to move
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.loopMove = function (group,direction,numberOfBeats) {
+    if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
+    var beatLength = (60*2) / engine.getValue(group, "bpm")
+        * engine.getValue(group, "track_samplerate");   // The *2 is for stereo
+    var oldStart = engine.getValue(group,"loop_start_position");
+    var oldEnd = engine.getValue(group,"loop_end_position");
+    var loopLength = oldEnd - oldStart;
+    var moveAmount = beatLength*numberOfBeats;
+    // If the loop length is shorter than the amount requested to move, only move
+    //  the loop length to stay contiguous
+    if (loopLength<moveAmount) moveAmount = loopLength;
+    if (direction<0) {
+        // Backwards
+        engine.setValue(group,"loop_start_position",oldStart-moveAmount);
+        engine.setValue(group,"loop_end_position",oldEnd-moveAmount);
+    }
+    else {
+        // Forwards
+        engine.setValue(group,"loop_end_position",oldEnd+moveAmount);
+        engine.setValue(group,"loop_start_position",oldStart+moveAmount);
+
     }
 }
 
@@ -123,112 +162,29 @@ script.midiPitch = function (LSB, MSB, status) {
 }
 
 /* -------- ------------------------------------------------------
-     script.spinbackDefault
-   Purpose: wrapper around spinback() that can be directly mapped 
-            from xml for a spinback effect
-   Input:   channel, control, value, status, group
-   Output:  none
-   -------- ------------------------------------------------------ */
-script.spinbackDefault = function(channel, control, value, status, group) {
-	// disable on note-off or zero value note/cc
-    script.spinback(group, ((status & 0xF0) != 0x80 && value > 0));
-}
-
-/* -------- ------------------------------------------------------
-     script.brakeDefault
-   Purpose: wrapper around brake() that can be directly mapped 
-            from xml for a brake effect
-   Input:   channel, control, value, status, group
-   Output:  none
-   -------- ------------------------------------------------------ */
-script.brakeDefault = function(channel, control, value, status, group) {
-	// disable on note-off or zero value note/cc
-    script.brake(group, ((status & 0xF0) != 0x80 && value > 0));
-}
-
-/* -------- ------------------------------------------------------
      script.spinback
-   Purpose: Activate or disable a spinback effect on the chosen deck
-   Input:   group, enable/disable, [delay], [factor], [inital rate]
-   Output:  None
+   Purpose: wrapper around engine.spinback() that can be directly mapped 
+            from xml for a spinback effect
+            e.g: <key>script.spinback</key>
+   Input:   channel, control, value, status, group
+   Output:  none
    -------- ------------------------------------------------------ */
-script.spinback = function(group, activate, factor, rate, delay) {
-    if (factor == undefined) factor = 0.8;
-    if (rate == undefined) rate = -10;
-    if (delay == undefined) delay = 5;
-    script.deckSpinbackBrake(group, activate, factor, rate, delay);
+script.spinback = function(channel, control, value, status, group) {
+    // disable on note-off or zero value note/cc
+    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
 }
 
 /* -------- ------------------------------------------------------
      script.brake
-   Purpose: Activate or disable a brake effect on the chosen deck
-   Input:   group, enable/disable, [delay], [factor], [inital rate]
-   Output:  None
+   Purpose: wrapper around engine.brake() that can be directly mapped 
+            from xml for a brake effect
+            e.g: <key>script.brake</key>
+   Input:   channel, control, value, status, group
+   Output:  none
    -------- ------------------------------------------------------ */
-script.brake = function(group, activate, factor, rate, delay) {
-    if (factor == undefined) factor = 0.95;
-    if (rate == undefined) rate = 1;
-    if (delay == undefined) delay = 0;
-    script.deckSpinbackBrake(group, activate, factor, rate, delay);
-}
-
-script.deckSpinbackBrakeData = {};
-
-script.deckSpinbackBrake = function(group, activate, factor, rate, delay) {
-
-    if (activate != undefined) {
-
-        // store the current settings
-
-        if (script.deckSpinbackBrakeData[group] == undefined) {
-            script.deckSpinbackBrakeData[group] = { timer: null, delay: delay, factor: factor, rate: rate };
-        }
-        else {
-            script.deckSpinbackBrakeData[group].delay = delay;
-            script.deckSpinbackBrakeData[group].factor = factor;
-            script.deckSpinbackBrakeData[group].rate = rate;
-        }
-
-        // kill timer when both enabling or disabling
-
-        if (script.deckSpinbackBrakeData[group].timer != null) {
-            engine.stopTimer(script.deckSpinbackBrakeData[group].timer);
-            script.deckSpinbackBrakeData[group].timer = null;
-        }
-
-        // enable/disable scratch2 mode
-
-        engine.setValue(group, 'scratch2_enable', activate ? 1 : 0);
-
-        if (activate) {
-            // save keylock status and disable it
-            if ((script.deckSpinbackBrakeData[group].keylock = engine.getValue(group, "keylock")) > 0) {
-                engine.setValue(group, "keylock", 0);
-            }
-
-            // setup timer and send first scratch2 'tick' if activating
-            script.deckSpinbackBrakeData[group].timer = engine.beginTimer(50, 'script.deckSpinbackBrake("' + group + '")');
-            engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
-        }
-
-        // re-enable keylock if needed
-
-        else if (script.deckSpinbackBrakeData[group].keylock) {
-            engine.setValue(group, "keylock", 1);
-        }
-    }
-    else {
-        // being called from a timer
-
-        engine.setValue(group, 'scratch2', script.deckSpinbackBrakeData[group].rate);
-
-        if (script.deckSpinbackBrakeData[group].delay > 0) {
-            script.deckSpinbackBrakeData[group].delay--;
-        }
-        else {
-            script.deckSpinbackBrakeData[group].rate *= script.deckSpinbackBrakeData[group].factor;
-        }
-    }
+script.brake = function(channel, control, value, status, group) {
+    // disable on note-off or zero value note/cc
+    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) != 0x80 && value > 0));
 }
 
 // bpm - Used for tapping the desired BPM for a deck

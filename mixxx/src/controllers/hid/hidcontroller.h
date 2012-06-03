@@ -62,6 +62,10 @@ class HidController : public Controller {
         return m_preset.isMappable();
     }
 
+    virtual bool matchPreset(const PresetInfo& preset);
+    virtual bool matchProductInfo(QHash <QString,QString >);
+    virtual void guessDeviceCategory();
+
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 

@@ -197,7 +197,7 @@ EksOtus.jogScratchScaler = function(group,name,value) {
         else 
             ticks = -1;
     }
-    print("JOG SCRATCH SCALER TICKS " + ticks + " FROM VALUE " + value);
+    // print("JOG SCRATCH SCALER TICKS " + ticks + " FROM VALUE " + value);
     return ticks;
 }
 
@@ -487,7 +487,7 @@ EksOtus.wheelLEDInitAnimation = function (state) {
     var i;
     var name = undefined;
     if (state=='off') {
-        print("DISABLE wheel animation");
+        //print("DISABLE wheel animation");
         if (EksOtus.initAnimationTimer!=undefined) {
             engine.stopTimer(EksOtus.initAnimationTimer);
             EksOtus.initAnimationTimer = undefined;
@@ -496,7 +496,7 @@ EksOtus.wheelLEDInitAnimation = function (state) {
         // if (EksOtus.activeDeck)
         //    EksOtus.activateSpinningPlatterLEDs();
     } else {
-        print("ENABLE wheel animation");
+        //print("ENABLE wheel animation");
         EksOtus.resetWheelLEDs(state);
         EksOtus.initAnimationTimer = engine.beginTimer(
             1000, "EksOtus.wheelLEDInitAnimation('off')"
