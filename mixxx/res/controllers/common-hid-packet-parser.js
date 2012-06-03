@@ -244,6 +244,15 @@ HIDPacket.prototype.lookupBit = function(group,name) {
     return undefined;
 }
 
+HIDPacket.prototype.removeControl = function(group,name) {
+    var control_group = this.lookupGroup(group,true);
+    if (!(name in control_group)) {
+        script.HIDDebug("Field not in control group " + group + ": " + name);
+        return;
+    }
+    control_group[name] = undefined;
+}
+
 // Register a numeric value to parse from input packet
 // Parameters:
 // group     control group name
@@ -637,7 +646,7 @@ HIDController.prototype.disableBitAutoRepeat = function(group,name) {
     if (field!=undefined && field.type=='bitvector')
         var field = packet.lookupBit(group,name);
     if (field==undefined) {
-        script.HIDDebug("Error setting autorepeat: bit not found" +group+'.'+name);
+        script.HIDDebug("Error setting autorepeat: bit not found " +group+'.'+name);
         return;
     }
     field.auto_repeat = false;
@@ -648,7 +657,7 @@ HIDController.prototype.enableBitAutoRepeat = function(group,name) {
     if (field!=undefined && field.type=='bitvector')
         var field = packet.lookupBit(group,name);
     if (field==undefined) {
-        script.HIDDebug("Error setting autorepeat: bit not found" +group+'.'+name);
+        script.HIDDebug("Error setting autorepeat: bit not found " +group+'.'+name);
         return;
     }
     field.auto_repeat = true;
@@ -1060,7 +1069,7 @@ HIDController.prototype.linkModifier = function(group,name,modifier) {
 }
 
 // Link a previously declared HID control to actual mixxx control
-HIDController.prototype.linkControl = function(group,name,m_group,m_name) {
+HIDController.prototype.linkControl = function(group,name,m_group,m_name,callback) {
     var packet = this.resolveInputPacket('control');
     var field;
     if (packet==undefined) {
@@ -1078,10 +1087,23 @@ HIDController.prototype.linkControl = function(group,name,m_group,m_name) {
             script.HIDDebug("BIT not found: " + group+'.'+name);
             return;
         }
+    } else if (group!=m_group) {
+        // Re-register the field to new control group
+        var old_group = this.lookupGroup(group);
+        var new_group = this.lookupGroup(m_group,true);
+        if (field.name in new_group) {
+            script.HIDDebug("Duplicate field " +m_group+'.'+m_name);
+            return
+        }
+        script.HIDDebug("MOVE CONTROL from " + group + " to " + m_group);
+        new_group[field.name] = field;
+        old_group[field.name] = undefined;
     }
     field.id = m_group+'.'+m_name;
     field.group = m_group;
     field.name = m_name;
+    if (callback!=undefined)
+        field.callback = callback;
 }
 
 // Parse a received input packet fields with 'unpack' calls to fields
@@ -1276,17 +1298,27 @@ HIDController.prototype.processControl = function(field) {
     }
 
     value = field.value;
-    scaler = this.lookupScalingFunction(name);
+    scaler = this.lookupScalingFunction(field.name);
     if (field.isEncoder==true) {
         var field_delta = field.delta;
         if (scaler!=undefined)
-            field_delta = scaler(group,name,field_delta);
-        engine.setValue(group,name,field_delta);
+            field_delta = scaler(group,field.name,field_delta);
+        engine.setValue(group,field.name,field_delta);
     } else {
         if (scaler!=undefined)
-            value = scaler(group,name,value);
-        engine.setValue(group,name,value);
+            value = scaler(group,field.name,value);
+        engine.setValue(group,field.name,value);
     }
+}
+
+// Toggle play/pause state
+HIDController.prototype.togglePlay = function(group,field) {
+    if (field.value==this.buttonStates.released)
+        return;
+    if (engine.getValue(group,'play'))
+        engine.setValue(group,'stop',true);
+    else
+        engine.setValue(group,'play',true);
 }
 
 // Callback for auto repeat timer to send again the values for

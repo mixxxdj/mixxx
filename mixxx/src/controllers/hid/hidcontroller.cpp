@@ -80,6 +80,8 @@ HidController::HidController(const hid_device_info deviceInfo) {
         wcslen(deviceInfo.product_string)
     );
 
+    guessDeviceCategory();
+
     // Set the Unique Identifier to the serial_number
     m_sUID = QString::fromWCharArray(hid_serial,wcslen(hid_serial));
 
@@ -125,6 +127,78 @@ void HidController::visit(const HidControllerPreset* preset) {
 bool HidController::savePreset(const QString fileName) const {
     HidControllerPresetFileHandler handler;
     return handler.save(m_preset, getName(), fileName);
+}
+
+bool HidController::matchPreset(const PresetInfo& preset) {
+    const QList< QHash<QString,QString> > products = preset.getProducts();
+    QHash <QString, QString> product;
+    foreach (product, products) {
+        if (matchProductInfo(product))
+            return true;
+    }
+    return false;
+}
+
+bool HidController::matchProductInfo(QHash <QString,QString > info) {
+    int value;
+    bool ok;
+    // Product and vendor match is always required
+    value = info["vendor_id"].toInt(&ok,16);
+    if (!ok || hid_vendor_id!=value) return false;
+    value = info["product_id"].toInt(&ok,16);
+    if (!ok || hid_product_id!=value) return false;
+
+    // Optionally check against interface_number / usage_page && usage
+    if (hid_interface_number!=-1) {
+        value = info["interface_number"].toInt(&ok,16);
+        if (!ok || hid_interface_number!=value) return false;
+    } else {
+        value = info["usage_page"].toInt(&ok,16);
+        if (!ok || hid_usage_page!=value) return false;
+
+        value = info["usage"].toInt(&ok,16);
+        if (!ok || hid_usage!=value) return false;
+    }
+    // Match found
+    return true;
+}
+
+void HidController::guessDeviceCategory() {
+    // This should be done somehow else, I know. But at least we get started with
+    // the idea of mapping this information
+    QString info;
+    if (hid_interface_number==-1) {
+        if (hid_usage_page==0x1) {
+            switch (hid_usage) {
+                case 0x2: info = tr("Generic HID Mouse"); break;
+                case 0x4: info = tr("Generic HID Joystick"); break;
+                case 0x5: info = tr("Generic HID Gamepad"); break;
+                case 0x6: info = tr("Generic HID Keyboard"); break;
+                case 0x8: info = tr("Gereric HID Multiaxis Controller"); break;
+                default: info = tr("Unknown HID Desktop Device") +
+                        QString().sprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
+                    break;
+            }
+        } else if (hid_vendor_id==0x5ac) {
+            // Apple laptop special HID devices
+            if (hid_product_id==0x8242) {
+                info = tr("HID Infrared Control");
+            } else {
+                info = tr("Unknown Apple HID Device") + QString().sprintf(
+                    " 0x%0x/0x%0x",hid_usage_page,hid_usage);
+            }
+        } else {
+            // Fill in the usage page and usage fields for debugging info
+            info = tr("HID Unknown Device") + QString().sprintf(
+                " 0x%0x/0x%0x", hid_usage_page, hid_usage);
+        }
+    } else {
+        // Guess linux device types somehow as well. Or maybe just fill in the
+        // interface number?
+        info = tr("HID Interface Number") + QString().sprintf(
+            " 0x%0x", hid_interface_number);
+    }
+    setDeviceCategory(info);
 }
 
 int HidController::open() {

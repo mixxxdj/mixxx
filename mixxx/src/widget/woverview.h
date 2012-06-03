@@ -94,6 +94,9 @@ private:
     Waveform* m_waveform;
     QPixmap m_waveformPixmap;
 
+    bool m_pixmapDone;
+    float m_waveformPeak;
+
     /** Hold the last visual sample processed to generate the pixmap*/
     int m_sampleDuration;
     int m_actualCompletion;

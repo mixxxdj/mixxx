@@ -580,19 +580,16 @@ void WTrackTableView::onShow() {
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
-    //emit this signal so that we know when a cell is entered by the mouse
-    QPoint bottomRight = pEvent->pos();
-    QPersistentModelIndex index = indexAt(bottomRight);
-    if(index.isValid()){
-        emit(entered(index));
-    }
-    //only use this for drag and drop if the LeftButton is pressed
-    //we need to check for this because PreviewButtonDelegate activates 
-    //mousetracking and this function is called everytime the mouse is moved
-    //-- kain88 May 2012
-    if(pEvent->buttons()!=Qt::LeftButton){
+    // Needed for mouse-tracking to fire entered() events.
+    WLibraryTableView::mouseMoveEvent(pEvent);
+
+    // Only use this for drag and drop if the LeftButton is pressed we need to
+    // check for this because PreviewButtonDelegate activates mousetracking and
+    // this function is called everytime the mouse is moved -- kain88 May 2012
+    if (pEvent->buttons() != Qt::LeftButton) {
         return;
     }
+    
     TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;

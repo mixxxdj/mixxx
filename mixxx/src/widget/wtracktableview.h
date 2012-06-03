@@ -67,10 +67,7 @@ class WTrackTableView : public WLibraryTableView {
     void lockBpm(bool lock);
 
     // Mouse move event, implemented to hide the text and show an icon instead
-    // when dragging, this overwrites the mouseMoveEvent from 
-    //QAbstractItemModel if removing this function fixes strange
-    //behaviour for you, look there and check if our implementation is
-    //consistent with the original one
+    // when dragging.
     void mouseMoveEvent(QMouseEvent *pEvent);
 
     // Returns the current TrackModel, or returns NULL if none is set.

@@ -50,6 +50,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
+    m_overviewNormalized = false;
 
     m_lastFrameTime = 0;
     m_actualFrameRate = 0;
@@ -140,7 +141,6 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-
     int zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization")).toInt(&ok);
     if (ok) {
         setZoomSync(static_cast<bool>(zoomSync));
@@ -164,6 +164,13 @@ bool WaveformWidgetFactory::setConfig(ConfigObject<ConfigValue> *config){
             m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(i)),
                           QString::number(m_visualGain[i]));
         }
+    }
+
+    int overviewNormalized = m_config->getValueString(ConfigKey("[Waveform]","OverviewNormalized")).toInt(&ok);
+    if (ok) {
+        setOverviewNormalized(static_cast<bool>(overviewNormalized));
+    } else {
+        m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
     return true;
@@ -346,6 +353,13 @@ void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
 
 double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
     return m_visualGain[index];
+}
+
+void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
+    m_overviewNormalized = normalize;
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+    }
 }
 
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {

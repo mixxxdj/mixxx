@@ -44,7 +44,7 @@ QSize StarRating::sizeHint() const
 /*
  * function paints the stars in this StarRating object on a paint device
  */
-void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &palette, 
+void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &palette,
                         EditMode mode, bool isSelected) const
 {
     painter->save();
@@ -55,12 +55,13 @@ void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &pal
     // Workaround for painting issue. If we are editable, assume we are
     // selected, so use the highlight and hightlightedText colors.
     if (mode == Editable) {
-        if(isSelected){
+        if (isSelected) {
             painter->fillRect(rect, palette.highlight());
+            painter->setBrush(palette.highlightedText());
         } else {
             painter->fillRect(rect, palette.base());
+            painter->setBrush(palette.text());
         }
-        painter->setBrush(palette.highlightedText());
     }
 
     int yOffset = (rect.height() - PaintingScaleFactor) / 2;
