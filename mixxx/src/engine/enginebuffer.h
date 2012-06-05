@@ -274,6 +274,9 @@ private:
 #endif
     CSAMPLE* m_pDitherBuffer;
     unsigned int m_iDitherBufferReadIndex;
+    CSAMPLE* m_pCrossFadeBuffer;
+    int m_iCrossFadeSamples;
+    int m_iLastBufferSize;
 };
 
 #endif

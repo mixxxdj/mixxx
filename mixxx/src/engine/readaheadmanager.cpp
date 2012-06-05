@@ -118,7 +118,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
             }
             addReadLogEntry(loop_target, m_iCurrentPosition);
             
-            //do crossfade
+            //do crossfade from the current buffer into the new loop beginning
             double mix_amount = 0.0;
             double mix_inc = 2.0 / static_cast<double>(samples_read);
             for (int i=0; i<samples_read; i+=2)

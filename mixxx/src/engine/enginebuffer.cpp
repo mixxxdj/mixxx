@@ -82,12 +82,18 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_fRampValue(0.0),
     m_iRampState(ENGINE_RAMP_NONE),
     m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
-    m_iDitherBufferReadIndex(0) {
+    m_iDitherBufferReadIndex(0),
+    m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
+    m_iCrossFadeSamples(0),
+    m_iLastBufferSize(0) {
 
     // Generate dither values
     for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
         m_pDitherBuffer[i] = static_cast<float>(rand() % 32768) / 32768.0 - 0.5;
     }
+
+    //zero out crossfade buffer
+    SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -353,6 +359,15 @@ void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
 void EngineBuffer::setNewPlaypos(double newpos)
 {
     //qDebug() << "engine new pos " << newpos;
+    
+    // Before seeking, read extra buffer for crossfading
+    CSAMPLE *fadeout;
+    fadeout = m_pScale->scale(0,
+                             m_iLastBufferSize,
+                             0,
+                             0);
+    m_iCrossFadeSamples = m_iLastBufferSize;
+    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
 
     filepos_play = newpos;
 
@@ -668,6 +683,31 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                     m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                         static_cast<int>(filepos_play), samplesRead);
         } // else (bCurBufferPaused)
+        
+        //Crossfade if we just did a seek
+        if (m_iCrossFadeSamples > 0)
+        {
+            int i = 0;
+            double cross_len = 0;
+            if (m_iCrossFadeSamples >= iBufferSize) {
+                i = m_iCrossFadeSamples - iBufferSize;
+                cross_len = static_cast<double>(iBufferSize) / 2.0;
+            } else {
+                cross_len = static_cast<double>(m_iCrossFadeSamples) / 2.0;
+            }
+            
+            double cross_mix = 0.0;
+            double cross_inc = 1.0 / cross_len;
+            
+            // Do crossfade from old fadeout buffer to this new data
+            for (int j=0; i < m_iCrossFadeSamples; i+=2, j+=2)
+            {
+                pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
+                pOutput[j+1] = pOutput[j+1] * cross_mix + m_pCrossFadeBuffer[i+1] * (1.0 - cross_mix);
+                cross_mix += cross_inc;
+            }
+            m_iCrossFadeSamples = 0;
+        }
 
         m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
@@ -815,8 +855,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         writer << pOutput[i] <<  "\n";
     }
 #endif
-
+    
     m_bLastBufferPaused = bCurBufferPaused;
+    m_iLastBufferSize = iBufferSize;
 }
 
 void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
