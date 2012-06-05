@@ -11,6 +11,7 @@
 #include <QEvent>
 #include <QtScript>
 #include <QMessageBox>
+#include <QFileSystemWatcher>
 
 #include "configobject.h"
 #include "controllers/pitchfilter.h"
@@ -95,6 +96,7 @@ class ControllerEngine : public QObject {
                                    float alpha, float beta, bool ramp = true);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
+    Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
     Q_INVOKABLE void brake(int deck, bool activate, float factor=0.9, float rate=1.0);
     Q_INVOKABLE void spinback(int deck, bool activate, float factor=1.8, float rate=-10.0);
@@ -124,6 +126,7 @@ class ControllerEngine : public QObject {
                          QList<QString> scriptFileNames);
     void initializeScripts(const QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown();
+    void scriptHasChanged(QString);
 
   signals:
     void initialized();
@@ -170,11 +173,15 @@ class ControllerEngine : public QObject {
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator, m_brakeKeylock;
+    QVarLengthArray<uint> m_lastMovement;
     QVarLengthArray<float> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<PitchFilter*> m_pitchFilter;
     QHash<int, int> m_scratchTimers;
     mutable QHash<QString, QScriptValue> m_scriptValueCache;
+    // Filesystem watcher for script auto-reload
+    QFileSystemWatcher m_scriptWatcher;
+    QString m_lastConfigPath;
 };
 
 #endif

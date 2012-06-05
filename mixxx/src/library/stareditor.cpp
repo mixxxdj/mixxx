@@ -41,6 +41,7 @@ StarEditor::StarEditor(QWidget *parent, const QStyleOptionViewItem &option)
     setPalette(option.palette);
     setMouseTracking(true);
     setAutoFillBackground(true);
+    m_isSelected = option.state & QStyle::State_Selected;
 }
 
 QSize StarEditor::sizeHint() const
@@ -54,7 +55,8 @@ QSize StarEditor::sizeHint() const
 void StarEditor::paintEvent(QPaintEvent *)
  {
     QPainter painter(this);
-    m_starRating.paint(&painter, rect(), palette(), StarRating::Editable);
+    m_starRating.paint(&painter, rect(), palette(), StarRating::Editable,
+                       m_isSelected);
  }
 /*
  * In the mouse event handler, we call setStarCount() on

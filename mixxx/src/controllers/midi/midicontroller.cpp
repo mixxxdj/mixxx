@@ -56,6 +56,11 @@ void MidiController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
+bool MidiController::matchPreset(const PresetInfo& preset) {
+    // Product info mapping not implemented for MIDI devices yet
+    return false;
+}
+
 bool MidiController::savePreset(const QString fileName) const {
     MidiControllerPresetFileHandler handler;
     return handler.save(m_preset, getName(), fileName);

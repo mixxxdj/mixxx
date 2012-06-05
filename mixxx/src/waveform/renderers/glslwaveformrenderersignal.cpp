@@ -11,6 +11,7 @@
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererSignalBase(waveformWidgetRenderer) {
 
+    m_shardersValid = false;
     m_signalMaxShaderProgram = 0;
     m_frameShaderProgram = 0;
 
@@ -19,6 +20,7 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
 
     m_loadedWaveform = 0;
 
+    m_frameBuffersValid = false;
     m_signalMaxbuffer = 0;
     m_framebuffer = 0;
 
@@ -50,6 +52,8 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
 bool GLSLWaveformRendererSignal::loadShaders()
 {
     qDebug() << "GLWaveformRendererSignalShader::loadShaders";
+
+    m_shardersValid = false;
 
     if( m_signalMaxShaderProgram->isLinked())
         m_signalMaxShaderProgram->release();
@@ -92,6 +96,7 @@ bool GLSLWaveformRendererSignal::loadShaders()
         return false;
     }
 
+    m_shardersValid = true;
     return true;
 }
 
@@ -181,15 +186,20 @@ void GLSLWaveformRendererSignal::createGeometry() {
     glEndList();
 }
 
-void GLSLWaveformRendererSignal::createFrameBuffer()
+void GLSLWaveformRendererSignal::createFrameBuffers()
 {
-    if( m_signalMaxbuffer)
-        delete m_signalMaxbuffer;
+    m_frameBuffersValid = false;
 
     int bufferWidth = nearestSuperiorPowerOfTwo(m_waveformRenderer->getWidth()*3);
     int bufferHeight = nearestSuperiorPowerOfTwo(m_waveformRenderer->getHeight());
 
+    if( m_signalMaxbuffer)
+        delete m_signalMaxbuffer;
+
     m_signalMaxbuffer = new QGLFramebufferObject(bufferWidth/(m_signalFrameBufferRatio*2),2);
+
+    if( !m_signalMaxbuffer->isValid())
+        qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - signal frame buffer not valid";
 
     if( m_framebuffer)
         delete m_framebuffer;
@@ -197,8 +207,11 @@ void GLSLWaveformRendererSignal::createFrameBuffer()
     //should work with any version of OpenGl
     m_framebuffer = new QGLFramebufferObject(bufferWidth,bufferHeight);
 
-    if( !m_signalMaxbuffer || !m_framebuffer->isValid())
-        qDebug() << "GLSLWaveformRendererSignal::createFrameBuffer - PBO not valid";
+
+    if( !m_framebuffer->isValid())
+        qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
+
+    m_frameBuffersValid = m_framebuffer->isValid() && m_framebuffer->isValid();
 
     //qDebug() << m_waveformRenderer->getWidth();
     //qDebug() << m_waveformRenderer->getWidth()*3;
@@ -206,6 +219,7 @@ void GLSLWaveformRendererSignal::createFrameBuffer()
 }
 
 void GLSLWaveformRendererSignal::onInit(){
+    m_loadedWaveform = 0;
 
     if(!m_signalMaxShaderProgram)
         m_signalMaxShaderProgram = new QGLShaderProgram();
@@ -213,11 +227,7 @@ void GLSLWaveformRendererSignal::onInit(){
     if(!m_frameShaderProgram)
         m_frameShaderProgram = new QGLShaderProgram();
 
-    if( !loadShaders())
-        return;
-
-    m_loadedWaveform = 0;
-
+    loadShaders();
     createGeometry();
     loadTexture();
 }
@@ -232,11 +242,11 @@ void GLSLWaveformRendererSignal::onSetTrack(){
 }
 
 void GLSLWaveformRendererSignal::onResize(){
-    createFrameBuffer();
+    createFrameBuffers();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    if (!m_framebuffer || !m_framebuffer->isValid()) {
+    if (!m_frameBuffersValid || !m_shardersValid) {
         return;
     }
 

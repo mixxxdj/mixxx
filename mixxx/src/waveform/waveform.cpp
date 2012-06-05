@@ -35,10 +35,21 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::FilteredSignal* filtered = waveform.mutable_signal_filtered();
     // TODO(rryan) get the actual cutoff values from analyserwaveform.cpp so
     // that if they change we don't have to remember to update these.
-    filtered->set_low_cutoff_frequency(200);
-    filtered->set_mid_low_cutoff_frequency(200);
-    filtered->set_mid_high_cutoff_frequency(2000);
-    filtered->set_high_cutoff_frequency(2000);
+
+    // Frequency cutoffs for butterworth filters:
+    // filtered->set_low_cutoff_frequency(200);
+    // filtered->set_mid_low_cutoff_frequency(200);
+    // filtered->set_mid_high_cutoff_frequency(2000);
+    // filtered->set_high_cutoff_frequency(2000);
+
+    // Frequency cutoff for bessel_lowpass4
+    filtered->set_low_cutoff_frequency(600);
+    // Frequency cutoff for bessel_bandpass
+    filtered->set_mid_low_cutoff_frequency(600);
+    filtered->set_mid_high_cutoff_frequency(4000);
+    // Frequency cutoff for bessel_highpass4
+    filtered->set_high_cutoff_frequency(4000);
+
     io::Waveform::Signal* low = filtered->mutable_low();
     io::Waveform::Signal* mid = filtered->mutable_mid();
     io::Waveform::Signal* high = filtered->mutable_high();

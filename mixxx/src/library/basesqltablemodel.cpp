@@ -519,6 +519,9 @@ bool BaseSqlTableModel::setData(
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
     TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    if (!pTrack) {
+        return false;
+    }
     setTrackValueForColumn(pTrack, column, value);
 
     // Do not save the track here. Changing the track dirties it and the caching

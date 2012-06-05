@@ -14,6 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QtDebug>
+
 #include "engine/enginepregain.h"
 #include "controllogpotmeter.h"
 #include "controlpotmeter.h"
@@ -68,6 +70,9 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
     m_fReplayGainCorrection=1;
+    // TODO(XXX) Why do we do this? Removing it results in clipping at unity
+    // gain so I think it was trying to compensate for some issue when we added
+    // replaygain but even at unity gain (no RG) we are clipping. rryan 5/2012
     fGain = fGain/2;
     if(fReplayGain*fEnableReplayGain != 0)
     {

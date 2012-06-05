@@ -118,7 +118,9 @@ void WaveformWidgetRenderer::onPreRender() {
     m_rate = m_rateControlObject->get();
     m_rateDir = m_rateDirControlObject->get();
     m_rateRange = m_rateRangeControlObject->get();
-    m_gain = m_gainControlObject->get();
+    // This gain adjustment compensates for an arbitrary /2 gain chop in
+    // EnginePregain. See the comment there.
+    m_gain = m_gainControlObject->get() * 2;
 
     //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
