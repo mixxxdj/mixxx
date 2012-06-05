@@ -4,15 +4,19 @@
 #include <QMutexLocker>
 
 #include "engine/readaheadmanager.h"
+#include "sampleutil.h"
 
 #include "mathstuff.h"
 #include "engine/enginecontrol.h"
 #include "cachingreader.h"
 
-
 ReadAheadManager::ReadAheadManager(CachingReader* pReader) :
     m_iCurrentPosition(0),
+    m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
     m_pReader(pReader) {
+
+    //zero out crossfade buffer
+    SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
 }
 
 ReadAheadManager::~ReadAheadManager() {
@@ -35,6 +39,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
                                                          m_iCurrentPosition,
                                                          0, 0);
+    int preloop_samples = 0;
 
     if (next_loop.second != kNoTrigger) {
         int samples_available;
@@ -45,23 +50,24 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }
         samples_needed = math_max(0, math_min(samples_needed,
                                               samples_available));
+        if (in_reverse) {
+            preloop_samples = m_iCurrentPosition - next_loop.second;
+        } else {
+            preloop_samples =  next_loop.second - m_iCurrentPosition;
+        }
+        
     }
 
     if (in_reverse) {
         start_sample = m_iCurrentPosition - samples_needed;
-        /*if (start_sample < 0) {
-            samples_needed = math_max(0, samples_needed + start_sample);
-            start_sample = 0;
-        }*/
     }
 
     // Sanity checks
-    //Q_ASSERT(start_sample >= 0);
     Q_ASSERT(samples_needed >= 0);
 
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
-
+    
     if (samples_read != samples_needed)
         qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
 
@@ -85,10 +91,45 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         if (loop_target != kNoTrigger &&
             ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
             (!in_reverse && m_iCurrentPosition >= loop_trigger))) {
+            
+            int newstart;
             m_iCurrentPosition = loop_target;
+            
+            if (in_reverse) {
+                m_iCurrentPosition += preloop_samples;
+            } else {
+                m_iCurrentPosition -= preloop_samples;
+            }
+            
+            newstart = m_iCurrentPosition;
+              
+            int looping_samples_read = m_pReader->read(m_iCurrentPosition, samples_read,
+                                               m_pCrossFadeBuffer);
+                                               
+            if (looping_samples_read != samples_read) {
+                qDebug() << "ERROR: Couldn't get samples for crossfade? (should assert?)";
+            }
+            
+            // Add log entry so we don't notify seeks
+            if (in_reverse) {
+                m_iCurrentPosition -= looping_samples_read;
+            } else {
+                m_iCurrentPosition += looping_samples_read;
+            }
+            addReadLogEntry(loop_target, m_iCurrentPosition);
+            
+            //do crossfade
+            double mix_amount = 0.0;
+            double mix_inc = 2.0 / static_cast<double>(samples_read);
+            for (int i=0; i<samples_read; i+=2)
+            {
+                base_buffer[i] = base_buffer[i] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i] * mix_amount;
+                base_buffer[i+1] = base_buffer[i+1] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i+1] * mix_amount;
+                mix_amount += mix_inc;
+            }
         }
     }
-
+    
     // Reverse the samples in-place
     if (in_reverse) {
         // TODO(rryan) pull this into MixxxUtil or something

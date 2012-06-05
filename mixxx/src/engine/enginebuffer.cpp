@@ -363,7 +363,7 @@ void EngineBuffer::setNewPlaypos(double newpos)
     if (m_pScale)
         m_pScale->clear();
     m_pReadAheadManager->notifySeek(filepos_play);
-
+    
     // Must hold the engineLock while using m_engineControls
     m_engineLock.lock();
     for (QList<EngineControl*>::iterator it = m_engineControls.begin();
@@ -458,7 +458,7 @@ void EngineBuffer::slotControlSeek(double change)
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
         new_playpos--;
-
+        
     setNewPlaypos(new_playpos);
 }
 
@@ -862,6 +862,16 @@ void EngineBuffer::hintReader(const double dRate,
 
     m_hintList.clear();
     m_pReadAheadManager->hintReader(dRate, m_hintList, iSourceSamples);
+    
+    //if slipping, hint about virtual position so we're ready for it
+    if (m_bSlipEnabled)
+    {
+        Hint hint;
+        hint.length = 2048; //default length please
+        hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
+        hint.priority = 1;
+        m_hintList.append(hint);
+    }
 
     QListIterator<EngineControl*> it(m_engineControls);
     while (it.hasNext()) {
