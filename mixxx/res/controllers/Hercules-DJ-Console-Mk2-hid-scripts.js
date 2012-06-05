@@ -231,6 +231,9 @@ HerculesMk2Hid.init = function() {
 	c.feedback("[Channel1]", "filterHighKill", c.kill_status);
 	c.feedback("[Channel1]", "filterMidKill", c.kill_status);
 	c.feedback("[Channel1]", "filterLowKill", c.kill_status);
+	c.feedback("[Channel2]", "filterHighKill", c.kill_status);
+	c.feedback("[Channel2]", "filterMidKill", c.kill_status);
+	c.feedback("[Channel2]", "filterLowKill", c.kill_status);
 
 	//
 	// clear/setup any initial leds
@@ -261,10 +264,10 @@ HerculesMk2Hid.layer_btn = function(g, e, v) {
 					engine.setValue(g, "flanger", v > 0);
 					break;
 				case 2:
-					script.spinback(g, v > 0);
+					engine.spinback(parseInt(g.substring(8,9)), v > 0);
 					break;
 				case 3:
-					script.brake(g, v > 0);
+					engine.brake(parseInt(g.substring(8,9)), v > 0);
 			}
 			break;
 		case "hotcue":

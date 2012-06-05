@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset mixxxVersion="1.10.0" schemaVersion="1">
 	<info>
-		<name>Denon MC3000</name>
-		<author>BeMixxx 2012</author>
+		<name>Denon MC3000 v0.995</name>
+		<author>BeMixxx</author>
 		<description>Optimized for Denon MC3000 - Default Midi Channel</description>
 	</info>
 	<controller id="MC3000 MIDI 1">	
@@ -18,64 +18,149 @@
                 <group>[Master]</group>
                 <key>crossfader</key>
 	</control>
+
 	<control>
                 <status>0xb0</status>
                 <midino>0x5</midino>
                 <group>[Channel1]</group>
+                <description>Volume Fader deck1 (A)</description>
                 <key>volume</key>
 	</control>
 	<control>
                 <status>0xb2</status>
                 <midino>0x10</midino>
                 <group>[Channel2]</group>
+		<description>Volume Fader deck2 (B)</description>
                 <key>volume</key>
 	</control>
+	<control>
+                <status>0xb1</status>
+                <midino>11</midino>
+                <group>[Channel3]</group>
+		<description>Volume Fader deck3 (C)</description>
+                <key>volume</key>
+	</control>
+	<control>
+                <status>0xb3</status>
+                <midino>21</midino>
+                <group>[Channel4]</group>
+		<description>Volume Fader deck4 (D)</description>
+                <key>volume</key>
+	</control>
+
 	<control>
                 <status>0xb0</status>
                 <midino>0x1</midino>
                 <group>[Channel1]</group>
+		<description>Pregain knob deck1 (A)</description>
                 <key>pregain</key>
 	</control>
 	<control>
                 <status>0xb2</status>
-                <midino>0xc</midino>
+                <midino>12</midino>
                 <group>[Channel2]</group>
+		<description>Pregain knob deck2 (B)</description>
                 <key>pregain</key>
 	</control>
+	<control>
+                <status>0xb1</status>
+                <midino>7</midino>
+                <group>[Channel3]</group>
+		<description>Pregain knob deck3 (C)</description>
+                <key>pregain</key>
+	</control>
+	<control>
+                <status>0xb3</status>
+                <midino>17</midino>
+                <group>[Channel4]</group>
+		<description>Pregain knob deck4 (D)</description>
+                <key>pregain</key>
+	</control>
+
 	<control>
                 <status>0xb0</status>
                 <midino>0x2</midino>
                 <group>[Channel1]</group>
+		<description>FilterHigh knob deck1 (A)</description>
                 <key>filterHigh</key>
 	</control>
 	<control>
                 <status>0xb2</status>
                 <midino>0xd</midino>
                 <group>[Channel2]</group>
+		<description>FilterHigh knob deck2 (B)</description>
                 <key>filterHigh</key>
 	</control>
+	<control>
+                <status>0xb1</status>
+                <midino>8</midino>
+                <group>[Channel3]</group>
+		<description>FilterHigh knob deck3 (C)</description>
+                <key>filterHigh</key>
+	</control>
+	<control>
+                <status>0xb3</status>
+                <midino>18</midino>
+                <group>[Channel4]</group>
+		<description>FilterHigh knob deck4 (D)</description>
+                <key>filterHigh</key>
+	</control>
+
 	<control>
                 <status>0xb0</status>
                 <midino>0x3</midino>
                 <group>[Channel1]</group>
+		<description>FilterMid knob deck1 (A)</description>
                 <key>filterMid</key>
 	</control>
 	<control>
                 <status>0xb2</status>
                 <midino>0xe</midino>
                 <group>[Channel2]</group>
+		<description>FilterMid knob deck2 (B)</description>
                 <key>filterMid</key>
 	</control>
 	<control>
+                <status>0xb1</status>
+                <midino>9</midino>
+                <group>[Channel3]</group>
+		<description>FilterMid knob deck3 (C)</description>
+                <key>filterMid</key>
+	</control>
+	<control>
+                <status>0xb3</status>
+                <midino>19</midino>
+                <group>[Channel4]</group>
+		<description>FilterMid knob deck4 (D)</description>
+                <key>filterMid</key>
+	</control>
+
+	<control>
                 <status>0xb0</status>
-                <midino>0x4</midino>
+                <midino>4</midino>
                 <group>[Channel1]</group>
+		<description>FilterLow knob deck1 (A)</description>
                 <key>filterLow</key>
 	</control>
 	<control>
                 <status>0xb2</status>
-                <midino>0xf</midino>
+                <midino>15</midino>
                 <group>[Channel2]</group>
+		<description>FilterLow knob deck2 (B)</description>
+                <key>filterLow</key>
+	</control>
+	<control>
+                <status>0xb1</status>
+                <midino>10</midino>
+                <group>[Channel3]</group>
+		<description>FilterLow knob deck3 (C)</description>
+                <key>filterLow</key>
+	</control>
+	<control>
+                <status>0xb3</status>
+                <midino>20</midino>
+                <group>[Channel4]</group>
+		<description>FilterLow knob deck4 (D)</description>
                 <key>filterLow</key>
 	</control>
 
@@ -84,6 +169,7 @@
                 <status>0xb0</status>
                 <midino>0x51</midino>
                 <group>[Channel1]</group>
+		<description>JogWheel deck1 (A)</description>
                 <key>mc3000.jogWheel</key>
                 <options>
                     <script-binding/>
@@ -93,16 +179,39 @@
                 <status>0xb2</status>
                 <midino>0x51</midino>
                 <group>[Channel2]</group>
+		<description>JogWheel deck2 (B)</description>
                 <key>mc3000.jogWheel</key>
                 <options>
                     <script-binding/>
                 </options>
 	</control>
+	<control>
+                <status>0xb1</status>
+                <midino>0x51</midino>
+                <group>[Channel3]</group>
+		<description>JogWheel deck3 (C)</description>
+                <key>mc3000.jogWheel</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0xb3</status>
+                <midino>0x51</midino>
+                <group>[Channel4]</group>
+		<description>JogWheel deck4 (D)</description>
+                <key>mc3000.jogWheel</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+
 <!-- TOUCH WHEEL -->
 	<control>
                 <status>0x90</status>
                 <midino>81</midino>
                 <group>[Channel1]</group>
+		<description>TouchWheel pressed deck1 (A)</description>
                 <key>mc3000.wheelTouch</key>
                 <options>
                     <script-binding/>
@@ -112,6 +221,7 @@
                 <status>0x80</status>
                 <midino>81</midino>
                 <group>[Channel1]</group>
+		<description>TouchWheel released deck1 (A)</description>
                 <key>mc3000.wheelTouch</key>
                 <options>
                     <script-binding/>
@@ -121,6 +231,7 @@
                 <status>0x92</status>
                 <midino>81</midino>
                 <group>[Channel2]</group>
+		<description>TouchWheel pressed deck2 (B)</description>
                 <key>mc3000.wheelTouch</key>
                 <options>
                     <script-binding/>
@@ -130,13 +241,54 @@
                 <status>0x82</status>
                 <midino>81</midino>
                 <group>[Channel2]</group>
+		<description>TouchWheel released deck2 (B)</description>
+                <key>mc3000.wheelTouch</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x91</status>
+                <midino>81</midino>
+                <group>[Channel3]</group>
+		<description>TouchWheel pressed deck3 (C)</description>
+                <key>mc3000.wheelTouch</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x81</status>
+                <midino>81</midino>
+                <group>[Channel3]</group>
+		<description>TouchWheel released deck3 (C)</description>
+                <key>mc3000.wheelTouch</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x93</status>
+                <midino>81</midino>
+                <group>[Channel4]</group>
+		<description>TouchWheel pressed deck4 (D)</description>
+                <key>mc3000.wheelTouch</key>
+                <options>
+			<script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x83</status>
+                <midino>81</midino>
+                <group>[Channel4]</group>
+		<description>TouchWheel released deck4 (D)</description>
                 <key>mc3000.wheelTouch</key>
                 <options>
                     <script-binding/>
                 </options>
 	</control>
 
-<!--PITCH RATE -->       
+<!--PITCH SLIDER -->       
 	<control>
                 <status>0xe0</status>
                 <midino>0x50</midino>
@@ -160,16 +312,30 @@
 	<control>
 		<status>0x90</status>
 		<midino>1</midino>
+		<description>Cue PFL deck1 (A)</description>
 		<group>[Channel1]</group>
 		<key>pfl</key>
-		<description>CUE (DECK A) - PFL</description>
 	</control>
 	<control>
 		<status>0x92</status>
 		<midino>5</midino>
+		<description>Cue PFL deck2 (B)</description>		
 		<group>[Channel2]</group>
 		<key>pfl</key>
-		<description>CUE (DECK B) - PFL</description>
+	</control>
+	<control>
+		<status>0x91</status>
+		<midino>2</midino>
+		<description>Cue PFL deck3 (C)</description>
+		<group>[Channel3]</group>
+		<key>pfl</key>
+	</control>
+	<control>
+		<status>0x93</status>
+		<midino>7</midino>
+		<description>Cue PFL deck4 (D)</description>		
+		<group>[Channel4]</group>
+		<key>pfl</key>
 	</control>
 
 <!-- EFX 1-4 FOR BEATLOOP_X -->       
@@ -620,7 +786,6 @@
 		</options>
 	</control>
 
-
 <!-- EFX KNOB IN SAMPLE MODE-->
 	<control>
 		<status>0x90</status>
@@ -679,42 +844,86 @@
 	</control>
 
 <!-- CUE DEFAULT --> 
-             <control>
-                <status>0x90</status>
-                <midino>0x42</midino>
-                <group>[Channel1]</group>
-                <key>mc3000.cue_default</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x92</status>
-                <midino>0x42</midino>
-                <group>[Channel2]</group>
-                <key>mc3000.cue_default</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-	     <control>
+	<control>
+		<status>0x90</status>
+		<midino>0x42</midino>
+		<group>[Channel1]</group>
+		<description>Cue BT pressed deck1 (A)</description>
+		<key>mc3000.cue_default</key>
+		<options>
+			<script-binding/>
+		</options>
+	</control>
+	<control>
                 <status>0x80</status>
                 <midino>0x42</midino>
                 <group>[Channel1]</group>
+		<description>Cue BT released deck1 (A)</description>
                 <key>mc3000.cue_default</key>
                 <options>
                     <script-binding/>
                 </options>
-            </control>
-            <control>
+	</control>
+	<control>
+                <status>0x92</status>
+                <midino>0x42</midino>
+                <group>[Channel2]</group>
+		<description>Cue BT pressed deck2 (B)</description>
+                <key>mc3000.cue_default</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
                 <status>0x82</status>
                 <midino>0x42</midino>
                 <group>[Channel2]</group>
+		<description>Cue BT released deck2 (B)</description>
                 <key>mc3000.cue_default</key>
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+	</control>
+	<control>
+                <status>0x91</status>
+                <midino>0x42</midino>
+                <group>[Channel3]</group>
+		<description>Cue BT pressed deck3 (C)</description>
+                <key>mc3000.cue_default</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x81</status>
+                <midino>0x42</midino>
+                <group>[Channel3]</group>
+		<description>Cue BT released deck3 (C)</description>
+                <key>mc3000.cue_default</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x93</status>
+                <midino>0x42</midino>
+                <group>[Channel4]</group>
+		<description>Cue BT pressed deck4 (D)</description>
+                <key>mc3000.cue_default</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x83</status>
+                <midino>0x42</midino>
+                <group>[Channel4]</group>
+		<description>Cue BT released deck4 (D)</description>
+                <key>mc3000.cue_default</key>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
 
 <!-- PLAY -->
 	<control>
@@ -722,15 +931,30 @@
                 <midino>0x43</midino>
                 <group>[Channel1]</group>
                 <key>play</key>
-                <description></description>
+                <description>Play BT deck1 (A)</description>
 	</control>
 	<control>
                 <status>0x92</status>
                 <midino>0x43</midino>
                 <group>[Channel2]</group>
                 <key>play</key>
-                <description></description>
+                <description>Play BT deck2 (B)</description>
 	</control>
+	<control>
+                <status>0x91</status>
+                <midino>0x43</midino>
+                <group>[Channel3]</group>
+                <key>play</key>
+                <description>Play BT deck3 (C)</description>
+	</control>
+	<control>
+                <status>0x93</status>
+                <midino>0x43</midino>
+                <group>[Channel4]</group>
+                <key>play</key>
+                <description>Play BT deck4 (D)</description>
+	</control>
+
 
 <!-- LOOP -->
 	<control>
@@ -944,37 +1168,74 @@
                 </options>
 	</control>
 
-<!-- KEYLOCK / SYNC / VINYL-->
+<!-- KEYLOCK / SYNC / VINYL MODE -->
 	<control>
                 <status>0x90</status>
                 <midino>6</midino>
                 <group>[Channel1]</group>
+                <description>Keylock BT deck1 (A)</description>
                 <key>keylock</key>
 	</control>
 	<control>
                 <status>0x92</status>
                 <midino>6</midino>
                 <group>[Channel2]</group>
+                <description>Keylock BT deck2 (B)</description>
                 <key>keylock</key>
 	</control>
+	<control>
+                <status>0x91</status>
+                <midino>6</midino>
+                <group>[Channel3]</group>
+                <description>Keylock BT deck3 (C)</description>
+                <key>keylock</key>
+	</control>
+	<control>
+                <status>0x93</status>
+                <midino>6</midino>
+                <group>[Channel4]</group>
+                <description>Keylock BT deck4 (D)</description>
+                <key>keylock</key>
+	</control>
+
+
 	<control>
                 <status>0x90</status>
                 <midino>107</midino>
                 <group>[Channel1]</group>
+                <description>Sync BT deck1 (A)</description>
                 <key>beatsync</key>
        	</control>
 	<control>
                 <status>0x92</status>
                 <midino>107</midino>
                 <group>[Channel2]</group>
+                <description>Sync BT deck2 (B)</description>
                 <key>beatsync</key>
  	</control>
+	<control>
+                <status>0x91</status>
+                <midino>107</midino>
+                <group>[Channel3]</group>
+                <description>Sync BT deck3 (C)</description>
+                <key>beatsync</key>
+ 	</control>
+	<control>
+                <status>0x93</status>
+                <midino>107</midino>
+                <group>[Channel4]</group>
+                <description>Sync BT deck4 (D)</description>
+                <key>beatsync</key>
+ 	</control>
+
+
+
 	<control>
                 <status>0x90</status>
                 <midino>4</midino>
                 <group>[Channel1]</group>
                 <key>mc3000.vinylmode</key>
-                <description></description>
+                <description>VinylMode BT deck1 (A)</description>
                 <options>
                     <script-binding/>
                 </options>
@@ -984,7 +1245,27 @@
                 <midino>4</midino>
                 <group>[Channel2]</group>
                 <key>mc3000.vinylmode</key>
-                <description></description>
+                <description>VinylMode BT deck2 (B)</description>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x91</status>
+                <midino>4</midino>
+                <group>[Channel3]</group>
+                <key>mc3000.vinylmode</key>
+                <description>VinylMode BT deck3 (C)</description>
+                <options>
+                    <script-binding/>
+                </options>
+	</control>
+	<control>
+                <status>0x93</status>
+                <midino>4</midino>
+                <group>[Channel4]</group>
+                <key>mc3000.vinylmode</key>
+                <description>VinylMode BT deck4 (D)</description>
                 <options>
                     <script-binding/>
                 </options>
