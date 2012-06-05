@@ -92,7 +92,6 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
             ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
             (!in_reverse && m_iCurrentPosition >= loop_trigger))) {
             
-            int newstart;
             m_iCurrentPosition = loop_target;
             
             if (in_reverse) {
@@ -101,8 +100,6 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                 m_iCurrentPosition -= preloop_samples;
             }
             
-            newstart = m_iCurrentPosition;
-              
             int looping_samples_read = m_pReader->read(m_iCurrentPosition, samples_read,
                                                m_pCrossFadeBuffer);
                                                
