@@ -60,12 +60,12 @@ function HIDKeyboard() {
 
     // Example to bind the bytes to a callback
     this.registerCallbacks = function() { 
-        this.controller.registerInputCallback('control','hid','keycode_1',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_2',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_3',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_4',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_5',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_6',this.keyPress);
+        this.controller.addCallback('control','hid','keycode_1',this.keyPress);
+        this.controller.addCallback('control','hid','keycode_2',this.keyPress);
+        this.controller.addCallback('control','hid','keycode_3',this.keyPress);
+        this.controller.addCallback('control','hid','keycode_4',this.keyPress);
+        this.controller.addCallback('control','hid','keycode_5',this.keyPress);
+        this.controller.addCallback('control','hid','keycode_6',this.keyPress);
     }
 
     // Example to do something with the keycodes received
