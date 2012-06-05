@@ -22,7 +22,7 @@ Wiimote.init = function(id) {
     controller.registerAutoRepeatTimer = function() {
         controller.auto_repeat_timer = engine.beginTimer(
             controller.auto_repeat_interval,
-            "Wiimote.controller.controlAutoRepeat()"
+            "Wiimote.controller.autorepeatTimer()"
         )
     }
 
@@ -55,24 +55,24 @@ Wiimote.registerCallbacks = function(id) {
 
     // Link HID buttons to deck1 and deck2 play buttons
     controller.linkModifier("hid","button_bottom","shift");
-    controller.registerInputCallback("control","hid","button_home",Wiimote.deck_cue);
-    controller.registerInputCallback("control","hid","button_a",Wiimote.play_load);
+    controller.addCallback("control","hid","button_home",Wiimote.deck_cue);
+    controller.addCallback("control","hid","button_a",Wiimote.play_load);
 
-    controller.registerInputCallback("control","hid","button_minus",Wiimote.jog);
-    controller.registerInputCallback("control","hid","button_plus",Wiimote.jog);
-    controller.enableBitAutoRepeat("hid","button_minus");
-    controller.enableBitAutoRepeat("hid","button_plus");
+    controller.addCallback("control","hid","button_minus",Wiimote.jog);
+    controller.addCallback("control","hid","button_plus",Wiimote.jog);
+    controller.autorepeat("hid","button_minus",true);
+    controller.autorepeat("hid","button_plus",true);
 
-    controller.registerInputCallback("control","hid","arrow_left",Wiimote.seek_loop);
-    controller.registerInputCallback("control","hid","arrow_right",Wiimote.seek_loop);
+    controller.addCallback("control","hid","arrow_left",Wiimote.seek_loop);
+    controller.addCallback("control","hid","arrow_right",Wiimote.seek_loop);
 
-    controller.registerInputCallback("control","hid","arrow_up",Wiimote.select);
-    controller.registerInputCallback("control","hid","arrow_down",Wiimote.select);
-    controller.enableBitAutoRepeat("hid","arrow_up");
-    controller.enableBitAutoRepeat("hid","arrow_down");
+    controller.addCallback("control","hid","arrow_up",Wiimote.select);
+    controller.addCallback("control","hid","arrow_down",Wiimote.select);
+    controller.autorepeat("hid","arrow_up",true);
+    controller.autorepeat("hid","arrow_down",true);
 
-    controller.registerInputCallback("control","hid","button_1",Wiimote.hotcue);
-    controller.registerInputCallback("control","hid","button_2",Wiimote.hotcue);
+    controller.addCallback("control","hid","button_1",Wiimote.hotcue);
+    controller.addCallback("control","hid","button_2",Wiimote.hotcue);
 
 
 };
@@ -87,7 +87,7 @@ Wiimote.seek_loop = function(field) {
         value = false;
     else
         value = true;
-    if (controller.modifierIsSet('shift')) {
+    if (controller.modifiers.get('shift')) {
         if (field.name=="arrow_left") 
             engine.setValue(group,'back',value);
         if (field.name=="arrow_right") 
@@ -112,7 +112,7 @@ Wiimote.seek_loop = function(field) {
 
 Wiimote.select = function(field) { 
     var controller = Wiimote.controller;
-    if (!controller.modifierIsSet('shift'))  {
+    if (!controller.modifiers.get('shift'))  {
         if (field.value==controller.buttonStates.released)
             return;
         if (field.name=="arrow_up") 
@@ -138,7 +138,7 @@ Wiimote.select = function(field) {
 // Call cue_default, or select deck if shift (bottom button) is pressed
 Wiimote.deck_cue = function(field) { 
     var controller = Wiimote.controller;
-    if (!controller.modifierIsSet('shift'))  {
+    if (!controller.modifiers.get('shift'))  {
         var group = controller.resolveDeckGroup(Wiimote.activeDeck);
         if (field.value==controller.buttonStates.released)
             engine.setValue(group,'cue_default',false);
@@ -163,7 +163,7 @@ Wiimote.play_load = function(field) {
         return;
     if (field.value==controller.buttonStates.released)
         return;
-    if (!controller.modifierIsSet('shift'))  {
+    if (!controller.modifiers.get('shift'))  {
         controller.togglePlay(group,field);
     } else {
         engine.setValue(group,"LoadSelectedTrack",true);
@@ -192,7 +192,7 @@ Wiimote.hotcue = function(field) {
     var group = controller.resolveDeckGroup(Wiimote.activeDeck);
     if (group==undefined)
         return;
-    if (controller.modifierIsSet('shift'))  {
+    if (controller.modifiers.get('shift'))  {
         if (field.value==controller.buttonStates.released)
             return;
         if (field.name=="button_1") 

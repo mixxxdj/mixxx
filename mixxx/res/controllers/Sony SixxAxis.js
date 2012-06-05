@@ -21,7 +21,7 @@ SonySixxAxis.init = function(id) {
     controller.registerAutoRepeatTimer = function() {
         controller.auto_repeat_timer = engine.beginTimer(
             controller.auto_repeat_interval,
-            "SonySixxAxis.controller.controlAutoRepeat()"
+            "SonySixxAxis.controller.autorepeatTimer()"
         )
     }
 
@@ -67,31 +67,31 @@ SonySixxAxis.registerCallbacks = function(id) {
     controller.linkControl("hid","jog_right_button","deck2","beatsync");
 
     // Callbacks for toggle buttons front of controller
-    controller.registerInputCallback("control","hid","button_bottom_left",SonySixxAxis.front_left);
-    controller.registerInputCallback("control","hid","button_top_left",SonySixxAxis.front_left);
-    controller.registerInputCallback("control","hid","button_bottom_right",SonySixxAxis.front_right);
-    controller.registerInputCallback("control","hid","button_top_right",SonySixxAxis.front_right);
-    controller.enableBitAutoRepeat("hid","button_bottom_right");
-    controller.enableBitAutoRepeat("hid","button_top_right");
+    controller.addCallback("control","hid","button_bottom_left",SonySixxAxis.front_left);
+    controller.addCallback("control","hid","button_top_left",SonySixxAxis.front_left);
+    controller.addCallback("control","hid","button_bottom_right",SonySixxAxis.front_right);
+    controller.addCallback("control","hid","button_top_right",SonySixxAxis.front_right);
+    controller.autorepeat("hid","button_bottom_right",true);
+    controller.autorepeat("hid","button_top_right",true);
 
     // Callbacks for pressure sensitive buttons front of controller
-    controller.registerInputCallback("control","hid","pressure_bottom_left",SonySixxAxis.left_bend);
-    controller.enableBitAutoRepeat("hid","pressure_bottom_left");
-    controller.registerInputCallback("control","hid","pressure_top_left",SonySixxAxis.left_bend);
-    controller.enableBitAutoRepeat("hid","pressure_top_left");
-    controller.registerInputCallback("control","hid","pressure_bottom_right",SonySixxAxis.right_bend);
-    controller.enableBitAutoRepeat("hid","pressure_bottom_right");
-    controller.registerInputCallback("control","hid","pressure_top_right",SonySixxAxis.right_bend);
-    controller.enableBitAutoRepeat("hid","pressure_top_right");
+    controller.addCallback("control","hid","pressure_bottom_left",SonySixxAxis.left_bend);
+    controller.autorepeat("hid","pressure_bottom_left",true);
+    controller.addCallback("control","hid","pressure_top_left",SonySixxAxis.left_bend);
+    controller.autorepeat("hid","pressure_top_left",true);
+    controller.addCallback("control","hid","pressure_bottom_right",SonySixxAxis.right_bend);
+    controller.autorepeat("hid","pressure_bottom_right",true);
+    controller.addCallback("control","hid","pressure_top_right",SonySixxAxis.right_bend);
+    controller.autorepeat("hid","pressure_top_right",true);
 
     // Callbacks for jog controls
-    controller.registerInputCallback("control","hid","jog_left_y",SonySixxAxis.left_jog);
-    controller.enableBitAutoRepeat("hid","jog_left_y");
-    controller.registerInputCallback("control","hid","jog_right_y",SonySixxAxis.right_jog);
-    controller.enableBitAutoRepeat("hid","jog_right_y");
+    controller.addCallback("control","hid","jog_left_y",SonySixxAxis.left_jog);
+    controller.autorepeat("hid","jog_left_y",true);
+    controller.addCallback("control","hid","jog_right_y",SonySixxAxis.right_jog);
+    controller.autorepeat("hid","jog_right_y",true);
 
-    controller.registerInputCallback("control","hid","jog_left_x",SonySixxAxis.left_jog);
-    controller.registerInputCallback("control","hid","jog_right_x",SonySixxAxis.right_jog);
+    controller.addCallback("control","hid","jog_left_x",SonySixxAxis.left_jog);
+    controller.addCallback("control","hid","jog_right_x",SonySixxAxis.right_jog);
 
 };
 
@@ -103,7 +103,7 @@ SonySixxAxis.front_left = function(field) {
     var controller = SonySixxAxis.controller;
     if (field.value==controller.buttonStates.released)
         return;
-    if (!controller.modifierIsSet('shift_left'))
+    if (!controller.modifiers.get('shift_left'))
         return;
     if (field.name=='button_top_left') 
         engine.setValue('[Playlist]','SelectPrevPlaylist',true);
@@ -115,7 +115,7 @@ SonySixxAxis.front_right = function(field) {
     var controller = SonySixxAxis.controller;
     if (field.value==controller.buttonStates.released)
         return;
-    if (!controller.modifierIsSet('shift_right')) 
+    if (!controller.modifiers.get('shift_right')) 
         return;
     if (field.name=='button_top_right') 
         engine.setValue('[Playlist]','SelectPrevTrack',true);
@@ -164,7 +164,7 @@ SonySixxAxis.right_jog = function(field) {
 
 SonySixxAxis.left_bend = function(field) {
     var controller = SonySixxAxis.controller;
-    if (controller.modifierIsSet('shift_left')) 
+    if (controller.modifiers.get('shift_left')) 
         return;
     if (field.name=='pressure_top_left') 
         SonySixxAxis.jog_bend('deck1','down',field);
@@ -174,7 +174,7 @@ SonySixxAxis.left_bend = function(field) {
 
 SonySixxAxis.right_bend = function(field) {
     var controller = SonySixxAxis.controller;
-    if (controller.modifierIsSet('shift_right')) 
+    if (controller.modifiers.get('shift_right')) 
         return;
     if (field.name=='pressure_top_right')
         SonySixxAxis.jog_bend('deck2','down',field);
