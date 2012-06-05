@@ -702,12 +702,27 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Do crossfade from old fadeout buffer to this new data
             for (int j=0; i < m_iCrossFadeSamples; i+=2, j+=2)
             {
+#ifdef __SCALER_DEBUG__
+                double debugorig = pOutput[j];
+#endif
                 pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
                 pOutput[j+1] = pOutput[j+1] * cross_mix + m_pCrossFadeBuffer[i+1] * (1.0 - cross_mix);
                 cross_mix += cross_inc;
+#ifdef __SCALER_DEBUG__
+                writer << pOutput[j] << "," << debugorig << "," << m_pCrossFadeBuffer[i] << "\n";
+#endif
             }
             m_iCrossFadeSamples = 0;
         }
+#ifdef __SCALER_DEBUG__
+        else
+        {
+            for (int i=0; i<iBufferSize; i+=2)
+            {
+                writer << pOutput[i] << ",0,0\n";
+            }
+        }
+#endif        
 
         m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
@@ -850,11 +865,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
 
-#ifdef __SCALER_DEBUG__
+/*#ifdef __SCALER_DEBUG__
     for (int i=0; i<iBufferSize; i+=2) {
         writer << pOutput[i] <<  "\n";
     }
-#endif
+#endif*/
     
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
