@@ -22,20 +22,25 @@ class AnalysisDao;
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
 
-inline CSAMPLE scaleSignal(CSAMPLE invalue) {
+inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
         return 0;
+    } else if (index == Low || index == Mid) {
+        //return pow(invalue, 2 * 0.5);
+        return invalue;
     } else {
-        //return invalue;
-        return pow(invalue, 0.316);
+        return pow(invalue, 2.0f * 0.316f);
     }
 }
 
 class WaveformStride {
     inline void init( int samples) {
         m_length = samples*2;
-        m_postScaleConversion = (float)std::numeric_limits<unsigned char>::max() / 2.0;
+        m_postScaleConversion = (float)std::numeric_limits<unsigned char>::max();
         m_conversionFactor = 1.0; //because we are taking a max, not an average any more
+
+        // This averages over the window. For now we're taking the max-envelope.
+        //m_conversionFactor = 1.0 / samples;
         reset();
     }
 
@@ -52,10 +57,10 @@ class WaveformStride {
     inline void store(WaveformData* data) {
         for( int i = 0; i < ChannelCount; i++) {
             WaveformData& datum = *(data + i);
-            datum.filtered.all = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_overallData[i]));
-            datum.filtered.low = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Low]));
-            datum.filtered.mid = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Mid]));
-            datum.filtered.high = static_cast<unsigned char>(m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][High]));
+            datum.filtered.all = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_overallData[i]) + 0.5));
+            datum.filtered.low = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Low], Low) + 0.5));
+            datum.filtered.mid = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Mid], Mid) + 0.5));
+            datum.filtered.high = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][High], High) + 0.5));
         }
     }
 

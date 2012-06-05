@@ -19,7 +19,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
                               "SETLOGHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.setlog");
+                                                   "mixxx.db.model.setlog",
+                                                   true);//show all tracks
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));

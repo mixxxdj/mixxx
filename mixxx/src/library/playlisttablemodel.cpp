@@ -9,7 +9,8 @@
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
-                                       QString settingsNamespace)
+                                       QString settingsNamespace,
+                                       bool showAll)
         : BaseSqlTableModel(parent, pTrackCollection,
                             pTrackCollection->getDatabase(),
                             settingsNamespace),
@@ -19,6 +20,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
           m_iPlaylistId(-1) {
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
+    m_showAll = showAll;
 }
 
 PlaylistTableModel::~PlaylistTableModel() {
@@ -50,10 +52,13 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM PlaylistTracks "
         "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-        "WHERE PlaylistTracks.playlist_id = %3 AND library.mixxx_deleted = 0")
+        "WHERE PlaylistTracks.playlist_id = %3")
             .arg(escaper.escapeString(playlistTableName),
                  columns.join(","),
                  QString::number(playlistId));
+    if (!m_showAll) {
+        queryString.append(" AND library.mixxx_deleted = 0");
+    }
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -246,49 +251,43 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         //qDebug() << queryString;
 
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                            "WHERE position > %1 AND "
-                              "playlist_id=%2").arg(
-                                  QString::number(oldPosition),
-                                  QString::number(m_iPlaylistId));
+                              "WHERE position > %1 AND "
+                              "playlist_id=%2").arg(QString::number(oldPosition),
+                                                    QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
-                            "WHERE position >= %1 AND " //position < %2 AND "
-                            "playlist_id=%3").arg(
-                                QString::number(newPosition),
-                                QString::number(m_iPlaylistId));
+                              "WHERE position >= %1 AND " //position < %2 AND "
+                              "playlist_id=%3").arg(QString::number(newPosition),
+                                                    QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=%1 "
-                            "WHERE position=-1 AND "
-                            "playlist_id=%2").arg(
-                                QString::number(newPosition),
-                                QString::number(m_iPlaylistId));
+                              "WHERE position=-1 AND "
+                              "playlist_id=%2").arg(QString::number(newPosition),
+                                                    QString::number(m_iPlaylistId));
         query.exec(queryString);
     }
     else if (newPosition > oldPosition)
     {
         queryString = QString("UPDATE PlaylistTracks SET position=-1 "
                               "WHERE position = %1 AND "
-                              "playlist_id=%2").arg(
-                                  QString::number(oldPosition),
-                                  QString::number(m_iPlaylistId));
+                              "playlist_id=%2").arg(QString::number(oldPosition),
+                                                    QString::number(m_iPlaylistId));
         //qDebug() << queryString;
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                               "WHERE position > %1 AND position <= %2 AND "
-                              "playlist_id=%3").arg(
-                                  QString::number(oldPosition),
-                                  QString::number(newPosition),
-                                  QString::number(m_iPlaylistId));
+                              "playlist_id=%3").arg(QString::number(oldPosition),
+                                                    QString::number(newPosition),
+                                                    QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=%1 "
                               "WHERE position=-1 AND "
-                              "playlist_id=%2").arg(
-                                  QString::number(newPosition),
-                                  QString::number(m_iPlaylistId));
+                              "playlist_id=%2").arg(QString::number(newPosition),
+                                                    QString::number(m_iPlaylistId));
         query.exec(queryString);
     }
 
@@ -364,7 +363,7 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
         return true;
     }
     if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-       return true;
+        return true;
     }
     return false;
 }

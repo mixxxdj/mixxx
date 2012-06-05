@@ -84,6 +84,11 @@ void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
+    // Clear out buffer and saved sample data
+    buffer_int_size = 0; 
+    m_dNextSampleIndex = 0;
+    m_fPrevSample[0] = 0;
+    m_fPrevSample[1] = 0;
 }
 
 
@@ -211,7 +216,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
         }
         *samples_read = read_size;
 
-        // update our class members so next time we need to scale it's ok we do
+        // update our class members so next time we need to scale it's ok. we do
         // blow away the fractional sample position here
         buffer_int_size = 0; // force buffer read
         m_dNextSampleIndex = 0;
