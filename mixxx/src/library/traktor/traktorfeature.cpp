@@ -115,9 +115,9 @@ void TraktorFeature::activate() {
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
-    } else {
-        emit(showTrackModel(m_pTraktorTableModel));
     }
+
+    emit(showTrackModel(m_pTraktorTableModel));
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
