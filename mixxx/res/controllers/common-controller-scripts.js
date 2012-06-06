@@ -71,8 +71,9 @@ script.absoluteSlider = function (group, key, value, low, high, min, max) {
 script.absoluteLin = function (value, low, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
-    if (value==max) return high;
-    else return ((((high - low) / max) * value) + low);
+    if (value <= min) return low;
+    if (value >= max) return high;
+    else return ((((high - low) / (max-min)) * (value-min)) + low);
 }
 
 // Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control
