@@ -13,11 +13,40 @@ controllers by writing some simple Javascript. For more information, see the
 `MIDI Scripting <http://mixxx.org/wiki/doku.php/midi_scripting>`_ topic on the
 Mixxx Wiki.
 
+.. _advanced-keyboard:
+
 Making a Custom Keyboard Mapping
 ================================
 
-Editing the keyboard shortcuts is very easy. For more information, see the
-`Mixxx Wiki <http://mixxx.org/wiki/>`_.
+The default shortcuts are defined in a text file which can be found at the 
+following location:
+
+* Linux: ``/usr/share/mixxx/keyboard/en_US.kbd.cfg``
+* Mac OS X: ``/Applications/Mixxx.app/Contents/Resources/keyboard/en_US.kbd.cfg``
+* Windows: ``<Mixxx dir>\keyboard\en_US.kbd.cfg``
+
+Depending on your systems language settings, Mixxx might use a different 
+file as default, e.g ``de_DE.kbd.cfg`` or ``es_ES.kbd.cfg`` .
+
+If you want to customize the keyboard mapping, add a new text file or copy the 
+default shortcut file to the following location:
+
+* Linux: ``~/.mixxx/Custom.kbd.cfg``
+* MacOSX: ``/Library/Application\ Support/Mixxx/Custom.kbd.cfg``
+* Windows: ``%USERPROFILE%\Local Settings\Application Data\Mixxx\Custom.kbd.cfg``
+
+Make sure the custom keyboard mapping file is renamed to **Custom.kbd.cfg** .
+On the next startup, Mixxx will check if ``Custom.kbd.cfg`` is present and load 
+that file instead of the standard mapping file.
+
+For a list of controls that can be used in the keyboard mapping, see the
+`MixxxControls <http://www.mixxx.org/wiki/doku.php/mixxxcontrols>`_ topic on the
+Mixxx Wiki.
+
+You can share custom keyboard mappings in the `Mixxx User customizations forum`_.
+
+.. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
+
 
 Effects via JACK Rack
 =====================
@@ -29,7 +58,7 @@ can be used with `Jack
 directly through `JACK Rack <http://jack-rack.sourceforge.net/>`_ effect racks,
 or for more control you can use Ardour (or other DAW) using sends for
 effects. This gives Mixxx access to the extensive collection of LADSPA
-plugins. For more informatoin, see the `Mixxx Wiki <http://mixxx.org/wiki>`_.
+plugins. For more information, see the `Mixxx Wiki <http://mixxx.org/wiki>`_.
 
 Deleting Your Library
 =====================

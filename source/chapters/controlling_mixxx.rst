@@ -119,15 +119,8 @@ note that you can also access the functions through Mixxx's interface.
 Customizing
 -----------
 
-You can also customize the keyboard mapping. The shortcuts are defined in a text file, and can be changed.
-
-* Linux: /usr/share/mixxx/keyboard/Standard.kbd.cfg
-* Mac OS X: <Mixxx bundle>/keyboard/Standard.kbd.cfg
-* Windows: <Mixxx dir>\\keyboard\\Standard.kbd.cfg
-
-You can share custom keyboard mappings in the `Mixxx User customizations forum`_.
-
-.. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
+You can also customize the keyboard mapping. For more information, please refer to 
+the chapter :ref:`advanced-keyboard` .
 
 .. _control-midi:
 
