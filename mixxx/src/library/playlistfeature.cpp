@@ -173,7 +173,6 @@ QModelIndex PlaylistFeature::constructChildModel(int selected_id)
     return m_childModel.index(selected_row, 0);
 }
 
-
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     if (!m_pPlaylistTableModel) {
         return;

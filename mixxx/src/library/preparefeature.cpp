@@ -41,31 +41,35 @@ QIcon PrepareFeature::getIcon() {
 void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                 WLibrary* libraryWidget,
                                 MixxxKeyboard* keyboard) {
-    DlgPrepare* pPrepareView = new DlgPrepare(libraryWidget,
+    m_pPrepareView = new DlgPrepare(libraryWidget,
                                               m_pConfig,
                                               m_pTrackCollection);
-    connect(pPrepareView, SIGNAL(loadTrack(TrackPointer)),
+    connect(m_pPrepareView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pPrepareView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(m_pPrepareView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-    connect(pPrepareView, SIGNAL(analyzeTracks(QList<int>)),
+    connect(m_pPrepareView, SIGNAL(analyzeTracks(QList<int>)),
             this, SLOT(analyzeTracks(QList<int>)));
-    connect(pPrepareView, SIGNAL(stopAnalysis()),
+    connect(m_pPrepareView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
 
     connect(this, SIGNAL(analysisActive(bool)),
-            pPrepareView, SLOT(analysisActive(bool)));
+            m_pPrepareView, SLOT(analysisActive(bool)));
     connect(this, SIGNAL(trackAnalysisProgress(TrackPointer, int)),
-            pPrepareView, SLOT(trackAnalysisProgress(TrackPointer, int)));
+            m_pPrepareView, SLOT(trackAnalysisProgress(TrackPointer, int)));
     connect(this, SIGNAL(trackAnalysisFinished(TrackPointer)),
-            pPrepareView, SLOT(trackAnalysisFinished(TrackPointer)));
-    pPrepareView->installEventFilter(keyboard);
+            m_pPrepareView, SLOT(trackAnalysisFinished(TrackPointer)));
+
+    connect(this, SIGNAL(trackAnalysisFinished(TrackPointer)),
+            m_pPrepareView, SLOT(trackAnalysisFinished(TrackPointer)));
+
+    m_pPrepareView->installEventFilter(keyboard);
 
     // Let the DlgPrepare know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyserQueue != NULL;
     emit(analysisActive(bAnalysisActive));
 
-    libraryWidget->registerView(m_sPrepareViewName, pPrepareView);
+    libraryWidget->registerView(m_sPrepareViewName, m_pPrepareView);
 }
 
 TreeItemModel* PrepareFeature::getChildModel() {
@@ -75,6 +79,7 @@ TreeItemModel* PrepareFeature::getChildModel() {
 void PrepareFeature::activate() {
     //qDebug() << "PrepareFeature::activate()";
     emit(switchToView(m_sPrepareViewName));
+    emit(restoreSearch(m_pPrepareView->currentSearch()));
 }
 
 void PrepareFeature::activateChild(const QModelIndex& index) {

@@ -19,6 +19,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
            TrackModel(db, settingsNamespace),
+           m_currentSearch(""),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_database(db) {

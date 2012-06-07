@@ -149,6 +149,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 
 void CrateFeature::activate() {
     emit(switchToView("CRATEHOME"));
+    emit(restoreSearch(QString())); //disable search on crate home
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
