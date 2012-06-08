@@ -92,7 +92,7 @@ If enabled, the BPM is computed by analyzing the first minute of the track. In m
 cases this does not affect the BPM detection negatively because most of today's dance music is written
 in a 4/4 signature, i.e., the distances between the beats are constant. 
  
-.. figure:: ../_static/mixxx-1.11-bpm-prefs.png
+.. figure:: ../_static/Mixxx-1.11-Preferences-Beatdetection.png
    :align: center
    :width: 100%
    :figwidth: 100%
@@ -119,7 +119,6 @@ The table below summarizes the beat detection settings:
 |                                        | the BPM if your beat detection preference change.     |
 |                                        |                                                       |
 +----------------------------------------+-------------------------------------------------------+
- 
 
 Correcting Beat Grids
 ---------------------
@@ -129,16 +128,13 @@ does not necessarily originate from a false computed BPM value. In most cases, t
 is correct but the analyzer has failed to find the first "real" beat. Consequently, the beat markers 
 are shifted, i.e., they are placed somewhere between two correct beats. To re-adjust the beat grid
 cue the track before a real beat and click the "gate" button illustrated in the figure below.
- 
-  
+
 .. figure:: ../_static/correcting_beat_grid.png
    :align: center
-   :width: 100%
+   :width: 70%
    :figwidth: 100%
    :alt: Mixxx preferences - Correcting beat grids
    :figclass: pretty-figures
-  
-  
 
 If the detected BPM value is not sufficiently accurate, the corresponding beat grid is not accurate, too. A deviation of
 0.02 BPM units is enough -- compared to the correct BPM --  to notice an unaligned beat grid for long tracks (e.g., a club mix).
@@ -147,9 +143,6 @@ the beat markers soon. Finding the correct BPM, however, is easy in many cases. 
 
 .. note:: If the detected BPM value is not sufficiently accurate but very close to an integer value,
           try to set the BPM value manually to the integer. 
- 
- 
-   
 
 Headphone Cueing
 ================
@@ -161,7 +154,6 @@ the “HEADPHONE” buttons located on the far left/right sides of Mixxx's
 interface. Headphone cueing is useful because it allows a DJ to beatmatch the
 next song in their headphones before bringing it into their mix by sliding the
 crossfader.
-
 
 Recording your Mix
 ==================
@@ -176,8 +168,6 @@ The recordings settings can be changed in Mixxx Preferences->Recording.
    :alt: Mixxx preferences - Setting up recordings
    :figclass: pretty-figures
 
-   Mixxx preferences - Setting up recordings
-
 .. note:: MP3 recordings are not supported out of the box in Mixxx since we do not
           license the MP3 encoding patents. In order to enable MP3 recording you must
           install the LAME MP3 encoding tool yourself.
@@ -189,8 +179,6 @@ The recordings settings can be changed in Mixxx Preferences->Recording.
    :figwidth: 100%
    :alt: Mixxx library - Recordings view
    :figclass: pretty-figures
-
-   Mixxx library - Recordings view
 
 If you click on the recording sidebar item, the right track table view displays the content
 of "<Your Music Folder>/Mixxx/Recordings". New recordings are automatically saved in this
