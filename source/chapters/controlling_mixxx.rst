@@ -116,6 +116,11 @@ note that you can also access the functions through Mixxx's interface.
 | Unload track from deck                 | Alt + Shift + left  | Alt + Shift + right |              |
 +----------------------------------------+---------------------+---------------------+--------------+
 
+.. note:: For some user groups, i.e. those using midi controllers or vinyl control 
+		  it might be useful to enable/disable the keyboard mapping at runtime. 
+		  You can do so by clicking ``Options`` -> ``Enable keyboard shortcuts`` 
+		  in the menu. 
+
 Customizing
 -----------
 
