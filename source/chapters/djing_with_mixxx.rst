@@ -3,8 +3,10 @@ DJing With Mixxx
 
 Mixxx was designed to be easy to learn for both novice and experienced DJs. The
 user interface mimics a hardware DJ mixer, but also includes several extra
-elements to gives DJs a better user experience, such as the optional parallel waveform
-displays.
+elements to gives DJs a better user experience, such as the optional parallel 
+waveform displays.
+
+.. _djing-loading-tracks:
 
 Loading Tracks
 ==============
@@ -12,7 +14,7 @@ Loading Tracks
 Tracks can be loaded into a deck in several ways:
 
 * Right-click the library track table: Right-clicking on a track in the table
-  will present the options “Load in Deck 1” and “Load in Deck 2”, among
+  will present the options ``Load in Deck 1`` and ``Load in Deck 2``, among
   others. Making either selection will load a track into a deck.
 * By :ref:`control-keyboard` to load the selected track from library track table.  
 * Drag-and-drop from library track table: Dragging-and-dropping a track from the
@@ -22,6 +24,65 @@ Tracks can be loaded into a deck in several ways:
   track. This function is also known to work on some platforms with other
   applications. For example, on Mac OS X, dragging-and-dropping a track from iTunes
   onto one of Mixxx's waveform displays will load that track into a deck.
+
+.. _djing-finding-tracks:
+
+Finding Tracks (Search)
+=======================
+
+The search function searches for a match only in the current selected list ( e.g 
+a playlist, a crate or even the whole library). 
+
+* Hit ``CTRL+F`` (Windows/Linux) or ``CMD+F`` (Mac) to activate the search input field.
+* Type in your search term, as soon as you type Mixxx filters the tracks and 
+  retains only the ones that match with the search term. Search terms can include 
+  an artist’s name, a song title, BPM, etc.
+* To clear the search string hit ``ESC`` or click the clear button right next to 
+  the input field.
+* Hit ``TAB`` to circle between the search and the list of results in the library.
+  Use the ``ARROW UP`` and ``ARROW DOWN`` keys to scroll in the list of results.
+ 
+.. note:: If the search input field has focus the Mixxx keyboard shortcuts do not 
+          work, see :ref:`control-keyboard`.
+
+Using search operators
+----------------------
+A search operator is an instruction that joins terms to form a new, more complex 
+query. It enables you to look for several terms at once.
+
+Mixxx supports the following filters:
+
+* Text filtering for artist, album, genre, title, composer, comment
+* Numeric (exact number or range) filtering for year, track, bpm, duration, played, rating
+
++------------------------------------------+---------------------------------------+
+| Examples for text filtering              | Examples for numeric filtering        |
++==========================================+=======================================+
+| artist: "com truise"                     | bpm:140                               |
++------------------------------------------+---------------------------------------+
+| album:Danger                             | bpm: >140                             |   
++------------------------------------------+---------------------------------------+
+| genre: Trance                            | year: <2010                           |
++------------------------------------------+---------------------------------------+
+| title: foo                               | bpm: >=140                            |
++------------------------------------------+---------------------------------------+
+| composer: foo                            | rating: <=4                           |
++------------------------------------------+---------------------------------------+
+| comment: foo                             | bpm: 140-150                          |
++------------------------------------------+---------------------------------------+
+|                                          | played: >10                           |
++------------------------------------------+---------------------------------------+
+| Note it doesn't matter if you have a     | Note that you can put a space between |
+| space between the colon and the argument | the colon but currently there must be | 
+| or not.                                  | no space between the operator and the |
+|                                          | number.                               |
+|                                          |                                       |
++------------------------------------------+---------------------------------------+
+| Of course you can combine these operators. The following example list all Danger |
+| tracks that are rated 4 or 5. There's no way to do an OR right now.              |
++------------------------------------------+---------------------------------------+
+| artist:Danger rating:>=4                                                         |
++------------------------------------------+---------------------------------------+
 
 Waveform displays
 =================
@@ -42,7 +103,7 @@ parallel waveforms.
 
    Mixxx default skin (Deere) - Separate waveforms
 
-In some skins the waveform displays are aligned parallel to each other in order to make 
+With some skins the waveform displays are aligned parallel to each other in order to make 
 beat matching easier, as it is possible to beatmatch visually by aligning the beats that
 appear in each waveform.
 
@@ -58,7 +119,7 @@ appear in each waveform.
 The mouse can be used on the waveforms to scratch, spin-back or throw the tracks.
 Right-click on the waveforms allows to drag with the mouse to make temporary pitch
 adjustments. Using the mouse-wheel everywhere in the waveform will zoom the waveform 
-in or out. You can choose whether or not too synchronize the zoom level between the 
+in or out. You can choose whether or not to synchronize the zoom level between the 
 decks in the preferences. The waveform display is updated in realtime upon seeking.
 
 There are two smaller waveform summary displays located adjacent to the main waveform
@@ -96,6 +157,8 @@ distinct “double bass kick” sound which is often preceded by the kick weaken
 in intensity (as the two kicks drift out of phase). When this happens, the beats
 can be realigned by simply tapping one of the temporary pitch bend buttons a few
 times in the appropriate direction. Now get out there and make Tiesto jealous!
+
+.. _djing-bpm-detection:
 
 BPM and Beat Detection
 ======================
@@ -181,10 +244,12 @@ Headphone Cueing
 Headphone cueing is a technique DJs use to listen to the next track they want to
 play in their headphones before playing it out the main speakers. Mixxx allows a
 DJ to route audio from either deck to their headphones by toggling either of
-the “HEADPHONE” buttons located on the far left/right sides of Mixxx's
+the ``HEADPHONE`` buttons located on the far left/right sides of Mixxx's
 interface. Headphone cueing is useful because it allows a DJ to beatmatch the
 next track in their headphones before bringing it into their mix by sliding the
 crossfader.
+
+.. _djing-recording-your-mix:
 
 Recording your Mix
 ==================
@@ -219,7 +284,7 @@ If you click on the recording sidebar item, the right track table view displays 
 of your recordings directory which can be changed in the preferences. New recordings are automatically 
 saved in this folder as well as CUE files if you choose to create them in the recording preferences.
 
-Switch to the "Recording" sidebar item, then click the "Start Recording" button. Alternatively
-you can click “Options” on the menu bar and click “Record Mix”. Mixxx records the audio you hear
+Switch to the ``Recording`` sidebar item, then click the ``Start Recording`` button. Alternatively
+you can click ``Options`` on the menu bar and click ``Record Mix``. Mixxx records the audio you hear
 from the speakers including the microphone. While recording, a text displays how much data
-has been recorded. If your mix is done, click the "Stop recording" button.
+has been recorded. If your mix is done, click the ``Stop Recording`` button.
