@@ -161,7 +161,7 @@ Recording your Mix
 You can record Mixxx's master output in WAV, AIFF, OGG or MP3.
 The recordings settings can be changed in Mixxx Preferences->Recording.
 
-.. figure:: ../_static/Mixxx-1.10-Preferences-Recording.png
+.. figure:: ../_static/Mixxx-1.11-Preferences-Recording.png
    :align: center
    :width: 100%
    :figwidth: 100%
@@ -181,8 +181,8 @@ The recordings settings can be changed in Mixxx Preferences->Recording.
    :figclass: pretty-figures
 
 If you click on the recording sidebar item, the right track table view displays the content
-of "<Your Music Folder>/Mixxx/Recordings". New recordings are automatically saved in this
-folder as well as CUE files if you choose to create them in the recording preferences.
+of your recordings directory which can be changed in the preferences. New recordings are automatically 
+saved in this folder as well as CUE files if you choose to create them in the recording preferences.
 
 Switch to the "Recording" sidebar item, then click the "Start Recording" button. Alternatively
 you can click “Options” on the menu bar and click “Record Mix”. Mixxx records the audio you hear
