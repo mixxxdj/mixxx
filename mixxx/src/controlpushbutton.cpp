@@ -82,7 +82,7 @@ void ControlPushButton::setValueFromMidi(MidiOpCode o, double v) {
         }
     } else { //Not a toggle button (trigger only when button pushed)
         if (o == MIDI_NOTE_ON) {
-            m_dValue = v;
+            m_dValue = !m_dValue;
         } else if (o == MIDI_NOTE_OFF) {
             m_dValue = 0.0;
         }
