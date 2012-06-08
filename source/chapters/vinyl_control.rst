@@ -1,7 +1,7 @@
 Vinyl Control
 *************
 
-Vinyl control allows a user to manipulate the playback of a song in Mixxx using
+Vinyl control allows a user to manipulate the playback of a track in Mixxx using
 a real turntable as a controller. In effect, it simulates the sound and feel of
 having your digital music collection on vinyl. Many DJs prefer the tactile feel
 of vinyl, and vinyl control allows that feel to be preserved while retaining the
@@ -57,12 +57,12 @@ timecoded vinyl or CD you are using on your decks.
 The "Lead-in Time" setting allows you to set a dead-zone at the start of your
 vinyl or CD, where the time code will be ignored. This is useful in situations
 where the time code begins very close to the edge of a vinyl which can make
-back-cueing over the first beat in a song tricky to do without your turntable's
+back-cueing over the first beat in a track tricky to do without your turntable's
 needle falling off the vinyl. Setting a lead-in time of 20 seconds or more helps
 alleviate this by giving you more room on the vinyl to cue with. It's also
 useful when you've worn the grooves at the edge of a control record to the point
 that it no longer works reliably: you simply set the lead-in so that the start
-of the songs begin in good groove area. You can keep doing this until you run
+of the tracks begin in good groove area. You can keep doing this until you run
 out of groove area, thereby decreasing your record replacement frequency.
 
 Signal Quality
