@@ -3,7 +3,7 @@ DJing With Mixxx
 
 Mixxx was designed to be easy to learn for both novice and experienced DJs. The
 user interface mimics a hardware DJ mixer, but also includes several extra
-elements to gives DJs a better user experience, such as the parallel waveform
+elements to gives DJs a better user experience, such as the optional parallel waveform
 displays.
 
 Loading Tracks
@@ -14,6 +14,7 @@ Tracks can be loaded into a deck in several ways:
 * Right-click the library track table: Right-clicking on a track in the table
   will present the options “Load in Deck 1” and “Load in Deck 2”, among
   others. Making either selection will load a track into a deck.
+* By :ref:`control-keyboard` to load the selected track from library track table.  
 * Drag-and-drop from library track table: Dragging-and-dropping a track from the
   track table onto a waveform display will load a track into a deck.
 * Drag-and-drop from external file browser: Dragging-and-dropping a track from an
@@ -27,19 +28,45 @@ Waveform displays
 
 There are two main waveform displays in Mixxx that are used to display the
 waveform of the tracks you are mixing. These are useful because they allow you to
-see features in a track (like a breakdown) before you hear them. The waveform
-displays are aligned parallel to each other in order to make beat matching
-easier, as it is possible to beatmatch visually by aligning the beats that
+see features in a track (like a breakdown) before you hear them.
+
+Depending on the skin Mixxx displays either separate waveforms (default) or 
+parallel waveforms.
+
+.. figure:: ../_static/Mixxx-1.11-Deere-separate-waveform.png
+   :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Mixxx default skin (Deere) - Separate waveforms
+   :figclass: pretty-figures
+
+   Mixxx default skin (Deere) - Separate waveforms
+
+In some skins the waveform displays are aligned parallel to each other in order to make 
+beat matching easier, as it is possible to beatmatch visually by aligning the beats that
 appear in each waveform.
 
-Clicking and dragging on a waveform allows you to seek through a track in both
-directions. The waveform display is updated in realtime upon seeking. There are
-two smaller waveform summary displays located adjacent to the main waveform
-displays. These smaller displays show the waveform envelope of the entire track,
-and are useful because they allow DJs to see breakdowns far in advance. Vinyl
-DJs will find this familiar because quiet sections of tracks can be visually
-distinguished when looking at a vinyl record, and this is a useful tool when
-planning your mixes on-the-fly.
+.. figure:: ../_static/Mixxx-1.11-Latenight-parallel-waveform.png
+   :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Mixxx alternative skin (Latenight) - Parallel waveforms
+   :figclass: pretty-figures
+
+   Mixxx alternative skin (Latenight) - Parallel waveforms
+
+The mouse can be used on the waveforms to scratch, spin-back or throw the tracks.
+Right-click on the waveforms allows to drag with the mouse to make temporary pitch
+adjustments. Using the mouse-wheel everywhere in the waveform will zoom the waveform 
+in or out. You can choose whether or not too synchronize the zoom level between the 
+decks in the preferences. The waveform display is updated in realtime upon seeking.
+
+There are two smaller waveform summary displays located adjacent to the main waveform
+displays. Clicking somewhere on a waveform summary allows you to seek through a track.
+These smaller displays show the waveform envelope of the entire track, and are useful 
+because they allow DJs to see breakdowns far in advance.  Vinyl DJs will find this 
+familiar because quiet sections of tracks can be visually distinguished when looking 
+at a vinyl record, and this is a useful tool when planning your mixes on-the-fly.
 
 Beatmatching and Mixing
 =======================
@@ -99,6 +126,8 @@ in a 4/4 signature, i.e., the distances between the beats are constant.
    :alt: Mixxx preferences - BPM settings
    :figclass: pretty-figures
 
+   Mixxx preferences - BPM settings
+
 The table below summarizes the beat detection settings:
 
 +----------------------------------------+-------------------------------------------------------+
@@ -131,10 +160,12 @@ cue the track before a real beat and click the "gate" button illustrated in the 
 
 .. figure:: ../_static/correcting_beat_grid.png
    :align: center
-   :width: 70%
+   :width: 60%
    :figwidth: 100%
    :alt: Mixxx preferences - Correcting beat grids
    :figclass: pretty-figures
+
+   Correcting beat grids
 
 If the detected BPM value is not sufficiently accurate, the corresponding beat grid is not accurate, too. A deviation of
 0.02 BPM units is enough -- compared to the correct BPM --  to notice an unaligned beat grid for long tracks (e.g., a club mix).
@@ -168,6 +199,8 @@ The recordings settings can be changed in Mixxx Preferences->Recording.
    :alt: Mixxx preferences - Setting up recordings
    :figclass: pretty-figures
 
+   Mixxx preferences - Setting up recordings
+
 .. note:: MP3 recordings are not supported out of the box in Mixxx since we do not
           license the MP3 encoding patents. In order to enable MP3 recording you must
           install the LAME MP3 encoding tool yourself.
@@ -179,6 +212,8 @@ The recordings settings can be changed in Mixxx Preferences->Recording.
    :figwidth: 100%
    :alt: Mixxx library - Recordings view
    :figclass: pretty-figures
+
+   Mixxx library - Recordings view
 
 If you click on the recording sidebar item, the right track table view displays the content
 of your recordings directory which can be changed in the preferences. New recordings are automatically 
