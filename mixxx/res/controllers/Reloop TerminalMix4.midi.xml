@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="1.11.0" schemaVersion="1">
     <info>
         <name>Reloop TerminalMix4</name>
         <author>Sean M. Pappalardo</author>
-        <description>A complete 4-deck preset for a single Reloop TerminalMix4, uses scripts.</description>
+        <description>A complete 4-deck preset for a single Reloop TerminalMix4. Uses scripting.</description>
     </info>
     <controller id="TerminalMix4">
         <scriptfiles>
