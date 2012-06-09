@@ -140,14 +140,15 @@ must do to beatmatch.
 
 Mixxx can match the tempo and align the beats for you. This, however, requires
 an accurately detected BPM value and a proper beat grid for both tracks. In this 
-case all you need to do is hit SYNC. To beatmatch manually the tempo of the two tracks 
-must be synchronized by adjusting the playback rate sliders on left and right side 
-of the user interface. You can adjust the phase of the beats by 
-clicking-and-dragging on either waveform display to temporarily
-slow down one of the tracks until the beats are aligned. The temporary pitch bend
-buttons can also be used to momentarily adjust the playback rate, allowing you
-to “shuffle” the beats in a track forwards or backwards, so they can be aligned
-with another track. 
+case all you need to do is hit the ``SYNC`` button. 
+To beatmatch manually the tempo of the two tracks  must be synchronized by 
+adjusting the playback rate sliders. You can adjust the phase of the beats by 
+right-clicking and dragging on either waveform display to temporarily speed up 
+or slow down one of the tracks until the beats are aligned. 
+The temporary pitch bend buttons can also be used to momentarily adjust the 
+playback rate, allowing you to “shuffle” the beats in a track forwards or 
+backwards, so they can be aligned with another track. See the chapter 
+:ref:`interface-rate`.
 
 Once the tempos are matched and the beats aligned between two tracks, they are
 said to be beatmatched. A “perfect” beatmatch is near impossible - there will
@@ -156,7 +157,19 @@ her ears open and listen for the beats drifting out of alignment. This has a
 distinct “double bass kick” sound which is often preceded by the kick weakening
 in intensity (as the two kicks drift out of phase). When this happens, the beats
 can be realigned by simply tapping one of the temporary pitch bend buttons a few
-times in the appropriate direction. Now get out there and make Tiesto jealous!
+times in the appropriate direction.
+
+Headphone Cueing
+================
+
+Headphone cueing is a technique DJs use to listen to the next track they want to
+play in their headphones before playing it out the main speakers. Headphone cueing 
+is useful because it allows a DJ to beatmatch the next track in their headphones 
+before bringing it into their mix by sliding the crossfader.
+
+Mixxx allows a DJ to route audio from either deck to their headphones by toggling 
+either of the ``HEADPHONE`` buttons in the mixer section of Mixxx's
+interface. See the chapter :ref:`interface-mixer`.
 
 .. _djing-bpm-detection:
 
@@ -165,8 +178,8 @@ BPM and Beat Detection
 
 Previous versions of Mixxx were able to detect BPM values but unable to determine
 where the beats are. Consequently, the beat grids often looked unaligned. 
-The DJ had to adjust the beat grid unless he or she did not make use of auto-beatmatching 
-via SYNC button .   
+The DJ had to adjust the beat grid unless he or she did not make use of 
+auto-beatmatching via ``SYNC`` button .   
 
 Starting with version 1.11, Mixxx comes with a new ultra-precise BPM and beat detector.
 The beat grid gets adjusted after track analysis has finished. Manual 
@@ -237,17 +250,6 @@ the beat markers soon. Finding the correct BPM, however, is easy in many cases. 
 
 .. note:: If the detected BPM value is not sufficiently accurate but very close to an integer value,
           try to set the BPM value manually to the integer. 
-
-Headphone Cueing
-================
-
-Headphone cueing is a technique DJs use to listen to the next track they want to
-play in their headphones before playing it out the main speakers. Mixxx allows a
-DJ to route audio from either deck to their headphones by toggling either of
-the ``HEADPHONE`` buttons located on the far left/right sides of Mixxx's
-interface. Headphone cueing is useful because it allows a DJ to beatmatch the
-next track in their headphones before bringing it into their mix by sliding the
-crossfader.
 
 .. _djing-recording-your-mix:
 

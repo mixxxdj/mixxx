@@ -56,6 +56,8 @@ in the track. You can customize this in the Mixxx Preferences Interface section.
 
 .. hint:: Tap the BPM to set the BPM to the speed you are tapping.
 
+.. _interface-rate:
+
 Rate Controls
 -------------
 
