@@ -49,10 +49,8 @@ Auto DJ
 =======
 
 The Auto DJ queue is a special playlist that contains extra controls for
-enabling automatic mixing. Toggling the “Enable Auto DJ” button within this view
-will tell Mixxx to automatically load the next track from this playlist when the
-current track is nearly finished, and crossfade into it. Mixxx will continue to
-automatically mix until the Auto DJ playlist is empty.
+enabling automatic mixing. This is useful for taking a break from live mixing 
+or for using Mixxx as media player. Also see the chapter :ref:`djing-auto-dj`.
 
 Playlists
 =========

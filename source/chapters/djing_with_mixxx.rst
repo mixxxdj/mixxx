@@ -290,3 +290,70 @@ Switch to the ``Recording`` sidebar item, then click the ``Start Recording`` but
 you can click ``Options`` on the menu bar and click ``Record Mix``. Mixxx records the audio you hear
 from the speakers including the microphone. While recording, a text displays how much data
 has been recorded. If your mix is done, click the ``Stop Recording`` button.
+
+.. _djing-auto-dj:
+
+Using automatic mixing (Auto DJ)
+================================
+
+Auto DJ allows you to automatically load the next track from the Auto DJ playlist 
+when the current track is nearly finished, and crossfade into it.
+
+.. figure:: ../_static/Mixxx-1.11-Library-Auto-DJ.png
+   :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Mixxx library - Auto DJ view
+   :figclass: pretty-figures
+
+   Mixxx library - Auto DJ view
+
+The Auto DJ features in detail:
+
+* Shuffle button - Shuffles the content of the Auto DJ playlist.
+* Skip track button - Skips the next track in the Auto DJ playlist.
+* Fade now button - Triggers the transition to the next track.
+* Transition time spin-box - Determines the duration of the transition.
+* Enable Auto DJ button - Toggles the Auto DJ mode on or off.
+
+The ``Skip track`` and ``Fade now`` buttons are only accessible if the Auto DJ 
+mode is enabled. The Search field in the upper left corner is disable in Auto DJ.
+
+.. hint:: You can put a pause between two tracks that are automatically mixed by 
+          using a negative value in the ``Transition time`` spin-box.
+
+Loading tracks into Auto DJ
+---------------------------
+
+To be able to play tracks automatically, they must first be loaded into the Auto 
+DJ playlist. The Auto DJ playlist is empty per default.
+
+.. figure:: ../_static/Mixxx-1.11-Library-Add-to-Auto-DJ.png
+   :align: center
+   :width: 60%
+   :figwidth: 100%
+   :alt: Mixxx library - Adding a playlist to Auto DJ
+   :figclass: pretty-figures
+
+   Mixxx library - Adding a playlist to Auto DJ
+
+There are several ways to load tracks into the Auto DJ:
+
+* Select single or multiple tracks from the library, a regular playlist or crate 
+  and drag them to the Auto DJ icon on the left.
+* Select a regular playlist or crate, right-click with the mouse and select 
+  ``Add to Auto DJ`` from the mouse menu. This adds all tracks to Auto DJ.
+* While being in Auto DJ view, drag tracks from external file managers to the 
+  Auto DJ.
+
+Playing tracks in Auto DJ
+-------------------------
+
+Now that you have loaded tracks into the Auto DJ playlist, you can activate Auto 
+DJ by clicking the ``Enable Auto DJ`` button. The first tracks from your list are 
+loaded into the decks and the playback starts. Mixxx will continue to automatically 
+mix until the Auto DJ playlist is empty.
+
+If you are done with Auto DJ, click the ``Disable Auto DJ`` button. You can then 
+seamlessly continue with the live playing of your tracks.
+
