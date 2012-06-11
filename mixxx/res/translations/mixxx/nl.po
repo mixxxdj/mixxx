@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-05-01 23:48+0000\n"
-"Last-Translator: korst <Unknown>\n"
+"PO-Revision-Date: 2012-06-10 15:10+0000\n"
+"Last-Translator: Quinten Schelfhout <dequicky@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:34+0000\n"
-"X-Generator: Launchpad (build 15288)\n"
+"X-Launchpad-Export-Date: 2012-06-11 04:33+0000\n"
+"X-Generator: Launchpad (build 15376)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,17 +24,17 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "voeg een auto DJ Queue toe (onder)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "voeg een auto DJ Queue toe (boven)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Afspeellijst importeren"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
@@ -44,7 +44,7 @@ msgstr ""
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Een onbekende fout is opgetreden bij het maken van afspeellijst: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -63,7 +63,7 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Verwijderen"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
@@ -73,7 +73,7 @@ msgstr "Hernoem"
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Vergrendelen"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
@@ -111,7 +111,7 @@ msgstr "Afspeellijstnaam:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Afspeellijst Aanmaken Mislukt"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
