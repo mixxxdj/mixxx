@@ -57,7 +57,10 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
     // Here we can override values to prevent restoring corrupt values from database
     setMovable(true);
-    setCascadingSectionResizes(true);
+
+    // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
+    setCascadingSectionResizes(false);
+
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
 
     int columns = model->columnCount();
@@ -114,7 +117,8 @@ void WTrackTableViewHeader::saveHeaderState() {
     }
     // Convert the QByteArray to a Base64 string and save it.
     QString headerState = QString(saveState().toBase64());
-    bool result = track_model->setModelSetting("header_state", headerState);
+    //bool result =
+    track_model->setModelSetting("header_state", headerState);
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
