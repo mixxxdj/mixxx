@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-05-05 21:37+0000\n"
+"PO-Revision-Date: 2012-06-11 20:45+0000\n"
 "Last-Translator: Xuacu Saturio <xuacusk8@gmail.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:33+0000\n"
-"X-Generator: Launchpad (build 15288)\n"
+"X-Launchpad-Export-Date: 2012-06-12 04:34+0000\n"
+"X-Generator: Launchpad (build 15389)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,27 +24,28 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Amestar a la cola del DJ Automáticu (al final)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Amestar a la cola del DJ Automáticu (al principiu)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importar llista de reproducción"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Falló crear llista de reproducción"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
 msgstr ""
+"Hebo un error desconocíu mentanto se creaba la llista de reproducción: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -53,12 +54,12 @@ msgstr "Llista de reproducción nueva"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Amestar a la cola del DJ Automáticu (al final)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Amestar a la cola del DJ Automáticu (al principiu)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -111,12 +112,13 @@ msgstr "Nome de la llista de reproducción:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Falló crear llista de reproducción"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
 msgstr ""
+"Hebo un error desconocíu mentanto se creaba la llista de reproducción: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -232,11 +234,11 @@ msgstr "Nun se pudo cargar la pista."
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "Amestar a enllaces rapidos"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "Desaniciar d'enllaces rápidos"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -255,6 +257,8 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Amosar te permite navegar, ver y cargar pistes dende carpetes del discu duru "
+"y preseos esternos."
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -336,7 +340,7 @@ msgstr "Allugamientu"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Biblioteca de Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -428,7 +432,7 @@ msgstr "Desaniciar"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr ""
+msgstr "Asistente de deprendimientu"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
@@ -526,16 +530,20 @@ msgstr ""
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Los Caxones son una bona manera d'ayudate a organizar la música cola que "
+"quies facer DJ."
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Fai un caxón pa la próxima actuación, pa les tos pistes favorites "
+"d'electrohouse, o pa les canciones más pidíes."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "¡Los caxones te permiten organizar la to música como quieras!"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
