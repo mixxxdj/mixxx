@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2011-09-12 10:27+0000\n"
-"Last-Translator: Andre Parhusip <Unknown>\n"
+"PO-Revision-Date: 2012-06-11 23:02+0000\n"
+"Last-Translator: Dana Ferdianto <masebros.unlimited@mail.com>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:35+0000\n"
-"X-Generator: Launchpad (build 15288)\n"
+"X-Launchpad-Export-Date: 2012-06-12 04:34+0000\n"
+"X-Generator: Launchpad (build 15389)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Auto DJ"
+msgstr ""
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -34,51 +34,51 @@ msgstr ""
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Impor Playlist"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Pembuatan Playlist Tidak Berhasil"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Kesalahan yang tidak diketahui terjadi saat membuat playlist: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Playlist Baru"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Tambahkan ke Auto DJ (bawah)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Tambahkan ke Auto DJ (atas)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Hapus"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Ganti Nama"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Kunci"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Impor Playlist"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
@@ -94,34 +94,34 @@ msgstr ""
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Ganti Nama Playlist Gagal"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Nama playlist tersebut sudah digunakan"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Playlist tidak bisa memiliki nama kosong"
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr ""
+msgstr "Nama Playlist"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Pembuatan Playlist Gagal"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Kesalahan terjadi saat membuat playlist: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Berkas Playlist"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -162,7 +162,7 @@ msgstr ""
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "Tahun"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
@@ -172,17 +172,17 @@ msgstr ""
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "Tempat"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "Komentar"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "Durasi"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -191,17 +191,17 @@ msgstr "Penilaian"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrasi"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "DPM"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "Lagu #"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -213,16 +213,16 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "Penanda waktu"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr ""
+msgstr "Kunci"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
-msgstr ""
+msgstr "Kunci BPM"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -230,15 +230,15 @@ msgstr "Tidak dapat memuat lagu"
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "Tambahkan ke Link Cepat"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "Hapus dari Link Cepat"
 
 #: BrowseFeature#3
 msgid "Quick Links"
-msgstr "Link cepat"
+msgstr "Link Cepat"
 
 #: BrowseFeature#4
 msgid "Devices"
@@ -253,6 +253,8 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Telusur memungkinkan Anda untuk menavigasi, dan memuat lagu dari folder-"
+"folder di hard disk dan perangkat eksternal."
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -290,51 +292,51 @@ msgstr "Tahun"
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "Aliran"
+msgstr "Jenis Musik"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "Penyusun"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Komentar"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Waktu"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "DPM"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr ""
+msgstr "Kunci"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Jenis"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrasi"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Tempat"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Library Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -346,11 +348,12 @@ msgstr ""
 
 #: BrowseTableModel#18
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Peringatan: Ini akan menghapus permanen file-file tersebut"
+msgstr "Peringatan: Ini akan menghapus tetap file-file tersebut"
 
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Apakah Anda yakin ingin menghapus file-file dari komputer Anda?"
+msgstr ""
+"Apakah Anda yakin ingin menghapus file-file tersebut dari komputer Anda?"
 
 #: BrowseTableModel#20
 msgid ""
@@ -366,19 +369,19 @@ msgstr "Tidak dapat memperbarui metadata file."
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Pengecualian tidak tertangkap di jalur %1 dalam file %2: %3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Pengecualian tidak tertangkap di jalur %1 dalam kode lewat %2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr ""
+msgstr "Controller script salah"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "Kontrol yang Anda gunakan tidak bekerja dengan baik."
 
 #: ControllerEngine#5
 msgid ""
@@ -387,36 +390,41 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Script code harus dibenahi.)<br>Untuk sekarang, you "
+"can:<ul><li>Ignore this error for this session but you may experience "
+"erratic behavior</li><li>Try to recover by resetting your "
+"controller</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Input"
 
 #: ControllerMappingDlg#3
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
 msgstr ""
+"Box dibawah sedang dalam pekerjaan dan tetap kosong di versi Mixxx saat ini."
 
 #: ControllerMappingDlg#4
 msgid "Controls"
-msgstr ""
+msgstr "Kontrol-kontrol"
 
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Tambah"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Hapus"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -424,24 +432,24 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Hapus semua"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Output"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
-msgstr ""
+msgstr "Output-output"
 
 #: ControllerMappingDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Hapus Semua"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Peti Baru"
+msgstr "Kotak Baru"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -451,7 +459,7 @@ msgstr "Hapus"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Ubah Nama"
+msgstr "Ganti Nama"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -482,11 +490,11 @@ msgstr "Buka Kunci"
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr "Nama peti:"
+msgstr "Nama Peti:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Sebuah kesalahan yang tidak diketahui terjadi saat membuat peti: * "
+msgstr "Kesalahan tidak diketahui terjadi saat membuat peti: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
@@ -498,12 +506,12 @@ msgstr "Nama peti baru"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Pengubahan nama peti tidak berhasil"
+msgstr ""
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Berkas Playlist"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -511,6 +519,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Teks CSV "
+"(*.csv);;Teks Terbaca (*.txt)"
 
 #: CrateFeature#17
 msgid ""
@@ -522,10 +532,12 @@ msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Buat peti untuk gig sleanjutnya, untuk lagu favorit anda, atau untuk lagu "
+"yang paling banyak diminta."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "Peti memberi kebebasan Anda mengatur musik seperti yang diinginkan!"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
@@ -537,7 +549,7 @@ msgstr "Pembuatan Peti Gagal"
 
 #: CrateFeature#22
 msgid "A crate by that name already exists."
-msgstr "Sebuah peti dengan nama yang sama sudah ada"
+msgstr "Sebuah peti dengan nama tersebut sudah ada"
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
@@ -545,7 +557,7 @@ msgstr "Tentang Mixx"
 
 #: DlgAboutDlg#2
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Situs Resmi</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
@@ -553,7 +565,7 @@ msgstr ""
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "Salah satu deck harus distop untuk mengaktifkan Auto-DJ."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -561,43 +573,43 @@ msgstr "Nonaktifkan Auto DJ"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "Acak isi playlist Auto DJ"
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Acak"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "Lewati lagu selanjutnya di playlist Auto DJ"
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "Lewati lagu"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Picu transisi ke lagu selanjutnya"
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Pudar Sekarang"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Menentukan durasi transisi"
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Detik"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "det."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Ubah Auto DJ on atau off"
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -606,11 +618,11 @@ msgstr "Aktifkan Auto DJ"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Atur"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Pengaturan deteksi ketukan"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -618,26 +630,30 @@ msgid ""
 "of your tracks, automatically shows a beat-grid for them, and allows you to "
 "synchronize tracks using their beat information."
 msgstr ""
+"Jika deteksi ketukan diaktifkan, Mixxx mendeteksi denyut per menit dan "
+"ketukan lagu Anda, secara otomatis menunjukkan beat-grid untuk mereka, dan "
+"memungkinkan Anda untuk menyinkronkan lagu menggunakan informasi ketukan "
+"lagu tersebut."
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr ""
+msgstr "Aktifkan Deteksi DPM dan Ketukan"
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
-msgstr ""
+msgstr "Pilih Analyzer"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr ""
+msgstr "Analyzer Ketukan:"
 
 #: DlgBeatsDlg#6
 msgid "Choose between different algorithms to detect beats."
-msgstr ""
+msgstr "Pilih anatara algoritma beda untuk mendeteksi ketukan."
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
-msgstr ""
+msgstr "Pengaturan Analyzer"
 
 #: DlgBeatsDlg#8
 msgid ""
@@ -645,10 +661,15 @@ msgid ""
 "minute of a track for beat information. This can speed up beat detection on "
 "slower computers but may result in lower quality beatgrids."
 msgstr ""
+"Aktifkan deteksi detak cepat. Jika diaktifkan Mixxx hanya menganalisis menit "
+"pertama lagu untuk informasi ketukan. Hal ini dapat mempercepat deteksi "
+"ketukan di komputer lebih lambat tapi dapat mengakibatkan kualitas beatgrids "
+"yang lebih rendah."
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
 msgstr ""
+"Aktifkan analisa cepat (Untuk komputer lambat, mungkin kurang akurat)"
 
 #: DlgBeatsDlg#10
 msgid ""
@@ -657,20 +678,27 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Mengubah detak yang terdeteksi oleh analyzer menjadi tetap dengan tempo "
+"beatgrid. Gunakan pengaturan ini jika lagu Anda memiliki tempo yang konstan "
+"(misalnya musik paling elektronik). Sering mengakibatkan kualitas betagrids "
+"yang lebih tinggi, tetapi tidak akan dilakukan dengan baik pada lagu yang "
+"memiliki pergeseran tempo."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
-msgstr ""
+msgstr "Asumsikan tempo konstan (Direkomendasikan)"
 
 #: DlgBeatsDlg#12
 msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
 "analyzing the beats to discard outliers."
 msgstr ""
+"Upaya untuk memperbaiki fase (ketukan pertama) fixed-tempo beatgrids dengan "
+"menganalisis ketukan untuk membuang outlier."
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
-msgstr ""
+msgstr "Aktifkan Koreksi Offset (Direkomendasikan)"
 
 #: DlgBeatsDlg#14
 msgid ""
@@ -678,30 +706,37 @@ msgid ""
 "If set, this setting will also re-analyse beatgrids generated by 3rd-party "
 "programs or previous versions of Mixxx."
 msgstr ""
+"Jika diaktifkan, akan menganalisa kembali beatgrids saat Anda mengubah "
+"preferensi di halaman ini. Jika diset, pengaturan ini juga akan menganalisa "
+"kembali beatgrids dihasilkan oleh pihak ke-3 program atau versi sebelumnya "
+"dari Mixxx."
 
 #: DlgBeatsDlg#15
 msgid ""
 "Re-analyse beats when settings change or beats already present\n"
 "(e.g. from 3rd-party programs or older Mixxx versions)"
 msgstr ""
+"Menganalisa kembali ketukan saat pengaturan mengubah atau ketukan yang sudah "
+"ada\n"
+"(misalnya dari pihak ke-3 program atau lebih Mixxx versi)"
 
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
 msgid "BPM Range"
-msgstr ""
+msgstr "Kisaran BPM"
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "Min:"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "Maks:"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Kembalikan ke Setelan Awal"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -714,23 +749,23 @@ msgstr "Nama Pola:"
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
 msgid "BPM Range"
-msgstr ""
+msgstr "Kisaran BPM"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr "Maks"
+msgstr "Maks."
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "Min"
+msgstr "Min."
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Track"
-msgstr ""
+msgstr "Analisis Seluruh Lagu"
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr ""
+msgstr "Controller Learning Wizard"
 
 #: DlgControllerLearning#2
 msgid ""
@@ -738,35 +773,40 @@ msgid ""
 "move a control on your controller to map it. Repeat this as many times as "
 "you wish. When you are finished mapping controls, click Done."
 msgstr ""
+"Klik salah kontrol pada antarmuka Mixxx atau pilih satu dari daftar. "
+"Kemudian pindahkan kontrol pada controller untuk memetakan. Ulangi sebanyak "
+"yang Anda inginkan. Setelah selesai kontrol pemetaan, klik Selesai."
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "Selesai"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
 msgstr ""
+"Untuk memetakan kontrol lainnya klik salah satu tombol atau pilih dari "
+"daftar."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
-msgstr ""
+msgstr "Pilih Kontrol"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
-msgstr ""
+msgstr "Deck %1"
 
 #: DlgControllerLearning#7
 msgctxt "DlgControllerLearning#7"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr ""
+msgstr "Kembalikan ke setelan awal"
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr ""
+msgstr "Mixer"
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
@@ -775,107 +815,107 @@ msgstr ""
 
 #: DlgControllerLearning#11
 msgid "Master volume"
-msgstr ""
+msgstr "Volume Utama"
 
 #: DlgControllerLearning#12
 msgid "Master balance"
-msgstr ""
+msgstr "Penyimbang Utama"
 
 #: DlgControllerLearning#13
 msgid "Headphone volume"
-msgstr ""
+msgstr "Volume Headphone"
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
-msgstr ""
+msgstr "Mix Headphone (pre/main)"
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "Angkut"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
-msgstr ""
+msgstr "Strip-search seluruh lagu"
 
 #: DlgControllerLearning#17
 msgid "Play button"
-msgstr ""
+msgstr "Tombol play"
 
 #: DlgControllerLearning#18
 msgid "Volume fader"
-msgstr ""
+msgstr "Pemudar Volume"
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
-msgstr ""
+msgstr "Tombol putar-balik cepat"
 
 #: DlgControllerLearning#20
 msgid "Fast forward button"
-msgstr ""
+msgstr "Tombol maju cepat"
 
 #: DlgControllerLearning#21
 msgid "Jump to start of track"
-msgstr ""
+msgstr "Loncat ke awal lagu"
 
 #: DlgControllerLearning#22
 msgid "Jump to end of track"
-msgstr ""
+msgstr "Loncat ke akhir lagu"
 
 #: DlgControllerLearning#23
 msgid "Play reverse button"
-msgstr ""
+msgstr "Tombol putar balik"
 
 #: DlgControllerLearning#24
 msgid "Gain knob"
-msgstr ""
+msgstr "Tombol tambah"
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
-msgstr ""
+msgstr "Tombol dengar headphone"
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
-msgstr ""
+msgstr "Mode pengalihan ulang"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
-msgstr ""
+msgstr "Keluarkan lagu"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Orientasi mix (misalnya kiri, tengah, kanan)"
 
 #: DlgControllerLearning#29
 msgid "BPM and Sync"
-msgstr ""
+msgstr "DPM dan Sync"
 
 #: DlgControllerLearning#30
 msgid "BPM tap button"
-msgstr ""
+msgstr "Tombol sadap BPM"
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
-msgstr ""
+msgstr "Sesuaikan beatgrid"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
-msgstr ""
+msgstr "Mode pengalihan quantisasi"
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr ""
+msgstr "Sinkron ketukan (tempo dan fase)"
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
-msgstr ""
+msgstr "Sinkron ketukan (hanya tempo)"
 
 #: DlgControllerLearning#35
 msgid "Beat sync (phase only)"
-msgstr ""
+msgstr "Sinkron ketukan (hanya fase)"
 
 #: DlgControllerLearning#36
 msgid "Pitch and Rate"
-msgstr ""
+msgstr "Nada dan Tingkat"
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
@@ -883,219 +923,219 @@ msgstr ""
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
-msgstr ""
+msgstr "Slider kontrol nada"
 
 #: DlgControllerLearning#39
 msgid "Adjust rate up (fine)"
-msgstr ""
+msgstr "Sesuaikan tingkat keatas (halus)"
 
 #: DlgControllerLearning#40
 msgid "Adjust rate down (fine)"
-msgstr ""
+msgstr "Sesuaikan tingkat kebawah (halus)"
 
 #: DlgControllerLearning#41
 msgid "Pitch-bend rate up (fine)"
-msgstr ""
+msgstr "Tingkat tikungan nada keatas (halus)"
 
 #: DlgControllerLearning#42
 msgid "Adjust rate up (coarse)"
-msgstr ""
+msgstr "Sesuaikan tingkat keatas (kasar)"
 
 #: DlgControllerLearning#43
 msgid "Adjust rate down (coarse)"
-msgstr ""
+msgstr "Sesuaikan tingkat kebawah (kasar)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (coarse)"
-msgstr ""
+msgstr "Tingkat tikungan nada keatas (kasar)"
 
 #: DlgControllerLearning#45
 msgid "Pitch-bend rate down (coarse)"
-msgstr ""
+msgstr "Tingkat tikungan nada keatas (kasar)"
 
 #: DlgControllerLearning#46
 msgid "Pitch-bend rate down (fine)"
-msgstr ""
+msgstr "Tingkat tikungan nada keatas (halus)"
 
 #: DlgControllerLearning#47
 msgctxt "DlgControllerLearning#47"
 msgid "Equalizers"
-msgstr ""
+msgstr "Equalizer"
 
 #: DlgControllerLearning#48
 msgid "High EQ knob"
-msgstr ""
+msgstr "Tombol EQ Tinggi"
 
 #: DlgControllerLearning#49
 msgid "Mid EQ knob"
-msgstr ""
+msgstr "Tombol EQ Tengah"
 
 #: DlgControllerLearning#50
 msgid "Low EQ knob"
-msgstr ""
+msgstr "Tombol EQ Rendah"
 
 #: DlgControllerLearning#51
 msgid "High EQ kill"
-msgstr ""
+msgstr "EQ Tinggi Mati"
 
 #: DlgControllerLearning#52
 msgid "Mid EQ kill"
-msgstr ""
+msgstr "EQ Tengah Mati"
 
 #: DlgControllerLearning#53
 msgid "Low EQ kill"
-msgstr ""
+msgstr "EQ Rendah Mati"
 
 #: DlgControllerLearning#54
 msgctxt "DlgControllerLearning#54"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Kontrol Vinil"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control (ON/OFF)"
-msgstr ""
+msgstr "Pengalihan kontrol-vinil (ON/OFF)"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
-msgstr ""
+msgstr "Pengalihan mode penanda kontrol-vinil (OFF/ONE/HOT)"
 
 #: DlgControllerLearning#57
 msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
-msgstr ""
+msgstr "Pengalihan mode kontrol-vinil (ABS/REL/CONST)"
 
 #: DlgControllerLearning#58
 msgid "Cues / Hotcues"
-msgstr ""
+msgstr "Penanda / Penanda Tepat"
 
 #: DlgControllerLearning#59
 msgid "Cue button"
-msgstr ""
+msgstr "Tombol penanda"
 
 #: DlgControllerLearning#60
 msgid "Set cue point"
-msgstr ""
+msgstr "Atur lokasi penanda"
 
 #: DlgControllerLearning#61
 msgid "Go to cue point and stop"
-msgstr ""
+msgstr "Ke lokasi penanda dan stop"
 
 #: DlgControllerLearning#62
 msgid "Set or jump to hotcue %1"
-msgstr ""
+msgstr "Set atau loncat ke penanda tepat %1"
 
 #: DlgControllerLearning#63
 msgid "Clear hotcue %1"
-msgstr ""
+msgstr "Hapus penanda tepat %1"
 
 #: DlgControllerLearning#64
 msgid "Jump to hotcue %1"
-msgstr ""
+msgstr "Loncat ke penanda tepat %1"
 
 #: DlgControllerLearning#65
 msgid "Jump to hotcue %1 and stop"
-msgstr ""
+msgstr "Loncat ke penanda tepat %1 dan stop"
 
 #: DlgControllerLearning#66
 msgid "Looping"
-msgstr ""
+msgstr "Putaran"
 
 #: DlgControllerLearning#67
 msgid "Loop In button"
-msgstr ""
+msgstr "Tombol Masuk Putaran"
 
 #: DlgControllerLearning#68
 msgid "Loop Out button"
-msgstr ""
+msgstr "Tombol Keluar Putaran"
 
 #: DlgControllerLearning#69
 msgid "Reloop / Exit button"
-msgstr ""
+msgstr "Tombol Pengulang Putaran / Keluar"
 
 #: DlgControllerLearning#70
 msgid "Halve the current loop's length"
-msgstr ""
+msgstr "Belah panjang putaran saat ini"
 
 #: DlgControllerLearning#71
 msgid "Double the current loop's length"
-msgstr ""
+msgstr "Dua kali panjang putaran saat ini"
 
 #: DlgControllerLearning#72
 msgid "Beat-Looping"
-msgstr ""
+msgstr "Putaran ketukan"
 
 #: DlgControllerLearning#73
 msgid "Create %1-beat loop"
-msgstr ""
+msgstr "Buat %1-putaran ketukan"
 
 #: DlgControllerLearning#74
 msgctxt "DlgControllerLearning#74"
 msgid "Library"
-msgstr ""
+msgstr "Pustaka"
 
 #: DlgControllerLearning#75
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "Beralih ke tampilan berikutnya (pustaka, playlist ..)"
 
 #: DlgControllerLearning#76
 msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgstr "Beralih ke tampilan sebelumnya (pustaka, playlist ..)"
 
 #: DlgControllerLearning#77
 msgid "Scroll to next track in library/playlist"
-msgstr ""
+msgstr "Gulir ke trek berikutnya di perpustakaan / playlist"
 
 #: DlgControllerLearning#78
 msgid "Scroll to previous track in library/playlist"
-msgstr ""
+msgstr "Gulir ke lagu sebelumnya di perpustakaan / playlist"
 
 #: DlgControllerLearning#79
 msgid "Load selected track into first stopped deck"
-msgstr ""
+msgstr "Muat lagu yang dipilih ke dalam dek yang berhenti pertama"
 
 #: DlgControllerLearning#80
 msgid "Load selected track"
-msgstr ""
+msgstr "Muat lagu yang dipilih"
 
 #: DlgControllerLearning#81
 msgid "Effects"
-msgstr ""
+msgstr "Efek"
 
 #: DlgControllerLearning#82
 msgid "Toggle flange effect"
-msgstr ""
+msgstr "Pengalihan efek flange"
 
 #: DlgControllerLearning#83
 msgid "Flange effect: Wavelength/period"
-msgstr ""
+msgstr "Efek flange: Panjang gelombang/masa"
 
 #: DlgControllerLearning#84
 msgid "Flange effect: Intensity"
-msgstr ""
+msgstr "Efek flange: Intensitas"
 
 #: DlgControllerLearning#85
 msgid "Flange effect: Phase delay"
-msgstr ""
+msgstr "Efek flange: Tunda fase"
 
 #: DlgControllerLearning#86
 msgctxt "DlgControllerLearning#86"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: DlgControllerLearning#87
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Mikrofon on/off"
 
 #: DlgControllerLearning#88
 msgid "Microphone volume"
-msgstr ""
+msgstr "Volume mikrofon"
 
 #: DlgControllerLearning#89
 msgid "Microphone channel orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Orientasi channel mikrofon (misal kiri, kanan, tengah)"
 
 #: DlgControllerLearning#90
 msgid "User Interface"
-msgstr ""
+msgstr "Antarmuka Pengguna"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
@@ -1103,15 +1143,15 @@ msgstr ""
 
 #: DlgControllerLearning#92
 msgid "Show/hide the microphone section"
-msgstr ""
+msgstr "Tampil/sembunyikan bagian mikrofon"
 
 #: DlgControllerLearning#93
 msgid "Show/hide the vinyl control section"
-msgstr ""
+msgstr "Tampil/sembunyikan bagian kontrol vinil"
 
 #: DlgControllerLearning#94
 msgid "Show/hide spinning vinyl widget"
-msgstr ""
+msgstr "Tampil/sembunyikan bagian widget vinil"
 
 #: DlgControllerLearning#95
 msgid "Ready to map: %1. Now move a control on your controller."
