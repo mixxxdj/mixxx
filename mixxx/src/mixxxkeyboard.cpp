@@ -132,7 +132,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e) {
     keyseq = QKeySequence(e->key()).toString();
     k = QKeySequence(modseq + keyseq);
 
-    qDebug() << "keyboard press: " << k.toString();
+    //qDebug() << "keyboard press: " << k.toString();
     return k;
 }
 
