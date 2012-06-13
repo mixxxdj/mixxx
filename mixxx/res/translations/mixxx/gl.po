@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-01-02 23:14+0000\n"
-"Last-Translator: Manuel Sampedro <Unknown>\n"
+"PO-Revision-Date: 2012-06-12 21:09+0000\n"
+"Last-Translator: Inés Ortega <inesortega02@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:34+0000\n"
-"X-Generator: Launchpad (build 15288)\n"
+"X-Launchpad-Export-Date: 2012-06-13 04:35+0000\n"
+"X-Generator: Launchpad (build 15389)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -35,59 +35,60 @@ msgstr ""
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importar a lista de reprodución"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Non foi posible crear a lista de reprodución"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
 msgstr ""
+"Produciuse un erro descoñecido mentres se creaba a lista de reprodución: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "&Nova lista de reprodución"
+msgstr "Nova lista de reprodución"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Engadir á cola de Auto DJ (abaixo)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Engadir á cola de Auto DJ (arriba)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Eliminar"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Renomear"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Bloquear"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importar a lista de reprodución"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportar lista de reprodución"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Renomear lista de reprodución"
+msgstr "Renomear a lista de reproducción"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
