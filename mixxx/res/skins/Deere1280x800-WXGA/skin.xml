@@ -3892,7 +3892,7 @@
 				</State>
 				<Pos>364,193</Pos>
 				<Connection>
-					<ConfigKey>[Channel1],passthrough_enabled</ConfigKey>
+					<ConfigKey>[Channel1],quantize</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
@@ -4943,7 +4943,7 @@
 				</State>
 				<Pos>364,193</Pos>
 				<Connection>
-					<ConfigKey>[Channel2],passthrough_enabled</ConfigKey>
+					<ConfigKey>[Channel2],quantize</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
