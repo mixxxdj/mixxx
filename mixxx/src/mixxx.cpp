@@ -34,7 +34,6 @@
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
-#include "engine/enginepassthrough.h"
 #include "library/library.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
