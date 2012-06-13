@@ -72,6 +72,11 @@ void StarEditor::paintEvent(QPaintEvent *)
        update();
     }
  }
+
+ void StarEditor::leaveEvent(QEvent *){
+     m_starRating.setStarCount(0);
+     update();
+ }
 /*
  * When the user releases a mouse button, we simply emit the editingFinished() signal.
  */
