@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.1d MIDI controller script v1.02             */
+/*      Stanton SCS.1d MIDI controller script v1.10             */
 /*          Copyright (C) 2009-2012, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.11.x, controller firmware v1.25     */
@@ -43,9 +43,13 @@ StantonSCS1d.mutex = { };   // Temporary mutual exclusion variables
 StantonSCS1d.prevValues = { };  // Temporary previous value storage
 StantonSCS1d.inSetup = false;   // Flag for if the device is in setup mode
 StantonSCS1d.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messages for this device
+StantonSCS1d.sysexCorrect = [0xF0, 0x00, 0x01, 0x60];  // Correct preamble for all SysEx messages for this device (ALSA's HSS1394 translation uses this)
+StantonSCS1d.initialized = false;
 StantonSCS1d.rpm = [33+1/3,45];    // RPM values for StantonSCS1d.platterSpeed - DO NOT CHANGE!
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
-StantonSCS1d.scratch = { "revtime":(60/StantonSCS1d.rpm[StantonSCS1d.platterSpeed]), "resolution":4000, "alpha":1.0/8, "beta":(1.0/8)/32, "prevTimeStamp":0, "prevState":0 };
+StantonSCS1d.scratch = { "revtime":(60/StantonSCS1d.rpm[StantonSCS1d.platterSpeed]),
+                         "resolution":4000, "alpha":1.0/8, "beta":(1.0/8)/32,
+                         "prevTimeStamp":0, "prevState":0 };
 // Pitch values for key change mode
 StantonSCS1d.pitchPoints = {    1:{ 8:-0.1998, 9:-0.1665, 10:-0.1332, 11:-0.0999, 12:-0.0666, 13:-0.0333,
                                     14:0.0333, 15:0.0666, 18:0.0999, 19:0.1332, 20:0.1665, 21:0.1998 }, // 3.33% increments
@@ -205,7 +209,8 @@ StantonSCS1d.init2 = function () {
     StantonSCS1d.DeckChange(StantonSCS1d.channel, StantonSCS1d.buttons["deckSelect"], 0x00, 0x80+StantonSCS1d.channel);
     
     //midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 16, 0xF7]),7); // Light all LEDs
-    
+
+    StantonSCS1d.initialized = true;
     print ("StantonSCS1d: \""+StantonSCS1d.id+"\" on MIDI channel "+(StantonSCS1d.channel+1)+" initialized.");
 }
 
@@ -242,19 +247,42 @@ StantonSCS1d.shutdown = function () {   // called when the MIDI device is closed
     print ("StantonSCS1d: \""+StantonSCS1d.id+"\" on MIDI channel "+(StantonSCS1d.channel+1)+" shut down.");
 }
 
-StantonSCS1d.firmwareResponse = function (data, length) {
-    var i=0;
-    var out="";
-    while (i<(length-6)) {
-        out+=data[i+5];
-        i++;
-    }
-    print("SCS.1d firmware string: "+out);
+StantonSCS1d.inboundSysex = function (data, length) {
+    if (data[3]==StantonSCS1d.sysex[3]) {
+        // The only specified sysex from the hardware itself is the firmware
+        //  version response
         
-    // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
-    //StantonSCS1d.fwVersion = 
+        // Assemble the firmware string
+        var i=0;
+        var out="";
+        while (i<(length-6)) {
+            out+=String.fromCharCode(data[i+5]);
+            i++;
+        }
+        print("SCS.1d firmware string: "+out);
 
-    StantonSCS1d.init2();
+        // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
+        //StantonSCS1d.fwVersion =
+
+        StantonSCS1d.init2();
+    } else if (StantonSCS1d.initialized && data[3]==StantonSCS1d.sysexCorrect[3]) {
+        // Check for ALSA's 'HSS' preamble
+        if (data[4]==0x48 && data[5]==0x53 && data[6]==0x53) {
+            // We're on Linux under ALSA.
+            // Parse the long-ass Sysex message into what libhss1394 sends
+            //  so the rest of this script code can use it the same way.
+
+            // Platter message
+            var offset=2;   // TODO: once Clemens removes the bogus 00, remove this
+            var message = [];
+            for (i=0; i<=7; i+=2) {  // 4 bytes in the 0xF9 message
+                message[i/2] = (data[7+i+offset] << 4) | data[8+i+offset];
+//                 print(data[7+i+offset]+" "+data[8+i+offset]);
+            }
+//             print(message[3]);
+            StantonSCS1d.vinylMoved(message,4);
+        }
+    }
 }
 
 StantonSCS1d.checkInSetup = function () {

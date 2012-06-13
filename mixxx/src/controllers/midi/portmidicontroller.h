@@ -60,7 +60,6 @@ class PortMidiController : public MidiController {
     unsigned char m_cReceiveMsg[1024];
     int m_cReceiveMsg_index;
     bool m_bInSysex;
-    bool m_bEndSysex;
 };
 
 #endif

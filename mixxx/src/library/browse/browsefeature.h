@@ -66,7 +66,6 @@ class BrowseFeature : public LibraryFeature {
     ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
-    QString m_currentSearch;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     TreeItem* m_pLastRightClickedItem;
