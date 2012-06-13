@@ -212,6 +212,8 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
         }
     }
 
+    // qDebug() << "Total active channels: " << totalActive;
+
     if (totalActive == 0) {
         SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
     } else if (totalActive == 1) {

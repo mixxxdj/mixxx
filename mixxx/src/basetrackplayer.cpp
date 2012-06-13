@@ -9,7 +9,6 @@
 #include "controlpotmeter.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
@@ -34,10 +33,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
-                                          pConfig, defaultOrientation);
-    EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
-    pMixingEngine->addChannel(pChannel);
+    m_pChannel = new EngineDeck(pSafeGroupName, pConfig, defaultOrientation);
+
+    EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
+    pMixingEngine->addChannel(m_pChannel);
 
     ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);
@@ -252,3 +251,8 @@ AnalyserQueue* BaseTrackPlayer::getAnalyserQueue() const {
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
+
+EngineDeck* BaseTrackPlayer::getEngineDeck() const {
+    return m_pChannel;
+}
+
