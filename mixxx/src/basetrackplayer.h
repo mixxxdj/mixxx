@@ -6,6 +6,7 @@
 #include "baseplayer.h"
 #include "analyserqueue.h"
 #include "engine/enginechannel.h"
+#include "engine/enginedeck.h"
 
 class EngineMaster;
 class ControlObject;
@@ -25,6 +26,7 @@ class BaseTrackPlayer : public BasePlayer {
 
     AnalyserQueue* getAnalyserQueue() const;
     TrackPointer getLoadedTrack() const;
+    EngineDeck* getEngineDeck() const;
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
@@ -53,6 +55,8 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
+
+    EngineDeck* m_pChannel;
 };
 
 
