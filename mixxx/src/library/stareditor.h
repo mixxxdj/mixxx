@@ -49,6 +49,8 @@ class StarEditor : public QWidget {
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    //if the mouse leaves the editing index set starCount to 0
+    void leaveEvent(QEvent *);
 
   private:
     int starAtPosition(int x);
