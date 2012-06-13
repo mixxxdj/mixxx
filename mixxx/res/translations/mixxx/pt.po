@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-06-10 19:53+0000\n"
-"Last-Translator: Joaquim Carvalho <j.carvalho59@gmail.com>\n"
+"PO-Revision-Date: 2012-06-12 12:04+0000\n"
+"Last-Translator: Sérgio Marques <Unknown>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-11 04:33+0000\n"
-"X-Generator: Launchpad (build 15376)\n"
+"X-Launchpad-Export-Date: 2012-06-13 04:35+0000\n"
+"X-Generator: Launchpad (build 15389)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,42 +24,41 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Juntar à fila Auto DJ (em baixo)"
+msgstr "Adicionar à fila Auto DJ (em baixo)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Juntar à fila Auto DJ (em cima)"
+msgstr "Adicionar à fila Auto DJ (em cima)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr "Importar Lista de Reprodução"
+msgstr "Importar lista de reprodução"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "A criação da Lista de Reprodução falhou"
+msgstr "A criação da lista de reprodução falhou"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
-"Ocorreu um erro desconhecido enquanto se criava a Lista de Reprodução "
+msgstr "Ocorreu um erro desconhecido ao criar a lista de reprodução "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Nova Lista de Reprodução"
+msgstr "Nova lista de reprodução"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Juntar à fila Auto DJ (em cima)"
+msgstr "Adicionar à fila Auto DJ (em cima)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Juntar à fila Auto DJ (em baixo)"
+msgstr "Adicionar à fila Auto DJ (em baixo)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -79,11 +78,11 @@ msgstr "Bloquear"
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Importar Lista de Reprodução"
+msgstr "Importar lista de reprodução"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Exportar Lista de Reprodução"
+msgstr "Exportar lista de reprodução"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
@@ -91,7 +90,7 @@ msgstr "Mudar nome da lista de reprodução"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "Novo nome de lista de reprodução"
+msgstr "Novo nome de lista de reprodução:"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
@@ -99,11 +98,11 @@ msgstr "A mudança de nome da lista de reprodução falhou"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "Um lista de reprodução com esse nome já existe"
+msgstr "Já existe uma lista de reprodução com este nome"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "Uma lista de reprodução não pode ter um nome em branco"
+msgstr "A lista de reprodução não pode ter um nome vazio"
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
@@ -112,18 +111,17 @@ msgstr "Nome da lista de reprodução:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr "A criação da Lista de Reprodução falhou"
+msgstr "A criação da lista de reprodução falhou"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
-"Ocorreu um erro desconhecido enquanto se criava a Lista de Reprodução "
+msgstr "Ocorreu um erro desconhecido ao criar a lista de reprodução "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Ficheiros de lista de reprodução (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "Listas de reprodução (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -195,7 +193,7 @@ msgstr "Avaliação"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr "Taxa de bits"
+msgstr "Taxa de dados"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -217,7 +215,7 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr "Data e Hora"
+msgstr "Data e hora"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
@@ -234,11 +232,11 @@ msgstr "Não foi possível carregar a faixa."
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr "Adicionar às Ligações Rápidas"
+msgstr "Adicionar às ligações rápidas"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr "Remover das Ligações Rápidas"
+msgstr "Remover das ligações rápidas"
 
 #: BrowseFeature#3
 msgid "Quick Links"

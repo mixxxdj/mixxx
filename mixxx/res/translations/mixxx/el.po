@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-04-24 10:22+0000\n"
-"Last-Translator: Christos Kalimeris <kalimeris.c@gmail.com>\n"
+"PO-Revision-Date: 2012-06-12 18:25+0000\n"
+"Last-Translator: Michael Tzavaras <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:34+0000\n"
-"X-Generator: Launchpad (build 15288)\n"
+"X-Launchpad-Export-Date: 2012-06-13 04:35+0000\n"
+"X-Generator: Launchpad (build 15389)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,27 +24,27 @@ msgstr "Αυτόματος DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Προσθήκη στον Αυτόματο DJ (στο τέλος)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Προσθήκη στον Αυτόματο DJ (στην αρχή)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Εισαγωγή Λίστας Αναπαραγωγής"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Η Δημιουργία Λίστας Απέτυχε"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -53,12 +53,12 @@ msgstr "Νέα Λίστα Αναπαραγωγής"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Προσθήκη στην Λίστα του Αυτόματου DJ (στο τέλος)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Προσθήκη στην Λίστα του Αυτόματου DJ (στην αρχή)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -106,17 +106,17 @@ msgstr "Η λίστα δεν μπορεί να έχει κενό όνομα"
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr "Όνομα λίστας:"
+msgstr "Όνομα λίστας αναπαραγωγής:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Η Δημιουργία Λίστας Απέτυχε"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -152,7 +152,7 @@ msgstr "Άλμπουμ"
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Είδος"
+msgstr "Είδος μουσικής"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
@@ -162,7 +162,7 @@ msgstr "Συνθέτης"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr "Έτος"
+msgstr "Χρονολογία"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"

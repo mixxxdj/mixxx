@@ -8,28 +8,28 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-06-11 23:02+0000\n"
+"PO-Revision-Date: 2012-06-12 21:30+0000\n"
 "Last-Translator: Dana Ferdianto <masebros.unlimited@mail.com>\n"
 "Language-Team: Indonesian <id@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-12 04:34+0000\n"
+"X-Launchpad-Export-Date: 2012-06-13 04:35+0000\n"
 "X-Generator: Launchpad (build 15389)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Tambahkan ke Auto DJ (bawah)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Tambahkan ke Auto DJ (atas)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -82,15 +82,15 @@ msgstr "Impor Playlist"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "Ekspor Playlist"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Ganti Nama Playlist"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr ""
+msgstr "Nama Playlist Baru"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
@@ -1427,223 +1427,225 @@ msgstr ""
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Arah Slider Nada/Tingkat"
 
 #: DlgPrefControlsDlg#10
 msgid "Track load behaviour"
-msgstr ""
+msgstr "Perilaku muat lagu"
 
 #: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Perilaku penanda"
 
 #: DlgPrefControlsDlg#12
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Recall Pendanda Otomatis"
 
 #: DlgPrefControlsDlg#13
 msgid "Locale"
-msgstr ""
+msgstr "Locale"
 
 #: DlgPrefControlsDlg#14
 msgid "Temporary rate change when left-clicking"
-msgstr ""
+msgstr "Tingkat sementara berubah saat mengklik kiri"
 
 #: DlgPrefControlsDlg#15
 msgid "Temporary rate change when right-clicking"
-msgstr ""
+msgstr "Tingkat sementara berubah saat mengklik kanan"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgstr "Tombol Nada/Tingkat Permanen"
 
 #: DlgPrefControlsDlg#17
 msgid "Displays which OpenGL version is supported by the current platform."
-msgstr ""
+msgstr "Menampilkan  versi OpenGL yang didukung oleh platform saat ini."
 
 #: DlgPrefControlsDlg#18
 msgid "Displays the actual frame rate."
-msgstr ""
+msgstr "Menampilkan frame rate yang sebenarnya."
 
 #: DlgPrefControlsDlg#19
 msgid "Left click"
-msgstr ""
+msgstr "Klik kiri"
 
 #: DlgPrefControlsDlg#20
 msgid "Right click"
-msgstr ""
+msgstr "Klik kanan"
 
 #: DlgPrefControlsDlg#21
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
+msgstr "Tombol Nada/Tingkat Sementara"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
-msgstr ""
+msgstr "Meningkatkan Lengkungan Nada"
 
 #: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
-msgstr ""
+msgstr "Kepekaan Lengkungan Nada"
 
 #: DlgPrefControlsDlg#25
 msgctxt "DlgPrefControlsDlg#25"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Tampilan Bentuk Gelombang"
 
 #: DlgPrefControlsDlg#26
 msgid "Synchronize zoom level across all waveform displays."
-msgstr ""
+msgstr "Sinkronkan tingkat tanjak di semua tampilan bentuk gelombang."
 
 #: DlgPrefControlsDlg#27
 msgid "OpenGl status"
-msgstr ""
+msgstr "Kondisi OpenGl"
 
 #: DlgPrefControlsDlg#28
 msgid "Display type"
-msgstr ""
+msgstr "Jenis tampilan"
 
 #: DlgPrefControlsDlg#29
 msgid "Permanent rate change when left-clicking"
-msgstr ""
+msgstr "Tingkat permanen berubah saat mengklik kiri"
 
 #: DlgPrefControlsDlg#30
 msgid "Permanent rate change when right-clicking"
-msgstr ""
+msgstr "Tingkat permanen berubah saat mengklik kanan"
 
 #: DlgPrefControlsDlg#31
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
 msgstr ""
+"Membuat tombol nada/tingkat sementara mengubah nada secara bertahap, bukan "
+"sekaligus."
 
 #: DlgPrefControlsDlg#32
 msgid "Value in milliseconds"
-msgstr ""
+msgstr "Nilai dalam milidetik"
 
 #: DlgPrefControlsDlg#33
 msgid "Visual gain of the high frequencies"
-msgstr ""
+msgstr "Tambahan visual suntuk frekuensi tinggi"
 
 #: DlgPrefControlsDlg#34
 msgid "Visual gain of the middle frequencies"
-msgstr ""
+msgstr "Tambahan visual suntuk frekuensi tengah"
 
 #: DlgPrefControlsDlg#35
 msgid "Visual gain of the low frequencies"
-msgstr ""
+msgstr "Tambahan visual suntuk frekuensi rendah"
 
 #: DlgPrefControlsDlg#36
 msgid "Global visual gain"
-msgstr ""
+msgstr "Tambahan visual global"
 
 #: DlgPrefControlsDlg#37
 msgid "Frame rate"
-msgstr ""
+msgstr "Tingkat bingkai"
 
 #: DlgPrefControlsDlg#38
 msgid "Default zoom"
-msgstr ""
+msgstr "Tanjak default"
 
 #: DlgPrefControlsDlg#39
 msgid "Visual gain"
-msgstr ""
+msgstr "Tambah visual"
 
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sinkronisasi"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
-msgstr ""
+msgstr "Lengkungan Crossfader"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr ""
+msgstr "Pudar lambat"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "Potong cepat"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr ""
+msgstr "Daya konstan"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr ""
+msgstr "Mixing"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
-msgstr ""
+msgstr "Scratching"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr ""
+msgstr "Linier"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritmis"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Kembalikan ke Defaults"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "EQ Statik (Untuk CPU lambat)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
-msgstr ""
+msgstr "Rak EQ Tinggi"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr ""
+msgstr "textLabel1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
-msgstr ""
+msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
-msgstr ""
+msgstr "1.014 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
-msgstr ""
+msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
-msgstr ""
+msgstr "Rak EQ Rendah"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
-msgstr ""
+msgstr "textLabel2"
 
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Kembalikan ke Defaults"
 
 #: DlgPrefMappableController#1
 msgid "Apply device settings?"
-msgstr ""
+msgstr "Terapkan pengaturan perangkat?"
 
 #: DlgPrefMappableController#2
 msgid ""
@@ -1653,38 +1655,38 @@ msgstr ""
 
 #: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "Hapus Binding Input"
 
 #: DlgPrefMappableController#4
 msgid "Are you sure you want to clear all bindings?"
-msgstr ""
+msgstr "Anda yakin ingin menghapus semua binding?"
 
 #: DlgPrefMappableController#5
 msgid "Clear Output Bindings"
-msgstr ""
+msgstr "Hapus Binding Output"
 
 #: DlgPrefMappableController#6
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Anda yakin ingin menghapus semua binding output?"
 
 #: DlgPrefNoControllersDlg#1
 msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
-msgstr ""
+msgstr "Tidak ada kontroler yang tersedia."
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Input"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1701,6 +1703,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
+"pane.</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1709,66 +1722,69 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+"ubleshooting</a>"
 
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Turntable Preamp"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Off)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Konfigurasi Vinil"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Tipe Vinil Deck 1"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Jenis Vinil Deck 2"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Waktu Salur-masuk"
 
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "detik"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Tampilkan Kualitas Sinyal di Lapisan"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Modus Kontrol"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Modus Mutlak"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Modus Relatif"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1778,189 +1794,194 @@ msgstr ""
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Kualitas Sinyal"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Didukung oleh xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b> Versi Mixxx saat ini tidak mendukung kontrol vinil.</b> <br> Silahkan "
+"kunjungi <a href=\"http://mixxx.org\">Mixxx.org</a> untuk informasi lebih "
+"lanjut."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Pilih petunjuk pustaka musik."
 
 #: DlgPrefPlaylistDlg#1
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Format Berkas Audio"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Plugin Format Tambahan:"
 
 #: DlgPrefPlaylistDlg#3
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#4
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Plugin yang Dimuat:"
 
 #: DlgPrefPlaylistDlg#5
 msgctxt "DlgPrefPlaylistDlg#5"
 msgid "None"
-msgstr ""
+msgstr "Tidak ada"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Lainnya"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "Sinkronkan tag ID3 dalam modifikasi lagu"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "Telusur ulang pustaka di start-up"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
-msgstr ""
+msgstr "Gunakan jalur relatif untuk ekspor playlist jika bisa"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Show Rhythmbox Library"
-msgstr ""
+msgstr "Tampilkan Pustaka Rhythmbox"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show iTunes Library"
-msgstr ""
+msgstr "Tampilkan Pustaka iTunes"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Show Traktor Library"
-msgstr ""
+msgstr "Tampilkan Pustaka Traktor"
 
 #: DlgPrefPlaylistDlg#13
 msgctxt "DlgPrefPlaylistDlg#13"
 msgid "Browse..."
-msgstr ""
+msgstr "Telusur..."
 
 #: DlgPrefPlaylistDlg#14
 msgctxt "DlgPrefPlaylistDlg#14"
 msgid "Library"
-msgstr ""
+msgstr "Pustaka"
 
 #: DlgPrefPlaylistDlg#15
 msgid "Music Directory:"
-msgstr ""
+msgstr "Petunjuk Musik:"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Built-in"
-msgstr ""
+msgstr "Bawaan"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Available Online..."
-msgstr ""
+msgstr "Tersedia di Web..."
 
 #: DlgPrefPlaylistDlg#18
 msgid "Bundled Songs"
-msgstr ""
+msgstr "Bundel Lagu"
 
 #: DlgPrefPlaylistDlg#19
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"Dukung Mixxx dengan menghitung and membagi playback bundel\n"
+"lagu dan statistik link keluar"
 
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "kbps"
-msgstr ""
+msgstr "kbpd"
 
 #: DlgPrefRecord#2
 msgid "Choose recordings directory"
-msgstr ""
+msgstr "Pilih petunjuk rekaman"
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefRecordDlg#2
 msgid "Recordings Directory"
-msgstr ""
+msgstr "Petunjuk Rekaman:"
 
 #: DlgPrefRecordDlg#3
 msgid "Recordings Directory:"
-msgstr ""
+msgstr "Petunjuk Rekaman:"
 
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
 msgid "Browse..."
-msgstr ""
+msgstr "Telusur..."
 
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
-msgstr ""
+msgstr "Pengkodean"
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
-msgstr ""
+msgstr "Kualitas"
 
 #: DlgPrefRecordDlg#7
 msgid "High"
-msgstr ""
+msgstr "Tinggi"
 
 #: DlgPrefRecordDlg#8
 msgid "Low"
-msgstr ""
+msgstr "Rendah"
 
 #: DlgPrefRecordDlg#9
 msgid "Tags"
-msgstr ""
+msgstr "Label"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Title"
-msgstr ""
+msgstr "Judul"
 
 #: DlgPrefRecordDlg#11
 msgid "Author"
-msgstr ""
+msgstr "Pencipta"
 
 #: DlgPrefRecordDlg#12
 msgctxt "DlgPrefRecordDlg#12"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefRecordDlg#13
 msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Lainnya"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Buat berkas CUE"
 
 #: DlgPrefRecordDlg#15
 msgid "File Splitting"
-msgstr ""
+msgstr "Pemisahan berkas"
 
 #: DlgPrefRecordDlg#16
 msgid "Split recordings at"
-msgstr ""
+msgstr "Pisah berkas di"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -2006,7 +2027,7 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
@@ -4421,75 +4442,77 @@ msgstr ""
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr ""
+msgstr "Muat ke Sampler"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr ""
+msgstr "Hapus"
 
 #: WTrackTableView#5
 msgid "Properties"
-msgstr ""
+msgstr "Pengaturan"
 
 #: WTrackTableView#6
 msgid "Open in File Browser"
-msgstr ""
+msgstr "Buka di Browser Berkas"
 
 #: WTrackTableView#7
 msgid "Add to Auto-DJ Queue (bottom)"
-msgstr ""
+msgstr "Tambah ke Daftar Auto-DJ (bawah)"
 
 #: WTrackTableView#8
 msgid "Add to Auto-DJ Queue (top)"
-msgstr ""
+msgstr "Tambah ke Daftar Auto-DJ (atas)"
 
 #: WTrackTableView#9
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Muat Ulang Metadata Lagu"
 
 #: WTrackTableView#10
 msgid "Reset Play Count"
-msgstr ""
+msgstr "Atur Ulang Hitungan Putaran"
 
 #: WTrackTableView#11
 msgid "Lock BPM"
-msgstr ""
+msgstr "Kunci DPM"
 
 #: WTrackTableView#12
 msgid "Unlock BPM"
-msgstr ""
+msgstr "Buka Kunci BPM"
 
 #: WTrackTableView#13
 msgid "Clear BPM and Beatgrid"
-msgstr ""
+msgstr "Hapus DPM dan Beatgrid"
 
 #: WTrackTableView#14
 msgid "Load to Deck %1"
-msgstr ""
+msgstr "Muat ke Deck %1"
 
 #: WTrackTableView#15
 msgctxt "WTrackTableView#15"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: WTrackTableView#16
 msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
 msgstr ""
+"Muat ulang metadata lagu di lagu yang dimuat dapat menyebabkan perubahan "
+"volume tiba-tiba. Apakah Anda yakin?"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Tampilkan atau sembunyikan kolom."
 
 #: WaveformWidgetFactory#1
 msgid "(GLSL)"
-msgstr ""
+msgstr "(GLSL)"
 
 #: WaveformWidgetFactory#2
 msgid "(GL)"
-msgstr ""
+msgstr "(GL)"
 
 #~ msgctxt "BaseSqlTableModel#9"
 #~ msgid "Comment"
