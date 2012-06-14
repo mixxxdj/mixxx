@@ -2,7 +2,7 @@
     <info>
       <author>Golzo</author>
       <name>Behringer BCD2000</name>
-      <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&t=3563</forums>
+      <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3563</forums>
     </info>
     <controller id="BCD2000 MIDI 1">
         <scriptfiles>

@@ -453,7 +453,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 
 void MidiController::receive(QByteArray data) {
     int length = data.size();
-    QString message = getName() + ": [";
+    QString message = QString("%1: %2 bytes: [").arg(getName()).arg(length);
     for (int i = 0; i < length; ++i) {
         message += QString("%1%2").arg(
             QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),

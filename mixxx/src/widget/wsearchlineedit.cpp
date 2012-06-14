@@ -117,7 +117,17 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     }
 }
 
+// slot
 void WSearchLineEdit::restoreSearch(const QString& text) {
+    if(text.isNull()) {
+        // disable
+        setEnabled(false);
+        blockSignals(true);
+        setText("- - -");
+        blockSignals(false);
+        return;
+    }
+    setEnabled(true);
     qDebug() << "WSearchLineEdit::restoreSearch(" << text << ")";
     blockSignals(true);
     setText(text);
@@ -136,6 +146,7 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
 
 void WSearchLineEdit::slotSetupTimer(const QString& text)
 {
+    Q_UNUSED(text);
     m_searchTimer.stop();
     //300 milliseconds timeout
     m_searchTimer.start(300);

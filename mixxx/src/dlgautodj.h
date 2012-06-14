@@ -54,7 +54,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
         ADJ_P1FADING,
         ADJ_P2FADING,
         ADJ_ENABLE_P1LOADED,
-        ADJ_ENABLE_P1PLAYING
+        ADJ_ENABLE_P1PLAYING,
+        ADJ_DISABLED
     };
 
     TrackPointer getNextTrackFromQueue();
@@ -66,7 +67,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
     PlaylistDAO& m_playlistDao;
-    bool m_bAutoDJEnabled;
 
     // Makes our Auto DJ logic assume the next track that should be played is
     // already loaded. We need this flag to make our

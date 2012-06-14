@@ -1255,10 +1255,10 @@ void ControllerEngine::scratchProcess(int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
+    //if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
+
     // If we're ramping and the current pitch is really close to the rampTo
     // value or we're in brake mode and have crossed over the zero value, end scratching
-
-    //if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newPitch) <= 0.00001) ||
         (m_brakeActive[deck] && (
             (oldPitch > 0.0 && newPitch < 0.0) ||
@@ -1266,13 +1266,12 @@ void ControllerEngine::scratchProcess(int timerId) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        // Clear scratch2_enable unless brake mode where we just set scratch2 to 0.0
+        // If in brake mode, we just set scratch2 to 0.0 (then wait until someone
+        //  calls scratchDisable().)
         if (m_brakeActive[deck]) {
-            if(cot == NULL) {
-                return; // abort and maybe it'll work on the next pass
-            }
             cot->slotSet(0.0);
         } else {
+            // Clear scratch2_enable to end scratching
             cot = getControlObjectThread(group, "scratch2_enable");
             if(cot == NULL) {
                 return; // abort and maybe it'll work on the next pass

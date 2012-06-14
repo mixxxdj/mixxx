@@ -69,6 +69,7 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     initHeaderData();
     setSearch("");
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
+    setSort(defaultSortColumn(),defaultSortOrder());
 }
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
@@ -301,27 +302,27 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     select();
 }
 
-void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
+void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
     int numOfTracks = rowCount();
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
     QSqlQuery query(m_pTrackCollection->getDatabase());
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    int currentPosition = currentIndex.sibling(currentIndex.row(), positionColumnIndex).data().toInt();
-    int shuffleStartIndex = currentPosition + 1;
+    int shuffleStartRow = shuffleStartIndex.row();
 
     ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 
     // This is a simple Fisher-Yates shuffling algorithm
-    for (int i=numOfTracks-1; i >= shuffleStartIndex; i--)
+    for (int i=numOfTracks-1; i >= shuffleStartRow; i--)
     {
-        int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks + 1 - shuffleStartIndex) + shuffleStartIndex);
-        qDebug() << "Swapping tracks " << i << " and " << random;
+        int oldPosition = index(i, positionColumnIndex).data().toInt();
+        int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks - shuffleStartRow) + shuffleStartRow + 1);
+        qDebug() << "Swapping tracks " << oldPosition << " and " << random;
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 WHERE position=%2 AND playlist_id=%3";
         query.exec(swapQuery.arg(QString::number(-1),
-                                 QString::number(i),
+                                 QString::number(oldPosition),
                                  QString::number(m_iPlaylistId)));
-        query.exec(swapQuery.arg(QString::number(i),
+        query.exec(swapQuery.arg(QString::number(oldPosition),
                                  QString::number(random),
                                  QString::number(m_iPlaylistId)));
         query.exec(swapQuery.arg(QString::number(random),

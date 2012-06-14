@@ -185,7 +185,7 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
 void BrowseFeature::activate() {
     emit(switchToView("BROWSEHOME"));
-    emit(restoreSearch(m_currentSearch));
+    emit(restoreSearch(QString()));
 }
 
 /*
