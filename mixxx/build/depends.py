@@ -582,6 +582,7 @@ class MixxxCore(Feature):
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
+                   "util/sleepableqthread.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)
