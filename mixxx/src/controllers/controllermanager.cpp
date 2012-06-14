@@ -7,6 +7,7 @@
 
 #include <QSet>
 
+#include "util/sleepableqthread.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -254,11 +255,16 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
-    foreach (Controller* pDevice, m_controllers) {
-        if (pDevice->isOpen() && pDevice->isPolling()) {
-            pDevice->poll();
+    bool eventsProcessed(false);
+    // Continue to poll while any device returned data.
+    do {
+        eventsProcessed = false;
+        foreach (Controller* pDevice, m_controllers) {
+            if (pDevice->isOpen() && pDevice->isPolling()) {
+                eventsProcessed = pDevice->poll() || eventsProcessed;
+            }
         }
-    }
+    } while (eventsProcessed);
 }
 
 
