@@ -72,6 +72,14 @@ class ControllerPreset {
         return m_description;
     }
 
+    inline void setForumLink(const QString forumlink) {
+        m_forumlink = forumlink;
+    }
+
+    inline QString forumlink() const {
+        return m_forumlink;
+    }
+
     inline void setSchemaVersion(const QString schemaVersion) {
         m_schemaVersion = schemaVersion;
     }
@@ -108,6 +116,7 @@ class ControllerPreset {
     QString m_name;
     QString m_author;
     QString m_description;
+    QString m_forumlink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
 };
