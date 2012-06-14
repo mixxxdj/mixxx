@@ -24,7 +24,13 @@
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
+#ifdef __LINUX__
+// Many Linux distros ship with the system tick set to 250Hz so 1ms timer
+// reportedly causes CPU hosage. See Bug #990992 rryan 6/2012
+const int kPollIntervalMillis = 5;
+#else
 const int kPollIntervalMillis = 1;
+#endif
 
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
