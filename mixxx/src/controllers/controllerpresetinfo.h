@@ -32,6 +32,7 @@ class PresetInfo {
 
     inline const QString getName() const { return name; } ;
     inline const QString getDescription() const { return description; };
+    inline const QString getForumLink() const { return forumlink; };
     inline const QString getAuthor() const { return author; };
 
     inline const QList< QHash<QString,QString> > getProducts() const { return products; };
@@ -47,6 +48,7 @@ class PresetInfo {
     QString name;
     QString author;
     QString description;
+    QString forumlink;
     QList< QHash<QString,QString> > products;
 };
 

@@ -68,6 +68,7 @@ class DlgPrefController : public QWidget {
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
+    QString presetForumLink(const ControllerPresetPointer pPreset) const;
     void savePreset(QString path);
 
     void enableDevice();
