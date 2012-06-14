@@ -334,7 +334,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
     field.bitmask = bitmask;
     field.isEncoder = isEncoder;
     field.callback = undefined;
-    field.sof_takeover = false;
+    field.soft_takeover = false;
     field.ignored = false;
     field.auto_repeat = false;
 
@@ -368,7 +368,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
         bitvector.addBitMask(group,name,bitmask);
         field.value = bitvector;
         field.delta = undefined;
-        field.sof_takeover = undefined;
+        field.soft_takeover = undefined;
         field.mindelta = undefined;
     }
 

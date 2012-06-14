@@ -53,7 +53,20 @@ function script() {}
 
 // DEPRECATED -- use script.midiDebug() instead
 script.debug = function (channel, control, value, status, group) {
+    print("Warning: script.debug() is deprecated. Use script.midiDebug() instead.");
     script.midiDebug(channel, control, value, status, group);
+}
+
+// DEPRECATED -- use script.midiPitch() instead
+script.pitch = function (LSB, MSB, status) {
+    print("Warning: script.pitch() is deprecated. Use script.midiPitch() instead.");
+    return script.midiPitch(LSB, MSB, status);
+}
+
+// DEPRECATED -- use script.absoluteLin() instead
+script.absoluteSlider = function (group, key, value, low, high, min, max) {
+    print("Warning: script.absoluteSlider() is deprecated. Use engine.setValue(group, key, script.absoluteLin(...)) instead.");
+    engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
 }
 
 script.midiDebug = function (channel, control, value, status, group) {
@@ -62,20 +75,48 @@ script.midiDebug = function (channel, control, value, status, group) {
           " status: 0x" + status.toString(16) + " group: " + group);
 }
 
-// DEPRECATED -- use script.absoluteLin() instead
-script.absoluteSlider = function (group, key, value, low, high, min, max) {
-    engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
+// Returns the deck number of a "ChannelN" or "SamplerN" group
+script.deckFromGroup = function (group) {
+    var deck = 0;
+    if (group.substring(2,8)=="hannel") {
+        // Extract deck number from the group text
+        deck = group.substring(8,group.length-1);
+    }
+/*
+    else if (group.substring(2,8)=="ampler") {
+        // Extract sampler number from the group text
+        deck = group.substring(8,group.length-1);
+    }
+*/
+    return parseInt(deck);
 }
 
-// Returns a value for a linear Mixxx control (like Volume: 0..1) from an absolute control
+/* -------- ------------------------------------------------------
+     script.absoluteLin
+   Purpose: Maps an absolute linear control value to a linear Mixxx control
+            value (like Volume: 0..1)
+   Input:   Control value (e.g. a knob,) MixxxControl values for the lowest and
+            highest points, lowest knob value, highest knob value
+            (Default knob values are standard MIDI 0..127)
+   Output:  MixxxControl value corresponding to the knob position
+   -------- ------------------------------------------------------ */
 script.absoluteLin = function (value, low, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
-    if (value==max) return high;
-    else return ((((high - low) / max) * value) + low);
+    if (value <= min) return low;
+    if (value >= max) return high;
+    else return ((((high - low) / (max-min)) * (value-min)) + low);
 }
 
-// Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control
+/* -------- ------------------------------------------------------
+     script.absoluteNonLin
+   Purpose: Maps an absolute linear control value to a non-linear Mixxx control
+            value (like EQs: 0..1..4)
+   Input:   Control value (e.g. a knob,) MixxxControl values for the lowest,
+            middle, and highest points, lowest knob value, highest knob value
+            (Default knob values are standard MIDI 0..127)
+   Output:  MixxxControl value corresponding to the knob position
+   -------- ------------------------------------------------------ */
 script.absoluteNonLin = function (value, low, mid, high, min, max) {
     if (!min) min = 0;
     if (!max) max = 127;
@@ -85,10 +126,6 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
     if (value<center)
         return low+(value/(center/(mid-low)));
     return mid+((value-center)/(center/(high-mid)));
-}
-
-script.pitch = function (LSB, MSB, status) {
-    return script.midiPitch(LSB, MSB, status);
 }
 
 /* -------- ------------------------------------------------------
@@ -118,8 +155,9 @@ script.crossfaderCurve = function (value, min, max) {
    -------- ------------------------------------------------------ */
 script.loopMove = function (group,direction,numberOfBeats) {
     if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
+    // 60s/min, *2 for stereo
     var beatLength = (60*2) / engine.getValue(group, "bpm")
-        * engine.getValue(group, "track_samplerate");   // The *2 is for stereo
+        * engine.getValue(group, "track_samplerate");
     var oldStart = engine.getValue(group,"loop_start_position");
     var oldEnd = engine.getValue(group,"loop_end_position");
     var loopLength = oldEnd - oldStart;
@@ -149,6 +187,7 @@ script.loopMove = function (group,direction,numberOfBeats) {
    Output:  Value for a "rate" control, or false if the input MIDI
             message was not a Pitch message (0xE#)
    -------- ------------------------------------------------------ */
+// TODO: Is this still useful now that MidiController.cpp properly handles these?
 script.midiPitch = function (LSB, MSB, status) {
     if ((status & 0xF0) != 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
         print("Script.midiPitch: Error, not a MIDI pitch (0xEn) message: "+status);
@@ -195,8 +234,9 @@ bpm.tap = [];   // Tap sample values
 
 /* -------- ------------------------------------------------------
         bpm.tapButton
-   Purpose: Sets the bpm of the track on a deck by tapping the beats.
-            This only works if the track's original BPM value is correct.
+   Purpose: Sets the tempo of the track on a deck by tapping the desired beats,
+            useful for manually synchronizing a track to an external beat.
+            (This only works if the track's detected BPM value is correct.)
             Call this each time the tap button is pressed.
    Input:   Mixxx deck to adjust
    Output:  -

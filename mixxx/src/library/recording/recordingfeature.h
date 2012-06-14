@@ -53,7 +53,6 @@ class RecordingFeature : public LibraryFeature {
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
-    QString m_currentSearch;
     const static QString m_sRecordingViewName;
     DlgRecording* m_pRecordingView;
     RecordingManager* m_pRecordingManager;
