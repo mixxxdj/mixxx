@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-06-14 23:31+0000\n"
+"PO-Revision-Date: 2012-06-15 21:51+0000\n"
 "Last-Translator: Joaquim Carvalho <j.carvalho59@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-15 04:40+0000\n"
-"X-Generator: Launchpad (build 15414)\n"
+"X-Launchpad-Export-Date: 2012-06-16 04:34+0000\n"
+"X-Generator: Launchpad (build 15419)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -78,31 +78,31 @@ msgstr "Bloquear"
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Importar lista de reprodução"
+msgstr "Importar Playlist"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Exportar lista de reprodução"
+msgstr "Exportar Playlist"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Mudar nome da lista de reprodução"
+msgstr "Mudar nome da Playlist"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "Novo nome de lista de reprodução:"
+msgstr "Novo nome da Playlist"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "A mudança de nome da lista de reprodução falhou"
+msgstr "A mudança de nome da Playlist falhou"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "Já existe uma lista de reprodução com este nome"
+msgstr "Já existe uma Playlist com este nome"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "A lista de reprodução não pode ter um nome vazio"
+msgstr "A Playlist não pode ter um nome vazio"
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
@@ -111,17 +111,17 @@ msgstr "Nome da lista de reprodução:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr "A criação da lista de reprodução falhou"
+msgstr "A criação da Playlist falhou"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Ocorreu um erro desconhecido ao criar a lista de reprodução "
+msgstr "Ocorreu um erro desconhecido ao criar a Playlist : "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Listas de reprodução (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "Ficheiros de Playlist (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -129,8 +129,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"Lista de reprodução M3U (*.m3u);;Lista de reprodução M3U8 (*.m3u8);;Lista de "
-"reprodução PLS (*.pls);;Texto CSV (*.csv);;Texto legivel(*.txt)"
+"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Texto "
+"CSV (*.csv);;Texto legível(*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -193,7 +193,7 @@ msgstr "Avaliação"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr "Taxa de dados"
+msgstr "Taxa"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -368,7 +368,7 @@ msgstr ""
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "Não foi possível atualizar os dados do ficheiro."
+msgstr "Não foi possível atualizar os metadados do ficheiro."
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -393,10 +393,10 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
-"<html>(O código do Script necessita de ser corrigido.)<br> Por agora, você "
-"pode:<ul><li>Ignorar este erro por esta sessão mas poderá experimentar um "
-"comportamento errático</li><li>Tente uma recuperação atravez de uma "
-"reinicialização do seu controlador</li></ul></html>"
+"<html>(O código do Script necessita de ser corrigido.)<br>Por agora, "
+"pode:<ul><li> Ignorar este erro nesta sessão, mas poderá experimentar um "
+"comportamento errático.</li><li>Tente a recuperação reiniciando o seu "
+"controlador.</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
@@ -436,7 +436,7 @@ msgstr "Assistente de aprendizagem"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr "Apagar todos"
+msgstr "Apagar tudo"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
@@ -449,11 +449,11 @@ msgstr "Saídas"
 
 #: ControllerMappingDlg#11
 msgid "Clear All"
-msgstr "Limpar Todos"
+msgstr "Apagar todas"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Nova caixa"
+msgstr "Caixa nova"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -473,7 +473,7 @@ msgstr "Bloquear"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Importar lista de reprodução"
+msgstr "Importar Playlist"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -515,7 +515,7 @@ msgstr "Falha ao mudar o nome da caixa"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Ficheiros de lista de reprodução (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "Ficheiros de Playlist (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -523,8 +523,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"Lista de reprodução M3U (*.m3u);;Lista de reprodução M3U8 (*.m3u8);;Lista de "
-"reprodução PLS (*.pls);;Texto CSV (*.csv);;Texto legivel(*.txt)"
+"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Texto "
+"CSV (*.csv);;Texto legível (*.txt)"
 
 #: CrateFeature#17
 msgid ""
@@ -538,8 +538,8 @@ msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
-"Crie uma caixa no seu próximo passo, para as suas faixas preferidas de "
-"electrohouse , ou para as suas músicas mais pedidas"
+"Crie uma caixa para a sua próxima actuação, com as suas faixas preferidas de "
+"electrohouse , ou com as suas músicas mais pedidas."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
@@ -547,7 +547,7 @@ msgstr "As caixas deixam-no organizar a sua música como quer que prefira"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
-msgstr "Tem que indicar o nome da caixa."
+msgstr "Uma caixa não pode ter um nome vazio"
 
 #: CrateFeature#21
 msgid "Creating Crate Failed"
@@ -567,11 +567,11 @@ msgstr "<a href=\"http://mixxx.org/\">Página web oficial</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr "Auto-DJ"
+msgstr "Auto DJ"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr "Um deck tem de estar parado para activar o modo Auto-DJ"
+msgstr "Um leitor tem de estar parado para activar o modo Auto DJ"
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -579,7 +579,7 @@ msgstr "Desactivar Auto DJ"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr "Misturar o conteudo de uma Lista de Reprodução do Auto-DJ"
+msgstr "Tornar aleatório o conteúdo da Playlist Auto DJ"
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
@@ -595,11 +595,11 @@ msgstr "Saltar Faixa"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr "Activar a transição para a proxima faixa"
+msgstr "Accionar a transição para a próxima faixa"
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr "Amortecer Agora"
+msgstr "Desvanecer agora"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
@@ -619,7 +619,7 @@ msgstr "Liga ou Desliga o Auto-DJ"
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
-msgstr "Ativar auto DJ"
+msgstr "Activar Auto DJ"
 
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
@@ -628,7 +628,7 @@ msgstr "Gerir"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr "Definições da deteção de batidas"
+msgstr "Definições da detecção de batidas"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -637,8 +637,8 @@ msgid ""
 "synchronize tracks using their beat information."
 msgstr ""
 "Quando a detecção de batidas está activada, o Mixxx detecta as batidas por "
-"minuto e as batidas da suas faixas, automaticamente mostra uma grelha de "
-"batida para estas e permite-lhe sincronizar as faixas usando essa informação "
+"minuto e as batidas da suas faixas, mostra automaticamente uma grelha de "
+"batida para elas e permite-lhe sincronizar faixas usando a sua informação "
 "das batidas."
 
 #: DlgBeatsDlg#3
@@ -651,7 +651,7 @@ msgstr "Escolher o Analisador"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr "Analizador de Batidas"
+msgstr "Analizador de Batidas:"
 
 #: DlgBeatsDlg#6
 msgid "Choose between different algorithms to detect beats."
@@ -659,7 +659,7 @@ msgstr "Escolha de entre algoritmos diferentes para detectar batidas"
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
-msgstr "Definições do Analizador"
+msgstr "Definições do Analisador"
 
 #: DlgBeatsDlg#8
 msgid ""
@@ -667,7 +667,7 @@ msgid ""
 "minute of a track for beat information. This can speed up beat detection on "
 "slower computers but may result in lower quality beatgrids."
 msgstr ""
-"Activar Detecção de Batidas Rápidas. Se activado, o Mixxx só analisa o "
+"Activar Detecção de Batidas Rápida. Se activado, o Mixxx só analisa o "
 "primeiro minuto de uma faixa para informações de batidas. Isto poderá "
 "acelerar a detecção de batidas em computadores mais lentos, mas poderá "
 "resultar em grelhas de batidas com menor qualidade."
@@ -685,15 +685,15 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
-"Converte batidas detectadas pelo Analisador numa grelha de batidas de "
-"temporização-fixa. Use esta definição se as suas pistas tem um tempo "
-"constante (ex.: a maioria da música electrónica). Resulta frequentemente em "
-"grelhas de batida de maior qualidade, mas não funcionará bem em faixas que "
-"possuam um tempo variável."
+"Converte batidas detectadas pelo Analisador numa grelha de batidas de tempo-"
+"fixo. Use esta definição se as suas faixas tem um tempo constante (ex.: a "
+"maioria da música electrónica). Resulta frequentemente em grelhas de batida "
+"de maior qualidade, mas não funcionará bem em faixas que possuam um tempo "
+"variável."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
-msgstr "Assumir tempo constante (recomendado"
+msgstr "Assumir tempo constante (recomendado)"
 
 #: DlgBeatsDlg#12
 msgid ""
@@ -791,7 +791,8 @@ msgstr "Concluído"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
-msgstr "Para mapear outro controlo clique num botão ou escolha um da lista."
+msgstr ""
+"Para associar outro controlo clique num botão ou escolha um da lista."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
@@ -799,12 +800,12 @@ msgstr "Escolha o Controlo"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
-msgstr "Deck %1"
+msgstr "Leitor %1"
 
 #: DlgControllerLearning#7
 msgctxt "DlgControllerLearning#7"
 msgid "Sampler %1"
-msgstr "Amostra %1"
+msgstr "Sampler %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
