@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-06-17 04:09+0000\n"
-"Last-Translator: mutil <Unknown>\n"
+"PO-Revision-Date: 2012-06-17 08:12+0000\n"
+"Last-Translator: tzem <athmakrigiannis@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-17 04:32+0000\n"
+"X-Launchpad-Export-Date: 2012-06-18 05:14+0000\n"
 "X-Generator: Launchpad (build 15419)\n"
 
 #: AutoDJFeature#1
@@ -4260,7 +4260,7 @@ msgstr ""
 
 #: Tooltips#162
 msgid "Track Time"
-msgstr ""
+msgstr "Χρόνος κομματιού"
 
 #: Tooltips#163
 msgid "Displays the elapsed or remaining time of the track loaded."
@@ -4272,7 +4272,7 @@ msgstr ""
 
 #: Tooltips#165
 msgid "Track Duration"
-msgstr ""
+msgstr "Διάρκεια κομματιού"
 
 #: Tooltips#166
 msgid "Displays the duration of the loaded track."
@@ -4284,7 +4284,7 @@ msgstr ""
 
 #: Tooltips#168
 msgid "Track Artist"
-msgstr ""
+msgstr "Καλλιτέχνης κομματιού"
 
 #: Tooltips#169
 msgid "Displays the artist of the loaded track."
@@ -4403,7 +4403,7 @@ msgstr "Ctrl+F"
 
 #: WSearchLineEdit#2
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: WSearchLineEdit#3
 msgid "Search..."
@@ -4428,11 +4428,11 @@ msgstr "Διαγραφή"
 
 #: WTrackTableView#5
 msgid "Properties"
-msgstr ""
+msgstr "Ιδιότητες"
 
 #: WTrackTableView#6
 msgid "Open in File Browser"
-msgstr ""
+msgstr "Άνοιξε το στο πρόγραμμα περιήγησης αρχείων"
 
 #: WTrackTableView#7
 msgid "Add to Auto-DJ Queue (bottom)"
