@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-06-18 18:27+0000\n"
-"Last-Translator: EPCI Radio <epciradio@gmail.com>\n"
+"PO-Revision-Date: 2012-06-19 14:00+0000\n"
+"Last-Translator: Joaquim Carvalho <j.carvalho59@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-19 04:33+0000\n"
+"X-Launchpad-Export-Date: 2012-06-20 04:32+0000\n"
 "X-Generator: Launchpad (build 15435)\n"
 
 #: AutoDJFeature#1
@@ -1000,7 +1000,7 @@ msgstr "Controlo Vinilo"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control (ON/OFF)"
-msgstr "Activar/desactivar o controlo vinilo (PÁRA/ARRANCA)"
+msgstr "Activar/desactivar o controlo vinilo"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
@@ -1017,7 +1017,7 @@ msgstr "Marcas / Marcadores"
 
 #: DlgControllerLearning#59
 msgid "Cue button"
-msgstr "Botão de marca"
+msgstr "Tecla de marca"
 
 #: DlgControllerLearning#60
 msgid "Set cue point"
@@ -1049,7 +1049,7 @@ msgstr "Looping"
 
 #: DlgControllerLearning#67
 msgid "Loop In button"
-msgstr "Botão de entrada em Loop"
+msgstr "Tecla de entrada em Loop"
 
 #: DlgControllerLearning#68
 msgid "Loop Out button"
