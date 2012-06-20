@@ -181,7 +181,7 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         return;
     }
 
-
+    QList<int> deleted_ids;
     bool any_deleted = false;
     TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
 
@@ -198,12 +198,13 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         qDebug() << "BrowseFeature: User deleted track " << track_location;
         any_deleted = true;
 
-        // If the track was contained in the Mixxx library, delete it
-        if (track_dao.trackExistsInDatabase(track_location)) {
-            int id = track_dao.getTrackId(track_location);
-            qDebug() << "BrowseFeature: Deletion affected database";
-            track_dao.removeTrack(id);
-        }
+        deleted_ids.append(track_dao.getTrackId(track_location));
+    }
+
+    // If the tracks are contained in the Mixxx library, delete them
+    if (!deleted_ids.isEmpty()) {
+        qDebug() << "BrowseFeature: Purge affected track from database";
+        track_dao.purgeTracks(deleted_ids);
     }
 
     // Repopulate model if any tracks were actually deleted

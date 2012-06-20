@@ -227,18 +227,6 @@ int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
     return trackIdList.size();
 }
 
-void CrateDAO::removeTrackFromCrates(int trackId) {
-    QSqlQuery query(m_database);
-    QString queryString = QString("DELETE FROM %1 WHERE %2 = %3")
-            .arg(CRATE_TRACKS_TABLE,
-                 CRATETRACKSTABLE_TRACKID,
-                 QString::number(trackId));
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-}
-
 bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE "

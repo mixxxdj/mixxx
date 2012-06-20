@@ -2,13 +2,12 @@
 #include <QtGui>
 #include <QtSql>
 #include "library/trackcollection.h"
-#include "library/missingtablemodel.h"
+#include "library/hiddentablemodel.h"
 #include "library/librarytablemodel.h"
 #include "mixxxutils.cpp"
 
-const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
 
-MissingTableModel::MissingTableModel(QObject* parent,
+HiddenTableModel::HiddenTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection,
                             pTrackCollection->getDatabase(),
@@ -17,12 +16,12 @@ MissingTableModel::MissingTableModel(QObject* parent,
           m_trackDao(m_pTrackCollection->getTrackDAO()) {
 
     QSqlQuery query;
-    //query.prepare("DROP VIEW " + playlistTableName);
-    //query.exec();
-    QString tableName("missing_songs");
+    QString tableName("hidden_songs");
 
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
+
+    QString filter("mixxx_deleted");
 
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
                   "SELECT "
@@ -30,7 +29,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   " FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
-                  "WHERE " + MissingTableModel::MISSINGFILTER);
+                  "WHERE " + filter);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -53,16 +52,16 @@ MissingTableModel::MissingTableModel(QObject* parent,
             this, SLOT(slotSearch(const QString&)));
 }
 
-MissingTableModel::~MissingTableModel() {
+HiddenTableModel::~HiddenTableModel() {
 }
 
-bool MissingTableModel::addTrack(const QModelIndex& index, QString location) {
+bool HiddenTableModel::addTrack(const QModelIndex& index, QString location) {
     Q_UNUSED(index);
     Q_UNUSED(location);
     return false;
 }
 
-TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const {
+TrackPointer HiddenTableModel::getTrack(const QModelIndex& index) const {
     //FIXME: use position instead of location for playlist tracks?
 
     //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
@@ -71,7 +70,7 @@ TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const {
     return m_trackDao.getTrack(trackId);
 }
 
-void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
+void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
     foreach (QModelIndex index, indices) {
@@ -86,18 +85,33 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     select(); //Repopulate the data model.
 }
 
+void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
 
-void MissingTableModel::search(const QString& searchText) {
-    // qDebug() << "MissingTableModel::search()" << searchText
+    foreach (QModelIndex index, indices) {
+        int trackId = getTrackId(index);
+        trackIds.append(trackId);
+    }
+
+    m_trackDao.unhideTracks(trackIds);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
+}
+
+
+void HiddenTableModel::search(const QString& searchText) {
+    // qDebug() << "HiddenTableModel::search()" << searchText
     //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
-void MissingTableModel::slotSearch(const QString& searchText) {
+void HiddenTableModel::slotSearch(const QString& searchText) {
     BaseSqlTableModel::search(searchText);
 }
 
-bool MissingTableModel::isColumnInternal(int column) {
+bool HiddenTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
@@ -107,19 +121,20 @@ bool MissingTableModel::isColumnInternal(int column) {
     }
     return false;
 }
-bool MissingTableModel::isColumnHiddenByDefault(int column) {
+bool HiddenTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
     }
     return false;
 }
 
-/** Override flags from BaseSqlModel since we don't want edit this model */
-Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
+// Override flags from BaseSqlModel since we don't want edit this model
+Qt::ItemFlags HiddenTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
+TrackModel::CapabilitiesFlags HiddenTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_PURGE;
+            | TRACKMODELCAPS_PURGE
+            | TRACKMODELCAPS_UNHIDE;
 }
