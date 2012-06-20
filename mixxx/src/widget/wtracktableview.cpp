@@ -738,42 +738,51 @@ void WTrackTableView::dropEvent(QDropEvent * event)
         QUrl url;
         QModelIndex selectedIndex; //Index of a selected track (iterator)
 
-        //TODO: Filter out invalid URLs (eg. files that aren't supported audio filetypes, etc.)
+        // Filter out invalid URLs (eg. files that aren't supported audio filetypes, etc.)
+        QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(),
+                       Qt::CaseInsensitive);
+        for (int i=0; i<urls.size(); i++) {
+            if (!fileRx.indexIn(urls.at(i).path())) {
+                // remove invalid urls and decrease i because the size of
+                // urls has changed.
+                urls.removeAt(i--);
+            }
+        }
 
-        //Save the vertical scrollbar position. Adding new tracks and moving tracks in
-        //the SQL data models causes a select() (ie. generation of a new result set),
-        //which causes view to reset itself. A view reset causes the widget to scroll back
-        //up to the top, which is confusing when you're dragging and dropping. :)
+        // Save the vertical scrollbar position. Adding new tracks and moving tracks in
+        // the SQL data models causes a select() (ie. generation of a new result set),
+        // which causes view to reset itself. A view reset causes the widget to scroll back
+        // up to the top, which is confusing when you're dragging and dropping. :)
         saveVScrollBarPos();
 
-        //The model index where the track or tracks are destined to go. :)
-        //(the "drop" position in a drag-and-drop)
+        // The model index where the track or tracks are destined to go. :)
+        // (the "drop" position in a drag-and-drop)
         QModelIndex destIndex = indexAt(event->pos());
 
 
         //qDebug() << "destIndex.row() is" << destIndex.row();
 
-        //Drag and drop within this widget (track reordering)
+        // Drag and drop within this widget (track reordering)
         if (event->source() == this)
         {
-            //For an invalid destination (eg. dropping a track beyond
-            //the end of the playlist), place the track(s) at the end
-            //of the playlist.
+            // For an invalid destination (eg. dropping a track beyond
+            // the end of the playlist), place the track(s) at the end
+            // of the playlist.
             if (destIndex.row() == -1) {
                 int destRow = model()->rowCount() - 1;
                 destIndex = model()->index(destRow, 0);
             }
-            //Note the above code hides an ambiguous case when a
-            //playlist is empty. For that reason, we can't factor that
-            //code out to be common for both internal reordering
-            //and external drag-and-drop. With internal reordering,
-            //you can't have an empty playlist. :)
+            // Note the above code hides an ambiguous case when a
+            // playlist is empty. For that reason, we can't factor that
+            // code out to be common for both internal reordering
+            // and external drag-and-drop. With internal reordering,
+            // you can't have an empty playlist. :)
 
             //qDebug() << "track reordering" << __FILE__ << __LINE__;
 
-            //Save a list of row (just plain ints) so we don't get screwed over
-            //when the QModelIndexes all become invalid (eg. after moveTrack()
-            //or addTrack())
+            // Save a list of row (just plain ints) so we don't get screwed over
+            // when the QModelIndexes all become invalid (eg. after moveTrack()
+            // or addTrack())
             QModelIndexList indices = selectionModel()->selectedRows();
 
             QList<int> selectedRows;
@@ -783,22 +792,20 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 selectedRows.append(idx.row());
             }
 
-
-            /** Note: The biggest subtlety in the way I've done this track reordering code
-                is that as soon as we've moved ANY track, all of our QModelIndexes probably
-                get screwed up. The starting point for the logic below is to say screw it to
-                the QModelIndexes, and just keep a list of row numbers to work from. That
-                ends up making the logic simpler and the behaviour totally predictable,
-                which lets us do nice things like "restore" the selection model.
-            */
+            // Note: The biggest subtlety in the way I've done this track reordering code
+            // is that as soon as we've moved ANY track, all of our QModelIndexes probably
+            // get screwed up. The starting point for the logic below is to say screw it to
+            // the QModelIndexes, and just keep a list of row numbers to work from. That
+            // ends up making the logic simpler and the behaviour totally predictable,
+            // which lets us do nice things like "restore" the selection model.
 
             if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                 TrackModel* trackModel = getTrackModel();
 
-                //The model indices are sorted so that we remove the tracks from the table
-                //in ascending order. This is necessary because if track A is above track B in
-                //the table, and you remove track A, the model index for track B will change.
-                //Sorting the indices first means we don't have to worry about this.
+                // The model indices are sorted so that we remove the tracks from the table
+                // in ascending order. This is necessary because if track A is above track B in
+                // the table, and you remove track A, the model index for track B will change.
+                // Sorting the indices first means we don't have to worry about this.
                 //qSort(m_selectedIndices);
                 //qSort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
                 qSort(selectedRows);
@@ -871,8 +878,6 @@ void WTrackTableView::dropEvent(QDropEvent * event)
             //eg. dragging a track from Windows Explorer onto the track table.
             TrackModel* trackModel = getTrackModel();
             if (trackModel) {
-                // XXX: Crappy, assumes all URLs are valid songs. Should filter
-                // out invalid URLs at the start of this function.
                 int numNewRows = urls.count();
 
                 // Have to do this here because the index is invalid after

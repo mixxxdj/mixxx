@@ -398,7 +398,6 @@ int PlaylistDAO::insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, i
     insertQuery.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
                         "VALUES (:playlist_id, :track_id, :position)");
     QSqlQuery query(m_database);
-
     int insertPositon = position;
     foreach (int trackId, trackIds) {
         if (trackId < 0) {
@@ -406,7 +405,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, i
         }
         // Move all tracks in playlist up by 1.
         query.prepare(QString("UPDATE PlaylistTracks SET position=position+1 "
-                              "WHERE position>=%1 AND"
+                              "WHERE position>=%1 AND "
                               "playlist_id=%2").arg(insertPositon).arg(playlistId));
 
         if (!query.exec()) {
