@@ -970,7 +970,11 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
         if (control == NULL) {
             qWarning() << "Requested control does not exist:" << key << ". Creating it.";
-            control = new ControlObject(configKey);
+            // Since the usual behavior here is to create a skin-defined push
+            // button, actually make it a push button and set it to toggle.
+            ControlPushButton* controlButton = new ControlPushButton(configKey);
+            controlButton->setButtonMode(ControlPushButton::TOGGLE);
+            control = controlButton;
         }
 
         QString property = XmlParse::selectNodeQString(con, "BindProperty");
