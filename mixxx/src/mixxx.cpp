@@ -674,10 +674,9 @@ int MixxxApp::noSoundDlg(void)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            break;
+            return 1;
         }
     }
-    return 1;
 }
 
 int MixxxApp::noOutputDlg(bool *continueClicked)
@@ -726,10 +725,9 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            break;
+            return 1;
         }
     }
-    return 1;
 }
 
 QString buildWhatsThis(QString title, QString text) {

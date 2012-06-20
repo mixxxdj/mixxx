@@ -293,28 +293,6 @@ bool PlaylistDAO::isHidden(int playlistId) {
     return true;
 }
 
-void PlaylistDAO::removeTrackFromPlaylists(int trackId) {
-    QSqlQuery query(m_database);
-    QString queryString = QString("SELECT %1, %2 FROM %3 ORDER BY %2 DESC")
-            .arg(PLAYLISTTRACKSTABLE_PLAYLISTID,
-                 PLAYLISTTRACKSTABLE_POSITION,
-                 PLAYLIST_TRACKS_TABLE);
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
-    int positionIndex = query.record().indexOf(PLAYLISTTRACKSTABLE_POSITION);
-    int playlistIdIndex = query.record().indexOf(
-        PLAYLISTTRACKSTABLE_PLAYLISTID);
-    while (query.next()) {
-        int position = query.value(positionIndex).toInt();
-        int playlistId = query.value(playlistIdIndex).toInt();
-        removeTrackFromPlaylist(playlistId, position);
-    }
-}
-
 void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
 {
     // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"

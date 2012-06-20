@@ -434,6 +434,7 @@ class MixxxCore(Feature):
                    "library/searchqueryparser.cpp",
                    "library/preparelibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
+                   "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 
                    "library/playlisttablemodel.cpp",

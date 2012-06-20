@@ -20,10 +20,8 @@ class MissingTableModel : public BaseSqlTableModel {
     virtual void search(const QString& searchText);
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
+    virtual void purgeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;

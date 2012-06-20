@@ -84,6 +84,8 @@ WTrackTableView::~WTrackTableView()
     delete m_pAutoDJAct;
     delete m_pAutoDJTopAct;
     delete m_pRemoveAct;
+    delete m_pHideAct;
+    delete m_pUnhideAct;
     delete m_pPropertiesAct;
     delete m_pMenu;
     delete m_pPlaylistMenu;
@@ -257,6 +259,15 @@ void WTrackTableView::createActions() {
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
+    m_pHideAct = new QAction(tr("Hide from library"), this);
+    connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
+
+    m_pUnhideAct = new QAction(tr("Unhide from library"), this);
+    connect(m_pUnhideAct, SIGNAL(triggered()), this, SLOT(slotUnhide()));
+
+    m_pPurgeAct = new QAction(tr("Purge from library"), this);
+    connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
+
     m_pPropertiesAct = new QAction(tr("Properties"), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()),
             this, SLOT(slotShowTrackInfo()));
@@ -339,6 +350,17 @@ void WTrackTableView::slotRemove()
     }
 }
 
+void WTrackTableView::slotPurge(){
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0)
+    {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            trackModel->purgeTracks(indices);
+        }
+    }
+}
+
 void WTrackTableView::slotOpenInFileBrowser() {
     TrackModel* trackModel = getTrackModel();
     if (!trackModel)
@@ -353,18 +375,46 @@ void WTrackTableView::slotOpenInFileBrowser() {
 
         QFileInfo file(trackModel->getTrackLocation(index));
 
-        if (!file.exists()) {
-            continue;
-        }
+        // if (!file.exists()) {
+            // continue;
+        // }
 
-        const QString directory = file.dir().absolutePath();
-        if (dirs.contains(directory))
-          continue;
-        dirs.insert(directory);
-        QDesktopServices::openUrl(QUrl::fromLocalFile(directory));
+        QDir directory = file.dir();
+        if (!directory.exists()) {
+            directory = QDir::home();
+        }
+        if (dirs.contains(directory.absolutePath()))
+            continue;
+        dirs.insert(directory.absolutePath());
+        QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
     }
 
 }
+
+void WTrackTableView::slotHide()
+{
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0)
+    {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            trackModel->hideTracks(indices);
+        }
+    }
+}
+
+void WTrackTableView::slotUnhide()
+{
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0)
+    {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            trackModel->unhideTracks(indices);
+        }
+    }
+}
+
 
 void WTrackTableView::slotShowTrackInfo() {
     QModelIndexList indices = selectionModel()->selectedRows();
@@ -525,13 +575,26 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-    m_pRemoveAct->setEnabled(!locked);
     m_pMenu->addSeparator();
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
-        m_pMenu->addAction(m_pRemoveAct);
-    }
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
+    }
+    // REMOVE and HIDE should not be at the first menu position to avoid excitedly clicks
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        m_pRemoveAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemoveAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        m_pHideAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pHideAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        m_pUnhideAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pUnhideAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        m_pPurgeAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pPurgeAct);
     }
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
         m_pMenu->addAction(m_pResetPlayedAct);
@@ -643,10 +706,9 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
     }
 }
 
-/** Drag move event, happens when a dragged item hovers over the track table view...
- *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
- *  -- Albert June 8/08
- */
+// Drag move event, happens when a dragged item hovers over the track table view...
+// Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
+// -- Albert June 8/08
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
@@ -668,7 +730,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     }
 }
 
-/** Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view */
+// Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
 void WTrackTableView::dropEvent(QDropEvent * event)
 {
     if (event->mimeData()->hasUrls()) {
