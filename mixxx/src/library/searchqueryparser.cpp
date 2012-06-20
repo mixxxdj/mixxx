@@ -15,7 +15,8 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "bpm"
                      << "duration"
                      << "played"
-                     << "rating";
+                     << "rating"
+                     << "bitrate";
     m_specialFilters << "key";
 
     m_fieldToSqlColumn.insert("artist", "artist");
@@ -27,6 +28,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumn.insert("year", "year");
     m_fieldToSqlColumn.insert("track", "tracknumber");
     m_fieldToSqlColumn.insert("bpm", "bpm");
+    m_fieldToSqlColumn.insert("bitrate", "bitrate");
     m_fieldToSqlColumn.insert("duration", "duration");
     m_fieldToSqlColumn.insert("key", "key");
     m_fieldToSqlColumn.insert("played", "timesplayed");
