@@ -636,7 +636,6 @@ void TrackDAO::purgeTracks(QList<int> ids) {
     // TODO(XXX) Not sure if we should check any of these for errors or just not
     // care if there were errors and commit anyway.
     if (query.lastError().isValid()) {
-        transaction.rollback();
         return;
     }
     transaction.commit();
