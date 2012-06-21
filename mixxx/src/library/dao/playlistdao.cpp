@@ -1,6 +1,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <QtSql>
+
 #include "trackinfoobject.h"
 #include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
@@ -528,3 +529,25 @@ int PlaylistDAO::getMaxPosition(int playlistId) {
     return position;
 }
 
+void PlaylistDAO::removeTrackFromPlaylists(int trackId) {
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM PlaylistTracks WHERE "
+                  "track_id=:=id");
+    query.bindValue(":id", trackId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+}
+
+void PlaylistDAO::removeTracksFromPlaylists(QList<int> ids) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM PlaylistTracks WHERE track_id in (" 
+                  +idList.join(",") + ")");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+}
