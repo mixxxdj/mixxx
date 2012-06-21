@@ -243,3 +243,21 @@ bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
     emit(changed(crateId));
     return true;
 }
+
+
+void CrateDAO::removeTracksFromCrates(QList<int> ids) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+    QSqlQuery query(m_database);
+    query.prepare(QString("DELETE FROM crate_tracks "
+                          "WHERE track_id in (%1)").arg(idList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // TODO(XXX) should we emit this for all crates?
+    // emit(trackRemoved(crateId, trackId));
+    // emit(changed(crateId));
+}
