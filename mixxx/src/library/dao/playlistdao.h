@@ -65,6 +65,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int getMaxPosition(int playlistId);
     // Remove a track from all playlists
     void removeTrackFromPlaylists(int trackId);
+    void removeTracksFromPlaylists(QList<int> ids);
     // Remove a track from a playlist
     void removeTrackFromPlaylist(int playlistId, int position);
     // Insert a track into a specific position in a playlist
