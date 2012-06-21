@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-05-24 15:59+0200\n"
-"PO-Revision-Date: 2012-06-13 18:16+0000\n"
-"Last-Translator: eduardo quispe cruz <eduardo_14_23_aries@hotmail.com>\n"
+"PO-Revision-Date: 2012-06-20 22:33+0000\n"
+"Last-Translator: Eduardo Alberto Calvo <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-14 04:32+0000\n"
-"X-Generator: Launchpad (build 15405)\n"
+"X-Launchpad-Export-Date: 2012-06-21 05:15+0000\n"
+"X-Generator: Launchpad (build 15435)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -114,12 +114,12 @@ msgstr "Nombre:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Falló la creación de la lista de reproducción"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Se produjo un error desconocido al crear la lista de reproducción: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -846,7 +846,7 @@ msgstr "Botón de reproducción"
 
 #: DlgControllerLearning#18
 msgid "Volume fader"
-msgstr ""
+msgstr "Atenuador de volumen"
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
@@ -1528,6 +1528,8 @@ msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
 msgstr ""
+"Hace que los botones pitch/rate temporales cambien la velocidad "
+"gradualmente, y no bruscamente."
 
 #: DlgPrefControlsDlg#32
 msgid "Value in milliseconds"
@@ -3122,6 +3124,8 @@ msgid ""
 "* Check to see that the MixxxControl name is spelled correctly in the "
 "mapping file (.xml)\n"
 msgstr ""
+"Compruebe que el nombre MixxxControl está escrito correctamente en el "
+"archivo de mapeo (.xml)\n"
 
 #: MidiController#5
 msgid ""
@@ -3733,6 +3737,9 @@ msgid ""
 "This is handy for remembering what worked in your DJ sets, posting set-"
 "lists, or reporting your plays to licensing organizations."
 msgstr ""
+"Esto es útil para recordar lo que funcionó bien en sus sesiones de DJ, "
+"publicar las listas de reprodución, o informar sobre sus reproducciones a "
+"los organismos de concesión de licencias."
 
 #: SetlogFeature#7
 msgid ""
@@ -3792,7 +3799,7 @@ msgstr "Salta en el tema haciendo clic sobre la forma de onda."
 
 #: Tooltips#8
 msgid "Use the mouse to scratch, spin-back or throw tracks."
-msgstr ""
+msgstr "Usa el ratón para scratch, spin-back o lanzar pistas."
 
 #: Tooltips#9
 msgctxt "Tooltips#9"
@@ -3986,11 +3993,11 @@ msgstr ""
 
 #: Tooltips#54
 msgid "Sets the pitch higher."
-msgstr ""
+msgstr "Establece el pitch más alto."
 
 #: Tooltips#55
 msgid "Sets the pitch higher in small steps."
-msgstr ""
+msgstr "Establece el pitch más alto en pequeños pasos."
 
 #: Tooltips#56
 msgid "Lower Pitch"
@@ -3998,7 +4005,7 @@ msgstr ""
 
 #: Tooltips#57
 msgid "Sets the pitch lower."
-msgstr ""
+msgstr "Establece el pitch más bajo."
 
 #: Tooltips#58
 msgid "Sets the pitch lower in small steps."
@@ -4010,11 +4017,12 @@ msgstr ""
 
 #: Tooltips#60
 msgid "Holds the pitch higher while active."
-msgstr ""
+msgstr "Mantiene el pitch más alto cuando está activo."
 
 #: Tooltips#61
 msgid "Holds the pitch higher (small amount) while active."
 msgstr ""
+"Mantiene el pitch más alto (en pequeña cantidad) mientras está activo."
 
 #: Tooltips#62
 msgid "Lower Pitch Temporary (Nudge)"
