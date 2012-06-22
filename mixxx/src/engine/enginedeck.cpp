@@ -45,7 +45,6 @@ EngineDeck::EngineDeck(const char* group,
     m_bPassthroughWasActive = false;
 
     // Set up passthrough toggle button
-    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pPassing, SIGNAL(valueChanged(double)),
             this, SLOT(slotPassingToggle(double)),
             Qt::DirectConnection);
