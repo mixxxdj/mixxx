@@ -78,8 +78,8 @@ int TrackDAO::getTrackId(QString absoluteFilePath) {
     return libraryTrackId;
 }
 
-/** Some code (eg. drag and drop) needs to just get a track's location, and it's
-    not worth retrieving a whole TrackInfoObject.*/
+// Some code (eg. drag and drop) needs to just get a track's location, and it's
+// not worth retrieving a whole TrackInfoObject.
 QString TrackDAO::getTrackLocation(int trackId) {
     qDebug() << "TrackDAO::getTrackLocation"
              << QThread::currentThread() << m_database.connectionName();
@@ -498,30 +498,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     addTracks(tracksToAdd, unremove);
 }
 
-/** Removes a track from the library track collection. */
-void TrackDAO::removeTrack(int id) {
-    //qDebug() << "TrackDAO::removeTrack" << QThread::currentThread() << m_database.connectionName();
-    Q_ASSERT(id >= 0);
-    QSqlQuery query(m_database);
-
-    // Remove track from crates and playlists.
-    m_playlistDao.removeTrackFromPlaylists(id);
-    m_crateDao.removeTrackFromCrates(id);
-
-    //Mark the track as deleted!
-    query.prepare("UPDATE library "
-                  "SET mixxx_deleted=1 "
-                  "WHERE id = " + QString::number(id));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    QSet<int> tracksRemovedSet;
-    tracksRemovedSet.insert(id);
-    emit(tracksRemoved(tracksRemovedSet));
-}
-
-void TrackDAO::removeTracks(QList<int> ids) {
+void TrackDAO::hideTracks(QList<int> ids) {
     QStringList idList;
     foreach (int id, ids) {
         idList.append(QString::number(id));
@@ -534,32 +511,118 @@ void TrackDAO::removeTracks(QList<int> ids) {
         LOG_FAILED_QUERY(query);
     }
 
+    // This is signal is received by beasetrackcache to remove the tracks from cache
     QSet<int> tracksRemovedSet = QSet<int>::fromList(ids);
     emit(tracksRemoved(tracksRemovedSet));
 }
 
-/*** If a track has been manually "removed" from Mixxx's library by the user via
-     Mixxx's interface, this lets you add it back. When a track is removed,
-     mixxx_deleted in the DB gets set to 1. This clears that, and makes it show
-     up in the library views again.
-     This function should get called if you drag-and-drop a file that's been
-     "removed" from Mixxx back into the library view.
-*/
-void TrackDAO::unremoveTrack(int trackId) {
-    Q_ASSERT(trackId >= 0);
-    QSqlQuery query(m_database);
-    query.prepare("UPDATE library "
-                  "SET mixxx_deleted=0 "
-                  "WHERE id = " + QString::number(trackId));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "Failed to set track" << trackId << "as undeleted";
+// If a track has been manually "hidden" from Mixxx's library by the user via
+// Mixxx's interface, this lets you add it back. When a track is hidden,
+// mixxx_deleted in the DB gets set to 1. This clears that, and makes it show
+// up in the library views again.
+// This function should get called if you drag-and-drop a file that's been
+// "hidden" from Mixxx back into the library view.
+void TrackDAO::unhideTracks(QList<int> ids) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList.append(QString::number(id));
     }
-    QSet<int> tracksAddedSet;
-    tracksAddedSet.insert(trackId);
+
+    QSqlQuery query(m_database);
+    query.prepare(QString("UPDATE library SET mixxx_deleted=0 "
+                  "WHERE id in (%1)").arg(idList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+    QSet<int> tracksAddedSet = QSet<int>::fromList(ids);
     emit(tracksAdded(tracksAddedSet));
 }
 
+// Warning, purge cannot be undone check before if there is no reference to this
+// track id's on other library tables
+void TrackDAO::purgeTracks(QList<int> ids) {
+    if (ids.empty()) {
+        return;
+    }
+
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+    QString idListJoined = idList.join(",");
+
+    ScopedTransaction transaction(m_database);
+
+    QSqlQuery query(m_database);
+    query.prepare(QString("SELECT track_locations.location, track_locations.directory FROM "
+                          "track_locations INNER JOIN library ON library.location = "
+                          "track_locations.id WHERE library.id in (%1)").arg(idListJoined));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    FieldEscaper escaper(m_database);
+    QStringList locationList;
+    QSet<QString> dirs;
+    while (query.next()) {
+        QString filePath = query.value(query.record().indexOf("location")).toString();
+        locationList << escaper.escapeString(filePath);
+        QString directory = query.value(query.record().indexOf("directory")).toString();
+        dirs.insert(directory);
+    }
+
+    QStringList dirList;
+    for (QSet<QString>::const_iterator it = dirs.constBegin();
+         it != dirs.constEnd(); ++it) {
+        dirList << escaper.escapeString(*it);
+    }
+
+    if (locationList.empty()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Remove location from track_locations table
+    query.prepare(QString("DELETE FROM track_locations "
+                          "WHERE location in (%1)").arg(locationList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Remove Track from library table
+    query.prepare(QString("DELETE FROM library "
+                          "WHERE id in (%1)").arg(idListJoined));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // mark LibraryHash with needs_verification and invalidate the hash
+    // in case the file was not deleted to detect it on a rescan
+    // TODO(XXX) delegate to libraryHashDAO
+    query.prepare(QString("UPDATE LibraryHashes SET needs_verification=1, "
+                          "hash=-1 WHERE directory_path in (%1)").arg(dirList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // TODO(XXX) Not sure if we should check any of these for errors or just not
+    // care if there were errors and commit anyway.
+    if (query.lastError().isValid()) {
+        return;
+    }
+    transaction.commit();
+
+    // also need to clean playlists, crates, cues and track_analyses
+
+    m_cueDao.deleteCuesForTracks(ids);
+    m_playlistDao.removeTracksFromPlaylists(ids);
+    m_crateDao.removeTracksFromCrates(ids);
+    m_analysisDao.deleteAnalysises(ids);
+
+    QSet<int> tracksRemovedSet = QSet<int>::fromList(ids);
+    emit(tracksRemoved(tracksRemovedSet));
+}
+
+// deleter of the TrackInfoObject, for delete a Track from Library use hide or purge
 // static
 void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
     Q_ASSERT(pTrack);

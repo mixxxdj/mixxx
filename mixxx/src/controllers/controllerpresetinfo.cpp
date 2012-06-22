@@ -21,14 +21,18 @@ PresetInfo::PresetInfo()
 PresetInfo::PresetInfo(const QString preset_path) {
     // Parse <info> header section from a controller description XML file
     // Contents parsed by xml path:
-    // info.name        Mapping name, used for drop down menus in dialogs
-    // info.author      Mapping author
-    // info.description Mapping description
+    // info.name        Preset name, used for drop down menus in dialogs
+    // info.author      Preset author
+    // info.description Preset description
+    // info.forums      Link to mixxx forum discussion for the preset
+    // info.wiki        Link to mixxx wiki for the preset
     // info.devices.product List of device matches, specific to device type
     path = QFileInfo(preset_path).absoluteFilePath();
     name = "";
     author = "";
     description = "";
+    forumlink = "";
+    wikilink = "";
 
     QDomElement root = XmlParse::openXMLFile(path, "controller");
     if (root.isNull()) {
@@ -51,6 +55,12 @@ PresetInfo::PresetInfo(const QString preset_path) {
 
     QDomElement dom_description = info.firstChildElement("description");
     if (!dom_description.isNull()) description = dom_description.text();
+
+    QDomElement dom_forums = info.firstChildElement("forums");
+    if (!dom_forums.isNull()) forumlink = dom_forums.text();
+
+    QDomElement dom_wiki = info.firstChildElement("wiki");
+    if (!dom_wiki.isNull()) wikilink = dom_wiki.text();
 
     QDomElement devices = info.firstChildElement("devices");
     if (!devices.isNull()) {

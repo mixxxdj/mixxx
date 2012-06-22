@@ -124,6 +124,25 @@ bool CueDAO::deleteCuesForTrack(int trackId) {
     return false;
 }
 
+bool CueDAO::deleteCuesForTracks(QList<int> ids) {
+    qDebug() << "CueDAO::deleteCuesForTracks" << QThread::currentThread() << m_database.connectionName();
+
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare("DELETE FROM " CUE_TABLE " WHERE track_id in (" 
+                  +idList.join(",") + ")");
+    if (query.exec()) {
+        return true;
+    } else {
+        qDebug() << query.lastError();
+    }
+    return false;
+}
+
 bool CueDAO::saveCue(Cue* cue) {
     //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
     Q_ASSERT(cue);

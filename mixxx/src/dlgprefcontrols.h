@@ -82,6 +82,7 @@ protected:
 private:
     void initWaveformControl();
     void notifyRebootNecessary();
+    bool checkSkinResolution(QString skin);
 
 private:
     /** Pointer to ConfigObject */
