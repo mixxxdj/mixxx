@@ -259,13 +259,13 @@ void WTrackTableView::createActions() {
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
-    m_pHideAct = new QAction(tr("Hide from library"), this);
+    m_pHideAct = new QAction(tr("Hide from Library"), this);
     connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
 
-    m_pUnhideAct = new QAction(tr("Unhide from library"), this);
+    m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
     connect(m_pUnhideAct, SIGNAL(triggered()), this, SLOT(slotUnhide()));
 
-    m_pPurgeAct = new QAction(tr("Purge from library"), this);
+    m_pPurgeAct = new QAction(tr("Purge from Library"), this);
     connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
 
     m_pPropertiesAct = new QAction(tr("Properties"), this);
