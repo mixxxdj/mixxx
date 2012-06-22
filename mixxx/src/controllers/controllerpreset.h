@@ -80,6 +80,14 @@ class ControllerPreset {
         return m_forumlink;
     }
 
+    inline void setWikiLink(const QString wikilink) {
+        m_wikilink = wikilink;
+    }
+
+    inline QString wikilink() const {
+        return m_wikilink;
+    }
+
     inline void setSchemaVersion(const QString schemaVersion) {
         m_schemaVersion = schemaVersion;
     }
@@ -117,6 +125,7 @@ class ControllerPreset {
     QString m_author;
     QString m_description;
     QString m_forumlink;
+    QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
 };

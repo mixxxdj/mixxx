@@ -44,6 +44,8 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
     preset->setDescription(description.isNull() ? "" : description.text());
     QDomElement forums = info.firstChildElement("forums");
     preset->setForumLink(forums.isNull() ? "" : forums.text());
+    QDomElement wiki = info.firstChildElement("wiki");
+    preset->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }
 
 QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
@@ -155,6 +157,9 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
     }
     if (preset.forumlink().length() > 0) {
         addTextTag(doc, info, "forums", preset.forumlink());
+    }
+    if (preset.wikilink().length() > 0) {
+        addTextTag(doc, info, "wiki", preset.wikilink());
     }
 
     QDomElement controller = doc.createElement("controller");
