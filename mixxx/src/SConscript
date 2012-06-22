@@ -520,6 +520,7 @@ def ubuntu_cleanup():
 
 # Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
+        global mixxx_version
         print
         print "==== Mixxx Post-Build Checks ===="
         print
