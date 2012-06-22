@@ -35,6 +35,7 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
 
     m_ui.labelLoadedPreset->setText(presetShortName(pPreset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(pPreset));
+    m_ui.labelLoadedPresetForumLink->setText(presetForumLink(pPreset));
 
     //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
@@ -95,6 +96,16 @@ QString DlgPrefController::presetDescription(const ControllerPresetPointer pPres
             description = descr;
     }
     return description;
+}
+
+QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset) const {
+    QString url = tr("No Forum Link for Mapping");
+    if (pPreset) {
+        QString link = pPreset->forumlink();
+        if (link.length() > 0)
+            url = "<a href=\"" +link+ "\">" + link + "</a>";
+    }
+    return url;
 }
 
 void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
