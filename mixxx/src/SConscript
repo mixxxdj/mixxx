@@ -552,12 +552,16 @@ def BuildUbuntuPackage(target, source, env):
 
         ubuntu_distros = ubuntu_distros.split(',')
 
+        # Big hack for PPA upload. We need LP to believe that our original
+        # package version is always changing otherwise it will reject our orig
+        # source tarball.
+        if ubuntu_ppa is not None:
+                mixxx_version = '%s-bzr%s' % (mixxx_version, bazaar_revision)
+
         # Destroy ubuntu/ and create it
         ubuntu_cleanup()
 
-        # The underscore is super important here to make the deb package work
         package_name = 'mixxx'
-        #mixxx_dir = '%s-%s' % (package_name, mixxx_version)
 
         # directory and original tarball need to have the upstream-release
         # version, NOT the package version. For example:
@@ -567,6 +571,7 @@ def BuildUbuntuPackage(target, source, env):
         # original tarball: mixxx_1.10.0-beta1.orig.tar.gz
 
         mixxx_dir = '%s-%s' % (package_name, mixxx_version)
+        # The underscore is super important here to make the deb package work
         mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, mixxx_version)
 
         build_dir = os.path.join('ubuntu', mixxx_dir)
