@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-24 15:59+0200\n"
+"POT-Creation-Date: 2012-06-22 07:46+0200\n"
 "PO-Revision-Date: 2012-05-12 08:22+0000\n"
 "Last-Translator: Jakub Hadámek <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-25 04:33+0000\n"
-"X-Generator: Launchpad (build 15288)\n"
+"X-Launchpad-Export-Date: 2012-06-23 04:37+0000\n"
+"X-Generator: Launchpad (build 15461)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1206,6 +1206,14 @@ msgstr ""
 msgid "Custom Preset"
 msgstr ""
 
+#: DlgPrefController#4
+msgid "No Description"
+msgstr ""
+
+#: DlgPrefController#5
+msgid "No support available."
+msgstr ""
+
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
 msgid "Dialog"
@@ -1225,18 +1233,30 @@ msgid ""
 msgstr ""
 
 #: DlgPrefControllerDlg#5
-msgid "Load Preset:"
-msgstr "Nahrát předvolbu"
+msgid "TextLabel"
+msgstr ""
 
 #: DlgPrefControllerDlg#6
-msgid "Loaded Preset:"
+msgid "Description:"
 msgstr ""
 
 #: DlgPrefControllerDlg#7
+msgid "Load Preset:"
+msgstr "Nahrát předvolbu"
+
+#: DlgPrefControllerDlg#8
+msgid "Loaded Preset:"
+msgstr ""
+
+#: DlgPrefControllerDlg#9
+msgid "Support:"
+msgstr ""
+
+#: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
 msgstr ""
 
-#: DlgPrefControllerDlg#8
+#: DlgPrefControllerDlg#11
 msgid "Learning Wizard (MIDI Only)"
 msgstr ""
 
@@ -1273,91 +1293,79 @@ msgid "Off"
 msgstr ""
 
 #: DlgPrefControls#8
-msgid "Mixxx Detected a WVGA Screen"
-msgstr "Mixxx detekoval a WVGA obrazovku"
-
-#: DlgPrefControls#9
-msgid "Mixxx has detected that your screen has a resolution of "
-msgstr "Mixxx detekoval obrazovku s rozlišením "
-
-#: DlgPrefControls#10
-msgid ""
-"The only skin compatiable with this size display is Outline800x480-WVGA.  "
-"Would you like to use that skin?"
-msgstr ""
-"Jediný vzhled kompatibilní s touto velikostí displeje je Outline800x480-"
-"WVGA. Chcete použít tento vzhled?"
-
-#: DlgPrefControls#11
 msgid "This skin does not support schemes"
 msgstr "Tento vzhled nepodporuje režimy"
 
-#: DlgPrefControls#12
+#: DlgPrefControls#9
 msgid "6%"
 msgstr ""
 
-#: DlgPrefControls#13
+#: DlgPrefControls#10
 msgid "8% (Technics SL-1210)"
 msgstr ""
 
-#: DlgPrefControls#14
+#: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
 msgstr ""
 
-#: DlgPrefControls#15
+#: DlgPrefControls#12
 msgid "10%"
 msgstr "10%"
 
-#: DlgPrefControls#16
+#: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
 msgstr ""
 
-#: DlgPrefControls#17
+#: DlgPrefControls#14
+msgid "The selected skin is bigger than your screen resolution."
+msgstr ""
+
+#: DlgPrefControls#15
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#18
+#: DlgPrefControls#16
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#19
+#: DlgPrefControls#17
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#20
+#: DlgPrefControls#18
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#21
+#: DlgPrefControls#19
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#22
+#: DlgPrefControls#20
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#23
+#: DlgPrefControls#21
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#24
+#: DlgPrefControls#22
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#25
+#: DlgPrefControls#23
 msgid "Up increases speed"
 msgstr "Nahoru zvyšuje rychlost"
 
-#: DlgPrefControls#26
-msgctxt "DlgPrefControls#26"
+#: DlgPrefControls#24
+msgctxt "DlgPrefControls#24"
 msgid "Information"
 msgstr ""
 
-#: DlgPrefControls#27
+#: DlgPrefControls#25
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr "Aby se změny projevily, restartujte Mixxx."
 
-#: DlgPrefControls#28
+#: DlgPrefControls#26
 msgid "OpenGL not available"
 msgstr ""
 
@@ -1437,94 +1445,98 @@ msgid "Displays the actual frame rate."
 msgstr ""
 
 #: DlgPrefControlsDlg#19
+msgid "Normalize Overview"
+msgstr ""
+
+#: DlgPrefControlsDlg#20
 msgid "Left click"
 msgstr "Levý klik"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#21
 msgid "Right click"
 msgstr "Pravý klik"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#22
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#23
 msgid "Temporary Pitch/Rate Buttons"
 msgstr "Tlačítka dočasné změny Pitch/Rate"
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#24
 msgid "Ramping Pitchbend"
 msgstr "Plynulá změna výšky (pitch)"
 
-#: DlgPrefControlsDlg#24
+#: DlgPrefControlsDlg#25
 msgid "Pitchbend sensitivity"
 msgstr "Citlivost"
 
-#: DlgPrefControlsDlg#25
-msgctxt "DlgPrefControlsDlg#25"
+#: DlgPrefControlsDlg#26
+msgctxt "DlgPrefControlsDlg#26"
 msgid "Waveform Display"
 msgstr ""
 
-#: DlgPrefControlsDlg#26
+#: DlgPrefControlsDlg#27
 msgid "Synchronize zoom level across all waveform displays."
 msgstr ""
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#28
 msgid "OpenGl status"
 msgstr ""
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#29
 msgid "Display type"
 msgstr ""
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#30
 msgid "Permanent rate change when left-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#30
+#: DlgPrefControlsDlg#31
 msgid "Permanent rate change when right-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#32
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
 msgstr ""
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#33
 msgid "Value in milliseconds"
 msgstr ""
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the high frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#35
 msgid "Visual gain of the middle frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#36
 msgid "Visual gain of the low frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#37
 msgid "Global visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#38
 msgid "Frame rate"
 msgstr ""
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#39
 msgid "Default zoom"
 msgstr ""
 
-#: DlgPrefControlsDlg#39
+#: DlgPrefControlsDlg#40
 msgid "Visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#40
-msgctxt "DlgPrefControlsDlg#40"
+#: DlgPrefControlsDlg#41
+msgctxt "DlgPrefControlsDlg#41"
 msgid "Synchronize"
 msgstr ""
 
@@ -1538,35 +1550,31 @@ msgid "Crossfader Curve"
 msgstr "Křivka crossfaderu"
 
 #: DlgPrefCrossfaderDlg#3
-msgid "Slow fade"
-msgstr "Pomalý fade"
+msgid "Slow fade/Fast cut (additive)"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#4
-msgid "Fast cut"
-msgstr "Rychlý řez"
-
-#: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
 msgstr "Konstantní výkon"
 
-#: DlgPrefCrossfaderDlg#6
+#: DlgPrefCrossfaderDlg#5
 msgid "Mixing"
 msgstr "Mixování"
 
-#: DlgPrefCrossfaderDlg#7
+#: DlgPrefCrossfaderDlg#6
 msgid "Scratching"
 msgstr "Skrečování"
 
-#: DlgPrefCrossfaderDlg#8
+#: DlgPrefCrossfaderDlg#7
 msgid "Linear"
 msgstr "Lineární"
 
-#: DlgPrefCrossfaderDlg#9
+#: DlgPrefCrossfaderDlg#8
 msgid "Logarithmic"
 msgstr "Logaritmický"
 
-#: DlgPrefCrossfaderDlg#10
-msgctxt "DlgPrefCrossfaderDlg#10"
+#: DlgPrefCrossfaderDlg#9
+msgctxt "DlgPrefCrossfaderDlg#9"
 msgid "Reset to Defaults"
 msgstr ""
 
@@ -1827,44 +1835,52 @@ msgid "Use relative paths for playlist export if possible"
 msgstr "Je-li to možné, pro export seznamu skladeb použít relativní cesty"
 
 #: DlgPrefPlaylistDlg#10
-msgid "Show Rhythmbox Library"
+msgid "Other Librarys"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#11
-msgid "Show iTunes Library"
+msgid "Show Rhythmbox Library"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#12
-msgid "Show Traktor Library"
+msgid "Show iTunes Library"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#13
-msgctxt "DlgPrefPlaylistDlg#13"
-msgid "Browse..."
+msgid "Show Traktor Library"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#14
-msgctxt "DlgPrefPlaylistDlg#14"
-msgid "Library"
+msgid "    You will need to restart Mixxx for this to take effect"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#15
+msgctxt "DlgPrefPlaylistDlg#15"
+msgid "Browse..."
+msgstr ""
+
+#: DlgPrefPlaylistDlg#16
+msgctxt "DlgPrefPlaylistDlg#16"
+msgid "Library"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
 msgstr "Hudební adresář:"
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#18
 msgid "Built-in"
 msgstr "Vestavěný"
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#19
 msgid "Available Online..."
 msgstr "K dispozici Online"
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#20
 msgid "Bundled Songs"
 msgstr "Přibalené songy"
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#21
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -2942,6 +2958,46 @@ msgctxt "GLWaveformWidget#1"
 msgid "Filtered"
 msgstr ""
 
+#: HidController#1
+msgid "Generic HID Mouse"
+msgstr ""
+
+#: HidController#2
+msgid "Generic HID Joystick"
+msgstr ""
+
+#: HidController#3
+msgid "Generic HID Gamepad"
+msgstr ""
+
+#: HidController#4
+msgid "Generic HID Keyboard"
+msgstr ""
+
+#: HidController#5
+msgid "Gereric HID Multiaxis Controller"
+msgstr ""
+
+#: HidController#6
+msgid "Unknown HID Desktop Device"
+msgstr ""
+
+#: HidController#7
+msgid "HID Infrared Control"
+msgstr ""
+
+#: HidController#8
+msgid "Unknown Apple HID Device"
+msgstr ""
+
+#: HidController#9
+msgid "HID Unknown Device"
+msgstr ""
+
+#: HidController#10
+msgid "HID Interface Number"
+msgstr ""
+
 #: ITunesFeature#1
 msgid "iTunes"
 msgstr "iTunes"
@@ -3431,14 +3487,26 @@ msgstr "Potvrďte ukončení"
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Některá z ploten hraje. Opravdu chcete vypnout Mixxx?"
 
+#: MixxxApp#87
+msgid "The preferences window is still open."
+msgstr ""
+
+#: MixxxApp#88
+msgid "Discard any changes and exit Mixxx?"
+msgstr ""
+
 #: MixxxLibraryFeature#1
 msgid "Missing Tracks"
 msgstr ""
 
 #: MixxxLibraryFeature#2
-msgctxt "MixxxLibraryFeature#2"
+msgid "Hidden Tracks"
+msgstr ""
+
+#: MixxxLibraryFeature#3
+msgctxt "MixxxLibraryFeature#3"
 msgid "Library"
-msgstr "Knihovna"
+msgstr ""
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
@@ -4433,22 +4501,32 @@ msgstr ""
 "Stiskněte OK pro ukončení."
 
 #: TrackCollection#3
+msgid "Click OK to exit."
+msgstr ""
+
+#: TrackCollection#4
 msgid "Cannot upgrade database schema"
 msgstr "Nelze upgradovat databázové schéma"
 
-#: TrackCollection#4
-msgid ""
-"Unable to upgrade your database schema to version %1.\n"
-"Your mixxx.db file may be corrupt.\n"
-"Try renaming it and restarting Mixxx.\n"
-"\n"
-"Click OK to exit."
+#: TrackCollection#5
+msgid "Unable to upgrade your database schema to version %1"
 msgstr ""
-"Nelze upgradovat databázové schéma na verzi %1.\n"
-"Váš soubor mixxx.db je možná poškozen.\n"
-"Pokuste se ho přejmenovat a pak restartovat Mixxx.\n"
-"\n"
-"Stiskněte OK pro ukončení."
+
+#: TrackCollection#6
+msgid "Your %1 file may be outdated."
+msgstr ""
+
+#: TrackCollection#7
+msgid "Your mixxxdb.sqlite file may be corrupt."
+msgstr ""
+
+#: TrackCollection#8
+msgid "Try renaming it and restarting Mixxx."
+msgstr ""
+
+#: TrackCollection#9
+msgid "Your %1 file may be missing or invalid."
+msgstr ""
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -4500,51 +4578,63 @@ msgid "Remove"
 msgstr "Odstranit"
 
 #: WTrackTableView#5
-msgid "Properties"
+msgid "Hide from library"
 msgstr ""
 
 #: WTrackTableView#6
-msgid "Open in File Browser"
+msgid "Unhide from library"
 msgstr ""
 
 #: WTrackTableView#7
-msgid "Add to Auto-DJ Queue (bottom)"
+msgid "Purge from library"
 msgstr ""
 
 #: WTrackTableView#8
-msgid "Add to Auto-DJ Queue (top)"
+msgid "Properties"
 msgstr ""
 
 #: WTrackTableView#9
-msgid "Reload Track Metadata"
-msgstr "Znovu načíst metadata"
+msgid "Open in File Browser"
+msgstr ""
 
 #: WTrackTableView#10
-msgid "Reset Play Count"
+msgid "Add to Auto-DJ Queue (bottom)"
 msgstr ""
 
 #: WTrackTableView#11
-msgid "Lock BPM"
+msgid "Add to Auto-DJ Queue (top)"
 msgstr ""
 
 #: WTrackTableView#12
-msgid "Unlock BPM"
-msgstr ""
+msgid "Reload Track Metadata"
+msgstr "Znovu načíst metadata"
 
 #: WTrackTableView#13
-msgid "Clear BPM and Beatgrid"
+msgid "Reset Play Count"
 msgstr ""
 
 #: WTrackTableView#14
-msgid "Load to Deck %1"
-msgstr "Načíst do plotny %1"
+msgid "Lock BPM"
+msgstr ""
 
 #: WTrackTableView#15
-msgctxt "WTrackTableView#15"
-msgid "Sampler %1"
+msgid "Unlock BPM"
 msgstr ""
 
 #: WTrackTableView#16
+msgid "Clear BPM and Beatgrid"
+msgstr ""
+
+#: WTrackTableView#17
+msgid "Load to Deck %1"
+msgstr "Načíst do plotny %1"
+
+#: WTrackTableView#18
+msgctxt "WTrackTableView#18"
+msgid "Sampler %1"
+msgstr ""
+
+#: WTrackTableView#19
 msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
@@ -4654,6 +4744,12 @@ msgstr ""
 #~ msgctxt "DlgPrefCrossfaderDlg#10"
 #~ msgid "Reset"
 #~ msgstr "Reset"
+
+#~ msgid "Slow fade"
+#~ msgstr "Pomalý fade"
+
+#~ msgid "Fast cut"
+#~ msgstr "Rychlý řez"
 
 #~ msgid "2.045 kHz"
 #~ msgstr "2.045 kHz"
@@ -5225,6 +5321,10 @@ msgstr ""
 #~ msgid "Remove"
 #~ msgstr "Odstranit"
 
+#~ msgctxt "MixxxLibraryFeature#2"
+#~ msgid "Library"
+#~ msgstr "Knihovna"
+
 #~ msgid "An unknown error occurred while creating playlist: "
 #~ msgstr "Při vytváření playlistu došlo k neznámé chybě. "
 
@@ -5301,8 +5401,14 @@ msgstr ""
 #~ msgid "On"
 #~ msgstr "Zapnout"
 
+#~ msgid "Mixxx Detected a WVGA Screen"
+#~ msgstr "Mixxx detekoval a WVGA obrazovku"
+
 #~ msgid "OK"
 #~ msgstr "OK"
+
+#~ msgid "Mixxx has detected that your screen has a resolution of "
+#~ msgstr "Mixxx detekoval obrazovku s rozlišením "
 
 #~ msgctxt "Ui#10"
 #~ msgid "Preferences"
@@ -5921,11 +6027,31 @@ msgstr ""
 #~ msgid "Unlock"
 #~ msgstr "Odemknout"
 
+#~ msgid ""
+#~ "Unable to upgrade your database schema to version %1.\n"
+#~ "Your mixxx.db file may be corrupt.\n"
+#~ "Try renaming it and restarting Mixxx.\n"
+#~ "\n"
+#~ "Click OK to exit."
+#~ msgstr ""
+#~ "Nelze upgradovat databázové schéma na verzi %1.\n"
+#~ "Váš soubor mixxx.db je možná poškozen.\n"
+#~ "Pokuste se ho přejmenovat a pak restartovat Mixxx.\n"
+#~ "\n"
+#~ "Stiskněte OK pro ukončení."
+
 #~ msgid "Mixxx Script Studio"
 #~ msgstr "Skriptovací studio Mixxxu"
 
 #~ msgid "Load tracks into playing decks"
 #~ msgstr "Načíst skladby do ploten"
+
+#~ msgid ""
+#~ "The only skin compatiable with this size display is Outline800x480-WVGA.  "
+#~ "Would you like to use that skin?"
+#~ msgstr ""
+#~ "Jediný vzhled kompatibilní s touto velikostí displeje je Outline800x480-"
+#~ "WVGA. Chcete použít tento vzhled?"
 
 #~ msgid "Headphones mix (pre/main)"
 #~ msgstr "Mix do sluchátek (pre/main)"
