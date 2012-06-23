@@ -10,15 +10,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-24 15:59+0200\n"
+"POT-Creation-Date: 2012-06-22 07:46+0200\n"
 "PO-Revision-Date: 2012-06-20 22:33+0000\n"
 "Last-Translator: Eduardo Alberto Calvo <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-21 05:15+0000\n"
-"X-Generator: Launchpad (build 15435)\n"
+"X-Launchpad-Export-Date: 2012-06-23 04:40+0000\n"
+"X-Generator: Launchpad (build 15461)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1240,6 +1240,14 @@ msgstr "%1 por %2"
 msgid "Custom Preset"
 msgstr "Configuración Personalizada"
 
+#: DlgPrefController#4
+msgid "No Description"
+msgstr ""
+
+#: DlgPrefController#5
+msgid "No support available."
+msgstr ""
+
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
 msgid "Dialog"
@@ -1261,18 +1269,30 @@ msgstr ""
 "problemas</a>"
 
 #: DlgPrefControllerDlg#5
+msgid "TextLabel"
+msgstr ""
+
+#: DlgPrefControllerDlg#6
+msgid "Description:"
+msgstr ""
+
+#: DlgPrefControllerDlg#7
 msgid "Load Preset:"
 msgstr "Cargar opciones predeterminadas"
 
-#: DlgPrefControllerDlg#6
+#: DlgPrefControllerDlg#8
 msgid "Loaded Preset:"
 msgstr "Configuración cargada:"
 
-#: DlgPrefControllerDlg#7
+#: DlgPrefControllerDlg#9
+msgid "Support:"
+msgstr ""
+
+#: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
 msgstr "Clic para comenzar el asistente de aprendizaje del Controlador."
 
-#: DlgPrefControllerDlg#8
+#: DlgPrefControllerDlg#11
 msgid "Learning Wizard (MIDI Only)"
 msgstr "Asistente de aprendizaje (sólo MIDI)"
 
@@ -1309,91 +1329,79 @@ msgid "Off"
 msgstr "Apagado"
 
 #: DlgPrefControls#8
-msgid "Mixxx Detected a WVGA Screen"
-msgstr "Mixxx detectó una pantalla WVGA"
-
-#: DlgPrefControls#9
-msgid "Mixxx has detected that your screen has a resolution of "
-msgstr "Mixxx ha detectado que su pantalla tiene una resolución de "
-
-#: DlgPrefControls#10
-msgid ""
-"The only skin compatiable with this size display is Outline800x480-WVGA.  "
-"Would you like to use that skin?"
-msgstr ""
-"La única skin compatible con este tamaño de dispositivo es Outline800x480-"
-"WVGA. Le gustaría usar esa skin?"
-
-#: DlgPrefControls#11
 msgid "This skin does not support schemes"
 msgstr "Esta piel no permite esquemas"
 
-#: DlgPrefControls#12
+#: DlgPrefControls#9
 msgid "6%"
 msgstr "6%"
 
-#: DlgPrefControls#13
+#: DlgPrefControls#10
 msgid "8% (Technics SL-1210)"
 msgstr "8%"
 
-#: DlgPrefControls#14
+#: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
 msgstr "Hacia abajo incrementa la velocidad (Technics SL-1210)"
 
-#: DlgPrefControls#15
+#: DlgPrefControls#12
 msgid "10%"
 msgstr "10%"
 
-#: DlgPrefControls#16
+#: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
 msgstr "Cargar pistas en una deck que está reproduciendo"
 
-#: DlgPrefControls#17
+#: DlgPrefControls#14
+msgid "The selected skin is bigger than your screen resolution."
+msgstr ""
+
+#: DlgPrefControls#15
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#18
+#: DlgPrefControls#16
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#19
+#: DlgPrefControls#17
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#20
+#: DlgPrefControls#18
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#21
+#: DlgPrefControls#19
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#22
+#: DlgPrefControls#20
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#23
+#: DlgPrefControls#21
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#24
+#: DlgPrefControls#22
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#25
+#: DlgPrefControls#23
 msgid "Up increases speed"
 msgstr "Arriba aumenta velocidad"
 
-#: DlgPrefControls#26
-msgctxt "DlgPrefControls#26"
+#: DlgPrefControls#24
+msgctxt "DlgPrefControls#24"
 msgid "Information"
-msgstr "Información"
+msgstr ""
 
-#: DlgPrefControls#27
+#: DlgPrefControls#25
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr "Mixxx debe reiniciarse para que los cambios surtan efecto."
 
-#: DlgPrefControls#28
+#: DlgPrefControls#26
 msgid "OpenGL not available"
 msgstr "OpenGL no disponible"
 
@@ -1473,57 +1481,61 @@ msgid "Displays the actual frame rate."
 msgstr "Muestra la tasa de refresco actual"
 
 #: DlgPrefControlsDlg#19
+msgid "Normalize Overview"
+msgstr ""
+
+#: DlgPrefControlsDlg#20
 msgid "Left click"
 msgstr "Clic izquierdo"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#21
 msgid "Right click"
 msgstr "Clic derecho"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#22
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#23
 msgid "Temporary Pitch/Rate Buttons"
 msgstr "Botones Pitch/Rate Temporales"
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#24
 msgid "Ramping Pitchbend"
 msgstr "Curvado de velocidad progresiva"
 
-#: DlgPrefControlsDlg#24
+#: DlgPrefControlsDlg#25
 msgid "Pitchbend sensitivity"
 msgstr "Sensibilidad del Curvado de velocidad"
 
-#: DlgPrefControlsDlg#25
-msgctxt "DlgPrefControlsDlg#25"
-msgid "Waveform Display"
-msgstr "Visualización de forma de onda"
-
 #: DlgPrefControlsDlg#26
+msgctxt "DlgPrefControlsDlg#26"
+msgid "Waveform Display"
+msgstr ""
+
+#: DlgPrefControlsDlg#27
 msgid "Synchronize zoom level across all waveform displays."
 msgstr ""
 "Sincroniza el nivel de ampliación en todas los visualizaciones de forma de "
 "onda."
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#28
 msgid "OpenGl status"
 msgstr "Estado de OpenGL"
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#29
 msgid "Display type"
 msgstr "Tipo de Visualización"
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#30
 msgid "Permanent rate change when left-clicking"
 msgstr "Cambio de velocidad permanente con click izquierdo"
 
-#: DlgPrefControlsDlg#30
+#: DlgPrefControlsDlg#31
 msgid "Permanent rate change when right-clicking"
 msgstr "Cambio de velocidad permanente con click derecho"
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#32
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
@@ -1531,42 +1543,42 @@ msgstr ""
 "Hace que los botones pitch/rate temporales cambien la velocidad "
 "gradualmente, y no bruscamente."
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#33
 msgid "Value in milliseconds"
 msgstr "Valor en milisegundos"
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the high frequencies"
 msgstr "Ganancia visual de las frecuencias agudas"
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#35
 msgid "Visual gain of the middle frequencies"
 msgstr "Ganancia visual de las frecuencias medias"
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#36
 msgid "Visual gain of the low frequencies"
 msgstr "Ganancia visual de las frecuencias graves"
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#37
 msgid "Global visual gain"
 msgstr "Ganancia visual global"
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#38
 msgid "Frame rate"
 msgstr "Tasa de fotograma"
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#39
 msgid "Default zoom"
 msgstr "Zoom predeterminado"
 
-#: DlgPrefControlsDlg#39
+#: DlgPrefControlsDlg#40
 msgid "Visual gain"
 msgstr "Ganancia visual"
 
-#: DlgPrefControlsDlg#40
-msgctxt "DlgPrefControlsDlg#40"
+#: DlgPrefControlsDlg#41
+msgctxt "DlgPrefControlsDlg#41"
 msgid "Synchronize"
-msgstr "Sincronizar"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1578,37 +1590,33 @@ msgid "Crossfader Curve"
 msgstr "Curva del Crossfader"
 
 #: DlgPrefCrossfaderDlg#3
-msgid "Slow fade"
-msgstr "Atenuación baja"
+msgid "Slow fade/Fast cut (additive)"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#4
-msgid "Fast cut"
-msgstr "Corte Rápido"
-
-#: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
 msgstr "Poder Constante"
 
-#: DlgPrefCrossfaderDlg#6
+#: DlgPrefCrossfaderDlg#5
 msgid "Mixing"
 msgstr "Mezcla"
 
-#: DlgPrefCrossfaderDlg#7
+#: DlgPrefCrossfaderDlg#6
 msgid "Scratching"
 msgstr "Scratching"
 
-#: DlgPrefCrossfaderDlg#8
+#: DlgPrefCrossfaderDlg#7
 msgid "Linear"
 msgstr "Linear"
 
-#: DlgPrefCrossfaderDlg#9
+#: DlgPrefCrossfaderDlg#8
 msgid "Logarithmic"
 msgstr "Logarítmica"
 
-#: DlgPrefCrossfaderDlg#10
-msgctxt "DlgPrefCrossfaderDlg#10"
+#: DlgPrefCrossfaderDlg#9
+msgctxt "DlgPrefCrossfaderDlg#9"
 msgid "Reset to Defaults"
-msgstr "Restablecer valores predeterminados"
+msgstr ""
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1872,44 +1880,52 @@ msgstr ""
 "Usar rutas relativas al exportar lista de reproducción cuando sea posible"
 
 #: DlgPrefPlaylistDlg#10
+msgid "Other Librarys"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
 msgstr "Mostrar la librería de Rhythmbox"
 
-#: DlgPrefPlaylistDlg#11
+#: DlgPrefPlaylistDlg#12
 msgid "Show iTunes Library"
 msgstr "Mostrar la librería de ITunes"
 
-#: DlgPrefPlaylistDlg#12
+#: DlgPrefPlaylistDlg#13
 msgid "Show Traktor Library"
 msgstr "Mostrar la librería de Traktor"
 
-#: DlgPrefPlaylistDlg#13
-msgctxt "DlgPrefPlaylistDlg#13"
-msgid "Browse..."
-msgstr "Examinar..."
-
 #: DlgPrefPlaylistDlg#14
-msgctxt "DlgPrefPlaylistDlg#14"
-msgid "Library"
-msgstr "Biblioteca"
+msgid "    You will need to restart Mixxx for this to take effect"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#15
+msgctxt "DlgPrefPlaylistDlg#15"
+msgid "Browse..."
+msgstr ""
+
+#: DlgPrefPlaylistDlg#16
+msgctxt "DlgPrefPlaylistDlg#16"
+msgid "Library"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
 msgstr "Directorio de música:"
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#18
 msgid "Built-in"
 msgstr "Incorporado"
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#19
 msgid "Available Online..."
 msgstr "Disponible en línea..."
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#20
 msgid "Bundled Songs"
 msgstr "Canciones incluidas"
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#21
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -3008,6 +3024,46 @@ msgctxt "GLWaveformWidget#1"
 msgid "Filtered"
 msgstr "Filtrado"
 
+#: HidController#1
+msgid "Generic HID Mouse"
+msgstr ""
+
+#: HidController#2
+msgid "Generic HID Joystick"
+msgstr ""
+
+#: HidController#3
+msgid "Generic HID Gamepad"
+msgstr ""
+
+#: HidController#4
+msgid "Generic HID Keyboard"
+msgstr ""
+
+#: HidController#5
+msgid "Gereric HID Multiaxis Controller"
+msgstr ""
+
+#: HidController#6
+msgid "Unknown HID Desktop Device"
+msgstr ""
+
+#: HidController#7
+msgid "HID Infrared Control"
+msgstr ""
+
+#: HidController#8
+msgid "Unknown Apple HID Device"
+msgstr ""
+
+#: HidController#9
+msgid "HID Unknown Device"
+msgstr ""
+
+#: HidController#10
+msgid "HID Interface Number"
+msgstr ""
+
 #: ITunesFeature#1
 msgid "iTunes"
 msgstr "iTunes"
@@ -3517,14 +3573,26 @@ msgstr "Confirmar salida"
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Un deck está reproduciendo. ¿Salir de Mixxx?"
 
+#: MixxxApp#87
+msgid "The preferences window is still open."
+msgstr ""
+
+#: MixxxApp#88
+msgid "Discard any changes and exit Mixxx?"
+msgstr ""
+
 #: MixxxLibraryFeature#1
 msgid "Missing Tracks"
 msgstr "Pistas Faltantes"
 
 #: MixxxLibraryFeature#2
-msgctxt "MixxxLibraryFeature#2"
+msgid "Hidden Tracks"
+msgstr ""
+
+#: MixxxLibraryFeature#3
+msgctxt "MixxxLibraryFeature#3"
 msgid "Library"
-msgstr "Biblioteca"
+msgstr ""
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
@@ -4568,22 +4636,32 @@ msgstr ""
 "Clickee OK para salir."
 
 #: TrackCollection#3
+msgid "Click OK to exit."
+msgstr ""
+
+#: TrackCollection#4
 msgid "Cannot upgrade database schema"
 msgstr "No se puede actualizar el esquema de la base de datos"
 
-#: TrackCollection#4
-msgid ""
-"Unable to upgrade your database schema to version %1.\n"
-"Your mixxx.db file may be corrupt.\n"
-"Try renaming it and restarting Mixxx.\n"
-"\n"
-"Click OK to exit."
+#: TrackCollection#5
+msgid "Unable to upgrade your database schema to version %1"
 msgstr ""
-"Incapaz de actualizar su esquema de base de datos a la versión %1.\n"
-"Su archivo mixxx.db puede estar corrupto.\n"
-"Intente renombrándolo y reiniciando Mixxx.\n"
-"\n"
-"Pulse aceptar para salir."
+
+#: TrackCollection#6
+msgid "Your %1 file may be outdated."
+msgstr ""
+
+#: TrackCollection#7
+msgid "Your mixxxdb.sqlite file may be corrupt."
+msgstr ""
+
+#: TrackCollection#8
+msgid "Try renaming it and restarting Mixxx."
+msgstr ""
+
+#: TrackCollection#9
+msgid "Your %1 file may be missing or invalid."
+msgstr ""
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -4635,51 +4713,63 @@ msgid "Remove"
 msgstr "Eliminar"
 
 #: WTrackTableView#5
-msgid "Properties"
+msgid "Hide from library"
 msgstr ""
 
 #: WTrackTableView#6
-msgid "Open in File Browser"
+msgid "Unhide from library"
 msgstr ""
 
 #: WTrackTableView#7
-msgid "Add to Auto-DJ Queue (bottom)"
+msgid "Purge from library"
 msgstr ""
 
 #: WTrackTableView#8
-msgid "Add to Auto-DJ Queue (top)"
+msgid "Properties"
 msgstr ""
 
 #: WTrackTableView#9
+msgid "Open in File Browser"
+msgstr ""
+
+#: WTrackTableView#10
+msgid "Add to Auto-DJ Queue (bottom)"
+msgstr ""
+
+#: WTrackTableView#11
+msgid "Add to Auto-DJ Queue (top)"
+msgstr ""
+
+#: WTrackTableView#12
 msgid "Reload Track Metadata"
 msgstr "Recargar los Metadatos de la Pista"
 
-#: WTrackTableView#10
+#: WTrackTableView#13
 msgid "Reset Play Count"
 msgstr "Reestablecer el contador de reproducción"
 
-#: WTrackTableView#11
+#: WTrackTableView#14
 msgid "Lock BPM"
 msgstr "Bloquear PPM"
 
-#: WTrackTableView#12
+#: WTrackTableView#15
 msgid "Unlock BPM"
 msgstr "Desbloquear PPM"
 
-#: WTrackTableView#13
+#: WTrackTableView#16
 msgid "Clear BPM and Beatgrid"
 msgstr "Borrar BPM y cuadrícula de tempo"
 
-#: WTrackTableView#14
+#: WTrackTableView#17
 msgid "Load to Deck %1"
 msgstr "Cargar al deck %1"
 
-#: WTrackTableView#15
-msgctxt "WTrackTableView#15"
+#: WTrackTableView#18
+msgctxt "WTrackTableView#18"
 msgid "Sampler %1"
 msgstr ""
 
-#: WTrackTableView#16
+#: WTrackTableView#19
 msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
@@ -5071,6 +5161,10 @@ msgstr "(GL)"
 #~ msgid "File"
 #~ msgstr "Archivo"
 
+#~ msgctxt "DlgPrefPlaylistDlg#14"
+#~ msgid "Library"
+#~ msgstr "Biblioteca"
+
 #~ msgctxt "DlgPrefPlaylistDlg#12"
 #~ msgid "Browse..."
 #~ msgstr "Examinar..."
@@ -5093,6 +5187,12 @@ msgstr "(GL)"
 
 #~ msgid "Apply"
 #~ msgstr "Aplicar"
+
+#~ msgid "Slow fade"
+#~ msgstr "Atenuación baja"
+
+#~ msgid "Fast cut"
+#~ msgstr "Corte Rápido"
 
 #~ msgid "Select Control Group"
 #~ msgstr "Seleccionar Grupo del Control"
@@ -5498,6 +5598,10 @@ msgstr "(GL)"
 #~ msgstr ""
 #~ "O ficheiro %1 xa existe. Desexa sobrescribilo?\n"
 #~ "Ao escoller «Non» cancelará a gravación."
+
+#~ msgctxt "MixxxLibraryFeature#2"
+#~ msgid "Library"
+#~ msgstr "Biblioteca"
 
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
@@ -6019,6 +6123,25 @@ msgstr "(GL)"
 #~ msgid "Run Macro"
 #~ msgstr "Ejecutar macro"
 
+#~ msgid ""
+#~ "Unable to upgrade your database schema to version %1.\n"
+#~ "Your mixxx.db file may be corrupt.\n"
+#~ "Try renaming it and restarting Mixxx.\n"
+#~ "\n"
+#~ "Click OK to exit."
+#~ msgstr ""
+#~ "Incapaz de actualizar su esquema de base de datos a la versión %1.\n"
+#~ "Su archivo mixxx.db puede estar corrupto.\n"
+#~ "Intente renombrándolo y reiniciando Mixxx.\n"
+#~ "\n"
+#~ "Pulse aceptar para salir."
+
+#~ msgid "Mixxx Detected a WVGA Screen"
+#~ msgstr "Mixxx detectó una pantalla WVGA"
+
+#~ msgid "Mixxx has detected that your screen has a resolution of "
+#~ msgstr "Mixxx ha detectado que su pantalla tiene una resolución de "
+
 #~ msgid "Headphones volume"
 #~ msgstr "Volumen de auriculares"
 
@@ -6465,3 +6588,10 @@ msgstr "(GL)"
 
 #~ msgid "Playlist Creation Failed"
 #~ msgstr "No se pudo crear lista de reproducción"
+
+#~ msgid ""
+#~ "The only skin compatiable with this size display is Outline800x480-WVGA.  "
+#~ "Would you like to use that skin?"
+#~ msgstr ""
+#~ "La única skin compatible con este tamaño de dispositivo es Outline800x480-"
+#~ "WVGA. Le gustaría usar esa skin?"
