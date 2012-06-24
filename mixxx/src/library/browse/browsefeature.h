@@ -54,7 +54,6 @@ class BrowseFeature : public LibraryFeature {
     ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
-    QString m_currentSearch;
 };
 
 #endif /* BROWSEFEATURE_H */

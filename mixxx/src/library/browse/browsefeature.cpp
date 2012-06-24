@@ -141,8 +141,9 @@ bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void BrowseFeature::activate() {
-    emit(restoreSearch(m_currentSearch));
+    emit(restoreSearch(QString()));
 }
+
 /*
  * Note: This is executed whenever you single click on an child item
  * Single clicks will not populate sub folders

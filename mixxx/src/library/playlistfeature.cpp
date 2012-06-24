@@ -102,6 +102,7 @@ void PlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 void PlaylistFeature::activate() {
     emit(showPage(QUrl("qrc:/html/playlists.html")));
     emit(switchToView("PLAYLISTHOME"));
+    emit(restoreSearch(QString())); // Null String disables search box
 }
 
 void PlaylistFeature::activateChild(const QModelIndex& index) {
@@ -448,7 +449,7 @@ void PlaylistFeature::slotExportPlaylist(){
         new PlaylistTableModel(this, m_pTrackCollection,
                                "mixxx.db.model.playlist_export"));
 
-    pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylistId());
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistTableModel->select();
     int rows = pPlaylistTableModel->rowCount();
@@ -481,12 +482,18 @@ void PlaylistFeature::slotExportPlaylist(){
 
 void PlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+	addToAutoDJ(false); // Top = True
+}
+
+void PlaylistFeature::addToAutoDJ(bool bTop) {
+    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
             m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
-            m_playlistDao.addToAutoDJQueue(playlistId);
+       		// Insert this playlist
+        	m_playlistDao.addToAutoDJQueue(playlistId, bTop);
         }
     }
     emit(featureUpdated());

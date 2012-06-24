@@ -816,6 +816,15 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group) {
 }
 
 void WTrackTableView::slotSendToAutoDJ() {
+	// append to auto DJ
+	sendToAutoDJ(false); // bTop = false
+}
+
+void WTrackTableView::slotSendToAutoDJTop() {
+	sendToAutoDJ(true); // bTop = true
+}
+
+void WTrackTableView::sendToAutoDJ(bool bTop) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
