@@ -1341,6 +1341,7 @@ void MixxxApp::slotHelpAbout() {
 "Bill Good<br>"
 "Owen Williams<br>"
 "Vittorio Colao<br>"
+"Daniel Sch&uuml;rmann<br>"
 
 "</p>"
 "<p align=\"center\"><b>%2</b></p>"
