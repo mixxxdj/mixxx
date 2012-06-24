@@ -19,9 +19,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
                        QString settingsNamespace);
     virtual ~PlaylistTableModel();
     void setPlaylist(int playlistId);
-    int getPlaylist() const {
-        return m_iPlaylistId;
-    }
+    int getPlaylistId(void);
     virtual TrackPointer getTrack(const QModelIndex& index) const;
 
     virtual void search(const QString& searchText);
@@ -30,6 +28,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
+    virtual bool appendTrack(int trackId);
     // Adding multiple tracks at one to a playlist. Returns the number of
     // successful additions.
     virtual int addTracks(const QModelIndex& index, QList<QString> locations);
