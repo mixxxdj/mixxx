@@ -3,6 +3,7 @@
 #ifndef SETLOGFEATURE_H
 #define SETLOGFEATURE_H
 
+#include <QLinkedList>
 #include <QSqlTableModel>
 #include <QAction>
 
@@ -39,8 +40,13 @@ public:
 
   private slots:
     void slotPlayingDeckChanged(int deck);
+    void slotPlaylistTableChanged(int playlistId);
+
 
   private:
+    virtual QString getRootViewHtml() const;
+
+    QLinkedList<int> m_recentTracks;
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
 };

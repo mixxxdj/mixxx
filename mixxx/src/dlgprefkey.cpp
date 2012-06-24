@@ -31,21 +31,23 @@
 
 #define CONFIG_KEY "[KEY]"
 
-DlgPrefKey::DlgPrefKey(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefKEYDlg()
+DlgPrefKeyNotationFormat::DlgPrefKeyNotationFormat(QWidget * parent, 
+  ConfigObject<ConfigValue> * _config) : QWidget(parent), 
+  Ui::DlgPrefKeyNotationFormatDlg()
 {
     config = _config;
 
     setupUi(this);
 }
 
-DlgPrefKey::~DlgPrefKey()
+DlgPrefKeyNotationFormat::~DlgPrefKeyNotationFormat()
 {
 }
 
-void DlgPrefKey::slotApply()
+void DlgPrefKeyNotationFormat::slotApply()
 {
 }
 
-void DlgPrefKey::slotUpdate()
+void DlgPrefKeyNotationFormat::slotUpdate()
 {
 }

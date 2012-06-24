@@ -10,6 +10,7 @@
 //
 //
 
+#include <QtDebug>
 #include <qapplication.h>
 #include "controlobjectthreadwidget.h"
 #include "controlobject.h"
@@ -31,6 +32,9 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
 {
 
     if (connectValueFromWidget) {
+        connect(widget, SIGNAL(valueReset()),
+                this, SLOT(slotReset()));
+
         if (emitOption & EMIT_ON_PRESS) {
             if (state == Qt::NoButton)
                 connect(widget, SIGNAL(valueChangedDown(double)),
@@ -67,6 +71,16 @@ void ControlObjectThreadWidget::setWidgetOnOff(QWidget * widget)
 {
     QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setOnOff(double)));
     emit(valueChanged(m_dValue));
+}
+
+void ControlObjectThreadWidget::slotReset() {
+    double defaultValue = m_pControlObject->defaultValue();
+    // defaultValue is a control value. slotSet needs to be set with a widget
+    // value since widget value-changed signals connect to it. setExtern needs
+    // to be called with a control value since it is triggered by control
+    // updates.
+    slotSet(m_pControlObject->getValueToWidget(defaultValue));
+    setExtern(defaultValue);
 }
 
 void ControlObjectThreadWidget::updateControlObject()

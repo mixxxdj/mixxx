@@ -84,6 +84,8 @@ WTrackTableView::~WTrackTableView()
     delete m_pAutoDJAct;
     delete m_pAutoDJTopAct;
     delete m_pRemoveAct;
+    delete m_pHideAct;
+    delete m_pUnhideAct;
     delete m_pPropertiesAct;
     delete m_pMenu;
     delete m_pPlaylistMenu;
@@ -92,6 +94,8 @@ WTrackTableView::~WTrackTableView()
     delete m_pTrackInfo;
     delete m_pNumSamplers;
     delete m_pNumDecks;
+    delete m_pBpmLockAction;
+    delete m_pBpmUnlockAction;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
@@ -163,7 +167,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        QItemDelegate* delegate = track_model->delegateForColumn(i);
+        QAbstractItemDelegate* delegate = track_model->delegateForColumn(i, this);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
@@ -255,9 +259,22 @@ void WTrackTableView::createActions() {
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
-    m_pPropertiesAct = new QAction(tr("Properties..."), this);
+    m_pHideAct = new QAction(tr("Hide from Library"), this);
+    connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
+
+    m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
+    connect(m_pUnhideAct, SIGNAL(triggered()), this, SLOT(slotUnhide()));
+
+    m_pPurgeAct = new QAction(tr("Purge from Library"), this);
+    connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
+
+    m_pPropertiesAct = new QAction(tr("Properties"), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()),
             this, SLOT(slotShowTrackInfo()));
+
+    m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
+    connect(m_pFileBrowserAct, SIGNAL(triggered()),
+            this, SLOT(slotOpenInFileBrowser()));
 
     m_pAutoDJAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
@@ -269,6 +286,21 @@ void WTrackTableView::createActions() {
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
+
+    m_pResetPlayedAct = new QAction(tr("Reset Play Count"), this);
+    connect(m_pResetPlayedAct, SIGNAL(triggered()),
+            this, SLOT(slotResetPlayed()));
+
+    m_pBpmLockAction = new QAction(tr("Lock BPM"), this);
+    m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), this);
+    connect(m_pBpmLockAction, SIGNAL(triggered()),
+            this, SLOT(slotLockBpm()));
+    connect(m_pBpmUnlockAction, SIGNAL(triggered()),
+            this, SLOT(slotUnlockBpm()));
+
+    m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
+    connect(m_pClearBeatsAction, SIGNAL(triggered()),
+            this, SLOT(slotClearBeats()));
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
@@ -317,6 +349,72 @@ void WTrackTableView::slotRemove()
         }
     }
 }
+
+void WTrackTableView::slotPurge(){
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0)
+    {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            trackModel->purgeTracks(indices);
+        }
+    }
+}
+
+void WTrackTableView::slotOpenInFileBrowser() {
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel)
+        return;
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    QSet<QString> dirs;
+    foreach (QModelIndex index, indices) {
+        if (!index.isValid())
+            continue;
+
+        QFileInfo file(trackModel->getTrackLocation(index));
+
+        // if (!file.exists()) {
+            // continue;
+        // }
+
+        QDir directory = file.dir();
+        if (!directory.exists()) {
+            directory = QDir::home();
+        }
+        if (dirs.contains(directory.absolutePath()))
+            continue;
+        dirs.insert(directory.absolutePath());
+        QDesktopServices::openUrl(QUrl::fromLocalFile(directory.absolutePath()));
+    }
+
+}
+
+void WTrackTableView::slotHide()
+{
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0)
+    {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            trackModel->hideTracks(indices);
+        }
+    }
+}
+
+void WTrackTableView::slotUnhide()
+{
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0)
+    {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel) {
+            trackModel->unhideTracks(indices);
+        }
+    }
+}
+
 
 void WTrackTableView::slotShowTrackInfo() {
     QModelIndexList indices = selectionModel()->selectedRows();
@@ -374,7 +472,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 QString deckGroup = QString("[Channel%1]").arg(i);
                 bool deckPlaying = ControlObject::getControl(
                     ConfigKey(deckGroup, "play"))->get() == 1.0f;
-                bool deckEnabled = !deckPlaying && oneSongSelected;
+                bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
+                	ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
+                bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
                 m_pMenu->addAction(pAction);
@@ -449,15 +549,58 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addMenu(m_pCrateMenu);
     }
 
-    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-    m_pRemoveAct->setEnabled(!locked);
     m_pMenu->addSeparator();
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
-        m_pMenu->addAction(m_pRemoveAct);
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_BPMLOCK)) {
+        m_pMenu->addAction(m_pBpmLockAction);
+        m_pMenu->addAction(m_pBpmUnlockAction);
     }
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
+        TrackModel* trackModel = getTrackModel();
+        if (trackModel == NULL) {
+            return;
+        }
+        QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+        bool allowClear = true;
+        for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+            QModelIndex index = selectedTrackIndices.at(i);
+            TrackPointer track = trackModel->getTrack(index);
+            if (track->hasBpmLock()) {
+                allowClear = false;
+            }
+        }
+        m_pClearBeatsAction->setEnabled(allowClear);
+        m_pMenu->addAction(m_pClearBeatsAction);
+    }
+
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
     }
+    // REMOVE and HIDE should not be at the first menu position to avoid excitedly clicks
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        m_pRemoveAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemoveAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        m_pHideAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pHideAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        m_pUnhideAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pUnhideAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        m_pPurgeAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pPurgeAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
+        m_pMenu->addAction(m_pResetPlayedAct);
+    }
+    m_pMenu->addAction(m_pFileBrowserAct);
+    m_pMenu->addSeparator();
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -488,12 +631,22 @@ void WTrackTableView::onShow() {
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
-   Q_UNUSED(pEvent);
-   TrackModel* trackModel = getTrackModel();
+    // Only use this for drag and drop if the LeftButton is pressed we need to
+    // check for this because PreviewButtonDelegate activates mousetracking and
+    // this function is called everytime the mouse is moved -- kain88 May 2012
+    if (pEvent->buttons() != Qt::LeftButton) {
+        // Needed for mouse-tracking to fire entered() events. If we call this
+        // outside of this if statement then we get 'ghost' drags. See Bug
+        // #1008737
+        WLibraryTableView::mouseMoveEvent(pEvent);
+        return;
+    }
+
+    TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
-
-    // Iterate over selected rows and append each item's location url to a list
+    // qDebug() << "MouseMoveEvent";
+    // Iterate over selected rows and append each item's location url to a list.
     QList<QUrl> locationUrls;
     QModelIndexList indices = selectionModel()->selectedRows();
     foreach (QModelIndex index, indices) {
@@ -553,10 +706,9 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
     }
 }
 
-/** Drag move event, happens when a dragged item hovers over the track table view...
- *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
- *  -- Albert June 8/08
- */
+// Drag move event, happens when a dragged item hovers over the track table view...
+// Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
+// -- Albert June 8/08
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
@@ -578,7 +730,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     }
 }
 
-/** Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view */
+// Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
 void WTrackTableView::dropEvent(QDropEvent * event)
 {
     if (event->mimeData()->hasUrls()) {
@@ -586,42 +738,51 @@ void WTrackTableView::dropEvent(QDropEvent * event)
         QUrl url;
         QModelIndex selectedIndex; //Index of a selected track (iterator)
 
-        //TODO: Filter out invalid URLs (eg. files that aren't supported audio filetypes, etc.)
+        // Filter out invalid URLs (eg. files that aren't supported audio filetypes, etc.)
+        QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(),
+                       Qt::CaseInsensitive);
+        for (int i=0; i<urls.size(); i++) {
+            if (!fileRx.indexIn(urls.at(i).path())) {
+                // remove invalid urls and decrease i because the size of
+                // urls has changed.
+                urls.removeAt(i--);
+            }
+        }
 
-        //Save the vertical scrollbar position. Adding new tracks and moving tracks in
-        //the SQL data models causes a select() (ie. generation of a new result set),
-        //which causes view to reset itself. A view reset causes the widget to scroll back
-        //up to the top, which is confusing when you're dragging and dropping. :)
+        // Save the vertical scrollbar position. Adding new tracks and moving tracks in
+        // the SQL data models causes a select() (ie. generation of a new result set),
+        // which causes view to reset itself. A view reset causes the widget to scroll back
+        // up to the top, which is confusing when you're dragging and dropping. :)
         saveVScrollBarPos();
 
-        //The model index where the track or tracks are destined to go. :)
-        //(the "drop" position in a drag-and-drop)
+        // The model index where the track or tracks are destined to go. :)
+        // (the "drop" position in a drag-and-drop)
         QModelIndex destIndex = indexAt(event->pos());
 
 
         //qDebug() << "destIndex.row() is" << destIndex.row();
 
-        //Drag and drop within this widget (track reordering)
+        // Drag and drop within this widget (track reordering)
         if (event->source() == this)
         {
-            //For an invalid destination (eg. dropping a track beyond
-            //the end of the playlist), place the track(s) at the end
-            //of the playlist.
+            // For an invalid destination (eg. dropping a track beyond
+            // the end of the playlist), place the track(s) at the end
+            // of the playlist.
             if (destIndex.row() == -1) {
                 int destRow = model()->rowCount() - 1;
                 destIndex = model()->index(destRow, 0);
             }
-            //Note the above code hides an ambiguous case when a
-            //playlist is empty. For that reason, we can't factor that
-            //code out to be common for both internal reordering
-            //and external drag-and-drop. With internal reordering,
-            //you can't have an empty playlist. :)
+            // Note the above code hides an ambiguous case when a
+            // playlist is empty. For that reason, we can't factor that
+            // code out to be common for both internal reordering
+            // and external drag-and-drop. With internal reordering,
+            // you can't have an empty playlist. :)
 
             //qDebug() << "track reordering" << __FILE__ << __LINE__;
 
-            //Save a list of row (just plain ints) so we don't get screwed over
-            //when the QModelIndexes all become invalid (eg. after moveTrack()
-            //or addTrack())
+            // Save a list of row (just plain ints) so we don't get screwed over
+            // when the QModelIndexes all become invalid (eg. after moveTrack()
+            // or addTrack())
             QModelIndexList indices = selectionModel()->selectedRows();
 
             QList<int> selectedRows;
@@ -631,22 +792,20 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 selectedRows.append(idx.row());
             }
 
-
-            /** Note: The biggest subtlety in the way I've done this track reordering code
-                is that as soon as we've moved ANY track, all of our QModelIndexes probably
-                get screwed up. The starting point for the logic below is to say screw it to
-                the QModelIndexes, and just keep a list of row numbers to work from. That
-                ends up making the logic simpler and the behaviour totally predictable,
-                which lets us do nice things like "restore" the selection model.
-            */
+            // Note: The biggest subtlety in the way I've done this track reordering code
+            // is that as soon as we've moved ANY track, all of our QModelIndexes probably
+            // get screwed up. The starting point for the logic below is to say screw it to
+            // the QModelIndexes, and just keep a list of row numbers to work from. That
+            // ends up making the logic simpler and the behaviour totally predictable,
+            // which lets us do nice things like "restore" the selection model.
 
             if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                 TrackModel* trackModel = getTrackModel();
 
-                //The model indices are sorted so that we remove the tracks from the table
-                //in ascending order. This is necessary because if track A is above track B in
-                //the table, and you remove track A, the model index for track B will change.
-                //Sorting the indices first means we don't have to worry about this.
+                // The model indices are sorted so that we remove the tracks from the table
+                // in ascending order. This is necessary because if track A is above track B in
+                // the table, and you remove track A, the model index for track B will change.
+                // Sorting the indices first means we don't have to worry about this.
                 //qSort(m_selectedIndices);
                 //qSort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
                 qSort(selectedRows);
@@ -709,7 +868,7 @@ void WTrackTableView::dropEvent(QDropEvent * event)
 
             }
         }
-        else
+        else//Drag and drop inside Mixxx is only for few rows, bulks happen here
         {
             //Reset the selected tracks (if you had any tracks highlighted, it
             //clears them)
@@ -719,21 +878,23 @@ void WTrackTableView::dropEvent(QDropEvent * event)
             //eg. dragging a track from Windows Explorer onto the track table.
             TrackModel* trackModel = getTrackModel();
             if (trackModel) {
-                int numNewRows = urls.count(); //XXX: Crappy, assumes all URLs are valid songs.
-                                               //     Should filter out invalid URLs at the start of this function.
+                int numNewRows = urls.count();
 
-                int selectionStartRow = destIndex.row();  //Have to do this here because the index is invalid after addTrack
+                // Have to do this here because the index is invalid after
+                // addTrack
+                int selectionStartRow = destIndex.row();
 
-                //Make a new selection starting from where the first track was dropped, and select
-                //all the dropped tracks
+                // Make a new selection starting from where the first track was
+                // dropped, and select all the dropped tracks
 
-                //If the track was dropped into an empty playlist, start at row 0 not -1 :)
+                // If the track was dropped into an empty playlist, start at row
+                // 0 not -1 :)
                 if ((destIndex.row() == -1) && (model()->rowCount() == 0))
                 {
                     selectionStartRow = 0;
                 }
-                //If the track was dropped beyond the end of a playlist, then we need
-                //to fudge the destination a bit...
+                // If the track was dropped beyond the end of a playlist, then
+                // we need to fudge the destination a bit...
                 else if ((destIndex.row() == -1) && (model()->rowCount() > 0))
                 {
                     //qDebug() << "Beyond end of playlist";
@@ -741,21 +902,26 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                     selectionStartRow = model()->rowCount();
                 }
 
-                //Add all the dropped URLs/tracks to the track model (playlist/crate)
-                foreach (url, urls)
-                {
-                    QFileInfo file(url.toLocalFile());
-                    if (!trackModel->addTrack(destIndex, file.absoluteFilePath()))
-                        numNewRows--; //# of rows to select must be decremented if we skipped some tracks
+                // Add all the dropped URLs/tracks to the track model (playlist/crate)
+                QList<QString> fileLocationList;
+                foreach(url, urls) {
+                    QString file(url.toLocalFile());
+                    fileLocationList.append(file);
                 }
+                // calling the addTracks returns number of failed additions
+                int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
 
-                //Create the selection, but only if the track model supports reordering.
-                //(eg. crates don't support reordering/indexes)
+                // Decrement # of rows to select if some were skipped
+                numNewRows -= (fileLocationList.size() - tracksAdded);
+
+                // Create the selection, but only if the track model supports
+                // reordering. (eg. crates don't support reordering/indexes)
                 if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
-                    for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++)
-                    {
-                        this->selectionModel()->select(model()->index(i, 0), QItemSelectionModel::Select |
-                                                    QItemSelectionModel::Rows);
+                    for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
+                        this->selectionModel()->select(model()->index(i, 0),
+                                                       QItemSelectionModel::Select |
+                                                       QItemSelectionModel::Rows);
+
                     }
                 }
             }
@@ -823,28 +989,32 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
 
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-
-    if (iAutoDJPlaylistId == -1)
+    if (iAutoDJPlaylistId == -1) {
         return;
+    }
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
     TrackModel* trackModel = getTrackModel();
+    if (!trackModel) {
+        return;
+    }
+
     foreach (QModelIndex index, indices) {
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
             int iTrackId = pTrack->getId();
-            if (iTrackId != -1) {
-                if (bTop) {
-                    // Load track to position two because position one is
-                    // already loaded to the player
-                    playlistDao.insertTrackIntoPlaylist(iTrackId,
-                                                        iAutoDJPlaylistId, 2);
-                } else {
-                    playlistDao.appendTrackToPlaylist(
-                        iTrackId, iAutoDJPlaylistId);
-                }
+            if (iTrackId == -1) {
+                continue;
+            }
+            if (bTop) {
+                // Load track to position two because position one is
+                // already loaded to the player
+                playlistDao.insertTrackIntoPlaylist(iTrackId,
+                                                    iAutoDJPlaylistId, 2);
+            } else {
+                playlistDao.appendTrackToPlaylist(
+                    iTrackId, iAutoDJPlaylistId);
             }
         }
     }
@@ -879,21 +1049,45 @@ void WTrackTableView::slotReloadTrackMetadata() {
     }
 }
 
+//slot for reset played count, sets count to 0 of one or more tracks
+void WTrackTableView::slotResetPlayed() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setTimesPlayed(0);
+        }
+    }
+}
+
 void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     TrackModel* trackModel = getTrackModel();
 
-    QModelIndexList indices = selectionModel()->selectedRows();
+    if (!trackModel) {
+        return;
+    }
 
+    QModelIndexList indices = selectionModel()->selectedRows();
+    QList<int> trackIds;
     foreach (QModelIndex index, indices) {
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            int iTrackId = pTrack->getId();
-            if (iTrackId != -1) {
-                playlistDao.appendTrackToPlaylist(iTrackId, iPlaylistId);
-            }
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (!pTrack) {
+            continue;
         }
+        int iTrackId = pTrack->getId();
+        if (iTrackId != -1) {
+            trackIds.append(iTrackId);
+        }
+    }
+    if (trackIds.size() > 0) {
+        playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }
 
@@ -901,16 +1095,25 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     TrackModel* trackModel = getTrackModel();
 
+    if (!trackModel) {
+        return;
+    }
+
     QModelIndexList indices = selectionModel()->selectedRows();
+    QList<int> trackIds;
     foreach (QModelIndex index, indices) {
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            int iTrackId = pTrack->getId();
-            if (iTrackId != -1) {
-                crateDao.addTrackToCrate(iTrackId, iCrateId);
-            }
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (!pTrack) {
+            continue;
         }
+        int iTrackId = pTrack->getId();
+        if (iTrackId != -1) {
+            trackIds.append(iTrackId);
+        }
+    }
+
+    if (trackIds.size() > 0) {
+        crateDao.addTracksToCrate(trackIds, iCrateId);
     }
 }
 
@@ -941,7 +1144,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     currentSelection->reset(); // remove current selection
 
-    QModelIndex first;
+    QMap<int,int> selectedRows;
     foreach (int trackId, trackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
@@ -954,17 +1157,65 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         // trackid.
         QLinkedList<int> rows = trackModel->getTrackRows(trackId);
         foreach (int row, rows) {
-            QModelIndex tl = itemModel->index(row, visibleColumn);
-            currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+            // Restore sort order by rows, so the following commands will act as expected
+            selectedRows.insert(row,0);
+        }
+    }
 
-            if (!first.isValid()) {
-                first = tl;
-            }
+    QModelIndex first;
+    QMapIterator<int,int> i(selectedRows);
+    while (i.hasNext()) {
+        i.next();
+        QModelIndex tl = itemModel->index(i.key(), visibleColumn);
+        currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+
+        if (!first.isValid()) {
+            first = tl;
         }
     }
 
     if (first.isValid()) {
         scrollTo(first, QAbstractItemView::EnsureVisible);
         //scrollTo(first, QAbstractItemView::PositionAtCenter);
+    }
+}
+
+void WTrackTableView::slotLockBpm() {
+    lockBpm(true);
+}
+
+void WTrackTableView::slotUnlockBpm() {
+    lockBpm(false);
+}
+
+void WTrackTableView::lockBpm(bool lock) {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    // TODO: This should be done in a thread for large selections
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        track->setBpmLock(lock);
+    }
+}
+
+void WTrackTableView::slotClearBeats() {
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    // TODO: This should be done in a thread for large selections
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        if (!track->hasBpmLock()) {
+            track->setBeats(BeatsPointer());
+        }
     }
 }

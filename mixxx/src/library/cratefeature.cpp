@@ -139,8 +139,7 @@ void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     Q_UNUSED(sidebarWidget);
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    connect(this, SIGNAL(showPage(const QUrl&)),
-            edit, SLOT(setSource(const QUrl&)));
+    edit->setHtml(getRootViewHtml());
     libraryWidget->registerView("CRATEHOME", edit);
 }
 
@@ -149,8 +148,8 @@ TreeItemModel* CrateFeature::getChildModel() {
 }
 
 void CrateFeature::activate() {
-    emit(showPage(QUrl("qrc:/html/crates.html")));
     emit(switchToView("CRATEHOME"));
+    emit(restoreSearch(QString())); //disable search on crate home
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
@@ -233,7 +232,6 @@ void CrateFeature::slotCreateCrate() {
 
     if (crate_id != -1) {
         emit(showTrackModel(&m_crateTableModel));
-        emit(featureUpdated());
     } else {
         qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
@@ -256,8 +254,7 @@ void CrateFeature::slotDeleteCrate() {
 
     bool deleted = m_crateDao.deleteCrate(crateId);
 
-    if (deleted) {
-        emit(featureUpdated());
+    if (deleted) {;
         activate();
     } else {
         qDebug() << "Failed to delete crateId" << crateId;
@@ -308,9 +305,7 @@ void CrateFeature::slotRenameCrate() {
     } while (!validNameGiven);
 
 
-    if (m_crateDao.renameCrate(crateId, newName)) {
-        emit(featureUpdated());
-    } else {
+    if (!m_crateDao.renameCrate(crateId, newName)) {
         qDebug() << "Failed to rename crateId" << crateId;
     }
 }
@@ -443,12 +438,11 @@ void CrateFeature::slotExportPlaylist(){
         new CrateTableModel(this, m_pTrackCollection));
     pCrateTableModel->setCrate(m_crateTableModel.getCrate());
     pCrateTableModel->select();
-    int rows = pCrateTableModel->rowCount();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
             ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);
     } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
-             ParserCsv::writeReadableTextFile(file_location, pCrateTableModel.data());
+             ParserCsv::writeReadableTextFile(file_location, pCrateTableModel.data(), false);
     } else{
         // populate a list of files of the crate
         QList<QString> playlist_items;
@@ -484,4 +478,22 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     m_crateTableModel.setCrate(crateId);
     // Update selection
     emit(featureSelect(this, m_lastRightClickedIndex));
+}
+
+QString CrateFeature::getRootViewHtml() const {
+    QString cratesTitle = tr("Crates");
+    QString cratesSummary = tr("Crates are a great way to help organize the music you want to DJ with.");
+    QString cratesSummary2 = tr("Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.");
+    QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
+
+    QString html;
+    html.append(QString("<h2>%1</h2>").arg(cratesTitle));
+    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
+    html.append(QString("<p>%1</p>").arg(cratesSummary));
+    html.append(QString("<p>%1</p>").arg(cratesSummary2));
+    html.append(QString("<p>%1</p>").arg(cratesSummary3));
+    html.append("</td><td>");
+    html.append("<img src=\"qrc:/images/library/crates_art.png\">");
+    html.append("</td></tr></table>");
+    return html;
 }

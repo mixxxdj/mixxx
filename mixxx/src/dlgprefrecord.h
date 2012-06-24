@@ -46,14 +46,17 @@ public slots:
     void slotRecordPathChange();
     void slotEnableCueFile(int);
     void slotChangeSplitSize();
+    /** Dialog to browse for recordings directory */
+    void slotBrowseRecordingsDir();
 signals:
     void apply(const QString &);
 private:
+    void setRecordingFolder();
     void setMetaData();
     void loadMetaData();
     int getSliderQualityVal();
     void updateTextQuality();
-    
+
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
     ControlObjectThreadMain* recordControl;

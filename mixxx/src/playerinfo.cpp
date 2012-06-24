@@ -77,6 +77,18 @@ void PlayerInfo::setTrackInfo(QString group, TrackPointer track)
     m_loadedTrackMap[group] = track;
 }
 
+bool PlayerInfo::isTrackLoaded(TrackPointer pTrack) const {
+    QMutexLocker locker(&m_mutex);
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value() == pTrack) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
     updateCurrentPlayingDeck();
 }
@@ -103,7 +115,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         if ((fvol = m_listCOVolume[chan]->get()) == 0.0 )
             continue;
 
-        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0);
+        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0, false);
 
         // Orientation goes: left is 0, center is 1, right is 2.
         // Leave math out of it...

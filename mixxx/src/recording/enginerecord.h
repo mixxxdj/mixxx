@@ -90,8 +90,8 @@ class EngineRecord : public EngineAbstractRecord {
     double m_dLatency;
 
     QByteArray m_cuefilename;
-    unsigned long m_cuesamplepos;
-    unsigned long m_cuetrack;
+    quint64 m_cuesamplepos;
+    quint64 m_cuetrack;
     bool m_bCueIsEnabled;
 };
 

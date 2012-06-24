@@ -26,9 +26,8 @@
 #include "defs.h"
 #include "wpixmapstore.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent, float defaultValue)
-    : WAbstractControl(parent,defaultValue)
-{
+WSliderComposed::WSliderComposed(QWidget * parent)
+    : WAbstractControl(parent) {
     m_pSlider = 0;
     m_pHandle = 0;
     m_bHorizontal = false;
@@ -38,8 +37,6 @@ WSliderComposed::WSliderComposed(QWidget * parent, float defaultValue)
     // Set default values
     m_iSliderLength=0;
     m_iHandleLength=0;
-
-    m_fValue = defaultValue; // FWI: Fixed slider default positon
 }
 
 WSliderComposed::~WSliderComposed()
@@ -180,7 +177,7 @@ void WSliderComposed::mousePressEvent(QMouseEvent * e)
     {
         if (e->button() == Qt::RightButton)
         {
-            reset();
+            emit(valueReset());
             m_bRightButtonPressed = true;
         }
         else

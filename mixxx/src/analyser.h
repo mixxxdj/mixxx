@@ -16,10 +16,12 @@
 class Analyser {
 
 public:
-    virtual void initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+    virtual bool initialise(TrackPointer tio, int sampleRate, int totalSamples) {
         Q_UNUSED(tio); Q_UNUSED(sampleRate); Q_UNUSED(totalSamples); // silence warnings
+        return false;
     }
     virtual void process(const CSAMPLE* pIn, const int iLen) = 0;
+    virtual void cleanup(TrackPointer tio) = 0;
     virtual void finalise(TrackPointer tio) { Q_UNUSED(tio); }
     virtual ~Analyser() {}
 };

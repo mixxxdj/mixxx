@@ -25,29 +25,24 @@
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
 
-class QListWidget;
-class QListWidgetItem;
-class QStackedWidget;
-
 class MixxxApp;
-class PlayerProxy;
 class SoundManager;
 class DlgPrefSound;
-class DlgPrefMidiBindings;
+class DlgPrefController;
+class DlgPrefNoControllers;
 class DlgPrefPlaylist;
-class DlgPrefNoMidi;
 class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
 class DlgPrefBpm;
-class DlgPrefKey;
+class DlgPrefKeyNotationFormat;
+class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
 class DlgPrefReplayGain;
-class PowerMate;
-class MidiDeviceManager;
+class ControllerManager;
 class SkinLoader;
 class PlayerManager;
 class VinylControlManager;
@@ -61,7 +56,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
-                   PlayerManager* pPlayerManager, MidiDeviceManager* midi,
+//                    PlayerManager* pPlayerManager, ControllerManager* controllers, MidiDeviceManager* midi,
+                   PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config);
 
     ~DlgPreferences();
@@ -69,31 +65,32 @@ public:
 public slots:
     void slotShow();
     void slotHide();
-    void rescanMidi();
+    void rescanControllers();
     void slotApply();
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
-    void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
+    void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 signals:
     void closeDlg();
     void showDlg();
 protected:
     bool eventFilter(QObject*, QEvent*);
 private:
-    void destroyMidiWidgets();
-    void setupMidiWidgets();
+    void destroyControllerWidgets();
+    void setupControllerWidgets();
     int addPageWidget(QWidget* w);
-    QList<DlgPrefMidiBindings*> m_wmidiBindingsForDevice;
-
+    QList<DlgPrefController*> m_controllerWindows;
+    
     DlgPrefSound* m_wsound;
     DlgPrefPlaylist* m_wplaylist;
-    DlgPrefNoMidi* m_wNoMidi;
+    DlgPrefNoControllers *m_wNoControllers;
     DlgPrefControls* m_wcontrols;
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
+    DlgPrefKeyNotationFormat* m_wkey;
     DlgPrefBpm* m_wbpm;
-    DlgPrefKey* m_wkey;
+    DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;
     DlgPrefShoutcast* m_wshoutcast;
@@ -102,7 +99,7 @@ private:
     /*
     QScrollArea* m_sasound;
     QScrollArea* m_saplaylist;
-    QScrollArea* m_saNoMidi;
+//     QScrollArea* m_saNoMidi;
     QScrollArea* m_sacontrols;
     QScrollArea* m_saeq;
     QScrollArea* m_sacrossfader;
@@ -120,19 +117,19 @@ private:
     QTreeWidgetItem* m_pEqButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
+    QTreeWidgetItem* m_pKeyNotationFormatButton;
     QTreeWidgetItem* m_pBPMdetectButton;
-    QTreeWidgetItem* m_pKEYdetectButton;
+    QTreeWidgetItem* m_pAnalysersButton;
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
-    QTreeWidgetItem* m_pMIDITreeItem;
-    QList<QTreeWidgetItem*> m_midiBindingsButtons;
+    QTreeWidgetItem* m_pControllerTreeItem;
+    QList<QTreeWidgetItem*> m_controllerWindowLinks;
 
     QSize m_pageSizeHint;
 
     ConfigObject<ConfigValue>* config;
-    MixxxApp* m_pMixxx;
-    MidiDeviceManager* m_pMidiDeviceManager;
+    ControllerManager* m_pControllerManager;
 };
 
 #endif

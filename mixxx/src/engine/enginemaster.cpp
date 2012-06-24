@@ -83,6 +83,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Headphone mix (left/right)
     head_mix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
+    head_mix->setDefaultValue(-1.);
     head_mix->set(-1.);
 
     // Headphone Clipping
@@ -105,6 +106,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     }
 
     //X-Fader Setup
+    xFaderMode = new ControlPotmeter(
+        ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
     xFaderCurve = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
     xFaderCalibration = new ControlPotmeter(
@@ -126,6 +129,7 @@ EngineMaster::~EngineMaster()
 
     delete xFaderCalibration;
     delete xFaderCurve;
+    delete xFaderMode;
 
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
@@ -376,7 +380,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     float c1_gain, c2_gain;
     EngineXfader::getXfadeGains(c1_gain, c2_gain,
                                 crossfader->get(), xFaderCurve->get(),
-                                xFaderCalibration->get());
+                                xFaderCalibration->get(),
+                                xFaderMode->get()==MIXXX_XFADER_CONSTPWR);
 
     // Now set the gains for overall volume and the left, center, right gains.
     m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);
@@ -438,6 +443,8 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
         ConfigKey(pChannel->getGroup(), "volume"), 1.0);
+    pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
+    pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);

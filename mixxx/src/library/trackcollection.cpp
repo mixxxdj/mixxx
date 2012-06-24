@@ -18,7 +18,8 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_playlistDao(m_db),
           m_crateDao(m_db),
           m_cueDao(m_db),
-          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao, pConfig),
+          m_analysisDao(m_db),
+          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao, m_analysisDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
@@ -43,17 +44,21 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     qDebug() << "~TrackCollection()";
-    // Save all tracks that haven't been saved yet.
-    m_trackDao.saveDirtyTracks();
-    // TODO(XXX) Maybe fold saveDirtyTracks into TrackDAO::finish now that it
-    // exists? -- rryan 10/2010
     m_trackDao.finish();
 
-    Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
-    //The above is an ASSERT because there should never be an outstanding
-    //transaction when this code is called. If there is, it means we probably
-    //aren't committing a transaction somewhere that should be.
-    m_db.close();
+    if (m_db.isOpen()) {
+        // There should never be an outstanding transaction when this code is
+        // called. If there is, it means we probably aren't committing a
+        // transaction somewhere that should be.
+        if (m_db.rollback()) {
+            qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
+                     << "There is a logic error somewhere.";
+        }
+        m_db.close();
+    } else {
+        qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
+                 << "There is a logic error somewhere.";
+    }
 }
 
 bool TrackCollection::checkForTables() {
@@ -67,15 +72,35 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 14;
-    if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
-                                               requiredSchemaVersion)) {
-        QMessageBox::warning(0, tr("Cannot upgrade database schema"),
-                             tr("Unable to upgrade your database schema to version %1.\n"
-                                "Your mixxx.db file may be corrupt.\n"
-                                "Try renaming it and restarting Mixxx.\n\n"
-                                "Click OK to exit.").arg(requiredSchemaVersion),
-                             QMessageBox::Ok);
+    int requiredSchemaVersion = 17;
+    QString schemaFilename = m_pConfig->getConfigPath();
+    schemaFilename.append("schema.xml");
+    QString okToExit = tr("Click OK to exit.");
+    QString upgradeFailed = tr("Cannot upgrade database schema");
+    QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
+            .arg(QString::number(requiredSchemaVersion));
+    int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, m_db, requiredSchemaVersion);
+    if (result < 0) {
+        if (result == -1) {
+            QMessageBox::warning(0, upgradeFailed,
+                                 upgradeToVersionFailed + "\n" +
+                                 tr("Your %1 file may be outdated.").arg(schemaFilename) +
+                                 "\n\n" + okToExit,
+                                 QMessageBox::Ok);
+        } else if (result == -2) {
+            QMessageBox::warning(0, upgradeFailed,
+                                 upgradeToVersionFailed + "\n" +
+                                 tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                                 tr("Try renaming it and restarting Mixxx.") +
+                                 "\n\n" + okToExit,
+                                 QMessageBox::Ok);
+        } else { // -3
+            QMessageBox::warning(0, upgradeFailed,
+                                 upgradeToVersionFailed + "\n" +
+                                 tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
+                                 "\n\n" + okToExit,
+                                 QMessageBox::Ok);
+        }
         return false;
     }
 

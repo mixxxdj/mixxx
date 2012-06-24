@@ -51,6 +51,10 @@ void TreeItem::appendChild(TreeItem *item) {
     m_childItems.append(item);
 }
 
+void TreeItem::removeChild(int index) {
+    m_childItems.removeAt(index);
+}
+
 TreeItem *TreeItem::child(int row) {
     return m_childItems.value(row);
 }

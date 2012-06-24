@@ -12,7 +12,7 @@ def get_bzr_branch_name():
     output_lines = os.popen("bzr info").read().splitlines()
 
     parent_matcher = re.compile(
-        r'\s*parent branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/(?P<project>.*?)/(?P<branch_name>.*?)/$')
+        r'\s*parent branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/(?P<project>.*?)/((?P<branch_name>.*?)/)?$')
     checkout_matcher = re.compile(
         r'\s*checkout of branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/(?P<project>.*?)/((?P<branch_name>.*?)/)?$')
 

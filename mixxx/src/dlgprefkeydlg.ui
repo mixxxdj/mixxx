@@ -1,5 +1,5 @@
 <ui version="4.0" >
- <class>DlgPrefKEYDlg</class>
+ <class>DlgPrefKeyNotationFormatDlg</class>
  <widget class="QWidget" name="DlgPrefKEYDlg">
   <property name="geometry">
    <rect>
@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>BPM Detection Settings</string>
+   <string>Key Notation Format Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

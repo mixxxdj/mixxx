@@ -94,7 +94,8 @@ bool ControlObjectThread::setExtern(double v)
     //         m_sqMutex.unlock();
     //     }
     // }
-
+    
+    emitValueChanged();
     return result;
 }
 

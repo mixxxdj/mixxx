@@ -19,11 +19,11 @@
 
 class QWidget;
 
-class DlgPrefKey : public QWidget, Ui::DlgPrefKEYDlg  {
+class DlgPrefKeyNotationFormat : public QWidget, Ui::DlgPrefKeyNotationFormatDlg  {
     Q_OBJECT
 public:
-    DlgPrefKey(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefKey();
+    DlgPrefKeyNotationFormat(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    ~DlgPrefKeyNotationFormat();
 public slots:
 
      /** Apply changes to widget */

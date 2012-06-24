@@ -28,6 +28,8 @@
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
 #include "controlobject.h"
+#include "waveform/waveform.h"
+#include "track/beatfactory.h"
 
 #include "mixxxutils.cpp"
 
@@ -36,12 +38,16 @@ TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
     QFileInfo fileInfo(sLocation);
     populateLocation(fileInfo);
     initialize(parseHeader);
+    m_waveform = new Waveform;
+    m_waveformSummary = new Waveform;
 }
 
 TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
         : m_qMutex(QMutex::Recursive) {
     populateLocation(fileInfo);
     initialize(parseHeader);
+    m_waveform = new Waveform;
+    m_waveformSummary = new Waveform;
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
@@ -70,9 +76,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
     m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
-    m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
-    m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
-    m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_bHeaderParsed = false;
     create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
     if (create_date == "")
@@ -88,15 +91,15 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
     m_bPlayed = false;
 
-    m_pVisualWave = 0;
-    m_dVisualResampleRate = 0;
-
     //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_bIsValid = true;
 
     m_bDirty = false;
     m_bLocationChanged = false;
+
+    m_waveform = new Waveform;
+    m_waveformSummary = new Waveform;
 }
 
 void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
@@ -104,7 +107,6 @@ void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
     m_sLocation = fileInfo.absoluteFilePath();
     m_sDirectory = fileInfo.absolutePath();
     m_iLength = fileInfo.size();
-    m_bExists = fileInfo.exists();
 }
 
 void TrackInfoObject::initialize(bool parseHeader) {
@@ -121,21 +123,17 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_bPlayed = false;
-    m_fBpm = 0.;
     m_fReplayGain = 0.;
-    m_bBpmConfirm = false;
     m_bIsValid = false;
     m_bHeaderParsed = false;
-    m_fBeatFirst = -1.;
     m_iId = -1;
-    m_pVisualWave = 0;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
-    m_dVisualResampleRate = 0;
     m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
+    m_bBpmLock = false;
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader) {
@@ -145,6 +143,8 @@ void TrackInfoObject::initialize(bool parseHeader) {
 
 TrackInfoObject::~TrackInfoObject() {
     //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
+    delete m_waveform;
+    delete m_waveformSummary;
 }
 
 void TrackInfoObject::doSave() {
@@ -178,14 +178,11 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
     XmlParse::addElement( doc, header, "replaygain", QString("%1").arg(m_fReplayGain) );
-    XmlParse::addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
-    XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
-    XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
     XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
     XmlParse::addElement( doc, header, "CreateDate", m_dCreateDate.toString() );
     //if (m_pWave) {
-        //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
+    //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
     //}
 
 }
@@ -284,7 +281,10 @@ QDateTime TrackInfoObject::getCreateDate() const
 bool TrackInfoObject::exists()  const
 {
     QMutexLocker lock(&m_qMutex);
-    return m_bExists;
+    // return here a fresh calculated value to be sure 
+    // the file is not deleted or gone with an USB-Stick 
+    // because it will probably stop the Auto-DJ
+    return QFile::exists(m_sLocation);
 }
 
 float TrackInfoObject::getReplayGain() const
@@ -305,24 +305,45 @@ void TrackInfoObject::setReplayGain(float f)
     emit(ReplayGainUpdated(f));
 }
 
-float TrackInfoObject::getBpm() const
-{
+float TrackInfoObject::getBpm() const {
     QMutexLocker lock(&m_qMutex);
-    return m_fBpm;
+    if (!m_pBeats) {
+        return 0;
+    }
+    // getBpm() returns -1 when invalid.
+    double bpm = m_pBeats->getBpm();
+    if (bpm >= 0.0) {
+        return bpm;
+    }
+    return 0;
 }
 
+void TrackInfoObject::setBpm(float f) {
+    if (f < 0) {
+        return;
+    }
 
-
-void TrackInfoObject::setBpm(float f)
-{
     QMutexLocker lock(&m_qMutex);
-    bool dirty = m_fBpm != f;
-    m_fBpm = f;
+    // TODO(rryan): Assume always dirties.
+    bool dirty = false;
+    if (f == 0.0) {
+        // If the user sets the BPM to 0, we assume they want to clear the
+        // beatgrid.
+        setBeats(BeatsPointer());
+        dirty = true;
+    } else if (!m_pBeats) {
+        setBeats(BeatFactory::makeBeatGrid(this, f, 0));
+        dirty = true;
+    } else if (m_pBeats->getBpm() != f) {
+        m_pBeats->setBpm(f);
+        dirty = true;
+    }
+
     if (dirty)
         setDirty(true);
 
     lock.unlock();
-    //Tell the GUI to update the bpm label...
+    // Tell the GUI to update the bpm label...
     //qDebug() << "TrackInfoObject signaling BPM update to" << f;
     emit(bpmUpdated(f));
 }
@@ -330,18 +351,6 @@ void TrackInfoObject::setBpm(float f)
 QString TrackInfoObject::getBpmStr() const
 {
     return QString("%1").arg(getBpm(), 3,'f',1);
-}
-
-bool TrackInfoObject::getBpmConfirm()  const
-{
-    QMutexLocker lock(&m_qMutex);
-    return m_bBpmConfirm;
-}
-
-void TrackInfoObject::setBpmConfirm(bool confirm)
-{
-    QMutexLocker lock(&m_qMutex);
-    m_bBpmConfirm = confirm;
 }
 
 void TrackInfoObject::setBeats(BeatsPointer pBeats) {
@@ -353,18 +362,25 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
     QObject* pObject = NULL;
     if (m_pBeats) {
         pObject = dynamic_cast<QObject*>(m_pBeats.data());
-        if (pObject)
-            pObject->disconnect(this, SIGNAL(updated()));
+        if (pObject) {
+            disconnect(pObject, SIGNAL(updated()),
+                       this, SLOT(slotBeatsUpdated()));
+        }
     }
     m_pBeats = pBeats;
-    pObject = dynamic_cast<QObject*>(m_pBeats.data());
-    Q_ASSERT(pObject);
-    if (pObject) {
-        connect(pObject, SIGNAL(updated()),
-                this, SLOT(slotBeatsUpdated()));
+    double bpm = 0.0;
+    if (m_pBeats) {
+        bpm = m_pBeats->getBpm();
+        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        Q_ASSERT(pObject);
+        if (pObject) {
+            connect(pObject, SIGNAL(updated()),
+                    this, SLOT(slotBeatsUpdated()));
+        }
     }
     setDirty(true);
     lock.unlock();
+    emit(bpmUpdated(bpm));
     emit(beatsUpdated());
 }
 
@@ -376,7 +392,9 @@ BeatsPointer TrackInfoObject::getBeats() const {
 void TrackInfoObject::slotBeatsUpdated() {
     QMutexLocker lock(&m_qMutex);
     setDirty(true);
+    double bpm = m_pBeats->getBpm();
     lock.unlock();
+    emit(bpmUpdated(bpm));
     emit(beatsUpdated());
 }
 
@@ -676,21 +694,6 @@ void TrackInfoObject::setBitrate(int i)
         setDirty(true);
 }
 
-void TrackInfoObject::setBeatFirst(float fBeatFirstPos)
-{
-    QMutexLocker lock(&m_qMutex);
-    bool dirty = m_fBeatFirst != fBeatFirstPos;
-    m_fBeatFirst = fBeatFirstPos;
-    if (dirty)
-        setDirty(true);
-}
-
-float TrackInfoObject::getBeatFirst() const
-{
-    QMutexLocker lock(&m_qMutex);
-    return m_fBeatFirst;
-}
-
 int TrackInfoObject::getId() const {
     QMutexLocker lock(&m_qMutex);
     return m_iId;
@@ -704,34 +707,13 @@ void TrackInfoObject::setId(int iId) {
         setDirty(true);
 }
 
-QVector<float> * TrackInfoObject::getVisualWaveform() {
-    QMutexLocker lock(&m_qMutex);
-    return m_pVisualWave;
-}
 
-void TrackInfoObject::setVisualResampleRate(double dVisualResampleRate) {
-    // Temporary, shared value that should not be saved. The only reason it
-    // exists on the TIO is a temporary hack, so it does not dirty the TIO.
-    QMutexLocker lock(&m_qMutex);
-    m_dVisualResampleRate = dVisualResampleRate;
-}
-
-double TrackInfoObject::getVisualResampleRate() {
-    QMutexLocker lock(&m_qMutex);
-    return m_dVisualResampleRate;
-}
-
+//TODO (vrince) remove clen-up when new summary is ready
+/*
 const QByteArray *TrackInfoObject::getWaveSummary()
 {
     QMutexLocker lock(&m_qMutex);
     return &m_waveSummary;
-}
-
-void TrackInfoObject::setVisualWaveform(QVector<float> *pWave) {
-    // The visual waveform is not serialized currently so it does not dirty a
-    // TIO.
-    QMutexLocker lock(&m_qMutex);
-    m_pVisualWave = pWave;
 }
 
 void TrackInfoObject::setWaveSummary(const QByteArray* pWave, bool updateUI)
@@ -741,7 +723,7 @@ void TrackInfoObject::setWaveSummary(const QByteArray* pWave, bool updateUI)
     setDirty(true);
     lock.unlock();
     emit(wavesummaryUpdated(this));
-}
+}*/
 
 void TrackInfoObject::setURL(QString url)
 {
@@ -756,6 +738,46 @@ QString TrackInfoObject::getURL()
 {
     QMutexLocker lock(&m_qMutex);
     return m_sURL;
+}
+
+Waveform* TrackInfoObject::getWaveform() {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveform;
+}
+
+const Waveform* TrackInfoObject::getWaveform() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveform;
+}
+
+void TrackInfoObject::setWaveform(Waveform* pWaveform) {
+    QMutexLocker lock(&m_qMutex);
+    if (m_waveform) {
+        delete m_waveform;
+    }
+    m_waveform = pWaveform;
+    lock.unlock();
+    emit(waveformUpdated());
+}
+
+Waveform* TrackInfoObject::getWaveformSummary() {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveformSummary;
+}
+
+const Waveform* TrackInfoObject::getWaveformSummary() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_waveformSummary;
+}
+
+void TrackInfoObject::setWaveformSummary(Waveform* pWaveformSummary) {
+    QMutexLocker lock(&m_qMutex);
+    if (m_waveformSummary) {
+        delete m_waveformSummary;
+    }
+    m_waveformSummary = pWaveformSummary;
+    lock.unlock();
+    emit(waveformSummaryUpdated());
 }
 
 void TrackInfoObject::setCuePoint(float cue)
@@ -818,7 +840,7 @@ void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
     while (it.hasNext()) {
         Cue* cue = it.next();
         connect(cue, SIGNAL(updated()),
-            this, SLOT(slotCueUpdated()));
+                this, SLOT(slotCueUpdated()));
     }
     setDirty(true);
     lock.unlock();
@@ -893,3 +915,15 @@ void TrackInfoObject::setKey(QString key){
         setDirty(true);
 }
 
+void TrackInfoObject::setBpmLock(bool bpmLock) {
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = bpmLock != m_bBpmLock;
+    m_bBpmLock = bpmLock;
+    if (dirty)
+        setDirty(true);
+}
+
+bool TrackInfoObject::hasBpmLock() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_bBpmLock;
+}

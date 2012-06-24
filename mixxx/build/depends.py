@@ -29,7 +29,7 @@ class PortMIDI(Dependence):
             raise Exception('Did not find PortMidi or its development headers.')
 
     def sources(self, build):
-        return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
+        return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
 
 class OpenGL(Dependence):
 
@@ -158,6 +158,7 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtSql4')
             build.env.Append(LIBS = 'QtGui4')
             build.env.Append(LIBS = 'QtCore4')
+            build.env.Append(LIBS = 'QtScript4')
             build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4')
@@ -168,6 +169,7 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtGui',
                                       '$QTDIR/include/QtXml',
                                       '$QTDIR/include/QtNetwork',
+                                      '$QTDIR/include/QtScript',
                                       '$QTDIR/include/QtSql',
                                       '$QTDIR/include/QtOpenGL',
                                       '$QTDIR/include/QtWebKit',
@@ -212,13 +214,19 @@ class FidLib(Dependence):
 class ReplayGain(Dependence):
 
     def sources(self, build):
-        return ["#lib/replaygain/replaygain_analysis.c"]
+        return ["#lib/replaygain/replaygain.cpp"]
 
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.6.0'
+
+    def sse_enabled(self, build):
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        return (build.machine_is_64bit or
+                (build.toolchain_is_msvs and optimize > 2) or
+                (build.toolchain_is_gnu and optimize > 1))
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
@@ -229,16 +237,21 @@ class SoundTouch(Dependence):
                    '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,]
+                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
 
         # SoundTouch CPU optimizations are only for x86
         # architectures. SoundTouch automatically ignores these files when it is
         # not being built for an architecture that supports them.
         cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else \
-                '#lib/%s/cpu_detect_x86_gcc.cpp'
+            '#lib/%s/cpu_detect_x86_gcc.cpp'
         sources.append(cpu_detection % self.SOUNDTOUCH_PATH)
+
+        # Check if the compiler has SSE extention enabled
+        # Allways the case on x64 (core instructions)
+        if self.sse_enabled(build):
+            sources.extend(
+                ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,])
         return sources
 
     def configure(self, build, conf):
@@ -246,6 +259,12 @@ class SoundTouch(Dependence):
             # Regardless of the bitwidth, ST checks for WIN32
             build.env.Append(CPPDEFINES = 'WIN32')
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
+
+        # Check if the compiler has SSE extention enabled
+        # Allways the case on x64 (core instructions)
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        if self.sse_enabled(build):
+            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
@@ -257,6 +276,12 @@ class TagLib(Dependence):
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
+
+class ProtoBuf(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']):
+            raise Exception("Could not find libprotobuf or its development headers.")
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -284,9 +309,11 @@ class MixxxCore(Feature):
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
-                   "dlgprefmidibindings.cpp",
+                   "controllers/dlgprefcontroller.cpp",
+                   "controllers/dlgprefmappablecontroller.cpp",
+                   "controllers/dlgcontrollerlearning.cpp",
+                   "controllers/dlgprefnocontrollers.cpp",
                    "dlgprefplaylist.cpp",
-                   "dlgprefnomidi.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
                    "dlgprefkey.cpp",
@@ -296,7 +323,6 @@ class MixxxCore(Feature):
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
                    "dlgprefcrossfader.cpp",
-                   "dlgmidilearning.cpp",
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
@@ -340,28 +366,26 @@ class MixxxCore(Feature):
 
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
-                   "analyserwavesummary.cpp",
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
-                   "midi/mididevice.cpp",
-                   "midi/mididevicemanager.cpp",
-                   "midi/midideviceenumerator.cpp",
-                   "midi/midimapping.cpp",
-                   "midi/midiinputmappingtablemodel.cpp",
-                   "midi/midioutputmappingtablemodel.cpp",
-                   "midi/midichanneldelegate.cpp",
-                   "midi/midistatusdelegate.cpp",
-                   "midi/midinodelegate.cpp",
-                   "midi/midioptiondelegate.cpp",
-                   "midi/midimessage.cpp",
-                   "midi/midiledhandler.cpp",
-                   "softtakeover.cpp",
+                   "controllers/controller.cpp",
+                   "controllers/controllerengine.cpp",
+                   "controllers/controllerenumerator.cpp",
+                   "controllers/controllerlearningeventfilter.cpp",
+                   "controllers/controllermanager.cpp",
+                   "controllers/controllerpresetfilehandler.cpp",
+                   "controllers/controllerpresetinfo.cpp",
+                   "controllers/midi/midicontroller.cpp",
+                   "controllers/midi/midicontrollerpresetfilehandler.cpp",
+                   "controllers/midi/midienumerator.cpp",
+                   "controllers/midi/midioutputhandler.cpp",
+                   "controllers/mixxxcontrol.cpp",
+                   "controllers/qtscript-bytearray/bytearrayclass.cpp",
+                   "controllers/qtscript-bytearray/bytearrayprototype.cpp",
+                   "controllers/softtakeover.cpp",
 
                    "main.cpp",
-                   "controlgroupdelegate.cpp",
-                   "controlvaluedelegate.cpp",
-                   "mixxxcontrol.cpp",
                    "mixxx.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
@@ -411,6 +435,7 @@ class MixxxCore(Feature):
                    "library/searchqueryparser.cpp",
                    "library/preparelibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
+                   "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 
                    "library/playlisttablemodel.cpp",
@@ -432,14 +457,13 @@ class MixxxCore(Feature):
                    "recording/recordingmanager.cpp",
 
                    # External Library Features
+                   "library/baseexternallibraryfeature.cpp",
                    "library/rhythmbox/rhythmboxfeature.cpp",
                    "library/rhythmbox/rhythmboxtrackmodel.cpp",
                    "library/rhythmbox/rhythmboxplaylistmodel.cpp",
-
                    "library/itunes/itunesfeature.cpp",
                    "library/itunes/itunestrackmodel.cpp",
                    "library/itunes/itunesplaylistmodel.cpp",
-
                    "library/traktor/traktorfeature.cpp",
                    "library/traktor/traktortablemodel.cpp",
                    "library/traktor/traktorplaylistmodel.cpp",
@@ -452,6 +476,7 @@ class MixxxCore(Feature):
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
                    "library/searchthread.cpp",
+
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",
@@ -460,6 +485,8 @@ class MixxxCore(Feature):
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
+                   "library/dao/analysisdao.cpp",
+
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
                    "library/promotracksfeature.cpp",
@@ -484,19 +511,43 @@ class MixxxCore(Feature):
 
                    "soundsourceproxy.cpp",
 
-                   "widget/wvisualsimple.cpp",
                    "widget/wwaveformviewer.cpp",
-                   "widget/wglwaveformviewer.cpp",
-                   "waveformviewerfactory.cpp",
-                   "waveform/renderobject.cpp",
-                   "waveform/waveformrenderer.cpp",
-                   "waveform/waveformrenderbackground.cpp",
-                   "waveform/waveformrendersignal.cpp",
-                   "waveform/waveformrendersignaltiles.cpp",
-                   "waveform/waveformrendersignalpixmap.cpp",
-                   "waveform/waveformrendermark.cpp",
-                   "waveform/waveformrendermarkrange.cpp",
-                   "waveform/waveformrenderbeat.cpp",
+
+                   "waveform/waveform.cpp",
+                   "waveform/waveformfactory.cpp",
+                   "waveform/waveformwidgetfactory.cpp",
+                   "waveform/renderers/waveformwidgetrenderer.cpp",
+                   "waveform/renderers/waveformrendererabstract.cpp",
+                   "waveform/renderers/waveformrenderbackground.cpp",
+                   "waveform/renderers/waveformrendermark.cpp",
+                   "waveform/renderers/waveformrendermarkrange.cpp",
+                   "waveform/renderers/waveformrenderbeat.cpp",
+                   "waveform/renderers/waveformrendererendoftrack.cpp",
+                   "waveform/renderers/waveformrendererpreroll.cpp",
+
+                   "waveform/renderers/waveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/glslwaveformrenderersignal.cpp",
+
+                   "waveform/renderers/waveformsignalcolors.cpp",
+
+                   "waveform/renderers/waveformrenderersignalbase.cpp",
+                   "waveform/renderers/waveformmark.cpp",
+                   "waveform/renderers/waveformmarkset.cpp",
+                   "waveform/renderers/waveformmarkrange.cpp",
+
+                   "waveform/widgets/waveformwidgetabstract.cpp",
+                   "waveform/widgets/emptywaveformwidget.cpp",
+                   "waveform/widgets/softwarewaveformwidget.cpp",
+                   "waveform/widgets/qtwaveformwidget.cpp",
+                   "waveform/widgets/qtsimplewaveformwidget.cpp",
+                   "waveform/widgets/glwaveformwidget.cpp",
+                   "waveform/widgets/glsimplewaveformwidget.cpp",
+
+                   "waveform/widgets/glslwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
@@ -505,12 +556,14 @@ class MixxxCore(Feature):
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
                    "skin/propertybinder.cpp",
+                   "skin/tooltips.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
-                   "track/beatmatrix.cpp",
+                   "track/beatmap.cpp",
                    "track/beatfactory.cpp",
+                   "track/beatutils.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -532,32 +585,50 @@ class MixxxCore(Feature):
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
+                   "util/sleepableqthread.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)
                    build.env.Qrc('#res/mixxx.qrc')
                    ]
 
+        proto_args = {
+            'PROTOCPROTOPATH': ['src'],
+            'PROTOCPYTHONOUTDIR': '', # set to None to not generate python
+            'PROTOCOUTDIR': build.build_dir,
+            'PROTOCCPPOUTFLAGS': '',
+            #'PROTOCCPPOUTFLAGS': "dllexport_decl=PROTOCONFIG_EXPORT:"
+        }
+        proto_sources = SCons.Glob('proto/*.proto')
+        proto_objects = [build.env.Protoc([], proto_source, **proto_args)[0]
+                        for proto_source in proto_sources]
+        sources.extend(proto_objects)
+
+
         # Uic these guys (they're moc'd automatically after this) - Generates
         # the code for the QT UI forms
         build.env.Uic4('dlgpreferencesdlg.ui')
         build.env.Uic4('dlgprefsounddlg.ui')
-        build.env.Uic4('dlgprefmidibindingsdlg.ui')
+
+        build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
+        build.env.Uic4('controllers/dlgprefmappablecontrollerdlg.ui')
+        build.env.Uic4('controllers/dlgcontrollerlearning.ui')
+        build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
+
         build.env.Uic4('dlgprefplaylistdlg.ui')
-        build.env.Uic4('dlgprefnomididlg.ui')
         build.env.Uic4('dlgprefcontrolsdlg.ui')
         build.env.Uic4('dlgprefeqdlg.ui')
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
         build.env.Uic4('dlgprefbpmdlg.ui')
         build.env.Uic4('dlgprefkeydlg.ui')
         build.env.Uic4('dlgprefreplaygaindlg.ui')
+        build.env.Uic4('dlgprefbeatsdlg.ui')
         build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
         build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
-        build.env.Uic4('dlgmidilearning.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
@@ -699,12 +770,15 @@ class MixxxCore(Feature):
         # Say where to find resources on Unix. TODO(XXX) replace this with a
         # RESOURCE_PATH that covers Win and OSX too:
         if build.platform_is_linux or build.platform_is_bsd:
-            share_path = os.path.join(SCons.ARGUMENTS.get('prefix', '/usr/local'), 'share/mixxx')
+            prefix = SCons.ARGUMENTS.get('prefix', '/usr/local')
+            share_path = os.path.join(prefix, 'share/mixxx')
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
+            lib_path = os.path.join(prefix, 'lib/mixxx')
+            build.env.Append(CPPDEFINES=('UNIX_LIB_PATH', r'\"%s\"' % lib_path))
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

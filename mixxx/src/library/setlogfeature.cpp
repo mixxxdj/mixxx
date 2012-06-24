@@ -17,9 +17,10 @@ SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "SETLOGHOME", "qrc:/html/setlogs.html") {
+                              "SETLOGHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.setlog");
+                                                   "mixxx.db.model.setlog",
+                                                   true);//show all tracks
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -37,11 +38,12 @@ SetlogFeature::SetlogFeature(QObject* parent,
         set_log_name = set_log_name_format.arg(++i);
     }
 
+    qDebug() << "Creating session history playlist name:" << set_log_name;
     m_playlistId = m_playlistDao.createPlaylist(set_log_name,
                                                 PlaylistDAO::PLHT_SET_LOG);
 
     if (m_playlistId == -1) {
-        qDebug() << "Playlist Creation Failed";
+        qDebug() << "Setlog playlist Creation Failed";
         qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
     }
 
@@ -62,11 +64,11 @@ SetlogFeature::~SetlogFeature() {
 }
 
 QVariant SetlogFeature::title() {
-    return tr("Set Logs");
+    return tr("History");
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_setlog.png");
+    return QIcon(":/images/library/ic_library_history.png");
 }
 
 void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
@@ -166,7 +168,7 @@ QModelIndex SetlogFeature::constructChildModel(int selected_id)
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
         if (playlist_id == m_playlistId) {
-            item->setIcon(QIcon(":/images/library/ic_library_setlog_current.png"));
+            item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
         } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
             item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
         } else {
@@ -228,7 +230,6 @@ void SetlogFeature::slotJoinWithPrevious() {
                 m_playlistDao.deletePlaylist(currentPlaylistId);
                 slotPlaylistTableChanged(previousPlaylistId); // For moving selection
                 emit(showTrackModel(m_pPlaylistTableModel));
-                emit(featureUpdated());
             }
         }
     }
@@ -242,15 +243,37 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (!currentPlayingTrack) {
             return;
         }
+
         int currentPlayingTrackId = currentPlayingTrack->getId();
+        bool track_played_recently = false;
+        if (currentPlayingTrackId >= 0) {
+            // Remove the track from the recent tracks list if it's present and put
+            // at the front of the list.
+            track_played_recently = m_recentTracks.removeOne(currentPlayingTrackId);
+            m_recentTracks.push_front(currentPlayingTrackId);
+
+            // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
+            const int kRecentTrackWindow = 6;
+            while (m_recentTracks.size() > kRecentTrackWindow) {
+                m_recentTracks.pop_back();
+            }
+        }
+
+        // If the track was recently played, don't increment the playcount or
+        // add it to the history.
+        if (track_played_recently) {
+            return;
+        }
+
+        // If the track is not present in the recent tracks list, mark it
+        // played and update its playcount.
+        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
+
         // We can only add tracks that are Mixxx library tracks, not external
         // sources.
         if (currentPlayingTrackId < 0) {
             return;
         }
-
-        // Here the song is realy played, not only loaded.
-        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
 
         if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
             // View needs a refresh
@@ -260,4 +283,45 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
                                                 m_playlistId);
         }
     }
+}
+
+void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_SET_LOG ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        m_playlistTableModel.select();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
+
+        if (type != PlaylistDAO::PLHT_UNKNOWN) {
+            // Switch the view to the playlist.
+            m_pPlaylistTableModel->setPlaylist(playlistId);
+            // Update selection
+            emit(featureSelect(this, m_lastRightClickedIndex));
+        }
+    }
+}
+
+
+QString SetlogFeature::getRootViewHtml() const {
+    QString playlistsTitle = tr("History");
+    QString playlistsSummary = tr("The history section automatically keeps a list of tracks you play in your DJ sets.");
+    QString playlistsSummary2 = tr("This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.");
+    QString playlistsSummary3 = tr("Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.");
+    QString playlistsSummary4 = tr("You can join the current history session with a previous one by right-clicking and selecting \"Join with previous\".");
+
+    QString html;
+    html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
+    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
+    html.append(QString("<p>%1</p>").arg(playlistsSummary));
+    html.append(QString("<p>%1</p>").arg(playlistsSummary2));
+    html.append(QString("<p>%1</p>").arg(playlistsSummary3));
+    html.append(QString("<p>%1</p>").arg(playlistsSummary4));
+    html.append("</td></tr></table>");
+    return html;
 }

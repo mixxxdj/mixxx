@@ -23,8 +23,9 @@ RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* p
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
         : LibraryFeature(parent),
-          m_pConfig(pConfig), m_pRecordingView(0),
-          m_pTrackCollection(pTrackCollection),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection), 
+          m_pRecordingView(0),
           m_pRecordingManager(pRecordingManager){
 
 }
@@ -48,6 +49,8 @@ void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
                              WLibrary *libraryWidget,
                              MixxxKeyboard *keyboard)
 {
+    Q_UNUSED(sidebarWidget);
+
     //The view will be deleted by LibraryWidget
     m_pRecordingView = new DlgRecording(libraryWidget,
                                            m_pConfig,
@@ -64,35 +67,47 @@ void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
 }
 
 bool RecordingFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RecordingFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 bool RecordingFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool RecordingFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 
 void RecordingFeature::activate() {
     m_pRecordingView->refreshBrowseModel();
-    emit(switchToView("Recording"));
+    emit(switchToView(m_sRecordingViewName));
+    emit(restoreSearch(m_pRecordingView->currentSearch()));
 }
 
 void RecordingFeature::activateChild(const QModelIndex& index) {
-
+    Q_UNUSED(index);
 }
 
 void RecordingFeature::onRightClick(const QPoint& globalPos) {
+    Q_UNUSED(globalPos);
 }
 
 void RecordingFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    Q_UNUSED(globalPos);
+    Q_UNUSED(index);
 }
+
 void RecordingFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do here since we have no child models
+    Q_UNUSED(index);    
+    // Nothing to do here since we have no child models
 }

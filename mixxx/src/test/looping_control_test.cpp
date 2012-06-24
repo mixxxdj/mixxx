@@ -21,7 +21,7 @@ class LoopingControlTest : public MixxxTest {
         m_pQuantizeEnabled.reset(
             new ControlPushButton(ConfigKey(m_pGroup, "quantize")));
         m_pQuantizeEnabled->set(1.0f);
-        m_pQuantizeEnabled->setToggleButton(true);
+        m_pQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
         m_pNextBeat.reset(new ControlObject(ConfigKey(m_pGroup, "beat_next")));
         m_pNextBeat->set(-1);
         m_pClosestBeat.reset(
@@ -32,6 +32,9 @@ class LoopingControlTest : public MixxxTest {
         m_pTrackSamples->set(kTrackLengthSamples);
 
         m_pLoopingControl.reset(new LoopingControl(m_pGroup, m_pConfig.data()));
+        TrackPointer track = TrackPointer(new TrackInfoObject("foo"));
+        track->setSampleRate(44100);
+        m_pLoopingControl->trackLoaded(track);
         m_pButtonLoopIn.reset(getControlObjectThread(
                 ConfigKey(m_pGroup, "loop_in")));
         m_pButtonLoopOut.reset(getControlObjectThread(
