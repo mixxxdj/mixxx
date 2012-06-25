@@ -138,6 +138,9 @@ void EngineShoutcast::updateFromPreferences()
 
     m_pUpdateShoutcastFromPrefs->slotSet(0.0f);
 
+    // If using static metadata, this will cause it to update.
+    m_firstCall = false;
+
     m_format_is_mp3 = false;
     m_format_is_ov = false;
     m_protocol_is_icecast1 = false;
