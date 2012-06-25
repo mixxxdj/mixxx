@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-05-22 12:21+0000\n"
-"Last-Translator: Rafael Neri <Unknown>\n"
+"PO-Revision-Date: 2012-06-24 13:14+0000\n"
+"Last-Translator: Fábio Ihle <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:41+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-06-25 05:13+0000\n"
+"X-Generator: Launchpad (build 15482)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,12 +24,12 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Adicionar à fila do Auto DJ (em baixo)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Adicionar à fila do Auto DJ (em cima)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -55,12 +55,12 @@ msgstr "Nova lista de reprodução"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Adicionar à fila do Auto DJ (em baixo)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Adicionar à fila do Auto DJ (em cima)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -236,11 +236,11 @@ msgstr "Não foi possível carregar faixa."
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "Adicionar ao acesso rápido"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "Remover do acesso rápido"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -259,6 +259,8 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Procurar permite-lhe navegar, ver, e carregar faixas das pastas do seu disco "
+"interno ou de periféricos externos"
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -384,7 +386,7 @@ msgstr "Controlador de erro de script"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "O controle que você acabou de usar não está funcionando corretamente"
 
 #: ControllerEngine#5
 msgid ""
@@ -393,6 +395,11 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(O código de script precisa ser corrigido.)<br> Por enquanto, você "
+"pode:<ul><li>\r\n"
+"Ignorar esse erro para esta sessão, entretanto você pode enfrentar um "
+"comportamento errático</li><li>\r\n"
+"Tentar recuperar reiniciando o seu controlador</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
@@ -409,6 +416,7 @@ msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
 msgstr ""
+"A caixa abaixo está em construção e vai ficar vazia nesta versão do Mixxx."
 
 #: ControllerMappingDlg#4
 msgid "Controls"
@@ -426,7 +434,7 @@ msgstr "Remover"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr ""
+msgstr "Assistente de aprendizagem"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
@@ -524,16 +532,20 @@ msgstr ""
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Crates são uma ótima maneira para ajudar a organizar a música que você "
+"pretende usar como DJ."
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Faça um crate para o seu próximo show, com as suas faixas preferidas de "
+"electrohouse, ou com as músicas mais pedidas."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "Crates permitem que você organize sua música do jeito que preferir!"
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
@@ -561,7 +573,7 @@ msgstr "Auto-DJ"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "Um deck deve ser parado para ativar o Auto DJ."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -585,11 +597,11 @@ msgstr "Pular faixa"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Acionar a transição para a próxima faixa."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Desvanecer agora"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
@@ -605,7 +617,7 @@ msgstr "seg."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Liga ou desliga o Auto DJ."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -618,7 +630,7 @@ msgstr "Gerenciar"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Configurações de detecção batida"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -626,6 +638,9 @@ msgid ""
 "of your tracks, automatically shows a beat-grid for them, and allows you to "
 "synchronize tracks using their beat information."
 msgstr ""
+"Quando a detecção de batida está ativada, Mixxx detecta os batimentos por "
+"minuto das suas faixas, e exibe automaticamente uma grade de batida para "
+"elas, permitindo que você sincronize suas faixas com informações das batidas."
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
@@ -653,6 +668,10 @@ msgid ""
 "minute of a track for beat information. This can speed up beat detection on "
 "slower computers but may result in lower quality beatgrids."
 msgstr ""
+"Ativar Detecção de Batidas Rápida. Se ativado, o Mixxx só analisa o primeiro "
+"minuto de uma faixa. Isto poderá acelerar a detecção de batidas em "
+"computadores mais lentos, entretanto poderá resultar em grades de batidas "
+"com menor qualidade."
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
@@ -667,6 +686,11 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Converte batidas detectadas pelo analisador numa grade de batidas de tempo-"
+"fixo. Use esta definição se as suas faixas tem um tempo constante (ex.: a "
+"maioria das músicas eletrônicas). Resulta frequentemente em grades de batida "
+"de maior qualidade, mas não funcionará bem em faixas que possuam um tempo "
+"variável."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
@@ -677,6 +701,8 @@ msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
 "analyzing the beats to discard outliers."
 msgstr ""
+"Tentar corrigir a Fase (primeira batida) de uma grade de batidas de tempo-"
+"fixo, analisando as batidas para descartar as que não se enquadram."
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
