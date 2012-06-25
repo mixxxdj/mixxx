@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-23 17:35+0000\n"
+"PO-Revision-Date: 2012-06-25 03:42+0000\n"
 "Last-Translator: Joaquim Carvalho <j.carvalho59@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-24 05:14+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-06-25 05:13+0000\n"
+"X-Generator: Launchpad (build 15482)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1870,11 +1870,11 @@ msgstr "Diversos"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
-msgstr "Sincronizar as tags ID3 nas modificações de pistas"
+msgstr "Sincronizar as etiquetas ID3 nas modificações das faixas"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Rescan library on start-up"
-msgstr "Re-ler a livraria ao iniciar o programa"
+msgstr "Reanalisar biblioteca ao iniciar"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Use relative paths for playlist export if possible"
@@ -1898,7 +1898,7 @@ msgstr "Mostrar a biblioteca Traktor"
 
 #: DlgPrefPlaylistDlg#14
 msgid "    You will need to restart Mixxx for this to take effect"
-msgstr "    Necessita de reiniciar para isto ter efeito"
+msgstr "    Necessita de reiniciar o Mixxx para isto ter efeito"
 
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
@@ -1959,7 +1959,7 @@ msgstr "Pasta das gravações:"
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
 msgid "Browse..."
-msgstr "Procurar..."
+msgstr "Navegar..."
 
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
@@ -1972,11 +1972,11 @@ msgstr "Qualidade"
 
 #: DlgPrefRecordDlg#7
 msgid "High"
-msgstr "Alto"
+msgstr "Alta"
 
 #: DlgPrefRecordDlg#8
 msgid "Low"
-msgstr "Baixo"
+msgstr "Baixa"
 
 #: DlgPrefRecordDlg#9
 msgid "Tags"
@@ -2020,15 +2020,15 @@ msgstr "Definições de Detecção de BPM"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr "Normalização do ReplayGain (ganho na repetição)"
+msgstr "Normalização da reprodução"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Enable Replay Gain"
-msgstr "Activar o ganho da replrodução"
+msgstr "Activar o Ganho da Reprodução"
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain Analysis"
-msgstr "Activar a análise de reprodução/ganho"
+msgstr "Activar a análise do ganho da reprodução"
 
 #: DlgPrefReplayGainDlg#5
 msgid "Apply volume normalization to loaded tracks."
@@ -2039,8 +2039,8 @@ msgid ""
 "Calculate ReplayGain normalization for tracks which are missing ReplayGain "
 "metadata."
 msgstr ""
-"Calcular o ReplayGain de normalização para as faixas que não têm metadados "
-"ReplayGain."
+"Calcular a normalização da reprodução das faixas que não tenham o campo de "
+"metadados Ganho da Reprodução preenchidos"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -2048,17 +2048,17 @@ msgid ""
 "applied to a new track. You may wish to wait before adjusting the pregain "
 "and volume."
 msgstr ""
-"Em computadores antigos, pode levar alguns segundos antes da normalização "
-"ser aplicada a uma nova faixa. Deverá poder esperar antes de ajustar o pré-"
-"ganho e o volume."
+"Em computadores mais antigos, o processo de normalização poderá demorar "
+"alguns segundos a ser aplicado a uma nova faixa. Deverá aguardar antes de "
+"ajustar o pré-ganho ou o volume."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr "Arranque inicial"
+msgstr "Aumento inicial"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr "Arranque do ganho inicial"
+msgstr "Aumento do ganho inicial"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
@@ -2067,7 +2067,7 @@ msgstr "dB"
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset to Defaults"
-msgstr "Reestabelecer os parâmetros por defeito"
+msgstr "Repor"
 
 #: DlgPrefShoutcast#1
 msgid "Icecast 2"
@@ -2104,7 +2104,7 @@ msgstr "Activar a difusão em directo"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr "Conecção ao servidor"
+msgstr "Ligação ao servidor"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
@@ -2191,7 +2191,7 @@ msgstr "A codificar..."
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Bitrate"
-msgstr "Débito"
+msgstr "Taxa"
 
 #: DlgPrefShoutcastDlg#22
 msgid "Format"
@@ -2203,11 +2203,11 @@ msgstr "Canais"
 
 #: DlgPrefShoutcastDlg#24
 msgid "Custom metadata"
-msgstr "Metadados pessoais"
+msgstr "Metadados personalizados"
 
 #: DlgPrefShoutcastDlg#25
 msgid "Enable custom metadata"
-msgstr "Activar metadados pessoais"
+msgstr "Activar metadados personalizados"
 
 #: DlgPrefShoutcastDlg#26
 msgctxt "DlgPrefShoutcastDlg#26"
@@ -2224,8 +2224,8 @@ msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
-"Avisa-se que por razões técnicas, alterações às definições do shoutcast "
-"causarão uma perca de conecção ao servidor e a sua reposição. "
+"Avisa-se que por razões técnicas, quaisquer alterações às definições do "
+"shoutcast causarão uma perda da ligação ao servidor e a sua reposição. "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
@@ -2246,7 +2246,7 @@ msgstr "Ocorreu um erro desconhecido"
 
 #: DlgPrefSound#5
 msgid "sound device \"%1\""
-msgstr "Periférico audio \"%1\""
+msgstr "Dispositivo audio \"%1\""
 
 #: DlgPrefSound#6
 msgid "Two outputs cannot share channels on %1"
@@ -2270,11 +2270,11 @@ msgstr "Erro de configuração"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
-msgstr "Interface de programação Aplicacional do Som"
+msgstr "API (Interface de Programação Aplicacional) do Som"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr "Taxa de Amostragem"
+msgstr "Frequência de Amostragem"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -2288,7 +2288,7 @@ msgid ""
 "</ul>"
 msgstr ""
 "<ul>\n"
-"<li>Aumentar a latência de forem ouvidos estalidos durante o playback</li>\n"
+"<li>Aumentar a latência se forem ouvidos estalidos durante a leitura</li>\n"
 "<li>Diminuir a latência para melhorar o tempo de resposta do Mixxx</li>\n"
 "</ul>"
 
@@ -2304,12 +2304,12 @@ msgstr "Entrada"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr "Pesquisa por dispositívos"
+msgstr "Consultar dispositivos"
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Reset to Defaults"
-msgstr "Reestabelecer os parâmetros por defeito"
+msgstr "Repor Padrões"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
@@ -2366,17 +2366,8 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
-"weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"weight:600;\">Seleccione os periféricos audio para o controlo de vinilo no "
-"banco de material audio.</span></p></body></html>"
+"Seleccione os dispositivos audio para o controlo vinilo no painel Hardware "
+"de Som."
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
@@ -2384,20 +2375,17 @@ msgid ""
 "<a "
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
-msgstr ""
-"<a "
-"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Rep"
-"aração</a>"
+msgstr "Resolução de problemas"
 
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr "Pré-amplificador do gira-discos"
+msgstr "Preamp gira-discos"
 
 #: DlgPrefVinylDlg#6
 msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
-msgstr "1 (apagado)"
+msgstr "1 (Desligado)"
 
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
@@ -2412,12 +2400,12 @@ msgstr "Configuração Vinilo"
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr "Tipo de vinilo no leitor 1"
+msgstr "Tipo de vinilo - Leitor 1"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr "Tipo de vinilo no leitor 2"
+msgstr "Tipo de vinilo - Leitor 2"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
@@ -2432,7 +2420,7 @@ msgstr "Aplicar"
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr "Duração da introdução"
+msgstr "Tempo de entrada"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
@@ -2517,7 +2505,7 @@ msgstr "Detecção do tempo"
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "BPM Detection"
-msgstr "Deteção de BPM"
+msgstr "Detecção de BPM"
 
 #: DlgPreferences#11
 msgid "Normalization"
@@ -2530,7 +2518,7 @@ msgstr "Controlo Vinilo"
 
 #: DlgPreferences#13
 msgid "Live Broadcasting"
-msgstr "Emissão ao vivo (ou em tempo real)"
+msgstr "Difusão em directo"
 
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
@@ -2548,7 +2536,7 @@ msgstr "Gerir"
 
 #: DlgPrepare#2
 msgid "Shows tracks added to the library within the last 7 days."
-msgstr "Mostra as faixas adicionadas à biblioteca nos ultimos 7 dias."
+msgstr "Mostra as faixas adicionadas à biblioteca nos últimos 7 dias."
 
 #: DlgPrepare#3
 msgid "New"
@@ -2572,14 +2560,15 @@ msgstr "Seleccione todas as faixas da tabela abaixo"
 
 #: DlgPrepare#8
 msgid "Select All"
-msgstr "Seleccionar Todos"
+msgstr "Seleccionar Todas"
 
 #: DlgPrepare#9
 msgid ""
 "Runs the BPM and beatgrid detection on the selected tracks.\n"
 "Waveforms will be generated as part of a analysis as well."
 msgstr ""
-"Executa a detecção do BPM e da grelha ritmica nas faixas seleccionadas"
+"Executa a detecção do BPM e da grelha ritmica nas faixas seleccionadas.\n"
+"Também serão geradas as formas de onda como parte da análise."
 
 #: DlgPrepare#10
 msgctxt "DlgPrepare#10"
@@ -2663,7 +2652,7 @@ msgstr "Ano"
 #: DlgTrackInfo#10
 msgctxt "DlgTrackInfo#10"
 msgid "Key"
-msgstr "Tonalidade"
+msgstr "Nota"
 
 #: DlgTrackInfo#11
 msgid "Filetype:"
@@ -2733,7 +2722,7 @@ msgstr "Bata o ritmo"
 #: DlgTrackInfo#27
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
-"Conselho: utilize a vista de Análise da Biblioteca para executar a detecção "
+"Sugestão: Utilize a vista de Análise da Biblioteca para executar a detecção "
 "do BPM."
 
 #: DlgTrackInfo#28
@@ -2748,7 +2737,7 @@ msgstr "Posição"
 #: DlgTrackInfo#30
 msgctxt "DlgTrackInfo#30"
 msgid "Hotcue"
-msgstr "Ponto de marcação"
+msgstr "Marcação"
 
 #: DlgTrackInfo#31
 msgid "Label"
@@ -2756,11 +2745,11 @@ msgstr "Rótulo"
 
 #: DlgTrackInfo#32
 msgid "Activate Cue"
-msgstr "Activar a marca"
+msgstr "Activar marca"
 
 #: DlgTrackInfo#33
 msgid "Delete Cue"
-msgstr "Apagar a marca"
+msgstr "Apagar marca"
 
 #: DlgTrackInfo#34
 msgid "&Apply"
