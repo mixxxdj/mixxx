@@ -520,6 +520,7 @@ def ubuntu_cleanup():
 
 # Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
+        global mixxx_version
         print
         print "==== Mixxx Post-Build Checks ===="
         print
@@ -610,7 +611,7 @@ def BuildUbuntuPackage(target, source, env):
 
         for ubuntu_distro in ubuntu_distros:
                 # if a control.$distro file exists, use it
-                if os.path.exists('control.%s' % ubuntu_distro):
+                if os.path.exists('debian/control.%s' % ubuntu_distro):
                         os.system('cp debian/control.%s debian/control' % ubuntu_distro)
                 # TODO(rryan) currently can only have version 1 within a distro
                 ubuntu_distro_version = '%s~%s1' % (ubuntu_version, ubuntu_distro)
