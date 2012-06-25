@@ -3,6 +3,7 @@
     <info>
         <name>Stanton SCS.3d</name>
         <author>Sean M. Pappalardo</author>
+        <wiki>http://mixxx.org/wiki/doku.php/stanton_scs.3d</wiki>
         <description>This is a complete mapping for a single Stanton SCS.3d touch controller controlling two virtual decks. Requires scripting.</description>
     </info>
     <controller id="Stanton SCS.3d" port="">
