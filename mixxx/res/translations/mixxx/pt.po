@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-25 03:42+0000\n"
+"PO-Revision-Date: 2012-06-25 21:17+0000\n"
 "Last-Translator: Joaquim Carvalho <j.carvalho59@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-25 05:13+0000\n"
+"X-Launchpad-Export-Date: 2012-06-26 05:13+0000\n"
 "X-Generator: Launchpad (build 15482)\n"
 
 #: AutoDJFeature#1
@@ -2859,27 +2859,27 @@ msgstr "Não pode alocar shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr "Erro de configuração em modo não-blocante"
+msgstr "Erro na configuração do modo não-blocante"
 
 #: EngineShoutcast#5
 msgid "Error setting hostname!"
-msgstr "Erro na definição do nome do hospedador!"
+msgstr "Erro na definição do nome do anfitrião!"
 
 #: EngineShoutcast#6
 msgid "Error setting protocol!"
-msgstr "Erro na definição do protocolo!"
+msgstr "Erro na configuração do protocolo!"
 
 #: EngineShoutcast#7
 msgid "Error setting port!"
-msgstr "Erro na definição da porta!"
+msgstr "Erro na configuração da porta!"
 
 #: EngineShoutcast#8
 msgid "Error setting password!"
-msgstr "Erro na definição da password!"
+msgstr "Erro na definição da palavra chave!"
 
 #: EngineShoutcast#9
 msgid "Error setting mount!"
-msgstr "Erro na definição da montagem!"
+msgstr "Erro na configuração do montar!"
 
 #: EngineShoutcast#10
 msgid "Error setting username!"
@@ -2914,7 +2914,7 @@ msgstr ""
 msgid ""
 "See https://bugs.launchpad.net/mixxx/+bug/686212 for more information."
 msgstr ""
-"Voir https://bugs.launchpad.net/mixxx/+bug/686212 para mais informações."
+"Ver https://bugs.launchpad.net/mixxx/+bug/686212 para mais informações."
 
 #: EngineShoutcast#17
 msgid "Error setting bitrate"
@@ -2930,7 +2930,7 @@ msgstr "Erro: libshout apenas suporta Shoutcast com o formato MP3!"
 
 #: EngineShoutcast#20
 msgid "Lost connection to streaming server"
-msgstr "Perca de conexão ao servidor de \"streaming\""
+msgstr "Perca de ligação ao servidor de \"streaming\""
 
 #: EngineShoutcast#21
 msgid ""
@@ -2938,7 +2938,7 @@ msgid ""
 "and password are correct."
 msgstr ""
 "Queira verificar a sua ligação à Internet e que a sua identificação e "
-"password estão correctas."
+"palavra passe estão correctas."
 
 #: EngineShoutcast#22
 msgid "Live broadcasting"
@@ -2966,7 +2966,7 @@ msgstr "Erro crítico"
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr "Alerta"
+msgstr "Aviso"
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
@@ -2989,7 +2989,7 @@ msgstr "experimental"
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
 msgid "Simple"
-msgstr "Básico"
+msgstr "Modo Vinilo"
 
 #: GLWaveformWidget#1
 msgctxt "GLWaveformWidget#1"
@@ -3030,7 +3030,7 @@ msgstr "DIH para Apple desconhecido"
 
 #: HidController#9
 msgid "HID Unknown Device"
-msgstr "DIH desconhecido"
+msgstr "DIH Dispositivo desconhecido"
 
 #: HidController#10
 msgid "HID Interface Number"
@@ -3050,7 +3050,7 @@ msgstr "(a carregar) iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
-msgstr "Utilizar a biblioteca por defeito"
+msgstr "Utilizar a biblioteca padrão"
 
 #: ITunesFeature#5
 msgid "Choose Library..."
@@ -3066,11 +3066,11 @@ msgid ""
 "or playlists may not have loaded."
 msgstr ""
 "Houve um erro no carregamento da sua biblioteca iTunes. Algumas das suas "
-"faixas ou playlists iTunes podem não ter sido carregadas."
+"faixas ou listas de reprodução iTunes podem não ter sido carregadas."
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
-msgstr "Arraste uma prédefinição da lista e largue-o aqui"
+msgstr "Arraste uma prédefinição da lista e largue-a aqui"
 
 #: LegacySkinParser#1
 msgid "activate"
@@ -3114,7 +3114,7 @@ msgstr "baixo (curto)"
 
 #: LegacySkinParser#11
 msgid "Shortcut"
-msgstr "Atalho de Teclado"
+msgstr "Atalho"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
@@ -3132,36 +3132,35 @@ msgstr "Cancelar"
 
 #: MidiController#1
 msgid "MixxxControl not found"
-msgstr "MixxxControlo não encontrado"
+msgstr "MixxxControl não encontrado"
 
 #: MidiController#2
 msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
 msgstr ""
-"O MixxxControlo '%1, %2' especificado no ficheiro de correspondência "
-"carregado é inválido."
+"O MixxxControlo '%1, %2' especificado na associação carregada é inválido."
 
 #: MidiController#3
 msgid ""
 "The MIDI output message 0x%1 0x%2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
-"A mensagem de saída MIDI 0x%1 0x%2 não será enviada.\n"
-"(Clique em Mostrar detalhes para conselhos.)"
+"A mensagem de saída MIDI 0x%1 0x%2 não será destinada.\n"
+"(Clique em Mostrar Detalhes para sugestões.)"
 
 #: MidiController#4
 msgid ""
 "* Check to see that the MixxxControl name is spelled correctly in the "
 "mapping file (.xml)\n"
 msgstr ""
-"* Verifique que o nome do MixxxControlo está escrito correctamente no "
-"ficheiro de correspondência (.xml)\n"
+"* Verifique que o nome do MixxxControl está escrito correctamente no "
+"ficheiro de associação (.xml)\n"
 
 #: MidiController#5
 msgid ""
 "* Make sure the MixxxControl you're trying to use actually exists. Visit "
 "this wiki page for a complete list:"
 msgstr ""
-"* Assegure-se que o MixxxControlo que está a tentar usar relamente existe. "
+"* Assegure-se que o MixxxControl que está a tentar usar existe realmente. "
 "Consulte esta página do wiki para uma lista completa:"
 
 #: MixxxApp#1
@@ -3179,11 +3178,11 @@ msgstr "Escolha a pasta da biblioteca musical"
 
 #: MixxxApp#4
 msgid "Sound Device Busy"
-msgstr "Placa de som ocupada"
+msgstr "Dispositivo de som ocupado"
 
 #: MixxxApp#5
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr "Encontrar <b>Ajuda</b> na Wiki Mixxx."
+msgstr "Encontrar <b>Ajuda</b> no Mixxx Wiki."
 
 #: MixxxApp#6
 msgid ""
@@ -3191,8 +3190,8 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
-"O Mixxx não foi capaz de aceder a todos os periféricos audio configurados. "
-"Um dos periféricos pode estar a ser usado por uma outra aplicação ou "
+"O Mixxx não foi capaz de aceder a todos os dispositivos audio configurados. "
+"Um dos dispositivos pode estar a ser usado por uma outra aplicação ou "
 "desligado."
 
 #: MixxxApp#7
@@ -3201,11 +3200,11 @@ msgid ""
 "device"
 msgstr ""
 "<b>Tentar de novo</b> após ter fechado a outra aplicação ou ter religado o "
-"periférico de som."
+"dispositivo de som."
 
 #: MixxxApp#8
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
-msgstr "<b>Reconfigurar</b> as opções audio do Mixxx."
+msgstr "<b>Reconfigurar</b> as opções áudio do Mixxx."
 
 #: MixxxApp#9
 msgid "<b>Exit</b> Mixxx."
@@ -3229,15 +3228,15 @@ msgstr "Sair"
 
 #: MixxxApp#14
 msgid "No Output Devices"
-msgstr "Nenhum periférico de saída"
+msgstr "Nenhum dispositivo de saída"
 
 #: MixxxApp#15
 msgid ""
 "Mixxx was configured without any output sound devices. Audio processing will "
 "be disabled without a configured output device."
 msgstr ""
-"O Mixxx foi configurado sem nenhum periférico de saída audio. Sem periférico "
-"de saída configurado, o processamento do som será desactivado."
+"O Mixxx foi configurado sem nenhum dispositivo de saída audio. Sem "
+"dispositivo de saída configurado, o processamento do som será desactivado."
 
 #: MixxxApp#16
 msgid "<b>Continue</b> without any outputs."
@@ -3381,7 +3380,7 @@ msgstr "Criar uma nova playlist"
 
 #: MixxxApp#51
 msgid "Create a new crate"
-msgstr "Criar um novo contentor"
+msgstr "Criar uma Caixa nova"
 
 #: MixxxApp#52
 msgid "Ctrl+Shift+F"
@@ -3389,11 +3388,11 @@ msgstr "Ctrl+Shift+F"
 
 #: MixxxApp#53
 msgid "Enable Vinyl Control &1"
-msgstr "Activar o controlo vinilo &1"
+msgstr "Activar o Controlo Vinilo &1"
 
 #: MixxxApp#54
 msgid "Enable Vinyl Control &2"
-msgstr "Activar o controlo vinilo &2"
+msgstr "Activar o Controlo Vinilo &2"
 
 #: MixxxApp#55
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
@@ -3483,7 +3482,7 @@ msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
-"Nenhum periférico de entrada seleccionado.\n"
+"Nenhum dispositivo de entrada seleccionado.\n"
 "Seleccione a(s) sua(s) placa(s) de som nas preferências."
 
 #: MixxxApp#76
@@ -3588,12 +3587,13 @@ msgstr "Falha de exportação do formato texto"
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
 msgid "Playlist Export Failed"
-msgstr "Falha de exportação da playlist"
+msgstr "Falha de exportação da lista de reprodução"
 
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
 msgstr ""
-"O caminho do ficheiro contém caractères, não autorizados nas playlists m3u.\n"
+"O caminho do ficheiro contém caractères, não autorizados nas listas de "
+"reprodução m3u.\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
@@ -3607,7 +3607,7 @@ msgstr "Impossível criar o ficheiro"
 #: ParserPls#1
 msgctxt "ParserPls#1"
 msgid "Playlist Export Failed"
-msgstr "Falha de exportação da playlist"
+msgstr "Falha de exportação da lista de reprodução"
 
 #: ParserPls#2
 msgctxt "ParserPls#2"
@@ -3617,48 +3617,49 @@ msgstr "Impossível criar o ficheiro"
 #: PlaylistFeature#1
 msgctxt "PlaylistFeature#1"
 msgid "Lock"
-msgstr "Trancar"
+msgstr "Bloquear"
 
 #: PlaylistFeature#2
 msgid "Playlists"
-msgstr "Playlists"
+msgstr "Listas de reprodução"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Unlock"
-msgstr "Destrancar"
+msgstr "Desbloquear"
 
 #: PlaylistFeature#4
 msgid ""
 "Playlists are ordered lists of songs that allow you to plan your DJ sets."
 msgstr ""
-"Playlists são listas ordenadas de faixas que lhe permitem planear as suas "
-"sessões de mistura."
+"Listas de reprodução são listas ordenadas de faixas que lhe permitem planear "
+"as suas sessões de mistura."
 
 #: PlaylistFeature#5
 msgid ""
 "Some DJs construct playlists before they perform live, but others prefer to "
 "build them on-the-fly."
 msgstr ""
-"Alguns DJs preparam playlists antes das suas actuações, mas outros preferem "
-"construi-las na altura em que estão a actuar."
+"Alguns DJs preparam listas de reprodução antes das suas actuações, mas "
+"outros preferem construi-las na altura em que estão a actuar."
 
 #: PlaylistFeature#6
 msgid ""
 "When using a playlist during a live DJ set, remember to always pay close "
 "attention to how your audience reacts to the music you've chosen to play."
 msgstr ""
-"Quando usa playlists durante as sessões de mistura em directo, lembre-se de "
-"prestar uma atenção particular à forma como o seu público reage à música que "
-"escolheu para tocar."
+"Quando usa listas de reprodução durante uma actuação de DJ ao vivo, lembre-"
+"se de prestar uma atenção particular à forma como o seu público reage à "
+"música que escolheu para tocar."
 
 #: PlaylistFeature#7
 msgid ""
 "It may be necessary to skip some songs in your prepared playlist or add some "
 "different songs in order to maintain the energy of your audience."
 msgstr ""
-"Pode ser necessário saltar algumas faixas da playlist que tinha preparado ou "
-"adicionar faixas diferentes a fim de manter a energia do seu público."
+"Pode ser necessário saltar algumas faixas da lista de reprodução que tinha "
+"preparado ou adicionar faixas diferentes a fim de manter a energia do seu "
+"público."
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3693,7 +3694,7 @@ msgstr "Microfone"
 
 #: QObject#7
 msgid "Passthrough"
-msgstr "Passadeira"
+msgstr "Passagem"
 
 #: QObject#8
 msgid "Unknown path type %1"
@@ -3715,35 +3716,35 @@ msgstr "Gravações"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
-msgstr "Rhythmbox"
+msgstr "Aplicação Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr "Guardar o Banco de amostras"
+msgstr "Guardar o Banco do Sampler"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr "Erro ao guardar o Banco de amostras"
+msgstr "Erro ao guardar o Banco do Sampler"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr "Não foi possível escrever o Banco de amostras para '%1'."
+msgstr "Não foi possível escrever o Banco do Sampler para '%1'."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr "Carregar o Banco de amostras"
+msgstr "Carregar o Banco do Sampler"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr "Erro de leiturs do Banco de amostras"
+msgstr "Erro de leitura do Banco do Sampler"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr "Não foi possível abrir o Banco de amostras '%1'."
+msgstr "Não foi possível abrir o Banco do Sampler '%1'."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr "Não foi possível ler o Banco de amostras '%1'."
+msgstr "Não foi possível ler o Banco do Sampler '%1'."
 
 #: SetlogFeature#1
 msgid "Join with previous"
@@ -3756,12 +3757,12 @@ msgstr "Histórico"
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
 msgid "Unlock"
-msgstr "Destrancar"
+msgstr "Desbloquear"
 
 #: SetlogFeature#4
 msgctxt "SetlogFeature#4"
 msgid "Lock"
-msgstr "Trancar"
+msgstr "Bloquear"
 
 #: SetlogFeature#5
 msgid ""
@@ -3776,7 +3777,7 @@ msgid ""
 "This is handy for remembering what worked in your DJ sets, posting set-"
 "lists, or reporting your plays to licensing organizations."
 msgstr ""
-"Isto é prático para se lembrar o que funcionou nas suas sessões de mistura, "
+"Isto é prático para se lembrar o que funcionou nas suas actuações de DJ, "
 "publicar as listas de sessão, ou comunicar as suas difusões às autoridades "
 "de gestão de direitos de autor."
 
@@ -3786,15 +3787,15 @@ msgid ""
 "it as a playlist in various formats or play it again with Auto DJ."
 msgstr ""
 "Sempre que inicia o Mixxx, é criada uma nova secção de histórico. Pode "
-"exportá-la como uma playlist em vários formatos ou tocá-la de novo com Auto "
-"DJ."
+"exportá-la como uma lista de reprodução em vários formatos ou tocá-la de "
+"novo com Auto DJ."
 
 #: SetlogFeature#8
 msgid ""
 "You can join the current history session with a previous one by right-"
 "clicking and selecting \"Join with previous\"."
 msgstr ""
-"Pode juntar o histórico de sessão corrente com o precedente fazendo um "
+"Pode juntar o histórico de sessão corrente com um precedente fazendo um "
 "clique-direito e seleccionando \"Juntar ao precedente\"."
 
 #: SoftwareWaveformWidget#1
@@ -3813,7 +3814,7 @@ msgstr ""
 
 #: Tooltips#2
 msgid "Reset to default value."
-msgstr "Reinicializar os valores por defeito."
+msgstr "Repor os valores padrão."
 
 #: Tooltips#3
 msgid "Left-click"
@@ -3839,8 +3840,7 @@ msgstr ""
 
 #: Tooltips#8
 msgid "Use the mouse to scratch, spin-back or throw tracks."
-msgstr ""
-"Utilizar o rato para fazer scratch, rodar para trás ou lançar as faixas"
+msgstr "Use o rato para fazer scratch, rodar para trás ou lançar as faixas"
 
 #: Tooltips#9
 msgctxt "Tooltips#9"
@@ -3854,7 +3854,8 @@ msgstr ""
 
 #: Tooltips#11
 msgid "Drag with mouse to make temporary pitch adjustments."
-msgstr "Arraste com o rato para fazer ajustamentos temporários da altura."
+msgstr ""
+"Arraste com o rato para fazer ajustamentos temporários da velocidade."
 
 #: Tooltips#12
 msgid "Spinning Vinyl"
@@ -3870,11 +3871,11 @@ msgstr "Ganho"
 
 #: Tooltips#15
 msgid "Adjusts the pre-fader gain of the track (to avoid clipping)."
-msgstr "Ajusta o ganho de pre-fader da faixa (para evitar aparar)"
+msgstr "Ajusta o ganho pre-atenuador da faixa (para evitar aparar)"
 
 #: Tooltips#16
 msgid "(too loud for the hardware and is being distorted)."
-msgstr "(Muito forte para o material e a ser distorcido)"
+msgstr "(Muito forte para o hardware e a ser distorcido)"
 
 #: Tooltips#17
 msgid "Peak Indicator"
@@ -3906,7 +3907,7 @@ msgstr "Vu-meter do Microfone"
 
 #: Tooltips#24
 msgid "Shows the current microphone volume."
-msgstr "Mostra o volume corrente do microfone"
+msgstr "Mostra o volume corrente do microfone."
 
 #: Tooltips#25
 msgid "Master Channel Volume Meter"
@@ -3941,11 +3942,11 @@ msgstr "Cursor de mistura"
 msgid ""
 "Determines the master output by fading between the left and right channels."
 msgstr ""
-"Determina a saída principal por fusão entre os canais esquerdo e direito."
+"Determina a saída principal por atenuação entre os canais esquerdo e direito."
 
 #: Tooltips#33
 msgid "Balance"
-msgstr "Balanço"
+msgstr "Panorâmico"
 
 #: Tooltips#34
 msgid "Adjusts the left/right channel balance on the master output."
@@ -4031,51 +4032,51 @@ msgstr "misturar a entrada microfone à saída principal."
 
 #: Tooltips#53
 msgid "Raise Pitch"
-msgstr "Aumentar a altura"
+msgstr "Aumentar a velocidade"
 
 #: Tooltips#54
 msgid "Sets the pitch higher."
-msgstr "Torna o son mais agudo."
+msgstr "Ajusta o aumento da velocidade"
 
 #: Tooltips#55
 msgid "Sets the pitch higher in small steps."
-msgstr "Torna o som mais agudo em pequenos passos."
+msgstr "Ajusta o aumento da velocidade em pequenos passos"
 
 #: Tooltips#56
 msgid "Lower Pitch"
-msgstr "Baixar a altura"
+msgstr "Diminui a velocidade"
 
 #: Tooltips#57
 msgid "Sets the pitch lower."
-msgstr "Torna o som mais grave."
+msgstr "Ajusta a diminuição da velocidade"
 
 #: Tooltips#58
 msgid "Sets the pitch lower in small steps."
-msgstr "Torna o som mais grave em pequenos passos."
+msgstr "Ajusta a diminuição da velocidade em pequenos passos"
 
 #: Tooltips#59
 msgid "Raise Pitch Temporary (Nudge)"
-msgstr "Aumenta a altura temporariamente (Impulso)"
+msgstr "Aumenta a velocidade temporariamente (Impulso)"
 
 #: Tooltips#60
 msgid "Holds the pitch higher while active."
-msgstr "Mantém o som mais agudo enquanto activo."
+msgstr "Mantém a velocidade aumentada enquanto activo."
 
 #: Tooltips#61
 msgid "Holds the pitch higher (small amount) while active."
-msgstr "Conserva o som mais agudo (ligeiramente) enquanto activo."
+msgstr "Mantém a velocidade aumentada (pequena quantidade) enquanto activo"
 
 #: Tooltips#62
 msgid "Lower Pitch Temporary (Nudge)"
-msgstr "Baixa a altura temporariamente (Impulso)"
+msgstr "Diminui a velocidade temporariamente (Impulso)"
 
 #: Tooltips#63
 msgid "Holds the pitch lower while active."
-msgstr "Mantém o som mais grave enquanto activo"
+msgstr "Mantém a velocidade diminuida enquanto activo"
 
 #: Tooltips#64
 msgid "Holds the pitch lower (small amount) while active."
-msgstr "Mantém o som mais grave (ligeiramente) enquanto activo."
+msgstr "Mantém a velocidade diminuida (pequena quantidade) enquanto activo."
 
 #: Tooltips#65
 msgid "Low EQ"
@@ -4123,11 +4124,11 @@ msgstr "Força o ganho do equalizdor dos médios a zero enquanto activo."
 
 #: Tooltips#76
 msgid "Low EQ Kill"
-msgstr "Supressão dos Baixos"
+msgstr "Supressão dos Graves"
 
 #: Tooltips#77
 msgid "Holds the gain of the low EQ to zero while active."
-msgstr "Força o ganho do equalizador dos baixos a zero enquanto activo."
+msgstr "Força o ganho do equalizador de graves a zero enquanto activo."
 
 #: Tooltips#78
 msgid "Displays the tempo of the loaded track in BPM (beats per minute)."
@@ -4148,7 +4149,7 @@ msgstr ""
 
 #: Tooltips#82
 msgid "Tempo and BPM Tap"
-msgstr "Tempo batido e BPM"
+msgstr "Batimento de Tempo e BPM"
 
 #: Tooltips#83
 msgid "Show/hide the spinning vinyl section."
@@ -4168,23 +4169,23 @@ msgstr ""
 
 #: Tooltips#86
 msgid "Key-Lock"
-msgstr "Trancagem da tonalidade"
+msgstr "Bloquear a tonalidade"
 
 #: Tooltips#87
 msgid "Prevents the pitch from from changing when the rate changes."
-msgstr "Impede a altura de variar quando a velocidade muda."
+msgstr "Impede a altura (tom) de variar quando a velocidade muda."
 
 #: Tooltips#88
 msgid ""
 "Toggling key-lock during playback may result in a momentary audio glitch."
 msgstr ""
-"Activar ou desactivar a trancagem de tonalidade durante a leitura pode "
+"Activar ou desactivar o bloqueio da tonalidade durante a leitura pode "
 "provocar uma falha momentânea do som."
 
 #: Tooltips#89
 msgid "If quantize is enabled, snaps to the nearest beat."
 msgstr ""
-"Quando a quantificação está activada, ajustam-se ao tempo mais próximo."
+"Quando a quantificação está activada, ajusta-se ao tempo mais próximo."
 
 #: Tooltips#90
 msgid "Quantize"
@@ -4192,7 +4193,7 @@ msgstr "Quantificação"
 
 #: Tooltips#91
 msgid "Toggles quantization."
-msgstr "Activar ou deascivar a quantificação."
+msgstr "Activa/desactiva a quantificação."
 
 #: Tooltips#92
 msgid "Loops and cues snap to the nearest beat when quantization is enabled."
@@ -4218,7 +4219,7 @@ msgstr "Alterna entre a leitura e a pausa da faixa."
 
 #: Tooltips#97
 msgid "Jumps to the beginning of the track."
-msgstr "Retorna ao início da faixa."
+msgstr "Salta para o início da faixa"
 
 #: Tooltips#98
 msgid "Places a cue-point at the current position on the waveform."
@@ -4234,13 +4235,13 @@ msgstr "(durante a leitura)"
 
 #: Tooltips#101
 msgid "Cue"
-msgstr "Marca"
+msgstr "Marca de início"
 
 #: Tooltips#102
 msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
 msgstr ""
 "Procura na faixa atá ao ponto de marcação e pára (=CDJ) ou procede à leitura "
-"(=simple)."
+"(=Vinilo)."
 
 #: Tooltips#103
 msgid "Seeks the track to the cue-point and stops."
@@ -4286,7 +4287,7 @@ msgstr ""
 
 #: Tooltips#112
 msgid "selected in Preferences -> Sound Hardware."
-msgstr "seleccionado em Preferências -> Material Audio."
+msgstr "seleccionado em Preferências -> Hardware de Som."
 
 #: Tooltips#113
 msgid "Fast Rewind"
@@ -4315,11 +4316,11 @@ msgstr "Sincronizar"
 
 #: Tooltips#119
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
-msgstr "Sincroniza o tempo (BPM) e a fase com a outra faixa. "
+msgstr "Sincroniza o tempo (BPM) e a fase com a outra faixa, "
 
 #: Tooltips#120
 msgid "if BPM is detected on both."
-msgstr "se o tempo (BPM) for detectado em ambos."
+msgstr "se o tempo (BPM) for detectado em ambas."
 
 #: Tooltips#121
 msgid "Syncs the tempo (BPM) to that of the other track,"
@@ -4327,7 +4328,7 @@ msgstr "Sincroniza o tempo (BPM) com o da outra faixa."
 
 #: Tooltips#122
 msgid "Pitch Control"
-msgstr "Controlo da Altura"
+msgstr "Controlo da Velocidade"
 
 #: Tooltips#123
 msgid "Changes the track playback rate."
