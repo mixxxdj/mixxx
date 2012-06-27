@@ -61,6 +61,10 @@ DlgSelector::DlgSelector(QWidget* parent,
 
     connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
+    // Getting info on current decks playing etc
+    connect(m_pSelectorLibraryTableModel, SIGNAL(currentTrackInfoChanged()),
+           this, SLOT(slotCurrentTrackInfoChanged()));
+            
 
 }
 
@@ -71,6 +75,7 @@ void DlgSelector::onShow()
 {
     qDebug() << "DlgSelector::onShow()";
     m_pSelectorLibraryTableModel->active(true);
+    slotCurrentTrackInfoChanged();
 }
 
 void DlgSelector::onHide()
@@ -94,8 +99,22 @@ void DlgSelector::onSearchCleared()
 
 void DlgSelector::slotFiltersChanged() {
     int count = m_pSelectorLibraryTableModel->rowCount();
-    QString labelMatchText = QString(tr("%1 Tracks Found ")).arg(count);
+    QString pluralize = ((count > 1) ? QString("s") : QString(""));
+    QString labelMatchText = QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
     labelMatchCount->setText(labelMatchText);
+}
+
+void DlgSelector::slotCurrentTrackInfoChanged() {
+    // check which filters to activate
+    checkBoxGenre->setEnabled(m_pSelectorLibraryTableModel->currentTrackGenreExists());
+    checkBoxBpm->setEnabled(m_pSelectorLibraryTableModel->currentTrackBpmExists());
+    horizontalSliderBpmRange->setEnabled(m_pSelectorLibraryTableModel->currentTrackBpmExists());
+    checkBoxYear->setEnabled(m_pSelectorLibraryTableModel->currentTrackYearExists());
+    checkBoxRating->setEnabled(m_pSelectorLibraryTableModel->currentTrackRatingExists());
+    checkBoxKey->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
+    checkBoxKey4th->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
+    checkBoxKey5th->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
+    checkBoxKeyRelative->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
 }
 
 void DlgSelector::onSearch(const QString& text)

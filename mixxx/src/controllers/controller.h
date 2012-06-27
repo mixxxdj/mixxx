@@ -131,8 +131,9 @@ class Controller : public QObject, ControllerPresetVisitor {
   private slots:
     virtual int open() = 0;
     virtual int close() = 0;
-    // Requests that the device poll if it is a polling device.
-    virtual void poll() { }
+    // Requests that the device poll if it is a polling device. Returns true
+    // if events were handled.
+    virtual bool poll() { return false; }
 
   private:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a

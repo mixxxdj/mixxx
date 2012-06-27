@@ -22,6 +22,12 @@ class SelectorLibraryTableModel : public LibraryTableModel
     virtual int rowCount();
 	void active(bool value);
 
+    bool currentTrackGenreExists();
+    bool currentTrackBpmExists();
+    bool currentTrackYearExists();
+    bool currentTrackRatingExists();
+    bool currentTrackKeyExists();
+
   public slots:
     void filterByGenre(bool value);
     void filterByBpm(bool value, int range);
@@ -49,6 +55,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void slotFiltersChanged();
   signals:
     void filtersChanged();
+    void currentTrackInfoChanged();
     void doSearch(const QString& searchText);
   private:
 
@@ -66,6 +73,13 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterKey4th;
     bool m_bFilterKey5th;
     bool m_bFilterKeyRelative;
+
+    // Current Track Properties
+    QString m_sCurrentTrackGenre;
+    float m_fCurrentTrackBpm;
+    QString m_sCurrentTrackYear;
+    int m_iCurrentTrackRating;
+    QString m_sCurrentTrackKey;
 
     QStringList m_semitoneList;
     QStringList m_majors;

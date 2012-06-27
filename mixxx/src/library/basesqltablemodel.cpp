@@ -19,6 +19,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
            TrackModel(db, settingsNamespace),
+           m_currentSearch(""),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_database(db) {
@@ -750,3 +751,19 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     }
     return NULL;
 }
+
+void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
+    foreach (QModelIndex index, indices) {
+        int trackId = getTrackId(index);
+        trackIds.append(trackId);
+    }
+
+    m_trackDAO.hideTracks(trackIds);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
+}
+
+

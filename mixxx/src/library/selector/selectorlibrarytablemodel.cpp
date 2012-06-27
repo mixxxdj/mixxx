@@ -41,6 +41,12 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_channelBpm = NULL;
     m_bActive = false;
     m_rate = 0;
+    
+    m_sCurrentTrackGenre = "";
+    m_fCurrentTrackBpm = 0;
+    m_sCurrentTrackYear = "";
+    m_iCurrentTrackRating = 0;
+    m_sCurrentTrackKey = "";
 
     initializeHarmonicsData();
 
@@ -59,6 +65,26 @@ int SelectorLibraryTableModel::rowCount() {
 
 void SelectorLibraryTableModel::active(bool value) {
     m_bActive = value;
+}
+
+bool SelectorLibraryTableModel::currentTrackGenreExists() {
+    return m_sCurrentTrackGenre != QString();
+}
+
+bool SelectorLibraryTableModel::currentTrackBpmExists() {
+    return m_fCurrentTrackBpm > 0;
+}
+
+bool SelectorLibraryTableModel::currentTrackYearExists() {
+    return m_sCurrentTrackYear != QString();
+}
+
+bool SelectorLibraryTableModel::currentTrackRatingExists() {
+    return m_iCurrentTrackRating > 0;
+}
+
+bool SelectorLibraryTableModel::currentTrackKeyExists() {
+    return m_sCurrentTrackKey != QString();
 }
 
 void SelectorLibraryTableModel::filterByGenre(bool value) {
@@ -119,12 +145,23 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
         SLOT(slotChannel1BpmChanged(double)));
 
     m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
+
+    m_sCurrentTrackGenre = m_pLoadedTrack->getGenre();
+    m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
+    m_sCurrentTrackYear = m_pLoadedTrack->getYear();
+    m_iCurrentTrackRating = m_pLoadedTrack->getRating();
+    m_sCurrentTrackKey = m_pLoadedTrack->getKey();
+
+    emit(currentTrackInfoChanged());
+
     setRate();
     updateFilterText();
 }
 
 
 void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
+    #define DISCARD_PARAMETER(p) (void)p
+    (void)value;
     setRate();
     updateFilterText();
 }
@@ -147,27 +184,27 @@ void SelectorLibraryTableModel::updateFilterText() {
 
         // Genre
         if (m_bFilterGenre) {
-            QString TrackGenre = m_pLoadedTrack->getGenre();
+            QString TrackGenre = m_sCurrentTrackGenre;
             if (TrackGenre != "")
                 filters << QString("Genre == '%1'").arg(TrackGenre);
         }
 
         // Year
         if (m_bFilterYear) {
-            QString TrackYear = m_pLoadedTrack->getYear();
+            QString TrackYear = m_sCurrentTrackYear;
             if (TrackYear!="")
                 filters << QString("Year == '%1'").arg(TrackYear);
         }
 
         // Rating
         if (m_bFilterRating) {
-            int TrackRating = m_pLoadedTrack->getRating();
+            int TrackRating = m_iCurrentTrackRating;
             if (TrackRating > 0)
                 filters << QString("Rating >= %1").arg(TrackRating);
         }
 
         // calculate the current BPM
-        float trackBpm = m_pLoadedTrack->getBpm();
+        float trackBpm = m_fCurrentTrackBpm;
         float currentBpm = trackBpm * m_rate;
 
         // Bpm
@@ -185,7 +222,7 @@ void SelectorLibraryTableModel::updateFilterText() {
         const int semitonesPerOctave = 12;
         float frequencyRatio = currentBpm / trackBpm;
         float semitoneOffset = semitonesPerOctave * log(frequencyRatio) / log(2);
-        QString trackKey = adjustPitchBy(m_pLoadedTrack->getKey(), semitoneOffset);
+        QString trackKey = adjustPitchBy(m_sCurrentTrackKey, semitoneOffset);
 
 		QString hKeys = getHarmonicKeys(trackKey);
 		if (hKeys!="")

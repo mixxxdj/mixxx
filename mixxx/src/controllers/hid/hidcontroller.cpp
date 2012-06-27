@@ -174,7 +174,7 @@ void HidController::guessDeviceCategory() {
                 case 0x4: info = tr("Generic HID Joystick"); break;
                 case 0x5: info = tr("Generic HID Gamepad"); break;
                 case 0x6: info = tr("Generic HID Keyboard"); break;
-                case 0x8: info = tr("Gereric HID Multiaxis Controller"); break;
+                case 0x8: info = tr("Generic HID Multiaxis Controller"); break;
                 default: info = tr("Unknown HID Desktop Device") +
                         QString().sprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
                     break;

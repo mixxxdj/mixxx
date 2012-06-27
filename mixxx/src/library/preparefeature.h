@@ -9,6 +9,7 @@
 #include "library/libraryfeature.h"
 #include "configobject.h"
 #include "treeitemmodel.h"
+#include "dlgprepare.h"
 
 class AnalyserQueue;
 class LibraryTableModel;
@@ -63,6 +64,7 @@ class PrepareFeature : public LibraryFeature {
     int m_iOldBpmEnabled;
     TreeItemModel m_childModel;
     const static QString m_sPrepareViewName;
+    DlgPrepare* m_pPrepareView;
 };
 
 

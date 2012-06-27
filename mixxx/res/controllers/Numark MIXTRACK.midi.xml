@@ -1,14 +1,16 @@
-<!--Numark MixTrack Mixxx Mapping v0.1 1/11/2010 Matteo matteo@magm3.com -->
-<MixxxMIDIPreset mixxxVersion="1.8.1+" schemaVersion="1">
-  <info>
-    <name>Numark MIXTRACK</name>
-  </info>
+<!--Numark MixTrack Mixxx Mapping v1.0b 26/06/2011 Matteo matteo@magm3.com -->
+<MixxxMIDIPreset mixxxVersion="1.9.0+" schemaVersion="1">
+    <info>
+      <name>Numark MIXTRACK</name>
+      <author>Matteo (matteo@magm3.com), RAWRR, and uncleeugene</author>
+      <description>Numark MixTrack Mapping v1.0b</description>
+    </info>
     <controller id="Numark Mix Track MIDI 1">
         <scriptfiles>
             <file functionprefix="NumarkMixTrack" filename="Numark-MixTrack-scripts.js"/>
         </scriptfiles>
         <controls>
-	 <control>
+        <control>
                 <status>0xb0</status>
                 <midino>0xc</midino>
                 <group>[Master]</group>
@@ -66,14 +68,14 @@
                 <status>0x90</status>
                 <midino>0x4f</midino>
                 <group>[Playlist]</group>
-                <key>NumarkMixTrack.toggleDirectoryMode</key>
+                <key>LoadSelectedIntoFirstStopped</key>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
            <control>
                 <status>0xb0</status>
-                <midino>0x1b</midino>
+                <midino>0x1c</midino>
                 <group>[Flanger]</group>
                 <key>lfoDepth</key>
                 <options>
@@ -82,7 +84,7 @@
             </control>
             <control>
                 <status>0xb0</status>
-                <midino>0x1d</midino>
+                <midino>0x1b</midino>
                 <group>[Flanger]</group>
                 <key>lfoPeriod</key>
                 <options>
@@ -91,7 +93,7 @@
             </control>
             <control>
                 <status>0xb0</status>
-                <midino>0x1c</midino>
+                <midino>0x1d</midino>
                 <group>[Flanger]</group>
                 <key>lfoDelay</key>
                 <options>
@@ -100,7 +102,7 @@
             </control>
 
 
-
+<!-- CHANNEL 1 -->
             <control>
                 <status>0x90</status>
                 <midino>0x3b</midino>
@@ -121,6 +123,24 @@
             </control>
             <control>
                 <status>0x90</status>
+                <midino>0x4a</midino>
+                <group>[Channel1]</group>
+                <key>cue_goto</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x59</midino>
+                <group>[Channel1]</group>
+                <key>cue_set</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
                 <midino>0x40</midino>
                 <group>[Channel1]</group>
                 <key>beatsync</key>
@@ -130,14 +150,13 @@
             </control>
             <control>
                 <status>0x90</status>
-                <midino>0x4a</midino>
+                <midino>0x51</midino>
                 <group>[Channel1]</group>
-                <key>NumarkMixTrack.playFromCue</key>
+                <key>NumarkMixTrack.ToggleKeylock</key>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-
             <control>
                 <status>0x90</status>
                 <midino>0x65</midino>
@@ -201,7 +220,6 @@
                     <normal/>
                 </options>
             </control>
-
             <control>
                 <status>0x90</status>
                 <midino>0x61</midino>
@@ -238,7 +256,7 @@
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+            <control>
                 <status>0x90</status>
                 <midino>0x4b</midino>
                 <group>[Channel1]</group>
@@ -273,7 +291,8 @@
                 <options>
                     <normal/>
                 </options>
-            </control>            <control>
+            </control>
+            <control>
                 <status>0x90</status>
                 <midino>0x43</midino>
                 <group>[Channel1]</group>
@@ -282,13 +301,20 @@
                     <normal/>
                 </options>
             </control>
-
-
             <control>
                 <status>0x90</status>
                 <midino>0x48</midino>
                 <group>[Channel1]</group>
                 <key>NumarkMixTrack.toggleScratchMode</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x4e</midino>
+                <group>[Channel1]</group>
+                <key>NumarkMixTrack.WheelTouch</key>
                 <options>
                     <script-binding/>
                 </options>
@@ -302,8 +328,6 @@
                     <script-binding/>
                 </options>
             </control>
-
-
             <control>
                 <status>0x90</status>
                 <midino>0x63</midino>
@@ -336,6 +360,24 @@
             </control>
             <control>
                 <status>0x90</status>
+                <midino>0x4c</midino>
+                <group>[Channel2]</group>
+                <key>cue_goto</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x5d</midino>
+                <group>[Channel2]</group>
+                <key>cue_set</key>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
                 <midino>0x47</midino>
                 <group>[Channel2]</group>
                 <key>beatsync</key>
@@ -343,6 +385,15 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x52</midino>
+                <group>[Channel2]</group>
+                <key>NumarkMixTrack.ToggleKeylock</key>
+                <options>
+                    <script-binding/>
+                </options>
+        </control>
             <control>
                 <status>0x90</status>
                 <midino>0x66</midino>
@@ -442,7 +493,7 @@
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+            <control>
                 <status>0x90</status>
                 <midino>0x34</midino>
                 <group>[Channel2]</group>
@@ -487,8 +538,6 @@
                     <normal/>
                 </options>
             </control>
-
-
             <control>
                 <status>0x90</status>
                 <midino>0x50</midino>
@@ -498,7 +547,16 @@
                     <script-binding/>
                 </options>
             </control>
-           <control>
+        <control>
+                <status>0x90</status>
+                <midino>0x4d</midino>
+                <group>[Channel2]</group>
+                <key>NumarkMixTrack.WheelTouch</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <status>0xb0</status>
                 <midino>0x18</midino>
                 <group>[Channel2]</group>
@@ -506,9 +564,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control>-
-
-
+            </control>
             <control>
                 <status>0x90</status>
                 <midino>0x64</midino>
@@ -520,10 +576,7 @@
             </control>
         </controls>
 
-
-
-
-        <outputs>
+       <outputs>
             <output>
                 <group>[Channel1]</group>
                 <key>play</key>
@@ -547,6 +600,19 @@
                 <maximum>0.1</maximum>
                 <status>0x90</status>
                 <midino>0x33</midino>
+                <on>0x0</on>
+                <off>0x64</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_goto</key>
+                <options>
+                    <normal/>
+                </options>
+                <minimum>0</minimum>
+                <maximum>0.1</maximum>
+                <status>0x90</status>
+                <midino>0x4a</midino>
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
@@ -683,6 +749,19 @@
             </output>
             <output>
                 <group>[Channel2]</group>
+                <key>cue_goto</key>
+                <options>
+                    <normal/>
+                </options>
+                <minimum>0</minimum>
+                <maximum>0.1</maximum>
+                <status>0x90</status>
+                <midino>0x4c</midino>
+                <on>0x0</on>
+                <off>0x64</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
                 <key>beatsync</key>
                 <options>
                     <normal/>
@@ -759,7 +838,7 @@
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
-	    <output>
+        <output>
                 <group>[Channel2]</group>
                 <key>rate</key>
                 <options>

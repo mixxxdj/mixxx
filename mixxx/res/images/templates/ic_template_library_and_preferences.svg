@@ -1197,6 +1197,16 @@
        y1="18.007271"
        x2="-29.517244"
        y2="18.007271" />
+    <linearGradient
+       y2="28.998877"
+       x2="13.000001"
+       y1="2.9987156"
+       x1="13.000001"
+       gradientTransform="matrix(1,0,0,1.0769164,-1.000001,-1.229366)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient10313"
+       xlink:href="#linearGradient5695-6"
+       inkscape:collect="always" />
   </defs>
   <metadata
      id="metadata4">
@@ -2132,7 +2142,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="7"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 12,7 C 12,9.7614237 9.7614237,12 7,12 4.2385763,12 2,9.7614237 2,7 2,4.2385763 4.2385763,2 7,2 c 2.7614237,0 5,2.2385763 5,5 z"
+           d="M 12,7 A 5,5 0 1 1 2,7 5,5 0 1 1 12,7 z"
            transform="matrix(1.9222927,0,0,1.9222927,0.5439511,-13.456048)" />
         <path
            sodipodi:type="arc"
@@ -2142,7 +2152,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="6"
            sodipodi:rx="1.4933327"
            sodipodi:ry="1.4933327"
-           d="M 7.4933327,6 C 7.4933327,6.8247449 6.8247449,7.4933327 6,7.4933327 5.1752551,7.4933327 4.5066673,6.8247449 4.5066673,6 4.5066673,5.1752551 5.1752551,4.5066673 6,4.5066673 6.8247449,4.5066673 7.4933327,5.1752551 7.4933327,6 z"
+           d="M 7.4933327,6 A 1.4933327,1.4933327 0 1 1 4.5066673,6 1.4933327,1.4933327 0 1 1 7.4933327,6 z"
            transform="matrix(1.3392862,0,0,1.3392862,5.9642827,-8.0357171)" />
       </g>
     </g>
@@ -2284,6 +2294,68 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          id="ic_preferences_recording"
          inkscape:connector-curvature="0"
          inkscape:label="#rect7900-2" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer27"
+       inkscape:label="midicontrollers.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <g
+         transform="translate(0,16)"
+         style="fill:url(#linearGradient7229);fill-opacity:1;display:inline;filter:url(#filter6108)"
+         id="ic_preferences_midicontrollers"
+         inkscape:label="#g5033-4">
+        <g
+           style="fill:url(#linearGradient7229);fill-opacity:1"
+           id="g4312-3">
+          <g
+             id="g3991-2"
+             style="fill:url(#linearGradient7229);fill-opacity:1">
+            <rect
+               y="-4"
+               x="24"
+               height="10"
+               width="2"
+               id="rect4367-7"
+               style="fill:url(#linearGradient7497);fill-opacity:1;stroke:none" />
+            <rect
+               style="fill:url(#linearGradient7499);fill-opacity:1;stroke:none"
+               id="rect4369-7"
+               width="2"
+               height="10"
+               x="20"
+               y="-4" />
+            <rect
+               y="-4"
+               x="12.000007"
+               height="10"
+               width="2"
+               id="rect4371-2"
+               style="fill:url(#linearGradient7501);fill-opacity:1;stroke:none" />
+            <rect
+               style="fill:url(#linearGradient7503);fill-opacity:1;stroke:none"
+               id="rect4373-5"
+               width="2"
+               height="10"
+               x="7.999999"
+               y="-4" />
+            <rect
+               y="-4"
+               x="4"
+               height="10"
+               width="2"
+               id="rect4375-6"
+               style="fill:url(#linearGradient7505);fill-opacity:1;stroke:none" />
+          </g>
+        </g>
+        <path
+           inkscape:connector-curvature="0"
+           id="rect4538-3"
+           d="m 1,-14 c -0.554,0 -1,0.446 -1,1 l 0,26 c 0,0.554 0.446,1 1,1 l 28,0 c 0.554,0 1,-0.446 1,-1 l 0,-26 c 0,-0.554 -0.446,-1 -1,-1 z m 1.28125,2 7.4375,0 C 9.866483,-12 10,-11.777 10,-11.5 l 0,1 c 0,0.277 -0.133517,0.5 -0.28125,0.5 l -7.4375,0 C 2.1335167,-10 2,-10.223 2,-10.5 l 0,-1 C 2,-11.777 2.1335167,-12 2.28125,-12 z m 19.78125,0 1.875,0 C 23.97443,-12 24,-11.777 24,-11.5 l 0,3 c 0,0.277 -0.02557,0.5 -0.0625,0.5 l -1.875,0 C 22.025567,-8 22,-8.223 22,-8.5 l 0,-3 c 0,-0.277 0.02557,-0.5 0.0625,-0.5 z m 4,0 1.875,0 C 27.97443,-12 28,-11.777 28,-11.5 l 0,3 c 0,0.277 -0.02557,0.5 -0.0625,0.5 l -1.875,0 C 26.025567,-8 26,-8.223 26,-8.5 l 0,-3 c 0,-0.277 0.02557,-0.5 0.0625,-0.5 z M 2.875,-4 27.1875,-4 c 0.481287,0 0.876289,0.2329448 0.875,0.53125 L 28,11 c -0.0013,0.298305 -0.518713,1 -1,1 L 3,12 C 2.5187125,12 2,11.298308 2,11 L 2,-3.46875 C 2,-3.767058 2.3937125,-4 2.875,-4 z"
+           style="color:#000000;fill:url(#linearGradient7231);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           sodipodi:nodetypes="sssssssssssssssssssssssssssssssssssssssssssss" />
+      </g>
     </g>
     <g
        inkscape:groupmode="layer"
@@ -2539,66 +2611,19 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
       </g>
     </g>
     <g
-       inkscape:groupmode="layer"
-       id="layer27"
-       inkscape:label="controllers.png"
        style="display:none"
+       inkscape:label="controllers.png"
+       id="g10271"
+       inkscape:groupmode="layer"
        sodipodi:insensitive="true">
-      <g
-         transform="translate(0,16)"
-         style="fill:url(#linearGradient7229);fill-opacity:1;display:inline;filter:url(#filter6108)"
+      <path
+         style="color:#000000;fill:url(#linearGradient10313);fill-opacity:1;stroke:none;stroke-width:1.99999988;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter6108);enable-background:accumulate"
+         mask="none"
+         d="M 1.96875,2 C 0.879975,2 0,2.788482 0,3.78125 l 0,24.4375 C 0,29.211518 0.879975,29.999479 1.96875,30 l 5.15625,0 14.25,0 4.65625,0 C 27.120024,30 28,29.211518 28,28.21875 L 28,3.78125 C 28,2.788482 27.120024,2 26.03125,2 z M 6,4 22,4 22,8 6,8 z m -4,4 2,0 0,4 -2,0 z m 12,2 c 4.406434,0 8,3.593566 8,8 0,4.406434 -3.593566,8 -8,8 -4.406433,0 -8,-3.593566 -8,-8 0,-4.406434 3.593567,-8 8,-8 z m 10,-2 2,0 0,4 -2,0 z m -10,6 c -2.209139,0 -4,1.790861 -4,4 0,2.209139 1.790861,4 4,4 2.209139,0 4,-1.790861 4,-4 0,-2.209139 -1.790861,-4 -4,-4 z m 10,2 2,0 0,10 -2,0 z m -22,6 2,0 0,4 -2,0 z"
          id="ic_preferences_controllers"
-         inkscape:label="#g5033-4">
-        <g
-           style="fill:url(#linearGradient7229);fill-opacity:1"
-           id="g4312-3">
-          <g
-             id="g3991-2"
-             style="fill:url(#linearGradient7229);fill-opacity:1">
-            <rect
-               y="-4"
-               x="24"
-               height="10"
-               width="2"
-               id="rect4367-7"
-               style="fill:url(#linearGradient7497);fill-opacity:1;stroke:none" />
-            <rect
-               style="fill:url(#linearGradient7499);fill-opacity:1;stroke:none"
-               id="rect4369-7"
-               width="2"
-               height="10"
-               x="20"
-               y="-4" />
-            <rect
-               y="-4"
-               x="12.000007"
-               height="10"
-               width="2"
-               id="rect4371-2"
-               style="fill:url(#linearGradient7501);fill-opacity:1;stroke:none" />
-            <rect
-               style="fill:url(#linearGradient7503);fill-opacity:1;stroke:none"
-               id="rect4373-5"
-               width="2"
-               height="10"
-               x="7.999999"
-               y="-4" />
-            <rect
-               y="-4"
-               x="4"
-               height="10"
-               width="2"
-               id="rect4375-6"
-               style="fill:url(#linearGradient7505);fill-opacity:1;stroke:none" />
-          </g>
-        </g>
-        <path
-           inkscape:connector-curvature="0"
-           id="rect4538-3"
-           d="m 1,-14 c -0.554,0 -1,0.446 -1,1 l 0,26 c 0,0.554 0.446,1 1,1 l 28,0 c 0.554,0 1,-0.446 1,-1 l 0,-26 c 0,-0.554 -0.446,-1 -1,-1 z m 1.28125,2 7.4375,0 C 9.866483,-12 10,-11.777 10,-11.5 l 0,1 c 0,0.277 -0.133517,0.5 -0.28125,0.5 l -7.4375,0 C 2.1335167,-10 2,-10.223 2,-10.5 l 0,-1 C 2,-11.777 2.1335167,-12 2.28125,-12 z m 19.78125,0 1.875,0 C 23.97443,-12 24,-11.777 24,-11.5 l 0,3 c 0,0.277 -0.02557,0.5 -0.0625,0.5 l -1.875,0 C 22.025567,-8 22,-8.223 22,-8.5 l 0,-3 c 0,-0.277 0.02557,-0.5 0.0625,-0.5 z m 4,0 1.875,0 C 27.97443,-12 28,-11.777 28,-11.5 l 0,3 c 0,0.277 -0.02557,0.5 -0.0625,0.5 l -1.875,0 C 26.025567,-8 26,-8.223 26,-8.5 l 0,-3 c 0,-0.277 0.02557,-0.5 0.0625,-0.5 z M 2.875,-4 27.1875,-4 c 0.481287,0 0.876289,0.2329448 0.875,0.53125 L 28,11 c -0.0013,0.298305 -0.518713,1 -1,1 L 3,12 C 2.5187125,12 2,11.298308 2,11 L 2,-3.46875 C 2,-3.767058 2.3937125,-4 2.875,-4 z"
-           style="color:#000000;fill:url(#linearGradient7231);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-           sodipodi:nodetypes="sssssssssssssssssssssssssssssssssssssssssssss" />
-      </g>
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ssscccsssssccccccccccssssscccccssssscccccccccc"
+         inkscape:label="#path6706-3" />
     </g>
     <g
        inkscape:groupmode="layer"

@@ -23,27 +23,34 @@ SkinLoader::~SkinLoader() {
 }
 
 QString SkinLoader::getConfiguredSkinPath() {
-    const QString defaultSkin = "Deere1280x800-WXGA";//XXX: App Store //"Outline1024x600-Netbook";
 
     QString qSkinPath = m_pConfig->getConfigPath();
     qSkinPath.append("skins/");
 
-    QDir skinPath(qSkinPath);
+    QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]","Skin"));
+    QString qThisSkin = qSkinPath + configSkin;
+    QDir thisSkin(qThisSkin);
 
-    if (skinPath.exists()) {
-        // Is the skin listed in the config database there? If not, use default skin.
-
-        QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]","Skin"));
-        QString qThisSkin = qSkinPath + configSkin;
-        QDir thisSkin(qThisSkin);
-
-        if (configSkin.length() > 0 && thisSkin.exists()) {
-            qSkinPath = qThisSkin;
-        } else {
-            m_pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue(defaultSkin));
-            qSkinPath.append(defaultSkin);
-        }
+    if (configSkin.length() > 0 && thisSkin.exists()) {
+        qSkinPath = qThisSkin;
     } else {
+        // Fall back to default skin
+        QString defaultSkin;
+        QRect screenGeo = QApplication::desktop()->screenGeometry();
+        if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
+            defaultSkin = "Deere1280x800-WXGA";
+        }
+        else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
+            defaultSkin = "ShadeDark1024x600-Netbook";
+        }
+        else {
+            defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
+        }
+        qSkinPath.append(defaultSkin);
+    }
+
+    QDir skinPath(qSkinPath);
+    if (!skinPath.exists()) {
         qCritical() << "Skin directory does not exist:" << qSkinPath;
     }
 

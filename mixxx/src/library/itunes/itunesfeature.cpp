@@ -120,6 +120,7 @@ void ITunesFeature::activate(bool forceReload) {
                 tr("Select your iTunes library"),
                 QDir::homePath(), "*.xml");
             if (m_dbfile.isEmpty() || !QFile::exists(m_dbfile)) {
+                emit(showTrackModel(m_pITunesTrackModel));
                 return;
             }
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
@@ -142,10 +143,8 @@ void ITunesFeature::activate(bool forceReload) {
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
     }
-    else{
-        emit(showTrackModel(m_pITunesTrackModel));
-    }
 
+    emit(showTrackModel(m_pITunesTrackModel));
 }
 
 void ITunesFeature::activateChild(const QModelIndex& index) {

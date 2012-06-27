@@ -8,6 +8,7 @@
 #include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
+#include "library/hiddentablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
@@ -15,7 +16,8 @@
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
-          kMissingTitle(tr("Missing Tracks")) {
+          kMissingTitle(tr("Missing Tracks")),
+          kHiddenTitle(tr("Hidden Tracks")){
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -34,6 +36,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "library." + LIBRARYTABLE_BPM
             << "library." + LIBRARYTABLE_BPM_LOCK
+            << "library." + LIBRARYTABLE_BITRATE
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
@@ -80,17 +83,23 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
 
-    TreeItem *rootItem = new TreeItem();
-    TreeItem *childItem = new TreeItem(kMissingTitle, kMissingTitle,
-                                       this, rootItem);
-    rootItem->appendChild(childItem);
-    m_childModel.setRootItem(rootItem);
+    TreeItem* pRootItem = new TreeItem();
+    TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
+                                       this, pRootItem);
+    TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
+                                       this, pRootItem);
+    pRootItem->appendChild(pmissingChildItem);
+    pRootItem->appendChild(phiddenChildItem);
+
+    m_childModel.setRootItem(pRootItem);
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
     delete m_pMissingTableModel;
+    delete m_pHiddenTableModel;
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -116,6 +125,9 @@ void MixxxLibraryFeature::refreshLibraryModels()
     if (m_pMissingTableModel) {
         m_pMissingTableModel->select();
     }
+    if (m_pHiddenTableModel) {
+        m_pHiddenTableModel->select();
+    }
 }
 
 void MixxxLibraryFeature::activate() {
@@ -132,30 +144,45 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     if (itemName == kMissingTitle) {
         emit(showTrackModel(m_pMissingTableModel));
     }
+    if (itemName == kHiddenTitle) {
+        emit(showTrackModel(m_pHiddenTableModel));
+    }
 }
 
 void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
+    Q_UNUSED(globalPos);
 }
 
 void MixxxLibraryFeature::onRightClickChild(const QPoint& globalPos,
                                             QModelIndex index) {
+    Q_UNUSED(globalPos);
+    Q_UNUSED(index);
 }
 
 bool MixxxLibraryFeature::dropAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+    Q_UNUSED(url);
+    Q_UNUSED(index);
     return false;
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool MixxxLibraryFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
+    Q_UNUSED(url);
+    Q_UNUSED(index);
     return false;
-}void MixxxLibraryFeature::onLazyChildExpandation(const QModelIndex &index){
+}
+
+void MixxxLibraryFeature::onLazyChildExpandation(const QModelIndex &index){
+    Q_UNUSED(index);
 //Nothing to do because the childmodel is not of lazy nature.
 }

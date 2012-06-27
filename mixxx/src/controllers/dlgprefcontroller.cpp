@@ -33,8 +33,7 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     m_pLayout = m_ui.gridLayout_4;
     const ControllerPresetPointer pPreset = controller->getPreset();
 
-    m_ui.labelLoadedPreset->setText(presetShortName(pPreset));
-    m_ui.labelLoadedPresetDescription->setText(presetDescription(pPreset));
+    slotPresetLoaded(pPreset);
 
     //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
@@ -95,6 +94,26 @@ QString DlgPrefController::presetDescription(const ControllerPresetPointer pPres
             description = descr;
     }
     return description;
+}
+
+QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset) const {
+    QString url;
+    if (pPreset) {
+        QString link = pPreset->forumlink();
+        if (link.length() > 0)
+            url = "<a href=\"" + link + "\">Mixxx Forums</a>";
+    }
+    return url;
+}
+
+QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset) const {
+    QString url;
+    if (pPreset) {
+        QString link = pPreset->wikilink();
+        if (link.length() > 0)
+            url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
+    }
+    return url;
 }
 
 void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
@@ -191,6 +210,11 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetShortName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
+    QString support = presetForumLink(preset) + presetWikiLink(preset);
+    if (support.length() == 0) {
+        support = tr("No support available.");
+    }
+    m_ui.labelLoadedPresetSupportLinks->setText(support);
 }
 
 void DlgPrefController::slotDeviceState(int state) {

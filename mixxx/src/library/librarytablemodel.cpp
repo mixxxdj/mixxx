@@ -51,6 +51,7 @@ LibraryTableModel::~LibraryTableModel() {
 }
 
 bool LibraryTableModel::addTrack(const QModelIndex& index, QString location) {
+    Q_UNUSED(index);
     QFileInfo fileInfo(location);
 
     // Adds track, does not insert duplicates, handles unremoving logic.
@@ -65,6 +66,7 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location) {
 }
 
 int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    Q_UNUSED(index);
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
@@ -78,31 +80,10 @@ TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const {
     return m_trackDao.getTrack(trackId);
 }
 
-void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
-    QList<int> trackIds;
-
-    foreach (QModelIndex index, indices) {
-        int trackId = getTrackId(index);
-        trackIds.append(trackId);
-    }
-
-    m_trackDao.removeTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
-}
-
-void LibraryTableModel::removeTrack(const QModelIndex& index) {
-    int trackId = getTrackId(index);
-    m_trackDao.removeTrack(trackId);
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
-}
-
 void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex,
                                   const QModelIndex& destIndex) {
+    Q_UNUSED(sourceIndex);
+    Q_UNUSED(destIndex);
     // Does nothing because we don't support reordering tracks in the library,
     // and getCapabilities() reports that.
 }
@@ -153,7 +134,7 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_REMOVE
+            | TRACKMODELCAPS_HIDE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;

@@ -674,10 +674,9 @@ int MixxxApp::noSoundDlg(void)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            break;
+            return 1;
         }
     }
-    return 1;
 }
 
 int MixxxApp::noOutputDlg(bool *continueClicked)
@@ -726,10 +725,9 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            break;
+            return 1;
         }
     }
-    return 1;
 }
 
 QString buildWhatsThis(QString title, QString text) {
@@ -1638,6 +1636,19 @@ bool MixxxApp::confirmExit() {
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;
+        }
+    }
+    if (m_pPrefDlg->isVisible()) {
+        QMessageBox::StandardButton btn = QMessageBox::question(
+            this, tr("Confirm Exit"),
+            tr("The preferences window is still open.") + "<br>" +
+            tr("Discard any changes and exit Mixxx?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (btn == QMessageBox::No) {
+            return false;
+        }
+        else {
+            m_pPrefDlg->close();
         }
     }
     return true;

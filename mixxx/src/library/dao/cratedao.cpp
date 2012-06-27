@@ -227,18 +227,6 @@ int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
     return trackIdList.size();
 }
 
-void CrateDAO::removeTrackFromCrates(int trackId) {
-    QSqlQuery query(m_database);
-    QString queryString = QString("DELETE FROM %1 WHERE %2 = %3")
-            .arg(CRATE_TRACKS_TABLE,
-                 CRATETRACKSTABLE_TRACKID,
-                 QString::number(trackId));
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-}
-
 bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE "
@@ -254,4 +242,22 @@ bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
     emit(trackRemoved(crateId, trackId));
     emit(changed(crateId));
     return true;
+}
+
+
+void CrateDAO::removeTracksFromCrates(QList<int> ids) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+    QSqlQuery query(m_database);
+    query.prepare(QString("DELETE FROM crate_tracks "
+                          "WHERE track_id in (%1)").arg(idList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // TODO(XXX) should we emit this for all crates?
+    // emit(trackRemoved(crateId, trackId));
+    // emit(changed(crateId));
 }

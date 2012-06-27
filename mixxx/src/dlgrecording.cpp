@@ -121,6 +121,7 @@ void DlgRecording::onSearchStarting()
 void DlgRecording::onSearchCleared()
 {
 }
+
 void DlgRecording::refreshBrowseModel(){
      m_browseModel.setPath(m_recordingDir);
 }
