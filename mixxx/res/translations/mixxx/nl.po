@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-10 15:10+0000\n"
-"Last-Translator: Quinten Schelfhout <dequicky@gmail.com>\n"
+"PO-Revision-Date: 2012-06-26 19:39+0000\n"
+"Last-Translator: Michiel Vanthuyne <djfreemc@hotmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:38+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-06-27 05:17+0000\n"
+"X-Generator: Launchpad (build 15482)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -29,7 +29,7 @@ msgstr "voeg een auto DJ Queue toe (onder)"
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "voeg een auto DJ Queue toe (boven)"
+msgstr ""
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -39,7 +39,7 @@ msgstr "Afspeellijst importeren"
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Afspeellijst Aanmaken Mislukt"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
@@ -48,7 +48,7 @@ msgstr "Een onbekende fout is opgetreden bij het maken van afspeellijst: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Nieuwe afspeellijst"
+msgstr "Nieuwe Afspeellijst"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
@@ -58,12 +58,12 @@ msgstr ""
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Voeg toe aan auto DJ wachtrij (bovenaan)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Verwijderen"
+msgstr "Wissen"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
@@ -116,7 +116,7 @@ msgstr "Afspeellijst Aanmaken Mislukt"
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Een onbekende fout is opgetreden bij het maken van afspeellijst: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -255,6 +255,8 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Bladeren laat je nummers in mappen op je harde schijf en externe apparaten "
+"navigeren, bekijken en laden."
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -297,22 +299,22 @@ msgstr "Genre"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "Componist"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Commentaar"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Duur"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -322,21 +324,21 @@ msgstr ""
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Type:"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Locatie"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx Bibliotheek"
 
 #: BrowseTableModel#17
 msgid ""
@@ -390,12 +392,12 @@ msgstr ""
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialoogvenster"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Bron"
 
 #: ControllerMappingDlg#3
 msgid ""
@@ -410,12 +412,12 @@ msgstr "Besturing"
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Toevoegen"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Verwijderen"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -423,12 +425,12 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Alles wissen"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Uitvoer"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
@@ -502,7 +504,7 @@ msgstr "Hernoemen van de krat is mislukt"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Afspeellijst Bestanden (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -510,6 +512,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"M3U Afspeellijst (*.m3u);;M3U8 Afspeellijst (*.m3u8);;PLS Afspeellijst "
+"(*.pls);;Tekst CSV (*.csv);;Leesbare Tekst (*.txt)"
 
 #: CrateFeature#17
 msgid ""
@@ -588,7 +592,7 @@ msgstr "Bepaalt de duur van de overgang."
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Seconden"
 
 #: DlgAutoDJ#12
 msgid "sec."
@@ -605,7 +609,7 @@ msgstr "Auto DJ inschakelen"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Beheren"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
@@ -4633,7 +4637,7 @@ msgstr "Laad naar Deck %1"
 #: WTrackTableView#18
 msgctxt "WTrackTableView#18"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: WTrackTableView#19
 msgid ""
@@ -4651,7 +4655,7 @@ msgstr ""
 
 #: WaveformWidgetFactory#2
 msgid "(GL)"
-msgstr ""
+msgstr "(GL)"
 
 #~ msgid "Permission Denied"
 #~ msgstr "Toegang geweigerd"

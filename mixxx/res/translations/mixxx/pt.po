@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-25 21:17+0000\n"
+"PO-Revision-Date: 2012-06-26 18:42+0000\n"
 "Last-Translator: Joaquim Carvalho <j.carvalho59@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-26 05:13+0000\n"
+"X-Launchpad-Export-Date: 2012-06-27 05:17+0000\n"
 "X-Generator: Launchpad (build 15482)\n"
 
 #: AutoDJFeature#1
@@ -34,21 +34,22 @@ msgstr "Adicionar à fila Auto DJ (em cima)"
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr "Importar Playlist"
+msgstr "Importar Lista de reprodução"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "A criação da Playlist falhou"
+msgstr "A criação da Lista de reprodução falhou"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Ocorreu um erro desconhecido ao criar a Playlist "
+msgstr ""
+"Um erro desconhecido ocorreu enquanto se criava a Lista de reprodução "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Nova Playlist"
+msgstr "Nova Lista de reprodução"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
@@ -78,50 +79,50 @@ msgstr "Bloquear"
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Importar Playlist"
+msgstr "Importar Lista de reprodução"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Exportar Playlist"
+msgstr "Exportar Lista de reprodução"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Mudar nome da Playlist"
+msgstr "Mudar nome da Lista de reprodução"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "Novo nome da Playlist"
+msgstr "Novo nome da Lista de reprodução"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "A mudança de nome da Playlist falhou"
+msgstr "A mudança de nome da Lista de reprodução falhou"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "Já existe uma Playlist com este nome"
+msgstr "Já existe uma Lista de reprodução com este nome"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "A Playlist não pode ter um nome vazio"
+msgstr "A Lista de reprodução não pode ter um nome vazio"
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr "Nome da lista de reprodução:"
+msgstr "Nome da Lista de reprodução:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr "A criação da Playlist falhou"
+msgstr "A criação da Lista de reprodução falhou"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Ocorreu um erro desconhecido ao criar a Playlist : "
+msgstr "Ocorreu um erro desconhecido ao criar a Lista de reprodução : "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Ficheiros de Playlist (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "Ficheiros de Lista de reprodução (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -129,8 +130,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Texto "
-"CSV (*.csv);;Texto legível(*.txt)"
+"Lista de reprodução M3U (*.m3u);;Lista de reprodução M3U8 (*.m3u8);;Lista de "
+"reprodução PLS (*.pls);;Texto CSV (*.csv);;Texto legível (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -220,7 +221,7 @@ msgstr "Data e hora"
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr "Chave"
+msgstr "Nota"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
@@ -260,7 +261,7 @@ msgstr ""
 
 #: BrowseFeature#7
 msgid "Browse"
-msgstr "Procurar"
+msgstr "Navegar"
 
 #: BrowseTableModel#1
 msgid "Filename"
@@ -329,7 +330,7 @@ msgstr "Tipo"
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr "Bit rate"
+msgstr "Taxa"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
@@ -368,7 +369,7 @@ msgstr ""
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "Não foi possível atualizar os metadados do ficheiro."
+msgstr "Não foi possível actualizar os metadados do ficheiro."
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -473,7 +474,7 @@ msgstr "Bloquear"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Importar Playlist"
+msgstr "Importar Lista de reprodução"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -515,7 +516,7 @@ msgstr "Falha ao mudar o nome da caixa"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Ficheiros de Playlist (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "Ficheiros de Lista de reprodução (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -579,7 +580,7 @@ msgstr "Desactivar Auto DJ"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr "Tornar aleatório o conteúdo da Playlist Auto DJ"
+msgstr "Tornar aleatório o conteúdo da Lista de reprodução Auto DJ"
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
@@ -587,7 +588,7 @@ msgstr "Misturar"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr "Saltar a proxima faixa da Lista de Reprodução do Auto-DJ"
+msgstr "Saltar a proxima faixa da Lista de reprodução do Auto DJ"
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
@@ -599,7 +600,7 @@ msgstr "Accionar a transição para a próxima faixa"
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr "Desvanecer agora"
+msgstr "Atenuar agora"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
@@ -615,7 +616,7 @@ msgstr "seg"
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr "Liga ou Desliga o Auto-DJ"
+msgstr "Activa/desactiva o Auto DJ"
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -4425,7 +4426,7 @@ msgstr "Amarelo a piscar quando a agulha chega ao fin do disco."
 
 #: Tooltips#142
 msgid "Red for needle skip detected."
-msgstr "Vermelho quando da detecção duma derrapagem da agulha."
+msgstr "Vermelho quando da detecção dum salto da agulha."
 
 #: Tooltips#143
 msgid "Loop-In Marker"
@@ -4433,8 +4434,7 @@ msgstr "Marcador de Entrada de Loop"
 
 #: Tooltips#144
 msgid "Sets the deck loop-in position to the current play position."
-msgstr ""
-"Define a posição de entrada de loop do leitor na posição corrente de leitura."
+msgstr "Define a posição de entrada de loop na posição corrente de leitura."
 
 #: Tooltips#145
 msgid "Loop-Out Marker"
@@ -4442,22 +4442,21 @@ msgstr "Marcador de Saída de Loop"
 
 #: Tooltips#146
 msgid "Sets the deck loop-out position to the current play position."
-msgstr ""
-"Define a posição de saída do loop do leitor na posição corrente de leitura."
+msgstr "Define a posição de saída do loop na posição corrente de leitura."
 
 #: Tooltips#147
 msgid "Loop Halve"
-msgstr "Redução do loop a metade"
+msgstr "Reduz o loop a metade"
 
 #: Tooltips#148
 msgid "Halves the current loop's length by moving the end marker."
 msgstr ""
-"Reduz de metade o comprimento corrente do loop movendo o marcador de fim."
+"Reduz a metade o comprimento do loop corrente, movendo o marcador de fim."
 
 #: Tooltips#149
 msgid "Deck immediately loops if past the new endpoint."
 msgstr ""
-"O leitor faz loop imdiatamente se o novo ponto de paragem for ultrapassado."
+"O leitor faz loop imdiatamente, se o novo marcador de saída for ultrapassado."
 
 #: Tooltips#150
 msgid "Loop Double"
@@ -4473,7 +4472,7 @@ msgstr "Loop de Tempos"
 
 #: Tooltips#153
 msgid "Setup a loop over X beats."
-msgstr "Define um loop de x tempos."
+msgstr "Define um loop de X tempos."
 
 #: Tooltips#154
 msgid "Reloop/Exit"
@@ -4501,25 +4500,25 @@ msgstr ""
 
 #: Tooltips#159
 msgid "Off - Cue points ignored."
-msgstr "Apagado - Pontos de marcação ignorados."
+msgstr "Inactivo - os pontos de marcação são ignorados."
 
 #: Tooltips#160
 msgid ""
 "One Cue - If needle is dropped after the cue point, track will seek to that "
 "cue point."
 msgstr ""
-"Uma marcação - Se a agulha é largada após o ponto de marcação, a faixa será "
-"calada a esse ponto de marcação."
+"Uma Marca – Se a agulha é largada após o ponto de marcação, a faixa "
+"posiciona-se nesse ponto de marcação."
 
 #: Tooltips#161
 msgid "Hot Cue - Track will seek to nearest previous hot cue point."
 msgstr ""
-"Marcação importante - A faixa será calada ao ponto de marcação precedente "
-"mais próximo."
+"Marca importante – A faixa posiciona-se no ponto de marcação importante mais "
+"próximo e anterior."
 
 #: Tooltips#162
 msgid "Track Time"
-msgstr "Tempo da faixa"
+msgstr "Duração da faixa"
 
 #: Tooltips#163
 msgid "Displays the elapsed or remaining time of the track loaded."
@@ -4581,8 +4580,8 @@ msgstr "Flanger"
 #: Tooltips#177
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
 msgstr ""
-"Activa/desactiva o efeito flanger. Utilizar os botões "
-"profundidade/atraso/lfo para o ajustar."
+"Activa/desactiva o efeito flange. Use os botões profundidade/atraso/lfo para "
+"o ajustar."
 
 #: Tooltips#178
 msgid "Flanger Delay"
@@ -4590,7 +4589,7 @@ msgstr "Atraso do Flanger"
 
 #: Tooltips#179
 msgid "Adjusts the phase delay of the flange effect (when active)."
-msgstr "Ajusta o atraso da fase do efeito de flanger (quando activo)"
+msgstr "Ajusta o atraso da fase do efeito flange (quando activo)."
 
 #: Tooltips#180
 msgid "Flanger Depth"
@@ -4598,7 +4597,7 @@ msgstr "Profundidade do Flanger"
 
 #: Tooltips#181
 msgid "Adjusts the intensity of the flange effect (when active)."
-msgstr "Ajusta a intensidade do efeito de falnger (quando activo)."
+msgstr "Ajusta a intensidade do efeito flange (quando activo)."
 
 #: Tooltips#182
 msgid "Flanger LFO Period"
@@ -4606,7 +4605,7 @@ msgstr "Período do LFO do Flanger"
 
 #: Tooltips#183
 msgid "Adjusts the wavelength of the flange effect (when active)."
-msgstr "Ajusta o comprimento de onda do efeito de flange (quando activo)."
+msgstr "Ajusta o comprimento de onda do efeito flange (quando activo)."
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -4624,7 +4623,7 @@ msgstr ""
 "O Mixxx necessita QT com suporte SQLite. Por favor, leia a documentação do "
 "driver SQL de QT para mais informações sobre a forma de o construir.\n"
 "\n"
-"Cilque em OK para sair."
+"Clique em OK para sair."
 
 #: TrackCollection#3
 msgid "Click OK to exit."
@@ -4632,7 +4631,7 @@ msgstr "Clique OK para sair"
 
 #: TrackCollection#4
 msgid "Cannot upgrade database schema"
-msgstr "Não pode actualizar o esquema da base de dados"
+msgstr "Não consegue actualizar o esquema da base de dados"
 
 #: TrackCollection#5
 msgid "Unable to upgrade your database schema to version %1"
@@ -4671,8 +4670,8 @@ msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
-"Houve um erro de carregamento da sua biblioteca Tracktor. Algumas das suas "
-"faixas ou playlits Traktor podem não ter sido carregadas."
+"Houve um erro de carregamento da sua biblioteca Traktor. Algumas das suas "
+"faixas ou listas de reprodução Traktor podem não ter sido carregadas."
 
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
@@ -4688,11 +4687,11 @@ msgstr "Procurar..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr "Adicionar à Playlist"
+msgstr "Adicionar à Lista de reprodução"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr "Adicionar ao Contentor"
+msgstr "Adicionar à Caixa"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
@@ -4709,7 +4708,7 @@ msgstr "Ocultar da biblioteca"
 
 #: WTrackTableView#6
 msgid "Unhide from library"
-msgstr "Reexibir da biblioteca"
+msgstr "Reexibir na biblioteca"
 
 #: WTrackTableView#7
 msgid "Purge from library"
@@ -4725,11 +4724,11 @@ msgstr "Abrir no Navegador de Ficheiros"
 
 #: WTrackTableView#10
 msgid "Add to Auto-DJ Queue (bottom)"
-msgstr "Adicionar à fila Auto-DJ (em baixo)"
+msgstr "Adicionar à fila Auto DJ (em baixo)"
 
 #: WTrackTableView#11
 msgid "Add to Auto-DJ Queue (top)"
-msgstr "Adicionar à fila Auto-DJ (em cima)"
+msgstr "Adicionar à fila Auto DJ (em cima)"
 
 #: WTrackTableView#12
 msgid "Reload Track Metadata"
@@ -4741,15 +4740,15 @@ msgstr "Reiniciar o contador de leitura."
 
 #: WTrackTableView#14
 msgid "Lock BPM"
-msgstr "Trancar o tempo (BPM)"
+msgstr "Bloquear o Tempo (BPM)"
 
 #: WTrackTableView#15
 msgid "Unlock BPM"
-msgstr "Destrancar o tempo (BPM)"
+msgstr "Desbloquear o Tempo (BPM)"
 
 #: WTrackTableView#16
 msgid "Clear BPM and Beatgrid"
-msgstr "Reiniciar o tempo (BPM) e a grelha rítmica"
+msgstr "Limpar o Tempo (BPM) e a grelha rítmica"
 
 #: WTrackTableView#17
 msgid "Load to Deck %1"
