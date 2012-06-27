@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-24 13:14+0000\n"
-"Last-Translator: Fábio Ihle <Unknown>\n"
+"PO-Revision-Date: 2012-06-26 16:53+0000\n"
+"Last-Translator: Victor Westmann <victor.westmann@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-25 05:13+0000\n"
+"X-Launchpad-Export-Date: 2012-06-27 05:17+0000\n"
 "X-Generator: Launchpad (build 15482)\n"
 
 #: AutoDJFeature#1
@@ -789,12 +789,12 @@ msgstr "Escolher controle"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
-msgstr ""
+msgstr "Deck %1"
 
 #: DlgControllerLearning#7
 msgctxt "DlgControllerLearning#7"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
@@ -823,7 +823,7 @@ msgstr "Volume do fone de ouvido"
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
-msgstr ""
+msgstr "Mix fone de ouvido (pre/main)"
 
 #: DlgControllerLearning#15
 msgid "Transport"
@@ -835,15 +835,15 @@ msgstr ""
 
 #: DlgControllerLearning#17
 msgid "Play button"
-msgstr ""
+msgstr "Botão tocar"
 
 #: DlgControllerLearning#18
 msgid "Volume fader"
-msgstr ""
+msgstr "Volume do fader"
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
-msgstr ""
+msgstr "Botão de retroceder rápido"
 
 #: DlgControllerLearning#20
 msgid "Fast forward button"
@@ -859,7 +859,7 @@ msgstr "Saltar o final da faixa"
 
 #: DlgControllerLearning#23
 msgid "Play reverse button"
-msgstr ""
+msgstr "Botão tocar reverso"
 
 #: DlgControllerLearning#24
 msgid "Gain knob"
@@ -867,7 +867,7 @@ msgstr ""
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
-msgstr ""
+msgstr "Botão ouvir fone de ouvido"
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
@@ -875,7 +875,7 @@ msgstr "Liga/Desliga modo de repetição"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
-msgstr ""
+msgstr "Ejetar trilha"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
@@ -887,11 +887,11 @@ msgstr "BPM e Sincronização"
 
 #: DlgControllerLearning#30
 msgid "BPM tap button"
-msgstr ""
+msgstr "Botão de ajustar BPM"
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
-msgstr ""
+msgstr "Ajustar grade de batida"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
@@ -1037,15 +1037,15 @@ msgstr "Repetição"
 
 #: DlgControllerLearning#67
 msgid "Loop In button"
-msgstr ""
+msgstr "Botão iniciar loop"
 
 #: DlgControllerLearning#68
 msgid "Loop Out button"
-msgstr ""
+msgstr "Botão sair loop"
 
 #: DlgControllerLearning#69
 msgid "Reloop / Exit button"
-msgstr ""
+msgstr "Reiniciar loop / Botão sair"
 
 #: DlgControllerLearning#70
 msgid "Halve the current loop's length"
@@ -1090,7 +1090,7 @@ msgstr ""
 
 #: DlgControllerLearning#80
 msgid "Load selected track"
-msgstr ""
+msgstr "Carregar trilha selecionada"
 
 #: DlgControllerLearning#81
 msgid "Effects"
@@ -1235,7 +1235,7 @@ msgstr ""
 
 #: DlgPrefController#4
 msgid "No Description"
-msgstr ""
+msgstr "Sem Descrição"
 
 #: DlgPrefController#5
 msgid "No support available."
@@ -1263,11 +1263,11 @@ msgstr ""
 
 #: DlgPrefControllerDlg#5
 msgid "TextLabel"
-msgstr ""
+msgstr "TextLabel"
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Descrição:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1275,11 +1275,11 @@ msgstr "Carregar predefinição:"
 
 #: DlgPrefControllerDlg#8
 msgid "Loaded Preset:"
-msgstr ""
+msgstr "Configuração pré definida carregada"
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Compatível:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
