@@ -55,7 +55,6 @@ EnginePregain::~EnginePregain()
     delete potmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;
-    delete m_pPassthroughEnabled;
 
     delete s_pEnableReplayGain;
     s_pEnableReplayGain = NULL;
