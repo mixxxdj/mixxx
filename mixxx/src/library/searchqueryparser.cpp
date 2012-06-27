@@ -9,7 +9,8 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                   << "title"
                   << "genre"
                   << "composer"
-                  << "comment";
+                  << "comment"
+                  << "key";
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
@@ -17,7 +18,9 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                      << "played"
                      << "rating"
                      << "bitrate";
-    m_specialFilters << "key";
+    // TODO(XXX): For now key search is text-only. In the future we want to
+    // support multiple notations of key searching.
+    //m_specialFilters << "key";
 
     m_fieldToSqlColumn.insert("artist", "artist");
     m_fieldToSqlColumn.insert("album", "album");

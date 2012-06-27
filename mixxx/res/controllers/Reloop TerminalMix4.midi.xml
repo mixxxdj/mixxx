@@ -3,6 +3,7 @@
     <info>
         <name>Reloop TerminalMix4</name>
         <author>Sean M. Pappalardo</author>
+        <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix4</wiki>
         <description>A complete 4-deck preset for a single Reloop TerminalMix4. Uses scripting.</description>
     </info>
     <controller id="TerminalMix4">
