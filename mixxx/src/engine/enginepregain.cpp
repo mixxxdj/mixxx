@@ -38,6 +38,7 @@ EnginePregain::EnginePregain(const char * group)
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
+    m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough_enabled"));
 
     if (s_pReplayGainBoost == NULL) {
         s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
@@ -70,52 +71,52 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
     m_fReplayGainCorrection=1;
+    float fPassing = m_pPassthroughEnabled->get();
     // TODO(XXX) Why do we do this? Removing it results in clipping at unity
     // gain so I think it was trying to compensate for some issue when we added
     // replaygain but even at unity gain (no RG) we are clipping. rryan 5/2012
     fGain = fGain/2;
-    if(fReplayGain*fEnableReplayGain != 0)
-    {
+
+    // Override replaygain value if passing through
+    if (fPassing == 0.0) {
+        fReplayGain = 1.0;
+    }
+
+    else if (fReplayGain*fEnableReplayGain != 0) {
         // Here is the point, when ReplayGain Analyser takes its action, suggested gain changes from 0 to a nonzero value
         // We want to smoothly fade to this last.
         // Anyway we have some the problem that code cannot block the full process for one second.
         // So we need to alter gain each time ::process is called.
+        if (m_bSmoothFade) { // This means that a ReplayGain value has been calculated after the track has been loaded
 
-        if(m_bSmoothFade)//This means that a ReplayGain value has been calculated after the track has been loaded
-        {
-            if(m_fClock==0)
+            if (m_fClock==0) {
                 m_fClock=clock();
+            }
             m_fSumClock += (float)((clock()-m_fClock)/CLOCKS_PER_SEC);
             m_fClock=clock();
-            if(m_fSumClock<1)
-            {
+            if (m_fSumClock<1) {
                 //Fade smoothly
-
                 m_fReplayGainCorrection=(1-m_fSumClock)+(m_fSumClock)*fReplayGain*pow(10, fReplayGainBoost/20);
-
             }
-            else
-            {
+            else {
                 m_bSmoothFade = false;
             }
         }
-        else
-        {
+        else {
             //Passing a user defined boost
             m_fReplayGainCorrection=fReplayGain*pow(10, fReplayGainBoost/20);
         }
     }
-    else
-    {
+    else {
         // If track has not ReplayGain value and ReplayGain is enabled
         // we prepare for smoothfading to ReplayGain suggested gain
-        if(fEnableReplayGain != 0)
-        {
+        if(fEnableReplayGain != 0) {
             m_bSmoothFade=true;
             m_fClock=0;
             m_fSumClock=0;
         }
     }
+
     fGain = fGain*m_fReplayGainCorrection;
     m_pTotalGain->set(fGain);
 
