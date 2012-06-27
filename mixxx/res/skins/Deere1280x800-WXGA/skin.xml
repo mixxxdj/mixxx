@@ -3751,6 +3751,26 @@
 
 			<!--
 			**********************************************
+			Text- Key display
+			**********************************************
+			-->
+			<Key>
+				<TooltipId>visual_key</TooltipId>
+				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #0099FF; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>214,1</Pos>
+				<Size>100,23</Size>
+				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+				<Alignment>right</Alignment>
+				<Connection>
+					<ConfigKey>[Channel1],visual_key</ConfigKey>
+				</Connection>
+			</Key>
+
+			<!--
+			**********************************************
 			Text- Playing position / Time remaining
 			**********************************************
 			-->

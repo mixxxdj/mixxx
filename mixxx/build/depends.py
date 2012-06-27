@@ -368,6 +368,8 @@ class MixxxCore(Feature):
                    "analyserqueue.cpp",
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
+                   "analyserkey.cpp",
+                   "analysergainvamp.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -415,6 +417,7 @@ class MixxxCore(Feature):
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
                    "widget/wtime.cpp",
+                   "widget/wkey.cpp",
 
                    "mathstuff.cpp",
 
