@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-26 19:39+0000\n"
+"PO-Revision-Date: 2012-06-27 19:05+0000\n"
 "Last-Translator: Michiel Vanthuyne <djfreemc@hotmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-27 05:17+0000\n"
-"X-Generator: Launchpad (build 15482)\n"
+"X-Launchpad-Export-Date: 2012-06-28 04:34+0000\n"
+"X-Generator: Launchpad (build 15505)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -660,6 +660,11 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Zet beats die gedetecteerd werden door de analyzer om in een beatgrid met "
+"vast tempo. Gebruik deze instelling als je nummers een vast tempo hebben "
+"(bv. de meeste elektronische muziek). Meestal is de kwaliteit van de "
+"beatgrids beter, maar dit werkt niet goed bij nummers met veranderingen in "
+"het tempo."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
@@ -744,11 +749,13 @@ msgstr ""
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "Klaar"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
 msgstr ""
+"Druk op een toets om een andere control toe te wijzen of kies er één uit de "
+"lijst."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
@@ -761,7 +768,7 @@ msgstr ""
 #: DlgControllerLearning#7
 msgctxt "DlgControllerLearning#7"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
@@ -769,12 +776,12 @@ msgstr ""
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr ""
+msgstr "Mengpaneel"
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgControllerLearning#11
 msgid "Master volume"
@@ -794,7 +801,7 @@ msgstr ""
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "Transport"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
@@ -858,7 +865,7 @@ msgstr ""
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
-msgstr ""
+msgstr "Beatgrid aanpassen"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
@@ -923,7 +930,7 @@ msgstr ""
 #: DlgControllerLearning#47
 msgctxt "DlgControllerLearning#47"
 msgid "Equalizers"
-msgstr ""
+msgstr "Equalizers"
 
 #: DlgControllerLearning#48
 msgid "High EQ knob"
@@ -952,7 +959,7 @@ msgstr ""
 #: DlgControllerLearning#54
 msgctxt "DlgControllerLearning#54"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Vinyl Bediening"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control (ON/OFF)"
@@ -1033,7 +1040,7 @@ msgstr ""
 #: DlgControllerLearning#74
 msgctxt "DlgControllerLearning#74"
 msgid "Library"
-msgstr ""
+msgstr "Collectie"
 
 #: DlgControllerLearning#75
 msgid "Switch to the next view (library, playlist..)"
@@ -1062,7 +1069,7 @@ msgstr ""
 
 #: DlgControllerLearning#81
 msgid "Effects"
-msgstr ""
+msgstr "Effecten"
 
 #: DlgControllerLearning#82
 msgid "Toggle flange effect"
@@ -1083,7 +1090,7 @@ msgstr ""
 #: DlgControllerLearning#86
 msgctxt "DlgControllerLearning#86"
 msgid "Microphone"
-msgstr ""
+msgstr "Microfoon"
 
 #: DlgControllerLearning#87
 msgid "Microphone on/off"
@@ -1103,11 +1110,11 @@ msgstr ""
 
 #: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
-msgstr ""
+msgstr "Sampler sectie tonen/verbergen"
 
 #: DlgControllerLearning#92
 msgid "Show/hide the microphone section"
-msgstr ""
+msgstr "Microfoon sectie tonen/verbergen"
 
 #: DlgControllerLearning#93
 msgid "Show/hide the vinyl control section"
@@ -1203,7 +1210,7 @@ msgstr ""
 
 #: DlgPrefController#4
 msgid "No Description"
-msgstr ""
+msgstr "Geen beschrijving"
 
 #: DlgPrefController#5
 msgid "No support available."
@@ -1212,7 +1219,7 @@ msgstr ""
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialoogvenster"
 
 #: DlgPrefControllerDlg#2
 msgid "Controller Name"
@@ -1229,11 +1236,11 @@ msgstr ""
 
 #: DlgPrefControllerDlg#5
 msgid "TextLabel"
-msgstr ""
+msgstr "TekstLabel"
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Omschrijving:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1245,7 +1252,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Ondersteuning:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1258,7 +1265,7 @@ msgstr ""
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
 msgid "Position"
-msgstr ""
+msgstr "Positie"
 
 #: DlgPrefControls#2
 msgid "Remaining"
@@ -1275,17 +1282,17 @@ msgstr "CDJ Modus"
 #: DlgPrefControls#5
 msgctxt "DlgPrefControls#5"
 msgid "Simple"
-msgstr ""
+msgstr "Eenvoudig"
 
 #: DlgPrefControls#6
 msgctxt "DlgPrefControls#6"
 msgid "On"
-msgstr ""
+msgstr "Aan"
 
 #: DlgPrefControls#7
 msgctxt "DlgPrefControls#7"
 msgid "Off"
-msgstr ""
+msgstr "Uit"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1293,11 +1300,11 @@ msgstr "Deze skin ondersteund geen schema's"
 
 #: DlgPrefControls#9
 msgid "6%"
-msgstr ""
+msgstr "6%"
 
 #: DlgPrefControls#10
 msgid "8% (Technics SL-1210)"
-msgstr ""
+msgstr "8% (Technics SL-1210)"
 
 #: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
@@ -1363,7 +1370,7 @@ msgstr ""
 
 #: DlgPrefControls#26
 msgid "OpenGL not available"
-msgstr ""
+msgstr "OpenGL niet beschikbaar"
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
@@ -1389,12 +1396,12 @@ msgstr "Tooltips"
 #: DlgPrefControlsDlg#6
 msgctxt "DlgPrefControlsDlg#6"
 msgid "On"
-msgstr ""
+msgstr "Aan"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "Off"
-msgstr ""
+msgstr "Uit"
 
 #: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
@@ -1418,7 +1425,7 @@ msgstr "Auto Recall Cue"
 
 #: DlgPrefControlsDlg#13
 msgid "Locale"
-msgstr ""
+msgstr "Taalregio"
 
 #: DlgPrefControlsDlg#14
 msgid "Temporary rate change when left-clicking"
