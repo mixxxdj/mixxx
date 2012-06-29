@@ -255,7 +255,9 @@ signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
     void bpmUpdated(double bpm);
+    //void bpmUpdated(double bpm);
     void beatsUpdated();
+    void keyUpdated(double key);
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed(TrackInfoObject* pTrack);
@@ -265,6 +267,7 @@ signals:
 
 private slots:
     void slotBeatsUpdated();
+    void slotKeyUpdated();
 
 private:
 
@@ -282,6 +285,7 @@ private:
     // TIO local methods or the TrackDAO.
     void setDirty(bool bDirty);
 
+    double convertKey(QString);
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
     void setId(int iId);

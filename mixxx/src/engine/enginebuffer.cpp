@@ -36,6 +36,7 @@
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
+#include "engine/keycontrol.h"
 #include "engine/quantizecontrol.h"
 
 #ifdef __VINYLCONTROL__
@@ -61,6 +62,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pLoopingControl(NULL),
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
+    m_pKeyControl(NULL),
     m_pReadAheadManager(NULL),
     m_pOtherEngineBuffer(NULL),
     m_pReader(NULL),
@@ -149,7 +151,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // BPM to display in the UI (updated more slowly than the actual bpm)
     visualBpm = new ControlObject(ConfigKey(group, "visual_bpm"));
-
+    visualKey = new ControlObject(ConfigKey(group, "visual_key"));
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
     playposSlider = new ControlPotmeter(
@@ -203,6 +205,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
+
+    m_pKeyControl = new KeyControl(_group, _config);
+    addControl(m_pKeyControl);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -309,6 +314,11 @@ double EngineBuffer::getBpm()
     return m_pBpmControl->getBpm();
 }
 
+double EngineBuffer::getKey()
+{
+    return m_pKeyControl->getKey();
+}
+
 void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
 {
     if (!m_pOtherEngineBuffer) {
@@ -396,6 +406,7 @@ void EngineBuffer::ejectTrack() {
     file_length_old = 0;
     playButton->set(0.0);
     visualBpm->set(0.0);
+    visualKey->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
@@ -776,7 +787,11 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         if (m_iUiSlowTick == 0) {
             visualBpm->set(m_pBpmControl->getBpm());
         }
-
+        //visualKey->set(m_pKeyControl->getKey());
+       // qDebug()<<"here";
+        qDebug()<<m_pKeyControl->getKey();
+        visualKey->set(m_pKeyControl->getKey());
+        //visualKey->set(20);
         // Reset sample counter
         m_iSamplesCalculated = 0;
     }

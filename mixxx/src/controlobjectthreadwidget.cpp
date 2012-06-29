@@ -69,8 +69,10 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
 
 void ControlObjectThreadWidget::setWidgetOnOff(QWidget * widget)
 {
+    qDebug()<<"abs";
     QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setOnOff(double)));
     emit(valueChanged(m_dValue));
+
 }
 
 void ControlObjectThreadWidget::slotReset() {

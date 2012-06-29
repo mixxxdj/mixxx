@@ -358,6 +358,7 @@ class MixxxCore(Feature):
                    "engine/positionscratchcontroller.cpp",
                    "engine/loopingcontrol.cpp",
                    "engine/bpmcontrol.cpp",
+                   "engine/keycontrol.cpp",
                    "engine/cuecontrol.cpp",
                    "engine/quantizecontrol.cpp",
                    "engine/clockcontrol.cpp",

@@ -36,8 +36,9 @@ public:
     //void setConstFactor(double);
 
 public slots:
-    void setValue(QString dValue);
-
+    void setValue(double dValue);
+private:
+    QString convertKey(double dValue);
 protected:
     QLabel *m_pLabel;
     QString m_qsText;

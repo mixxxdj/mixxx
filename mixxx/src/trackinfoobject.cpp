@@ -398,6 +398,16 @@ void TrackInfoObject::slotBeatsUpdated() {
     emit(beatsUpdated());
 }
 
+void TrackInfoObject::slotKeyUpdated() {
+    QMutexLocker lock(&m_qMutex);
+    setDirty(true);
+    double key = convertKey(m_key);
+    lock.unlock();
+    emit(keyUpdated(key));
+    //emit(beatsUpdated());
+}
+
+
 bool TrackInfoObject::getHeaderParsed()  const
 {
     QMutexLocker lock(&m_qMutex);
@@ -927,3 +937,34 @@ bool TrackInfoObject::hasBpmLock() const {
     QMutexLocker lock(&m_qMutex);
     return m_bBpmLock;
 }
+
+double TrackInfoObject::convertKey(QString dValue)
+{
+    double key=0;
+    if(dValue == "C") key=1;
+    else if(dValue == "C#")key=2;
+    else if(dValue == "D")key=3;
+    else if(dValue == "D#")key=4;
+    else if(dValue == "E")key=5;
+    else if(dValue == "F")key=6;
+    else if(dValue == "F#")key=7;
+    else if(dValue == "G")key=8;
+    else if(dValue == "G#")key=9;
+    else if(dValue == "A")key=10;
+    else if(dValue == "A#")key=11;
+    else if(dValue == "B")key=12;
+    else if(dValue == "c")key=13;
+    else if(dValue == "c#")key=14;
+    else if(dValue == "d")key=15;
+    else if(dValue == "d#")key=16;
+    else if(dValue == "e")key=17;
+    else if(dValue == "f")key=18;
+    else if(dValue == "f#")key=19;
+    else if(dValue == "g")key=20;
+    else if(dValue == "g#")key=21;
+    else if(dValue == "a")key=22;
+    else if(dValue == "a#")key=23;
+    else if(dValue == "b")key=24;
+    return key;
+}
+
