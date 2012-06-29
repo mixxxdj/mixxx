@@ -145,7 +145,7 @@ static int mp4_open(struct input_plugin_data *ip_data)
     priv->overflow_buf_len = 0;
     priv->overflow_buf = NULL;
 
-    priv->sample_buf_len = 4096;
+    priv->sample_buf_len = 8192;
     priv->sample_buf = new char[priv->sample_buf_len];
     priv->sample_buf_frame = -1;
 
@@ -184,6 +184,8 @@ static int mp4_open(struct input_plugin_data *ip_data)
     // Allocate AAC read buffer
     priv->aac_data_len = MP4GetTrackMaxSampleSize(priv->mp4.handle, priv->mp4.track);
     priv->aac_data = new unsigned char[priv->aac_data_len];
+
+    qDebug() << "AAC Data Length:" << priv->aac_data_len;
 
     priv->mp4.num_samples = MP4GetTrackNumberOfSamples(priv->mp4.handle, priv->mp4.track);
     // MP4 frames are 1-indexed
@@ -335,6 +337,7 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
     bytes = frame_info.samples * 2;
 
     if (bytes > count) {
+      qDebug() << "TOO MUCH BABY!  " << bytes << ":" << count;
         /* decoded too much; keep overflow. */
         //memcpy(priv->overflow_buf_base, sample_buf + count, bytes - count);
         //priv->overflow_buf = priv->overflow_buf_base;
@@ -357,6 +360,8 @@ static int mp4_read(struct input_plugin_data *ip_data, char *buffer, int count)
     /* use overflow from previous call (if any) */
     if (priv->overflow_buf_len > 0) {
         int len = priv->overflow_buf_len;
+
+        qDebug() << "using overflow " << len << ":" << count;
 
         if (len > count)
             len = count;
