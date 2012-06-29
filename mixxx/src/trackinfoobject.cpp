@@ -912,15 +912,19 @@ void TrackInfoObject::setRating (int rating){
         setDirty(true);
 }
 
-QString TrackInfoObject::getKey() const{
+//double TrackInfoObject::getKey() const{
+double TrackInfoObject::getKey() {
     QMutexLocker lock(&m_qMutex);
-    return m_key;
+    //return m_key;
+    double key = convertKey(m_key);
+    return key;
 }
 
 void TrackInfoObject::setKey(QString key){
     QMutexLocker lock(&m_qMutex);
     bool dirty = key != m_key;
     m_key = key;
+    //qDebug()<<m_key;
     if (dirty)
         setDirty(true);
 }
@@ -968,3 +972,33 @@ double TrackInfoObject::convertKey(QString dValue)
     return key;
 }
 
+QString TrackInfoObject::convertK(double dValue)
+{
+    QString key="";
+    if(dValue > 24 || dValue<=0)key="err";
+    else if(dValue == 1)key = "C";
+    else if(dValue == 2)key = "C#";
+    else if(dValue == 3)key = "D";
+    else if(dValue == 4)key = "D#";
+    else if(dValue == 5)key = "E";
+    else if(dValue == 6)key = "F";
+    else if(dValue == 7)key = "F#";
+    else if(dValue == 8)key = "G";
+    else if(dValue == 9)key = "G#";
+    else if(dValue == 10)key = "A";
+    else if(dValue == 11)key = "A#";
+    else if(dValue == 12)key = "B";
+    else if(dValue == 13)key = "c";
+    else if(dValue == 14)key = "c#";
+    else if(dValue == 15)key = "d";
+    else if(dValue == 16)key = "d#";
+    else if(dValue == 17)key = "e";
+    else if(dValue == 18)key = "f";
+    else if(dValue == 19)key = "f#";
+    else if(dValue == 20)key = "g";
+    else if(dValue == 21)key = "g#";
+    else if(dValue == 22)key = "a";
+    else if(dValue == 23)key = "a#";
+    else if(dValue == 24)key = "b";
+    return key;
+}

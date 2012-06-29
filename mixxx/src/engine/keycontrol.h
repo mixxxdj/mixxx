@@ -8,7 +8,7 @@
 #include "tapfilter.h"
 
 class ControlObject;
-class ControlPushButton;
+//class ControlPushButton;
 
 class KeyControl : public EngineControl {
     Q_OBJECT
@@ -36,15 +36,15 @@ class KeyControl : public EngineControl {
    // void slotBeatsTranslate(double);
 
   private:
-    bool syncTempo();
-    bool syncPhase();
+    //bool syncTempo();
+    //bool syncPhase();
     double convertKey(QString);
 
     // ControlObjects that come from EngineBuffer
-    ControlObject* m_pPlayButton;
+   /* ControlObject* m_pPlayButton;
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
-    ControlObject* m_pRateDir;
+    ControlObject* m_pRateDir;*/
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileKey;
@@ -53,18 +53,18 @@ class KeyControl : public EngineControl {
     ControlObject* m_pEngineKey;
 
     // Used for bpm tapping from GUI and MIDI
-    ControlPushButton* m_pButtonTap;
+    //ControlPushButton* m_pButtonTap;
 
     /** Button for sync'ing with the other EngineBuffer */
-    ControlPushButton* m_pButtonSync;
+    /*ControlPushButton* m_pButtonSync;
     ControlPushButton* m_pButtonSyncPhase;
-    ControlPushButton* m_pButtonSyncTempo;
+    ControlPushButton* m_pButtonSyncTempo;*/
 
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
-    ControlPushButton* m_pTranslateBeats;
+    /*ControlPushButton* m_pTranslateBeats;
 
-    TapFilter m_tapFilter;
+    TapFilter m_tapFilter;*/
 
     TrackPointer m_pTrack;
     double m_pKey;

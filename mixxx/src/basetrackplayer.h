@@ -52,6 +52,7 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThreadMain* m_pPlayPosition;
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
+    ControlObjectThreadMain* m_pKey;
     ControlObjectThreadMain* m_pReplayGain;
 };
 

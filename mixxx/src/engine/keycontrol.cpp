@@ -14,8 +14,8 @@ const int filterLength = 5;
 
 KeyControl::KeyControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
-        EngineControl(_group, _config),
-        m_tapFilter(this, filterLength, maxInterval) {
+        EngineControl(_group, _config){
+       // m_tapFilter(this, filterLength, maxInterval) {
     /*m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
@@ -86,15 +86,16 @@ KeyControl::KeyControl(const char* _group,
 KeyControl::~KeyControl() {
     delete m_pEngineKey;
     delete m_pFileKey;
-    delete m_pButtonSync;
+    /*delete m_pButtonSync;
     delete m_pButtonSyncTempo;
     delete m_pButtonSyncPhase;
     delete m_pButtonTap;
-    delete m_pTranslateBeats;
+    delete m_pTranslateBeats;*/
 }
 
 double KeyControl::getKey() {
     return m_pEngineKey->get();
+    //return m_pKey;
 }
 
 void KeyControl::slotFileKeyChanged(double key) {
@@ -346,7 +347,8 @@ void KeyControl::trackLoaded(TrackPointer pTrack) {
 
     if (pTrack) {
         m_pTrack = pTrack;
-        m_pKey = convertKey(m_pTrack->getKey());
+        m_pKey = m_pTrack->getKey();
+       // qDebug()<<m_pKey;
         connect(m_pTrack.data(), SIGNAL(keyUpdated()),
                 this, SLOT(slotUpdatedTrackKey()));
     }
@@ -364,7 +366,7 @@ void KeyControl::trackUnloaded(TrackPointer pTrack) {
 void KeyControl::slotUpdatedTrackKey()
 {
     if (m_pTrack) {
-        m_pKey = convertKey(m_pTrack->getKey());
+        m_pKey = m_pTrack->getKey();
         //qDebug()<<m_pKey;
     }
 }

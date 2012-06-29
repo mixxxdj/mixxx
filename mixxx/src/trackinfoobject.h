@@ -199,7 +199,8 @@ public:
     void setRating(int);
 
     /** Returns KEY_CODE */
-    QString getKey() const;
+    //double getKey() const;
+    double getKey();
     /** Set KEY_CODE */
     void setKey(QString);
 
@@ -247,7 +248,8 @@ public:
 
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
-
+    double convertKey(QString);
+    QString convertK(double dValue);
   public slots:
     void slotCueUpdated();
 
@@ -285,7 +287,7 @@ private:
     // TIO local methods or the TrackDAO.
     void setDirty(bool bDirty);
 
-    double convertKey(QString);
+
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
     void setId(int iId);

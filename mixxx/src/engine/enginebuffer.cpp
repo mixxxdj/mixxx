@@ -789,9 +789,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         }
         //visualKey->set(m_pKeyControl->getKey());
        // qDebug()<<"here";
-        qDebug()<<m_pKeyControl->getKey();
+        //qDebug()<<m_pKeyControl->getKey();
         visualKey->set(m_pKeyControl->getKey());
-        //visualKey->set(20);
+        //visualKey->set(0);
         // Reset sample counter
         m_iSamplesCalculated = 0;
     }
