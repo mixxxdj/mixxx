@@ -21,6 +21,10 @@
     #include "controllers/hid/hidenumerator.h"
 #endif
 
+#ifdef __BULK__
+#    include "controllers/bulk/bulkenumerator.h"
+#endif
+
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
@@ -79,6 +83,9 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
 #endif
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
+#endif
+#ifdef __BULK__
+    m_enumerators.append(new BulkEnumerator());
 #endif
 
     m_pollTimer.setInterval(kPollIntervalMillis);

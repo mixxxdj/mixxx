@@ -131,7 +131,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
 
     int total_bytes_to_decode = size * m_iChannels;
     int total_bytes_decoded = 0;
-    int num_bytes_req = 4096;
+    int num_bytes_req = 8192;
     char* buffer = (char*)destination;
     SAMPLE * as_buffer = (SAMPLE*) destination; //pointer for mono->stereo filling.
     do {
