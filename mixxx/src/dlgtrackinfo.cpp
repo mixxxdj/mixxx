@@ -116,9 +116,9 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
     double key = pTrack->getKey();
-    qDebug()<<pTrack->convertK(key);
-    txtKey->setText(pTrack->convertK(key));
-
+    //qDebug()<<pTrack->convertK(key);
+    //txtKey->setText(pTrack->convertK(key));
+    //txtKey->setText("as");
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;

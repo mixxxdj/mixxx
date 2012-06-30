@@ -118,7 +118,7 @@ void WKey::setValue(double dValue)
 QString WKey::convertKey(double dValue)
 {
     QString key="";
-    if(dValue > 24 || dValue<=0)key="err";
+    if(dValue > 24 || dValue<=0)key="";
     else if(dValue == 1)key = "C";
     else if(dValue == 2)key = "C#";
     else if(dValue == 3)key = "D";

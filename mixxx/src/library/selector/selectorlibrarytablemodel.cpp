@@ -150,7 +150,7 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
     m_sCurrentTrackYear = m_pLoadedTrack->getYear();
     m_iCurrentTrackRating = m_pLoadedTrack->getRating();
-    m_sCurrentTrackKey = m_pLoadedTrack->getKey();
+    m_sCurrentTrackKey = m_pLoadedTrack->convertK(m_pLoadedTrack->getKey());
 
     emit(currentTrackInfoChanged());
 

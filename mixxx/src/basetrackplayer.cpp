@@ -224,6 +224,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     //m_pKey->slotSet(m_pLoadedTrack->convertK(m_pLoadedTrack->getKey()));
     m_pKey->slotSet(m_pLoadedTrack->getKey());
+    //m_pKey->slotSet(20);
     m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace

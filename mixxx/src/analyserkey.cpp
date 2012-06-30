@@ -150,6 +150,7 @@ void AnalyserKey::finalise(TrackPointer tio) {
     it--;
     //qDebug()<<"key 4";
     tio->setKey(keys[(*it).second]);
+    //tio->setKey("a");
     //qDebug()<<"key 5";
     //tio->setKey(keyfind[keyfinderResult.globalKeyEstimate]);
             //key_time.insert(pair<float,int>(m_frames[i+1]-m_frames[i],m_keys[i]))

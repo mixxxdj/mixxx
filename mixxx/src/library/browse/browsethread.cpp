@@ -161,7 +161,7 @@ void BrowseThread::populateModel() {
         item = new QStandardItem(tio.getBpmStr());
         row_data.insert(COLUMN_BPM, item);
 
-        item = new QStandardItem(tio.getKey());
+        item = new QStandardItem(tio.convertK(tio.getKey()));
         row_data.insert(COLUMN_KEY, item);
 
         item = new QStandardItem(tio.getType());
