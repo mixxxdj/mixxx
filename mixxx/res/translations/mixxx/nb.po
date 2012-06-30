@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-01 17:12+0000\n"
+"PO-Revision-Date: 2012-06-29 20:22+0000\n"
 "Last-Translator: Neethan Puvanendran <neethan98@hotmail.ca>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:40+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-06-30 04:36+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -44,7 +44,7 @@ msgstr ""
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "En ukjent feil oppstod under oppretting av spillelisten: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -78,7 +78,7 @@ msgstr "Lås"
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importér spilleliste"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
@@ -102,7 +102,7 @@ msgstr "Det finnes allerede en spilleliste med det navnet"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Spillelisten kan ikke ha en tomt navn."
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
@@ -116,12 +116,12 @@ msgstr ""
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "En ukjent feil oppstod under oppretting av spillelisten: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Spilleliste filer (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -162,27 +162,27 @@ msgstr ""
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "År"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "Plassering"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "Varighet"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -191,17 +191,17 @@ msgstr "Vurdering"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bithastighet"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "Spor nr"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -213,7 +213,7 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "Tidsstempel"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
@@ -246,7 +246,7 @@ msgstr "Enheter"
 
 #: BrowseFeature#5
 msgid "Removable Devices"
-msgstr ""
+msgstr "Eksterne Enheter"
 
 #: BrowseFeature#6
 msgid ""
@@ -334,7 +334,7 @@ msgstr ""
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx-bibliotek"
 
 #: BrowseTableModel#17
 msgid ""
@@ -396,7 +396,7 @@ msgstr ""
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Inndata"
 
 #: ControllerMappingDlg#3
 msgid ""
@@ -411,12 +411,12 @@ msgstr "Kontroller"
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Legg til"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Fjern"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -424,12 +424,12 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Slett alt"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Utdata"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
