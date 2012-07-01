@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-05-05 14:14+0000\n"
-"Last-Translator: datnet <erdemtusu@gmail.com>\n"
+"PO-Revision-Date: 2012-06-30 15:59+0000\n"
+"Last-Translator: Hasan Yılmaz <iletisim@hasanyilmaz.net>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:40+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-07-01 04:37+0000\n"
+"X-Generator: Launchpad (build 15520)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -63,7 +63,7 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Çıkart"
+msgstr "Kaldır"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
