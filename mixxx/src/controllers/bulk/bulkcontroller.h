@@ -22,9 +22,7 @@ class BulkReader : public QThread {
     BulkReader(libusb_device_handle *handle, unsigned char in_epaddr);
     virtual ~BulkReader();
 
-    void stop() {
-        m_stop = 1;
-    }
+    void stop();
 
   signals:
     void incomingData(QByteArray data);
