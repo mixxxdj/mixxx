@@ -33,11 +33,14 @@ BulkReader::~BulkReader() {
     m_phandle = NULL;
 }
 
+void BulkReader::stop() {
+    m_stop = 1;
+}
+
 void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    DUMP();
     while (m_stop == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
@@ -49,21 +52,13 @@ void BulkReader::run() {
         int transferred;
         int result;
         
-        DUMP();
-#if 0
         result = libusb_bulk_transfer(m_phandle,
                                       m_in_epaddr,
                                       data, sizeof data,
                                       &transferred, 500);
-#else
-        result = 0;
-        sleep(1);
-#endif
-        DUMP();
-        if (result > 0) {
+        if (result >= 0) {
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char *)data, transferred);
-            DUMP();
             emit(incomingData(outData));
         }
     }
@@ -75,7 +70,6 @@ get_string(libusb_device_handle *handle, u_int8_t id)
     unsigned char buf[128];
     QString s;
 
-    DUMP();
     buf[0] = 0;
     if (id) {
         (void)libusb_get_string_descriptor_ascii(handle, id, buf, sizeof buf);
@@ -88,8 +82,6 @@ get_string(libusb_device_handle *handle, u_int8_t id)
 BulkController::BulkController(libusb_device_handle *handle,
                                struct libusb_device_descriptor *desc)
 {
-    DUMP();
-
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
@@ -117,7 +109,6 @@ void BulkController::visit(const MidiControllerPreset* preset) {
 }
 
 void BulkController::visit(const HidControllerPreset* preset) {
-    DUMP();
     m_preset = *preset;
     // Emit presetLoaded with a clone of the preset.
     emit(presetLoaded(getPreset()));
@@ -125,15 +116,12 @@ void BulkController::visit(const HidControllerPreset* preset) {
 
 bool BulkController::savePreset(const QString fileName) const {
     HidControllerPresetFileHandler handler;
-    DUMP();
     return handler.save(m_preset, getName(), fileName);
 }
 
 bool BulkController::matchPreset(const PresetInfo& preset) {
-    DUMP();
     const QList< QHash<QString,QString> > products = preset.getProducts();
     QHash <QString, QString> product;
-    DUMP();
     foreach (product, products) {
         if (matchProductInfo(product))
             return true;
@@ -144,7 +132,6 @@ bool BulkController::matchPreset(const PresetInfo& preset) {
 bool BulkController::matchProductInfo(QHash <QString,QString > info) {
     int value;
     bool ok;
-    DUMP();
     // Product and vendor match is always required
     value = info["vendor_id"].toInt(&ok,16);
     if (!ok || vendor_id!=value) return false;
@@ -158,7 +145,6 @@ bool BulkController::matchProductInfo(QHash <QString,QString > info) {
 int BulkController::open() {
     int i;
 
-    DUMP();
     if (isOpen()) {
         qDebug() << "USB Bulk device" << getName() << "already open";
         return -1;
@@ -173,30 +159,33 @@ int BulkController::open() {
             break;
         }
     }
-    DUMP();
 
     if (bulk_supported[i].vendor_id == 0) {
         qWarning() << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
-    DUMP();
+    m_phandle = NULL;
 
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == NULL) {
         m_phandle = libusb_open_device_with_vid_pid(NULL, vendor_id, product_id);
     }
-    DUMP();
+
+    {
+        int transferred;
+
+        uint8_t cmd[] = { 0x90, 0x3e, 0x7f };
+        libusb_bulk_transfer(m_phandle, 0x03, cmd, 3, &transferred, 0);
+    }
 
     if (m_phandle == NULL) {
         qWarning()  << "Unable to open USB Bulk device" << getName();
         return -1;
     }
-    DUMP();
 
     setOpen(true);
     startEngine();
 
-    DUMP();
     if (m_pReader != NULL) {
         qWarning() << "BulkReader already present for" << getName();
     } else {
@@ -210,7 +199,6 @@ int BulkController::open() {
         // audio directly, like when scratching
         m_pReader->start(QThread::HighPriority);
     }
-    DUMP();
 
     return 0;
 }
@@ -254,7 +242,6 @@ void BulkController::send(QList<int> data, unsigned int length) {
     Q_UNUSED(length);
     QByteArray temp;
 
-    DUMP();
     foreach (int datum, data) {
         temp.append(datum);
     }
@@ -265,18 +252,10 @@ void BulkController::send(QByteArray data) {
     int ret;
     int transferred;
 
-    DUMP();
     // XXX: don't get drunk again.
-    // XXX: it's dying on libusb_bulk_transfer calls.  Maybe m_phandel is NULL.
-    DUMP_p(m_phandle);
-    DUMP_d(out_epaddr);
-    DUMP_s(data.constData());
-    DUMP_d(data.size());
-    DUMP_p(&transferred);
     ret = libusb_bulk_transfer(m_phandle, out_epaddr,
                                (unsigned char *)data.constData(), data.size(),
                                &transferred, 0);
-    DUMP();
     if (ret < 0) {
         if (debugging()) {
             qWarning() << "Unable to send data to" << getName()
