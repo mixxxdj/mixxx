@@ -171,13 +171,6 @@ int BulkController::open() {
         m_phandle = libusb_open_device_with_vid_pid(NULL, vendor_id, product_id);
     }
 
-    {
-        int transferred;
-
-        uint8_t cmd[] = { 0x90, 0x3e, 0x7f };
-        libusb_bulk_transfer(m_phandle, 0x03, cmd, 3, &transferred, 0);
-    }
-
     if (m_phandle == NULL) {
         qWarning()  << "Unable to open USB Bulk device" << getName();
         return -1;
