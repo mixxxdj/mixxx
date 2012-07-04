@@ -8,7 +8,8 @@
     <controller id="DJ">
         <scriptfiles>
             <file functionprefix="" filename="common-bulk-midi.js"/>
-            <file functionprefix="MP3e2" filename="Hercules-mp3e2.js"/>
+            <file functionprefix="" filename="Hercules DJ Control MP3 e2-scripts.js"/>
+            <file functionprefix="MP3e2" filename="Hercules-mp3e2-compat.js"/>
         </scriptfiles>
     </controller>
 </MixxxControllerPreset>
