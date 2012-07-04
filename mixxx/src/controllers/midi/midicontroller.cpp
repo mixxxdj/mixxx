@@ -336,6 +336,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
         newValue = computeValue(options, currMixxxControlValue, value);
     }
 
+    // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
+    // mapping is <button> we override the Midi 'status' appropriately.
+    if (options.button || options.sw) {
+        opCode = MIDI_NOTE_ON;
+    }
+
     if (options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(p);
