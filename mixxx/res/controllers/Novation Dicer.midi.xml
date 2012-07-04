@@ -2,7 +2,7 @@
 <info>
   <name>Novation Dicer</name>
   <author>Shaun (DJPandemonium@gmail.com)</author>
-  <description>Implements cuepoints, looping, loop rolls, basic effects, and navigation. See http://mixxx.org/wiki/doku.php/novation_dicer for details.</description>
+  <description>Implements cuepoints, looping, loop rolls, basic effects, and navigation.</description>
   <wiki>http://mixxx.org/wiki/doku.php/novation_dicer</wiki>
 </info>
     <controller id="Dicer Novation Dicer">
