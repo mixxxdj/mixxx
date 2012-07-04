@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-05-25 07:27+0000\n"
-"Last-Translator: Maxime MARAIS <Unknown>\n"
+"PO-Revision-Date: 2012-07-03 12:35+0000\n"
+"Last-Translator: Matthieu Baerts <matttbe@gmail.com>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:38+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-07-04 04:37+0000\n"
+"X-Generator: Launchpad (build 15544)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -1255,11 +1255,11 @@ msgstr "Pré-réglages personnalisés"
 
 #: DlgPrefController#4
 msgid "No Description"
-msgstr ""
+msgstr "Aucune Description"
 
 #: DlgPrefController#5
 msgid "No support available."
-msgstr ""
+msgstr "Aucun support disponible."
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
@@ -1286,7 +1286,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Description :"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1298,7 +1298,7 @@ msgstr "Pré-réglage chargé :"
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Support :"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1407,7 +1407,7 @@ msgstr "Haut augmente la vitesse"
 #: DlgPrefControls#24
 msgctxt "DlgPrefControls#24"
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #: DlgPrefControls#25
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1496,7 +1496,7 @@ msgstr "Affiche la vitesse de rafraîchissement courante."
 
 #: DlgPrefControlsDlg#19
 msgid "Normalize Overview"
-msgstr ""
+msgstr "Aperçu Normalisé"
 
 #: DlgPrefControlsDlg#20
 msgid "Left click"
@@ -1525,7 +1525,7 @@ msgstr "Sensibilité du variateur de hauteur"
 #: DlgPrefControlsDlg#26
 msgctxt "DlgPrefControlsDlg#26"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Affichage de la forme d'onde"
 
 #: DlgPrefControlsDlg#27
 msgid "Synchronize zoom level across all waveform displays."
@@ -1591,7 +1591,7 @@ msgstr "Gain visuel"
 #: DlgPrefControlsDlg#41
 msgctxt "DlgPrefControlsDlg#41"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1604,7 +1604,7 @@ msgstr "Courbe du curseur de mixage"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade/Fast cut (additive)"
-msgstr ""
+msgstr "Fondu lent / Coupe rapide (additif)"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Constant power"
@@ -1629,7 +1629,7 @@ msgstr "Logarithmique"
 #: DlgPrefCrossfaderDlg#9
 msgctxt "DlgPrefCrossfaderDlg#9"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Réinitialiser aux valeurs par défaut"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1894,7 +1894,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#10
 msgid "Other Librarys"
-msgstr ""
+msgstr "Autres bibliothèques"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
@@ -1910,17 +1910,17 @@ msgstr "Afficher la Bibliothèque Tracktor"
 
 #: DlgPrefPlaylistDlg#14
 msgid "    You will need to restart Mixxx for this to take effect"
-msgstr ""
+msgstr "    Vous aurez besoin de redémarrer Mixxx pour que cela prenne effet"
 
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Browse..."
-msgstr ""
+msgstr "Parcourir…"
 
 #: DlgPrefPlaylistDlg#16
 msgctxt "DlgPrefPlaylistDlg#16"
 msgid "Library"
-msgstr ""
+msgstr "Bibliothèque"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
