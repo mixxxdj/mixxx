@@ -3,7 +3,7 @@
   <info>
     <name>Hercules DJ Control MP3 e2</name>
     <author>Gianfe</author>
-    <description>This is a complete mapping for Hercules DJ Control MP3 e2 controller. Requires scripting.</description>
+    <description>This is a complete mapping for Hercules DJ Control MP3 e2 controller.</description>
   </info>
   <controller id="Hercules DJ Control MP3 e2" port="">
     <scriptfiles>
@@ -551,7 +551,7 @@
           <Button/>
         </options>
       </control>
-      
+
       <control>
         <status>0x90</status>
         <midino>0x29</midino>
