@@ -7,6 +7,7 @@
 
 #include <QSet>
 
+#include "util/sleepableqthread.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -23,7 +24,13 @@
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
+#ifdef __LINUX__
+// Many Linux distros ship with the system tick set to 250Hz so 1ms timer
+// reportedly causes CPU hosage. See Bug #990992 rryan 6/2012
+const int kPollIntervalMillis = 5;
+#else
 const int kPollIntervalMillis = 1;
+#endif
 
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
@@ -254,11 +261,16 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
-    foreach (Controller* pDevice, m_controllers) {
-        if (pDevice->isOpen() && pDevice->isPolling()) {
-            pDevice->poll();
+    bool eventsProcessed(false);
+    // Continue to poll while any device returned data.
+    do {
+        eventsProcessed = false;
+        foreach (Controller* pDevice, m_controllers) {
+            if (pDevice->isOpen() && pDevice->isPolling()) {
+                eventsProcessed = pDevice->poll() || eventsProcessed;
+            }
         }
-    }
+    } while (eventsProcessed);
 }
 
 

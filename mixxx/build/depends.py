@@ -434,6 +434,7 @@ class MixxxCore(Feature):
                    "library/searchqueryparser.cpp",
                    "library/preparelibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
+                   "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 
                    "library/playlisttablemodel.cpp",
@@ -583,6 +584,7 @@ class MixxxCore(Feature):
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
+                   "util/sleepableqthread.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)

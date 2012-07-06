@@ -3,6 +3,7 @@
     <info>
         <name>Stanton SCS.1d (unfinished)</name>
         <author>Sean M. Pappalardo</author>
+        <wiki>http://mixxx.org/wiki/doku.php/stanton_scs.1d</wiki>
         <description>This is a complete mapping for a single Stanton SCS.1d turntable controller. Requires scripting and native HSS1394 support.</description>
     </info>
     <controller id="Stanton SCS.1d">

@@ -54,8 +54,8 @@ public:
     /** Initialize a new track with the filename. */
     TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(QFileInfo& fileInfo, bool parseHeader=true);
-    /** Creates a new track given information from the xml file. */
+    TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
+    // Creates a new track given information from the xml file. 
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
@@ -272,7 +272,7 @@ private:
     void initialize(bool parseHeader);
 
     // Initialize all the location variables.
-    void populateLocation(QFileInfo& fileInfo);
+    void populateLocation(const QFileInfo& fileInfo);
 
     // Method for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"

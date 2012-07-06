@@ -100,29 +100,15 @@ void RecordingManager::stopRecording()
 }
 
 void RecordingManager::setRecordingDir() {
-    QString userRecordings = m_pConfig->getValueString(
-        ConfigKey("[Recording]", "Directory"));
-
-    QDir recordDir;
-    if (userRecordings == "") {
-        qDebug() << "Recording directory was not set";
-        // Create recordings directory under music library path by default
-        QDir musicDir(m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
-        userRecordings = musicDir.absolutePath()+"/Mixxx/Recordings";
-        recordDir.setPath(userRecordings);
-
-        // Save default preference value
-        m_pConfig->set(ConfigKey("[Recording]", "Directory"),
-                       recordDir.absolutePath());
-    } else {
-        recordDir.setPath(userRecordings);
-    }
+    QDir recordDir(m_pConfig->getValueString(
+        ConfigKey("[Recording]", "Directory")));
+    // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord
 
     if (!recordDir.exists()) {
         if (recordDir.mkpath(recordDir.absolutePath())) {
-            qDebug() << "Created folder" << userRecordings << "for recordings";
+            qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
         } else {
-            qDebug() << "Failed to create folder" << userRecordings << "for recordings";
+            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
         }
     }
     m_recordingDir = recordDir.absolutePath();

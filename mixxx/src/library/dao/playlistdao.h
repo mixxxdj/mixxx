@@ -33,23 +33,23 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
-    /** Create a playlist */
+    // Create a playlist 
     int createPlaylist(QString name, HiddenType type = PLHT_NOT_HIDDEN);
-    /** Delete a playlist */
+    // Delete a playlist 
     void deletePlaylist(int playlistId);
-    /** Rename a playlist */
+    // Rename a playlist 
     void renamePlaylist(int playlistId, const QString& newName);
-    /** Lock or unlock a playlist */
+    // Lock or unlock a playlist 
     bool setPlaylistLocked(int playlistId, bool locked);
-    /** Find out the state of a playlist lock */
+    // Find out the state of a playlist lock
     bool isPlaylistLocked(int playlistId);
-    /** Append a list of tracks to a playlist */
+    // Append a list of tracks to a playlist
     void appendTracksToPlaylist(QList<int> trackIds, int playlistId);
-    /** Append a track to a playlist */
+    // Append a track to a playlist
     void appendTrackToPlaylist(int trackId, int playlistId);
-    /** Find out how many playlists exist. */
+    // Find out how many playlists exist.
     unsigned int playlistCount();
-    /** Find out the name of the playlist at the given Id */
+    // Find out the name of the playlist at the given Id
     QString getPlaylistName(int playlistId);
     // Get the playlist id by its name
     int getPlaylistIdFromName(QString name);
@@ -63,15 +63,16 @@ class PlaylistDAO : public QObject, public virtual DAO {
     HiddenType getHiddenType(int playlistId);
     // Returns the maximum position of the given playlist
     int getMaxPosition(int playlistId);
-    /** Remove a track from all playlists */
+    // Remove a track from all playlists
     void removeTrackFromPlaylists(int trackId);
-    /** Remove a track from a playlist */
+    void removeTracksFromPlaylists(QList<int> ids);
+    // Remove a track from a playlist
     void removeTrackFromPlaylist(int playlistId, int position);
-    /** Insert a track into a specific position in a playlist */
+    // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(int trackId, int playlistId, int position);
-    /** Inserts a list of tracks into playlist*/
+    // Inserts a list of tracks into playlist
     int insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, int position);
-    /** Add a playlist to the Auto-DJ Queue */
+    // Add a playlist to the Auto-DJ Queue
     void addToAutoDJQueue(int playlistId, bool bTop);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
