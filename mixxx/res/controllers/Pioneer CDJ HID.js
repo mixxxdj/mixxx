@@ -81,28 +81,50 @@ function PioneerCDJController() {
         // TODO - Sean: this is just example, fill in correct packet
         // size, header bytes control field offesets but bits to make
         // it work.
-        packet = new HIDPacket("button_leds",[],20);
-        packet.addLED("hid","play",0,"B",6);
-        packet.addLED("hid","cue",0,"B",6);
-        packet.addLED("hid","previous_track",0,"B",2);
-        packet.addLED("hid","seek_back",0,"B",3);
-        packet.addLED("hid","seek_forward",0,"B",3);
-        packet.addLED("hid","reloop_exit",0,"B",3);
-        packet.addLED("hid","cue_out",0,"B",3);
-        packet.addLED("hid","cue_in",0,"B",3);
-        packet.addLED("hid","time_mode",0,"B",3);
-        packet.addLED("hid","cue_delete",0,"B",3);
-        packet.addLED("hid","cue_previous",0,"B",3);
-        packet.addLED("hid","cue_next",0,"B",3);
-        packet.addLED("hid","cue_memory",0,"B",3);
-        packet.addLED("hid","jog_mode",0,"B",3);
-        packet.addLED("hid","master_tempo",0,"B",3);
-        packet.addLED("hid","tempo_range",0,"B",3);
-        packet.addLED("hid","beat_select",0,"B",3);
-        packet.addLED("hid","beat_16",0,"B",3);
-        packet.addLED("hid","beat_8",0,"B",3);
-        packet.addLED("hid","beat_4",0,"B",3);
-        packet.addLED("hid","beat_2",0,"B",3);
+        packet = new HIDPacket(
+            "button_leds",
+            [0x1,0x0,0x0,0x0,
+             //0x0,0x0,0x0,0x0,
+             //0x0,0x0,0x0,0x80,
+             //0x0,0x0,0x0,0x10,
+             //0x0,0x0,0x0,0x0,
+             //0x20,0x0,0x0,0x0,
+             //0x0,0x0,0x0,0x0,
+             //0x0,0x0,0x0,0x0,
+             //0x0,0x0,0x0,0x0,
+            ]
+            ,36
+        );
+        packet.addLED("hid","screen_acue",4,"B",0x1);
+        packet.addLED("hid","remain",4,"B",0x2);
+        packet.addLED("hid","reloop_exit",4,"B",0x8);
+        packet.addLED("hid","cue_out",4,"B",0x10);
+        packet.addLED("hid","cue_in",4,"B",0x20);
+        packet.addLED("hid","cue",4,"B",0x40);
+        packet.addLED("hid","play",4,"B",0x80);
+        packet.addLED("hid","screen_memory",5,"B",0x1);
+        packet.addLED("hid","screen_wide",5,"B",0x8);
+        packet.addLED("hid","screen_16_percent",5,"B",0x10);
+        packet.addLED("hid","screen_10_percent",5,"B",0x20);
+        packet.addLED("hid","screen_6_percent",5,"B",0x40);
+        packet.addLED("hid","master_tempo",5,"B",0x80);
+        packet.addLED("hid","beatloop_16",6,"B",0x1);
+        packet.addLED("hid","beatloop_8",6,"B",0x2);
+        packet.addLED("hid","beatloop_4",6,"B",0x4);
+        packet.addLED("hid","beatloop_2",6,"B",0x8);
+        packet.addLED("hid","reverse",6,"B",0x10);
+        packet.addLED("hid","jog_dashed_circle",6,"B",0x20);
+        packet.addLED("hid","jog_vinyl_logo",6,"B",0x40);
+        packet.addLED("hid","browse",8,"B",0x1);
+        packet.addLED("hid","info",8,"B",0x4);
+        packet.addLED("hid","menu",8,"B",0x40);
+        packet.addLED("hid","taglist",8,"B",0x80);
+        packet.addLED("hid","set_time_mode",11,"B");
+        packet.addLED("hid","hours",12,"B");
+        packet.addLED("hid","minutes",13,"B");
+        packet.addLED("hid","seconds",14,"B");
+        packet.addLED("hid","bpm",20,"B");
+        packet.addLED("hid","rate_percent",22,"H");
         this.controller.registerOutputPacket(packet);
 
         // Control packet for screen text control
@@ -227,6 +249,9 @@ PioneerCDJHID.init = function(id) {
         );
     }
 
+    var packet = controller.resolveOutputPacket("button_leds");
+    packet.send();
+
     script.HIDDebug("Pioneer CDJ Deck "+PioneerCDJHID.id+" initialized");
 }
 
@@ -318,6 +343,11 @@ PioneerCDJHID.registerCallbacks = function() {
     // controller.linkControl("hid","tag_track","deck","");
 
     script.HIDDebug("Registering controls and callbacks finished");
+}
+
+// Scaling of pregain (0-0xff) to gain value
+PioneerCDJHID.pregainScaler = function (group,name,value) {
+    return script.absoluteLin(value, 0, 4, 0, 0xff);
 }
 
 // Hotcues activated with normal press, cleared with shift
