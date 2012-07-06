@@ -1166,6 +1166,8 @@ HIDController.prototype.parsePacket = function(data,length) {
         // Process generic changed_data packet, if callback is defined
         if (this.processDelta!=undefined)
             this.processDelta(packet,changed_data);
+        if (this.postProcessDelta!=undefined)
+            this.postProcessDelta(packet,changed_data);
         return;
     }
     script.HIDDebug("Received unknown packet of " + length + " bytes");
