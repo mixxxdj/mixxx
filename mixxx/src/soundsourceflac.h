@@ -20,6 +20,11 @@
 
 #include <QFile>
 #include <QString>
+
+#ifdef __WINDOWS__  //TODO: #if defined (__WINDOWS__ && STATIC_LIBS)
+#define FLAC__NO_DLL
+#endif
+
 #include <FLAC/stream_decoder.h>
 
 #include "defs.h"
