@@ -4,14 +4,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-22 08:01+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2012-07-06 18:38+0000\n"
+"Last-Translator: Daniel Schürmann <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:38+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-07-07 04:39+0000\n"
+"X-Generator: Launchpad (build 15558)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -1457,7 +1457,7 @@ msgstr "Cue-Modus"
 
 #: DlgPrefControlsDlg#12
 msgid "Auto Recall Cue"
-msgstr "Cue automatisch abrufen"
+msgstr "Vorspulen zum Cue-Punkt"
 
 #: DlgPrefControlsDlg#13
 msgid "Locale"
