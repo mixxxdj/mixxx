@@ -171,12 +171,12 @@ elif build.crosscompile and build.platform_is_osx:
 else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
-# dll_files = libsndfile
-dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtXmlPatterns4.dll $QTDIR/lib/QtSvg4.dll $QTDIR/lib/QtWebKit4.dll $QTDIR/lib/phonon4.dll""")
+dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
+
+# if not int(build.flags['staticlibs']):
+dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtXmlPatterns4.dll $QTDIR/lib/QtSvg4.dll  $QTDIR/lib/phonon4.dll $QTDIR/lib/QtScript4.dll""")
 if int(flags.get('sqlitedll', 0)):
         sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
-
-dll_files += Split("""$QTDIR/lib/QtScript4.dll""")  # Required for non-midi controllers
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')

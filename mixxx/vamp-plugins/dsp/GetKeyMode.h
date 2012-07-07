@@ -34,36 +34,41 @@
  *  provided "as is" without express or implied warranty."
  */
 #if (defined (__WINDOWS__))
+    #include	<math.h>
+    
+    #ifdef WIN64
+        #define	lrint(dbl)		((int)(dbl))
+        #define	lrintf(flt)		((int)(flt))
+    #else
 
-	#include	<math.h>
+        /*	Win32 doesn't seem to have these functions. 
+        **	Therefore implement inline versions of them here.
+        */
+        
+        __inline long int 
+        lrint (double flt) 
+        {	int intgr;
 
-	/*	Win32 doesn't seem to have these functions. 
-	**	Therefore implement inline versions of these functions here.
-	*/
-	
-	__inline long int 
-	lrint (double flt) 
-	{	int intgr;
+            _asm
+            {	fld flt
+                fistp intgr
+                } ;
+                
+            return intgr ;
+        } 
+        
+        __inline long int 
+        lrintf (float flt)
+        {	int intgr;
 
-		_asm
-		{	fld flt
-			fistp intgr
-			} ;
-			
-		return intgr ;
-	} 
-	
-	__inline long int 
-	lrintf (float flt)
-	{	int intgr;
-
-		_asm
-		{	fld flt
-			fistp intgr
-			} ;
-			
-		return intgr ;
-	}
+            _asm
+            {	fld flt
+                fistp intgr
+                } ;
+                
+            return intgr ;
+        }
+    #endif
 #endif
 
 class GetKeyMode  
