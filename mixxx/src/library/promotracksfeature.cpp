@@ -31,7 +31,7 @@
 
 QString PromoTracksFeature::m_sPromoLocalHTMLLocation;
 QString PromoTracksFeature::m_sPromoRemoteHTMLLocation;
-#define PROMO_BUNDLE_PATH (config->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/")
+#define PROMO_BUNDLE_PATH (config->getResourcePath() + "promo/" + MIXXX_PROMO_VERSION + "/")
 #define LOCAL_HTML_LOCATION (PROMO_BUNDLE_PATH + "index.html")
 
 const QString PromoTracksFeature::m_sFeaturedArtistsViewName = "Featured Artists";
@@ -52,7 +52,7 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
 
     m_sPromoRemoteHTMLLocation = QString("http://promo.mixxx.org/%1/index.html").arg(MIXXX_PROMO_VERSION); //m_pConfig->getConfigPath() + "/promo/promotracks.html";
     m_sPromoLocalHTMLLocation = LOCAL_HTML_LOCATION;
-    m_sPromoAutoloadLocation = m_pConfig->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/autoload.dat";
+    m_sPromoAutoloadLocation = m_pConfig->getResourcePath() + "/promo/" + MIXXX_PROMO_VERSION + "/autoload.dat";
 
     //Load the extra.dat file so we can peek at some extra information, such
     //as which songs to auto-load into Mixxx's players.
@@ -65,7 +65,7 @@ PromoTracksFeature::PromoTracksFeature(QObject* parent,
         while (!extra.atEnd())
         {
             QString trackPath = extra.readLine();
-            trackPath = m_pConfig->getConfigPath() + "/promo/" + MIXXX_PROMO_VERSION + "/" + trackPath;
+            trackPath = m_pConfig->getResourcePath() + "/promo/" + MIXXX_PROMO_VERSION + "/" + trackPath;
             QFileInfo fileInfo(trackPath);
             trackPath = fileInfo.absoluteFilePath();
             //qDebug() << "PROMO: Auto-loading track" << trackPath;
@@ -174,12 +174,11 @@ void PromoTracksFeature::activate() {
 
 void PromoTracksFeature::activateChild(const QModelIndex& index) {
     QString itemString = m_childModel.data(index, Qt::DisplayRole).toString();
-    if (itemString == tr(m_sMyDownloadsViewName.toUtf8().constData()))
-    {
+    if (itemString == tr(m_sMyDownloadsViewName.toUtf8().constData())) {
         emit(showTrackModel(&m_downloadsTableModel));
-    }
-    else
+    } else {
         emit(switchToView(itemString));
+    }
 }
 
 void PromoTracksFeature::onRightClick(const QPoint& globalPos) {

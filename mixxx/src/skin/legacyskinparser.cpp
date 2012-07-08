@@ -853,7 +853,8 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     QByteArray qba(channelStr.toAscii());
     char *safe = new char[qba.size() + 1]; // +1 for \0
     int i = 0;
-    while (safe[i] = qba[i]) ++i;
+    // Copy string
+    while ((safe[i] = qba[i])) ++i;
     s_channelStrs.append(safe);
     return safe;
 }
