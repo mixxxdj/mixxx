@@ -12,7 +12,10 @@ class PortAudio(Dependence):
             raise Exception('Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files.')
 
         #Turn on PortAudio support in Mixxx
-        build.env.Append(CPPDEFINES = '__PORTAUDIO__');
+        build.env.Append(CPPDEFINES = '__PORTAUDIO__')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('advapi32')
 
     def sources(self, build):
         return ['sounddeviceportaudio.cpp']
@@ -92,6 +95,10 @@ class FLAC(Dependence):
             raise Exception('Did not find libFLAC development headers')
         elif not conf.CheckLib(['libFLAC', 'FLAC']):
             raise Exception('Did not find libFLAC development libraries')
+            
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'FLAC__NO_DLL')
+        
         return
 
     def sources(self, build):
@@ -165,16 +172,8 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4')
             
-            # This detection should go in mixxx.py but I can't get it to work there! - Sean (who doesn't know Python)
-            build.flags['staticlibs'] = util.get_flags(build.env, 'staticlibs', 0)
-            if int(build.flags['staticlibs']):
-                # Dependent Windows libs
-                build.env.Append(LIBS = 'winmm') # libshout
-                build.env.Append(LIBS = 'ws2_32') # libshout
-                build.env.Append(LIBS = 'advapi32') # portaudio, portmidi
-                build.env.Append(LIBS = 'user32') # libHSS1394
-                
-                # # For Qt, pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
+            # if build.static_dependencies:
+                # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
                 # # QtCore
                 # build.env.Append(LIBS = 'kernel32')
                 # build.env.Append(LIBS = 'user32') # QtGui, QtOpenGL, libHSS1394
@@ -307,6 +306,9 @@ class TagLib(Dependence):
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'TAGLIB_STATIC')
 
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
@@ -814,7 +816,7 @@ class MixxxCore(Feature):
         after the Configure checks run."""
         if build.platform_is_windows:
             if build.toolchain_is_msvs:
-                if not int(build.flags['staticlibs']):
+                if not build.static_dependencies:
                     build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
                                                   '/nodefaultlib:LIBCMTd.lib'])
                 
