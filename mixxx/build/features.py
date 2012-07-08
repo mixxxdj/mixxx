@@ -42,6 +42,9 @@ class HSS1394(Feature):
                 return
 
         build.env.Append(CPPDEFINES = '__HSS1394__')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('user32')
 
     def sources(self, build):
         return ['controllers/midi/hss1394controller.cpp',
@@ -288,7 +291,7 @@ class MSVCDebug(Feature):
             if not build.toolchain_is_msvs:
                 raise Exception("Error, msvcdebug flag set when toolchain is not MSVS.")
 
-            if int(build.flags['staticlibs']):
+            if build.static_dependencies:
                 build.env.Append(CCFLAGS = '/MTd')
             else:
                 build.env.Append(CCFLAGS = '/MDd')
@@ -300,7 +303,7 @@ class MSVCDebug(Feature):
             else:
                 build.env.Append(CCFLAGS = '/ZI')
         elif build.toolchain_is_msvs:
-            if int(build.flags['staticlibs']):
+            if build.static_dependencies:
                 build.env.Append(CCFLAGS = '/MT')
             else:
                 build.env.Append(CCFLAGS = '/MD')
@@ -729,6 +732,10 @@ class Shoutcast(Feature):
             vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
+        
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('winmm')
+            conf.CheckLib('ws2_32')
 
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
