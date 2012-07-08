@@ -43,8 +43,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_pQueryLibraryInsert(NULL),
           m_pQueryLibraryUpdate(NULL),
           m_pQueryLibrarySelect(NULL),
-          m_pTransaction(NULL)
-          {
+          m_pTransaction(NULL) {
 }
 
 TrackDAO::~TrackDAO() {
@@ -365,7 +364,7 @@ void TrackDAO::addTracksFinish() {
     m_pQueryTrackLocationSelect = NULL;
     m_pQueryLibraryInsert = NULL;
     m_pQueryLibrarySelect = NULL;
-    m_pTransaction=NULL;
+    m_pTransaction = NULL;
 
     emit(tracksAdded(m_tracksAddedSet));
     m_tracksAddedSet.clear();
@@ -1154,3 +1153,35 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     }
     return false;
 }
+
+void TrackDAO::verifyTracksOutside(const QString& libraryPath) {
+    QSqlQuery query(m_database);
+    QSqlQuery query2(m_database);
+    QString trackLocation;
+
+    query.setForwardOnly(true);
+    query.prepare("SELECT location "
+                  "FROM track_locations "
+                  "WHERE directory NOT LIKE '" +
+                  libraryPath +
+                  "/%'"); //Add wildcard to SQL query to match subdirectories!
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    query2.prepare("UPDATE track_locations "
+                  "SET fs_deleted=:fs_deleted, needs_verification=0 "
+                  "WHERE location=:location");
+
+    while (query.next()) {
+        trackLocation = query.value(query.record().indexOf("location")).toString();
+        query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));        
+        query2.bindValue(":location", trackLocation);  
+        if (!query2.exec()) {
+            LOG_FAILED_QUERY(query2);
+        }
+    }
+}
+
