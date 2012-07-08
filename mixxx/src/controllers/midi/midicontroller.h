@@ -69,7 +69,7 @@ class MidiController : public Controller {
 
   private slots:
     // Initializes the engine and static output mappings.
-    void applyPreset(QString configPath);
+    void applyPreset(QString resourcePath);
 
   private:
     virtual void send(unsigned int word) = 0;

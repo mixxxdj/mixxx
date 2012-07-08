@@ -46,11 +46,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "ITUNES_SCANNER");
-    m_database.setHostName("localhost");
-    m_database.setDatabaseName(MIXXX_DB_PATH);
-    m_database.setUserName("mixxx");
-    m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "ITUNES_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -73,6 +69,7 @@ BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) 
     return pModel;
 }
 
+// static
 bool ITunesFeature::isSupported() {
     // itunes db might just be elsewhere, don't rely on it being in its
     // normal place. And since we will load an itdb on any platform...

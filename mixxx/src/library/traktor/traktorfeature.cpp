@@ -46,11 +46,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "TRAKTOR_SCANNER");
-    m_database.setHostName("localhost");
-    m_database.setDatabaseName(MIXXX_DB_PATH);
-    m_database.setUserName("mixxx");
-    m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {

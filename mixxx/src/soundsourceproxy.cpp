@@ -33,6 +33,8 @@
 #endif
 #include "soundsourceflac.h"
 
+#include "mixxx.h"
+
 #include <QLibrary>
 #include <QMutexLocker>
 #include <QMutex>
@@ -67,6 +69,7 @@ SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
     m_pTrack = pTrack;
 }
 
+// static
 void SoundSourceProxy::loadPlugins()
 {
     /** Scan for and initialize all plugins */
@@ -74,11 +77,11 @@ void SoundSourceProxy::loadPlugins()
     QList<QDir> pluginDirs;
     QStringList nameFilters;
 
-    QStringList clArgs = QApplication::arguments();
-    int pluginPath = clArgs.indexOf("--pluginPath");
-    if (pluginPath != -1 && pluginPath + 1 < clArgs.size()) {
-        qDebug() << "Adding plugin path from commandline arg:" << clArgs.at(pluginPath + 1);
-        pluginDirs.append(QDir(clArgs.at(pluginPath + 1)));
+    const QString& pluginPath = CmdlineArgs::Instance().getPluginPath();
+
+    if (!pluginPath.isEmpty()) {
+        qDebug() << "Adding plugin path from commandline arg:" << pluginPath;
+        pluginDirs.append(QDir(pluginPath));
     }
 #ifdef __LINUX__
     QDir libPath(UNIX_LIB_PATH);
@@ -115,6 +118,7 @@ void SoundSourceProxy::loadPlugins()
     }
 }
 
+// static
 Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 
     Mixxx::SoundSource* sndsrc = NULL;
@@ -163,6 +167,7 @@ SoundSourceProxy::~SoundSourceProxy()
     delete m_pSoundSource;
 }
 
+// static
 QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 {
     static QMutex mutex;
@@ -283,6 +288,7 @@ int SoundSourceProxy::parseHeader()
     return 0;
 }
 
+// static
 int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
     QString qFilename = p->getLocation();
@@ -328,6 +334,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
     return 0;
 }
 
+// static
 QStringList SoundSourceProxy::supportedFileExtensions()
 {
     QMutexLocker locker(&m_extensionsMutex);
@@ -347,6 +354,7 @@ QStringList SoundSourceProxy::supportedFileExtensions()
     return supportedFileExtensions;
 }
 
+// static
 QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
@@ -354,6 +362,7 @@ QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
     return supportedFileExtensions;
 }
 
+// static
 QString SoundSourceProxy::supportedFileExtensionsString() {
     QStringList supportedFileExtList = SoundSourceProxy::supportedFileExtensions();
     // Turn the list into a "*.mp3 *.wav *.etc" style string
@@ -363,6 +372,7 @@ QString SoundSourceProxy::supportedFileExtensionsString() {
     return supportedFileExtList.join(" ");
 }
 
+// static
 QString SoundSourceProxy::supportedFileExtensionsRegex() {
     QStringList supportedFileExtList = SoundSourceProxy::supportedFileExtensions();
 
@@ -375,6 +385,7 @@ QString SoundSourceProxy::supportedFileExtensionsRegex() {
     return QString("\\.(%1)$").arg(supportedFileExtList.join("|"));
 }
 
+// static
 bool SoundSourceProxy::isFilenameSupported(QString fileName) {
     if (m_supportedFileRegex.isValid()) {
         QString regex = SoundSourceProxy::supportedFileExtensionsRegex();
