@@ -39,6 +39,7 @@ public:
 
     void setBaseRate(double dBaseRate);
     double setTempo(double dTempo);
+    double setKey(double dKey);
     void clear();
 
 private:
@@ -49,6 +50,7 @@ private:
     /** Holds playback direction */
     bool m_bBackwards;
     bool m_bClear;
+    double m_fOldKey;
     float m_fOldTempo;          /** Keep the old tempo around so we can interpolate smoothly
                                     between the old one and the new one to avoid any discontinuities
                                     in the audio when you change the playback rate */

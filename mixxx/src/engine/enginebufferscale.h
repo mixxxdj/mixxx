@@ -46,6 +46,7 @@ public:
     virtual void setBaseRate(double dBaseRate) = 0;
     /** Set tempo */
     virtual double setTempo(double dTempo) = 0;
+    virtual double setKey(double dKey) = 0;
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
@@ -58,7 +59,7 @@ public:
 
 protected:
     /** Tempo and base rate */
-    double m_dTempo, m_dBaseRate;
+    double m_dTempo, m_dBaseRate,m_dKey;
     /** Pointer to internal buffer */
     CSAMPLE *buffer;
     /** New playpos after call to scale */

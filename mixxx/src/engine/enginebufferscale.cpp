@@ -20,6 +20,7 @@
 EngineBufferScale::EngineBufferScale()
 {
     m_dTempo = 1.;
+    m_dKey = 0;
     buffer = new CSAMPLE[MAX_BUFFER_LEN];
     new_playpos = 0;
 }

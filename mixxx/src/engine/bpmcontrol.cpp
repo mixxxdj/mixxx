@@ -6,7 +6,7 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
-
+#include <QDebug>
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
 const int filterLength = 5;
@@ -100,6 +100,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     //qDebug() << this << "slotFileBpmChanged" << bpm;
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM.
+    //qDebug()<<"bpm"<<m_pRateDir->get()<<" "<<m_pRateRange->get()<<" "<<m_pRateSlider->get();
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(bpm * dRate);
 }

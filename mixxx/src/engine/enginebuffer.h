@@ -149,6 +149,7 @@ public:
 
 private:
     void setPitchIndpTimeStretch(bool b);
+    void setTimeIndpPitchStretch(bool b);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -219,7 +220,7 @@ private:
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
     ControlPushButton *m_pKeylock;
-
+    ControlPushButton *m_pTempolock;
     ControlPushButton *m_pEject;
 
     /** Control used to signal when at end of file */

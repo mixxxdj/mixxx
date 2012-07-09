@@ -6,6 +6,8 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/keycontrol.h"
+#include "controlpotmeter.h"
+
 #include <QDebug>
 
 const int minBpm = 30;
@@ -16,8 +18,9 @@ KeyControl::KeyControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config){
        // m_tapFilter(this, filterLength, maxInterval) {
-    /*m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
-    m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
+    //m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
+   // m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
+    m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "keyrate"), -1.f, 1.f);
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged(double)),
             Qt::DirectConnection);
@@ -39,7 +42,7 @@ KeyControl::KeyControl(const char* _group,
             Qt::DirectConnection);
     connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotRateChanged(double)),
-            Qt::DirectConnection);*/
+            Qt::DirectConnection);
 
     m_pFileKey = new ControlObject(ConfigKey(_group, "file_key"));
     connect(m_pFileKey, SIGNAL(valueChanged(double)),
@@ -102,19 +105,27 @@ void KeyControl::slotFileKeyChanged(double key) {
     //qDebug() << this << "slotFileBpmChanged" << bpm;
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM.
-    //double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-    //m_pEngineKey->set(key * dRate);
-    m_pEngineKey->set(key);
+    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    m_pEngineKey->set(key * dRate);
+    //qDebug()<<"1";
+    //qDebug()<<m_pRateDir->get()<<" "<<m_pRateRange->get()<<" "<<m_pRateSlider->get();
+    //qDebug()<<"2";
+    //m_pEngineKey->set(key);
+}
+
+double KeyControl::getRawRate() {
+    return m_pRateSlider->get() * m_pRateRange->get() * m_pRateDir->get();
 }
 
 void KeyControl::slotSetEngineKey(double key) {
     double filekey = m_pFileKey->get();
-
-/*    if (filekey != 0.0) {
+    //qDebug()<<"3";
+    if (filekey != 0.0) {
         double newRate = key / filekey - 1.0f;
         newRate = math_max(-1.0f, math_min(1.0f, newRate));
         m_pRateSlider->set(newRate * m_pRateDir->get());
-    }*/
+      //  qDebug()<<"4";
+    }
 }
 
 /*void KeyControl::slotBpmTap(double v) {

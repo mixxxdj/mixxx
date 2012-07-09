@@ -8,6 +8,7 @@
 #include "tapfilter.h"
 
 class ControlObject;
+class ControlPotmeter;
 //class ControlPushButton;
 
 class KeyControl : public EngineControl {
@@ -17,6 +18,7 @@ class KeyControl : public EngineControl {
     KeyControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~KeyControl();
     double getKey();
+    double getRawRate();
 
   public slots:
 
@@ -41,10 +43,11 @@ class KeyControl : public EngineControl {
     double convertKey(QString);
 
     // ControlObjects that come from EngineBuffer
-   /* ControlObject* m_pPlayButton;
-    ControlObject* m_pRateSlider;
+    ControlObject* m_pPlayButton;
+    //ControlObject* m_pRateSlider;
+    ControlPotmeter* m_pRateSlider;
     ControlObject* m_pRateRange;
-    ControlObject* m_pRateDir;*/
+    ControlObject* m_pRateDir;
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileKey;
