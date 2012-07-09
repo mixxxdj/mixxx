@@ -801,12 +801,13 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
 
 TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
+    TrackPointer pTrack;
 
     // If the track cache contains the track, use it to get a strong reference
     // to the track. We do this first so that the QCache keeps track of the
     // least-recently-used track so that it expires them intelligently.
     if (m_trackCache.contains(id)) {
-        TrackPointer pTrack = *m_trackCache[id];
+        pTrack = *m_trackCache[id];
 
         // If the strong reference is still valid (it should be), then return it.
         if (pTrack)
@@ -823,16 +824,18 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
         QMutexLocker locker(&m_sTracksMutex);
         if (m_sTracks.contains(id)) {
             //qDebug() << "Returning cached TIO for track" << id;
-            TrackPointer pTrack = m_sTracks[id];
-
-            // If the pointer to the cached copy is still valid, return
-            // it. Otherwise, re-query the DB for the track.
-            if (pTrack) {
-                // Add pinter to Cache again
-                m_trackCache.insert(id, new TrackPointer(pTrack));
-                return pTrack;
-            }
+            pTrack = m_sTracks[id];
         }
+    }
+
+    // If the pointer to the cached copy is still valid, return
+    // it. Otherwise, re-query the DB for the track.
+    if (pTrack) {
+        // Add pointer to Cache again. 
+        // Never call insert() inside mutex to qCache, it may trigger a 
+        // cache delete which requires mutex as well and cause deadlock.
+        m_trackCache.insert(id, new TrackPointer(pTrack));
+        return pTrack;
     }
     // The person only wanted the track if it was cached.
     if (cacheOnly) {
