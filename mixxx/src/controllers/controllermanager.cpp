@@ -222,7 +222,7 @@ int ControllerManager::slotSetUpDevices() {
             }
             continue;
         }
-        pController->applyPreset(m_pConfig->getConfigPath());
+        pController->applyPreset(m_pConfig->getResourcePath());
     }
 
     maybeStartOrStopPolling();
@@ -273,7 +273,6 @@ void ControllerManager::pollDevices() {
     } while (eventsProcessed);
 }
 
-
 void ControllerManager::openController(Controller* pController) {
     if (!pController) {
         return;
@@ -287,7 +286,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(m_pConfig->getConfigPath());
+        pController->applyPreset(m_pConfig->getResourcePath());
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->set(ConfigKey(
@@ -352,7 +351,7 @@ bool ControllerManager::loadPreset(Controller* pController,
 
     // If the file isn't present in the user's directory, check res/
     if (!QFile::exists(filepath)) {
-        filepath = m_pConfig->getConfigPath()
+        filepath = m_pConfig->getResourcePath()
                 .append("controllers/") + filenameWithExt;
     }
 

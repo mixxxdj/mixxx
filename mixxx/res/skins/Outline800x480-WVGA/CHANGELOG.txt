@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.05	(04/07/2012)
+* Fix: Deactivate stylesheets for tooltips in skins which use color scheme support, workaround for lp:1021031
+
 v1.11.0.04	(24/05/2012)
 * Feature: Support <DefaultMark> cue style that define any non explicitly defined ones, lp:994647
   This allows to view all 36 Hotcues in the waveform (Overview) without the need to declare each of them individually.

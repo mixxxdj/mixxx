@@ -98,6 +98,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void detectMovedFiles(QSet<int>* pTracksMovedSetNew, QSet<int>* pTracksMovedSetOld);
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
+    void verifyTracksOutside(const QString& libraryPath);
 
   signals:
     void trackDirty(int trackId);
