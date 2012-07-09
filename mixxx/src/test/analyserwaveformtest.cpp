@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <QDebug>
+#include <QDir>
 
 #include "trackinfoobject.h"
 #include "configobject.h"
