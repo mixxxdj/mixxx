@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QSqlDatabase>
 
+#include "configobject.h"
 #include "analyser.h"
 #include "waveform/waveform.h"
 
@@ -80,7 +81,7 @@ class WaveformStride {
 
 class AnalyserWaveform : public Analyser {
   public:
-    AnalyserWaveform();
+    AnalyserWaveform(ConfigObject<ConfigValue>* pConfig);
     virtual ~AnalyserWaveform();
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);

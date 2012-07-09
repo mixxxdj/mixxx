@@ -27,7 +27,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
-    m_db.setDatabaseName(MIXXX_DB_PATH);
+    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
@@ -73,7 +73,7 @@ bool TrackCollection::checkForTables() {
     }
 
     int requiredSchemaVersion = 17;
-    QString schemaFilename = m_pConfig->getConfigPath();
+    QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
@@ -153,12 +153,11 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
         // user's library OR the user has "removed" the track via
         // "Right-Click -> Remove". These tracks stay in the library, but
         // their mixxx_deleted column is 1.
-        if (!trackDao.trackExistsInDatabase(absoluteFilePath))
-        {
+        if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
             //qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 
-            TrackPointer pTrack =TrackPointer(new TrackInfoObject(
+            TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
 
             if (trackDao.addTracksAdd(pTrack.data(), false)) {

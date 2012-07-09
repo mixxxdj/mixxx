@@ -203,10 +203,12 @@ void BaseSqlTableModel::select() {
         Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
         tableColumnIndices.push_back(record.indexOf(column));
     }
-    int rows = query.size();
-    if (sDebug) {
-        qDebug() << "Rows returned" << rows << m_rowInfo.size();
-    }
+
+	// sqlite does not set size and m_rowInfo was just cleared    
+    //int rows = query.size();
+    //if (sDebug) {
+    //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
+    //}
 
     QVector<RowInfo> rowInfo;
     QSet<int> trackIds;
@@ -216,7 +218,7 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size();
+        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located        
         // Get all the table columns and store them in the hash for this
         // row-info section.
 

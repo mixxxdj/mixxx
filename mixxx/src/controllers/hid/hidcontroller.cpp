@@ -9,6 +9,8 @@
 #include <wchar.h>
 #include <string.h>
 
+#include "defs.h" // for PATH_MAX on Windows
+
 #include "controllers/hid/hidcontroller.h"
 
 HidReader::HidReader(hid_device* device)

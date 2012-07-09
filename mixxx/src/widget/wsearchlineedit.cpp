@@ -9,7 +9,7 @@
 WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
                                  QWidget* pParent) : QLineEdit(pParent) {
 
-    QString skinpath = pConfig->getConfigPath();
+    QString skinpath = pConfig->getResourcePath();
     m_clearButton = new QToolButton(this);
     QPixmap pixmap(skinpath.append("/skins/cross.png"));
     m_clearButton->setIcon(QIcon(pixmap));
