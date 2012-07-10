@@ -88,15 +88,21 @@ void MessageHandler(QtMsgType type, const char *input)
     static QMutex mutex;
     QMutexLocker locker(&mutex);
     QByteArray ba;
-    ba = "[" + QThread::currentThread()->objectName().toLocal8Bit() + "]: " + input + "\n";
+    QThread* thread = QThread::currentThread();
+    if (thread) {
+        ba = "[" + QThread::currentThread()->objectName().toLocal8Bit() + "]: ";
+    } else {
+        ba = "[?]: ";
+    }
+    ba += input;
+    ba += "\n";
 
     if(!Logfile.isOpen())
     {
-#ifdef Q_OS_WIN32
-        QString logFileName("mixxx.log");
-#else
-        QString logFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
-#endif
+        // This Must be done in the Message Handler itself, to guarantee that the
+        // QApplication is initialized
+        QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
+
         //backup old logfiles
         //FIXME: cout << doesn't get printed until after mixxx quits (???)
         for (int i=9; i>0; i--)
@@ -178,8 +184,55 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("mixxx.org");
     QCoreApplication::setOrganizationName("Mixxx");
 
-//it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
+    // Construct a list of strings based on the command line arguments
+    CmdlineArgs& args = CmdlineArgs::Instance();
+    if (!args.Parse(argc, argv)) {
+        fputs("Mixxx digital DJ software v",stdout);
+        fputs(VERSION,stdout);
+        fputs(" - Command line options",stdout);
+        fputs(
+                   "\n(These are case-sensitive.)\n\n\
+    [FILE]                  Load the specified music file(s) at start-up.\n\
+                            Each must be one of the following file types:\n\
+                            ", stdout);
 
+        QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
+        QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
+        fputs(fileExtensionsBA.constData(), stdout);
+        fputs("\n\n", stdout);
+        fputs("\
+                            Each file you specify will be loaded into the\n\
+                            next virtual deck.\n\
+\n\
+    --resourcePath PATH     Top-level directory where Mixxx should look\n\
+                            for its resource files such as MIDI mappings,\n\
+                            overriding the default installation location.\n\
+\n\
+    --pluginPath PATH       Top-level directory where Mixxx should look\n\
+                            for sound source plugins in addition to default\n\
+                            locations.\n\
+\n\
+    --settingsPath PATH     Top-level directory where Mixxx should look\n\
+                            for settings. Default is:\n", stdout);
+        fprintf(stdout, "\
+                            %s\n", args.getSettingsPath().toLocal8Bit().data());
+        fputs("\
+\n\
+    --controllerDebug       Causes Mixxx to display/log all of the controller\n\
+                            data it receives and script functions it loads\n\
+\n\
+    --locale LOCALE         Use a custom locale for loading translations\n\
+                            (e.g 'fr')\n\
+\n\
+    -f, --fullScreen        Starts Mixxx in full-screen mode\n\
+\n\
+    -h, --help              Display this help message and exit", stdout);
+
+        fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+        return(0);
+    }
+
+    //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 
 #ifdef __WINDOWS__
   #ifdef DEBUGCONSOLE
@@ -206,66 +259,6 @@ int main(int argc, char * argv[])
 //        if(QString("--no-visuals")==argv[i])
 //            bVisuals = false;
 
-    // Construct a list of strings based on the command line arguments
-    struct CmdlineArgs args;
-    args.bStartInFullscreen = false; //Initialize vars
-
-    // Only match supported file types since command line options are also parsed elsewhere
-    QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
-
-   for (int i = 0; i < argc; ++i) {
-       if (   argv[i] == QString("-h")
-            || argv[i] == QString("--h")
-            || argv[i] == QString("--help")
-    ) {
-           fputs("Mixxx digital DJ software v",stdout);
-           fputs(VERSION,stdout);
-           fputs(" - Command line options",stdout);
-           fputs(
-                   "\n(These are case-sensitive.)\n\n\
-    [FILE]                  Load the specified music file(s) at start-up.\n\
-                            Each must be one of the following file types:\n\
-                            ",stdout);
-
-            QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
-            QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            fputs(fileExtensionsBA.constData(),stdout);
-            fputs("\n\n",stdout);
-            fputs("\
-                            Each file you specify will be loaded into the\n\
-                            next virtual deck.\n\
-\n\
-    --resourcePath PATH     Top-level directory where Mixxx should look\n\
-                            for its resource files such as MIDI mappings,\n\
-                            overriding the default installation location.\n\
-\n\
-    --pluginPath PATH       Top-level directory where Mixxx shoud look\n\
-                            for sound source plugins in addition to default\n\
-                            locations.\n\
-\n\
-    --controllerDebug       Causes Mixxx to display/log all of the controller\n\
-                            data it receives and script functions it loads\n\
-\n\
-    --locale LOCALE         Use a custom locale for loading translations\n\
-                            (e.g 'fr')\n\
-\n\
-    -f, --fullScreen        Starts Mixxx in full-screen mode\n\
-\n\
-    -h, --help              Display this help message and exit",stdout);
-
-            fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
-            return(0);
-        }
-
-        if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
-        {
-            args.bStartInFullscreen = true;
-        } else if (argv[i] == QString("--locale") && i+1 < argc) {
-            args.locale = argv[i+1];
-        } else if (fileRx.indexIn(argv[i]) != -1) {
-            args.qlMusicFiles += argv[i];
-        }
-    }
 
     // set up the plugin paths...
     /*

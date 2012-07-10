@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 #include <QDebug>
+#include <QDir>
 
 #include "trackinfoobject.h"
+#include "configobject.h"
 #include "analyserwaveform.h"
 
 #define BIGBUF_SIZE (1024 * 1024)  //Megabyte
@@ -14,7 +16,8 @@ namespace {
 class AnalyserWaveformTest: public testing::Test {
   protected:
     virtual void SetUp() {
-        aw = new AnalyserWaveform();
+        config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+        aw = new AnalyserWaveform(config);
         tio = TrackPointer(new TrackInfoObject("foo"));
         tio->setSampleRate(44100);
 
@@ -41,6 +44,7 @@ class AnalyserWaveformTest: public testing::Test {
     }
 
     AnalyserWaveform* aw;
+    ConfigObject<ConfigValue>* config;
     TrackPointer tio;
     CSAMPLE* bigbuf;
     CSAMPLE* canaryBigBuf;

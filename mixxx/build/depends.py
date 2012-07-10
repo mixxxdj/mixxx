@@ -12,7 +12,10 @@ class PortAudio(Dependence):
             raise Exception('Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files.')
 
         #Turn on PortAudio support in Mixxx
-        build.env.Append(CPPDEFINES = '__PORTAUDIO__');
+        build.env.Append(CPPDEFINES = '__PORTAUDIO__')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('advapi32')
 
     def sources(self, build):
         return ['sounddeviceportaudio.cpp']
@@ -40,12 +43,12 @@ class OpenGL(Dependence):
             not conf.CheckLib('opengl32') and
             not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and
             not conf.CheckCHeader('GL/gl.h')):
-            raise Exception('Did not find OpenGL development files, exiting!')
+            raise Exception('Did not find OpenGL development files')
 
         if (not conf.CheckLib('GLU') and
             not conf.CheckLib('glu32') and
             not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h')):
-            raise Exception('Did not find GLU development files, exiting!')
+            raise Exception('Did not find GLU development files')
 
         if build.platform_is_osx:
             build.env.Append(CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
@@ -69,7 +72,7 @@ class OggVorbis(Dependence):
             raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
 
         if not conf.CheckLib(['libogg', 'ogg']):
-            raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!')
+            raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers')
 
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
@@ -80,7 +83,7 @@ class SndFile(Dependence):
     def configure(self, build, conf):
         #if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
         if not conf.CheckLib(['sndfile', 'libsndfile']):
-            raise Exception("Did not find libsndfile or it\'s development headers, exiting!")
+            raise Exception("Did not find libsndfile or it\'s development headers")
         build.env.Append(CPPDEFINES = '__SNDFILE__')
 
     def sources(self, build):
@@ -89,9 +92,13 @@ class SndFile(Dependence):
 class FLAC(Dependence):
     def configure(self, build, conf):
         if not conf.CheckHeader('FLAC/stream_decoder.h'):
-            raise Exception('Did not find libFLAC development headers, exiting!')
+            raise Exception('Did not find libFLAC development headers')
         elif not conf.CheckLib(['libFLAC', 'FLAC']):
-            raise Exception('Did not find libFLAC development libraries, exiting!')
+            raise Exception('Did not find libFLAC development libraries')
+            
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'FLAC__NO_DLL')
+        
         return
 
     def sources(self, build):
@@ -153,15 +160,38 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
+            
+            # Since we use WebKit, that's only available dynamically
+            build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtXml4')
             build.env.Append(LIBS = 'QtXmlPatterns4')
             build.env.Append(LIBS = 'QtSql4')
             build.env.Append(LIBS = 'QtGui4')
             build.env.Append(LIBS = 'QtCore4')
             build.env.Append(LIBS = 'QtScript4')
-            build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4')
+            
+            # if build.static_dependencies:
+                # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
+                # # QtCore
+                # build.env.Append(LIBS = 'kernel32')
+                # build.env.Append(LIBS = 'user32') # QtGui, QtOpenGL, libHSS1394
+                # build.env.Append(LIBS = 'shell32')
+                # build.env.Append(LIBS = 'uuid')
+                # build.env.Append(LIBS = 'ole32') # QtGui,
+                # build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
+                # build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
+                # # QtGui
+                # build.env.Append(LIBS = 'gdi32') #QtOpenGL
+                # build.env.Append(LIBS = 'comdlg32')
+                # build.env.Append(LIBS = 'oleaut32')
+                # build.env.Append(LIBS = 'imm32')
+                # build.env.Append(LIBS = 'winmm')
+                # build.env.Append(LIBS = 'winspool')
+                # # QtOpenGL
+                # build.env.Append(LIBS = 'glu32')
+                # build.env.Append(LIBS = 'opengl32')
 
         # Set Qt include paths for non-OSX
         if not build.platform_is_osx:
@@ -276,6 +306,9 @@ class TagLib(Dependence):
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'TAGLIB_STATIC')
 
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
@@ -783,9 +816,11 @@ class MixxxCore(Feature):
         after the Configure checks run."""
         if build.platform_is_windows:
             if build.toolchain_is_msvs:
-                build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                              '/nodefaultlib:LIBCMTd.lib',
-                                              '/entry:mainCRTStartup'])
+                if not build.static_dependencies:
+                    build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                                  '/nodefaultlib:LIBCMTd.lib'])
+                
+                build.env.Append(LINKFLAGS = '/entry:mainCRTStartup')
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
                 build.env.Append(LINKFLAGS = '/manifest') #Force MSVS to generate a manifest (MSVC2010)

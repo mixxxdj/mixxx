@@ -236,6 +236,9 @@ void LibraryScanner::run()
     // Runs inside a transaction
     m_trackDao.addTracksFinish();
 
+    //Verify all Tracks inside Library but outside the library path
+    m_trackDao.verifyTracksOutside(m_qLibraryPath);
+
     // Start a transaction for all the library hashing (moved file detection)
     // stuff.
     ScopedTransaction transaction(m_database);

@@ -72,6 +72,9 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QFuture<TreeItem*> m_future;
     QString m_title;
 
+    QString m_dbItunesRoot;
+    QString m_mixxxItunesRoot;
+
     static const QString ITDB_PATH_KEY;
 };
 

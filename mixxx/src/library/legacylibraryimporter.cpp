@@ -38,7 +38,10 @@ LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
 /** Upgrade from <= 1.7 library to 1.8 DB format */
 void LegacyLibraryImporter::import()
 {
-    QString trackXML = QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxtrack.xml");
+    // TODO(XXX) SETTINGS_PATH may change in new Mixxx Versions. Here we need
+    // the SETTINGS_PATH from Mixxx V <= 1.7
+    QString settingPath17 = QDir::homePath().append("/").append(SETTINGS_PATH);
+    QString trackXML = settingPath17.append("mixxxtrack.xml");
     QFile file(trackXML);
 
     QDomDocument doc("TrackList");
@@ -174,7 +177,7 @@ void LegacyLibraryImporter::import()
             }
         }
 
-        QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
+        QString upgrade_filename = settingPath17.append("DBUPGRADED");
         //now create stub so that the library is not readded next time program loads
         QFile upgradefile(upgrade_filename);
         if (!upgradefile.open(QIODevice::WriteOnly | QIODevice::Text))

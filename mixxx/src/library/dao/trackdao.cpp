@@ -43,8 +43,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_pQueryLibraryInsert(NULL),
           m_pQueryLibraryUpdate(NULL),
           m_pQueryLibrarySelect(NULL),
-          m_pTransaction(NULL)
-          {
+          m_pTransaction(NULL) {
 }
 
 TrackDAO::~TrackDAO() {
@@ -374,7 +373,7 @@ void TrackDAO::addTracksFinish() {
     m_pQueryTrackLocationSelect = NULL;
     m_pQueryLibraryInsert = NULL;
     m_pQueryLibrarySelect = NULL;
-    m_pTransaction=NULL;
+    m_pTransaction = NULL;
 
     emit(tracksAdded(m_tracksAddedSet));
     m_tracksAddedSet.clear();
@@ -811,12 +810,13 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
 
 TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
+    TrackPointer pTrack;
 
     // If the track cache contains the track, use it to get a strong reference
     // to the track. We do this first so that the QCache keeps track of the
     // least-recently-used track so that it expires them intelligently.
     if (m_trackCache.contains(id)) {
-        TrackPointer pTrack = *m_trackCache[id];
+        pTrack = *m_trackCache[id];
 
         // If the strong reference is still valid (it should be), then return it.
         if (pTrack)
@@ -833,16 +833,18 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
         QMutexLocker locker(&m_sTracksMutex);
         if (m_sTracks.contains(id)) {
             //qDebug() << "Returning cached TIO for track" << id;
-            TrackPointer pTrack = m_sTracks[id];
-
-            // If the pointer to the cached copy is still valid, return
-            // it. Otherwise, re-query the DB for the track.
-            if (pTrack) {
-                // Add pinter to Cache again
-                m_trackCache.insert(id, new TrackPointer(pTrack));
-                return pTrack;
-            }
+            pTrack = m_sTracks[id];
         }
+    }
+
+    // If the pointer to the cached copy is still valid, return
+    // it. Otherwise, re-query the DB for the track.
+    if (pTrack) {
+        // Add pointer to Cache again. 
+        // Never call insert() inside mutex to qCache, it may trigger a 
+        // cache delete which requires mutex as well and cause deadlock.
+        m_trackCache.insert(id, new TrackPointer(pTrack));
+        return pTrack;
     }
     // The person only wanted the track if it was cached.
     if (cacheOnly) {
@@ -1163,3 +1165,35 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     }
     return false;
 }
+
+void TrackDAO::verifyTracksOutside(const QString& libraryPath) {
+    QSqlQuery query(m_database);
+    QSqlQuery query2(m_database);
+    QString trackLocation;
+
+    query.setForwardOnly(true);
+    query.prepare("SELECT location "
+                  "FROM track_locations "
+                  "WHERE directory NOT LIKE '" +
+                  libraryPath +
+                  "/%'"); //Add wildcard to SQL query to match subdirectories!
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    query2.prepare("UPDATE track_locations "
+                  "SET fs_deleted=:fs_deleted, needs_verification=0 "
+                  "WHERE location=:location");
+
+    while (query.next()) {
+        trackLocation = query.value(query.record().indexOf("location")).toString();
+        query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));        
+        query2.bindValue(":location", trackLocation);  
+        if (!query2.exec()) {
+            LOG_FAILED_QUERY(query2);
+        }
+    }
+}
+

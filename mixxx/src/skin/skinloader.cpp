@@ -24,7 +24,7 @@ SkinLoader::~SkinLoader() {
 
 QString SkinLoader::getConfiguredSkinPath() {
 
-    QString qSkinPath = m_pConfig->getConfigPath();
+    QString qSkinPath = m_pConfig->getResourcePath();
     qSkinPath.append("skins/");
 
     QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]","Skin"));

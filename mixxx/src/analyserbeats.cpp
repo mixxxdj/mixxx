@@ -17,8 +17,6 @@
 #include "track/beatutils.h"
 #include "track/beat_preferences.h"
 
-static bool sDebug = false;
-
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config)
         : m_pConfig(_config),
           m_pVamp(NULL),

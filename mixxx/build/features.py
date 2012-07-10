@@ -35,13 +35,16 @@ class HSS1394(Feature):
             #    raise Exception('Could not find libffado.')
         else:
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
-#                raise Exception('Did not find HSS1394 development headers, exiting!')
+#                raise Exception('Did not find HSS1394 development headers')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
             if not conf.CheckLib(['libhss1394', 'hss1394']):
-                raise Exception('Did not find HSS1394 development library, exiting!')
+                raise Exception('Did not find HSS1394 development library')
                 return
 
         build.env.Append(CPPDEFINES = '__HSS1394__')
+        
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('user32')
 
     def sources(self, build):
         return ['controllers/midi/hss1394controller.cpp',
@@ -72,7 +75,7 @@ class HID(Feature):
             build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
             if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
                 not conf.CheckHeader('libusb-1.0/libusb.h')):
-                raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
+                raise Exception('Did not find the libusb 1.0 development library or its header file')
 
             # Optionally add libpthread and librt. Some distros need this.
             conf.CheckLib(['pthread', 'libpthread'])
@@ -288,9 +291,10 @@ class MSVCDebug(Feature):
             if not build.toolchain_is_msvs:
                 raise Exception("Error, msvcdebug flag set when toolchain is not MSVS.")
 
-            # Enable debug multithread and DLL specific runtime methods. Required
-            # for sndfile w/ flac support on windows.
-            build.env.Append(CCFLAGS = '/MDd')
+            if build.static_dependencies:
+                build.env.Append(CCFLAGS = '/MTd')
+            else:
+                build.env.Append(CCFLAGS = '/MDd')
             build.env.Append(LINKFLAGS = '/DEBUG')
             build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
@@ -299,9 +303,10 @@ class MSVCDebug(Feature):
             else:
                 build.env.Append(CCFLAGS = '/ZI')
         elif build.toolchain_is_msvs:
-            # Enable multithreaded and DLL specific runtime methods. Required
-            # for sndfile w/ flac support on windows
-            build.env.Append(CCFLAGS = '/MD')
+            if build.static_dependencies:
+                build.env.Append(CCFLAGS = '/MT')
+            else:
+                build.env.Append(CCFLAGS = '/MD')
 
 
 class HifiEq(Feature):
@@ -541,13 +546,13 @@ class AsmLib(Feature):
         build.env.Append(LIBPATH='#/../asmlib')
         if build.platform_is_linux:
             build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-            build.env.Append(LIBS = '":alibelf%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS = '":alibelf%so.a"' % build.bitwidth)
         elif build.platform_is_osx:
             build.env.Append(CCFLAGS = '-fno-builtin')   #Use ASMLIB's functions instead of the compiler's
-            build.env.Append(LIBS = '":alibmac%so.a"' % build.bitwidth)
+            build.env.Prepend(LIBS = '":alibmac%so.a"' % build.bitwidth)
         elif build.platform_is_windows:
             build.env.Append(CCFLAGS = '/Oi-')   #Use ASMLIB's functions instead of the compiler's
-            build.env.Append(LIBS = 'alibcof%so' % build.bitwidth)
+            build.env.Prepend(LIBS = 'alibcof%so' % build.bitwidth)
 
 
 class QDebug(Feature):
@@ -713,20 +718,24 @@ class Shoutcast(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-
+            
         libshout_found = conf.CheckLib(['libshout','shout'])
         build.env.Append(CPPDEFINES = '__SHOUTCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
-
-        # libvorbisenc does only exist on Linux, OSX and mingw32 on Windows. On
+        
+        # libvorbisenc only exists on Linux, OSX and mingw32 on Windows. On
         # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
         # libogg are included from build.py so don't add here.
         if not build.platform_is_windows or build.toolchain_is_gnu:
             vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
+        
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('winmm')
+            conf.CheckLib('ws2_32')
 
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')

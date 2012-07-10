@@ -36,8 +36,6 @@ class TrackInfoObject;
 
 #define AUTODJ_TABLE "Auto DJ"
 
-const QString MIXXX_DB_PATH = QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxxdb.sqlite");
-
 class BpmDetector;
 
 /**

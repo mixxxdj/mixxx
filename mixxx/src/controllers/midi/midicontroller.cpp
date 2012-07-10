@@ -66,9 +66,9 @@ bool MidiController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-void MidiController::applyPreset(QString configPath) {
+void MidiController::applyPreset(QString resourcePath) {
     // Handles the engine
-    Controller::applyPreset(configPath);
+    Controller::applyPreset(resourcePath);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
