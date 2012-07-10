@@ -76,6 +76,13 @@ TreeItemModel* PrepareFeature::getChildModel() {
     return &m_childModel;
 }
 
+void PrepareFeature::refreshLibraryModels()
+{
+    if (m_pPrepareView) {
+        m_pPrepareView->onShow();
+    }
+}
+
 void PrepareFeature::activate() {
     //qDebug() << "PrepareFeature::activate()";
     emit(switchToView(m_sPrepareViewName));
