@@ -292,7 +292,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
 
     m_pQueryLibraryInsert->bindValue(":timesplayed", pTrack->getTimesPlayed());
-    query.bindValue(":datetime_added", pTrack->getCreateDate());
+    m_pQueryLibraryInsert->bindValue(":datetime_added", pTrack->getCreateDate());
     m_pQueryLibraryInsert->bindValue(":channels", pTrack->getChannels());
     m_pQueryLibraryInsert->bindValue(":mixxx_deleted", 0);
     m_pQueryLibraryInsert->bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
