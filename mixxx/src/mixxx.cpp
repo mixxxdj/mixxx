@@ -1097,7 +1097,7 @@ void MixxxApp::slotFileLoadSongPlayer1() {
 }
 
 void MixxxApp::slotFileLoadSongPlayer2() {
-    slotFileLoadSongPlayer(1);
+    slotFileLoadSongPlayer(2);
 }
 
 void MixxxApp::slotFileQuit()
