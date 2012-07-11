@@ -237,7 +237,8 @@ void LibraryScanner::run()
     m_trackDao.addTracksFinish();
 
     //Verify all Tracks inside Library but outside the library path
-    m_trackDao.verifyTracksOutside(m_qLibraryPath);
+    //OWEN EDIT: disable beacuse this is slow and crashes mixxx
+    //m_trackDao.verifyTracksOutside(m_qLibraryPath);
 
     // Start a transaction for all the library hashing (moved file detection)
     // stuff.
