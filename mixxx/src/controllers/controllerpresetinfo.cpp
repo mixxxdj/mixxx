@@ -120,7 +120,7 @@ QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) c
 PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig)
     : m_pConfig(pConfig) {
 
-    QString configPath = m_pConfig->getSettingsPath();
+    QString configPath = m_pConfig->getResourcePath();
     controllerDirPaths.append(configPath.append("controllers/"));
     controllerDirPaths.append(LOCAL_PRESETS_PATH);
 

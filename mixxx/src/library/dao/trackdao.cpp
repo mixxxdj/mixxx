@@ -284,7 +284,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":samplerate", pTrack->getSampleRate());
     m_pQueryLibraryInsert->bindValue(":cuepoint", pTrack->getCuePoint());
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
-    
+
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
     m_pQueryLibraryInsert->bindValue(":key", pTrack->getKey());
 
@@ -525,7 +525,7 @@ QList<int> TrackDAO::addTracks(QList<QFileInfo> fileInfoList, bool unremove) {
         delete pTrack;
     }
 
-    addTracksFinish();    
+    addTracksFinish();
     return trackIDs;
 }
 
@@ -746,7 +746,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             pTrack->setReplayGain(replaygain.toFloat());
 
             QString beatsVersion = query.value(query.record().indexOf("beats_version")).toString();
-            QString beatsSubVersion = query.value(query.record().indexOf("beats_sub_version")).toString();            
+            QString beatsSubVersion = query.value(query.record().indexOf("beats_sub_version")).toString();
             QByteArray beatsBlob = query.value(query.record().indexOf("beats")).toByteArray();
             BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
             if (pBeats) {
@@ -784,8 +784,8 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             m_sTracksMutex.lock();
             // Automatic conversion to a weak pointer
             m_sTracks[id] = pTrack;
-            m_sTracksMutex.unlock();
             qDebug() << "m_sTracks.count() =" << m_sTracks.count();
+            m_sTracksMutex.unlock();
             m_trackCache.insert(id, new TrackPointer(pTrack));
 
             // If the header hasn't been parsed, parse it but only after we set the
@@ -799,7 +799,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
         } // while (query.next())
 
     } else {
-        LOG_FAILED_QUERY(query) 
+        LOG_FAILED_QUERY(query)
             << QString("getTrack(%1)").arg(id);
     }
     //qDebug() << "getTrack hit the database, took " << time.elapsed() << "ms";
@@ -839,8 +839,8 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
     // If the pointer to the cached copy is still valid, return
     // it. Otherwise, re-query the DB for the track.
     if (pTrack) {
-        // Add pointer to Cache again. 
-        // Never call insert() inside mutex to qCache, it may trigger a 
+        // Add pointer to Cache again.
+        // Never call insert() inside mutex to qCache, it may trigger a
         // cache delete which requires mutex as well and cause deadlock.
         m_trackCache.insert(id, new TrackPointer(pTrack));
         return pTrack;
@@ -1188,8 +1188,8 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath) {
 
     while (query.next()) {
         trackLocation = query.value(query.record().indexOf("location")).toString();
-        query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));        
-        query2.bindValue(":location", trackLocation);  
+        query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));
+        query2.bindValue(":location", trackLocation);
         if (!query2.exec()) {
             LOG_FAILED_QUERY(query2);
         }
