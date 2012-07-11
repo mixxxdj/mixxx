@@ -179,28 +179,28 @@ double EngineBufferScaleST::setTempo(double dTempo)
 double EngineBufferScaleST::setKey(double dKey)
 {
     double dKeyOld = m_dKey;
-    //m_dKey = fabs(dKey);
+    m_dKey = fabs(dKey);
 
-    if (m_dKey>MAX_SEEK_SPEED)
+    /*if (m_dKey>MAX_SEEK_SPEED)
         m_dKey = MAX_SEEK_SPEED;
     else if (m_dKey<MIN_SEEK_SPEED)
-        m_dKey = 0.0;
-    qDebug()<<m_bTimeIndpPitchStretch<<" "<<m_dKey;
+        m_dKey = 0.0;*/
+    qDebug()<<"setkeyscalest";
     m_qMutex.lock();
-    m_pSoundTouch->setPitchSemiTones(float(dKey*120));
+
     //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
     //if (dKeyOld != m_dKey && m_dKey != 0.0)
     //{   //qDebug()<<m_dKey;
-        //if (1){//m_bTimeIndpPitchStretch){
-            //qDebug()<<"key"<<m_dKey;
-      //      m_pSoundTouch->setPitchSemiTones(float(m_dKey*10));
-      //  }
+    if (m_bTimeIndpPitchStretch){
+        //qDebug()<<"key"<<m_dKey;
+        m_pSoundTouch->setPitchSemiTones(float(dKey*120));
+        }
         //else
           //  m_pSoundTouch->setRate(m_dBaseRate*m_dKey);
     //}
     m_qMutex.unlock();
 
-    if (dKey<0.)
+    /*if (dKey<0.)
     {
         if (!m_bBackwards)
             clear();
@@ -215,7 +215,8 @@ double EngineBufferScaleST::setKey(double dKey)
 
         m_bBackwards = false;
         return m_dKey;
-    }
+    }*/
+    return dKey;
 }
 
 /**

@@ -555,7 +555,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
         keyrate = m_pKeyControl->getRawRate();
-        //qDebug() << "rate" << rate << " paused" << paused;
+        //qDebug()<<m_pKeylock->get() << " " << m_pTempolock->get();
+        //qDebug()<<(m_pScale!=m_pScaleST);
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
@@ -563,7 +564,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             setPitchIndpTimeStretch(false);
             setTimeIndpPitchStretch(false);
         } else if (!is_scratching) {
-            /*if ((m_pKeylock->get() && !m_pTempolock->get()) && m_pScale != m_pScaleST) {
+            if ((m_pKeylock->get() && !m_pTempolock->get()) && m_pScale != m_pScaleST) {
                 setPitchIndpTimeStretch(true);
                 setTimeIndpPitchStretch(false);
                 qDebug()<<"1";
@@ -575,16 +576,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 setPitchIndpTimeStretch(false);
                 setTimeIndpPitchStretch(false);
                 qDebug()<<"3";
-            }*/
+            }
 
             //else if (!is_scratching) {
-        if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+        /*if (m_pKeylock->get() && m_pScale != m_pScaleST) {
                 setPitchIndpTimeStretch(true);
                 qDebug()<<"1";
             } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
                 setPitchIndpTimeStretch(false);
                 qDebug()<<"2";
-            }
+            }*/
         }
 
         /*if (is_scratching && m_pScale != m_pScaleLinear) {
@@ -596,6 +597,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 setTimeIndpPitchStretch(false);
             }
         }*/
+        m_pScale->setKey(keyrate);
 
         // If the rate has changed, set it in the scale object
         if (rate != rate_old || m_bScalerChanged) {
@@ -613,7 +615,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
             rate_old = rate;
-            qDebug()<<baserate<<"pr";
+
            // if (keyrate!=0)m_pScale->setKey(keyrate);
 
             if (baserate > 0) //Prevent division by 0
@@ -623,6 +625,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Scaler is up to date now.
             m_bScalerChanged = false;
         }
+        qDebug()<<keyrate<<"pr";
+        //if (keyrate!=0)
 
         bool at_start = filepos_play <= 0;
         bool at_end = filepos_play >= file_length_old;
