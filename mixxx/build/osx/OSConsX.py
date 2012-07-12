@@ -282,7 +282,8 @@ def build_app(target, source, env):
         Execute(Copy(embedded, abs))
         if not os.access(embedded, os.W_OK):
             print "Adding write permissions to %s" % embedded_p
-            os.chmod(embedded, stat.S_IWUSR)
+            mode = os.stat(embedded).st_mode
+            os.chmod(embedded, mode | stat.S_IWUSR)
         patch_lib(embedded)
 
 
