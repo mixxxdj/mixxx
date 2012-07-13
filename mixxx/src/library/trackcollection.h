@@ -51,7 +51,7 @@ class TrackCollection : public QObject
 
     /** Import the files in a given diretory, without recursing into subdirectories */
     bool importDirectory(QString directory, TrackDAO &trackDao,
-                         const QStringList & nameFilters);
+                         const QStringList & nameFilters, volatile bool* cancel);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
@@ -61,9 +61,7 @@ class TrackCollection : public QObject
     PlaylistDAO& getPlaylistDAO();
     QSharedPointer<BaseTrackCache> getTrackSource(const QString name);
     void addTrackSource(const QString name, QSharedPointer<BaseTrackCache> trackSource);
-
-  public slots:
-    void slotCancelLibraryScan();
+    void cancelLibraryScan();
 
   signals:
     void startedLoading();
@@ -80,9 +78,6 @@ class TrackCollection : public QObject
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     const QRegExp m_supportedFileExtensionsRegex;
-    /** Flag to raise when library scan should be cancelled */
-    int bCancelLibraryScan;
-    QMutex m_libraryScanMutex;
 };
 
 #endif
