@@ -35,7 +35,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     // successful additions.
     virtual int addTracks(const QModelIndex& index, QList<QString> locations);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-    virtual void shuffleTracks(const QModelIndex& currentIndex);
+    virtual void shuffleTracks(const QModelIndex& shuffleStartIndex);
 
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
