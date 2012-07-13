@@ -23,7 +23,6 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         m_supportedFileExtensionsRegex(
             SoundSourceProxy::supportedFileExtensionsRegex(),
             Qt::CaseInsensitive) {
-    bCancelLibraryScan = false;
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
@@ -121,7 +120,7 @@ QSqlDatabase& TrackCollection::getDatabase() {
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                    const QStringList & nameFilters) {
+                                    const QStringList & nameFilters, volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -132,10 +131,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
     while (it.hasNext()) {
 
         //If a flag was raised telling us to cancel the library scan then stop.
-        m_libraryScanMutex.lock();
-        bool cancel = bCancelLibraryScan;
-        m_libraryScanMutex.unlock();
-        if (cancel) {
+        if (*cancel) {
             return false;
         }
 
@@ -172,18 +168,6 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
     }
     emit(finishedLoading());
     return true;
-}
-
-void TrackCollection::slotCancelLibraryScan() {
-    m_libraryScanMutex.lock();
-    bCancelLibraryScan = 1;
-    m_libraryScanMutex.unlock();
-}
-
-void TrackCollection::resetLibaryCancellation() {
-    m_libraryScanMutex.lock();
-    bCancelLibraryScan = 0;
-    m_libraryScanMutex.unlock();
 }
 
 CrateDAO& TrackCollection::getCrateDAO() {
