@@ -18,7 +18,7 @@ TODO:
 
 
 
-import sys, os, shutil
+import sys, os, shutil, stat
 import SCons
 from SCons.Builder import Builder
 from SCons.Script import *
@@ -280,6 +280,10 @@ def build_app(target, source, env):
     print "Installing embedded libs:"
     for ref, (abs, embedded) in locals.iteritems():
         Execute(Copy(embedded, abs))
+        if not os.access(embedded, os.W_OK):
+            print "Adding write permissions to %s" % embedded_p
+            mode = os.stat(embedded).st_mode
+            os.chmod(embedded, mode | stat.S_IWUSR)
         patch_lib(embedded)
 
 
