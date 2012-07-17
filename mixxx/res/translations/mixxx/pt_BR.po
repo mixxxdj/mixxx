@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-07-09 03:33+0000\n"
-"Last-Translator: Fábio Ihle <Unknown>\n"
+"PO-Revision-Date: 2012-07-16 17:11+0000\n"
+"Last-Translator: Hriostat <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-07-10 05:13+0000\n"
-"X-Generator: Launchpad (build 15558)\n"
+"X-Launchpad-Export-Date: 2012-07-17 04:36+0000\n"
+"X-Generator: Launchpad (build 15627)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -863,7 +863,7 @@ msgstr "Botão tocar reverso"
 
 #: DlgControllerLearning#24
 msgid "Gain knob"
-msgstr ""
+msgstr "Botão de ganho"
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
@@ -879,7 +879,7 @@ msgstr "Ejetar trilha"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Direção da mixagem (ex.: esquerda, direita, centro)"
 
 #: DlgControllerLearning#29
 msgid "BPM and Sync"
@@ -899,15 +899,15 @@ msgstr ""
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr ""
+msgstr "Sincronia da batida (tempo e fase)"
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
-msgstr ""
+msgstr "Sincronia da batida (somente tempo)"
 
 #: DlgControllerLearning#35
 msgid "Beat sync (phase only)"
-msgstr ""
+msgstr "Sincronia da batida (somente fase)"
 
 #: DlgControllerLearning#36
 msgid "Pitch and Rate"
