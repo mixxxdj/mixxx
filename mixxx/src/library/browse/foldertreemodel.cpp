@@ -88,16 +88,29 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     std::string dot("."), dotdot("..");
     QByteArray ba = path.toLocal8Bit();
     DIR *directory = opendir(ba);
+    int unknown_count = 0;
+    int total_count = 0;
     if (directory != NULL) {
         struct dirent *entry;
         while (!has_children && ((entry = readdir(directory)) != NULL)) {
-            if (entry->d_name != dot && entry->d_name != dotdot)
-            {
+            if (entry->d_name != dot && entry->d_name != dotdot) {
+                total_count++;
+                if (entry->d_type == DT_UNKNOWN) {
+                    unknown_count++;
+                }
                 has_children = (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
-                //qDebug() << "Subfolder of " << path << " : " << entry->d_name << "type :" << entry->d_type;
             }
         }
         closedir(directory);
+    }
+
+    // If all files are of type DH_UNKNOWN then do a costlier analysis to
+    // determine if the directory has subdirectories. This affects folders on
+    // filesystems that do not fully implement readdir such as JFS.
+    if (directory == NULL || (unknown_count == total_count && total_count > 0)) {
+        QDir dir(path);
+        QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        has_children = all.count() > 0;
     }
 #endif
 
