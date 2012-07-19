@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-05-26 19:29+0000\n"
+"PO-Revision-Date: 2012-07-18 08:53+0000\n"
 "Last-Translator: Sergey Koptev <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:40+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-07-19 04:35+0000\n"
+"X-Generator: Launchpad (build 15637)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -678,6 +678,7 @@ msgstr ""
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
 msgstr ""
+"Включить быстрый анализ (Для слабых компьютеров, может быть менее точным)"
 
 #: DlgBeatsDlg#10
 msgid ""
