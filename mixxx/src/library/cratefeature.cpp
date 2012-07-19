@@ -140,6 +140,10 @@ void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit,SIGNAL(anchorClicked(const QUrl)),
+        this,SLOT(htmlLinkClicked(const QUrl))
+    );
     libraryWidget->registerView("CRATEHOME", edit);
 }
 
@@ -480,6 +484,14 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     emit(featureSelect(this, m_lastRightClickedIndex));
 }
 
+void CrateFeature::htmlLinkClicked(const QUrl & link) {
+    if (QString(link.path())=="create") {
+        slotCreateCrate();
+    } else {
+        qDebug() << "Unknown crate link clicked" << link;
+    }
+}
+
 QString CrateFeature::getRootViewHtml() const {
     QString cratesTitle = tr("Crates");
     QString cratesSummary = tr("Crates are a great way to help organize the music you want to DJ with.");
@@ -487,13 +499,18 @@ QString CrateFeature::getRootViewHtml() const {
     QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
 
     QString html;
+    QString createCrateLink = tr("Create new crate");
     html.append(QString("<h2>%1</h2>").arg(cratesTitle));
     html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(cratesSummary));
     html.append(QString("<p>%1</p>").arg(cratesSummary2));
     html.append(QString("<p>%1</p>").arg(cratesSummary3));
-    html.append("</td><td>");
+    html.append("</td><td rowspan=\"2\">");
     html.append("<img src=\"qrc:/images/library/crates_art.png\">");
+    html.append("</td></tr>");
+    html.append(
+        QString("<tr><td><a href=\"create\">%1</a>").arg(createCrateLink)
+    );
     html.append("</td></tr></table>");
     return html;
 }
