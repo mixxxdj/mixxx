@@ -305,14 +305,14 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //the waveform the roll in a weird way or fire an ASSERT from
     //visualchannel.cpp or something. Need to valgrind this or something.
 
-    if (b == true) {
-        m_pScale = m_pScaleST;
+    //if (b == true) {
+      //  m_pScale = m_pScaleST;
         //qDebug()<<"true";
         ((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
-    } else {
-        m_pScale = m_pScaleLinear;
-    }
-    m_bScalerChanged = true;
+    //} else {
+   //     m_pScale = m_pScaleLinear;
+    //}
+    //m_bScalerChanged = true;
 }
 
 void EngineBuffer::setTimeIndpPitchStretch(bool b)
@@ -332,12 +332,28 @@ void EngineBuffer::setTimeIndpPitchStretch(bool b)
     //the waveform the roll in a weird way or fire an ASSERT from
     //visualchannel.cpp or something. Need to valgrind this or something.
 
-    if (b == true) {
-        m_pScale = m_pScaleST;
+    //if (b == true) {
+      //  m_pScale = m_pScaleST;
         ((EngineBufferScaleST *)m_pScaleST)->setTimeIndpPitchStretch(b);
        // qDebug()<<"true";
-    } else {
+    //} else {
+      //  m_pScale = m_pScaleLinear;
+    //}
+    //m_bScalerChanged = true;
+}
+
+void EngineBuffer::enableSoundTouch(bool b)
+{
+    if (b==true){
+      //  qDebug()<<"a";
+        m_pScale = m_pScaleST;
+        if(m_pTempolock->get())setTimeIndpPitchStretch(true);
+        else if (m_pKeylock->get())setPitchIndpTimeStretch(true);
+    }
+    else{
         m_pScale = m_pScaleLinear;
+        setTimeIndpPitchStretch(false);
+        setPitchIndpTimeStretch(false);
     }
     m_bScalerChanged = true;
 }
@@ -555,48 +571,33 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
         keyrate = m_pKeyControl->getRawRate();
-        //qDebug()<<m_pKeylock->get() << " " << m_pTempolock->get();
-        //qDebug()<<(m_pScale!=m_pScaleST);
+        qDebug()<<m_pKeylock->get() << " " << m_pTempolock->get();
+        qDebug()<<(m_pScale!=m_pScaleST)<<" ";
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
         if (is_scratching && m_pScale != m_pScaleLinear) {
-            setPitchIndpTimeStretch(false);
-            setTimeIndpPitchStretch(false);
-        } else if (!is_scratching) {
-            if ((m_pKeylock->get() && !m_pTempolock->get()) && m_pScale != m_pScaleST) {
-                setPitchIndpTimeStretch(true);
-                setTimeIndpPitchStretch(false);
+            //setPitchIndpTimeStretch(false);
+            //setTimeIndpPitchStretch(false);
+            //qDebug()<<"5";
+            enableSoundTouch(false);
+            //qDebug()<<"6";
+            } else if (!is_scratching) {
+            if ((m_pKeylock->get() || m_pTempolock->get()) && m_pScale != m_pScaleST) {
+                //setPitchIndpTimeStretch(true);
+                //setTimeIndpPitchStretch(false);
                 qDebug()<<"1";
-            }else if((!m_pKeylock->get() && m_pTempolock->get()) && m_pScale != m_pScaleST) {
-                setPitchIndpTimeStretch(false);
-                setTimeIndpPitchStretch(true);
-                qDebug()<<"2";
+                enableSoundTouch(true);
+                //qDebug()<<"1";
             }else if ((!m_pKeylock->get() && !m_pTempolock->get()) && m_pScale == m_pScaleST) {
-                setPitchIndpTimeStretch(false);
-                setTimeIndpPitchStretch(false);
                 qDebug()<<"3";
+                enableSoundTouch(false);
+                //setPitchIndpTimeStretch(false);
+                //setTimeIndpPitchStretch(false);
+                //qDebug()<<"3";
             }
 
-            //else if (!is_scratching) {
-        /*if (m_pKeylock->get() && m_pScale != m_pScaleST) {
-                setPitchIndpTimeStretch(true);
-                qDebug()<<"1";
-            } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
-                setPitchIndpTimeStretch(false);
-                qDebug()<<"2";
-            }*/
         }
-
-        /*if (is_scratching && m_pScale != m_pScaleLinear) {
-            setTimeIndpPitchStretch(false);
-        } else if (!is_scratching) {
-            if (m_pTempolock->get() && m_pScale != m_pScaleST) {
-                setTimeIndpPitchStretch(true);
-            } else if (!m_pTempolock->get() && m_pScale == m_pScaleST) {
-                setTimeIndpPitchStretch(false);
-            }
-        }*/
         m_pScale->setKey(keyrate);
 
         // If the rate has changed, set it in the scale object
@@ -625,7 +626,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Scaler is up to date now.
             m_bScalerChanged = false;
         }
-        qDebug()<<keyrate<<"pr";
+       // qDebug()<<keyrate<<"pr";
         //if (keyrate!=0)
 
         bool at_start = filepos_play <= 0;

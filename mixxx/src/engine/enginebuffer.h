@@ -150,6 +150,7 @@ public:
 private:
     void setPitchIndpTimeStretch(bool b);
     void setTimeIndpPitchStretch(bool b);
+    void enableSoundTouch(bool b);
 
     void updateIndicators(double rate, int iBufferSize);
 

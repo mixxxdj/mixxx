@@ -151,6 +151,7 @@ double EngineBufferScaleST::setTempo(double dTempo)
     //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
     if (dTempoOld != m_dTempo && m_dTempo != 0.0)
     {
+        qDebug()<<m_bPitchIndpTimeStretch;
         if (m_bPitchIndpTimeStretch)
             m_pSoundTouch->setTempo(m_dTempo);
         else
