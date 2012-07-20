@@ -202,6 +202,7 @@ QString PlaylistFeature::getRootViewHtml() const {
     QString playlistsSummary2 = tr("Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.");
     QString playlistsSummary3 = tr("When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.");
     QString playlistsSummary4 = tr("It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.");
+    QString createPlaylistLink = tr("Create new playlist");
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
@@ -210,6 +211,11 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<p>%1</p>").arg(playlistsSummary2));
     html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
                                             playlistsSummary4));
+    html.append("</td></tr>");
+    html.append(
+        QString("<tr><td><a href=\"create\">%1</a>")
+        .arg(createPlaylistLink)
+    );
     html.append("</td></tr></table>");
     return html;
 }
