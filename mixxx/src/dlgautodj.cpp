@@ -64,20 +64,40 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     pushButtonFadeNow->setEnabled(false);
     pushButtonSkipNext->setEnabled(false);
 
+    m_pCOShufflePlaylist = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "shuffle_playlist"));
+    m_pCOTShufflePlaylist = new ControlObjectThreadMain(m_pCOShufflePlaylist);
+    connect(m_pCOTShufflePlaylist, SIGNAL(valueChanged(double)),
+            this, SLOT(shufflePlaylist(double)));
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
-            this, SLOT(shufflePlaylist(bool)));
+            this, SLOT(shufflePlaylistButton(bool)));
 
+    m_pCOSkipNext = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "skip_next"));
+    m_pCOTSkipNext = new ControlObjectThreadMain(m_pCOSkipNext);
+    connect(m_pCOTSkipNext, SIGNAL(valueChanged(double)),
+            this, SLOT(skipNext(double)));
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
-            this, SLOT(skipNext(bool)));
+            this, SLOT(skipNextButton(bool)));
 
+    m_pCOFadeNow = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "fade_now"));
+    m_pCOTFadeNow = new ControlObjectThreadMain(m_pCOFadeNow);
+    connect(m_pCOTFadeNow, SIGNAL(valueChanged(double)),
+            this, SLOT(fadeNow(double)));
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
-            this, SLOT(fadeNow(bool)));
+            this, SLOT(fadeNowButton(bool)));
 
     connect(spinBoxTransition, SIGNAL(valueChanged(int)),
             this, SLOT(transitionValueChanged(int)));
 
+    m_pCOToggleAutoDJ = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "toggle_autodj"));
+    m_pCOTToggleAutoDJ = new ControlObjectThreadMain(m_pCOToggleAutoDJ);
+    connect(m_pCOToggleAutoDJ, SIGNAL(valueChanged(double)),
+            this, SLOT(toggleAutoDJ(double)));
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJ(bool))); _blah;
+            this,  SLOT(toggleAutoDJButton(bool))); _blah;
 
     // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThreadMain(
@@ -119,6 +139,14 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pCORepeat1;
     delete m_pCORepeat2;
     delete m_pCOCrossfader;
+    delete m_pCOSkipNext;
+    delete m_pCOShufflePlaylist;
+    delete m_pCOToggleAutoDJ;
+    delete m_pCOFadeNow;
+    delete m_pCOTSkipNext;
+    delete m_pCOTShufflePlaylist;
+    delete m_pCOTToggleAutoDJ;
+    delete m_pCOTFadeNow;
     // Delete m_pTrackTableView before the table model. This is because the
     // table view saves the header state using the model.
     delete m_pTrackTableView;
@@ -189,22 +217,28 @@ void DlgAutoDJ::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
 }
 
-void DlgAutoDJ::shufflePlaylist(bool buttonChecked) {
-    Q_UNUSED(buttonChecked);
-    qDebug() << "Shuffling AutoDJ playlist";
-    int row;
-    if(m_eState == ADJ_DISABLED) {
-        row = 0;
-    } else {
-        row = 1;
-    }
-    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
-    qDebug() << "Shuffling done";
+void DlgAutoDJ::shufflePlaylistButton(bool) {
+    // Activate regardless of button being checked
+    shufflePlaylist(1.0);
 }
 
-void DlgAutoDJ::skipNext(bool buttonChecked) {
-    Q_UNUSED(buttonChecked);
-    qDebug() << "Skip Next";
+void DlgAutoDJ::shufflePlaylist(double value) {
+    if (value <= 0.0) {
+        return;
+    }
+    int row = m_eState == ADJ_DISABLED ? 0 : 1;
+    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
+}
+
+void DlgAutoDJ::skipNextButton(bool) {
+    // Activate regardless of button being checked
+    skipNext(1.0);
+}
+
+void DlgAutoDJ::skipNext(double value) {
+    if (value <= 0.0 || m_eState == ADJ_DISABLED) {
+        return;
+    }
     // Load the next song from the queue.
     if (m_pCOPlay1Fb->get() == 0.0f) {
         removePlayingTrackFromQueue("[Channel1]");
@@ -215,9 +249,15 @@ void DlgAutoDJ::skipNext(bool buttonChecked) {
     }
 }
 
-void DlgAutoDJ::fadeNow(bool buttonChecked) {
-    Q_UNUSED(buttonChecked);
-    qDebug() << "Fade Now";
+void DlgAutoDJ::fadeNowButton(bool) {
+    // Activate regardless of button being checked
+    fadeNow(1.0);
+}
+
+void DlgAutoDJ::fadeNow(double value) {
+    if (value <= 0.0) {
+        return;
+    }
     if (m_eState == ADJ_IDLE) {
         m_bFadeNow = true;
         double crossfader = m_pCOCrossfader->get();
@@ -232,6 +272,13 @@ void DlgAutoDJ::fadeNow(bool buttonChecked) {
             // Repeat is disabled by FadeNow but disables auto Fade
             m_pCORepeat2->slotSet(0.0f);
         }
+    }
+}
+
+void DlgAutoDJ::toggleAutoDJ(double v) {
+    if (v > 0) {
+        pushButtonAutoDJ->toggle();
+        toggleAutoDJ(pushButtonAutoDJ->isChecked());
     }
 }
 
