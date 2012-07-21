@@ -1,7 +1,6 @@
 //
-// Native Instruments Traktor Kontrol F1 HID controller script v0.01
+// Native Instruments Traktor Kontrol F1 HID controller script v0.9
 // Copyright (C) 2012, Ilkka Tuohela
-// but feel free to tweak this to your heart's content!
 // For Mixxx version 1.11.x
 //
 
@@ -61,8 +60,9 @@ function KontrolF1Controller() {
         packet.addControl("hid","pad_9_button",1,"I",0x8000);
         packet.addControl("hid","shift",1,"I",0x800000);
         packet.addControl("hid","reverse",1,"I",0x400000);
-        packet.addControl("hid","type",1,"I",0x200000);
         packet.addControl("hid","size",1,"I",0x100000);
+        packet.addControl("hid","type",1,"I",0x200000);
+        packet.addControl("hid","select_push",1,"I",0x40000);
         packet.addControl("hid","browse",1,"I",0x80000);
         packet.addControl("hid","stop_1",1,"I",0x80000000);
         packet.addControl("hid","stop_2",1,"I",0x40000000);
@@ -74,7 +74,7 @@ function KontrolF1Controller() {
         packet.addControl("hid","select_encoder",5,"B",undefined,true);
 
         // Knobs have value range 0-4092, so while some controls are
-        // -1..0..1 range, hidparser will return same data as with 'h'
+        // -1..0..1 range, hidparser will return same data as with h
         // packing (16 bit range while we only use 12 bits)
         packet.addControl("hid","knob_1",6,"H");
         packet.addControl("hid","knob_2",8,"H");
@@ -191,17 +191,6 @@ function KontrolF1Controller() {
         this.registerOutputPackets();
     }
 
-    this.dump = function(packet,delta) {
-        for (field_name in delta) {
-            var field = delta[field_name];
-            script.HIDDebug(
-                "KontrolF1 " + field.id 
-                + " VALUE " + field.value
-                + " DELTA " + field.delta
-            );
-        }   
-    }
-
     // Volume slider scaling for 0..1..5 scaling
     this.volumeScaler = function(group,name,value) {
         return script.absoluteLin(value, 0, 5, 0, 4096);
@@ -221,16 +210,16 @@ function KontrolF1Controller() {
     // Valid adjustment range is 0-0x7f
     this.setButtonBrightness = function(name,value) {
         var controller = this.controller;
-        var packet = controller.resolveOutputPacket("lights");
+        var packet = controller.getOutputPacket("lights");
         if (name.match(/pad_/)) {
-            script.HIDDebug("ERROR: set PAD colors with setPADColor");
+            HIDDebug("ERROR: set PAD colors with setPADColor");
             return;
         }
         if (!name.match(/.*_brightness$/))
             name = name + "_brightness";
-        var field = packet.lookupField("hid",name);
+        var field = packet.getField("hid",name);
         if (field==undefined) {
-            script.HIDDebug("button field not found: " + name);
+            HIDDebug("button field not found: " + name);
             return;
         }
         if (value<0) 
@@ -243,23 +232,23 @@ function KontrolF1Controller() {
     // Set the 8 bytes in left or right 7-segment display. DP is the dot.
     this.set7SegmentValue = function(name,dp,v1,v2,v3,v4,v5,v6,v7,v8) {
         var controller = this.controller;
-        var packet = controller.resolveOutputPacket("lights");
+        var packet = controller.getOutputPacket("lights");
         var field = undefined;
-        field = packet.lookupField("hid",name+"_segment_dp");
+        field = packet.getField("hid",name+"_segment_dp");
         field.value = dp;
-        field = packet.lookupField("hid",name+"_segment_a");
+        field = packet.getField("hid",name+"_segment_a");
         field.value = v1;
-        field = packet.lookupField("hid",name+"_segment_b");
+        field = packet.getField("hid",name+"_segment_b");
         field.value = v2;
-        field = packet.lookupField("hid",name+"_segment_c");
+        field = packet.getField("hid",name+"_segment_c");
         field.value = v3;
-        field = packet.lookupField("hid",name+"_segment_d");
+        field = packet.getField("hid",name+"_segment_d");
         field.value = v4;
-        field = packet.lookupField("hid",name+"_segment_e");
+        field = packet.getField("hid",name+"_segment_e");
         field.value = v5;
-        field = packet.lookupField("hid",name+"_segment_f");
+        field = packet.getField("hid",name+"_segment_f");
         field.value = v6;
-        field = packet.lookupField("hid",name+"_segment_g");
+        field = packet.getField("hid",name+"_segment_g");
         field.value = v7;
     }
 
@@ -268,10 +257,10 @@ function KontrolF1Controller() {
     // Valid range for each color is 0-0x7f.
     this.setPADColor = function(index,red,green,blue) {
         var controller = this.controller;
-        var packet = controller.resolveOutputPacket("lights");
+        var packet = controller.getOutputPacket("lights");
         var field = undefined;
         if (index<0 || index>16) {
-            script.HIDDebug("Invalid pad index" + index);
+            HIDDebug("Invalid pad index" + index);
             return;
         }
         if (red==undefined) 
@@ -286,18 +275,18 @@ function KontrolF1Controller() {
             blue=0;
         if (blue>0x7f) 
             blue=0x7f;
-        field = packet.lookupField("hid","pad_"+index+"_red");
+        field = packet.getField("hid","pad_"+index+"_red");
         field.value = red;
-        field = packet.lookupField("hid","pad_"+index+"_green");
+        field = packet.getField("hid","pad_"+index+"_green");
         field.value = green;
-        field = packet.lookupField("hid","pad_"+index+"_blue");
+        field = packet.getField("hid","pad_"+index+"_blue");
         field.value = blue;
     }
 
     // reset all lights to off state
     this.resetLights = function() {
         var controller = this.controller;
-        var packet = controller.resolveOutputPacket("lights");
+        var packet = controller.getOutputPacket("lights");
         for (var group_name in packet.groups) {
             var group = packet.groups[group_name];
             for (var field_name in group) {
@@ -310,13 +299,13 @@ function KontrolF1Controller() {
 
     // Send update for LED packets after LED state modifications
     this.updateLEDs = function() {
-        var packet = this.controller.resolveOutputPacket("lights");
+        var packet = this.controller.getOutputPacket("lights");
         packet.send();
     }
 
 }
 
-KontrolF1Samplers = new KontrolF1SamplersController();
+KontrolF1Samplers = new KontrolF1Controller();
 
 KontrolF1Samplers.init = function (id) {
     KontrolF1Samplers.id = id;
@@ -353,7 +342,7 @@ KontrolF1Samplers.init = function (id) {
             "KontrolF1Samplers.controller.updateLEDs(true)"
         );
     }
-    script.HIDDebug("NI Traktor F1 "+KontrolF1Samplers.id+" initialized");
+    HIDDebug("NI Traktor F1 "+KontrolF1Samplers.id+" initialized");
 }
 
 // Device cleanup function
@@ -371,7 +360,7 @@ KontrolF1Samplers.shutdown = function() {
     //}
 
     KontrolF1Samplers.shutdownHardware(2);
-    script.HIDDebug("NI Traktor F1 "+KontrolF1Samplers.id+" shut down");
+    HIDDebug("NI Traktor F1 "+KontrolF1Samplers.id+" shut down");
 }
 
 // Mandatory default handler for incoming packets
@@ -385,7 +374,7 @@ KontrolF1Samplers.ButtonLEDPressUpdate = function(packet,changed_data) {
     var send_led_update = false;
     for (var field in changed_data) {
         var delta = changed_data[field];
-        var name = field.split('.')[1]
+        var name = field.split(".")[1]
         // Select encoder also resets LEDs for some reason
         if (field=="select_encoder") {
             send_led_update = true;
@@ -405,7 +394,6 @@ KontrolF1Samplers.ButtonLEDPressUpdate = function(packet,changed_data) {
             send_led_update = true;
             break;
         }
-        print("RECEIVED " + field);
     }
     if (send_led_update)
         KontrolF1Samplers.updateLEDs();
@@ -452,32 +440,34 @@ KontrolF1Samplers.registerCallbacks = function() {
     controller.linkControl("hid","knob_6","[Sampler2]","pregain");
     controller.linkControl("hid","knob_7","[Sampler3]","pregain");
     controller.linkControl("hid","knob_8","[Sampler4]","pregain");
-    controller.addScaler("rate",KontrolF1Samplers.rateScaler);
-    controller.addScaler("pregain",KontrolF1Samplers.volumeScaler);
+    controller.setScaler("rate",KontrolF1Samplers.rateScaler);
+    controller.setScaler("pregain",KontrolF1Samplers.volumeScaler);
 
+    controller.linkControl("hid","select_encoder","[Playlist]","SelectTrackKnob");
+    controller.linkControl("hid","select_push","[Playlist]","LoadSelectedIntoFirstStopped");
     controller.linkModifier("hid","shift","shift");
 
-    controller.linkControl("hid","stop_1","[Sampler1]","play");
-    controller.linkControl("hid","stop_2","[Sampler2]","play");
-    controller.linkControl("hid","stop_3","[Sampler3]","play");
-    controller.linkControl("hid","stop_4","[Sampler4]","play");
+    controller.linkControl("hid","stop_1","[Sampler1]","play",KontrolF1Samplers.play_load);
+    controller.linkControl("hid","stop_2","[Sampler2]","play",KontrolF1Samplers.play_load);
+    controller.linkControl("hid","stop_3","[Sampler3]","play",KontrolF1Samplers.play_load);
+    controller.linkControl("hid","stop_4","[Sampler4]","play",KontrolF1Samplers.play_load);
 
-    controller.addCallback("control","hid","pad_1_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_2_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_3_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_4_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_5_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_6_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_7_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_8_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_9_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_10_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_11_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_12_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_13_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_14_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_15_button",KontrolF1Samplers.hotcue);
-    controller.addCallback("control","hid","pad_16_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_1_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_2_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_3_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_4_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_5_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_6_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_7_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_8_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_9_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_10_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_11_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_12_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_13_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_14_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_15_button",KontrolF1Samplers.hotcue);
+    controller.setCallback("control","hid","pad_16_button",KontrolF1Samplers.hotcue);
 
     engine.connectControl("[Sampler1]","play",KontrolF1Samplers.updateButtonLEDState);
     engine.connectControl("[Sampler1]","hotcue_1_enabled",KontrolF1Samplers.updatePadLEDState);
@@ -513,6 +503,10 @@ KontrolF1Samplers.updateButtonLEDState = function(value,group,key) {
         value = (value==1) ? 0x7f : 0;
         KontrolF1Samplers.setButtonBrightness("stop_"+sampler+"_1",value);
         KontrolF1Samplers.setButtonBrightness("stop_"+sampler+"_2",value);
+        // Seek end of track decks back to start
+        if (value==0 && engine.getValue(group,"playposition")>0.99) {
+            engine.setValue(group,"playposition",0); 
+        }
     }
     KontrolF1Samplers.updateLEDs();
 }
@@ -523,7 +517,7 @@ KontrolF1Samplers.updatePadLEDState = function(value,group,key) {
     if (! /^hotcue_[0-9]_enabled$/.test(key))
         return;
     var sampler = parseInt(group.substring(8,group.length-1));
-    var hotcue = parseInt(key.split('_')[1]);
+    var hotcue = parseInt(key.split("_")[1]);
     var button = 4*(hotcue-1) + sampler;
     var color;
 
@@ -535,6 +529,14 @@ KontrolF1Samplers.updatePadLEDState = function(value,group,key) {
         return;
     KontrolF1Samplers.setPADColor(button,color[0],color[1],color[2]);
     KontrolF1Samplers.updateLEDs();
+}
+
+KontrolF1Samplers.play_load = function(field) {
+    var controller = KontrolF1Samplers.controller;
+    if (controller.modifiers.get("shift")) 
+        engine.setValue(field.mapped_group,"LoadSelectedTrack",true);
+    else 
+        controller.togglePlay(field.mapped_group,field);
 }
 
 // Hotcues activated with normal press, cleared with shift

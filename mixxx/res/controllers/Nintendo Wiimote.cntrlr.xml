@@ -13,8 +13,7 @@
     <controller id="Nintendo Wii Remote Controller">
         <scriptfiles>
             <file filename="common-hid-packet-parser.js" functionprefix=""/>
-            <file filename="Nintendo Wiimote.hid.js" functionprefix=""/>
-            <file filename="Nintendo Wiimote.js" functionprefix="Wiimote"/>
+            <file filename="Nintendo-Wiimote.js" functionprefix="Wiimote"/>
         </scriptfiles>
     </controller>
 </MixxxControllerPreset>
