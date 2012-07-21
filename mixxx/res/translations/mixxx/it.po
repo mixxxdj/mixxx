@@ -6,14 +6,14 @@ msgstr ""
 "Project-Id-Version: Mixxx\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-07-15 18:39+0000\n"
+"PO-Revision-Date: 2012-07-20 21:07+0000\n"
 "Last-Translator: Paolo Zeta <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-07-16 05:14+0000\n"
-"X-Generator: Launchpad (build 15614)\n"
+"X-Launchpad-Export-Date: 2012-07-21 04:35+0000\n"
+"X-Generator: Launchpad (build 15654)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -27,36 +27,36 @@ msgstr "Aggiungi a fine coda in «Auto DJ»"
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Aggiungi a inizio coda in «Auto DJ»"
+msgstr "Aggiungi alla coda in modalità \"Auto DJ\" (in cima)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr "Importa playlist"
+msgstr "Importa scaletta"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "Errore nella creazione della playlist"
+msgstr "Impossibile creare la scaletta"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Errore sconosciuto durante la creazione della playlist: "
+msgstr "Errore sconosciuto durante la creazione della scaletta "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Nuova playlist"
+msgstr "Nuova Scaletta"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Aggiungi a fine coda in «Auto DJ»"
+msgstr "Aggiungi alla coda in modalità \"Auto DJ\" (in fondo)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Aggiungi a inizio coda in «Auto DJ»"
+msgstr "Aggiungi alla coda in modalità \"Auto DJ\" (in cima)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -76,27 +76,27 @@ msgstr "Blocca"
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Importa playlist"
+msgstr "Importa scaletta"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Esporta playlist"
+msgstr "Esporta scaletta"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Rinomina playlist"
+msgstr "Rinomina scaletta"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "Nome della nuova playlist:"
+msgstr "Nome della nuova scaletta"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "Errore nella rinomina della playlist"
+msgstr "Errore nella rinomina della scaletta"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "Esiste già una playlist con lo stesso nome."
+msgstr "Esiste già una scaletta con lo stesso nome"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
