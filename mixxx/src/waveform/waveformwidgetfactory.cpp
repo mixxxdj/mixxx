@@ -39,25 +39,27 @@ WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidge
 
 ///////////////////////////////////////////
 
-WaveformWidgetFactory::WaveformWidgetFactory() {
-    m_time = new QTime();
-    m_config = 0;
-    m_skipRender = false;
-    setFrameRate(33);
-    m_defaultZoom = 3;
-    m_zoomSync = false;
+WaveformWidgetFactory::WaveformWidgetFactory() :
+        m_config(0),
+        m_time(new QTime()),
+        m_skipRender(false),
+        m_defaultZoom(3),
+        m_zoomSync(false),
+        m_overviewNormalized(false),
+        //setup the opengl default format
+        m_openGLAvailable(false),
+        m_openGLShaderAvailable(false),
+        m_actualFrameRate(0),
+        m_lastFrameTime(0), 
+        m_type(WaveformWidgetType::Count_WaveformwidgetType) {
+
     m_visualGain[All] = 1.5;
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
-    m_overviewNormalized = false;
 
-    m_lastFrameTime = 0;
-    m_actualFrameRate = 0;
+    setFrameRate(33);
 
-    //setup the opengl default format
-    m_openGLAvailable = false;
-    m_openGLShaderAvailable = false;
 
     if (QGLFormat::hasOpenGL()) {
         QGLFormat glFormat;
@@ -103,6 +105,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
             m_openGLVersion = QString::number(majorVersion) + "." +
                     QString::number(minorVersion);
         }
+        // TODO(xxx) unusual code
+        // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
         m_openGLAvailable = true;
         {
             QGLWidget glWidget;
