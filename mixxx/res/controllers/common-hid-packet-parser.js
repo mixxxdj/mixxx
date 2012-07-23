@@ -694,7 +694,6 @@ function HIDController () {
     this.scalers = new Object();
     this.timers = new Object();
 
-    this.timers['auto_repeat'] = undefined;
     this.auto_repeat_interval = 100;
 }
 
@@ -984,6 +983,7 @@ HIDController.prototype.parsePacket = function(data,length) {
         return;
     }
     HIDDebug("Received unknown packet of " + length + " bytes");
+    for (var i in data) HIDDebug("BYTE " + data[i]);
 }
 
 // Process the modified field values (delta) from input packet fields for
@@ -1246,6 +1246,7 @@ HIDController.prototype.stopAutoRepeatTimer = function(timer_id) {
 
 // Toggle field autorepeat on or off
 HIDController.prototype.setAutoRepeat = function(group,name,callback,interval) {
+    var packet = this.getInputPacket('control');
     var field = packet.getField(group,name);
     if (field!=undefined && field.type=='bitvector')
         var field = packet.lookupBit(group,name);
