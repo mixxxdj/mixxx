@@ -1,16 +1,16 @@
 
 
 // Generic HID trackpad implementation
-function HIDTrackpad() {
+function HIDTrackpadDevice() {
     this.controller = new HIDController();
 
     this.registerInputPackets = function() {
         // Example how to register a callback directly on a packet
-        packet = new HIDPacket('control',[],4,this.mouseInput);
-        packet.addControl('hid','byte_1',3,'B');
-        packet.addControl('hid','byte_2',4,'B');
-        packet.addControl('hid','byte_3',5,'B');
-        packet.addControl('hid','byte_4',6,'B');
+        packet = new HIDPacket("control",[],4,this.mouseInput);
+        packet.addControl("hid","byte_1",3,"B");
+        packet.addControl("hid","byte_2",4,"B");
+        packet.addControl("hid","byte_3",5,"B");
+        packet.addControl("hid","byte_4",6,"B");
         this.controller.registerInputPacket(packet);
     }
 
@@ -25,30 +25,30 @@ function HIDTrackpad() {
 
     // Example to process the mouse input packet all yourself
     this.mouseInput = function(packet,delta) {
-        script.HIDDebug("Trackpad INPUT " + packet.name);
+        HIDDebug("Trackpad INPUT " + packet.name);
         if (!delta.length) {
-            script.HIDDebug("No changed data received in HID packet");
+            HIDDebug("No changed data received in HID packet");
             return;
         }
         for (var field_name in delta) {
             var field = delta[field_name];
-            script.HIDDebug("FIELD " + field.id + " VALUE " + value);
+            HIDDebug("FIELD " + field.id + " VALUE " + value);
         }
     }
 }
 
 // Generic HID keyboard implementation 
-function HIDKeyboard() {
+function HIDKeyboardDevice() {
     this.controller = new HIDController();
 
     this.registerInputPackets = function() {
-        packet = new HIDPacket('control',[0x1,0x0,0x0],9);
-        packet.addControl('hid','keycode_1',3,'B');
-        packet.addControl('hid','keycode_2',4,'B');
-        packet.addControl('hid','keycode_3',5,'B');
-        packet.addControl('hid','keycode_4',6,'B');
-        packet.addControl('hid','keycode_5',7,'B');
-        packet.addControl('hid','keycode_6',8,'B');
+        packet = new HIDPacket("control",[0x1,0x0,0x0],9);
+        packet.addControl("hid","keycode_1",3,"B");
+        packet.addControl("hid","keycode_2",4,"B");
+        packet.addControl("hid","keycode_3",5,"B");
+        packet.addControl("hid","keycode_4",6,"B");
+        packet.addControl("hid","keycode_5",7,"B");
+        packet.addControl("hid","keycode_6",8,"B");
         this.controller.registerInputPacket(packet);
     }
 
@@ -60,20 +60,20 @@ function HIDKeyboard() {
 
     // Example to bind the bytes to a callback
     this.registerCallbacks = function() { 
-        this.controller.registerInputCallback('control','hid','keycode_1',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_2',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_3',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_4',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_5',this.keyPress);
-        this.controller.registerInputCallback('control','hid','keycode_6',this.keyPress);
+        this.controller.setCallback("control","hid","keycode_1",this.keyPress);
+        this.controller.setCallback("control","hid","keycode_2",this.keyPress);
+        this.controller.setCallback("control","hid","keycode_3",this.keyPress);
+        this.controller.setCallback("control","hid","keycode_4",this.keyPress);
+        this.controller.setCallback("control","hid","keycode_5",this.keyPress);
+        this.controller.setCallback("control","hid","keycode_6",this.keyPress);
     }
 
     // Example to do something with the keycodes received
     this.keyPress = function(field) {
         if (field.value!=0) 
-            script.HIDDebug("KEY PRESS " + field.id + " CODE " + field.value);
+            HIDDebug("KEY PRESS " + field.id + " CODE " + field.value);
         else
-            script.HIDDebug("KEY RELEASE " + field.id); 
+            HIDDebug("KEY RELEASE " + field.id); 
     }
 }
 
