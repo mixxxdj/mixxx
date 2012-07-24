@@ -49,7 +49,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
     m_brakeKeylock.resize(kDecks);
-
+    m_brakeTempolock.resize(kDecks);
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
         m_dx[i] = 0.0;
@@ -1421,6 +1421,12 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
             cot->slotSet(0);
         }
 
+        cot = getControlObjectThread(group, "tempolock");
+        if (cot != NULL) {
+            m_brakeTempolock[deck] = cot->get();
+            cot->slotSet(0);
+        }
+
         // setup timer and send first scratch2 'tick'
         int timerId = startTimer(1);
         m_scratchTimers[timerId] = deck;
@@ -1446,6 +1452,14 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
             if (cot != NULL) {
                 cot->slotSet(1);
             }
+
+        if (m_brakeTempolock[deck]) {
+            cot = getControlObjectThread(group, "tempolock");
+            if (cot != NULL) {
+                cot->slotSet(1);
+            }
+        }
+
         }
     }
 }

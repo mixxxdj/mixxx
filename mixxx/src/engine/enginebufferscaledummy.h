@@ -34,6 +34,7 @@ public:
     void setBaseRate(double dBaseRate);
     /** Set tempo */
     double setTempo(double dTempo);
+    double setKey(double dKey);
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */

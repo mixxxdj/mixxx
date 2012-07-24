@@ -50,6 +50,10 @@ void WLibraryTextBrowser::onShow() {
 
 }
 
+void WLibraryTextBrowser::onHide() {
+
+}
+
 void WLibraryTextBrowser::loadSelectedTrack() {
     // Not applicable to text views
 }

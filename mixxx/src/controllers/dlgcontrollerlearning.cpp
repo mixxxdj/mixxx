@@ -74,6 +74,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     // Rate
     QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
     addDeckAndSamplerControl("keylock", tr("Toggle keylock mode"), rateMenu);
+    addDeckAndSamplerControl("tempolock", tr("Toggle tempolock mode"), rateMenu);
     addDeckAndSamplerControl("rate", tr("Pitch control slider"), rateMenu, true);
     addDeckControl("rate_perm_up", tr("Adjust rate up (coarse)"), rateMenu);
     addDeckControl("rate_perm_up_small", tr("Adjust rate up (fine)"), rateMenu);

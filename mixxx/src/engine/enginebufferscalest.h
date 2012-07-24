@@ -51,6 +51,8 @@ public:
     /** Toggle pitch independent time stretch */
     void setPitchIndpTimeStretch(bool b);
     bool getPitchIndpTimeStretch(void);
+    void setTimeIndpPitchStretch(bool b);
+    bool getTimeIndpPitchStretch(void);
 
     /** Scale buffer */
     CSAMPLE* scale(double playpos, unsigned long buf_size,
@@ -58,7 +60,7 @@ public:
 
     /** Set tempo */
     double setTempo(double dTempo);
-
+    double setKey(double dKey);//{ return dKey;};
     /** Set base rate */
     void setBaseRate(double dBaseRate);
 
@@ -80,7 +82,7 @@ private:
 
     /** True if in pitch independent time stretch mode */
     bool m_bPitchIndpTimeStretch;
-
+    bool m_bTimeIndpPitchStretch;
     /** Used when clear is called */
     bool m_bClear;
 

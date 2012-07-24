@@ -16,6 +16,8 @@
 #include "analyserrg.h"
 #ifdef __VAMP__
 #include "analyserbeats.h"
+#include "analyserkey.h"
+#include "analysergainvamp.h"
 #include "vamp/vampanalyser.h"
 #endif
 
@@ -304,7 +306,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 #ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
-    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+    ret->addAnalyser(new AnalyserKey(_config));
 #else
     ret->addAnalyser(new AnalyserBPM(_config));
 #endif
@@ -321,7 +323,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
 #ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
-    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+    ret->addAnalyser(new AnalyserKey(_config));
 #else
     ret->addAnalyser(new AnalyserBPM(_config));
 #endif

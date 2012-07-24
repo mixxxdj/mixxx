@@ -49,6 +49,7 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wkey.h"
 
 QList<const char*> LegacySkinParser::s_channelStrs;
 QMutex LegacySkinParser::s_safeStringMutex;
@@ -267,6 +268,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseSpinny(node);
     } else if (nodeName == "Time") {
         return parseTime(node);
+    } else if (nodeName == "Key") {
+        return parseKey(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -828,6 +831,17 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     return pTabWidget;
 }
+
+QWidget* LegacySkinParser::parseKey(QDomElement node) {
+    WKey* p = new WKey(m_pParent);
+    setupWidget(node, p);
+    p->setup(node);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
 
 QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     QString group = XmlParse::selectNodeQString(node, "Group");

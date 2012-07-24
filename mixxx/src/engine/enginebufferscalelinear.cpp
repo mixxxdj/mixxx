@@ -73,6 +73,29 @@ double EngineBufferScaleLinear::setTempo(double _tempo)
     return m_dTempo;
 }
 
+double EngineBufferScaleLinear::setKey(double _key)
+{
+//    if (m_fOldTempo != m_dTempo)
+        m_fOldKey = m_dKey; //Save the old tempo when the tempo changes
+
+    m_dKey = _key;
+
+    if (m_dKey>MAX_SEEK_SPEED) {
+        m_dKey = MAX_SEEK_SPEED;
+    } else if (m_dKey < -MAX_SEEK_SPEED) {
+        m_dKey = -MAX_SEEK_SPEED;
+    }
+
+    // Determine playback direction
+    if (m_dKey<0.) {
+        m_bBackwards = true;
+    } else {
+        m_bBackwards = false;
+    }
+
+    return m_dKey;
+}
+
 void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 {
 //    if (m_fOldBaseRate != m_dBaseRate)

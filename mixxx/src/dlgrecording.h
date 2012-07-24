@@ -31,6 +31,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
+    virtual void onHide();
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
     virtual void moveSelection(int delta);

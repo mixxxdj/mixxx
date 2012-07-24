@@ -48,6 +48,7 @@ void WLibrary::switchToView(const QString& name) {
         QWidget* widget = m_viewMap[name];
         if (widget != NULL && currentWidget() != widget) {
             //qDebug() << "WLibrary::setCurrentWidget" << name;
+            dynamic_cast<LibraryView*>(currentWidget())->onHide();
             setCurrentWidget(widget);
             dynamic_cast<LibraryView*>(widget)->onShow();
         }

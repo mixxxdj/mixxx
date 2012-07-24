@@ -36,6 +36,7 @@
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
+#include "engine/keycontrol.h"
 #include "engine/quantizecontrol.h"
 
 #ifdef __VINYLCONTROL__
@@ -61,6 +62,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pLoopingControl(NULL),
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
+    m_pKeyControl(NULL),
     m_pReadAheadManager(NULL),
     m_pOtherEngineBuffer(NULL),
     m_pReader(NULL),
@@ -149,7 +151,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // BPM to display in the UI (updated more slowly than the actual bpm)
     visualBpm = new ControlObject(ConfigKey(group, "visual_bpm"));
-
+    visualKey = new ControlObject(ConfigKey(group, "visual_key"));
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
     playposSlider = new ControlPotmeter(
@@ -204,6 +206,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
 
+    m_pKeyControl = new KeyControl(_group, _config);
+    addControl(m_pKeyControl);
+
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
     m_pReadAheadManager->addEngineControl(m_pRateControl);
@@ -214,12 +219,16 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
     setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
-
+    setTimeIndpPitchStretch(false);
     setNewPlaypos(0.);
 
     m_pKeylock = new ControlPushButton(ConfigKey(group, "keylock"));
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
     m_pKeylock->set(false);
+
+    m_pTempolock = new ControlPushButton(ConfigKey(group, "tempolock"));
+    m_pTempolock->setButtonMode(ControlPushButton::TOGGLE);
+    m_pTempolock->set(false);
 
     m_pEject = new ControlPushButton(ConfigKey(group, "eject"));
     connect(m_pEject, SIGNAL(valueChanged(double)),
@@ -268,6 +277,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleST;
 
     delete m_pKeylock;
+    delete m_pTempolock;
     delete m_pEject;
 
     delete [] m_pDitherBuffer;
@@ -295,11 +305,55 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //the waveform the roll in a weird way or fire an ASSERT from
     //visualchannel.cpp or something. Need to valgrind this or something.
 
-    if (b == true) {
-        m_pScale = m_pScaleST;
+    //if (b == true) {
+      //  m_pScale = m_pScaleST;
+        //qDebug()<<"true";
         ((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
-    } else {
+    //} else {
+   //     m_pScale = m_pScaleLinear;
+    //}
+    //m_bScalerChanged = true;
+}
+
+void EngineBuffer::setTimeIndpPitchStretch(bool b)
+{
+    // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
+
+    // Change sound scale mode
+
+    //SoundTouch's linear interpolation code doesn't sound very good.
+    //Our own EngineBufferScaleLinear sounds slightly better, but it's
+    //not working perfectly. Eventually we should have our own working
+    //better, so scratching sounds good.
+
+    //Update Dec 30/2007
+    //If we delete the m_pScale object and recreate it, it eventually
+    //causes some weird bad pointer somewhere, which will either cause
+    //the waveform the roll in a weird way or fire an ASSERT from
+    //visualchannel.cpp or something. Need to valgrind this or something.
+
+    //if (b == true) {
+      //  m_pScale = m_pScaleST;
+        ((EngineBufferScaleST *)m_pScaleST)->setTimeIndpPitchStretch(b);
+       // qDebug()<<"true";
+    //} else {
+      //  m_pScale = m_pScaleLinear;
+    //}
+    //m_bScalerChanged = true;
+}
+
+void EngineBuffer::enableSoundTouch(bool b)
+{
+    if (b==true){
+      //  qDebug()<<"a";
+        m_pScale = m_pScaleST;
+        if(m_pTempolock->get())setTimeIndpPitchStretch(true);
+        else if (m_pKeylock->get())setPitchIndpTimeStretch(true);
+    }
+    else{
         m_pScale = m_pScaleLinear;
+        setTimeIndpPitchStretch(false);
+        setPitchIndpTimeStretch(false);
     }
     m_bScalerChanged = true;
 }
@@ -307,6 +361,11 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 double EngineBuffer::getBpm()
 {
     return m_pBpmControl->getBpm();
+}
+
+double EngineBuffer::getKey()
+{
+    return m_pKeyControl->getKey();
 }
 
 void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
@@ -396,6 +455,7 @@ void EngineBuffer::ejectTrack() {
     file_length_old = 0;
     playButton->set(0.0);
     visualBpm->set(0.0);
+    visualKey->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
@@ -495,11 +555,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     bool bCurBufferPaused = false;
     double rate = 0;
+    double keyrate = 0;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
         float sr = m_pSampleRate->get();
 
         double baserate = 0.0f;
+
         if (sr > 0)
             baserate = ((double)file_srate_old/sr);
 
@@ -508,20 +570,35 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
-
-        //qDebug() << "rate" << rate << " paused" << paused;
+        keyrate = m_pKeyControl->getRawRate();
+        qDebug()<<m_pKeylock->get() << " " << m_pTempolock->get();
+        qDebug()<<(m_pScale!=m_pScaleST)<<" ";
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
         if (is_scratching && m_pScale != m_pScaleLinear) {
-            setPitchIndpTimeStretch(false);
-        } else if (!is_scratching) {
-            if (m_pKeylock->get() && m_pScale != m_pScaleST) {
-                setPitchIndpTimeStretch(true);
-            } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
-                setPitchIndpTimeStretch(false);
+            //setPitchIndpTimeStretch(false);
+            //setTimeIndpPitchStretch(false);
+            //qDebug()<<"5";
+            enableSoundTouch(false);
+            //qDebug()<<"6";
+            } else if (!is_scratching) {
+            if ((m_pKeylock->get() || m_pTempolock->get()) && m_pScale != m_pScaleST) {
+                //setPitchIndpTimeStretch(true);
+                //setTimeIndpPitchStretch(false);
+                qDebug()<<"1";
+                enableSoundTouch(true);
+                //qDebug()<<"1";
+            }else if ((!m_pKeylock->get() && !m_pTempolock->get()) && m_pScale == m_pScaleST) {
+                qDebug()<<"3";
+                enableSoundTouch(false);
+                //setPitchIndpTimeStretch(false);
+                //setTimeIndpPitchStretch(false);
+                //qDebug()<<"3";
             }
+
         }
+        m_pScale->setKey(keyrate);
 
         // If the rate has changed, set it in the scale object
         if (rate != rate_old || m_bScalerChanged) {
@@ -539,6 +616,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
             rate_old = rate;
+
+           // if (keyrate!=0)m_pScale->setKey(keyrate);
+
             if (baserate > 0) //Prevent division by 0
                 rate = baserate*m_pScale->setTempo(rate/baserate);
             m_pScale->setBaseRate(baserate);
@@ -546,6 +626,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Scaler is up to date now.
             m_bScalerChanged = false;
         }
+       // qDebug()<<keyrate<<"pr";
+        //if (keyrate!=0)
 
         bool at_start = filepos_play <= 0;
         bool at_end = filepos_play >= file_length_old;
@@ -776,7 +858,11 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         if (m_iUiSlowTick == 0) {
             visualBpm->set(m_pBpmControl->getBpm());
         }
-
+        //visualKey->set(m_pKeyControl->getKey());
+       // qDebug()<<"here";
+        //qDebug()<<m_pKeyControl->getKey();
+        visualKey->set(m_pKeyControl->getKey());
+        //visualKey->set(0);
         // Reset sample counter
         m_iSamplesCalculated = 0;
     }

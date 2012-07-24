@@ -97,7 +97,8 @@ class HidController : public Controller {
     unsigned short hid_usage_page;
     unsigned short hid_usage;
     char* hid_path;
-    wchar_t* hid_serial;
+    wchar_t* hid_serial_raw;
+    QString hid_serial;
     QString hid_manufacturer;
     QString hid_product;
 

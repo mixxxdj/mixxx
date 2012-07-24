@@ -33,6 +33,7 @@
 
 class EngineControl;
 class BpmControl;
+class KeyControl;
 class RateControl;
 class LoopingControl;
 class ReadAheadManager;
@@ -101,6 +102,7 @@ public:
     double getRate();
     /** Returns current bpm value (not thread-safe) */
     double getBpm();
+    double getKey();
     /** Sets pointer to other engine buffer/channel */
     void setOtherEngineBuffer(EngineBuffer *);
 
@@ -147,6 +149,8 @@ public:
 
 private:
     void setPitchIndpTimeStretch(bool b);
+    void setTimeIndpPitchStretch(bool b);
+    void enableSoundTouch(bool b);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -171,7 +175,7 @@ private:
 
     /** Pointer to the BPM control object */
     BpmControl* m_pBpmControl;
-
+    KeyControl* m_pKeyControl;
     QList<EngineControl*> m_engineControls;
 
     /** The read ahead manager for EngineBufferScale's that need to read
@@ -211,12 +215,13 @@ private:
 
     ControlObject *rateEngine;
     ControlObject *visualBpm;
+    ControlObject *visualKey;
     ControlObject *m_pMasterRate;
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
     ControlPushButton *m_pKeylock;
-
+    ControlPushButton *m_pTempolock;
     ControlPushButton *m_pEject;
 
     /** Control used to signal when at end of file */

@@ -31,6 +31,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager) :
     EngineBufferScale(),
     m_bBackwards(false),
     m_bPitchIndpTimeStretch(false),
+    m_bTimeIndpPitchStretch(false),
     m_bClear(true),
     m_pReadAheadManager(pReadAheadManager)
 {
@@ -38,10 +39,12 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager) :
     m_pSoundTouch = new soundtouch::SoundTouch();
     m_dBaseRate = 1.;
     m_dTempo = 1.;
+    m_dKey = 0;
 
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setTempo(m_dTempo);
+    m_pSoundTouch->setPitchSemiTones(float(m_dKey));
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_qMutex.unlock();
 
@@ -61,6 +64,7 @@ EngineBufferScaleST::~EngineBufferScaleST()
 void EngineBufferScaleST::setPitchIndpTimeStretch(bool b)
 {
     m_bPitchIndpTimeStretch = b;
+    //qDebug()<<b<<"pl";
     m_qMutex.lock();
     if (m_bPitchIndpTimeStretch)
         m_pSoundTouch->setRate(1.);
@@ -72,6 +76,23 @@ void EngineBufferScaleST::setPitchIndpTimeStretch(bool b)
 bool EngineBufferScaleST::getPitchIndpTimeStretch(void)
 {
     return m_bPitchIndpTimeStretch;
+}
+
+void EngineBufferScaleST::setTimeIndpPitchStretch(bool b)
+{
+    m_bTimeIndpPitchStretch = b;
+    //qDebug()<<b<<"tl";
+    m_qMutex.lock();
+    if (m_bTimeIndpPitchStretch)
+        m_pSoundTouch->setRate(1.);
+    else
+        m_pSoundTouch->setPitchSemiTones(0);
+    m_qMutex.unlock();
+}
+
+bool EngineBufferScaleST::getTimeIndpPitchStretch(void)
+{
+    return m_bTimeIndpPitchStretch;
 }
 
 
@@ -125,11 +146,12 @@ double EngineBufferScaleST::setTempo(double dTempo)
         m_dTempo = MAX_SEEK_SPEED;
     else if (m_dTempo<MIN_SEEK_SPEED)
         m_dTempo = 0.0;
-
+    qDebug()<<"tem"<<m_dTempo;
     m_qMutex.lock();
     //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
     if (dTempoOld != m_dTempo && m_dTempo != 0.0)
     {
+        qDebug()<<m_bPitchIndpTimeStretch;
         if (m_bPitchIndpTimeStretch)
             m_pSoundTouch->setTempo(m_dTempo);
         else
@@ -153,6 +175,49 @@ double EngineBufferScaleST::setTempo(double dTempo)
         m_bBackwards = false;
         return m_dTempo;
     }
+}
+
+double EngineBufferScaleST::setKey(double dKey)
+{
+    double dKeyOld = m_dKey;
+    m_dKey = fabs(dKey);
+
+    /*if (m_dKey>MAX_SEEK_SPEED)
+        m_dKey = MAX_SEEK_SPEED;
+    else if (m_dKey<MIN_SEEK_SPEED)
+        m_dKey = 0.0;*/
+    qDebug()<<"setkeyscalest";
+    m_qMutex.lock();
+
+    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
+    //if (dKeyOld != m_dKey && m_dKey != 0.0)
+    //{   //qDebug()<<m_dKey;
+    if (m_bTimeIndpPitchStretch){
+        //qDebug()<<"key"<<m_dKey;
+        m_pSoundTouch->setPitchSemiTones(float(dKey*120));
+        }
+        //else
+          //  m_pSoundTouch->setRate(m_dBaseRate*m_dKey);
+    //}
+    m_qMutex.unlock();
+
+    /*if (dKey<0.)
+    {
+        if (!m_bBackwards)
+            clear();
+
+        m_bBackwards = true;
+        return -m_dKey;
+    }
+    else
+    {
+        if (m_bBackwards)
+            clear();
+
+        m_bBackwards = false;
+        return m_dKey;
+    }*/
+    return dKey;
 }
 
 /**

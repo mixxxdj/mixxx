@@ -398,6 +398,16 @@ void TrackInfoObject::slotBeatsUpdated() {
     emit(beatsUpdated());
 }
 
+void TrackInfoObject::slotKeyUpdated() {
+    QMutexLocker lock(&m_qMutex);
+    setDirty(true);
+    double key = convertKey(m_key);
+    lock.unlock();
+    emit(keyUpdated(key));
+    //emit(beatsUpdated());
+}
+
+
 bool TrackInfoObject::getHeaderParsed()  const
 {
     QMutexLocker lock(&m_qMutex);
@@ -902,15 +912,19 @@ void TrackInfoObject::setRating (int rating){
         setDirty(true);
 }
 
-QString TrackInfoObject::getKey() const{
+//double TrackInfoObject::getKey() const{
+double TrackInfoObject::getKey() {
     QMutexLocker lock(&m_qMutex);
-    return m_key;
+    //return m_key;
+    double key = convertKey(m_key);
+    return key;
 }
 
 void TrackInfoObject::setKey(QString key){
     QMutexLocker lock(&m_qMutex);
     bool dirty = key != m_key;
     m_key = key;
+    //qDebug()<<m_key;
     if (dirty)
         setDirty(true);
 }
@@ -926,4 +940,65 @@ void TrackInfoObject::setBpmLock(bool bpmLock) {
 bool TrackInfoObject::hasBpmLock() const {
     QMutexLocker lock(&m_qMutex);
     return m_bBpmLock;
+}
+
+double TrackInfoObject::convertKey(QString dValue)
+{
+    double key=0;
+    if(dValue == "C") key=1;
+    else if(dValue == "C#")key=2;
+    else if(dValue == "D")key=3;
+    else if(dValue == "D#")key=4;
+    else if(dValue == "E")key=5;
+    else if(dValue == "F")key=6;
+    else if(dValue == "F#")key=7;
+    else if(dValue == "G")key=8;
+    else if(dValue == "G#")key=9;
+    else if(dValue == "A")key=10;
+    else if(dValue == "A#")key=11;
+    else if(dValue == "B")key=12;
+    else if(dValue == "c")key=13;
+    else if(dValue == "c#")key=14;
+    else if(dValue == "d")key=15;
+    else if(dValue == "d#")key=16;
+    else if(dValue == "e")key=17;
+    else if(dValue == "f")key=18;
+    else if(dValue == "f#")key=19;
+    else if(dValue == "g")key=20;
+    else if(dValue == "g#")key=21;
+    else if(dValue == "a")key=22;
+    else if(dValue == "a#")key=23;
+    else if(dValue == "b")key=24;
+    return key;
+}
+
+QString TrackInfoObject::convertK(double dValue)
+{
+    QString key="";
+    if(dValue > 24 || dValue<=0)key="err";
+    else if(dValue == 1)key = "C";
+    else if(dValue == 2)key = "C#";
+    else if(dValue == 3)key = "D";
+    else if(dValue == 4)key = "D#";
+    else if(dValue == 5)key = "E";
+    else if(dValue == 6)key = "F";
+    else if(dValue == 7)key = "F#";
+    else if(dValue == 8)key = "G";
+    else if(dValue == 9)key = "G#";
+    else if(dValue == 10)key = "A";
+    else if(dValue == 11)key = "A#";
+    else if(dValue == 12)key = "B";
+    else if(dValue == 13)key = "c";
+    else if(dValue == 14)key = "c#";
+    else if(dValue == 15)key = "d";
+    else if(dValue == 16)key = "d#";
+    else if(dValue == 17)key = "e";
+    else if(dValue == 18)key = "f";
+    else if(dValue == 19)key = "f#";
+    else if(dValue == 20)key = "g";
+    else if(dValue == 21)key = "g#";
+    else if(dValue == 22)key = "a";
+    else if(dValue == 23)key = "a#";
+    else if(dValue == 24)key = "b";
+    return key;
 }

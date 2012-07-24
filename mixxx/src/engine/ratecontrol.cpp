@@ -47,6 +47,7 @@ RateControl::RateControl(const char* _group,
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
 
+    //m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
     m_pRateSearch = new ControlPotmeter(ConfigKey(_group, "rateSearch"), -300., 300.);

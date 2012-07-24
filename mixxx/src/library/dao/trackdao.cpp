@@ -278,7 +278,7 @@ void TrackDAO::bindTrackToLibraryInsert(
     query.bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
-    query.bindValue(":key", pTrack->getKey());
+    query.bindValue(":key", pTrack->convertK(pTrack->getKey()));
 
     // We no longer store the wavesummary in the library table.
     query.bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
@@ -857,7 +857,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":cuepoint", pTrack->getCuePoint());
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
-    query.bindValue(":key", pTrack->getKey());
+    query.bindValue(":key", pTrack->convertK(pTrack->getKey()));
     query.bindValue(":rating", pTrack->getRating());
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed());

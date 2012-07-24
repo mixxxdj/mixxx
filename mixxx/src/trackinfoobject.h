@@ -199,7 +199,8 @@ public:
     void setRating(int);
 
     /** Returns KEY_CODE */
-    QString getKey() const;
+    //double getKey() const;
+    double getKey();
     /** Set KEY_CODE */
     void setKey(QString);
 
@@ -247,7 +248,8 @@ public:
 
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
-
+    double convertKey(QString);
+    QString convertK(double dValue);
   public slots:
     void slotCueUpdated();
 
@@ -255,7 +257,9 @@ signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
     void bpmUpdated(double bpm);
+    //void bpmUpdated(double bpm);
     void beatsUpdated();
+    void keyUpdated(double key);
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed(TrackInfoObject* pTrack);
@@ -265,6 +269,7 @@ signals:
 
 private slots:
     void slotBeatsUpdated();
+    void slotKeyUpdated();
 
 private:
 
@@ -281,6 +286,7 @@ private:
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.
     void setDirty(bool bDirty);
+
 
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO

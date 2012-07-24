@@ -29,6 +29,12 @@ double EngineBufferScaleDummy::setTempo(double tempo)
 	return m_dTempo;
 }
 
+double EngineBufferScaleDummy::setKey(double key)
+{
+        m_dKey = key;
+        return m_dKey;
+}
+
 double EngineBufferScaleDummy::getNewPlaypos()
 {
 	return new_playpos;
