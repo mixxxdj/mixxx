@@ -35,7 +35,7 @@ class BasePlaylistFeature : public LibraryFeature {
   public slots:
     virtual void activate();
     virtual void activateChild(const QModelIndex& index);
-    virtual bool dropAccept(QUrl url);
+    virtual bool dropAccept(QList<QUrl> urls);
     virtual bool dragMoveAccept(QUrl url);
     virtual void onLazyChildExpandation(const QModelIndex& index);
     virtual void htmlLinkClicked(const QUrl & link);
