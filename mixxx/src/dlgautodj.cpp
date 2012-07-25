@@ -97,7 +97,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(m_pCOToggleAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(toggleAutoDJ(double)));
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJButton(bool))); _blah;
+            this,  SLOT(toggleAutoDJ(bool))); _blah;
 
     // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThreadMain(
