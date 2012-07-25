@@ -40,6 +40,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void onLazyChildExpandation(const QModelIndex& index);
     virtual void htmlLinkClicked(const QUrl & link);
 
+    virtual void slotPlaylistTableChanged(int playlistId) = 0;
     void slotCreatePlaylist();
 
   protected slots:

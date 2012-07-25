@@ -38,7 +38,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     void shufflePlaylistButton(bool buttonChecked);
     void skipNextButton(bool buttonChecked);
     void fadeNowButton(bool buttonChecked);
-    void toggleAutoDJ(bool toggle);
+    void toggleAutoDJButton(bool toggle);
     void shufflePlaylist(double value);
     void skipNext(double value);
     void fadeNow(double value);
