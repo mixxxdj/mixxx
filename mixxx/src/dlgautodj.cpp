@@ -282,7 +282,7 @@ void DlgAutoDJ::toggleAutoDJ(double v) {
     }
 }
 
-void DlgAutoDJ::toggleAutoDJ(bool toggle) {
+void DlgAutoDJ::toggleAutoDJButton(bool toggle) {
     bool deck1Playing = m_pCOPlay1Fb->get() == 1.0f;
     bool deck2Playing = m_pCOPlay2Fb->get() == 1.0f;
 
