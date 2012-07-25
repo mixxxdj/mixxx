@@ -680,7 +680,3 @@ void DlgAutoDJ::transitionValueChanged(int value) {
     m_pConfig->set(ConfigKey(CONFIG_KEY, kTransitionPreferenceName),
                    ConfigValue(value));
 }
-
-bool DlgAutoDJ::appendTrack(int trackId) {
-    return m_pAutoDJTableModel->appendTrack(trackId);
-}
