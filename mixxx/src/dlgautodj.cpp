@@ -97,7 +97,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(m_pCOToggleAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(toggleAutoDJ(double)));
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJ(bool))); _blah;
+            this,  SLOT(toggleAutoDJButton(bool))); _blah;
 
     // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThreadMain(
@@ -282,7 +282,7 @@ void DlgAutoDJ::toggleAutoDJ(double v) {
     }
 }
 
-void DlgAutoDJ::toggleAutoDJ(bool toggle) {
+void DlgAutoDJ::toggleAutoDJButton(bool toggle) {
     bool deck1Playing = m_pCOPlay1Fb->get() == 1.0f;
     bool deck2Playing = m_pCOPlay2Fb->get() == 1.0f;
 
