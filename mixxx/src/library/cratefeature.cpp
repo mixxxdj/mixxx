@@ -93,28 +93,33 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
-bool CrateFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url)
+bool CrateFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls)
     return false;
 }
 
-bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
-
-    //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
-    //     QUrl::toLocalFile() vs. QUrl::toString() usage.
-    QFileInfo file(url.toLocalFile());
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
+        //     QUrl::toLocalFile() vs. QUrl::toString() usage.
+        files.append(url.toLocalFile());
+    }
 
     // Adds track, does not insert duplicates, handles unremoving logic.
-    int trackId = m_pTrackCollection->getTrackDAO().addTrack(file, true);
-
-    qDebug() << "CrateFeature::dropAcceptChild adding track"
-             << trackId << "to crate" << crateId;
-
-    if (trackId >= 0)
-        return m_crateDao.addTrackToCrate(trackId, crateId);
-    return false;
+    QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    qDebug() << "CrateFeature::dropAcceptChild adding tracks"
+            << trackIds.size() << " to crate "<< crateId;
+    // remove tracks that could not be added
+    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+        if (trackIds.at(trackId) < 0) {
+            trackIds.removeAt(trackId--);
+        }
+    }
+    m_crateDao.addTracksToCrate(trackIds, crateId);
+    return true;
 }
 
 bool CrateFeature::dragMoveAccept(QUrl url) {

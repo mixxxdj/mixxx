@@ -158,13 +158,13 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& globalPos,
     Q_UNUSED(index);
 }
 
-bool MixxxLibraryFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(url);
+bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
+    Q_UNUSED(urls);
     Q_UNUSED(index);
     return false;
 }
