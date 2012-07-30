@@ -37,11 +37,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "RHYTHMBOX_SCANNER");
-    m_database.setHostName("localhost");
-    m_database.setDatabaseName(MIXXX_DB_PATH);
-    m_database.setUserName("mixxx");
-    m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {

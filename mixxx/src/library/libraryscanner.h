@@ -68,8 +68,7 @@ class LibraryScanner : public QThread {
     TrackDAO m_trackDao;
 
     QStringList m_nameFilters;
-    bool m_bCancelLibraryScan;
-    QMutex m_libraryScanMutex;
+    volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
 };
 

@@ -28,8 +28,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1280"
-     inkscape:window-height="752"
+     inkscape:window-width="1920"
+     inkscape:window-height="1152"
      id="namedview26"
      showgrid="true"
      inkscape:zoom="10"
@@ -629,24 +629,6 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4942"
-       id="linearGradient5190"
-       x1="17.5"
-       y1="-3"
-       x2="17.5"
-       y2="45"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4942"
-       id="linearGradient5313"
-       gradientUnits="userSpaceOnUse"
-       x1="16"
-       y1="8"
-       x2="16"
-       y2="32" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4942"
        id="linearGradient5316"
        gradientUnits="userSpaceOnUse"
        x1="20"
@@ -1207,6 +1189,26 @@
        id="linearGradient10313"
        xlink:href="#linearGradient5695-6"
        inkscape:collect="always" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3354"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.0225424,0,0,1.75,10.09017,26.25)"
+       x1="-34.160061"
+       y1="-32.904762"
+       x2="-34.160061"
+       y2="-6.2380953" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3356"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.0225424,0,0,1.75,24.09017,56.25)"
+       x1="-4"
+       y1="-29.857143"
+       x2="-4.0000005"
+       y2="-13.857142" />
   </defs>
   <metadata
      id="metadata4">
@@ -1470,8 +1472,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer36"
      inkscape:label="ic_library_"
-     style="display:none"
-     sodipodi:insensitive="true">
+     style="display:inline">
     <g
        inkscape:groupmode="layer"
        id="layer66"
@@ -1519,22 +1520,22 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        sodipodi:insensitive="true">
       <g
          id="ic_library_rhythmbox"
-         inkscape:label="#g6137">
+         inkscape:label="#g3350">
         <path
-           sodipodi:nodetypes="ssssssssssssssssssssssssssss"
+           inkscape:label="#rect8124"
            inkscape:connector-curvature="0"
-           id="rect3993"
-           d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 z m 4,2 2,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 10,8 C 8.892,8 8,7.108 8,6 8,4.892 8.892,4 10,4 z m 10,0 2,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 20,8 C 18.892,8 18,7.108 18,6 18,4.892 18.892,4 20,4 z m -4,7 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z"
-           style="color:#000000;fill:url(#linearGradient5313);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+           id="rect8124"
+           d="M 8,2 C 6.892,2 6,2.892 6,4 l 0,24 c 0,1.108 0.892,2 2,2 l 16,0 c 1.108,0 2,-0.892 2,-2 L 26,4 C 26,2.892 25.108,2 24,2 L 8,2 z m 8,4 c 3.313708,0 6,2.686292 6,6 0,3.313708 -2.686292,6 -6,6 -3.313709,0 -6,-2.686292 -6,-6 0,-3.313708 2.686291,-6 6,-6 z M 12.5,21 C 13.880712,21 15,22.119288 15,23.5 15,24.880712 13.880712,26 12.5,26 11.119288,26 10,24.880712 10,23.5 10,22.119288 11.119288,21 12.5,21 z m 7,0 C 20.880712,21 22,22.119288 22,23.5 22,24.880712 20.880712,26 19.5,26 18.119288,26 17,24.880712 17,23.5 17,22.119288 18.119288,21 19.5,21 z"
+           style="color:#000000;fill:url(#linearGradient3356);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
         <path
-           transform="matrix(0.54545455,0,0,0.5,6.4545454,9.5)"
-           d="m 23,19 a 5.5,6 0 1 1 -11,0 5.5,6 0 1 1 11,0 z"
-           sodipodi:ry="6"
-           sodipodi:rx="5.5"
-           sodipodi:cy="19"
-           sodipodi:cx="17.5"
-           id="path4671-4"
-           style="color:#000000;fill:url(#linearGradient5190);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.82970834;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           transform="matrix(0.6,0,0,0.6,51.4,22.8)"
+           d="m -54,-18 a 5,5 0 1 1 -10,0 5,5 0 1 1 10,0 z"
+           sodipodi:ry="5"
+           sodipodi:rx="5"
+           sodipodi:cy="-18"
+           sodipodi:cx="-59"
+           id="path8146"
+           style="color:#000000;fill:url(#linearGradient3354);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:4;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            sodipodi:type="arc" />
       </g>
     </g>
@@ -2121,8 +2122,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer14"
      inkscape:label="ic_preferences_"
-     style="display:none"
-     sodipodi:insensitive="true">
+     style="display:inline">
     <g
        inkscape:groupmode="layer"
        id="layer35"
@@ -2729,7 +2729,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          x="3.2128906"
          y="3.9195313"
          id="tspan4269"
-         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.10+</tspan><tspan
+         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.11+</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
          y="6.3195314"
