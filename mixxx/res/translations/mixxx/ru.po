@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-07-18 08:53+0000\n"
-"Last-Translator: Sergey Koptev <Unknown>\n"
+"PO-Revision-Date: 2012-07-29 16:18+0000\n"
+"Last-Translator: maximko <Soccket@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-07-19 04:35+0000\n"
-"X-Generator: Launchpad (build 15637)\n"
+"X-Launchpad-Export-Date: 2012-07-30 04:39+0000\n"
+"X-Generator: Launchpad (build 15702)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Автоматический диджеинг"
+msgstr "Авто DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -180,7 +180,7 @@ msgstr "Расположение"
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr "Описание"
+msgstr "Комментарий"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
@@ -194,7 +194,7 @@ msgstr "Оценка"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr "Частота бит"
+msgstr "Битрейт"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -216,7 +216,7 @@ msgstr "№"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr "Метка времени"
+msgstr "Отметка времени"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
@@ -305,7 +305,7 @@ msgstr "Композитор"
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr "Описание"
+msgstr "Комментарий"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
@@ -330,7 +330,7 @@ msgstr "Тип"
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr "Частота бит"
+msgstr "Битрейт"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
@@ -406,7 +406,7 @@ msgstr "Диалог"
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr "Ввод"
+msgstr "Вход"
 
 #: ControllerMappingDlg#3
 msgid ""
@@ -700,7 +700,7 @@ msgstr ""
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
-msgstr ""
+msgstr "Включить коррекцию смещения (Рекомендуется)"
 
 #: DlgBeatsDlg#14
 msgid ""
@@ -853,7 +853,7 @@ msgstr "Перейти в конец дорожки"
 
 #: DlgControllerLearning#23
 msgid "Play reverse button"
-msgstr ""
+msgstr "Клавиша обратного воспроизведения"
 
 #: DlgControllerLearning#24
 msgid "Gain knob"
@@ -909,7 +909,7 @@ msgstr ""
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
-msgstr ""
+msgstr "Переключить режим блокирования"
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
@@ -954,15 +954,15 @@ msgstr "Эквалайзеры"
 
 #: DlgControllerLearning#48
 msgid "High EQ knob"
-msgstr ""
+msgstr "Регулятор высоких частот"
 
 #: DlgControllerLearning#49
 msgid "Mid EQ knob"
-msgstr ""
+msgstr "Регулятор средних частот"
 
 #: DlgControllerLearning#50
 msgid "Low EQ knob"
-msgstr ""
+msgstr "Регулятор низких частот"
 
 #: DlgControllerLearning#51
 msgid "High EQ kill"
@@ -1131,11 +1131,11 @@ msgstr "Пользовательский интерфейс"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
-msgstr ""
+msgstr "Показать/скрыть секцию сэмплера"
 
 #: DlgControllerLearning#92
 msgid "Show/hide the microphone section"
-msgstr ""
+msgstr "Показать/скрыть секцию микрофона"
 
 #: DlgControllerLearning#93
 msgid "Show/hide the vinyl control section"
@@ -1173,7 +1173,7 @@ msgstr "Использовать определение уд./мин."
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Tracks BPM on Import"
-msgstr ""
+msgstr "Определять BPM треков при импорте"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -1231,7 +1231,7 @@ msgstr "Настраиваемый профиль"
 
 #: DlgPrefController#4
 msgid "No Description"
-msgstr ""
+msgstr "Нет описания"
 
 #: DlgPrefController#5
 msgid "No support available."
@@ -1263,7 +1263,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Описание:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1275,7 +1275,7 @@ msgstr "Загруженный профиль:"
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Поддержка:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1340,11 +1340,11 @@ msgstr "10%"
 
 #: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
-msgstr ""
+msgstr "Загружать треки в играющую деку"
 
 #: DlgPrefControls#14
 msgid "The selected skin is bigger than your screen resolution."
-msgstr ""
+msgstr "Выбранный скин больше разрешения экрана"
 
 #: DlgPrefControls#15
 msgid "20%"
@@ -1385,7 +1385,7 @@ msgstr "Вверх - увеличивает скорость"
 #: DlgPrefControls#24
 msgctxt "DlgPrefControls#24"
 msgid "Information"
-msgstr ""
+msgstr "Информация"
 
 #: DlgPrefControls#25
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1419,12 +1419,12 @@ msgstr "Подсказки по инструментам"
 #: DlgPrefControlsDlg#6
 msgctxt "DlgPrefControlsDlg#6"
 msgid "On"
-msgstr ""
+msgstr "Вкл."
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "Off"
-msgstr ""
+msgstr "Выкл."
 
 #: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
@@ -1509,7 +1509,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#28
 msgid "OpenGl status"
-msgstr ""
+msgstr "Статус OpenGL"
 
 #: DlgPrefControlsDlg#29
 msgid "Display type"
@@ -1531,7 +1531,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#33
 msgid "Value in milliseconds"
-msgstr ""
+msgstr "Значение в миллисекундах"
 
 #: DlgPrefControlsDlg#34
 msgid "Visual gain of the high frequencies"
@@ -1564,7 +1564,7 @@ msgstr ""
 #: DlgPrefControlsDlg#41
 msgctxt "DlgPrefControlsDlg#41"
 msgid "Synchronize"
-msgstr ""
+msgstr "Синхронизация"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1891,7 +1891,7 @@ msgstr ""
 #: DlgPrefPlaylistDlg#16
 msgctxt "DlgPrefPlaylistDlg#16"
 msgid "Library"
-msgstr ""
+msgstr "Медиатека"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
@@ -4639,15 +4639,15 @@ msgstr ""
 
 #: WTrackTableView#9
 msgid "Open in File Browser"
-msgstr ""
+msgstr "Открыть в файловом менеджере"
 
 #: WTrackTableView#10
 msgid "Add to Auto-DJ Queue (bottom)"
-msgstr ""
+msgstr "Добавить в очередь Авто DJ (вниз)"
 
 #: WTrackTableView#11
 msgid "Add to Auto-DJ Queue (top)"
-msgstr ""
+msgstr "Добавить в очередь Авто DJ (вверх)"
 
 #: WTrackTableView#12
 msgid "Reload Track Metadata"
@@ -4659,11 +4659,11 @@ msgstr "Сбросить счётчик воспроизведения"
 
 #: WTrackTableView#14
 msgid "Lock BPM"
-msgstr ""
+msgstr "Заблокировать BPM"
 
 #: WTrackTableView#15
 msgid "Unlock BPM"
-msgstr ""
+msgstr "Разблокировать BPM"
 
 #: WTrackTableView#16
 msgid "Clear BPM and Beatgrid"
@@ -4676,7 +4676,7 @@ msgstr "Загрузить в деку %1"
 #: WTrackTableView#18
 msgctxt "WTrackTableView#18"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Сэмплер %1"
 
 #: WTrackTableView#19
 msgid ""
