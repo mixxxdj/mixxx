@@ -29,7 +29,7 @@ function EKSOtusController() {
 
         packet = new HIDPacket("control",[0x0,0x35],64);
         packet.addControl("hid","wheel_position",2,"H");
-        packet.addControl("hid","jog_wheel",4,"h");
+        packet.addControl("hid","wheel_speed",4,"h");
         packet.addControl("hid","timestamp",6,"I");
         packet.addControl("hid","slider_value",10,"H");
         packet.addControl("hid","slider_position",12,"H");
@@ -85,7 +85,6 @@ function EKSOtusController() {
         packet.addControl("hid","touch_trackpad",46,"I",0x80000000);
         packet.addControl("hid","packet_number",51,"B");
         packet.addControl("hid","deck_status",52,"B"); 
-        packet.setMinDelta("hid","jog_wheel",4);
         this.controller.registerInputPacket(packet);
 
         packet = new HIDPacket("firmware_version",[0xa,0x4],64);
@@ -124,9 +123,9 @@ function EKSOtusController() {
         packet.addOutput("hid","eject_left",offset++,"B");
         packet.addOutput("hid","stop",offset++,"B");
         packet.addOutput("hid","play",offset++,"B");
-        packet.addOutput("hid","brake",offset++,"B");
-        packet.addOutput("hid","cue",offset++,"B");
         packet.addOutput("hid","reverse",offset++,"B");
+        packet.addOutput("hid","cue",offset++,"B");
+        packet.addOutput("hid","brake",offset++,"B");
         packet.addOutput("hid","fastforward",offset++,"B");
         this.controller.registerOutputPacket(packet);
 
@@ -319,6 +318,9 @@ EksOtus.init = function (id) {
 
     EksOtus.deckSwitchClicked = false;
 
+    // Wheel absolute position value
+    EksOtus.wheelPosition = undefined;
+
     // Wheel spin animation details
     EksOtus.activeTrackDuration = undefined;
     // Group registered to update spinning platter details
@@ -336,13 +338,13 @@ EksOtus.init = function (id) {
     controller.setPacketCallback("trackpad_mode",EksOtus.TrackpadModeWrapper);
 
     controller.ignoredControlChanges = [
-        "mask","timestamp","packet_number","deck_status", "wheel_position",
+        "mask","timestamp","packet_number","deck_status", "wheel_speed",
         // These return the Otus slider position scaled by the 'slider scale'
         "slider_pos_1","slider_pos_2", "slider_value"
     ];
 
     // Scratch parameters
-    controller.scratchintervalsPerRev = 512;
+    controller.scratchintervalsPerRev = 1024;
     controller.scratchAlpha = 1.0/8;
     controller.rampedScratchEnable = true;
 
@@ -433,11 +435,10 @@ EksOtus.registerCallbacks = function() {
 
     controller.linkControl("hid","play","deck","play");
     controller.linkControl("hid","cue","deck","cue_default");
+    controller.linkControl("hid","reverse","deck","reverse");
     controller.linkControl("hid","eject_left","deck","pfl");
     controller.linkControl("hid","jog_touch","deck","jog_touch");
-    controller.setScaler("jog",EksOtus.jogScaler);
-    controller.setScaler("jog_scratch",EksOtus.jogScratchScaler);
-    controller.linkControl("hid","jog_wheel","deck","jog_wheel");
+    controller.linkControl("hid","wheel_position","deck","jog_wheel");
 
     controller.linkControl("hid","jog_se_button","deck","LoadSelectedTrack");
     controller.linkControl("hid","jog_se","[Playlist]","SelectTrackKnob");
@@ -451,6 +452,9 @@ EksOtus.registerCallbacks = function() {
     controller.linkControl("hid","eq_mid_2","deck2","filterMid");
     controller.linkControl("hid","eq_low_1","deck1","filterLow");
     controller.linkControl("hid","eq_low_2","deck2","filterLow");
+
+    controller.setScaler("jog",EksOtus.jogScaler);
+    controller.setScaler("jog_scratch",EksOtus.wheelScaler);
     controller.setScaler("crossfader",EksOtus.plusMinus1Scaler);
     controller.setScaler("pregain",EksOtus.eqScaler);
     controller.setScaler("filterHigh",EksOtus.eqScaler);
@@ -492,24 +496,36 @@ EksOtus.registerCallbacks = function() {
     controller.linkOutput("hid","reloop_exit","deck","reloop_exit",EksOtus.outputCallback);
     controller.linkOutput("hid","eject_left","deck","pfl",EksOtus.outputCallback);
     controller.linkOutput("hid","play","deck","play",EksOtus.outputCallback);
+    controller.linkOutput("hid","reverse","deck","reverse",EksOtus.outputCallback);
     controller.linkOutput("hid","cue","deck","cue_default",EksOtus.outputCallback);
 
 }
 
 // Default scaler for jog values
-EksOtus.jogScaler = function(group,name,value) { 
-    return value/256; 
+EksOtus.wheelScaler = function(group,name,value) { 
+    if (EksOtus.wheelPosition==undefined) {
+        EksOtus.wheelPosition = value;
+        return 0;
+    }
+    var delta = EksOtus.wheelPosition - value; 
+    if (delta>32768)
+        return 0; 
+    EksOtus.wheelPosition = value;
+    if (delta>-8 && delta<8)
+        return -delta/4;
+    return -delta/16; 
 }
 
-// Jog wheel scratch event scaler
-EksOtus.jogScratchScaler = function(group,name,value) {
-    var ticks = undefined;
-    if (value<8)
-        return value<0 ? -1 : 1;
-    if (value>128)
-        return value/64;
-    else
-        return value/32;
+EksOtus.jogScaler = function(group,name,value) { 
+    if (EksOtus.wheelPosition==undefined) {
+        EksOtus.wheelPosition = value;
+        return 0;
+    }
+    var delta = EksOtus.wheelPosition - value; 
+    if (delta>32768)
+        return 0; 
+    EksOtus.wheelPosition = value;
+    return -delta/64; 
 }
 
 // Deck rate adjustment with top corner wheels
