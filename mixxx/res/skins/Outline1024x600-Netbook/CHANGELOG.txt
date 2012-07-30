@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.06	(04/07/2012)
+* Fix: Deactivate stylesheets for tooltips in skins which use color scheme support, workaround for lp:1021031
+
 v1.11.0.05	(25/05/2012)
 * Fix: Support beatloop_X_toggle and beatloop_X_enabled controls instead of the deprecated beatloop_x, lp:1000829 & lp:902641
   This fixes beatloop GUI buttons to start the loop again on button up

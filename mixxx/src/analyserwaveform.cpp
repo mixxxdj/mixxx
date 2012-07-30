@@ -14,7 +14,7 @@
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"
 
-AnalyserWaveform::AnalyserWaveform() {
+AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) {
     qDebug() << "AnalyserWaveform::AnalyserWaveform()";
     m_skipProcessing = false;
 
@@ -32,7 +32,7 @@ AnalyserWaveform::AnalyserWaveform() {
     m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
-        m_database.setDatabaseName(MIXXX_DB_PATH);
+        m_database.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
         m_database.setUserName("mixxx");
         m_database.setPassword("mixxx");
 
@@ -167,6 +167,8 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 }
 
 void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
+    Q_UNUSED(tio);
+    Q_UNUSED(sampleRate);
     //TODO: (vRince) bind this with *actual* filter values ...
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
@@ -174,7 +176,6 @@ void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
     m_filter[Low] = new EngineFilterIIR(bessel_lowpass4, 4);
     m_filter[Mid] = new EngineFilterIIR(bessel_bandpass, 8);
     m_filter[High] = new EngineFilterIIR(bessel_highpass4, 4);
-
 }
 
 void AnalyserWaveform::destroyFilters() {
@@ -351,6 +352,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
 }
 
 void AnalyserWaveform::cleanup(TrackPointer tio) {
+    Q_UNUSED(tio);
     if (m_skipProcessing) {
         return;
     }

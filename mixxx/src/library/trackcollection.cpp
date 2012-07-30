@@ -23,11 +23,10 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         m_supportedFileExtensionsRegex(
             SoundSourceProxy::supportedFileExtensionsRegex(),
             Qt::CaseInsensitive) {
-    bCancelLibraryScan = false;
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
     m_db.setHostName("localhost");
-    m_db.setDatabaseName(MIXXX_DB_PATH);
+    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
@@ -73,7 +72,7 @@ bool TrackCollection::checkForTables() {
     }
 
     int requiredSchemaVersion = 17;
-    QString schemaFilename = m_pConfig->getConfigPath();
+    QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
@@ -121,7 +120,7 @@ QSqlDatabase& TrackCollection::getDatabase() {
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                    const QStringList & nameFilters) {
+                                    const QStringList & nameFilters, volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -132,10 +131,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
     while (it.hasNext()) {
 
         //If a flag was raised telling us to cancel the library scan then stop.
-        m_libraryScanMutex.lock();
-        bool cancel = bCancelLibraryScan;
-        m_libraryScanMutex.unlock();
-        if (cancel) {
+        if (*cancel) {
             return false;
         }
 
@@ -153,12 +149,11 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
         // user's library OR the user has "removed" the track via
         // "Right-Click -> Remove". These tracks stay in the library, but
         // their mixxx_deleted column is 1.
-        if (!trackDao.trackExistsInDatabase(absoluteFilePath))
-        {
+        if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
             //qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 
-            TrackPointer pTrack =TrackPointer(new TrackInfoObject(
+            TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
 
             if (trackDao.addTracksAdd(pTrack.data(), false)) {
@@ -173,18 +168,6 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
     }
     emit(finishedLoading());
     return true;
-}
-
-void TrackCollection::slotCancelLibraryScan() {
-    m_libraryScanMutex.lock();
-    bCancelLibraryScan = 1;
-    m_libraryScanMutex.unlock();
-}
-
-void TrackCollection::resetLibaryCancellation() {
-    m_libraryScanMutex.lock();
-    bCancelLibraryScan = 0;
-    m_libraryScanMutex.unlock();
 }
 
 CrateDAO& TrackCollection::getCrateDAO() {

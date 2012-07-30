@@ -5,6 +5,7 @@
 #include <QModelIndex>
 #include <QVariant>
 #include <QList>
+#include <QHash>
 
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
@@ -16,14 +17,17 @@ class TreeItem;
  * initialization.
  */
 
-class FolderTreeModel : public TreeItemModel
-{
+class FolderTreeModel : public TreeItemModel {
     Q_OBJECT
-
-public:
+  public:
     FolderTreeModel(QObject *parent = 0);
     virtual ~FolderTreeModel();
     virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
+    bool directoryHasChildren(const QString& path) const;
+
+  private:
+    // Used for memoizing the results of directoryHasChildren
+    mutable QHash<QString, bool> m_directoryCache;
 };
 
 #endif

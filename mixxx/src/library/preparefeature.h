@@ -36,6 +36,7 @@ class PrepareFeature : public LibraryFeature {
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
+    void refreshLibraryModels();
 
   signals:
     void trackAnalysisProgress(TrackPointer pTrack, int progress);

@@ -47,6 +47,7 @@ class CrateFeature : public LibraryFeature {
     void slotImportPlaylist();
     void slotExportPlaylist();
     void slotCrateTableChanged(int playlistId);
+    void htmlLinkClicked(const QUrl & link);
 
   private:
     QString getRootViewHtml() const;

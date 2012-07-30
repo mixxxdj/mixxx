@@ -64,7 +64,7 @@ void Controller::stopEngine()
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset(QString configPath) {
+void Controller::applyPreset(QString resourcePath) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -80,7 +80,7 @@ void Controller::applyPreset(QString configPath) {
         return;
     }
 
-    m_pEngine->loadScriptFiles(configPath, pPreset->scriptFileNames);
+    m_pEngine->loadScriptFiles(resourcePath, pPreset->scriptFileNames);
     m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
 }
 

@@ -157,9 +157,6 @@ QList<SoundDevice*> SoundManager::getDeviceList(QString filterAPI, bool bOutputD
     //qDebug() << "SoundManager::getDeviceList";
     bool bMatchedCriteria = true;   //Whether or not the current device matched the filtering criteria
 
-    if (m_devices.empty())
-        this->queryDevices();
-
     if (filterAPI == "None")
     {
         QList<SoundDevice*> emptyList;
