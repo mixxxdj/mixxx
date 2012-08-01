@@ -130,14 +130,6 @@ bool EngineDeck::isActive() {
     return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
 }
 
-bool EngineDeck::isPFL() {
-    return true;
-}
-
-bool EngineDeck::isMaster() {
-    return true;
-}
-
 void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
 
     // Skip receiving audio input if passthrough is not active
