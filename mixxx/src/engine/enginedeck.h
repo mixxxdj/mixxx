@@ -49,8 +49,6 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     virtual EngineBuffer* getEngineBuffer();
 
     virtual bool isActive();
-    virtual bool isPFL();
-    virtual bool isMaster();
 
     // Begin vinyl passthrough methods
 

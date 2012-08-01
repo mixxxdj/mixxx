@@ -363,7 +363,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-        
+
         if (!pChannel->isActive()) {
             continue;
         }
@@ -381,16 +381,16 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             needsProcessing = true;
         }
 
-		// Process the buffer if necessary
+        // Process the buffer if necessary
         if (needsProcessing) {
-			pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
-	    }
+            pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+        }
     }
 
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
     mixChannels(headphoneOutput, maxChannels, m_pHead, iBufferSize, &m_headphoneGain);
-    
+
     // Calculate the crossfader gains for left and right side of the crossfader
     float c1_gain, c2_gain;
     EngineXfader::getXfadeGains(c1_gain, c2_gain,
@@ -411,7 +411,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Clipping
     clipping->process(m_pMaster, m_pMaster, iBufferSize);
-    
+
     // Balance values
     float balright = 1.;
     float balleft = 1.;
@@ -440,10 +440,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Head volume and clipping
     SampleUtil::applyGain(m_pHead, m_pHeadVolume->get(), iBufferSize);
-    head_clipping->process(m_pHead, m_pHead, iBufferSize);
+    //head_clipping->process(m_pHead, m_pHead, iBufferSize);
     
     //delay the headphone sound by the appropriate amount
-    m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
+    //m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
