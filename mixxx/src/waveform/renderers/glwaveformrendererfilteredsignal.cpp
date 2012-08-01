@@ -61,7 +61,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     const int lastIndex = int(lastVisualIndex+0.5);
     lastVisualIndex = lastIndex + lastIndex%2;
 
-    // save the GL state set for QPainter
+    // Reset device for native painting
     painter->beginNativePainting();
 
     glEnable(GL_BLEND);
@@ -93,14 +93,14 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     float meanIndex;
 
-    glPushMatrix();
-
-    if( m_alignment == Qt::AlignCenter) {
+    if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
         glLoadIdentity();
         glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
         glLoadIdentity();
 
         glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
@@ -155,6 +155,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glEnd();
     } else { //top || bottom
         glMatrixMode(GL_PROJECTION);
+        glPushMatrix();        
         glLoadIdentity();
         if( m_alignment == Qt::AlignBottom)
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
@@ -162,6 +163,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();        
         glLoadIdentity();
 
         glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
@@ -203,8 +205,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glEnd();
     }
 
-    glPopMatrix();
-
     //DEBUG
     /*glDisable(GL_ALPHA_TEST);
     glBegin(GL_LINE_LOOP);
@@ -217,7 +217,8 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     }
     glEnd();*/
 
-    glDisable(GL_BLEND);
-
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
     painter->endNativePainting();
 }
