@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-07-29 16:18+0000\n"
+"PO-Revision-Date: 2012-07-31 06:24+0000\n"
 "Last-Translator: maximko <Soccket@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-07-30 04:39+0000\n"
-"X-Generator: Launchpad (build 15702)\n"
+"X-Launchpad-Export-Date: 2012-08-01 04:41+0000\n"
+"X-Generator: Launchpad (build 15719)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,12 +24,12 @@ msgstr "Авто DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Поставить в очередь автоматического диджеинга (вниз)"
+msgstr "Поставить в очередь Авто DJ (вниз)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Поставить в очередь автоматического диджеинга (вверх)"
+msgstr "Поставить в очередь Авто DJ (вверх)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
