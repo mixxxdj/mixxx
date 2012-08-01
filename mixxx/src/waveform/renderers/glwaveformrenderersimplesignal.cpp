@@ -58,7 +58,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     const int lastIndex = int(lastVisualIndex+0.5);
     lastVisualIndex = lastIndex + lastIndex%2;
 
-    // save the GL state set for QPainter
+    // Reset device for native painting
     painter->beginNativePainting();
 
     glEnable(GL_BLEND);
@@ -71,14 +71,14 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     float maxAll[2];
 
-    glPushMatrix();
-
-    if( m_alignment == Qt::AlignCenter) {
+    if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
         glLoadIdentity();
         glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
         glLoadIdentity();
 
         glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
@@ -118,6 +118,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glEnd();
     } else { //top || bottom
         glMatrixMode(GL_PROJECTION);
+        glPushMatrix();        
         glLoadIdentity();
         if( m_alignment == Qt::AlignBottom)
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
@@ -125,6 +126,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();        
         glLoadIdentity();
 
         glScalef(1.f,visualGain*m_waveformRenderer->getGain(),1.f);
@@ -152,12 +154,8 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         }
         glEnd();
     }
-
     glPopMatrix();
-
-    glDisable(GL_BLEND);
-
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
     painter->endNativePainting();
 }
-
-
