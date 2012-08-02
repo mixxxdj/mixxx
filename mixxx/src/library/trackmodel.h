@@ -131,6 +131,11 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
+    virtual int fieldIndex(const QString& fieldName) const {
+        Q_UNUSED(fieldName);
+        return 0;
+    }
+
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;

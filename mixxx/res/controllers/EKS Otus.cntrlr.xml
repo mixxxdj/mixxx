@@ -12,7 +12,7 @@
 
         <scriptfiles>
             <file filename="common-hid-packet-parser.js" functionprefix=""/>
-            <file filename="EKS Otus.js" functionprefix="EksOtus"/>
+            <file filename="EKS-Otus.js" functionprefix="EksOtus"/>
         </scriptfiles>
     </controller>
 </MixxxControllerPreset>

@@ -134,6 +134,7 @@ QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
 void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                     WLibrary* libraryWidget,
                                     MixxxKeyboard* keyboard) {
+    Q_UNUSED(sidebarWidget);
 
     QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
 
@@ -182,26 +183,35 @@ void PromoTracksFeature::activateChild(const QModelIndex& index) {
 }
 
 void PromoTracksFeature::onRightClick(const QPoint& globalPos) {
+    Q_UNUSED(globalPos);
 }
 
 void PromoTracksFeature::onRightClickChild(const QPoint& globalPos,
                                             QModelIndex index) {
+    Q_UNUSED(globalPos);
+    Q_UNUSED(index);
 }
 
-bool PromoTracksFeature::dropAccept(QUrl url) {
+bool PromoTracksFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool PromoTracksFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool PromoTracksFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
+    Q_UNUSED(index);
+    Q_UNUSED(urls);
     return false;
 }
 
 bool PromoTracksFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool PromoTracksFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
+                                             QUrl url) {
+    Q_UNUSED(index);
+    Q_UNUSED(url);
     return false;
 }
 void PromoTracksFeature::onLazyChildExpandation(const QModelIndex &index){

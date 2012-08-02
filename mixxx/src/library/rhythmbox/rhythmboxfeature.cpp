@@ -113,14 +113,14 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
-bool RhythmboxFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool RhythmboxFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 
