@@ -683,7 +683,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
         "filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
-        "header_parsed, timesplayed, played, beats_version, beats_sub_version, beats, bpm_lock "
+        "header_parsed, timesplayed, datetime_added, played, beats_version, beats_sub_version, beats, bpm_lock "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -712,6 +712,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             QString bpm = query.value(query.record().indexOf("bpm")).toString();
             QString replaygain = query.value(query.record().indexOf("replaygain")).toString();
             int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
+            QDateTime datetime_added = query.value(query.record().indexOf("datetime_added")).toDateTime();
             int played = query.value(query.record().indexOf("played")).toInt();
             int channels = query.value(query.record().indexOf("channels")).toInt();
             //int filesize = query.value(query.record().indexOf("filesize")).toInt();
@@ -757,6 +758,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             pTrack->setBpmLock(has_bpm_lock);
 
             pTrack->setTimesPlayed(timesplayed);
+            pTrack->setDateAdded(datetime_added);
             pTrack->setPlayed(played);
             pTrack->setChannels(channels);
             pTrack->setType(filetype);
