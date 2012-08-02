@@ -42,6 +42,7 @@ class CrateDAO : public QObject, public virtual DAO {
     // the number of successful insertions.
     int addTracksToCrate(QList<int> trackIdList, int crateId);
     bool removeTrackFromCrate(int trackId, int crateId);
+    bool removeTracksFromCrate(QList<int> ids, int crateId);
     // remove tracks from all crates
     void removeTracksFromCrates(QList<int> ids);
 

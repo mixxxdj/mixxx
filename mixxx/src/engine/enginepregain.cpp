@@ -48,6 +48,8 @@ EnginePregain::EnginePregain(const char * group)
     m_bSmoothFade = false;
     m_fClock=0;
     m_fSumClock=0;
+    m_fReplayGain = 0;
+    m_fOldReplayGainCorrection = 1;
 }
 
 EnginePregain::~EnginePregain()

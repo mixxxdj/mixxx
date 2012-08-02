@@ -130,14 +130,14 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-bool TraktorFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool TraktorFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool TraktorFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool TraktorFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 

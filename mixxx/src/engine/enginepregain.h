@@ -32,7 +32,6 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
 
-
 private:
     ControlLogpotmeter *potmeterPregain;
     ControlObject *m_pTotalGain;
@@ -40,7 +39,7 @@ private:
     ControlObject* m_pPassthroughEnabled;
     static ControlPotmeter *s_pReplayGainBoost;
     static ControlObject *s_pEnableReplayGain;
-    float m_fReplayGainCorrection;
+    float m_fReplayGainCorrection, m_fReplayGain, m_fOldReplayGainCorrection;
     bool m_bSmoothFade;
     float m_fClock;
     float m_fSumClock;

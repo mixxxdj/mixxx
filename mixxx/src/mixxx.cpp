@@ -622,6 +622,7 @@ MixxxApp::~MixxxApp()
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
    delete m_pKeyboard;
+   delete m_pKbdConfigEmpty;
 }
 
 int MixxxApp::noSoundDlg(void)
