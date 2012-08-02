@@ -30,7 +30,7 @@ void WaveformRendererFilteredSignal::onResize() {
 }
 
 void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
-
+    Q_UNUSED(node);
 }
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,

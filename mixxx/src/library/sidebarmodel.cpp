@@ -90,11 +90,10 @@ QModelIndex SidebarModel::index(int row, int column,
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
     //qDebug() << "SidebarModel::parent index=" << index.data();
     if (index.isValid()) {
-        /* If we have selected the root of a library feature
-         * its internal pointer is the current sidebar object model
-         * A root library feature has no parent and thus we return
-         * an invalid QModelIndex
-         */
+        // If we have selected the root of a library feature
+        // its internal pointer is the current sidebar object model
+        // A root library feature has no parent and thus we return
+        // an invalid QModelIndex
         if (index.internalPointer() == this) {
             return QModelIndex();
         } else {
@@ -242,16 +241,16 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     }
 }
 
-bool SidebarModel::dropAccept(const QModelIndex& index, QUrl url) {
+bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            return m_sFeatures[index.row()]->dropAccept(url);
+            return m_sFeatures[index.row()]->dropAccept(urls);
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                return feature->dropAcceptChild(index, url);
+                return feature->dropAcceptChild(index, urls);
             }
         }
     }

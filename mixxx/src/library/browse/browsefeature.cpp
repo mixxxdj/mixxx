@@ -151,14 +151,14 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-bool BrowseFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool BrowseFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool BrowseFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool BrowseFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 
