@@ -103,6 +103,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
         m_pBuffer->process(0, pOut, iBufferSize);
         // Emulate vinyl sounds
         m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+
         m_bPassthroughWasActive = false;
     }
 

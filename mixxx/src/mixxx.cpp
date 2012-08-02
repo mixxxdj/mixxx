@@ -314,10 +314,14 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
         // Add deck to the player manager
         Deck* pDeck = m_pPlayerManager->addDeck();
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
 
+#ifdef __VINYLCONTROL__
+
+        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
         // Register vinyl input signal with deck for passthrough
         m_pSoundManager->registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, deck), pEngineDeck);
+
+#endif
 
     }
 

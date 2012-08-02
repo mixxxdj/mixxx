@@ -74,7 +74,7 @@ private slots:
 
     void slotWaveformSummaryUpdated();
 
-private:
+  private:
     /** append the waveform overview pixmap according to available data in waveform */
     bool drawNextPixmapPart();
     inline int valueToPosition( float value) const {
@@ -84,7 +84,6 @@ private:
         return (float(position) - m_b) / m_a;
     }
 
-private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectThreadMain* m_totalGainControl;
@@ -92,6 +91,7 @@ private:
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;
     QString m_sPrefix;
+    ControlObjectThreadMain* m_trackSamplesControl;
 
     Waveform* m_waveform;
     QPixmap m_waveformPixmap;
@@ -100,7 +100,6 @@ private:
     float m_waveformPeak;
 
     /** Hold the last visual sample processed to generate the pixmap*/
-    int m_sampleDuration;
     int m_actualCompletion;
     double m_visualSamplesByPixel;
     int m_renderSampleLimit;
