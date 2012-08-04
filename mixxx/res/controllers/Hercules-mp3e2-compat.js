@@ -65,7 +65,6 @@ MP3e2.incomingData = function(data, length) {
         var group;
         var f = null;
 
-        print(midino);
         if (status == 0xb0) {
             if ((midino > 0x38) || 
                 ((midino < 0x34) && (midino & 1))) {
