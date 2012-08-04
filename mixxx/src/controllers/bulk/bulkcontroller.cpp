@@ -51,7 +51,7 @@ void BulkReader::run() {
         // block for a short while (500ms)
         int transferred;
         int result;
-        
+
         result = libusb_bulk_transfer(m_phandle,
                                       m_in_epaddr,
                                       data, sizeof data,
@@ -61,7 +61,9 @@ void BulkReader::run() {
             QByteArray outData((char *)data, transferred);
             emit(incomingData(outData));
         }
+
     }
+    qDebug() << "Stopped Reader";
 }
 
 static QString
