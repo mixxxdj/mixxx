@@ -6,14 +6,14 @@ msgstr ""
 "Project-Id-Version: Mixxx\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-07-20 21:07+0000\n"
-"Last-Translator: Paolo Zeta <Unknown>\n"
+"PO-Revision-Date: 2012-08-03 16:52+0000\n"
+"Last-Translator: Mattia Tartaglia <staffa@irule.it>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-07-21 04:35+0000\n"
-"X-Generator: Launchpad (build 15654)\n"
+"X-Launchpad-Export-Date: 2012-08-04 04:37+0000\n"
+"X-Generator: Launchpad (build 15742)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -334,7 +334,7 @@ msgstr "Posizione"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Libreria Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -375,7 +375,7 @@ msgstr "Eccezione non catturara alla linea %1 nel codice immesso: %2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr ""
+msgstr "Errore dello script del controller"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
@@ -397,7 +397,7 @@ msgstr "Finestra di dialogo"
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Input"
 
 #: ControllerMappingDlg#3
 msgid ""
@@ -414,12 +414,12 @@ msgstr "Controlli"
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Rimuovi"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -563,7 +563,7 @@ msgstr "DJ automatico"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "Va fermato un deck per abilitare la modalità Auto-DJ"
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
