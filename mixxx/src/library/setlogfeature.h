@@ -23,7 +23,7 @@ public:
     QVariant title();
     QIcon getIcon();
 
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,

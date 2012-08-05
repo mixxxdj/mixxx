@@ -66,14 +66,14 @@ void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 }
 
-bool RecordingFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool RecordingFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool RecordingFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool RecordingFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 

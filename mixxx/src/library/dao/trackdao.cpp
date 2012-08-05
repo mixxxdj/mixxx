@@ -704,6 +704,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             QString bpm = query.value(query.record().indexOf("bpm")).toString();
             QString replaygain = query.value(query.record().indexOf("replaygain")).toString();
             int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
+            QDateTime datetime_added = query.value(query.record().indexOf("datetime_added")).toDateTime();
             int played = query.value(query.record().indexOf("played")).toInt();
             int channels = query.value(query.record().indexOf("channels")).toInt();
             //int filesize = query.value(query.record().indexOf("filesize")).toInt();
@@ -749,6 +750,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             pTrack->setBpmLock(has_bpm_lock);
 
             pTrack->setTimesPlayed(timesplayed);
+            pTrack->setDateAdded(datetime_added);
             pTrack->setPlayed(played);
             pTrack->setChannels(channels);
             pTrack->setType(filetype);
