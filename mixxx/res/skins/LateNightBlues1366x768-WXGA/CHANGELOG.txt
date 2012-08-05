@@ -17,6 +17,9 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.07	(04/08/2012)
+* Fix: Show correct tooltip for artist/track name display in sample decks
+
 v1.11.0.06	(28/05/2012)
 * Fix: Swap Delay & LFO knobs for Flanger FX , lp:1004826
   The order is now like in other skins (e.g. Deere) and GUI labels actually match functionality. 
