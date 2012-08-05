@@ -34,8 +34,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
-    if (event->mimeData()->hasUrls())
-    {
+    if (event->mimeData()->hasUrls()) {
         event->acceptProposedAction();
     }
     //QTreeView::dragEnterEvent(event);
@@ -46,7 +45,6 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
-
     // Start a timer to auto-expand sections the user hovers on.
     QPoint pos = event->pos();
     QModelIndex index = indexAt(pos);
@@ -55,33 +53,22 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
         m_hoverIndex = index;
         m_expandTimer.start(expand_time, this);
     }
-
     // This has to be here instead of after, otherwise all drags will be
     // rejected -- rryan 3/2011
     QTreeView::dragMoveEvent(event);
-
-    if (event->mimeData()->hasUrls())
-    {
+    if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
-
-        QUrl url;
-
         //Drag and drop within this widget
-        if (event->source() == this && event->possibleActions() & Qt::MoveAction)
-        {
+        if (event->source() == this && event->possibleActions() & Qt::MoveAction) {
             //Do nothing.
              event->ignore();
-        }
-        else
-        {
+        } else {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
             if (sidebarModel) {
-                foreach (url, urls)
-                {
+                foreach (QUrl url, urls) {
                     QModelIndex destIndex = this->indexAt(event->pos());
-                    if (!sidebarModel->dragMoveAccept(destIndex, url))
-                    {
+                    if (!sidebarModel->dragMoveAccept(destIndex, url)) {
                         //We only need one URL to be invalid for us
                         //to reject the whole drag...
                         //(eg. you may have tried to drag two MP3's and an EXE)
@@ -95,10 +82,8 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
             else
                 event->ignore();
         }
-    }
-    else
+    } else
         event->ignore();
-
 }
 
 void WLibrarySidebar::timerEvent(QTimerEvent *event) {
@@ -116,50 +101,29 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
     QTreeView::timerEvent(event);
 }
 
-/** Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view */
+// Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
-        QUrl url;
-
         //Drag and drop within this widget
-        if (event->source() == this && event->possibleActions() & Qt::MoveAction)
-        {
-            //Do nothing.
-             event->ignore();
-        }
-        else
-        {
+        if (event->source() == this && event->possibleActions() & Qt::MoveAction) {
+            event->ignore();
+        } else {
             //Reset the selected items (if you had anything highlighted, it clears it)
             //this->selectionModel()->clear();
-
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
-
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
-            bool accepted = false;
             if (sidebarModel) {
-                foreach (url, urls)
-                {
-                    //qDebug() << "dropEvent" << url;
-                    QModelIndex destIndex = indexAt(event->pos());
-                    if (sidebarModel->dropAccept(destIndex, url))
-                    {
-                        accepted = true;
-
-                    }
+                QModelIndex destIndex = indexAt(event->pos());
+                if (sidebarModel->dropAccept(destIndex, urls)) {
+                    event->acceptProposedAction();
+                } else {
+                    event->ignore();
                 }
             }
-
-            if (accepted)
-                event->acceptProposedAction();
-            else
-                event->ignore();
         }
-
-
         //emit(trackDropped(name));
-
         //repaintEverything();
     } else {
         event->ignore();

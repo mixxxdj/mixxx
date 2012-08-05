@@ -221,8 +221,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 }
 
-bool BasePlaylistFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool BasePlaylistFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 

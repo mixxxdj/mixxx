@@ -103,14 +103,14 @@ void PrepareFeature::onRightClickChild(const QPoint& globalPos,
     Q_UNUSED(index);
 }
 
-bool PrepareFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool PrepareFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool PrepareFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool PrepareFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 

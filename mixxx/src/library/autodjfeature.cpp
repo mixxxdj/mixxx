@@ -72,40 +72,35 @@ void AutoDJFeature::onRightClickChild(const QPoint& /*globalPos*/,
                                       QModelIndex /*index*/) {
 }
 
-bool AutoDJFeature::dropAccept(QUrl url) {
+bool AutoDJFeature::dropAccept(QList<QUrl> urls) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-
-    //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
-    //     instead of toString()
-    QFileInfo file(url.toLocalFile());
-
-    if (!SoundSourceProxy::isFilenameSupported(file.fileName())) {
-        return false;
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
+        //     instead of toString()
+        QFileInfo file = url.toLocalFile();
+        if (SoundSourceProxy::isFilenameSupported(file.fileName())) {
+            files.append(file);
+        }
     }
+    QList<int> trackIds = trackDao.addTracks(files, true);
 
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    int trackId = trackDao.addTrack(file, true);
-
-    if (trackId < 0) {
-        return false;
+    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    // remove tracks that could not be added
+    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+        if (trackIds.at(trackId) < 0) {
+            trackIds.removeAt(trackId--);
+        }
     }
-
-    // TODO(XXX) No feedback on whether this worked.
-    if (m_pAutoDJView) {
-        m_pAutoDJView->appendTrack(trackId);
-    } else {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-        m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
-    }
-
+    m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     return true;
 }
 
-bool AutoDJFeature::dropAcceptChild(const QModelIndex& /*index*/, QUrl /*url*/) {
+bool AutoDJFeature::dropAcceptChild(const QModelIndex& /*index*/, QList<QUrl> /*url*/) {
     return false;
 }
 
