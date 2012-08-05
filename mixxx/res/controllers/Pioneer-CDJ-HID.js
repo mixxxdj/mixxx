@@ -71,7 +71,7 @@ function PioneerCDJController() {
         // TODO - Sean: this is just example, fill in correct packet
         // size, header bytes control field offesets but bits to make
         // it work.
-        packet = new HIDPacket("button_leds", [0x1],36);
+        packet = new HIDPacket("lights", [0x1],36);
         packet.addOutput("hid","screen_acue",4,"B",0x1);
         packet.addOutput("hid","remain",4,"B",0x2);
         packet.addOutput("hid","reloop_exit",4,"B",0x8);
@@ -200,10 +200,10 @@ PioneerCDJHID.init = function(id) {
 
     // Map beatloop sizes to actual mixxx values
     PioneerCDJHID.beatLoopSizeMap = {
-        beatloop_2: "16", beatloop_2_shift: "1",
-        beatloop_4: "8", beatloop_4_shift: "0.5",
-        beatloop_8: "4", beatloop_8_shift: "0.25",
-        beatloop_16: "2", beatloop_16_shift: "0.125"
+        beatloop_2: "16", beatloop_2_shift: "1",      beatloop_2_hotcue: "4",
+        beatloop_4: "8",  beatloop_4_shift: "0.5",    beatloop_4_hotcue: "3",
+        beatloop_8: "4",  beatloop_8_shift: "0.25",   beatloop_8_hotcue: "2",
+        beatloop_16: "2", beatloop_16_shift: "0.125", beatloop_16_hotcue: "1",
     }
 
     // Call the HID packet parser initializers
@@ -240,7 +240,7 @@ PioneerCDJHID.shutdown = function() {
 
 // Scaling of pregain (0-0xff) to gain value
 PioneerCDJHID.pregainScaler = function (group,name,value) {
-    return script.absoluteLin(value, 0, 4, 0, 0xff);
+    return script.absoluteNonLin(value,0,1,4,0,0xff);
 }
 
 // Mandatory default handler for incoming packets
@@ -283,6 +283,8 @@ PioneerCDJHID.registerCallbacks = function() {
 
     // Handle beatloop buttons with modifier + callback
     controller.linkModifier("hid","beat_select","beatloop_size");
+    controller.linkModifier("hid","cue_memory","hotcue_set");
+    controller.linkModifier("hid","cue_delete","hotcue_delete");
     controller.setCallback("control","hid","beatloop_16",PioneerCDJHID.beatloop);
     controller.setCallback("control","hid","beatloop_8",PioneerCDJHID.beatloop);
     controller.setCallback("control","hid","beatloop_4",PioneerCDJHID.beatloop);
@@ -294,13 +296,12 @@ PioneerCDJHID.registerCallbacks = function() {
     // we ignore the other input fields for jog control. Feel free to adopt.
     controller.linkControl("hid","jog_touch","deck","jog_touch");
     controller.linkControl("hid","jog_wheel","deck","jog_wheel");
-
+     
     // Standard HIDController scalers for jog functionality. 
     // Not related to field specifications names above!
     controller.setScaler("jog",PioneerCDJHID.jogScaler);
     controller.setScaler("jog_scratch",PioneerCDJHID.jogPositionDelta);
 
-    // TODO Fix these if we want to actually follow CDJ controls strictly.
     // Misuse some buttons for something more useful in mixxx
     controller.linkControl("hid","cue_previous","deck","loop_halve");
     controller.linkControl("hid","cue_next","deck","loop_double");
@@ -311,6 +312,10 @@ PioneerCDJHID.registerCallbacks = function() {
     // Use vinyl speed adjustment for pregain
     controller.linkControl("hid","vinyl_speed_knob","deck","pregain");
     controller.setScaler("pregain",PioneerCDJHID.pregainScaler);
+     
+    // Unused buttons
+    // controller.linkControl("hid","menu_back","deck","");
+    // controller.linkControl("hid","tag_track","deck","");
 
     controller.linkOutput("hid","play","deck","play","PioneerCDJHID.updateLED");
     controller.linkOutput("hid","cue","deck","cue_default","PioneerCDJHID.updateLED");
@@ -322,10 +327,6 @@ PioneerCDJHID.registerCallbacks = function() {
 
     // Use 'eject' button for deck switching
     controller.setCallback("control","hid","eject",PioneerCDJHID.switchDeck);
-
-    // Unused, useful buttons to map - MAP to something!
-    // controller.linkControl("hid","menu_back","deck","");
-    // controller.linkControl("hid","tag_track","deck","");
 
     HIDDebug("CDJ Controls And Callbacks Registered");
 }
@@ -360,7 +361,7 @@ PioneerCDJHID.disconnectDeck = function() {
 PioneerCDJHID.connectDeck = function() {
     var controller = PioneerCDJHID.controller;
     var group = controller.resolveDeckGroup(controller.activeDeck);
-    var output_packet = controller.getOutputPacket("button_leds");
+    var output_packet = controller.getOutputPacket("lights");
 
     engine.connectControl(group,"duration","PioneerCDJHID.durationCallback");
     engine.connectControl(group,"playposition","PioneerCDJHID.positionCallback");
@@ -463,7 +464,7 @@ PioneerCDJHID.setTime = function(value) {
 // Control callback when track duration changes (new track is loaded)
 // Update all other outputs as side effect, because track changed
 PioneerCDJHID.durationCallback = function(value,group,key) {
-    var output_packet = PioneerCDJHID.controller.getOutputPacket("button_leds");
+    var output_packet = PioneerCDJHID.controller.getOutputPacket("lights");
     PioneerCDJHID.setDuration(value);
     PioneerCDJHID.setBPM();
     PioneerCDJHID.setRate();
@@ -473,21 +474,21 @@ PioneerCDJHID.durationCallback = function(value,group,key) {
 
 // Update current track location on CDJ display
 PioneerCDJHID.positionCallback = function(value,group,key) {
-    var output_packet = PioneerCDJHID.controller.getOutputPacket("button_leds");
+    var output_packet = PioneerCDJHID.controller.getOutputPacket("lights");
     PioneerCDJHID.setTime(value);
     output_packet.send();
 }
 
 // Control callback to update track BPM value
 PioneerCDJHID.bpmCallback = function(value) {
-    var output_packet = PioneerCDJHID.controller.getOutputPacket("button_leds");
+    var output_packet = PioneerCDJHID.controller.getOutputPacket("lights");
     PioneerCDJHID.setBPM(value);
     output_packet.send();
 }
 
 // Control callback to update track BPM value
 PioneerCDJHID.rateCallback = function(value) {
-    var output_packet = PioneerCDJHID.controller.getOutputPacket("button_leds");
+    var output_packet = PioneerCDJHID.controller.getOutputPacket("lights");
     PioneerCDJHID.setRate(value);
     output_packet.send();
 }
@@ -531,22 +532,32 @@ PioneerCDJHID.track = function(field) {
     }
 }
 
-// Set given size beatloop, light LED for beatloop
+// Set given size beatloop or a hotcue, light LED for beatloop
 PioneerCDJHID.beatloop = function(field) {
     var controller = PioneerCDJHID.controller;
+    var group = controller.resolveDeckGroup(controller.activeDeck); 
+    var size;
+
     if (field.value==controller.buttonStates.released)
         return;
 
-    if (controller.modifiers.get("beatloop_size")) {
+    if (controller.modifiers.get("hotcue_set")) {
+        size = PioneerCDJHID.beatLoopSizeMap[field.name+"_hotcue"];
+        control = "hotcue_" + size + "_activate";
+    } else if (controller.modifiers.get("hotcue_delete")) {
+        size = PioneerCDJHID.beatLoopSizeMap[field.name+"_hotcue"];
+        control = "hotcue_" + size + "_clear";
+    } else if (controller.modifiers.get("beatloop_size")) {
         size = PioneerCDJHID.beatLoopSizeMap[field.name+"_shift"] ;
+        control = "beatloop_" + size + "_activate";
+        engine.setValue(group,control,true);
     } else {
         size = PioneerCDJHID.beatLoopSizeMap[field.name];
+        control = "beatloop_" + size + "_activate";
     }
+    engine.setValue(group,control,true);
 
-    control = "beatloop_" + size + "_activate";
-    engine.setValue(controller.resolveDeckGroup(controller.activeDeck),control,true);
-
-    var output_packet = controller.getOutputPacket("button_leds");
+    var output_packet = controller.getOutputPacket("lights");
     controller.setOutput("hid","beatloop_16",controller.LEDColors.off);
     controller.setOutput("hid","beatloop_8",controller.LEDColors.off);
     controller.setOutput("hid","beatloop_4",controller.LEDColors.off);
@@ -569,7 +580,7 @@ PioneerCDJHID.reloop_exit = function(field) {
         "reloop_exit",
         true 
     );
-    var output_packet = controller.getOutputPacket("button_leds");
+    var output_packet = controller.getOutputPacket("lights");
     controller.setOutput("hid","beatloop_16",controller.LEDColors.off);
     controller.setOutput("hid","beatloop_8",controller.LEDColors.off);
     controller.setOutput("hid","beatloop_4",controller.LEDColors.off);

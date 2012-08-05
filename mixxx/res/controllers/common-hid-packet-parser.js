@@ -1190,11 +1190,20 @@ HIDController.prototype.processControl = function(field) {
     }
 }
 
+// Toggle control state from toggle button
+HIDController.prototype.toggle = function(group,control,value) {
+    if (value==this.buttonStates.released)
+        return;
+    var status = (engine.getValue(group,control)==true) ? false : true;
+    engine.setValue(group,control,status);
+}
+
 // Toggle play/pause state
 HIDController.prototype.togglePlay = function(group,field) {
     if (field.value==this.buttonStates.released)
         return;
-    if (engine.getValue(group,'play'))
+    var status = (engine.getValue(group,"play")) ? false : true;
+    if (!status)
         engine.setValue(group,'stop',true);
     else
         engine.setValue(group,'play',true);
