@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-07-11 13:01+0000\n"
-"Last-Translator: Damian van den Berg <ajax-damian@Live.nl>\n"
+"PO-Revision-Date: 2012-08-05 00:23+0000\n"
+"Last-Translator: Michael Beck <maabeck@hotmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-07-12 04:39+0000\n"
-"X-Generator: Launchpad (build 15593)\n"
+"X-Launchpad-Export-Date: 2012-08-05 04:38+0000\n"
+"X-Generator: Launchpad (build 15742)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -693,6 +693,8 @@ msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
 "analyzing the beats to discard outliers."
 msgstr ""
+"Pogingen om de fase (eerste beat) van de fixed-tempo beatgrids te corrigeren "
+"door beats te analyseren en zo uitschieters te verwijderen."
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
@@ -765,7 +767,7 @@ msgstr "Volledig nummer analyzeren"
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr ""
+msgstr "Controller Learning Wizard"
 
 #: DlgControllerLearning#2
 msgid ""
@@ -773,6 +775,10 @@ msgid ""
 "move a control on your controller to map it. Repeat this as many times as "
 "you wish. When you are finished mapping controls, click Done."
 msgstr ""
+"Klik op een regelaar in de Mixxx interface of kies er een uit de lijst. "
+"Gebruik dan een regelaar op je controller om ze te koppelen. Herhaal dit zo "
+"vaak als je wilt. Als je klaar bent met het koppelen van de regelaars, klikt "
+"u op Done."
 
 #: DlgControllerLearning#3
 msgid "Done"
@@ -786,7 +792,7 @@ msgstr ""
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
-msgstr ""
+msgstr "Kies Control"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
@@ -832,7 +838,7 @@ msgstr "Transport"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
-msgstr ""
+msgstr "Strip-search met behulp van een track"
 
 #: DlgControllerLearning#17
 msgid "Play button"
@@ -888,7 +894,7 @@ msgstr "BPM en Synchronizatie"
 
 #: DlgControllerLearning#30
 msgid "BPM tap button"
-msgstr ""
+msgstr "BPM tiptoets"
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
@@ -896,7 +902,7 @@ msgstr "Beatgrid aanpassen"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
-msgstr ""
+msgstr "Kies quantize mode"
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
@@ -912,11 +918,11 @@ msgstr "Beat sync (enkel fase)"
 
 #: DlgControllerLearning#36
 msgid "Pitch and Rate"
-msgstr ""
+msgstr "Pitch en Rate"
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
-msgstr ""
+msgstr "Kies keylock mode"
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
@@ -994,15 +1000,15 @@ msgstr "Vinyl controle aan/uit schakelen"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
-msgstr ""
+msgstr "Kies vinyl-controle wachtrij mode (UIT/EENMALIG/HOT)"
 
 #: DlgControllerLearning#57
 msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
-msgstr ""
+msgstr "Kies vinyl-controle modus (ABS/REL/CONST)"
 
 #: DlgControllerLearning#58
 msgid "Cues / Hotcues"
-msgstr ""
+msgstr "Wachtrijen / Hot wachtrijen"
 
 #: DlgControllerLearning#59
 msgid "Cue button"
@@ -1018,7 +1024,7 @@ msgstr "Ga naar cue punt en stop"
 
 #: DlgControllerLearning#62
 msgid "Set or jump to hotcue %1"
-msgstr ""
+msgstr "Stel in of spring naar hot wachtrij %1"
 
 #: DlgControllerLearning#63
 msgid "Clear hotcue %1"
@@ -1046,7 +1052,7 @@ msgstr "Loop Uit knop"
 
 #: DlgControllerLearning#69
 msgid "Reloop / Exit button"
-msgstr ""
+msgstr "Reloop / Exit knop"
 
 #: DlgControllerLearning#70
 msgid "Halve the current loop's length"
@@ -1133,7 +1139,7 @@ msgstr "Microfoon kanaal richting (b.v. links, rechts, midden)"
 
 #: DlgControllerLearning#90
 msgid "User Interface"
-msgstr ""
+msgstr "Gebruikersinterface"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
@@ -1251,7 +1257,7 @@ msgstr "Dialoogvenster"
 
 #: DlgPrefControllerDlg#2
 msgid "Controller Name"
-msgstr ""
+msgstr "Naam van externe besturing"
 
 #: DlgPrefControllerDlg#3
 msgid "Enabled"
@@ -1261,6 +1267,7 @@ msgstr "Ingeschakeld"
 msgid ""
 "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
 msgstr ""
+"<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
 
 #: DlgPrefControllerDlg#5
 msgid "TextLabel"
@@ -1284,11 +1291,11 @@ msgstr "Ondersteuning:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
-msgstr ""
+msgstr "Klik hier om de Controller Learning wizard te starten"
 
 #: DlgPrefControllerDlg#11
 msgid "Learning Wizard (MIDI Only)"
-msgstr ""
+msgstr "Learning wizard (Alleen MIDI)"
 
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
@@ -1336,7 +1343,7 @@ msgstr "8% (Technics SL-1210)"
 
 #: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
-msgstr ""
+msgstr "Omlaag verhoogd de snelheid (Technics SL-1210)"
 
 #: DlgPrefControls#12
 msgid "10%"
