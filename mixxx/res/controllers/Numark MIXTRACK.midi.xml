@@ -657,19 +657,6 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x5a</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
                 <key>filterMidKill</key>
                 <options>
                     <normal/>

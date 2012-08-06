@@ -1,6 +1,8 @@
 <MixxxMIDIPreset mixxxVersion="1.8.0+" schemaVersion="1">
   <info>
     <name>DJ-Tech i-Mix Reload</name>
+    <author></author>
+    <description>MIDI mapping for DJ-Tech i-Mix Reload</description>
   </info>
   <controller id="DJ-Tech i-Mix Reload">
     <scriptfiles>

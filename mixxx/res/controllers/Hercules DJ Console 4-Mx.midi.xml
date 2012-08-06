@@ -2,6 +2,7 @@
     <info>
       <author>deusdiabolus</author>
       <name>Hercules DJ Console 4-Mx</name>
+      <description>Mapping for Hercules DJ Console 4-Mx</description>
     </info>
     <controller id="DJ Console 4-Mx MIDI">
         <scriptfiles>

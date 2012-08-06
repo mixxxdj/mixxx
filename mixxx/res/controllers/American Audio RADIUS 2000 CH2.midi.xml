@@ -1,6 +1,8 @@
 <MixxxMIDIPreset mixxxVersion="1.10.0-beta1+" schemaVersion="1">
     <info>
         <name>American Audio Radius 2000 CH2</name>
+        <author></author>
+        <description>American Audio Radius 2000 mapping for Deck 2</description>
     </info>
     <controller id="Radius 2000 MIDI 1">
         <scriptfiles>
@@ -58,16 +60,6 @@
                 </options>
             </control>
             <control>
-                <status>0x90</status>
-                <midino>0x2a</midino>
-                <group>[Channel2]</group>
-                <key>RADIUS2000.play</key>
-                <description></description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-	    <control>
                 <status>0x90</status>
                 <midino>0x2a</midino>
                 <group>[Channel2]</group>
