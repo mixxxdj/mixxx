@@ -2,8 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>MidiTech MidiControl</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file MidiTech-MidiControl.midi.xml for Mixxx 1.6.2</description>
+    <author></author>
+    <description>MIDI Mapping for MidiTech MidiControl</description>
   </info>
   <controller id="MidiTech-MidiControl" port="Port">
     <controls>
