@@ -11,6 +11,13 @@
 
 #include <time.h>
 #include <stdio.h>
+
+
+/* This is for my debugging, because I like typing
+       DUMP();
+   more than typing
+       qDebug() << "foo";
+ */
 #ifdef NODUMP
 #  define DUMPf(fmt, args...)
 #else

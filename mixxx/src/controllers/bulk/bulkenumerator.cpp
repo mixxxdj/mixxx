@@ -12,6 +12,7 @@
 #include "controllers/bulk/bulksupported.h"
 
 BulkEnumerator::BulkEnumerator() : ControllerEnumerator() {
+    libusb_init(NULL);
 }
 
 BulkEnumerator::~BulkEnumerator() {
