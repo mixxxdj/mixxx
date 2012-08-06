@@ -18,7 +18,7 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
- #include <QDialog>
+#include <QDialog>
 
 #include <qevent.h>
 #include <QtGui>
@@ -36,7 +36,7 @@ class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
 class DlgPrefBpm;
-class DlgPrefKeyNotationFormat;
+class DlgPrefKey;
 class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
@@ -88,7 +88,7 @@ private:
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
-    DlgPrefKeyNotationFormat* m_wkey;
+    DlgPrefKey* m_wkey;
     DlgPrefBpm* m_wbpm;
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;

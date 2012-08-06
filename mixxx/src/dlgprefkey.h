@@ -1,5 +1,3 @@
-
-
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -14,27 +12,54 @@
 
 #include "ui_dlgprefkeydlg.h"
 #include "configobject.h"
-
+#include "vamp/vamppluginloader.h"
 #include <qlist.h>
 
 class QWidget;
 
-class DlgPrefKeyNotationFormat : public QWidget, Ui::DlgPrefKeyNotationFormatDlg  {
+class DlgPrefKey : public QWidget, Ui::DlgPrefKEYDlg {
     Q_OBJECT
 public:
-    DlgPrefKeyNotationFormat(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefKeyNotationFormat();
+    DlgPrefKey(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    ~DlgPrefKey();
 public slots:
 
      /** Apply changes to widget */
     void slotApply();
     void slotUpdate();
+
+private slots:
+   // void pluginSelected(int i);
+   // void analyserEnabled(int i);
+    void writeTagsEnabled(int i);
+    void firstLastEnabled(int i);
+    void setDefaults();
+    void reanalyzeEnabled(int i);
+    void skipRelevantEnabled(int i);
+   // void minBpmRangeChanged(int value);
+   // void maxBpmRangeChanged(int value);
+  //  void slotReanalyzeChanged(int value);
+
+//    void on_bfirstLastEnabled_released();
+
+  //  void on_bfirstLastEnabled_clicked();
+
 signals:
     void apply(const QString &);
 private:
+   // void populate();
+    void loadSettings();
+    /** Pointer to config object */
+    ConfigObject<ConfigValue>* m_pconfig;
+    QList<QString> m_listName;
+    QList<QString> m_listLibrary, m_listIdentifier;
+    QString m_selectedAnalyser;
+   // int m_minBpm;
+    //int m_maxBpm;
+    bool m_bwriteTagsEnabled, m_bfirstLastEnabled, m_breanalyzeEnabled, m_bskipRelevantEnabled;// m_bReanalyze;
 
       /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
+ //   ConfigObject<ConfigValue> *config;
 };
 
 #endif

@@ -94,7 +94,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     m_wbpm = new DlgPrefBpm(this, config);
     addPageWidget(m_wbpm);
 #endif
-    m_wkey = new DlgPrefKeyNotationFormat(this, config);
+    m_wkey = new DlgPrefKey(this, config);
     addPageWidget(m_wkey);
     m_wreplaygain = new DlgPrefReplayGain(this, config);
     addPageWidget(m_wreplaygain);

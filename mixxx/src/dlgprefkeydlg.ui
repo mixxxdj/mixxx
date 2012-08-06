@@ -1,12 +1,13 @@
-<ui version="4.0" >
- <class>DlgPrefKeyNotationFormatDlg</class>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefKEYDlg</class>
  <widget class="QWidget" name="DlgPrefKEYDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>433</width>
-    <height>446</height>
+    <height>499</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,98 +19,58 @@
      <property name="title">
       <string>Miscellaneous</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="checkBox_3">
-        <property name="text">
-         <string>Write to tags automatically during batch processing</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox_4">
-        <property name="text">
-         <string>Skip file with existing data in relevant tags</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="grpTags">
-     <property name="title">
-      <string>Tagging files</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="comboBoxTagsToWrite">
-        <item>
-         <property name="text">
-          <string>Keys</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Custom codes</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Both</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_what_to_write">
-        <property name="text">
-         <string>What to write:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_where_to_write">
-        <property name="text">
-         <string>Where to write:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="chkCommentTag">
-        <property name="text">
-         <string>Comment tag</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QCheckBox" name="chkKeyTag">
-        <property name="text">
-         <string>Key tag</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QCheckBox" name="chkGroupTag">
-        <property name="text">
-         <string>Grouping tag</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QCheckBox" name="bskipRelevantEnabled">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>70</y>
+        <width>310</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Skip file with existing data in relevant tags</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="bwriteTagsEnabled">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>377</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Write to tags</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="bfirstLastEnabled">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>377</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Analyse only first and last 30 seconds of each track</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="breanalyzeEnabled">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>90</y>
+        <width>377</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Reanalyse key values from 3rd party software</string>
+      </property>
+     </widget>
     </widget>
    </item>
    <item>

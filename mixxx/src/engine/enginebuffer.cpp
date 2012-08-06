@@ -54,6 +54,7 @@
 
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
+bool first = false;
 
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
     m_engineLock(QMutex::Recursive),
@@ -234,7 +235,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pEject, SIGNAL(valueChanged(double)),
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
-
+    first=true;
     //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
@@ -571,8 +572,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
         keyrate = m_pKeyControl->getRawRate();
-        qDebug()<<m_pKeylock->get() << " " << m_pTempolock->get();
-        qDebug()<<(m_pScale!=m_pScaleST)<<" ";
+       // qDebug()<<m_pKeylock->get() << " " << m_pTempolock->get();
+        //qDebug()<<(m_pScale!=m_pScaleST)<<" ";
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
@@ -598,7 +599,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
         }
-        m_pScale->setKey(keyrate);
+       // qDebug()<<keyrate;
+        if(m_pTempolock->get())m_pScale->setKey(keyrate);
 
         // If the rate has changed, set it in the scale object
         if (rate != rate_old || m_bScalerChanged) {
@@ -620,8 +622,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
            // if (keyrate!=0)m_pScale->setKey(keyrate);
 
             if (baserate > 0) //Prevent division by 0
-                rate = baserate*m_pScale->setTempo(rate/baserate);
-            m_pScale->setBaseRate(baserate);
+                if(!first) rate = baserate*m_pScale->setTempo(rate/baserate);
+            //first = false;
+            if(!first) m_pScale->setBaseRate(baserate);
+
             rate_old = rate;
             // Scaler is up to date now.
             m_bScalerChanged = false;
@@ -659,11 +663,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
             // Perform scaling of Reader buffer into buffer.
-            output = m_pScale->scale(0,
-                                     iBufferSize,
-                                     0,
-                                     0);
-            double samplesRead = m_pScale->getNewPlaypos();
+            //if(!first)output = m_pScale->scale(0,iBufferSize,0,0);
+            output = m_pScale->scale(0,iBufferSize,0,0);
+            //first = false;
+            double samplesRead=0;
+            if(!first) samplesRead = m_pScale->getNewPlaypos();
+            first=false;
 
             // qDebug() << "sourceSamples used " << iSourceSamples
             //          <<" samplesRead " << samplesRead

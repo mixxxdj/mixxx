@@ -27,7 +27,7 @@ class AnalyserKey: public Analyser {
   private:
     //QVector<double> correctedBeats ( QVector<double> rawbeats, bool bypass);
     bool m_bPass;
-    ConfigObject<ConfigValue> *m_pConfigAVT;
+    //ConfigObject<ConfigValue> *m_pConfigAVT;
     VampAnalyser* mvamp;
   /*  KeyFinder::KeyFinder keyfinderKey;
     KeyFinder::Parameters keyfinderParams;
@@ -38,6 +38,8 @@ class AnalyserKey: public Analyser {
 
     QVector<double> m_frames;
     QVector<double> m_keys;
+    bool m_bPreferenceswriteTagsEnabled, m_bPreferencesfirstLastEnabled, m_bPreferencesreanalyzeEnabled, m_bPreferencesskipRelevantEnabled;
+    ConfigObject<ConfigValue> *m_pConfig;
 
     /*SRC_DATA src_in;
     SRC_STATE *src_state ;

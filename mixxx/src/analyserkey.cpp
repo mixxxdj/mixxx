@@ -18,12 +18,14 @@
 #include "analyserkey.h"
 //#include "track/beatmatrix.h"
 #include "track/beatfactory.h"
+#include "track/key_preferences.h"
+
 
 using namespace std;
 static bool sDebug = false;
 
 AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config) {
-    m_pConfigAVT = _config;
+    m_pConfig = _config;
     m_bPass = 0;
 
     //"pluginID"
@@ -46,14 +48,32 @@ AnalyserKey::~AnalyserKey(){
 
 bool AnalyserKey::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
-QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserKeyLibrary"));
-QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserKeyPluginID"));
+QString library = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyLibrary"));
+QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyPluginID"));
  if(library.isEmpty() || library.isNull())
       library = "libmixxxminimal";
  if(pluginID.isEmpty() || pluginID.isNull())
       pluginID="qm-keydetector:0";
 
- mvamp = new VampAnalyser(m_pConfigAVT);
+ mvamp = new VampAnalyser(m_pConfig);
+
+ m_bPreferenceswriteTagsEnabled = static_cast<bool>(
+     m_pConfig->getValueString(
+         ConfigKey(KEY_CONFIG_KEY, KEY_WRITE_TAGS)).toInt());
+
+ m_bPreferencesfirstLastEnabled = static_cast<bool>(
+     m_pConfig->getValueString(
+         ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
+
+ m_bPreferencesreanalyzeEnabled = static_cast<bool>(
+     m_pConfig->getValueString(
+         ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE)).toInt());
+
+ m_bPreferencesskipRelevantEnabled = static_cast<bool>(
+     m_pConfig->getValueString(
+         ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
+
+ //qDebug()<<m_bPreferencesskipRelevantEnabled<<"asasda";
 //KeyFinder::Parameters p;
 
 /* keyfinderAudio.setFrameRate(sampleRate);
@@ -148,6 +168,7 @@ void AnalyserKey::finalise(TrackPointer tio) {
     it++;
     qDebug() << keys[(*it).second]<<"  "<<(*it).first;
     it--;
+    qDebug()<<m_bPreferencesskipRelevantEnabled<<"asasda";
     //qDebug()<<"key 4";
     tio->setKey(keys[(*it).second]);
     //tio->setKey("a");
