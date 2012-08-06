@@ -225,7 +225,6 @@ KontrolX1.buttons = function(channel,control,value,status,group) {
 
     //if (!button.hold)
     value = engine.getValue(button.group,button.control) ? false : true;
-    KontrolX1.debug("BUTTON" + button.id + " value " + value + " shift " + shift);
     engine.setValue(button.group,button.control,value);
 }
 
@@ -262,7 +261,6 @@ KontrolX1.knobs = function(channel,control,value,status,group) {
         return;
     }
     value = knob.scaler(value);
-    KontrolX1.debug("KNOB " + knob.id + " value " + value + " shift " + shift);
     engine.setValue(knob.group,knob.control,value);
 }
 
@@ -291,7 +289,6 @@ KontrolX1.encoders = function(channel,control,value,status,group) {
         return;
     }
     engine.setValue(encoder.group,encoder.control,value);
-    KontrolX1.debug("ENCODER " + encoder.id + " value " + value + " shift " + shift);
 }
 
 // Seek button callback
@@ -302,7 +299,6 @@ KontrolX1.seek = function(channel,control,value,status,group) {
     }
     value = (engine.getValue(group,"play")==true) ? 0.02 : 0.5;
     if (control=='seek_back') value = -value;
-    KontrolX1.debug("SEEK " + group+"."+control + " " +value);
     engine.setValue(group,'wheel',value);
 }
 
