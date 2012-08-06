@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8+">
-<info><!-- Optional - information about the preset file -->
-        <name>M-Audio Xponent</name>
-        <author>Luca Franceschini, Juan Pedro Bolívar Puente</author>
-        <description>This is a midi present of Xponent.</description>
-        <deviceid>Xponent Port 1</deviceid>
-        <deviceid>Xponent Port 2</deviceid>
+<info>
+  <name>M-Audio Xponent</name>
+  <author>Luca Franceschini, Juan Pedro Bolívar Puente</author>
+  <description>This is a midi present of Xponent.</description>
+  <!-- These comments are not suppported by mixxx hile 2012-08-06 -->
+  <!-- <deviceid>Xponent Port 1</deviceid><deviceid>Xponent Port 2</deviceid> -->
 </info>
 <controller id="Xponent Port 1">
 <scriptfiles>

@@ -35,7 +35,6 @@
       <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x1b</midino><options><Script-Binding/></options></control>
       <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x12</midino><options><Script-Binding/></options></control>
       <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x13</midino><options><Script-Binding/></options></control>
-      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x15</midino><options><Script-Binding/></options></control>
       <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x14</midino><options><Script-Binding/></options></control>
       <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x15</midino><options><Script-Binding/></options></control>
       <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x16</midino><options><Script-Binding/></options></control>

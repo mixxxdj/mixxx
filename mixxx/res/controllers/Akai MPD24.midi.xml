@@ -2,6 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>Akai MPD24</name>
+    <author></author>
+    <description>MIDI mapping for Akai MPD24</description>
   </info>
 <controller id="Akai MPD24 MIDI 1">
   <controls>
