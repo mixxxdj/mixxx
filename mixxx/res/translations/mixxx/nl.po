@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-08-05 00:23+0000\n"
-"Last-Translator: Michael Beck <maabeck@hotmail.com>\n"
+"PO-Revision-Date: 2012-08-05 19:41+0000\n"
+"Last-Translator: Marc van Remmen <mixxx@chepro.nl>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-05 04:38+0000\n"
-"X-Generator: Launchpad (build 15742)\n"
+"X-Launchpad-Export-Date: 2012-08-06 04:38+0000\n"
+"X-Generator: Launchpad (build 15745)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,7 +24,7 @@ msgstr "Auto DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "voeg een auto DJ Queue toe (onder)"
+msgstr "Voeg toe aan auto DJ wachtrij (onderaan)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
@@ -39,7 +39,7 @@ msgstr "Afspeellijst importeren"
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "Afspeellijst Aanmaken Mislukt"
+msgstr "Afspeellijst aanmaken mislukt"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
@@ -48,7 +48,7 @@ msgstr "Een onbekende fout is opgetreden bij het maken van afspeellijst: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Nieuwe Afspeellijst"
+msgstr "Nieuwe afspeellijst"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
@@ -1351,7 +1351,7 @@ msgstr "10%"
 
 #: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
-msgstr ""
+msgstr "Laadt nummers in een spelend deck"
 
 #: DlgPrefControls#14
 msgid "The selected skin is bigger than your screen resolution."
@@ -1464,11 +1464,11 @@ msgstr "Taalregio"
 
 #: DlgPrefControlsDlg#14
 msgid "Temporary rate change when left-clicking"
-msgstr ""
+msgstr "Tijdelijke wijziging bij links-klikken"
 
 #: DlgPrefControlsDlg#15
 msgid "Temporary rate change when right-clicking"
-msgstr ""
+msgstr "Tijdelijke wijziging bij rechts-klikken"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent Pitch/Rate Buttons"
@@ -1477,14 +1477,16 @@ msgstr "Permanente Pitch/Rate Knoppen"
 #: DlgPrefControlsDlg#17
 msgid "Displays which OpenGL version is supported by the current platform."
 msgstr ""
+"Toont welke OpenGL versie ondersteund wordt door het huidige "
+"besturingssysteem"
 
 #: DlgPrefControlsDlg#18
 msgid "Displays the actual frame rate."
-msgstr ""
+msgstr "Laat de werkelijke frame rate zien"
 
 #: DlgPrefControlsDlg#19
 msgid "Normalize Overview"
-msgstr ""
+msgstr "Overzicht normalizeren"
 
 #: DlgPrefControlsDlg#20
 msgid "Left click"
@@ -3367,7 +3369,7 @@ msgstr "Ctrl+L"
 
 #: MixxxApp#48
 msgid "&Record Mix"
-msgstr "&Mix Openemen"
+msgstr "&Mix opnemen"
 
 #: MixxxApp#49
 msgid "Ctrl+R"

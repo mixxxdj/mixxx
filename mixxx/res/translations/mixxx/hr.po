@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-25 15:38+0000\n"
+"PO-Revision-Date: 2012-08-05 22:19+0000\n"
 "Last-Translator: nikola <Unknown>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-26 05:13+0000\n"
-"X-Generator: Launchpad (build 15482)\n"
+"X-Launchpad-Export-Date: 2012-08-06 04:38+0000\n"
+"X-Generator: Launchpad (build 15745)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -255,88 +255,90 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Pretraga omogućuje navigaciju, pregled i učitavanje pjesama sa vašeg tvrdog "
+"diska i vanjskih uređaja."
 
 #: BrowseFeature#7
 msgid "Browse"
-msgstr ""
+msgstr "Pretraga"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr ""
+msgstr "Naziv datoteke"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Izvođač"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Naslov"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr ""
+msgstr "Pjesma #"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Godina"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr ""
+msgstr "Vrsta glazbe"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "Kompozitor"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Komentar"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Trajanje"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr ""
+msgstr "Ključ"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Vrsta"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "Protok bitova"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Lokacija"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx Biblioteka"
 
 #: BrowseTableModel#17
 msgid ""
@@ -346,37 +348,39 @@ msgstr ""
 
 #: BrowseTableModel#18
 msgid "Warning: This will permanently delete the following files:"
-msgstr ""
+msgstr "Upozorenje: Ovo će trajno ukloniti sljedeće datoteke:"
 
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr ""
+msgstr "Jeste li sigurni da želite ukloniti ove datoteke sa vašeg računala?"
 
 #: BrowseTableModel#20
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
+"Nemože izbrisati navedenu datoteku jer ju trenutačno koristi Mixxx ili neka "
+"druga aplikacija:"
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr ""
+msgstr "Nemože obnoviti metapodatke datoteke."
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Neuhvaćena iznimka u liniji %1 u datoteci %2: %3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Neuhvaćeni izraz u liniji %1 u prođenom kodu: %2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr ""
+msgstr "Greška kontrolne skripte"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "Kontrola koju ste upravo koristili ne radi pravilno."
 
 #: ControllerEngine#5
 msgid ""
@@ -385,123 +389,128 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Kod skripte treba biti ispravljen.)<br>Za sad se "
+"može:<ul><li>Ignorirati ova greška za ovu sesiju, ali može doći do čudnog "
+"ponašanja</li><li>Pokušajte napraviti oporavak tako da resetirate "
+"kontroler.</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dijalog"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Ulaz"
 
 #: ControllerMappingDlg#3
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
 msgstr ""
+"Kutija odispod je u izgradnji i ostati će prazna u ovoj inačici Mixxxa."
 
 #: ControllerMappingDlg#4
 msgid "Controls"
-msgstr ""
+msgstr "Kontrole"
 
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Dodaj"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Ukloni"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr ""
+msgstr "Čarobnjak za učenje"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Očisti sve"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Izlaz"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
-msgstr ""
+msgstr "Izlazi"
 
 #: ControllerMappingDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Očisti sve"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr ""
+msgstr "Novi spremnik"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Ukloni"
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr ""
+msgstr "Preimenuj"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Zaključaj"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Uvezi popis izvođenja"
 
 #: CrateFeature#6
 msgid "Crates"
-msgstr ""
+msgstr "Spremnik"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr ""
+msgstr "Uvezi spremnik"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr ""
+msgstr "Izvezi spremnik"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Otključaj"
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr ""
+msgstr "Stvori ime:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr ""
+msgstr "Nepoznata greška pri stvaranju spremnika: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr ""
+msgstr "Preimenuj spremnik"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr ""
+msgstr "Ime novog spremnika"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Neuspjelo preimenovanje spremnika"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Liste izvođenja (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -509,17 +518,23 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"M3U lista (*.m3u);;M3U8 lista (*.m3u8);;PLS lista (*.pls);;Tekst CSV "
+"(*.csv);;Čitljivi tekst (*.txt)"
 
 #: CrateFeature#17
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Spremnici su dobar način za pomoć pri organizaciji pjesama s kojim će te "
+"raditi."
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Napravi spremnik za sljedeću gažu, za svoje omiljene electrohouse pjesme, "
+"ili za najtraženije pjesme."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
@@ -527,88 +542,89 @@ msgstr ""
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Spremnik mora imati ime."
 
 #: CrateFeature#21
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Neuspjelo kreiranje spremnika"
 
 #: CrateFeature#22
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Spremnik toga imena već postoji."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "O Mixxxu"
 
 #: DlgAboutDlg#2
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Službena stranica</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "Automatski DJ"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
 msgstr ""
+"Jedan svirač mora biti zaustavljen kako bi se omogućio Automatski DJ mod."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Onemogući Automatskog DJ-a"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "Izmiješaj sadržaj liste izvođenja Automatskog DJ-a."
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Izmiješaj"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "Preskoći sljedeću pjesmu u listi izvođenja Automatskog DJ-a."
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "Preskoći pjesmu"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Uključi prijelaz na sljedeću pjesmu."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Odmah prijelaz"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Određuje trajanje prijelaza."
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Sekunde"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "sek."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Uključi ili isključi Automatskog DJ-a."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Omogući Automatskog DJ-a."
 
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Uređivanje"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Postavke otkrivanja ritma."
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -616,26 +632,29 @@ msgid ""
 "of your tracks, automatically shows a beat-grid for them, and allows you to "
 "synchronize tracks using their beat information."
 msgstr ""
+"Kada je otkrivanje ritma obogućeno, Mixxx otkriva ritmove pjesama, "
+"automatski pokazuje njihovu mrežu ritmova, i omogućava sinkronizaciju "
+"pjesama uz pomoć informacija o ritmovima."
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr ""
+msgstr "Omogući BPM i detekciju ritma."
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
-msgstr ""
+msgstr "Odaberite analizatora"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr ""
+msgstr "Analizator ritma:"
 
 #: DlgBeatsDlg#6
 msgid "Choose between different algorithms to detect beats."
-msgstr ""
+msgstr "Izaberite imeđu različitih algoritama za otkrivanje ritma."
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
-msgstr ""
+msgstr "Postavke Analizatora"
 
 #: DlgBeatsDlg#8
 msgid ""
@@ -643,10 +662,13 @@ msgid ""
 "minute of a track for beat information. This can speed up beat detection on "
 "slower computers but may result in lower quality beatgrids."
 msgstr ""
+"Omogući brzu detekciju ritma. Ako je aktivna Mixxx analizira samo prvu "
+"minutu pjesme za informacije o ritmu. Ovo može ubrzati detekciju ritma na "
+"sporijim računalima, ali može uzrokovati loše rezultate na mreži ritmova."
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
-msgstr ""
+msgstr "Brza Analiza Ritma (Za sporija računala, može biti manje točna)"
 
 #: DlgBeatsDlg#10
 msgid ""
@@ -655,20 +677,26 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Pretvori ritmove detektirane od strane analizatora u mrežu ritma sa fiksnim "
+"tempom. Koristi ovu postavku ako pjesme imaju konstantni tempo ( većina "
+"elektronske glazbe). Često rezultira sa dobrom mrežom ritmova, ali nije "
+"dobar za pjesme sa promjenom tempa."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
-msgstr ""
+msgstr "Uzmi konstatni tempo (Preporuča se)"
 
 #: DlgBeatsDlg#12
 msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
 "analyzing the beats to discard outliers."
 msgstr ""
+"Pokušava ispraviti fazu (prvi ritam) mreže ritma sa fiksnim tempom "
+"analizirajući ritmove tako da odbaci grube pogreške."
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
-msgstr ""
+msgstr "Omogući popravak pomaka (Preporučeno)"
 
 #: DlgBeatsDlg#14
 msgid ""
@@ -676,59 +704,64 @@ msgid ""
 "If set, this setting will also re-analyse beatgrids generated by 3rd-party "
 "programs or previous versions of Mixxx."
 msgstr ""
+"Ako je omogućeno, reanaliza se mreže ritmova ako mjenjate postavke na ovoj "
+"stranici."
 
 #: DlgBeatsDlg#15
 msgid ""
 "Re-analyse beats when settings change or beats already present\n"
 "(e.g. from 3rd-party programs or older Mixxx versions)"
 msgstr ""
+"Reanaliziraj ritmove kada su postavke promjenjene ili su ritmovi već "
+"prisutni.\n"
+"(iz stranih aplikacija ili starih inačica Mixxxa)"
 
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM Raspon"
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "Min:"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "Max:"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Vrati na Standardno"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "BPM Shema"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Ime Sheme:"
 
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM Raspon"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Track"
-msgstr ""
+msgstr "Analiziraj cijelu pjesmu"
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr ""
+msgstr "Čarobnjak za učenje kontrolera"
 
 #: DlgControllerLearning#2
 msgid ""
@@ -736,108 +769,113 @@ msgid ""
 "move a control on your controller to map it. Repeat this as many times as "
 "you wish. When you are finished mapping controls, click Done."
 msgstr ""
+"Klikni na bilo koju kontrolu sa Mixxxevog sučelja ili odaberi jednu sa "
+"popisa. Onda prenesi kontrolu na svoj kontroler da je zabilježi. Ponovite "
+"koliko god puta želite. Kada ste sve kontrole zabilježili, kliknite na "
+"Završi."
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "Završi"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
 msgstr ""
+"Kako bi ste zabilježili kontrolu kliknite na gumb ili odaberite sa popisa."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
-msgstr ""
+msgstr "Odaberi kontrolu"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
-msgstr ""
+msgstr "Svirač %1"
 
 #: DlgControllerLearning#7
 msgctxt "DlgControllerLearning#7"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sempler %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr ""
+msgstr "Vrati na standardno"
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr ""
+msgstr "Mikseta"
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
 msgid "Crossfader"
-msgstr ""
+msgstr "Prelaznik"
 
 #: DlgControllerLearning#11
 msgid "Master volume"
-msgstr ""
+msgstr "Glavna jačina zvuka"
 
 #: DlgControllerLearning#12
 msgid "Master balance"
-msgstr ""
+msgstr "Glavni balans"
 
 #: DlgControllerLearning#13
 msgid "Headphone volume"
-msgstr ""
+msgstr "Jačina zvuka u slušalicama"
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
-msgstr ""
+msgstr "Prebacivanje slušalica (pred/glavni)"
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "Prijenos"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
-msgstr ""
+msgstr "Detaljan pregled pjesme"
 
 #: DlgControllerLearning#17
 msgid "Play button"
-msgstr ""
+msgstr "Gumb za reprodukciju"
 
 #: DlgControllerLearning#18
 msgid "Volume fader"
-msgstr ""
+msgstr "Prijelaz zvuka"
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
-msgstr ""
+msgstr "Gumb za brzo premotavanje"
 
 #: DlgControllerLearning#20
 msgid "Fast forward button"
-msgstr ""
+msgstr "Gumb za brzo naprijed"
 
 #: DlgControllerLearning#21
 msgid "Jump to start of track"
-msgstr ""
+msgstr "Skoči na početak pjesme"
 
 #: DlgControllerLearning#22
 msgid "Jump to end of track"
-msgstr ""
+msgstr "Skoči na kraj pjesme"
 
 #: DlgControllerLearning#23
 msgid "Play reverse button"
-msgstr ""
+msgstr "Gumb za reprodukciju unazad"
 
 #: DlgControllerLearning#24
 msgid "Gain knob"
-msgstr ""
+msgstr "Potenciometar za pojačanje"
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
-msgstr ""
+msgstr "Gumb za slušanje na slušalice"
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
-msgstr ""
+msgstr "Promjena tipa ponavljanja"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
-msgstr ""
+msgstr "Izbaci pjesmu"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
