@@ -81,11 +81,11 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());
 #endif
-#ifdef __HID__
-    m_enumerators.append(new HidEnumerator());
-#endif
 #ifdef __BULK__
     m_enumerators.append(new BulkEnumerator());
+#endif
+#ifdef __HID__
+    m_enumerators.append(new HidEnumerator());
 #endif
 
     m_pollTimer.setInterval(kPollIntervalMillis);
