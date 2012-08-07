@@ -106,7 +106,7 @@
 							**********************************************
 							-->
 							<Text>
-								<TooltipId>track_title</TooltipId>
+								<TooltipId>text</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								</Style>
@@ -593,7 +593,7 @@
 							**********************************************
 							-->
 							<Text>
-								<TooltipId>track_title</TooltipId>
+								<TooltipId>text</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								</Style>
@@ -1080,7 +1080,7 @@
 							**********************************************
 							-->
 							<Text>
-								<TooltipId>track_title</TooltipId>
+								<TooltipId>text</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								</Style>
@@ -1567,7 +1567,7 @@
 							**********************************************
 							-->
 							<Text>
-								<TooltipId>track_title</TooltipId>
+								<TooltipId>text</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								</Style>

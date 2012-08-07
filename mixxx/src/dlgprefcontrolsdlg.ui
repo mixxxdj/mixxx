@@ -840,6 +840,7 @@
   <tabstop>ComboBoxCueRecall</tabstop>
   <tabstop>ComboBoxCueDefault</tabstop>
   <tabstop>ComboBoxAllowTrackLoadToPlayingDeck</tabstop>
+  <tabstop>ComboBoxLocale</tabstop>
   <tabstop>waveformTypeComboBox</tabstop>
   <tabstop>frameRateSlider</tabstop>
   <tabstop>frameRateSpinBox</tabstop>
@@ -847,6 +848,7 @@
   <tabstop>lowVisualGain</tabstop>
   <tabstop>midVisualGain</tabstop>
   <tabstop>highVisualGain</tabstop>
+  <tabstop>normalizeOverviewCheckBox</tabstop>
   <tabstop>defaultZoomComboBox</tabstop>
   <tabstop>synchronizeZoomCheckBox</tabstop>
   <tabstop>spinBoxPermRateLeft</tabstop>
