@@ -11,13 +11,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-08-05 04:24+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2012-08-07 00:15+0000\n"
+"Last-Translator: almonacilo <david@almocuba.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-06 04:38+0000\n"
+"X-Launchpad-Export-Date: 2012-08-07 04:37+0000\n"
 "X-Generator: Launchpad (build 15745)\n"
 
 #: AutoDJFeature#1
@@ -1246,7 +1246,7 @@ msgstr "Sin descripción"
 
 #: DlgPrefController#5
 msgid "No support available."
-msgstr ""
+msgstr "Ayuda no disponible."
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
@@ -1354,7 +1354,7 @@ msgstr "Cargar pistas en una deck que está reproduciendo"
 
 #: DlgPrefControls#14
 msgid "The selected skin is bigger than your screen resolution."
-msgstr ""
+msgstr "El skin seleccionado es más grande que la resolución de la pantalla."
 
 #: DlgPrefControls#15
 msgid "20%"
@@ -3579,7 +3579,7 @@ msgstr "La ventana de preferencias todavía está abierta."
 
 #: MixxxApp#88
 msgid "Discard any changes and exit Mixxx?"
-msgstr ""
+msgstr "¿Descartar cambios y salir de Mixxx?"
 
 #: MixxxLibraryFeature#1
 msgid "Missing Tracks"
@@ -3587,7 +3587,7 @@ msgstr "Pistas Faltantes"
 
 #: MixxxLibraryFeature#2
 msgid "Hidden Tracks"
-msgstr ""
+msgstr "Pistas Ocultas"
 
 #: MixxxLibraryFeature#3
 msgctxt "MixxxLibraryFeature#3"
@@ -4637,7 +4637,7 @@ msgstr ""
 
 #: TrackCollection#3
 msgid "Click OK to exit."
-msgstr ""
+msgstr "Pulsa OK para salir."
 
 #: TrackCollection#4
 msgid "Cannot upgrade database schema"
@@ -4646,22 +4646,23 @@ msgstr "No se puede actualizar el esquema de la base de datos"
 #: TrackCollection#5
 msgid "Unable to upgrade your database schema to version %1"
 msgstr ""
+"No se ha podido actualizar el esquema de base de datos a la versión %1"
 
 #: TrackCollection#6
 msgid "Your %1 file may be outdated."
-msgstr ""
+msgstr "El archivo %1 puede estar desactualizado."
 
 #: TrackCollection#7
 msgid "Your mixxxdb.sqlite file may be corrupt."
-msgstr ""
+msgstr "El archivo mixxxdb.sqlite puede estar corrupto."
 
 #: TrackCollection#8
 msgid "Try renaming it and restarting Mixxx."
-msgstr ""
+msgstr "Pruebe renombrandolo y reiniciando Mixxx."
 
 #: TrackCollection#9
 msgid "Your %1 file may be missing or invalid."
-msgstr ""
+msgstr "El archivo %1 parece desaparecido o inválido."
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -4714,15 +4715,15 @@ msgstr "Eliminar"
 
 #: WTrackTableView#5
 msgid "Hide from library"
-msgstr ""
+msgstr "Ocultar de la librería"
 
 #: WTrackTableView#6
 msgid "Unhide from library"
-msgstr ""
+msgstr "Desocultar de la librería"
 
 #: WTrackTableView#7
 msgid "Purge from library"
-msgstr ""
+msgstr "Eliminar de la librería"
 
 #: WTrackTableView#8
 msgid "Properties"

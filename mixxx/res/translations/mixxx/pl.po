@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-08-06 04:18+0000\n"
+"PO-Revision-Date: 2012-08-07 01:17+0000\n"
 "Last-Translator: AreYouLoco? <orest.orko@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-06 04:38+0000\n"
+"X-Launchpad-Export-Date: 2012-08-07 04:37+0000\n"
 "X-Generator: Launchpad (build 15745)\n"
 
 #: AutoDJFeature#1
@@ -1063,19 +1063,19 @@ msgstr "Przewiń do następnego utworu w kolekcji/playliście"
 
 #: DlgControllerLearning#78
 msgid "Scroll to previous track in library/playlist"
-msgstr "Przewiń do wcześniejszego utworu w kolekcji/playliście"
+msgstr ""
 
 #: DlgControllerLearning#79
 msgid "Load selected track into first stopped deck"
-msgstr ""
+msgstr "Załaduj zaznaczoną scieżkę do pierwszego zatrzymanego decka"
 
 #: DlgControllerLearning#80
 msgid "Load selected track"
-msgstr ""
+msgstr "Załaduj zaznaczoną scieżkę"
 
 #: DlgControllerLearning#81
 msgid "Effects"
-msgstr ""
+msgstr "Efekty"
 
 #: DlgControllerLearning#82
 msgid "Toggle flange effect"
@@ -1083,7 +1083,7 @@ msgstr ""
 
 #: DlgControllerLearning#83
 msgid "Flange effect: Wavelength/period"
-msgstr ""
+msgstr "Efekt flangera: Długość fali/Okres"
 
 #: DlgControllerLearning#84
 msgid "Flange effect: Intensity"
@@ -1091,16 +1091,16 @@ msgstr ""
 
 #: DlgControllerLearning#85
 msgid "Flange effect: Phase delay"
-msgstr ""
+msgstr "Efekt flangera: Opóźnienie Frazy"
 
 #: DlgControllerLearning#86
 msgctxt "DlgControllerLearning#86"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: DlgControllerLearning#87
 msgid "Microphone on/off"
-msgstr "Wł / wyĹ Mikrofon"
+msgstr "Wł/Wył Mikrofon"
 
 #: DlgControllerLearning#88
 msgid "Microphone volume"
@@ -1108,19 +1108,19 @@ msgstr "Głośność mikrofonu"
 
 #: DlgControllerLearning#89
 msgid "Microphone channel orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Orientacja kanału mikrofonu (np. lewo, prawo, środek)"
 
 #: DlgControllerLearning#90
 msgid "User Interface"
-msgstr ""
+msgstr "Interfejs Użytkownika"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
-msgstr ""
+msgstr "Pokaż/Ukryj sekcje samplera"
 
 #: DlgControllerLearning#92
 msgid "Show/hide the microphone section"
-msgstr ""
+msgstr "Pokaż/Ukryj sekcje mikrofonu"
 
 #: DlgControllerLearning#93
 msgid "Show/hide the vinyl control section"
@@ -1183,7 +1183,7 @@ msgstr "Dodaj"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Edytuj"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
@@ -1204,32 +1204,32 @@ msgstr "Nie można otworzyć pliku %1"
 #: DlgPrefController#1
 msgctxt "DlgPrefController#1"
 msgid "None"
-msgstr ""
+msgstr "Brak"
 
 #: DlgPrefController#2
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 wykonywane przez %2"
 
 #: DlgPrefController#3
 msgid "Custom Preset"
-msgstr ""
+msgstr "Własny profil"
 
 #: DlgPrefController#4
 msgid "No Description"
-msgstr ""
+msgstr "Brak opisu"
 
 #: DlgPrefController#5
 msgid "No support available."
-msgstr ""
+msgstr "Brak dostępnego wsparcia."
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Okno dialogowe"
 
 #: DlgPrefControllerDlg#2
 msgid "Controller Name"
-msgstr ""
+msgstr "Nazwa kontrolera"
 
 #: DlgPrefControllerDlg#3
 msgid "Enabled"
@@ -1242,11 +1242,11 @@ msgstr ""
 
 #: DlgPrefControllerDlg#5
 msgid "TextLabel"
-msgstr ""
+msgstr "Etykieta tekstowa"
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Opis:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1254,11 +1254,11 @@ msgstr "Wczytaj Ustawienia:"
 
 #: DlgPrefControllerDlg#8
 msgid "Loaded Preset:"
-msgstr ""
+msgstr "Wczytane ustawienia:"
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Wsparcie:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1271,7 +1271,7 @@ msgstr ""
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
 msgid "Position"
-msgstr ""
+msgstr "Pozycja"
 
 #: DlgPrefControls#2
 msgid "Remaining"
@@ -1288,17 +1288,17 @@ msgstr "Tryb CDJ"
 #: DlgPrefControls#5
 msgctxt "DlgPrefControls#5"
 msgid "Simple"
-msgstr ""
+msgstr "Prosty"
 
 #: DlgPrefControls#6
 msgctxt "DlgPrefControls#6"
 msgid "On"
-msgstr ""
+msgstr "Wł."
 
 #: DlgPrefControls#7
 msgctxt "DlgPrefControls#7"
 msgid "Off"
-msgstr ""
+msgstr "Wył."
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1306,11 +1306,11 @@ msgstr "Skórka nie obsługuje schematów"
 
 #: DlgPrefControls#9
 msgid "6%"
-msgstr ""
+msgstr "6&"
 
 #: DlgPrefControls#10
 msgid "8% (Technics SL-1210)"
-msgstr ""
+msgstr "8% (Technics SL-1210)"
 
 #: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
@@ -1326,7 +1326,7 @@ msgstr ""
 
 #: DlgPrefControls#14
 msgid "The selected skin is bigger than your screen resolution."
-msgstr ""
+msgstr "Wybrana skórka jest wieksza niż rozdzielczość Twojego ekranu."
 
 #: DlgPrefControls#15
 msgid "20%"
@@ -1367,7 +1367,7 @@ msgstr "W górę, przyspiesza"
 #: DlgPrefControls#24
 msgctxt "DlgPrefControls#24"
 msgid "Information"
-msgstr ""
+msgstr "Informacja"
 
 #: DlgPrefControls#25
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1375,7 +1375,7 @@ msgstr "Należy ponownie uruchomić Mixxx, w celu zastosowania zmian."
 
 #: DlgPrefControls#26
 msgid "OpenGL not available"
-msgstr ""
+msgstr "OpenGL niedostępne"
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
@@ -1401,12 +1401,12 @@ msgstr "Podpowiedzi"
 #: DlgPrefControlsDlg#6
 msgctxt "DlgPrefControlsDlg#6"
 msgid "On"
-msgstr ""
+msgstr "Wł."
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "Off"
-msgstr ""
+msgstr "Wył."
 
 #: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
@@ -1418,7 +1418,7 @@ msgstr "Kierunek suwaka Szybość/Tempo"
 
 #: DlgPrefControlsDlg#10
 msgid "Track load behaviour"
-msgstr "Zachowaj podczas ładowania utworu"
+msgstr "Zachowanie podczas ładowania utworu"
 
 #: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
@@ -1430,15 +1430,15 @@ msgstr "Automatycznie Przywołaj Cue"
 
 #: DlgPrefControlsDlg#13
 msgid "Locale"
-msgstr ""
+msgstr "Ustawienia lokalne"
 
 #: DlgPrefControlsDlg#14
 msgid "Temporary rate change when left-clicking"
-msgstr ""
+msgstr "Zmiana tymczasowej szybkości LPM"
 
 #: DlgPrefControlsDlg#15
 msgid "Temporary rate change when right-clicking"
-msgstr ""
+msgstr "Zmiana tymczasowej szybkości PPM"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent Pitch/Rate Buttons"
@@ -1446,11 +1446,11 @@ msgstr "Trwałe Przyciski Szybkość/Tempo"
 
 #: DlgPrefControlsDlg#17
 msgid "Displays which OpenGL version is supported by the current platform."
-msgstr ""
+msgstr "Pokazuje jaką wersję OpenGL wspiera aktualna platforma."
 
 #: DlgPrefControlsDlg#18
 msgid "Displays the actual frame rate."
-msgstr ""
+msgstr "Pokazuje szybkość klatek"
 
 #: DlgPrefControlsDlg#19
 msgid "Normalize Overview"
@@ -1458,11 +1458,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#20
 msgid "Left click"
-msgstr "Lewy przycisk"
+msgstr "Kliknięcie LPM"
 
 #: DlgPrefControlsDlg#21
 msgid "Right click"
-msgstr "Prawy przycisk"
+msgstr "Kliknięcie PPM"
 
 #: DlgPrefControlsDlg#22
 msgid "%"
@@ -1491,19 +1491,19 @@ msgstr ""
 
 #: DlgPrefControlsDlg#28
 msgid "OpenGl status"
-msgstr ""
+msgstr "Status OpenGL"
 
 #: DlgPrefControlsDlg#29
 msgid "Display type"
-msgstr ""
+msgstr "Typ ekranu"
 
 #: DlgPrefControlsDlg#30
 msgid "Permanent rate change when left-clicking"
-msgstr ""
+msgstr "Stała zmiana szybkości LPM"
 
 #: DlgPrefControlsDlg#31
 msgid "Permanent rate change when right-clicking"
-msgstr ""
+msgstr "Stała zmiana szybkości PPM"
 
 #: DlgPrefControlsDlg#32
 msgid ""
@@ -1513,11 +1513,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#33
 msgid "Value in milliseconds"
-msgstr ""
+msgstr "Wartość w milisekundach"
 
 #: DlgPrefControlsDlg#34
 msgid "Visual gain of the high frequencies"
-msgstr ""
+msgstr "Optyczne wzmocnienie wysokich częstotliwości"
 
 #: DlgPrefControlsDlg#35
 msgid "Visual gain of the middle frequencies"
@@ -3590,18 +3590,25 @@ msgid ""
 "Some DJs construct playlists before they perform live, but others prefer to "
 "build them on-the-fly."
 msgstr ""
+"Niektórzy didżeje tworzą playlisty przed ich występem na żywo, natomiast "
+"inni preferują tworzyć je w locie."
 
 #: PlaylistFeature#6
 msgid ""
 "When using a playlist during a live DJ set, remember to always pay close "
 "attention to how your audience reacts to the music you've chosen to play."
 msgstr ""
+"Przy zastosowaniu list odtwarzania podczas występu na żywo, pamiętaj, aby "
+"zawsze zwracać baczną uwagę na to, jak publiczność reaguje na muzykę, którą "
+"wybrałeś do gry."
 
 #: PlaylistFeature#7
 msgid ""
 "It may be necessary to skip some songs in your prepared playlist or add some "
 "different songs in order to maintain the energy of your audience."
 msgstr ""
+"Może okazać się koniecznym pominięcie kilka utworów z przygotowanej listy "
+"lub dodanie kilka różnych piosenek w celu zachowania energii odbiorców."
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3632,7 +3639,7 @@ msgstr "Vinyl Control"
 #: QObject#6
 msgctxt "QObject#6"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: QObject#7
 msgid "Passthrough"
@@ -3645,7 +3652,7 @@ msgstr "Nieznany typ ścieżki %1"
 #: QtSimpleWaveformWidget#1
 msgctxt "QtSimpleWaveformWidget#1"
 msgid "Simple"
-msgstr ""
+msgstr "Prosty"
 
 #: QtWaveformWidget#1
 msgctxt "QtWaveformWidget#1"
@@ -3694,17 +3701,17 @@ msgstr ""
 
 #: SetlogFeature#2
 msgid "History"
-msgstr ""
+msgstr "Historia"
 
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
 msgid "Unlock"
-msgstr ""
+msgstr "Odblokuj"
 
 #: SetlogFeature#4
 msgctxt "SetlogFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Zablokuj"
 
 #: SetlogFeature#5
 msgid ""
