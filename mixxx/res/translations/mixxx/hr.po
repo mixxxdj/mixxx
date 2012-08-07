@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-08-05 22:19+0000\n"
+"PO-Revision-Date: 2012-08-06 08:43+0000\n"
 "Last-Translator: nikola <Unknown>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-06 04:38+0000\n"
+"X-Launchpad-Export-Date: 2012-08-07 04:37+0000\n"
 "X-Generator: Launchpad (build 15745)\n"
 
 #: AutoDJFeature#1
@@ -345,6 +345,8 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
+"Nemože učitati navedenu datoteku jer je koristi Mixxx ili neka druga "
+"aplikacija."
 
 #: BrowseTableModel#18
 msgid "Warning: This will permanently delete the following files:"
@@ -538,7 +540,7 @@ msgstr ""
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "Spremnici vam omogućavaju da organizirate pjesme po želji."
 
 #: CrateFeature#20
 msgid "A crate cannot have a blank name."
@@ -879,11 +881,11 @@ msgstr "Izbaci pjesmu"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Orijentacija Miksa (ljevo, desno, centar)"
 
 #: DlgControllerLearning#29
 msgid "BPM and Sync"
-msgstr ""
+msgstr "BPM i sinkronizacija"
 
 #: DlgControllerLearning#30
 msgid "BPM tap button"
@@ -891,7 +893,7 @@ msgstr ""
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
-msgstr ""
+msgstr "Prilagodi mrežu ritmova"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
@@ -899,15 +901,15 @@ msgstr ""
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr ""
+msgstr "Sinkronizacija ritma (tempo i faza)"
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
-msgstr ""
+msgstr "Sinkronizacija ritma (samo tempo)"
 
 #: DlgControllerLearning#35
 msgid "Beat sync (phase only)"
-msgstr ""
+msgstr "Sinkronizacija ritma (samo faza)"
 
 #: DlgControllerLearning#36
 msgid "Pitch and Rate"
