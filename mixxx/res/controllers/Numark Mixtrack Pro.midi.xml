@@ -582,7 +582,7 @@ Modify by Darío José Freije 6/2/2012-->
                 <options>
                     <script-binding/>
                 </options>
-            </control>-
+            </control>
             <control>
                 <status>0x90</status>
                 <midino>0x4D</midino>
