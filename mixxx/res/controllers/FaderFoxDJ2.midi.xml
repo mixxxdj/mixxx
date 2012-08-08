@@ -57,7 +57,7 @@
         <options>
 
 	</options>
-        <sensitivity>700</sensitivity>
+        <!-- Not a valid mixxx 1.11 control <sensitivity>700</sensitivity> -->
       </control>
       <control>
         <group>[Channel1]</group>
@@ -241,7 +241,7 @@
         <options>
 
     </options>
-        <sensitivity>700</sensitivity>
+        <!-- Not a valid mixxx 1.11 control <sensitivity>700</sensitivity> -->
       </control>
       <control>
         <group>[Channel2]</group>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxMIDIPreset schemaVersion="1">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.11+">
     <info>
         <name>DJTech CDJ 101</name>
         <author>zestoi</author>
