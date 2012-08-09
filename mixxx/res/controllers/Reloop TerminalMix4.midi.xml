@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="1.11.0" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="1.11.0" schemaVersion="1">
     <info>
         <name>Reloop TerminalMix4</name>
         <author>Sean M. Pappalardo</author>
-        <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix4</wiki>
         <description>A complete 4-deck preset for a single Reloop TerminalMix4. Uses scripting.</description>
+        <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix4</wiki>
     </info>
     <controller id="TerminalMix4">
         <scriptfiles>
@@ -3598,4 +3598,4 @@
             </output>
         </outputs>
     </controller>
-</MixxxControllerPreset>
+</MixxxMIDIPreset>
