@@ -10,8 +10,8 @@
 #include <string.h>
 
 #include "defs.h" // for PATH_MAX on Windows
-
 #include "controllers/hid/hidcontroller.h"
+#include "controllers/defs_controllers.h"
 
 HidReader::HidReader(hid_device* device)
         : QThread(),
@@ -121,6 +121,10 @@ HidController::~HidController() {
     close();
     delete [] hid_path;
     delete [] hid_serial_raw;
+}
+
+QString HidController::presetExtension() {
+    return HID_PRESET_EXTENSION;
 }
 
 void HidController::visit(const MidiControllerPreset* preset) {
