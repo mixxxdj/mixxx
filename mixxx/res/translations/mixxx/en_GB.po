@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-06-27 12:56+0000\n"
-"Last-Translator: Sid Roberts <Unknown>\n"
+"PO-Revision-Date: 2012-08-08 12:44+0000\n"
+"Last-Translator: anup bhojagi <abtalk@indiatimes.com>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-28 04:35+0000\n"
-"X-Generator: Launchpad (build 15505)\n"
+"X-Launchpad-Export-Date: 2012-08-09 04:38+0000\n"
+"X-Generator: Launchpad (build 15761)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -68,7 +68,7 @@ msgstr "Remove"
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "Rename"
+msgstr "Scaled"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
@@ -111,17 +111,17 @@ msgstr "Playlist name:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr "Playlist Creation Failed"
+msgstr "Η Δημιουργία Λίστας Απέτυχε"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "An unknown error occurred while creating playlist: "
+msgstr "Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "Αρχεία Λίστας Αναπαραγωγής (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -134,17 +134,17 @@ msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Last played"
+msgstr "Αναπαρήχθει"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Artist"
+msgstr "Καλλιτέχνης"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr "Security Warning"
+msgstr "Title"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
