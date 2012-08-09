@@ -34,10 +34,6 @@ QString Controller::defaultPreset() {
             .append(m_sDeviceName.replace(" ", "_") + presetExtension());
 }
 
-QString Controller::presetExtension() {
-    return CONTROLLER_PRESET_EXTENSION;
-}
-
 void Controller::startEngine()
 {
     if (debugging()) {
