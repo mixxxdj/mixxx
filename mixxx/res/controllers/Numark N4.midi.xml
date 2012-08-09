@@ -1,7 +1,8 @@
 <MixxxMIDIPreset mixxxVersion="1.10.0+" schemaVersion="1">
     <info>
-        <author>dj.stuartbrand</author>
         <name>Numark N4</name>
+        <author>dj.stuartbrand</author>
+        <description>MIDI Mapping for Numark N4</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3450</forums>
     </info>
     <controller id="N4 MIDI 1">

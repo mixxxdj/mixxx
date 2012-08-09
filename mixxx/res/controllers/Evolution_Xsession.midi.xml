@@ -2,8 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>Evolution X-Session</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file Evolution_Xsession.midi.xml for Mixxx 1.6.2</description>
+    <author>Amias Channer</author>
+    <description>MIDI Mapping for Evolution X-Session</description>
   </info>
   <controller id="Evolution Xsession" port="Port">
     <controls>

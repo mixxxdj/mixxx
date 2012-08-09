@@ -3,8 +3,8 @@
     <info>
         <name>Stanton SCS.3m</name>
         <author>Sean M. Pappalardo</author>
-        <wiki>http://mixxx.org/wiki/doku.php/stanton_scs.3m</wiki>
         <description>This is a complete mapping for a single Stanton SCS.3m mixer touch controller. Requires scripting.</description>
+        <wiki>http://mixxx.org/wiki/doku.php/stanton_scs.3m</wiki>
     </info>
     <controller id="Stanton SCS.3m">
 		<scriptfiles>
