@@ -21,8 +21,6 @@ class LibraryTableModel : public BaseSqlTableModel {
     virtual void search(const QString& searchText);
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     // Takes a list of locations and add the tracks to the library. Returns the
     // number of successful additions.

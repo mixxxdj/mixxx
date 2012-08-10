@@ -84,10 +84,8 @@ bool loadTranslations(const QLocale& systemLocale, QString userLocale,
     return pTranslator->load(translation + prefix + userLocale, translationPath);
 }
 
-
-MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
+MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 {
-    m_pApp = a;
 
     QString buildBranch, buildRevision, buildFlags;
 #ifdef BUILD_BRANCH
@@ -116,6 +114,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     }
     QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
 
+    // This is the first line in mixxx.log
     qDebug() << "Mixxx" << VERSION << buildInfoFormatted << "is starting...";
     qDebug() << "Qt version is:" << qVersion();
 
@@ -141,14 +140,15 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
-    m_pConfig = upgrader.versionUpgrade();
+    m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     bool bFirstRun = upgrader.isFirstRun();
     bool bUpgraded = upgrader.isUpgraded();
-    QString qConfigPath = m_pConfig->getConfigPath();
-    QString translationsFolder = qConfigPath + "translations/";
+
+    QString resourcePath = m_pConfig->getResourcePath();
+    QString translationsFolder = resourcePath + "translations/";
 
     // Load Qt base translations
-    QString userLocale = args.locale;
+    QString userLocale = args.getLocale();
     QLocale systemLocale = QLocale::system();
 
     // Attempt to load user locale from config
@@ -158,29 +158,29 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load Qt translations for this locale from the system translation
     // path. This is the lowest precedence QTranslator.
-    QTranslator* qtTranslator = new QTranslator(a);
+    QTranslator* qtTranslator = new QTranslator(pApp);
     if (loadTranslations(systemLocale, userLocale, "qt", "_",
                          QLibraryInfo::location(QLibraryInfo::TranslationsPath),
                          qtTranslator)) {
-        a->installTranslator(qtTranslator);
+        pApp->installTranslator(qtTranslator);
     } else {
         delete qtTranslator;
     }
 
     // Load Qt translations for this locale from the Mixxx translations
     // folder.
-    QTranslator* mixxxQtTranslator = new QTranslator(a);
+    QTranslator* mixxxQtTranslator = new QTranslator(pApp);
     if (loadTranslations(systemLocale, userLocale, "qt", "_",
                          translationsFolder,
                          mixxxQtTranslator)) {
-        a->installTranslator(mixxxQtTranslator);
+        pApp->installTranslator(mixxxQtTranslator);
     } else {
         delete mixxxQtTranslator;
     }
 
     // Load Mixxx specific translations for this locale from the Mixxx
     // translations folder.
-    QTranslator* mixxxTranslator = new QTranslator(a);
+    QTranslator* mixxxTranslator = new QTranslator(pApp);
     bool mixxxLoaded = loadTranslations(systemLocale, userLocale, "mixxx", "_",
                                         translationsFolder, mixxxTranslator);
     qDebug() << "Loading translations for locale"
@@ -188,13 +188,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
              << "from translations folder" << translationsFolder << ":"
              << (mixxxLoaded ? "success" : "fail");
     if (mixxxLoaded) {
-        a->installTranslator(mixxxTranslator);
+        pApp->installTranslator(mixxxTranslator);
     } else {
         delete mixxxTranslator;
     }
 
     // Store the path in the config database
-    m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
+    m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 
     // Set the default value in settings file
     if (m_pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
@@ -202,9 +202,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString userKeyboard =
-        QDir::homePath().append("/").append(SETTINGS_PATH)
-            .append("Custom.kbd.cfg");
+    QString userKeyboard = args.getSettingsPath() + "Custom.kbd.cfg";
 
     //Empty keyboard configuration
     m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
@@ -217,13 +215,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QLocale locale = QApplication::keyboardInputLocale();
 
         // check if a default keyboard exists
-        QString defaultKeyboard = QString(qConfigPath).append("keyboard/");
+        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(qConfigPath).append("keyboard/").append("en_US.kbd.cfg");
+            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
             if (!QFile::exists(defaultKeyboard)) {
                 qDebug() << defaultKeyboard << " not found, starting without shortcuts";
                 defaultKeyboard = "";
@@ -284,13 +282,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             hasChanged_MusicDir = true;
         }
     }
-    /*
-     * Do not write meta data back to ID3 when meta data has changed
-     * Because multiple TrackDao objects can exists for a particular track
-     * writing meta data may ruine your MP3 file if done simultaneously.
-     * see Bug #728197
-     * For safety reasons, we deactivate this feature.
-     */
+    // Do not write meta data back to ID3 when meta data has changed
+    // Because multiple TrackDao objects can exists for a particular track
+    // writing meta data may ruine your MP3 file if done simultaneously.
+    // see Bug #728197
+    // For safety reasons, we deactivate this feature.
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
 
@@ -298,10 +294,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // sqlite driver if this path doesn't exist. Normally config->Save()
     // above would make it but if it doesn't get run for whatever reason
     // we get hosed -- bkgood
-    if (!QDir(QDir::homePath().append("/").append(SETTINGS_PATH)).exists()) {
-        QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
+    if (!QDir(args.getSettingsPath()).exists()) {
+        QDir().mkpath(args.getSettingsPath());
     }
-
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);
@@ -436,8 +431,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-            && i < args.qlMusicFiles.count(); ++i) {
-        m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
+            && i < args.getMusicFiles().count(); ++i) {
+        if ( SoundSourceProxy::isFilenameSupported(args.getMusicFiles().at(i))) {
+            m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
+        }
     }
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
@@ -485,13 +482,14 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
-    m_pApp->installEventFilter(this); // The eventfilter is located in this
+    pApp->installEventFilter(this); // The eventfilter is located in this
                                       // Mixxx class as a callback.
 
     // If we were told to start in fullscreen mode on the command-line,
     // then turn on fullscreen mode.
-    if (args.bStartInFullscreen)
+    if (args.getStartInFullscreen()) {
         slotOptionsFullScreen(true);
+    }
 
     // Refresh the GUI (workaround for Qt 4.6 display bug)
     /* // TODO(bkgood) delete this block if the moving of setCentralWidget
@@ -607,6 +605,7 @@ MixxxApp::~MixxxApp()
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
    delete m_pKeyboard;
+   delete m_pKbdConfigEmpty;
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -673,10 +672,9 @@ int MixxxApp::noSoundDlg(void)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            break;
+            return 1;
         }
     }
-    return 1;
 }
 
 int MixxxApp::noOutputDlg(bool *continueClicked)
@@ -725,10 +723,9 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
             msgBox.show();
 
         } else if (msgBox.clickedButton() == exitButton) {
-            break;
+            return 1;
         }
     }
-    return 1;
 }
 
 QString buildWhatsThis(QString title, QString text) {
@@ -744,7 +741,7 @@ void MixxxApp::initActions()
 
     QString player1LoadStatusText = loadTrackStatusText.arg(QString::number(1));
     m_pFileLoadSongPlayer1 = new QAction(loadTrackText.arg(QString::number(1)), this);
-    m_pFileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
+    m_pFileLoadSongPlayer1->setShortcut(QKeySequence(tr("Ctrl+O")));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer1->setStatusTip(player1LoadStatusText);
     m_pFileLoadSongPlayer1->setWhatsThis(
@@ -754,7 +751,7 @@ void MixxxApp::initActions()
 
     QString player2LoadStatusText = loadTrackStatusText.arg(QString::number(2));
     m_pFileLoadSongPlayer2 = new QAction(loadTrackText.arg(QString::number(2)), this);
-    m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
+    m_pFileLoadSongPlayer2->setShortcut(QKeySequence(tr("Ctrl+Shift+O")));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer2->setStatusTip(player2LoadStatusText);
     m_pFileLoadSongPlayer2->setWhatsThis(
@@ -765,7 +762,7 @@ void MixxxApp::initActions()
     QString quitTitle = tr("&Exit");
     QString quitText = tr("Quits Mixxx");
     m_pFileQuit = new QAction(quitTitle, this);
-    m_pFileQuit->setShortcut(tr("Ctrl+Q"));
+    m_pFileQuit->setShortcut(QKeySequence(tr("Ctrl+Q")));
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileQuit->setStatusTip(quitText);
     m_pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
@@ -785,7 +782,7 @@ void MixxxApp::initActions()
     QString createPlaylistTitle = tr("Add &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
-    m_pPlaylistsNew->setShortcut(tr("Ctrl+N"));
+    m_pPlaylistsNew->setShortcut(QKeySequence(tr("Ctrl+N")));
     m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pPlaylistsNew->setStatusTip(createPlaylistText);
     m_pPlaylistsNew->setWhatsThis(buildWhatsThis(createPlaylistTitle, createPlaylistText));
@@ -795,7 +792,7 @@ void MixxxApp::initActions()
     QString createCrateTitle = tr("Add New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
-    m_pCratesNew->setShortcut(tr("Ctrl+Shift+N"));
+    m_pCratesNew->setShortcut(QKeySequence(tr("Ctrl+Shift+N")));
     m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pCratesNew->setStatusTip(createCrateText);
     m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
@@ -806,9 +803,9 @@ void MixxxApp::initActions()
     QString fullScreenText = tr("Display Mixxx using the full screen");
     m_pOptionsFullScreen = new QAction(fullScreenTitle, this);
 #ifdef __APPLE__
-    m_pOptionsFullScreen->setShortcut(tr("Ctrl+Shift+F"));
+    m_pOptionsFullScreen->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
 #else
-    m_pOptionsFullScreen->setShortcut(tr("F11"));
+    m_pOptionsFullScreen->setShortcut(QKeySequence(tr("F11")));
 #endif
     m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
@@ -837,7 +834,7 @@ void MixxxApp::initActions()
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     m_pOptionsPreferences = new QAction(preferencesTitle, this);
-    m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
+    m_pOptionsPreferences->setShortcut(QKeySequence(tr("Ctrl+P")));
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsPreferences->setStatusTip(preferencesText);
     m_pOptionsPreferences->setWhatsThis(buildWhatsThis(preferencesTitle, preferencesText));
@@ -886,7 +883,7 @@ void MixxxApp::initActions()
     QString vinylControlTitle2 = tr("Enable Vinyl Control &2");
 
     m_pOptionsVinylControl = new QAction(vinylControlTitle1, this);
-    m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
+    m_pOptionsVinylControl->setShortcut(QKeySequence(tr("Ctrl+Y")));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
@@ -1045,7 +1042,7 @@ void MixxxApp::slotFileLoadSongPlayer1() {
 }
 
 void MixxxApp::slotFileLoadSongPlayer2() {
-    slotFileLoadSongPlayer(1);
+    slotFileLoadSongPlayer(2);
 }
 
 void MixxxApp::slotFileQuit()
@@ -1207,11 +1204,11 @@ void MixxxApp::slotHelpAbout() {
     }
     about->version_label->setText(version.join(" "));
 
-    QString s_devTeam=QString(tr("Mixxx %1 Development Team")).arg(VERSION);
-    QString s_contributions=tr("With contributions from:");
-    QString s_specialThanks=tr("And special thanks to:");
-    QString s_pastDevs=tr("Past Developers");
-    QString s_pastContribs=tr("Past Contributors");
+    QString s_devTeam = QString(tr("Mixxx %1 Development Team")).arg(VERSION);
+    QString s_contributions = tr("With contributions from:");
+    QString s_specialThanks = tr("And special thanks to:");
+    QString s_pastDevs = tr("Past Developers");
+    QString s_pastContribs = tr("Past Contributors");
 
     QString credits = QString("<p align=\"center\"><b>%1</b></p>"
 "<p align=\"center\">"
@@ -1385,7 +1382,7 @@ void MixxxApp::slotHelpTranslation() {
 }
 
 void MixxxApp::slotHelpManual() {
-    QDir configDir(m_pConfig->getConfigPath());
+    QDir resourceDir(m_pConfig->getResourcePath());
     // Default to the mixxx.org hosted version of the manual.
     QUrl qManualUrl(MIXXX_MANUAL_URL);
 #if defined(__APPLE__)
@@ -1393,16 +1390,16 @@ void MixxxApp::slotHelpManual() {
     // web-hosted version.
 #elif defined(__WINDOWS__)
     // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
-    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
-            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
 #elif defined(__LINUX__)
     // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    configDir.cd("doc");
-    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+    resourceDir.cd("doc");
+    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
-            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
 #else
     // No idea, default to the mixxx.org hosted version.
@@ -1431,9 +1428,6 @@ void MixxxApp::rebootMixxxView() {
     // it is not fullscreen, but acts as if it is.
     bool wasFullScreen = m_pOptionsFullScreen->isChecked();
     slotOptionsFullScreen(false);
-
-    // TODO(XXX) Make getSkinPath not public
-    QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
     //delete the view cause swaping central widget do not remove the old one !
     if( m_pView)
@@ -1637,6 +1631,19 @@ bool MixxxApp::confirmExit() {
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;
+        }
+    }
+    if (m_pPrefDlg->isVisible()) {
+        QMessageBox::StandardButton btn = QMessageBox::question(
+            this, tr("Confirm Exit"),
+            tr("The preferences window is still open.") + "<br>" +
+            tr("Discard any changes and exit Mixxx?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (btn == QMessageBox::No) {
+            return false;
+        }
+        else {
+            m_pPrefDlg->close();
         }
     }
     return true;

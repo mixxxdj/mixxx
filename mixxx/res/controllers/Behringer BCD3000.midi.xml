@@ -1,6 +1,9 @@
 <MixxxMIDIPreset mixxxVersion="1.8.0+" schemaVersion="1">
     <info>
         <name>Behringer BCD3000</name>
+        <author>Aposto</author>
+        <description>MIDI Mapping for Behringer BCD3000</description>
+        <forums>http://mixxx.org/forums/viewtopic.php?f=3&amp;t=845</forums>
     </info>
     <controller id="BCD3000 MIDI 1">
         <scriptfiles>

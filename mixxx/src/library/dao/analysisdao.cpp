@@ -200,6 +200,31 @@ bool AnalysisDao::deleteAnalysis(int analysisId) {
     return true;
 }
 
+void AnalysisDao::deleteAnalysises(QList<int> ids) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+    QSqlQuery query(m_db);
+    query.prepare("SELECT track_analysis.id FROM track_analysis WHERE "
+                  "track_id in (" + idList.join(",")+ ")");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+    while(query.next()){
+        int id = query.value(query.record().indexOf("id")).toInt();
+        QString dataPath = getAnalysisStoragePath().absoluteFilePath(
+                            QString::number(id));
+        qDebug() << dataPath;
+        deleteFile(dataPath);
+    }
+    query.prepare(QString("DELETE FROM track_analysis "
+                          "WHERE track_id in (%1)").arg(idList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+}
+
 bool AnalysisDao::deleteAnalysesForTrack(int trackId) {
     if (trackId == -1) {
         return false;

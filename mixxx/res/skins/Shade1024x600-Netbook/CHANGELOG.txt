@@ -17,6 +17,9 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.09	(04/08/2012)
+* Fix: Show correct tooltip for artist/track name display in sample decks
+
 v1.11.0.05	(25/05/2012)
 * Fix: Support beatloop_X_toggle and beatloop_X_enabled controls instead of the deprecated beatloop_x, lp:1000829 & lp:902641
   This fixes beatloop GUI buttons to start the loop again on button up

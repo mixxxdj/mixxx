@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset schemaVersion="1">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.11+">
     <info>
         <name>Novation Launchpad</name>
         <author>zestoi</author>
@@ -733,4 +733,4 @@
         </controls>
         <outputs/>
     </controller>
-</MixxxControllerPreset>
+</MixxxMIDIPreset>

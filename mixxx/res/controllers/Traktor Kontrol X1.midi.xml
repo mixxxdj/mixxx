@@ -1,0 +1,111 @@
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.10.0+">
+  <info>
+    <name>Traktor Kontrol X1</name>
+    <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
+    <description>MIDI mapping for Native Instruments Traktor Kontrol X1.</description>
+    <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3809&amp;sid=c1bfe107f8ea6c65bf2294ff51a0920d</forums>
+  </info>
+  <controller id="KontrolX1" port="">
+    <scriptfiles>
+      <file functionprefix="KontrolX1" filename="Traktor-Kontrol-X1.js" />
+    </scriptfiles>
+    <controls>
+
+      <!-- All inputs without shift being pressed -->
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x00</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x01</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x02</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x03</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x04</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x05</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x06</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x07</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x08</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x09</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x0a</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x0b</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x0c</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x0d</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x0e</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x0f</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x10</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x11</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x1a</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x1b</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x12</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x13</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x14</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x15</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x16</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x17</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x18</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x19</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x1c</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x1d</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x1e</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x1f</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x20</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x21</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x22</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x23</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x24</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x25</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x26</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x27</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x28</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x29</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x2a</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x2b</midino><options><Script-Binding/></options></control>
+
+      <!-- All inputs with shift being pressed -->
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x2c</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x2d</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x2e</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x2f</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x30</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x31</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x32</midino><options><Script-Binding/></options></control>
+      <control><group>knobs</group><key>KontrolX1.knobs</key><status>0xb0</status><midino>0x33</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x34</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x35</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x36</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x37</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x38</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x39</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x3a</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x3b</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x3c</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x3e</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x3d</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x3f</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x44</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x45</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x46</midino><options><Script-Binding/></options></control>
+      <control><group>encoders</group><key>KontrolX1.encoders</key><status>0xb0</status><midino>0x47</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x40</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x41</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x42</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x43</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x48</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x49</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x4a</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x4b</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x4c</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x4d</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x4e</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x4f</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x50</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x51</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x52</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x53</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x54</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x55</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x56</midino><options><Script-Binding/></options></control>
+      <control><group>buttons</group><key>KontrolX1.buttons</key><status>0xb0</status><midino>0x57</midino><options><Script-Binding/></options></control>
+
+    </controls>
+
+  </controller>
+
+</MixxxMIDIPreset>
+

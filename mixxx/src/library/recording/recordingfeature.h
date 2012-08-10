@@ -29,8 +29,8 @@ class RecordingFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
     void bindWidget(WLibrarySidebar* sidebarWidget,
@@ -53,7 +53,6 @@ class RecordingFeature : public LibraryFeature {
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
-    QString m_currentSearch;
     const static QString m_sRecordingViewName;
     DlgRecording* m_pRecordingView;
     RecordingManager* m_pRecordingManager;

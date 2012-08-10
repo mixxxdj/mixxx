@@ -28,7 +28,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Returns the extension for the controller (type) preset files.  This is
     // used by the ControllerManager to display only relevant preset files for
     // the controller (type.)
-    virtual QString presetExtension();
+    virtual QString presetExtension() = 0;
     inline QString defaultPreset();
 
     void setPreset(const ControllerPreset& preset) {
@@ -83,7 +83,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual void receive(const QByteArray data);
 
     // Initializes the controller engine
-    virtual void applyPreset(QString configPath);
+    virtual void applyPreset(QString resourcePath);
 
     void learn(MixxxControl control);
     void cancelLearn();
@@ -131,8 +131,9 @@ class Controller : public QObject, ControllerPresetVisitor {
   private slots:
     virtual int open() = 0;
     virtual int close() = 0;
-    // Requests that the device poll if it is a polling device.
-    virtual void poll() { }
+    // Requests that the device poll if it is a polling device. Returns true
+    // if events were handled.
+    virtual bool poll() { return false; }
 
   private:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a

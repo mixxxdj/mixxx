@@ -3,8 +3,8 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
 <MixxxMIDIPreset mixxxVersion="1.8.1+" schemaVersion="1">
     <info>
       <name>Numark DJ2Go</name>
-      <version>0.1</version>
       <author>Jeff Mission (beatfixstudios@gmail.com)</author>
+      <description>MIDI mapping for Numark DJ2Go Controller</description>
     </info>
     <controller id="Numark DJ2Go MIDI 1">
         <scriptfiles>
@@ -372,19 +372,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
                 <maximum>0.1</maximum>
                 <status>0x90</status>
                 <midino>0x65</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x5a</midino>
                 <on>0x0</on>
                 <off>0x64</off>
             </output>

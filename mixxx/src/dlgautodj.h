@@ -4,6 +4,7 @@
 #include <QItemSelection>
 #include "ui_dlgautodj.h"
 #include "configobject.h"
+#include "controlpushbutton.h"
 #include "trackinfoobject.h"
 #include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
@@ -31,13 +32,16 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
     virtual void moveSelection(int delta);
-    virtual bool appendTrack(int trackId);
 
   public slots:
-    void shufflePlaylist(bool buttonChecked);
-    void skipNext(bool buttonChecked);
-    void fadeNow(bool buttonChecked);
-    void toggleAutoDJ(bool toggle);
+    void shufflePlaylistButton(bool buttonChecked);
+    void skipNextButton(bool buttonChecked);
+    void fadeNowButton(bool buttonChecked);
+    void toggleAutoDJButton(bool toggle);
+    void shufflePlaylist(double value);
+    void skipNext(double value);
+    void fadeNow(double value);
+    void toggleAutoDJ(double value);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
     void player1PlayChanged(double value);
@@ -54,7 +58,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
         ADJ_P1FADING,
         ADJ_P2FADING,
         ADJ_ENABLE_P1LOADED,
-        ADJ_ENABLE_P1PLAYING
+        ADJ_ENABLE_P1PLAYING,
+        ADJ_DISABLED
     };
 
     TrackPointer getNextTrackFromQueue();
@@ -66,7 +71,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
     PlaylistDAO& m_playlistDao;
-    bool m_bAutoDJEnabled;
 
     // Makes our Auto DJ logic assume the next track that should be played is
     // already loaded. We need this flag to make our
@@ -88,6 +92,14 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     ControlObjectThreadMain* m_pCORepeat1;
     ControlObjectThreadMain* m_pCORepeat2;
     ControlObjectThreadMain* m_pCOCrossfader;
+    ControlObjectThreadMain* m_pCOTSkipNext;
+    ControlObjectThreadMain* m_pCOTFadeNow;
+    ControlObjectThreadMain* m_pCOTShufflePlaylist;
+    ControlObjectThreadMain* m_pCOTToggleAutoDJ;
+    ControlPushButton* m_pCOSkipNext;
+    ControlPushButton* m_pCOFadeNow;
+    ControlPushButton* m_pCOShufflePlaylist;
+    ControlPushButton* m_pCOToggleAutoDJ;
 };
 
 #endif //DLGTRIAGE_H

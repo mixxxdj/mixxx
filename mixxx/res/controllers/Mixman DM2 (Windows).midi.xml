@@ -2,8 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>Mixman DM2 (Windows)</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file Mixman DM2 (Windows).midi.xml for Mixxx 1.6.2</description>
+    <author>Joe M.</author>
+    <description>MIDI Mapping for Mixman DM2 (Windows)</description>
   </info>
   <controller id="Mixman DM2 (Windows)" port="Port">
     <controls>

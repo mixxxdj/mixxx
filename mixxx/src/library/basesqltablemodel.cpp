@@ -20,6 +20,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
            TrackModel(db, settingsNamespace),
+           m_currentSearch(""),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_database(db) {
@@ -205,10 +206,12 @@ void BaseSqlTableModel::select() {
         Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
         tableColumnIndices.push_back(record.indexOf(column));
     }
-    int rows = query.size();
-    if (sDebug) {
-        qDebug() << "Rows returned" << rows << m_rowInfo.size();
-    }
+
+	// sqlite does not set size and m_rowInfo was just cleared    
+    //int rows = query.size();
+    //if (sDebug) {
+    //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
+    //}
 
     QVector<RowInfo> rowInfo;
     QSet<int> trackIds;
@@ -218,7 +221,7 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size();
+        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located        
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
@@ -755,3 +758,19 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     }
     return NULL;
 }
+
+void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
+    foreach (QModelIndex index, indices) {
+        int trackId = getTrackId(index);
+        trackIds.append(trackId);
+    }
+
+    m_trackDAO.hideTracks(trackIds);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
+}
+
+

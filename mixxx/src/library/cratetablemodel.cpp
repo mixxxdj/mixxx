@@ -128,9 +128,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
         foreach (QModelIndex index, indices) {
             trackIds.append(getTrackId(index));
         }
-        foreach (int trackId, trackIds) {
-            crateDao.removeTrackFromCrate(trackId, m_iCrateId);
-        }
+        crateDao.removeTracksFromCrate(trackIds, m_iCrateId);
         select();
     }
 }

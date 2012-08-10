@@ -41,6 +41,9 @@ class WTrackTableView : public WLibraryTableView {
 
   private slots:
     void slotRemove();
+    void slotHide();
+    void slotUnhide();
+    void slotPurge();
     void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotNextTrackInfo();
@@ -103,6 +106,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Remove from table
     QAction *m_pRemoveAct;
+    QAction *m_pHideAct;
+    QAction *m_pUnhideAct;
+    QAction *m_pPurgeAct;
 
     // Reset the played count of selected track or tracks
     QAction* m_pResetPlayedAct;

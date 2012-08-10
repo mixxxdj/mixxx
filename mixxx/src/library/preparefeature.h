@@ -9,6 +9,7 @@
 #include "library/libraryfeature.h"
 #include "configobject.h"
 #include "treeitemmodel.h"
+#include "dlgprepare.h"
 
 class AnalyserQueue;
 class LibraryTableModel;
@@ -25,8 +26,8 @@ class PrepareFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -35,6 +36,7 @@ class PrepareFeature : public LibraryFeature {
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
+    void refreshLibraryModels();
 
   signals:
     void trackAnalysisProgress(TrackPointer pTrack, int progress);
@@ -63,6 +65,7 @@ class PrepareFeature : public LibraryFeature {
     int m_iOldBpmEnabled;
     TreeItemModel m_childModel;
     const static QString m_sPrepareViewName;
+    DlgPrepare* m_pPrepareView;
 };
 
 

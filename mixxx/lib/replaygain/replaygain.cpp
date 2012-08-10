@@ -97,6 +97,10 @@
 #include <math.h>
 #include "replaygain.h"
 
+#if defined(_MSC_VER)
+    #include <stdint.h>
+#endif
+
 typedef float Float_t;
 
 static const Float_t  AYule [9] [11] = {

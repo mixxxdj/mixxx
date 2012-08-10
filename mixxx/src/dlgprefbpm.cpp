@@ -30,6 +30,7 @@
 #include "dlgbpmscheme.h"
 #include "bpm/bpmscheme.h"
 #include "xmlparse.h"
+#include "mixxx.h"
 
 #define CONFIG_KEY "[BPM]"
 
@@ -293,7 +294,7 @@ void DlgPrefBpm::loadBpmSchemes()
     // Verify path for xml track file.
     QString schemeFileName = config->getValueString(ConfigKey("[BPM]","SchemeFile"));
     if (schemeFileName.trimmed().isEmpty() | !QFile(schemeFileName).exists() ) {
-        schemeFileName = QDir::homePath().append("/").append(SETTINGS_PATH).append(BPMSCHEME_FILE);
+        schemeFileName = CmdlineArgs::Instance().getSettingsPath() + BPMSCHEME_FILE;
         qDebug() << "BPM Scheme File ConfigKey not set or file missing... setting to"<< schemeFileName;
         config->set(ConfigKey("[BPM]","SchemeFile"), schemeFileName);
         config->Save();
