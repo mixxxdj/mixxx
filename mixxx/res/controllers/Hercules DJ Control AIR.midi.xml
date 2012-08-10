@@ -1,7 +1,8 @@
 <MixxxMIDIPreset mixxxVersion="1.10.0+" schemaVersion="1">
     <info>
-      <author>rojaro</author>
       <name>Hercules DJ Control AIR</name>
+      <author>rojaro</author>
+      <description>Mapping for Hercules DJ Control AIR</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3263</forums>
     </info>
     <controller id="DJ Control Air">

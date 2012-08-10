@@ -281,15 +281,6 @@
         </options>
       </control>
       <control>
-        <status>0x90</status>
-        <midino>0xd</midino>
-        <group>[Channel1]</group>
-        <key>fwd</key>
-        <options>
-          <Button/>
-        </options>
-      </control>
-      <control>
         <status>0xb0</status>
         <midino>0x36</midino>
         <group>[Channel1]</group>
@@ -332,15 +323,6 @@
         <key>crossfader</key>
         <options>
           <normal/>
-        </options>
-      </control>
-      <control>
-        <status>0x90</status>
-        <midino>0x10</midino>
-        <group>[Channel1]</group>
-        <key>pfl</key>
-        <options>
-          <Button/>
         </options>
       </control>
       <control>
@@ -399,15 +381,6 @@
       </control>
       <control>
         <status>0x90</status>
-        <midino>0x0E</midino>
-        <group>[Channel1]</group>
-        <key>HerculesMP3e2.cue</key>
-        <options>
-          <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <status>0x90</status>
         <midino>0x22</midino>
         <group>[Channel2]</group>
         <key>HerculesMP3e2.cue</key>
@@ -431,15 +404,6 @@
         <key>HerculesMP3e2.sync</key>
         <options>
           <Script-Binding/>
-        </options>
-      </control>
-      <control>
-        <status>0x90</status>
-        <midino>0xf</midino>
-        <group>[Channel1]</group>
-        <key>play</key>
-        <options>
-          <Button/>
         </options>
       </control>
       <control>
@@ -489,33 +453,6 @@
       </control>
       <control>
         <status>0x90</status>
-        <midino>0x21</midino>
-        <group>[Channel2]</group>
-        <key>fwd</key>
-        <options>
-          <Button/>
-        </options>
-      </control>
-      <control>
-        <status>0x90</status>
-        <midino>0x23</midino>
-        <group>[Channel2]</group>
-        <key>play</key>
-        <options>
-          <Button/>
-        </options>
-      </control>
-      <control>
-        <status>0x90</status>
-        <midino>0x24</midino>
-        <group>[Channel2]</group>
-        <key>pfl</key>
-        <options>
-          <Button/>
-        </options>
-      </control>
-      <control>
-        <status>0x90</status>
         <midino>0x20</midino>
         <group>[Channel2]</group>
         <key>back</key>
@@ -541,7 +478,6 @@
           <Button/>
         </options>
       </control>
-
       <control>
         <status>0x90</status>
         <midino>0x24</midino>
