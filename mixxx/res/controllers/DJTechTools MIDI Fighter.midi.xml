@@ -3,7 +3,7 @@
   <info>
     <name>DJTechTools MIDIFighter</name>
     <author>RJ Ryan</author>
-    <description></description>
+    <description>Mapping for DJTechTools MIDIFighter Controller</description>
   </info>
   <controller id="DJTechTools MIDIFighter" port="">
     <scriptfiles>

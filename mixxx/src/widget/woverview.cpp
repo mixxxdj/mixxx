@@ -33,8 +33,6 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
     : WWidget(parent),
       m_pGroup(pGroup),
       m_pConfig(pConfig) {
-
-    m_sampleDuration = 0;
     m_iPos = 0;
     m_bDrag = false;
 
@@ -50,6 +48,8 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
              this, SLOT( onEndOfTrackChange(double)));
     m_endOfTrack = false;
 
+    m_trackSamplesControl = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "track_samples")));
     setAcceptDrops(true);
 
     m_waveform = NULL;
@@ -68,6 +68,8 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
 
 WOverview::~WOverview() {
     delete m_totalGainControl;
+    delete m_endOfTrackControl;
+    delete m_trackSamplesControl;
 }
 
 void WOverview::setup(QDomNode node) {
@@ -187,9 +189,6 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
 
     if (pTrack) {
         m_pCurrentTrack = pTrack;
-
-        m_sampleDuration = pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels();
-
         connect(pTrack.data(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
         slotWaveformSummaryUpdated();
@@ -399,6 +398,7 @@ void WOverview::paintEvent(QPaintEvent *)
     WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     if (m_waveform) {
         painter.setOpacity(1.0);
+
         bool normalize = widgetFactory->isOverviewNormalized();
         if( normalize && m_pixmapDone && m_waveformPeak > 1) {
             int diffPeak = 255 - m_waveformPeak - 1;
@@ -415,12 +415,12 @@ void WOverview::paintEvent(QPaintEvent *)
         }
     }
 
-    if (m_sampleDuration > 0) {
-
+    double trackSamples = m_trackSamplesControl->get();
+    if (trackSamples > 0) {
         const float offset = 1.0f;
-        const float gain = (float)(width()-2) / (float)m_sampleDuration;
+        const float gain = (float)(width()-2) / trackSamples;
 
-        //Draw range (loop)
+        // Draw range (loop)
         for( unsigned int i = 0; i < m_markRanges.size(); i++) {
             WaveformMarkRange& currentMarkRange = m_markRanges[i];
 
@@ -463,7 +463,7 @@ void WOverview::paintEvent(QPaintEvent *)
             WaveformMark& currentMark = m_marks[i];
             if( currentMark.m_pointControl->get() > 0.0) {
                 //const float markPosition = 1.0 +
-                //        (currentMark.m_pointControl->get() / (float)m_sampleDuration) * (float)(width()-2);
+                //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                 const float markPosition = offset + currentMark.m_pointControl->get() * gain;
 
                 const QLineF line(markPosition, 0.0, markPosition, (float)height());

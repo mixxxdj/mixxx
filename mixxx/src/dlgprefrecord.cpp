@@ -48,8 +48,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     if (recordingsPath == "") {
         // Initialize recordings path in config to old default path.
         // Do it here so we show current value in UI correctly.
-        QDir musicDir(config->getValueString(ConfigKey("[Playlist]","Directory")));
-        QDir recordDir(musicDir.absolutePath() + "/Mixxx/Recordings");
+        QString musicDir = config->getValueString(ConfigKey("[Playlist]","Directory"));
+        if (musicDir.isEmpty()) {
+            musicDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
+        }
+        QDir recordDir(musicDir + "/Mixxx/Recordings");
         recordingsPath = recordDir.absolutePath();
     }
     LineEditRecordings->setText(recordingsPath);
@@ -241,13 +244,6 @@ void DlgPrefRecord::slotUpdate()
 {
     // Recordings path
     QString recordingsPath = config->getValueString(ConfigKey("[Recording]","Directory"));
-    if (recordingsPath == "") {
-        // Initialize recordings path in config to old default path.
-        // Do it here so we show current value in UI correctly.
-        QDir musicDir(config->getValueString(ConfigKey("[Playlist]","Directory")));
-        QDir recordDir(musicDir.absolutePath() + "/Mixxx/Recordings");
-        recordingsPath = recordDir.absolutePath();
-    }
     LineEditRecordings->setText(recordingsPath);
 
     if (radioWav && radioWav->isChecked())
@@ -306,9 +302,9 @@ void DlgPrefRecord::setRecordingFolder() {
 
 void DlgPrefRecord::slotEnableCueFile(int enabled)
 {
-    config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(CheckBoxRecordCueFile->isChecked()));
-
+    config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(enabled != Qt::Unchecked));
 }
+
 void DlgPrefRecord::slotChangeSplitSize()
 {
         config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),

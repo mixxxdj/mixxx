@@ -2,8 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>FaderFox DJ2</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file FaderFoxDJ2.midi.xml for Mixxx 1.6.2</description>
+    <author>Sacha Berger</author>
+    <description>MIDI Mapping for FaderFoxDJ2</description>
   </info>
   <controller id="FaderFoxDJ2" port="Port">
     <controls>
@@ -57,7 +57,7 @@
         <options>
 
 	</options>
-        <sensitivity>700</sensitivity>
+        <!-- Not a valid mixxx 1.11 control <sensitivity>700</sensitivity> -->
       </control>
       <control>
         <group>[Channel1]</group>
@@ -241,7 +241,7 @@
         <options>
 
     </options>
-        <sensitivity>700</sensitivity>
+        <!-- Not a valid mixxx 1.11 control <sensitivity>700</sensitivity> -->
       </control>
       <control>
         <group>[Channel2]</group>

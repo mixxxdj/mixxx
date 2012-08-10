@@ -60,6 +60,10 @@ void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate
 // Given a sorted set of numbers, find the sample median.
 // http://en.wikipedia.org/wiki/Median#The_sample_median
 double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
+    if (sortedItems.empty()) {
+        return 0.0;
+    }
+
     // When there are an even number of elements, the sample median is the mean
     // of the middle 2 elements.
     if (sortedItems.size() % 2 == 0) {

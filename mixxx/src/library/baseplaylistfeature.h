@@ -35,10 +35,12 @@ class BasePlaylistFeature : public LibraryFeature {
   public slots:
     virtual void activate();
     virtual void activateChild(const QModelIndex& index);
-    virtual bool dropAccept(QUrl url);
+    virtual bool dropAccept(QList<QUrl> urls);
     virtual bool dragMoveAccept(QUrl url);
     virtual void onLazyChildExpandation(const QModelIndex& index);
+    virtual void htmlLinkClicked(const QUrl & link);
 
+    virtual void slotPlaylistTableChanged(int playlistId) = 0;
     void slotCreatePlaylist();
 
   protected slots:
@@ -49,7 +51,6 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
-    virtual void slotPlaylistTableChanged(int playlistId) = 0;
 
   protected:
     virtual QModelIndex constructChildModel(int selected_id) = 0;

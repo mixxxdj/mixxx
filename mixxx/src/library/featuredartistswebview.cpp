@@ -94,7 +94,7 @@ FeaturedArtistsWebView::~FeaturedArtistsWebView()
 
 void FeaturedArtistsWebView::setup(QDomNode node)
 {
-
+	Q_UNUSED(node);
 }
 
 void FeaturedArtistsWebView::handleClickedLink(const QUrl& url)
@@ -126,6 +126,7 @@ void FeaturedArtistsWebView::handleClickedLink(const QUrl& url)
 //TODO: Implement this for MIDI control
 void FeaturedArtistsWebView::keyPressEvent(QKeyEvent* event)
 {
+    Q_UNUSED(event);
     //Look at WTrackTableView::keyPressEvent(...) for some
     //code to start with...
 }

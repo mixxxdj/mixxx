@@ -37,11 +37,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "RHYTHMBOX_SCANNER");
-    m_database.setHostName("localhost");
-    m_database.setDatabaseName(MIXXX_DB_PATH);
-    m_database.setUserName("mixxx");
-    m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -105,9 +101,8 @@ void RhythmboxFeature::activate() {
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit (featureIsLoading(this));
     }
-    else
-        emit(showTrackModel(m_pRhythmboxTrackModel));
 
+    emit(showTrackModel(m_pRhythmboxTrackModel));
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
@@ -118,14 +113,14 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
-bool RhythmboxFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool RhythmboxFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 

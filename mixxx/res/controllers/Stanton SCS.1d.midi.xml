@@ -4,8 +4,9 @@
         <name>Stanton SCS.1d (unfinished)</name>
         <author>Sean M. Pappalardo</author>
         <description>This is a complete mapping for a single Stanton SCS.1d turntable controller. Requires scripting and native HSS1394 support.</description>
+        <wiki>http://mixxx.org/wiki/doku.php/stanton_scs.1d</wiki>
     </info>
-    <controller id="Stanton SCS.1d" port="">
+    <controller id="Stanton SCS.1d">
         <scriptfiles>
             <file filename="Stanton-SCS1d-scripts.js" functionprefix="StantonSCS1d"/>
         </scriptfiles>
@@ -14,7 +15,7 @@
                 <control>   <!-- Firmware version response -->
                     <status>0xf0</status>
                     <group>[Master]</group>
-                    <key>StantonSCS1d.firmwareResponse</key>
+                    <key>StantonSCS1d.inboundSysex</key>
                     <options>
                         <Script-Binding/>
                     </options>

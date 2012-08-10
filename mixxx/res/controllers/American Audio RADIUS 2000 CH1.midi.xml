@@ -1,6 +1,8 @@
 <MixxxMIDIPreset mixxxVersion="1.10.0-beta1+" schemaVersion="1">
     <info>
         <name>American Audio Radius 2000 CH1</name>
+        <author>Markus Steinbauer</author>
+        <description>American Audio Radius 2000 mapping for Deck 1</description>
     </info>
     <controller id="Radius 2000 MIDI 1">
         <scriptfiles>
@@ -12,7 +14,6 @@
                 <midino>0x38</midino>
                 <group>[Playlist]</group>
                 <key>RADIUS2000.trackSearch</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -22,7 +23,6 @@
                 <midino>0x36</midino>
                 <group>[Playlist]</group>
                 <key>RADIUS2000.menuSearch</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -32,7 +32,6 @@
                 <midino>0x30</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.cue</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -42,7 +41,6 @@
                 <midino>0x26</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.wheelTouch</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -52,7 +50,6 @@
                 <midino>0x35</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.wheelTurn</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -62,17 +59,6 @@
                 <midino>0x2a</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.play</key>
-                <description></description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-	    <control>
-                <status>0x90</status>
-                <midino>0x2a</midino>
-                <group>[Channel1]</group>
-                <key>RADIUS2000.play</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -82,7 +68,6 @@
                 <midino>0x06</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.keylock</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -92,7 +77,6 @@
                 <midino>0x0C</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.pitchRateRange</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -102,7 +86,6 @@
                 <midino>0x01</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.pitchRate</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -112,7 +95,6 @@
                 <midino>0x2D</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.flanger</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -122,7 +104,6 @@
                 <midino>0x18</midino>
                 <group>[Channel1]</group>
                 <key>RADIUS2000.flangerDelay</key>
-                <description></description>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -132,7 +113,6 @@
                 <midino>0x07</midino>
                 <group>[Channel1]</group>
                 <key>rate_temp_down</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -142,7 +122,6 @@
                 <midino>0x0D</midino>
                 <group>[Channel1]</group>
                 <key>rate_temp_up</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -152,7 +131,6 @@
                 <midino>0x2</midino>
                 <group>[Channel1]</group>
                 <key>beatloop_4</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -162,7 +140,6 @@
                 <midino>0x4</midino>
                 <group>[Channel1]</group>
                 <key>reverse</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -172,7 +149,6 @@
                 <midino>0x5</midino>
                 <group>[Channel1]</group>
                 <key>loop_out</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -182,7 +158,6 @@
                 <midino>0x8</midino>
                 <group>[Channel1]</group>
                 <key>loop_double</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -192,7 +167,6 @@
                 <midino>0x1F</midino>
                 <group>[Channel1]</group>
                 <key>LoadSelectedTrack</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -202,7 +176,6 @@
                 <midino>0xa</midino>
                 <group>[Channel1]</group>
                 <key>hotcue_3_activate</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -212,7 +185,6 @@
                 <midino>0xb</midino>
                 <group>[Channel1]</group>
                 <key>loop_in</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -222,7 +194,6 @@
                 <midino>0x46</midino>
                 <group>[Channel1]</group>
                 <key>rate</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -232,7 +203,6 @@
                 <midino>0xe</midino>
                 <group>[Channel1]</group>
                 <key>loop_halve</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -242,7 +212,6 @@
                 <midino>0x10</midino>
                 <group>[Channel1]</group>
                 <key>hotcue_2_activate</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -252,7 +221,6 @@
                 <midino>0x11</midino>
                 <group>[Channel1]</group>
                 <key>back</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -262,7 +230,6 @@
                 <midino>0x12</midino>
                 <group>[Channel1]</group>
                 <key>beatsync</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -272,7 +239,6 @@
                 <midino>0x13</midino>
                 <group>[Channel1]</group>
                 <key>LoadSelectedTrack</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -282,7 +248,6 @@
                 <midino>0x16</midino>
                 <group>[Channel1]</group>
                 <key>hotcue_1_activate</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -292,7 +257,6 @@
                 <midino>0x17</midino>
                 <group>[Channel1]</group>
                 <key>reloop_exit</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -302,7 +266,6 @@
                 <midino>0x1d</midino>
                 <group>[Playlist]</group>
                 <key>SelectNextTrack</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -312,7 +275,6 @@
                 <midino>0x22</midino>
                 <group>[Channel1]</group>
                 <key>hotcue_4_activate</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -322,7 +284,6 @@
                 <midino>0x23</midino>
                 <group>[Channel1]</group>
                 <key>fwd</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
@@ -332,7 +293,6 @@
                 <midino>0x29</midino>
                 <group>[Playlist]</group>
                 <key>SelectPrevTrack</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>

@@ -23,7 +23,7 @@ class Upgrade
     public:
         Upgrade();
         ~Upgrade();
-        ConfigObject<ConfigValue>* versionUpgrade();
+        ConfigObject<ConfigValue>* versionUpgrade(const QString& settingsPath);
         bool isFirstRun() { return m_bFirstRun; };
         bool isUpgraded() { return m_bUpgraded; };
     private:

@@ -254,7 +254,7 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, cueSet);
 
     QString whilePlaying = tr("(while playing)");
-    QString whileStopped = tr("(while playing)");
+    QString whileStopped = tr("(while stopped)");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."))

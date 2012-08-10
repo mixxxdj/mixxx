@@ -82,6 +82,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
 
 void BasePlaylistFeature::activate() {
     emit(switchToView(m_rootViewName));
+    emit(restoreSearch(QString())); // Null String disables search box
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
@@ -220,8 +221,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 }
 
-bool BasePlaylistFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool BasePlaylistFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
@@ -380,7 +381,19 @@ void BasePlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit,SIGNAL(anchorClicked(const QUrl)),
+        this,SLOT(htmlLinkClicked(const QUrl))
+    );
     libraryWidget->registerView(m_rootViewName, edit);
+}
+
+void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
+    if (QString(link.path())=="create") {
+        slotCreatePlaylist();   
+    } else {
+        qDebug() << "Unknonw playlist link clicked" << link.path();
+    } 
 }
 
 /**

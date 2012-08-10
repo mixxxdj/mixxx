@@ -442,7 +442,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-                ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
+                ControlObject::getControl(ConfigKey(channelStr, "wheel")), viewer);
 
     p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
@@ -857,7 +857,8 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     QByteArray qba(channelStr.toAscii());
     char *safe = new char[qba.size() + 1]; // +1 for \0
     int i = 0;
-    while (safe[i] = qba[i]) ++i;
+    // Copy string
+    while ((safe[i] = qba[i])) ++i;
     s_channelStrs.append(safe);
     return safe;
 }
@@ -974,7 +975,11 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
         if (control == NULL) {
             qWarning() << "Requested control does not exist:" << key << ". Creating it.";
-            control = new ControlObject(configKey);
+            // Since the usual behavior here is to create a skin-defined push
+            // button, actually make it a push button and set it to toggle.
+            ControlPushButton* controlButton = new ControlPushButton(configKey);
+            controlButton->setButtonMode(ControlPushButton::TOGGLE);
+            control = controlButton;
         }
 
         QString property = XmlParse::selectNodeQString(con, "BindProperty");

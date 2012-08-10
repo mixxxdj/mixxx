@@ -147,8 +147,6 @@ void DlgPrefPlaylist::slotUpdate()
     checkBox_show_rhythmbox->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
     checkBox_show_itunes->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
-
-
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
