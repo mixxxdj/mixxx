@@ -1030,7 +1030,7 @@
                 </options>
 	</control>
 
-	// AUTOLOOP BT
+	<!-- AUTOLOOP BT -->
 	<control>
                 <status>0x90</status>
                 <midino>29</midino>

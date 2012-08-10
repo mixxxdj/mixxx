@@ -110,6 +110,8 @@ function HIDPacket(name,header,length,callback) {
     this.length = length;
     this.callback = callback;
 
+    this.groups = new Object();
+
     // Size of various 'pack' values in bytes
     this.packSizes = { b: 1, B: 1, h: 2, H: 2, i: 4, I: 4 };
     this.signedPackFormats = [ 'b', 'h', 'i'];
@@ -118,23 +120,49 @@ function HIDPacket(name,header,length,callback) {
 // Pack a field value to the packet.
 // Can only pack bits and byte values, patches welcome.
 HIDPacket.prototype.pack = function(packet,field) {
+    var value = 0;
+    if (!(field.pack in this.packSizes)) {
+        HIDDebug("ERROR parsing packed value: invalid pack format " + field.pack);
+        return;
+    }
+    var bytes = this.packSizes[field.pack];
+    var signed = false;
+    if (this.signedPackFormats.indexOf(field.pack)!=-1)
+        signed = true;
+
     if (field.type=='bitvector') {
+        // TODO - fix multi byte bit vector outputs
+        if (bytes>1) {
+            HIDDebug("ERROR: packing multibyte bit vectors not yet supported");
+            return;
+        }
         for (bit_id in field.value.bits) {
             var bit = field.value.bits[bit_id];
             packet.data[field.offset] = packet.data[field.offset] | bit.value;
         }
         return;
     }
-    if (!(field.pack in this.packSizes)) {
-        HIDDebug("Error packing field: unknown pack value " + field.pack);
+
+    value = (field.value!=undefined) ? field.value : 0;  
+
+    if (value<field.min || value>field.max) {
+        HIDDebug("ERROR " + field.id + " packed value out of range: " + value);
         return;
     }
-    var signed = false;
-    if (this.signedPackFormats.indexOf(field.pack)!=-1)
-        signed = true;
 
-    // TODO - implement packing anything else but unsigned byte
-    packet.data[field.offset] = field.value;
+    for (var byte_index=0;byte_index<bytes;byte_index++) {
+        var index = field.offset+byte_index;
+        if (signed) {
+            if (value>=0) {
+                packet.data[index] = (value>>(byte_index*8)) & 255;
+            } else {
+                packet.data[index] = 255 - ((-(value+1)>>(byte_index*8)) & 255);
+            }
+        } else {
+            packet.data[index] = (value>>(byte_index*8)) & 255;
+        }
+    }
+
 }
 
 // Parse and return field value matching the 'pack' field from field attributes.
@@ -426,6 +454,13 @@ HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback
     field.toggle = undefined;
 
     var packet_max_value = Math.pow(2,this.packSizes[field.pack]*8);
+    if (this.signedPackFormats.indexOf(pack)!=-1) {
+        field.min = 0 - (packet_max_value/2)+1;
+        field.max = (packet_max_value/2)-1;
+    } else {
+        field.min = 0;
+        field.max = packet_max_value-1;
+    }
     if (bitmask==undefined || bitmask==packet_max_value) {
         field.type = 'output';
         field.value = undefined;
@@ -653,6 +688,10 @@ function HIDController () {
     this.InputPackets = new Object();
     this.OutputPackets = new Object();
 
+    // Callback functions called by deck switching. Undefined by default
+    this.disconnectDeck = undefined;
+    this.connectDeck = undefined;
+
     // Scratch parameter defaults for this.scratchEnable function
     // override for custom control
     this.isScratchEnabled = false;
@@ -668,7 +707,7 @@ function HIDController () {
     // Output color values to send 
     this.LEDColors = {off: 0x0, on: 0x7f};
     // Toggle buttons
-    this.toggleButtons = [ 'play', 'pfl', 'keylock', 'quantize' ];
+    this.toggleButtons = [ 'play', 'pfl', 'keylock', 'quantize', 'reverse' ];
 
     // Override to set specific colors for multicolor button Output per deck
     this.deckOutputColors = {1: 'on', 2: 'on', 3: 'on', 4: 'on'};
@@ -1151,11 +1190,20 @@ HIDController.prototype.processControl = function(field) {
     }
 }
 
+// Toggle control state from toggle button
+HIDController.prototype.toggle = function(group,control,value) {
+    if (value==this.buttonStates.released)
+        return;
+    var status = (engine.getValue(group,control)==true) ? false : true;
+    engine.setValue(group,control,status);
+}
+
 // Toggle play/pause state
 HIDController.prototype.togglePlay = function(group,field) {
     if (field.value==this.buttonStates.released)
         return;
-    if (engine.getValue(group,'play'))
+    var status = (engine.getValue(group,"play")) ? false : true;
+    if (!status)
         engine.setValue(group,'stop',true);
     else
         engine.setValue(group,'play',true);
@@ -1306,6 +1354,8 @@ HIDController.prototype.switchDeck = function(deck) {
     }
     new_group = this.resolveDeckGroup(deck);
     HIDDebug("Switching to deck " + deck + " group " + new_group);
+    if (this.disconnectDeck!=undefined)
+        this.disconnectDeck();
     for (var packet_name in this.OutputPackets) {
         packet = this.OutputPackets[packet_name];
         var send_packet = false;
@@ -1359,6 +1409,8 @@ HIDController.prototype.switchDeck = function(deck) {
         }
     }
     this.activeDeck = deck;
+    if (this.connectDeck!=undefined)
+        this.connectDeck();
 }
 
 // Link a virtual HID Output to mixxx control
@@ -1427,4 +1479,29 @@ HIDController.prototype.setOutputToggle = function(group,name,toggle_value) {
     field.toggle = toggle_value<<field.bit_offset;
     field.packet.send();
 }
+
+// Manual packing test functions 
+//var packet = new HIDPacket("test",[0x1,0x2],6);
+//var field;
+//packet.addOutput("test","ushort",2,'H');
+//packet.addOutput("test","short",4,'h');
+//field = packet.getField("test","ushort");
+//print("FIELD " + field.id + " MIN " + field.min + " MAX " + field.max);
+//field.value = 1024;
+//field = packet.getField("test","short");
+//field.value = -32767;
+//print("FIELD " + field.id + " MIN " + field.min + " MAX " + field.max);
+//var out = { 'length': packet.length, 'data': []};
+//for (var i=0;i<packet.header.length;i++) {
+//    out.data[i] = i;
+//}
+//for (var group_name in packet.groups) {
+//    var group = packet.groups[group_name];
+//    for (var field_name in group) {
+//        var field = group[field_name];
+//        print("PACKING " + field.id);
+//        packet.pack(out,field);
+//    }
+//}
+//for (var i=0;i<out.length;i++) { print("BYTE " +i+ " VALUE " +out.data[i]); }
 
