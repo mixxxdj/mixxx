@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-06-22 07:46+0200\n"
-"PO-Revision-Date: 2012-02-12 09:56+0000\n"
-"Last-Translator: radiodiscret21 <adi_de_adi80@yahoo.com>\n"
+"POT-Creation-Date: 2012-08-10 12:07+0200\n"
+"PO-Revision-Date: 2012-08-10 10:53+0000\n"
+"Last-Translator: otzy_007 <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-06-23 04:40+0000\n"
-"X-Generator: Launchpad (build 15461)\n"
+"X-Launchpad-Export-Date: 2012-08-11 05:13+0000\n"
+"X-Generator: Launchpad (build 15780)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -34,7 +34,7 @@ msgstr ""
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importă listă de redare"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
@@ -48,7 +48,7 @@ msgstr ""
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Listă de redare nouă"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
@@ -63,30 +63,30 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Eliminati"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Redenumește"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Blochează"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importă listă de redare"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportare listă de redare"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Redenumește lista de redare"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
@@ -106,7 +106,7 @@ msgstr ""
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr ""
+msgstr "Nume listă de redare:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
@@ -157,32 +157,32 @@ msgstr "Gen"
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr ""
+msgstr "Compozitor"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "An"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "Locația"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "Comentariu"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "Durată"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -191,17 +191,17 @@ msgstr "Rating"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "Pista #"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -213,7 +213,7 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "Amprentă de timp"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
@@ -238,7 +238,7 @@ msgstr ""
 
 #: BrowseFeature#3
 msgid "Quick Links"
-msgstr ""
+msgstr "Link-uri rapide"
 
 #: BrowseFeature#4
 msgid "Devices"
@@ -295,22 +295,22 @@ msgstr "Gen"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "Compozitor"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Comentariu"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Durată"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -320,21 +320,21 @@ msgstr ""
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Locația"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Biblioteca Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -346,7 +346,7 @@ msgstr ""
 
 #: BrowseTableModel#18
 msgid "Warning: This will permanently delete the following files:"
-msgstr ""
+msgstr "Atenție: Următoarele fișiere vor fi șterse permanent:"
 
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
@@ -389,12 +389,12 @@ msgstr ""
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Intrare"
 
 #: ControllerMappingDlg#3
 msgid ""
@@ -409,12 +409,12 @@ msgstr "Controale"
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Adaugă"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Elimina"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -422,12 +422,12 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Șterge tot"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Ieșire"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
@@ -449,7 +449,7 @@ msgstr "Eliminare"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Nume nou"
+msgstr "Redenumește"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -526,14 +526,18 @@ msgid "Crates let you organize your music however you'd like!"
 msgstr ""
 
 #: CrateFeature#20
-msgid "A crate cannot have a blank name."
+msgid "Create new crate"
 msgstr ""
 
 #: CrateFeature#21
+msgid "A crate cannot have a blank name."
+msgstr ""
+
+#: CrateFeature#22
 msgid "Creating Crate Failed"
 msgstr "Crearea colecției a eșuat"
 
-#: CrateFeature#22
+#: CrateFeature#23
 msgid "A crate by that name already exists."
 msgstr "Există o colecție cu acest nume."
 
@@ -543,11 +547,11 @@ msgstr "Despre Mixxx"
 
 #: DlgAboutDlg#2
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr "<a href=\"http://mixxx.org/\">Official Website</a>"
+msgstr "<a href=\"http://mixxx.org/\">Website oficial</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
@@ -563,7 +567,7 @@ msgstr ""
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Amestecă"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
@@ -587,11 +591,11 @@ msgstr ""
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Secunde"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "sec."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
@@ -604,7 +608,7 @@ msgstr "Activează Auto Dj"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Gestionează"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
@@ -690,16 +694,16 @@ msgstr ""
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "Min:"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "Max:"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restabilește valorile implicite"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -716,11 +720,11 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr "Maxim"
+msgstr "Max"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "Minim"
+msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Track"
@@ -739,7 +743,7 @@ msgstr ""
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "Gata"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
@@ -760,16 +764,16 @@ msgstr ""
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr ""
+msgstr "Restabilește la implicit"
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr ""
+msgstr "Mixer"
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgControllerLearning#11
 msgid "Master volume"
@@ -789,7 +793,7 @@ msgstr ""
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "Transport"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
@@ -1028,7 +1032,7 @@ msgstr ""
 #: DlgControllerLearning#74
 msgctxt "DlgControllerLearning#74"
 msgid "Library"
-msgstr ""
+msgstr "Bibliotecă"
 
 #: DlgControllerLearning#75
 msgid "Switch to the next view (library, playlist..)"
@@ -1056,7 +1060,7 @@ msgstr ""
 
 #: DlgControllerLearning#81
 msgid "Effects"
-msgstr ""
+msgstr "Efecte"
 
 #: DlgControllerLearning#82
 msgid "Toggle flange effect"
@@ -1077,15 +1081,15 @@ msgstr ""
 #: DlgControllerLearning#86
 msgctxt "DlgControllerLearning#86"
 msgid "Microphone"
-msgstr ""
+msgstr "Microfon"
 
 #: DlgControllerLearning#87
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Microfon pornit/oprit"
 
 #: DlgControllerLearning#88
 msgid "Microphone volume"
-msgstr ""
+msgstr "Volum microfon"
 
 #: DlgControllerLearning#89
 msgid "Microphone channel orientation (e.g. left, right, center)"
@@ -1093,7 +1097,7 @@ msgstr ""
 
 #: DlgControllerLearning#90
 msgid "User Interface"
-msgstr ""
+msgstr "Interfaţă utilizator"
 
 #: DlgControllerLearning#91
 msgid "Show/hide the sampler section"
@@ -1131,7 +1135,7 @@ msgstr ""
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Detectare BPM"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
@@ -1185,7 +1189,7 @@ msgstr "Fișierul %1 nu a putut fi deschis"
 #: DlgPrefController#1
 msgctxt "DlgPrefController#1"
 msgid "None"
-msgstr ""
+msgstr "Niciuna"
 
 #: DlgPrefController#2
 msgid "%1 by %2"
@@ -1223,11 +1227,11 @@ msgstr ""
 
 #: DlgPrefControllerDlg#5
 msgid "TextLabel"
-msgstr ""
+msgstr "EtichetăText"
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Descriere:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1239,7 +1243,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Asistență:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1252,7 +1256,7 @@ msgstr ""
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
 msgid "Position"
-msgstr ""
+msgstr "Poziție"
 
 #: DlgPrefControls#2
 msgid "Remaining"
@@ -1264,22 +1268,22 @@ msgstr ""
 
 #: DlgPrefControls#4
 msgid "CDJ Mode"
-msgstr ""
+msgstr "Mod CDJ"
 
 #: DlgPrefControls#5
 msgctxt "DlgPrefControls#5"
 msgid "Simple"
-msgstr ""
+msgstr "Simplu"
 
 #: DlgPrefControls#6
 msgctxt "DlgPrefControls#6"
 msgid "On"
-msgstr ""
+msgstr "Pornit"
 
 #: DlgPrefControls#7
 msgctxt "DlgPrefControls#7"
 msgid "Off"
-msgstr ""
+msgstr "Oprit"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1348,7 +1352,7 @@ msgstr ""
 #: DlgPrefControls#24
 msgctxt "DlgPrefControls#24"
 msgid "Information"
-msgstr ""
+msgstr "Informaţie"
 
 #: DlgPrefControls#25
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1382,12 +1386,12 @@ msgstr ""
 #: DlgPrefControlsDlg#6
 msgctxt "DlgPrefControlsDlg#6"
 msgid "On"
-msgstr ""
+msgstr "Pornit"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "Off"
-msgstr ""
+msgstr "Oprit"
 
 #: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
@@ -1514,7 +1518,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#38
 msgid "Frame rate"
-msgstr ""
+msgstr "Rata de cadre"
 
 #: DlgPrefControlsDlg#39
 msgid "Default zoom"
@@ -1527,7 +1531,7 @@ msgstr ""
 #: DlgPrefControlsDlg#41
 msgctxt "DlgPrefControlsDlg#41"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizează"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1556,7 +1560,7 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Linear"
-msgstr ""
+msgstr "Liniar"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Logarithmic"
@@ -1565,7 +1569,7 @@ msgstr "Logaritmic"
 #: DlgPrefCrossfaderDlg#9
 msgctxt "DlgPrefCrossfaderDlg#9"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restabilește valorile implicite"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1602,12 +1606,12 @@ msgstr ""
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
-msgstr ""
+msgstr "etichetăTextuală2"
 
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restabilește la valorile implicite"
 
 #: DlgPrefMappableController#1
 msgid "Apply device settings?"
@@ -1638,7 +1642,7 @@ msgstr ""
 #: DlgPrefNoControllersDlg#1
 msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
@@ -1686,12 +1690,12 @@ msgstr ""
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Oprit)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
@@ -1726,17 +1730,17 @@ msgstr ""
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Mod control"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Mod absolut"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Mod relativ"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1746,7 +1750,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Calitate semnal"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
@@ -1767,7 +1771,7 @@ msgstr ""
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Alege directorul bibliotecii de muzică"
 
 #: DlgPrefPlaylistDlg#1
 msgid "Audio File Formats"
@@ -1788,12 +1792,12 @@ msgstr ""
 #: DlgPrefPlaylistDlg#5
 msgctxt "DlgPrefPlaylistDlg#5"
 msgid "None"
-msgstr ""
+msgstr "Niciuna"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diverse"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
@@ -1830,12 +1834,12 @@ msgstr ""
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Browse..."
-msgstr ""
+msgstr "Răsfoiește..."
 
 #: DlgPrefPlaylistDlg#16
 msgctxt "DlgPrefPlaylistDlg#16"
 msgid "Library"
-msgstr ""
+msgstr "Bibliotecă"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
@@ -1843,7 +1847,7 @@ msgstr "Director muzică:"
 
 #: DlgPrefPlaylistDlg#18
 msgid "Built-in"
-msgstr ""
+msgstr "Integrat"
 
 #: DlgPrefPlaylistDlg#19
 msgid "Available Online..."
@@ -1862,7 +1866,7 @@ msgstr ""
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "kbps"
-msgstr ""
+msgstr "kb/s"
 
 #: DlgPrefRecord#2
 msgid "Choose recordings directory"
@@ -1884,12 +1888,12 @@ msgstr ""
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
 msgid "Browse..."
-msgstr ""
+msgstr "Răsfoiește..."
 
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
-msgstr ""
+msgstr "Codare"
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
@@ -1910,7 +1914,7 @@ msgstr "Etichete"
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Title"
-msgstr ""
+msgstr "Titlu"
 
 #: DlgPrefRecordDlg#11
 msgid "Author"
@@ -1919,12 +1923,12 @@ msgstr "Autor"
 #: DlgPrefRecordDlg#12
 msgctxt "DlgPrefRecordDlg#12"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefRecordDlg#13
 msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diverse"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
@@ -1987,7 +1991,7 @@ msgstr "dB"
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restabilește valorile implicite"
 
 #: DlgPrefShoutcast#1
 msgid "Icecast 2"
@@ -2073,7 +2077,7 @@ msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#15
 msgid "Description"
-msgstr ""
+msgstr "Descriere"
 
 #: DlgPrefShoutcastDlg#16
 msgid ""
@@ -2104,7 +2108,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#17
 msgctxt "DlgPrefShoutcastDlg#17"
 msgid "Genre"
-msgstr ""
+msgstr "Gen"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Live mix"
@@ -2117,12 +2121,12 @@ msgstr "Stream public"
 #: DlgPrefShoutcastDlg#20
 msgctxt "DlgPrefShoutcastDlg#20"
 msgid "Encoding"
-msgstr ""
+msgstr "Codare"
 
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Bitrate"
-msgstr ""
+msgstr "Rată de biți"
 
 #: DlgPrefShoutcastDlg#22
 msgid "Format"
@@ -2134,7 +2138,7 @@ msgstr "Canale"
 
 #: DlgPrefShoutcastDlg#24
 msgid "Custom metadata"
-msgstr ""
+msgstr "Metadate personalizate"
 
 #: DlgPrefShoutcastDlg#25
 msgid "Enable custom metadata"
@@ -2143,12 +2147,12 @@ msgstr ""
 #: DlgPrefShoutcastDlg#26
 msgctxt "DlgPrefShoutcastDlg#26"
 msgid "Artist"
-msgstr ""
+msgstr "Artist"
 
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Title"
-msgstr ""
+msgstr "Titlu"
 
 #: DlgPrefShoutcastDlg#28
 msgid ""
@@ -2220,7 +2224,7 @@ msgstr ""
 #: DlgPrefSoundDlg#5
 msgctxt "DlgPrefSoundDlg#5"
 msgid "Output"
-msgstr ""
+msgstr "Ieșire"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
@@ -2234,7 +2238,7 @@ msgstr ""
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restabilește valorile implicite"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
@@ -2390,7 +2394,7 @@ msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Preferences"
-msgstr ""
+msgstr "Preferințe"
 
 #: DlgPreferences#2
 msgid "Sound Hardware"
@@ -2403,7 +2407,7 @@ msgstr ""
 #: DlgPreferences#4
 msgctxt "DlgPreferences#4"
 msgid "Library"
-msgstr ""
+msgstr "Bibliotecă"
 
 #: DlgPreferences#5
 msgid "Interface"
@@ -2417,12 +2421,12 @@ msgstr ""
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "Recording"
-msgstr ""
+msgstr "Înregistrare"
 
 #: DlgPreferences#9
 msgid "Beat Detection"
@@ -2431,7 +2435,7 @@ msgstr ""
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Detectare BPM"
 
 #: DlgPreferences#11
 msgid "Normalization"
@@ -2466,7 +2470,7 @@ msgstr ""
 
 #: DlgPrepare#3
 msgid "New"
-msgstr ""
+msgstr "Nou"
 
 #: DlgPrepare#4
 msgid "Shows all tracks in the library."
@@ -2474,7 +2478,7 @@ msgstr ""
 
 #: DlgPrepare#5
 msgid "All"
-msgstr ""
+msgstr "Toate"
 
 #: DlgPrepare#6
 msgid "Progress"
@@ -2497,7 +2501,7 @@ msgstr ""
 #: DlgPrepare#10
 msgctxt "DlgPrepare#10"
 msgid "Analyze"
-msgstr ""
+msgstr "Analizează"
 
 #: DlgPrepare#11
 msgid "Stop Analysis"
@@ -2542,7 +2546,7 @@ msgstr "Editor de piste"
 
 #: DlgTrackInfo#2
 msgid "Summary"
-msgstr ""
+msgstr "Rezumat"
 
 #: DlgTrackInfo#3
 msgid "Title:"
@@ -2566,17 +2570,17 @@ msgstr "Gen:"
 
 #: DlgTrackInfo#8
 msgid "Composer:"
-msgstr ""
+msgstr "Compozitor:"
 
 #: DlgTrackInfo#9
 msgctxt "DlgTrackInfo#9"
 msgid "Year"
-msgstr ""
+msgstr "An"
 
 #: DlgTrackInfo#10
 msgctxt "DlgTrackInfo#10"
 msgid "Key"
-msgstr ""
+msgstr "Tastă"
 
 #: DlgTrackInfo#11
 msgid "Filetype:"
@@ -2584,11 +2588,11 @@ msgstr ""
 
 #: DlgTrackInfo#12
 msgid "BPM:"
-msgstr ""
+msgstr "BPM:"
 
 #: DlgTrackInfo#13
 msgid "Location:"
-msgstr ""
+msgstr "Locație:"
 
 #: DlgTrackInfo#14
 msgid "Filename:"
@@ -2596,12 +2600,12 @@ msgstr "Nume fișier:"
 
 #: DlgTrackInfo#15
 msgid "Bitrate:"
-msgstr ""
+msgstr "Rata de biți:"
 
 #: DlgTrackInfo#16
 msgctxt "DlgTrackInfo#16"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: DlgTrackInfo#17
 msgid "Double BPM"
@@ -2617,11 +2621,11 @@ msgstr ""
 
 #: DlgTrackInfo#20
 msgid "&Previous"
-msgstr ""
+msgstr "&Anterior"
 
 #: DlgTrackInfo#21
 msgid "&Next"
-msgstr ""
+msgstr "&Următor"
 
 #: DlgTrackInfo#22
 msgid "Duration:"
@@ -2654,7 +2658,7 @@ msgstr ""
 #: DlgTrackInfo#29
 msgctxt "DlgTrackInfo#29"
 msgid "Position"
-msgstr ""
+msgstr "Poziție"
 
 #: DlgTrackInfo#30
 msgctxt "DlgTrackInfo#30"
@@ -2684,11 +2688,11 @@ msgstr "&Anulează"
 #: DlgTrackInfo#36
 msgctxt "DlgTrackInfo#36"
 msgid "kbps"
-msgstr ""
+msgstr "kb/s"
 
 #: EmptyWaveformWidget#1
 msgid "Empty"
-msgstr ""
+msgstr "Gol"
 
 #: EncoderMp3#1
 msgid "Encoder"
@@ -2880,7 +2884,7 @@ msgstr ""
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
 msgid "Simple"
-msgstr ""
+msgstr "Simplu"
 
 #: GLWaveformWidget#1
 msgctxt "GLWaveformWidget#1"
@@ -2904,7 +2908,7 @@ msgid "Generic HID Keyboard"
 msgstr ""
 
 #: HidController#5
-msgid "Gereric HID Multiaxis Controller"
+msgid "Generic HID Multiaxis Controller"
 msgstr ""
 
 #: HidController#6
@@ -2963,19 +2967,19 @@ msgstr ""
 
 #: LegacySkinParser#1
 msgid "activate"
-msgstr ""
+msgstr "activare"
 
 #: LegacySkinParser#2
 msgid "toggle"
-msgstr ""
+msgstr "comută"
 
 #: LegacySkinParser#3
 msgid "right"
-msgstr ""
+msgstr "dreapta"
 
 #: LegacySkinParser#4
 msgid "left"
-msgstr ""
+msgstr "stânga"
 
 #: LegacySkinParser#5
 msgid "right small"
@@ -2987,11 +2991,11 @@ msgstr ""
 
 #: LegacySkinParser#7
 msgid "up"
-msgstr ""
+msgstr "sus"
 
 #: LegacySkinParser#8
 msgid "down"
-msgstr ""
+msgstr "jos"
 
 #: LegacySkinParser#9
 msgid "up small"
@@ -3003,7 +3007,7 @@ msgstr ""
 
 #: LegacySkinParser#11
 msgid "Shortcut"
-msgstr ""
+msgstr "Scurtătură"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
@@ -3249,7 +3253,7 @@ msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Create a new playlist"
-msgstr ""
+msgstr "Creează o nouă listă de redare"
 
 #: MixxxApp#51
 msgid "Create a new crate"
@@ -3257,7 +3261,7 @@ msgstr "Creează o colecţie nouă"
 
 #: MixxxApp#52
 msgid "Ctrl+Shift+F"
-msgstr ""
+msgstr "Ctrl+Shift+F"
 
 #: MixxxApp#53
 msgid "Enable Vinyl Control &1"
@@ -3309,7 +3313,7 @@ msgstr "&Fișier"
 
 #: MixxxApp#65
 msgid "Ctrl+Shift+N"
-msgstr ""
+msgstr "Ctrl+Shift+N"
 
 #: MixxxApp#66
 msgid "Toggles keyboard shortcuts on or off"
@@ -3321,7 +3325,7 @@ msgstr ""
 
 #: MixxxApp#68
 msgid "&Translate This Application"
-msgstr ""
+msgstr "&Tradu această aplicație"
 
 #: MixxxApp#69
 msgid "Enable Live &Broadcasting"
@@ -3423,12 +3427,12 @@ msgstr ""
 #: MixxxLibraryFeature#3
 msgctxt "MixxxLibraryFeature#3"
 msgid "Library"
-msgstr ""
+msgstr "Bibliotecă"
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
 msgid "Location"
-msgstr ""
+msgstr "Locație"
 
 #: ParserCsv#2
 msgctxt "ParserCsv#2"
@@ -3475,16 +3479,16 @@ msgstr ""
 #: PlaylistFeature#1
 msgctxt "PlaylistFeature#1"
 msgid "Lock"
-msgstr ""
+msgstr "Blochează"
 
 #: PlaylistFeature#2
 msgid "Playlists"
-msgstr ""
+msgstr "Liste de redare"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Unlock"
-msgstr ""
+msgstr "Deblochează"
 
 #: PlaylistFeature#4
 msgid ""
@@ -3507,6 +3511,10 @@ msgstr ""
 msgid ""
 "It may be necessary to skip some songs in your prepared playlist or add some "
 "different songs in order to maintain the energy of your audience."
+msgstr ""
+
+#: PlaylistFeature#8
+msgid "Create new playlist"
 msgstr ""
 
 #: PrepareFeature#1
@@ -3538,7 +3546,7 @@ msgstr ""
 #: QObject#6
 msgctxt "QObject#6"
 msgid "Microphone"
-msgstr ""
+msgstr "Microfon"
 
 #: QObject#7
 msgid "Passthrough"
@@ -3551,7 +3559,7 @@ msgstr ""
 #: QtSimpleWaveformWidget#1
 msgctxt "QtSimpleWaveformWidget#1"
 msgid "Simple"
-msgstr ""
+msgstr "Simplu"
 
 #: QtWaveformWidget#1
 msgctxt "QtWaveformWidget#1"
@@ -3600,7 +3608,7 @@ msgstr ""
 
 #: SetlogFeature#2
 msgid "History"
-msgstr ""
+msgstr "Istoric"
 
 #: SetlogFeature#3
 msgctxt "SetlogFeature#3"
@@ -3610,7 +3618,7 @@ msgstr ""
 #: SetlogFeature#4
 msgctxt "SetlogFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Blochează"
 
 #: SetlogFeature#5
 msgid ""
@@ -3639,11 +3647,11 @@ msgstr ""
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Filtrat"
 
 #: SoftwareWaveformWidget#2
 msgid "Software"
-msgstr ""
+msgstr "Software"
 
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
@@ -3655,11 +3663,11 @@ msgstr ""
 
 #: Tooltips#3
 msgid "Left-click"
-msgstr ""
+msgstr "Clic stânga"
 
 #: Tooltips#4
 msgid "Right-click"
-msgstr ""
+msgstr "Clic dreapta"
 
 #: Tooltips#5
 msgid "Waveform Overview"
@@ -3700,7 +3708,7 @@ msgstr ""
 
 #: Tooltips#14
 msgid "Gain"
-msgstr ""
+msgstr "Amplificare"
 
 #: Tooltips#15
 msgid "Adjusts the pre-fader gain of the track (to avoid clipping)."
@@ -3752,7 +3760,7 @@ msgstr ""
 
 #: Tooltips#27
 msgid "Volume Control"
-msgstr ""
+msgstr "Control volum"
 
 #: Tooltips#28
 msgid "Adjusts the volume of the selected channel."
@@ -3760,7 +3768,7 @@ msgstr ""
 
 #: Tooltips#29
 msgid "Master Volume"
-msgstr ""
+msgstr "Volum principal"
 
 #: Tooltips#30
 msgid "Adjusts the master output volume."
@@ -3769,7 +3777,7 @@ msgstr ""
 #: Tooltips#31
 msgctxt "Tooltips#31"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Tooltips#32
 msgid ""
@@ -3778,7 +3786,7 @@ msgstr ""
 
 #: Tooltips#33
 msgid "Balance"
-msgstr ""
+msgstr "Balanţă"
 
 #: Tooltips#34
 msgid "Adjusts the left/right channel balance on the master output."
@@ -3817,7 +3825,7 @@ msgstr ""
 #: Tooltips#42
 msgctxt "Tooltips#42"
 msgid "Microphone"
-msgstr ""
+msgstr "Microfon"
 
 #: Tooltips#43
 msgid "Show/hide the Microphone section."
@@ -3842,7 +3850,7 @@ msgstr ""
 
 #: Tooltips#48
 msgid "Microphone Volume"
-msgstr ""
+msgstr "Volum microfon"
 
 #: Tooltips#49
 msgid "Adjusts the microphone volume."
@@ -3966,7 +3974,7 @@ msgstr ""
 
 #: Tooltips#79
 msgid "Tempo"
-msgstr ""
+msgstr "Tempo"
 
 #: Tooltips#80
 msgid "BPM Tap"
@@ -4025,7 +4033,7 @@ msgstr ""
 
 #: Tooltips#93
 msgid "Reverse"
-msgstr ""
+msgstr "Invers"
 
 #: Tooltips#94
 msgid "Reverses track playback during regular playback."
@@ -4033,7 +4041,7 @@ msgstr ""
 
 #: Tooltips#95
 msgid "Play/Pause"
-msgstr ""
+msgstr "Redare/Pauză"
 
 #: Tooltips#96
 msgid "Toggles playing or pausing the track."
@@ -4056,346 +4064,358 @@ msgid "(while playing)"
 msgstr ""
 
 #: Tooltips#101
-msgid "Cue"
+msgid "(while stopped)"
 msgstr ""
 
 #: Tooltips#102
-msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
+msgid "Cue"
 msgstr ""
 
 #: Tooltips#103
-msgid "Seeks the track to the cue-point and stops."
+msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
 msgstr ""
 
 #: Tooltips#104
-msgid "Headphone"
+msgid "Seeks the track to the cue-point and stops."
 msgstr ""
 
 #: Tooltips#105
+msgid "Headphone"
+msgstr "Căști"
+
+#: Tooltips#106
 msgid "Sends the selected channel's audio to the headphone output."
 msgstr ""
 
-#: Tooltips#106
+#: Tooltips#107
+msgid "Clock"
+msgstr ""
+
+#: Tooltips#108
+msgid "Displays the current time."
+msgstr ""
+
+#: Tooltips#109
 msgid ""
 "If Vinyl control is enabled, displays time-coded vinyl signal quality (see "
 "Preferences -> Vinyl Control)."
 msgstr ""
 
-#: Tooltips#107
+#: Tooltips#110
 msgid "Shows the current master volume for the right channel."
 msgstr ""
 
-#: Tooltips#108
+#: Tooltips#111
 msgid "Change the crossfader curve in Preferences -> Crossfader"
 msgstr ""
 
-#: Tooltips#109
+#: Tooltips#112
 msgid "Activate Vinyl Control from the Menu -> Options."
 msgstr ""
 
-#: Tooltips#110
+#: Tooltips#113
 msgid "Change the step-size in the Preferences -> Interface menu."
 msgstr ""
 
-#: Tooltips#111
+#: Tooltips#114
 msgid "Change the default cue behavior in Preferences -> Interface."
 msgstr ""
 
-#: Tooltips#112
+#: Tooltips#115
 msgid "selected in Preferences -> Sound Hardware."
 msgstr ""
 
-#: Tooltips#113
+#: Tooltips#116
 msgid "Fast Rewind"
 msgstr ""
 
-#: Tooltips#114
+#: Tooltips#117
 msgid "Fast rewind through the track."
 msgstr ""
 
-#: Tooltips#115
+#: Tooltips#118
 msgid "Fast Forward"
-msgstr ""
+msgstr "Derulare rapidă înainte"
 
-#: Tooltips#116
+#: Tooltips#119
 msgid "Fast forward through the track."
 msgstr ""
 
-#: Tooltips#117
+#: Tooltips#120
 msgid "Jumps to the end of the track."
 msgstr ""
 
-#: Tooltips#118
-msgctxt "Tooltips#118"
+#: Tooltips#121
+msgctxt "Tooltips#121"
 msgid "Synchronize"
 msgstr ""
 
-#: Tooltips#119
+#: Tooltips#122
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
 msgstr ""
 
-#: Tooltips#120
+#: Tooltips#123
 msgid "if BPM is detected on both."
 msgstr ""
 
-#: Tooltips#121
+#: Tooltips#124
 msgid "Syncs the tempo (BPM) to that of the other track,"
 msgstr ""
 
-#: Tooltips#122
+#: Tooltips#125
 msgid "Pitch Control"
 msgstr ""
 
-#: Tooltips#123
+#: Tooltips#126
 msgid "Changes the track playback rate."
 msgstr ""
 
-#: Tooltips#124
+#: Tooltips#127
 msgid "Pitch Rate"
 msgstr ""
 
-#: Tooltips#125
+#: Tooltips#128
 msgid "Displays the current playback rate of the track."
 msgstr ""
 
-#: Tooltips#126
+#: Tooltips#129
 msgid "Repeat"
-msgstr ""
+msgstr "Repetă"
 
-#: Tooltips#127
+#: Tooltips#130
 msgid ""
 "When active the track will repeat if you go past the end or reverse before "
 "the start."
 msgstr ""
 
-#: Tooltips#128
+#: Tooltips#131
 msgid "Eject"
-msgstr ""
+msgstr "Scoate"
 
-#: Tooltips#129
+#: Tooltips#132
 msgid "Ejects track from the player."
 msgstr ""
 
-#: Tooltips#130
-msgctxt "Tooltips#130"
+#: Tooltips#133
+msgctxt "Tooltips#133"
 msgid "Hotcue"
 msgstr ""
 
-#: Tooltips#131
+#: Tooltips#134
 msgid "If hotcue is set, jumps to the hotcue."
 msgstr ""
 
-#: Tooltips#132
+#: Tooltips#135
 msgid "If hotcue is not set, sets the hotcue to the current play position."
 msgstr ""
 
-#: Tooltips#133
+#: Tooltips#136
 msgid "If hotcue is set, clears the hotcue."
 msgstr ""
 
-#: Tooltips#134
+#: Tooltips#137
 msgid "Vinyl Control Mode"
 msgstr ""
 
-#: Tooltips#135
+#: Tooltips#138
 msgid "Absolute mode - track position equals needle position and speed."
 msgstr ""
 
-#: Tooltips#136
+#: Tooltips#139
 msgid ""
 "Relative mode - track speed equals needle speed regardless of needle "
 "position."
 msgstr ""
 
-#: Tooltips#137
+#: Tooltips#140
 msgid ""
 "Constant mode - track speed equals last known-steady speed regardless of "
 "needle input."
 msgstr ""
 
-#: Tooltips#138
+#: Tooltips#141
 msgid "Vinyl Status"
 msgstr ""
 
-#: Tooltips#139
+#: Tooltips#142
 msgid "Provides visual feedback for vinyl control status:"
 msgstr ""
 
-#: Tooltips#140
+#: Tooltips#143
 msgid "Green for control enabled."
 msgstr ""
 
-#: Tooltips#141
+#: Tooltips#144
 msgid "Blinking yellow for when the needle reaches the end of the record."
 msgstr ""
 
-#: Tooltips#142
+#: Tooltips#145
 msgid "Red for needle skip detected."
 msgstr ""
 
-#: Tooltips#143
+#: Tooltips#146
 msgid "Loop-In Marker"
 msgstr ""
 
-#: Tooltips#144
+#: Tooltips#147
 msgid "Sets the deck loop-in position to the current play position."
 msgstr ""
 
-#: Tooltips#145
+#: Tooltips#148
 msgid "Loop-Out Marker"
 msgstr ""
 
-#: Tooltips#146
+#: Tooltips#149
 msgid "Sets the deck loop-out position to the current play position."
 msgstr ""
 
-#: Tooltips#147
+#: Tooltips#150
 msgid "Loop Halve"
 msgstr ""
 
-#: Tooltips#148
+#: Tooltips#151
 msgid "Halves the current loop's length by moving the end marker."
 msgstr ""
 
-#: Tooltips#149
+#: Tooltips#152
 msgid "Deck immediately loops if past the new endpoint."
 msgstr ""
 
-#: Tooltips#150
+#: Tooltips#153
 msgid "Loop Double"
 msgstr ""
 
-#: Tooltips#151
+#: Tooltips#154
 msgid "Doubles the current loop's length by moving the end marker."
 msgstr ""
 
-#: Tooltips#152
+#: Tooltips#155
 msgid "Beatloop"
 msgstr ""
 
-#: Tooltips#153
+#: Tooltips#156
 msgid "Setup a loop over X beats."
 msgstr ""
 
-#: Tooltips#154
+#: Tooltips#157
 msgid "Reloop/Exit"
 msgstr ""
 
-#: Tooltips#155
+#: Tooltips#158
 msgid "Toggles the current loop on or off."
 msgstr ""
 
-#: Tooltips#156
+#: Tooltips#159
 msgid "Works only if Loop-In and Loop-Out marker are set."
 msgstr ""
 
-#: Tooltips#157
+#: Tooltips#160
 msgid "Vinyl Cueing Mode"
 msgstr ""
 
-#: Tooltips#158
+#: Tooltips#161
 msgid "Determines how cue points are treated in vinyl control Relative mode:"
 msgstr ""
 
-#: Tooltips#159
+#: Tooltips#162
 msgid "Off - Cue points ignored."
 msgstr ""
 
-#: Tooltips#160
+#: Tooltips#163
 msgid ""
 "One Cue - If needle is dropped after the cue point, track will seek to that "
 "cue point."
 msgstr ""
 
-#: Tooltips#161
+#: Tooltips#164
 msgid "Hot Cue - Track will seek to nearest previous hot cue point."
 msgstr ""
 
-#: Tooltips#162
+#: Tooltips#165
 msgid "Track Time"
 msgstr ""
 
-#: Tooltips#163
+#: Tooltips#166
 msgid "Displays the elapsed or remaining time of the track loaded."
 msgstr ""
 
-#: Tooltips#164
+#: Tooltips#167
 msgid "Click to toggle between time elapsed/remaining time."
 msgstr ""
 
-#: Tooltips#165
+#: Tooltips#168
 msgid "Track Duration"
 msgstr ""
 
-#: Tooltips#166
+#: Tooltips#169
 msgid "Displays the duration of the loaded track."
 msgstr ""
 
-#: Tooltips#167
+#: Tooltips#170
 msgid "Information is loaded from the track's metadata tags."
 msgstr ""
 
-#: Tooltips#168
+#: Tooltips#171
 msgid "Track Artist"
-msgstr ""
+msgstr "Artist piesă"
 
-#: Tooltips#169
+#: Tooltips#172
 msgid "Displays the artist of the loaded track."
 msgstr ""
 
-#: Tooltips#170
+#: Tooltips#173
 msgid "Track Title"
-msgstr ""
+msgstr "Titlu piesă"
 
-#: Tooltips#171
+#: Tooltips#174
 msgid "Displays the title of the loaded track."
 msgstr ""
 
-#: Tooltips#172
+#: Tooltips#175
 msgid "Track Album"
 msgstr ""
 
-#: Tooltips#173
+#: Tooltips#176
 msgid "Displays the album name of the loaded track."
 msgstr ""
 
-#: Tooltips#174
+#: Tooltips#177
 msgid "Track Artist/Title"
 msgstr ""
 
-#: Tooltips#175
+#: Tooltips#178
 msgid "Displays the artist and title of the loaded track."
 msgstr ""
 
-#: Tooltips#176
+#: Tooltips#179
 msgid "Flanger"
 msgstr ""
 
-#: Tooltips#177
+#: Tooltips#180
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
 msgstr ""
 
-#: Tooltips#178
+#: Tooltips#181
 msgid "Flanger Delay"
 msgstr ""
 
-#: Tooltips#179
+#: Tooltips#182
 msgid "Adjusts the phase delay of the flange effect (when active)."
 msgstr ""
 
-#: Tooltips#180
+#: Tooltips#183
 msgid "Flanger Depth"
 msgstr ""
 
-#: Tooltips#181
+#: Tooltips#184
 msgid "Adjusts the intensity of the flange effect (when active)."
 msgstr ""
 
-#: Tooltips#182
+#: Tooltips#185
 msgid "Flanger LFO Period"
 msgstr ""
 
-#: Tooltips#183
+#: Tooltips#186
 msgid "Adjusts the wavelength of the flange effect (when active)."
 msgstr ""
 
@@ -4464,7 +4484,7 @@ msgstr "Ctrl+F"
 
 #: WSearchLineEdit#2
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: WSearchLineEdit#3
 msgid "Search..."
@@ -4472,7 +4492,7 @@ msgstr "Caută..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Adaugă la lista de redare"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
@@ -4488,20 +4508,20 @@ msgid "Remove"
 msgstr "Elimină"
 
 #: WTrackTableView#5
-msgid "Hide from library"
+msgid "Hide from Library"
 msgstr ""
 
 #: WTrackTableView#6
-msgid "Unhide from library"
+msgid "Unhide from Library"
 msgstr ""
 
 #: WTrackTableView#7
-msgid "Purge from library"
+msgid "Purge from Library"
 msgstr ""
 
 #: WTrackTableView#8
 msgid "Properties"
-msgstr ""
+msgstr "Proprietăţi"
 
 #: WTrackTableView#9
 msgid "Open in File Browser"
@@ -4556,11 +4576,11 @@ msgstr ""
 
 #: WaveformWidgetFactory#1
 msgid "(GLSL)"
-msgstr ""
+msgstr "(GLSL)"
 
 #: WaveformWidgetFactory#2
 msgid "(GL)"
-msgstr ""
+msgstr "(GL)"
 
 #~ msgctxt "BaseSqlTableModel#9"
 #~ msgid "Comment"
@@ -5126,3 +5146,7 @@ msgstr ""
 
 #~ msgid "Begin"
 #~ msgstr "Begin"
+
+#~ msgctxt "Tooltips#118"
+#~ msgid "Synchronize"
+#~ msgstr "Sincronizează"
