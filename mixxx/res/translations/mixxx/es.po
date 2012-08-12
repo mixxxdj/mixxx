@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-11 05:13+0000\n"
+"X-Launchpad-Export-Date: 2012-08-12 04:43+0000\n"
 "X-Generator: Launchpad (build 15780)\n"
 
 #: AutoDJFeature#1
@@ -6616,20 +6616,3 @@ msgstr "(GL)"
 #~ msgstr ""
 #~ "La única skin compatible con este tamaño de dispositivo es Outline800x480-"
 #~ "WVGA. Le gustaría usar esa skin?"
-
-#~ msgctxt "Tooltips#118"
-#~ msgid "Synchronize"
-#~ msgstr "Sincronizar"
-
-#~ msgctxt "Tooltips#130"
-#~ msgid "Hotcue"
-#~ msgstr "Hotcue"
-
-#~ msgid "Purge from library"
-#~ msgstr "Eliminar de la librería"
-
-#~ msgid "Unhide from library"
-#~ msgstr "Desocultar de la librería"
-
-#~ msgid "Hide from library"
-#~ msgstr "Ocultar de la librería"

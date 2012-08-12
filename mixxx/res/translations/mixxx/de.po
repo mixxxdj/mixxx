@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-08-02 06:37+0000\n"
-"Last-Translator: Daniel Schürmann <Unknown>\n"
+"PO-Revision-Date: 2012-08-11 11:01+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-11 05:11+0000\n"
+"X-Launchpad-Export-Date: 2012-08-12 04:41+0000\n"
 "X-Generator: Launchpad (build 15780)\n"
 "Language: de\n"
 
@@ -545,7 +545,7 @@ msgstr ""
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Neue Plattenkiste erstellen"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -688,8 +688,9 @@ msgid ""
 msgstr ""
 "Konvertiert die durch den Analyser erkannten Beats in Fest-Tempo Beatgrids. "
 "Benutzen Sie diese Einstellung wenn Ihre Titel ein konstantes Tempo haben "
-"(z.B. die meiste elektronische Musik). Das führt oft zu Betgrids mit höherer "
-"Qualität, wird aber nicht so gut funktionieren bei Titeln mit Tempowechseln."
+"(z.B. die meiste elektronische Musik). Das führt oft zu Beatgrids mit "
+"höherer Qualität, wird aber nicht so gut funktionieren bei Titeln mit "
+"Tempowechseln."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
@@ -783,7 +784,7 @@ msgstr ""
 "Klicken Sie auf ein beliebiges Steuerelement in der Mixxx Benutzeroberfläche "
 "oder wählen Sie eines aus der Liste. Dann bewegen Sie ein Steuerelement auf "
 "Ihrem Controller um es zuzuweisen. Wiederholen Sie dies so oft Sie wollen. "
-"Wenn die Steuerlelementen zugewiesen sind, klicken Sie Fertig."
+"Wenn die Steuerelementen zugewiesen sind, klicken Sie Fertig."
 
 #: DlgControllerLearning#3
 msgid "Done"
@@ -883,7 +884,7 @@ msgstr "Kopfhörer-Knopf"
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
-msgstr "Widerholungsmodus ein-/ausschalten"
+msgstr "Wiederholungsmodus ein-/ausschalten"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
@@ -1073,7 +1074,7 @@ msgstr "Beat-Looping"
 
 #: DlgControllerLearning#73
 msgid "Create %1-beat loop"
-msgstr "%1-beat Loop erzeugen"
+msgstr "%1-Beat Loop erzeugen"
 
 #: DlgControllerLearning#74
 msgctxt "DlgControllerLearning#74"
@@ -1523,7 +1524,7 @@ msgstr "Wellenformanzeige"
 
 #: DlgPrefControlsDlg#27
 msgid "Synchronize zoom level across all waveform displays."
-msgstr "Synchronisieren die Vergrößerungsstufe in all Wellenform-Anzeigen."
+msgstr "Synchronisieren der Vergrößerungsstufe in allen Wellenform-Anzeigen."
 
 #: DlgPrefControlsDlg#28
 msgid "OpenGl status"
@@ -1547,7 +1548,7 @@ msgid ""
 "all at once."
 msgstr ""
 "Läßt die Knöpfe für vorübergehende Tonhöhen-/Geschwindigkeitsänderungen "
-"diese schrittweise anpassen antstatt auf einmal."
+"diese schrittweise anpassen anstatt auf einmal."
 
 #: DlgPrefControlsDlg#33
 msgid "Value in milliseconds"
@@ -1944,7 +1945,7 @@ msgstr ""
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "kbps"
-msgstr "kbps"
+msgstr "kBit/s"
 
 #: DlgPrefRecord#2
 msgid "Choose recordings directory"
@@ -2792,12 +2793,12 @@ msgstr "&Anwenden"
 
 #: DlgTrackInfo#35
 msgid "&Cancel"
-msgstr "&Abbrechen"
+msgstr "Ab&brechen"
 
 #: DlgTrackInfo#36
 msgctxt "DlgTrackInfo#36"
 msgid "kbps"
-msgstr "kbps"
+msgstr "kBit/s"
 
 #: EmptyWaveformWidget#1
 msgid "Empty"
@@ -3050,7 +3051,7 @@ msgstr "Standard HID Tastatur"
 
 #: HidController#5
 msgid "Generic HID Multiaxis Controller"
-msgstr ""
+msgstr "Standard HID Mehrachsen-Controller"
 
 #: HidController#6
 msgid "Unknown HID Desktop Device"
@@ -3700,7 +3701,7 @@ msgstr ""
 
 #: PlaylistFeature#8
 msgid "Create new playlist"
-msgstr ""
+msgstr "Neue Wiedergabeliste erstellen"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3881,7 +3882,8 @@ msgstr "Springen Sie durch Klicken in die Wellenform im Titel umher."
 
 #: Tooltips#8
 msgid "Use the mouse to scratch, spin-back or throw tracks."
-msgstr "Nutzen Sie die Maus zum scratchen, für spin-backs oder anschieben."
+msgstr ""
+"Nutzen Sie die Maus zum Scratchen, für Spin-backs oder zum Anschieben."
 
 #: Tooltips#9
 msgctxt "Tooltips#9"
@@ -4099,7 +4101,7 @@ msgstr "Verringert die Wiedergabegeschwindigkeit in kleinen Schritten."
 
 #: Tooltips#59
 msgid "Raise Pitch Temporary (Nudge)"
-msgstr "Vorrübergehende Geschwindigkeitserhöhung (Anstoßen)"
+msgstr "Wiedergabegeschwindigkeit vorübergehend erhöhen (Anstoßen)"
 
 #: Tooltips#60
 msgid "Holds the pitch higher while active."
@@ -4112,7 +4114,7 @@ msgstr ""
 
 #: Tooltips#62
 msgid "Lower Pitch Temporary (Nudge)"
-msgstr "Vorrübergehende Geschwindigkeitsverringerung (Anstoßen)"
+msgstr "Wiedergabegeschwindigkeit vorübergehend verringern (Anstoßen)"
 
 #: Tooltips#63
 msgid "Holds the pitch lower while active."
@@ -4280,7 +4282,7 @@ msgstr "(während der Wiedergabe)"
 
 #: Tooltips#101
 msgid "(while stopped)"
-msgstr ""
+msgstr "(während des Stops)"
 
 #: Tooltips#102
 msgid "Cue"
@@ -4305,19 +4307,19 @@ msgstr "Sendet das Audiosignal des gewählten Kanals zum Kopfhörerausgang."
 
 #: Tooltips#107
 msgid "Clock"
-msgstr ""
+msgstr "Uhr"
 
 #: Tooltips#108
 msgid "Displays the current time."
-msgstr ""
+msgstr "Zeigt die aktuelle Uhrzeit an."
 
 #: Tooltips#109
 msgid ""
 "If Vinyl control is enabled, displays time-coded vinyl signal quality (see "
 "Preferences -> Vinyl Control)."
 msgstr ""
-"Wenn die Vinyl-Steuerung aktiviert ist, zeigt es die Signalqualität des time-"
-"code Vinyls (Einstellungen -> Vinyl-Steuerung)."
+"Wenn die Vinyl-Steuerung aktiviert ist, zeigt es die Signalqualität des "
+"Timecode-Vinyls (Einstellungen -> Vinyl-Steuerung)."
 
 #: Tooltips#110
 msgid "Shows the current master volume for the right channel."
@@ -4369,12 +4371,12 @@ msgstr "Springt zum Ende des Titels."
 #: Tooltips#121
 msgctxt "Tooltips#121"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronisieren"
 
 #: Tooltips#122
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
 msgstr ""
-"Synchronosiert das Tempo (BPM) und die Phase mit der des anderen Titels, "
+"Synchronisiert das Tempo (BPM) und die Phase mit der des anderen Titels, "
 
 #: Tooltips#123
 msgid "if BPM is detected on both."
@@ -4382,7 +4384,7 @@ msgstr "wenn die BPM bei beiden erkannt wurde."
 
 #: Tooltips#124
 msgid "Syncs the tempo (BPM) to that of the other track,"
-msgstr "Synchronosiert das Tempo (BPM) mit dem des anderen Titels,"
+msgstr "Synchronisiert das Tempo (BPM) mit dem des anderen Titels,"
 
 #: Tooltips#125
 msgid "Pitch Control"
@@ -4423,7 +4425,7 @@ msgstr "Wirft den Titel aus dem Deck."
 #: Tooltips#133
 msgctxt "Tooltips#133"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#134
 msgid "If hotcue is set, jumps to the hotcue."
@@ -4762,15 +4764,15 @@ msgstr "Entfernen"
 
 #: WTrackTableView#5
 msgid "Hide from Library"
-msgstr ""
+msgstr "In der Bibliothek verbergen"
 
 #: WTrackTableView#6
 msgid "Unhide from Library"
-msgstr ""
+msgstr "In der Bibliothek anzeigen"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
-msgstr ""
+msgstr "Aus der Bibliothek entfernen"
 
 #: WTrackTableView#8
 msgid "Properties"
@@ -6672,23 +6674,3 @@ msgstr "(GL)"
 
 #~ msgid "An unknown error occurred while creating playlist: "
 #~ msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
-
-#~ msgctxt "Tooltips#118"
-#~ msgid "Synchronize"
-#~ msgstr "Synchronisieren"
-
-#~ msgctxt "Tooltips#130"
-#~ msgid "Hotcue"
-#~ msgstr "Hotcue"
-
-#~ msgid "Gereric HID Multiaxis Controller"
-#~ msgstr "Standard HID Mehrachsen-Controller"
-
-#~ msgid "Hide from library"
-#~ msgstr "In der Bibliothek verbergen"
-
-#~ msgid "Unhide from library"
-#~ msgstr "In der Bibliothek anzeigen"
-
-#~ msgid "Purge from library"
-#~ msgstr "Aus der Bibilothek entfernen"
