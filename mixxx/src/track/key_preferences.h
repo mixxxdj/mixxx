@@ -10,8 +10,9 @@
 #define KEY_CONFIG_KEY "[BPM]"
 
 // BPM_CONFIG_KEY Preferences
-//#define BPM_DETECTION_ENABLED "BPMDetectionEnabled"
-#define KEY_WRITE_TAGS "WriteTags"
+#define KEY_DETECTION_ENABLED "KEYDetectionEnabled"
+//#define KEY_WRITE_TAGS "WriteTags"
+#define KEY_FAST_ANALYSIS "FastAnalysis"
 #define KEY_FIRST_LAST "FirstLast"
 #define KEY_REANALYZE "Reanalyze"
 #define KEY_SKIP_RELEVANT "SkipRelevant"

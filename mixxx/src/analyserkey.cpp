@@ -24,9 +24,8 @@
 using namespace std;
 static bool sDebug = false;
 
-AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config) {
-    m_pConfig = _config;
-    m_bPass = 0;
+AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config):m_pConfig(_config) {
+    m_bShouldAnalyze = false;
 
     //"pluginID"
     //tested key detection features with vamp-plugins:
@@ -43,36 +42,56 @@ AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config) {
 }
 
 AnalyserKey::~AnalyserKey(){
-    delete mvamp;
+    delete m_pVamp;
 }
 
 bool AnalyserKey::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
-QString library = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyLibrary"));
-QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyPluginID"));
- if(library.isEmpty() || library.isNull())
+    m_bShouldAnalyze=false;
+    if (totalSamples == 0)
+        return false;
+
+    QString library = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyLibrary"));
+    QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyPluginID"));
+    if(library.isEmpty() || library.isNull())
       library = "libmixxxminimal";
- if(pluginID.isEmpty() || pluginID.isNull())
+    if(pluginID.isEmpty() || pluginID.isNull())
       pluginID="qm-keydetector:0";
 
- mvamp = new VampAnalyser(m_pConfig);
+    m_pVamp = new VampAnalyser(m_pConfig);
 
- m_bPreferenceswriteTagsEnabled = static_cast<bool>(
-     m_pConfig->getValueString(
-         ConfigKey(KEY_CONFIG_KEY, KEY_WRITE_TAGS)).toInt());
+     m_bPreferencesfastAnalysisEnabled = static_cast<bool>(
+         m_pConfig->getValueString(
+         ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
 
- m_bPreferencesfirstLastEnabled = static_cast<bool>(
-     m_pConfig->getValueString(
+    m_bPreferencesfirstLastEnabled = static_cast<bool>(
+         m_pConfig->getValueString(
          ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
 
- m_bPreferencesreanalyzeEnabled = static_cast<bool>(
-     m_pConfig->getValueString(
+    m_bPreferencesreanalyzeEnabled = static_cast<bool>(
+         m_pConfig->getValueString(
          ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE)).toInt());
 
- m_bPreferencesskipRelevantEnabled = static_cast<bool>(
-     m_pConfig->getValueString(
+    m_bPreferencesskipRelevantEnabled = static_cast<bool>(
+         m_pConfig->getValueString(
          ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
 
+    m_bPreferencesKeyDetectionEnabled = static_cast<bool>(
+         m_pConfig->getValueString(
+         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
+
+
+    if (!m_bPreferencesKeyDetectionEnabled) {
+        qDebug() << "Key detection is deactivated";
+        m_bShouldAnalyze = false;
+        return false;
+    }
+    if (m_bPreferencesskipRelevantEnabled && (tio->getKey() != 0)){
+        m_bShouldAnalyze = false;
+        return false;
+    }
+
+    m_bShouldAnalyze=true;
  //qDebug()<<m_bPreferencesskipRelevantEnabled<<"asasda";
 //KeyFinder::Parameters p;
 
@@ -82,13 +101,19 @@ QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyPlug
  totSamples = totalSamples/2; //since libkeyfinder only uses one channel
  keyfinderAudio.addToSampleCount(totSamples);*/
 
- int fastAnalyse=1;
-    m_bPass = mvamp->Init(library, pluginID,sampleRate, totalSamples, fastAnalyse);
-    mvamp->SelectOutput(2);
-    if (!m_bPass)
-        qDebug() << "Failed to init key!";
+ //int fastAnalyse=1;
+   // m_bPass = mvamp->Init(library, pluginID,sampleRate, totalSamples, m_bPreferencesfastAnalysisEnabled);
+     m_bShouldAnalyze = m_pVamp->Init(library, pluginID,sampleRate, totalSamples, m_bPreferencesfastAnalysisEnabled);
+     m_pVamp->SelectOutput(2);
 
-    /*channels = 2; //for libsamplerate
+     if (!m_bShouldAnalyze)
+     {
+         delete m_pVamp;
+         m_pVamp = NULL;
+     }
+     return m_bShouldAnalyze;
+
+     /*channels = 2; //for libsamplerate
     converter = SRC_SINC_BEST_QUALITY;
     if ((src_state = src_new (converter, channels, &error)) == NULL)
         qDebug() << "Error : src_new() failed : "<< src_strerror (error);
@@ -100,11 +125,20 @@ QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyPlug
 }
 
 void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
-    if(!m_bPass) return;
+    //if(!m_bPass) return;
     //qDebug()<< "key detecasdasdt";
     //qDebug()<<"key 1";
+    if (!m_bShouldAnalyze || m_pVamp == NULL)
+        return;
 
-    m_bPass = mvamp->Process(pIn, iLen);
+    m_bShouldAnalyze = m_pVamp->Process(pIn, iLen);
+
+    if (!m_bShouldAnalyze) {
+        delete m_pVamp;
+        m_pVamp = NULL;
+    }
+
+    //m_bPass = m_pVamp->Process(pIn, iLen);
     //qDebug()<< "key detecasdasdt";
  /*   int iIN=0;
     //SRC_DATA *src_in;
@@ -139,7 +173,12 @@ void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
 }
 
 void AnalyserKey::finalise(TrackPointer tio) {
-    if(!m_bPass) return;
+    //if(!m_bPass) return;
+
+    if (!m_bShouldAnalyze || m_pVamp == NULL) {
+        return;
+    }
+
     //enum {'C','C#','D','D#','E','F','F#','G','G#','A','A#','B','c','c#','d','d#','e','f','f#','g','g#','a','a#','b'}keys;
     static const char *keys[] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};
    // static const char *keyfind[] = {"A","a","A#","a#","B","b","C","c","C#","c#","D","d","D#","d#","E","e","F","f","F#","f#","G","g","G#","g#","SILENCE"};
@@ -149,8 +188,12 @@ void AnalyserKey::finalise(TrackPointer tio) {
   //  qDebug()<<"libkeyfinder result"<< keyfind[keyfinderResult.globalKeyEstimate];
     //if(mvamp->GetInitFramesVector(&m_frames)){
       //  if(mvamp->GetLastValuesVector(&m_keys))
-    m_frames= mvamp->GetInitFramesVector();
-    m_keys= mvamp->GetLastValuesVector();
+    bool success = m_pVamp->End();
+    qDebug() << "Beat Calculation" << (success ? "complete" : "failed");
+
+    m_frames= m_pVamp->GetInitFramesVector();
+    m_keys= m_pVamp->GetLastValuesVector();
+
     vector<float> key_times(24,0);
     map<float,int> key_time;
     map<float,int>::reverse_iterator it;
@@ -168,7 +211,9 @@ void AnalyserKey::finalise(TrackPointer tio) {
     it++;
     qDebug() << keys[(*it).second]<<"  "<<(*it).first;
     it--;
-    qDebug()<<m_bPreferencesskipRelevantEnabled<<"asasda";
+    qDebug()<<tio->getKey();
+    //qDebug()<<m_bPreferencesKeyDetectionEnabled<<m_bPreferenceswriteTagsEnabled<<m_bPreferencesfirstLastEnabled<<m_bPreferencesreanalyzeEnabled<<m_bPreferencesskipRelevantEnabled;
+   // qDebug()<<m_bPreferenceswriteTagsEnabled;
     //qDebug()<<"key 4";
     tio->setKey(keys[(*it).second]);
     //tio->setKey("a");
@@ -181,7 +226,7 @@ void AnalyserKey::finalise(TrackPointer tio) {
                // qDebug()<<" "<<m_keys[i]<<" at frame "<<m_frames[i];
     //}
 
-    m_bPass = mvamp->End();
+    m_bShouldAnalyze = m_pVamp->End();
     m_frames.clear();
     m_keys.clear();
     //src_delete(src_state);
@@ -190,5 +235,10 @@ void AnalyserKey::finalise(TrackPointer tio) {
 }
 
 void AnalyserKey::cleanup(TrackPointer tio) {
-return ;
+    Q_UNUSED(tio);
+    if (!m_bShouldAnalyze) {
+        return;
+    }
+    delete m_pVamp;
+    m_pVamp = NULL;
 }

@@ -41,13 +41,13 @@ using Vamp::HostExt::PluginInputDomainAdapter;
 
 
 #define CONFIG_KEY "[KEY]"
-
+bool firs = true;
 DlgPrefKey::DlgPrefKey(QWidget * parent,
-  ConfigObject<ConfigValue> * _config) : QWidget(parent)
+                       ConfigObject<ConfigValue> * _config) : QWidget(parent),m_pconfig(_config)
   //Ui::DlgPrefKey()
 {
     //config = _config;
-    m_pconfig = _config;
+    //m_pconfig = _config;
     setupUi(this);
     //m_selectedAnalyser = "qm-tempotracker:0";
     //setupUi(this);
@@ -57,10 +57,10 @@ DlgPrefKey::DlgPrefKey(QWidget * parent,
     //Connections
   //  connect(plugincombo, SIGNAL(currentIndexChanged(int)),
     //        this, SLOT(pluginSelected(int)));
-   // connect(banalyserenabled, SIGNAL(stateChanged(int)),
-     //       this, SLOT(analyserEnabled(int)));
-    connect(bwriteTagsEnabled, SIGNAL(stateChanged(int)),
-            this, SLOT(writeTagsEnabled(int)));
+    connect(banalyserenabled, SIGNAL(stateChanged(int)),
+          this, SLOT(analyserEnabled(int)));
+    connect(bfastAnalysisEnabled, SIGNAL(stateChanged(int)),
+            this, SLOT(fastAnalysisEnabled(int)));
     connect(bfirstLastEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(firstLastEnabled(int)));
    // connect(reset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
@@ -68,7 +68,7 @@ DlgPrefKey::DlgPrefKey(QWidget * parent,
     connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(reanalyzeEnabled(int)));
 
-    connect(bskipRelevantEnabled, SIGNAL(valueChanged(int)),
+    connect(bskipRelevantEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(skipRelevantEnabled(int)));
    // connect(txtMaxBpm, SIGNAL(valueChanged(int)),
       //      this, SLOT(maxBpmRangeChanged(int)));
@@ -86,7 +86,7 @@ void DlgPrefKey::loadSettings(){
     //if(m_pconfig->getValueString(
       //  ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID))==QString("")) {
         //setDefaults();
-        slotApply();    // Write to config file so AnalyzerBeats can get the data
+           // Write to config file so AnalyzerBeats can get the data
         //return;
     //}
 
@@ -94,11 +94,11 @@ void DlgPrefKey::loadSettings(){
      //   ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
     //m_selectedAnalyser = pluginid;
 
-    //m_banalyserEnabled = static_cast<bool>(m_pconfig->getValueString(
-      //  ConfigKey(BPM_CONFIG_KEY, BPM_DETECTION_ENABLED)).toInt());
+    m_banalyserEnabled = static_cast<bool>(m_pconfig->getValueString(
+        ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
 
-    m_bwriteTagsEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(KEY_CONFIG_KEY, KEY_WRITE_TAGS)).toInt());
+    m_bfastAnalysisEnabled = static_cast<bool>(m_pconfig->getValueString(
+        ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
 
     m_bfirstLastEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
@@ -108,7 +108,7 @@ void DlgPrefKey::loadSettings(){
 
     m_bskipRelevantEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
-
+    slotApply();
   //  if (!m_listIdentifier.contains(pluginid)) {
     //    setDefaults();
     //}
@@ -124,7 +124,8 @@ void DlgPrefKey::setDefaults() {
         //return;
     //}
     //m_selectedAnalyser = "qm-tempotracker:0";
-    m_bwriteTagsEnabled = false;
+    m_banalyserEnabled = false;
+    m_bfastAnalysisEnabled = false;
     m_bfirstLastEnabled = false;
     m_breanalyzeEnabled = false;
     //m_FastAnalysisEnabled = false;
@@ -136,9 +137,13 @@ void DlgPrefKey::setDefaults() {
     slotUpdate();
 }
 
+void  DlgPrefKey::analyserEnabled(int i){
+    m_banalyserEnabled = static_cast<bool>(i);
+    slotUpdate();
+}
 
-void  DlgPrefKey::writeTagsEnabled(int i){
-    m_bwriteTagsEnabled = static_cast<bool>(i);
+void  DlgPrefKey::fastAnalysisEnabled(int i){
+    m_bfastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
@@ -154,9 +159,9 @@ void DlgPrefKey::reanalyzeEnabled(int i){
 
 void DlgPrefKey::skipRelevantEnabled(int i){
     m_bskipRelevantEnabled = static_cast<bool>(i);
+    qDebug()<<m_bskipRelevantEnabled;
     slotUpdate();
-    qDebug()<<"asda";
-}
+    }
 
 
 
@@ -171,7 +176,9 @@ void DlgPrefKey::slotApply()
     //m_pconfig->set(ConfigKey(
       //  VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID), ConfigValue(m_selectedAnalyser));
     m_pconfig->set(ConfigKey(
-        KEY_CONFIG_KEY, KEY_WRITE_TAGS), ConfigValue(m_bwriteTagsEnabled ? 1 : 0));
+        KEY_CONFIG_KEY, KEY_DETECTION_ENABLED), ConfigValue(m_banalyserEnabled ? 1 : 0));
+    m_pconfig->set(ConfigKey(
+        KEY_CONFIG_KEY, KEY_FAST_ANALYSIS), ConfigValue(m_bfastAnalysisEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(
         KEY_CONFIG_KEY, KEY_FIRST_LAST), ConfigValue(m_bfirstLastEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(
@@ -194,14 +201,14 @@ void DlgPrefKey::slotUpdate()
     //bfixedtempo->setEnabled(m_banalyserEnabled);
     //boffset->setEnabled((m_banalyserEnabled && m_bfixedtempoEnabled));
     //plugincombo->setEnabled(m_banalyserEnabled);
-    //banalyserenabled->setChecked(m_banalyserEnabled);
-    bwriteTagsEnabled->setChecked(m_bwriteTagsEnabled);
+    banalyserenabled->setChecked(m_banalyserEnabled);
+    bfastAnalysisEnabled->setChecked(m_bfastAnalysisEnabled);
     //txtMaxBpm->setEnabled(m_banalyserEnabled && m_bfixedtempoEnabled);
     // txtMinBpm->setEnabled(m_banalyserEnabled && m_bfixedtempoEnabled);
     bfirstLastEnabled->setChecked(m_bfirstLastEnabled);
     breanalyzeEnabled->setChecked(m_breanalyzeEnabled);
     bskipRelevantEnabled->setChecked(m_bskipRelevantEnabled);
-
+    slotApply();
 
     //if(!m_banalyserEnabled)
       //  return;

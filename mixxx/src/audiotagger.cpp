@@ -90,7 +90,7 @@ void AudioTagger::setComment (QString comment )
 
 void AudioTagger::setKey (QString key )
 {
-m_key = key;
+    m_key = key;
 }
 
 void AudioTagger::setBpm (QString bpm )

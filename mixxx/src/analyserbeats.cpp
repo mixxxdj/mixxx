@@ -156,7 +156,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         delete m_pVamp;
         m_pVamp = NULL;
     }
-    return m_bShouldAnalyze;;
+    return m_bShouldAnalyze;
 }
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {

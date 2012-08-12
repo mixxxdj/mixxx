@@ -30,8 +30,9 @@ public slots:
 
 private slots:
    // void pluginSelected(int i);
-   // void analyserEnabled(int i);
-    void writeTagsEnabled(int i);
+    void analyserEnabled(int i);
+    //void writeTagsEnabled(int i);
+    void fastAnalysisEnabled(int i);
     void firstLastEnabled(int i);
     void setDefaults();
     void reanalyzeEnabled(int i);
@@ -56,7 +57,7 @@ private:
     QString m_selectedAnalyser;
    // int m_minBpm;
     //int m_maxBpm;
-    bool m_bwriteTagsEnabled, m_bfirstLastEnabled, m_breanalyzeEnabled, m_bskipRelevantEnabled;// m_bReanalyze;
+    bool m_banalyserEnabled, m_bfastAnalysisEnabled, m_bfirstLastEnabled, m_breanalyzeEnabled, m_bskipRelevantEnabled;// m_bReanalyze;
 
       /** Pointer to config object */
  //   ConfigObject<ConfigValue> *config;

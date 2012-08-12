@@ -105,9 +105,10 @@ void WKey::setValue(double dValue)
     int d1 = (int)floor((v-floor(v))*10.);
     int d2 = (int)floor((v-floor(v))*100.)%10;*/
     //qDebug()<<"key 1";
-    qDebug()<<"key"<<dValue;
+    //qDebug()<<"key"<<"asdasd"<<dValue;
 
     m_pLabel->setText(convertKey(dValue));
+    //m_pLabel->setText("z");
     //qDebug()<<"key 2";
     /*m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg(
         QString("%1").arg(static_cast<int>(v), 3, 10),
