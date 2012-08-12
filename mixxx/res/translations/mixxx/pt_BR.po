@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-11 05:14+0000\n"
+"X-Launchpad-Export-Date: 2012-08-12 04:43+0000\n"
 "X-Generator: Launchpad (build 15780)\n"
 
 #: AutoDJFeature#1
@@ -6152,20 +6152,3 @@ msgstr "(GL)"
 #~ msgctxt "MixxxLibraryFeature#2"
 #~ msgid "Library"
 #~ msgstr "Biblioteca"
-
-#~ msgctxt "Tooltips#118"
-#~ msgid "Synchronize"
-#~ msgstr "Sincronizar"
-
-#~ msgctxt "Tooltips#130"
-#~ msgid "Hotcue"
-#~ msgstr "Hotcue"
-
-#~ msgid "Unhide from library"
-#~ msgstr "Exibir na biblioteca"
-
-#~ msgid "Hide from library"
-#~ msgstr "Ocultar da biblioteca"
-
-#~ msgid "Purge from library"
-#~ msgstr "Remover da biblioteca"

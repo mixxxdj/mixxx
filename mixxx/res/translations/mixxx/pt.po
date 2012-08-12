@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-11 05:13+0000\n"
+"X-Launchpad-Export-Date: 2012-08-12 04:43+0000\n"
 "X-Generator: Launchpad (build 15780)\n"
 
 #: AutoDJFeature#1
@@ -5402,14 +5402,6 @@ msgstr "(GL)"
 #~ msgid "Library"
 #~ msgstr "Biblioteca"
 
-#~ msgctxt "Tooltips#118"
-#~ msgid "Synchronize"
-#~ msgstr "Sincronizar"
-
-#~ msgctxt "Tooltips#130"
-#~ msgid "Hotcue"
-#~ msgstr "Ponto de marcação"
-
 #~ msgid ""
 #~ "Unable to upgrade your database schema to version %1.\n"
 #~ "Your mixxx.db file may be corrupt.\n"
@@ -6257,15 +6249,3 @@ msgstr "(GL)"
 
 #~ msgid "Mixxx Detected a WVGA Screen"
 #~ msgstr "Mixxx detectou um ecrã WVGA"
-
-#~ msgid "Gereric HID Multiaxis Controller"
-#~ msgstr "DIH genérico - Controlador multieixos"
-
-#~ msgid "Hide from library"
-#~ msgstr "Ocultar da biblioteca"
-
-#~ msgid "Purge from library"
-#~ msgstr "Limpar da biblioteca"
-
-#~ msgid "Unhide from library"
-#~ msgstr "Reexibir na biblioteca"

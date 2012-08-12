@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-11 05:13+0000\n"
+"X-Launchpad-Export-Date: 2012-08-12 04:43+0000\n"
 "X-Generator: Launchpad (build 15780)\n"
 
 #: AutoDJFeature#1
@@ -6526,11 +6526,3 @@ msgstr "(GL)"
 
 #~ msgid "Adjusts the phase delay of the flange effect"
 #~ msgstr "Настройка задержки фазы фленджер-эффекта"
-
-#~ msgctxt "Tooltips#118"
-#~ msgid "Synchronize"
-#~ msgstr "Синхронизировать"
-
-#~ msgctxt "Tooltips#130"
-#~ msgid "Hotcue"
-#~ msgstr "Быстрые метки"
