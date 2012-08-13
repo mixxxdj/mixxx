@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxMIDIPreset schemaversion="1" mixxxVersion="1.10.0+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.10.0+">
   <info>
     <name>Pioneer CDJ-850</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>

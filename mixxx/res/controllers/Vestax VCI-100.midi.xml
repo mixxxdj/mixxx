@@ -550,12 +550,6 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>fwd</key>
-        <status>0x80</status>
-        <midino>0x43</midino>
-      </control>
-      <control>
-        <group>[Channel2]</group>
         <key>beatsync</key>
         <status>0x90</status>
         <midino>0x47</midino>

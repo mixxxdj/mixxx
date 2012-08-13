@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<MixxxControllerPreset schemaVersion="1">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="1.11+">
     <info>
         <name>Nintendo Wii Remote</name>
         <author>Ilkka Tuohela</author>
