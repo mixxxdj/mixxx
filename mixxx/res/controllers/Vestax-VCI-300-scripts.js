@@ -786,7 +786,7 @@ VestaxVCI300.onAutoLoopButton = function (channel, control, value, status, group
 
 VestaxVCI300.onCratesButton = function (channel, control, value, status, group) {
 	// TODO
-	VestaxVCI300.createsLED.trigger(VestaxVCI300.getButtonPressed(value));
+	VestaxVCI300.cratesLED.trigger(VestaxVCI300.getButtonPressed(value));
 }
 
 VestaxVCI300.onFilesButton = function (channel, control, value, status, group) {
