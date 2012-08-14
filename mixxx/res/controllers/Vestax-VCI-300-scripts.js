@@ -20,52 +20,59 @@
  * 2012-08-12: Initial revision for Mixxx 1.11.0
  * 2012-08-13: Show spinning wheels in scratch mode
  *             Fast track search while not playing: Shift + Jog
+ * 2012-08-14: Fix typo to avoid crash when pressing Crates button
+ *             Fix typo to correctly disconnect controls upon shutdown
+ *             Fix array of auto loop beat lengths
+ *             Connect and synchronize rateRange with preference settings
+ *             Adjust behaviour of Auto Tempo button:
+ *               -         Auto Tempo = trigger "beatsync"
+ *               - Shift + Auto Tempo = toggle "quantize"
+ *             Manipulate crossfader curve via C.F.CURVE control
+ *             Use Scroll + Jog to scroll the playlist
+ *             Shift + Play = toggle "repeat"
  * ...to be continued...
  *****************************************************************************/
 
 
-VestaxVCI300 = new function () {
-	this.group = "[Master]";
+function VestaxVCI300() {}
 
-	this.pitchRateRange = 0.06; // +/- 6%
-	this.pitchFineTuneStepPercent = 0.01;
-	this.pitchFineTuneStep = this.pitchFineTuneStepPercent / (100.0 * this.pitchRateRange);
+VestaxVCI300.group = "[Master]";
 
-	this.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3
-	this.scratchAlpha = 1.0 / 8.0;
-	this.scratchBeta = this.scratchAlpha / 32.0;
-	this.disableScratchingTimeoutMillisec = 20;
-	this.jogResolution = 1664; // steps per revolution
+VestaxVCI300.pitchFineTuneStepPercent = 0.01;
 
-	this.jogInputRange = this.jogResolution / this.scratchRPM;
-	this.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0
-	this.jogPitchBendSensitivity = 0.8; // 1.0 = linear
-	this.jogSearchScale = this.jogOutputRange / this.jogInputRange;
+VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3
+VestaxVCI300.scratchAlpha = 1.0 / 8.0;
+VestaxVCI300.scratchBeta = this.scratchAlpha / 32.0;
+VestaxVCI300.disableScratchingTimeoutMillisec = 20;
+VestaxVCI300.jogResolution = 1664; // steps per revolution
 
-	this.numberOfHotcues = 6;
+VestaxVCI300.jogInputRange = this.jogResolution / this.scratchRPM;
+VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0
+VestaxVCI300.jogPitchBendSensitivity = 0.8; // 1.0 = linear
+VestaxVCI300.jogSearchScale = this.jogOutputRange / this.jogInputRange;
+VestaxVCI300.jogScrollDeltaStepsPerTrack = 8; // 1664 / 8 = 208 tracks per revolution
+VestaxVCI300.jogScrollDeltaAdjustment = this.jogScrollDeltaStepsPerTrack - 1;
+VestaxVCI300.numberOfHotcues = 6;
 
-	this.autoLoopBeatsArray = [
-		"0.0625",
-		"0.125",
-		"0.25",
-		"0.5",
-		"1",
-		"2",
-		"4",
-		"8",
-		"16",
-		"32",
-		"64",
-		"128" ];
-	this.defaultAutoLoopBeatsIndex = 6; // 4 beats
+VestaxVCI300.autoLoopBeatsArray = [
+	"0.0625",
+	"0.125",
+	"0.25",
+	"0.5",
+	"1",
+	"2",
+	"4",
+	"8",
+	"16",
+	"32",
+	"64" ];
+VestaxVCI300.defaultAutoLoopBeatsIndex = 6; // 4 beats
+VestaxVCI300.vuMeterOffThreshold = 0.025;
+VestaxVCI300.vuMeterYellowThreshold = 0.9;
 
-	this.vuMeterOffThreshold = 0.025;
-	this.vuMeterYellowThreshold = 0.9;
-
-	this.decksByGroup = {};
+VestaxVCI300.decksByGroup = {};
 	
-	this.allLEDs = [];
-}
+VestaxVCI300.allLEDs = [];
 
 VestaxVCI300.updatePitchValue = function (group, pitchHigh, pitchLow) {
 	// 0x00 <= pitchHigh <= 0x7F
@@ -177,9 +184,9 @@ VestaxVCI300.leftDeck = new VestaxVCI300.Deck(1);
 VestaxVCI300.rightDeck = new VestaxVCI300.Deck(2);
 
 VestaxVCI300.Deck.prototype.resetScratchingTimer = function () {
-	if (undefined != this.scratchDisableTimer) {
-		engine.stopTimer(this.scratchDisableTimer);
-		this.scratchDisableTimer = undefined
+	if (undefined != this.disableScratchingTimer) {
+		engine.stopTimer(this.disableScratchingTimer);
+		this.disableScratchingTimer = undefined
 	}
 }
 
@@ -212,7 +219,7 @@ VestaxVCI300.Deck.prototype.disableScratchingLazy = function () {
 		this.disableScratching();
 	} else {
 		if (engine.isScratching(this.number)) {
-			this.scratchDisableTimer = engine.beginTimer(
+			this.disableScratchingTimer = engine.beginTimer(
 				VestaxVCI300.disableScratchingTimeoutMillisec,
 				this.disableScratchingTimerCB);
 		}
@@ -233,32 +240,44 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 			// cyclic overflow
 			this.jogDelta += 0x4000;
 		}
-		if (engine.isScratching(this.number)) {
-			engine.scratchTick(this.number, this.jogDelta);
-			this.jogMoveLED.trigger(0.0 < Math.abs(this.jogDelta));
-		} else {
-			if (engine.getValue(this.group,"play")) {
-				// pitch bend
-				engine.setValue(this.group, "jog", ((this.jogDelta < 0.0) ? -1.0 : 1.0) * VestaxVCI300.jogOutputRange * Math.pow(Math.abs(this.jogDelta) / VestaxVCI300.jogInputRange, VestaxVCI300.jogPitchBendSensitivity));
+		if (this.jogDelta != 0) {
+			if (engine.isScratching(this.number)) {
+				engine.scratchTick(this.number, this.jogDelta);
+				this.jogMoveLED.trigger(0.0 < Math.abs(this.jogDelta));
 			} else {
-				if (this.shiftState) {
-					// fast track search
-					var searchpos = engine.getValue(this.group, "playposition") + (this.jogDelta / VestaxVCI300.jogResolution);
-					if (searchpos > 1.0) {
-						searchpos = 1.0;
-					} else if (searchpos < 0.0) {
-						searchpos = 0.0;
-					}
-					engine.setValue(this.group, "playposition", searchpos);
+				if (engine.getValue(this.group,"play")) {
+					// pitch bend
+					engine.setValue(this.group, "jog", ((this.jogDelta < 0.0) ? -1.0 : 1.0) * VestaxVCI300.jogOutputRange * Math.pow(Math.abs(this.jogDelta) / VestaxVCI300.jogInputRange, VestaxVCI300.jogPitchBendSensitivity));
 				} else {
-					// jog search
-					engine.setValue(this.group, "jog", this.jogDelta * VestaxVCI300.jogSearchScale);
+					if (this.shiftState) {
+						var playposition = engine.getValue(this.group, "playposition");
+						if (undefined != playposition) {
+							// fast track search
+							var searchpos = engine.getValue(this.group, "playposition") + (this.jogDelta / VestaxVCI300.jogResolution);
+							engine.setValue(this.group, "playposition", Math.min(0.0, Math.max(1.0, searchpos)));
+						}
+					} else if (VestaxVCI300.scrollState) {
+						// scroll playlist
+						var adjustedJogDelta;
+						if (this.jogDelta < 0) {
+							adjustedJogDelta = this.jogDelta - VestaxVCI300.jogScrollDeltaAdjustment;
+						} else {
+							adjustedJogDelta = this.jogDelta + VestaxVCI300.jogScrollDeltaAdjustment;
+						}
+						engine.setValue(
+							"[Playlist]",
+							"SelectTrackKnob",
+							Math.round(adjustedJogDelta / VestaxVCI300.jogScrollDeltaStepsPerTrack));
+					} else {
+						// jog search
+						engine.setValue(this.group, "jog", this.jogDelta * VestaxVCI300.jogSearchScale);
+					}
 				}
 			}
-		}
+		 }
 	}
 	this.jogValue = jogValue;
-	if (undefined != this.scratchDisableTimer) {
+	if (undefined != this.disableScratchingTimer) {
 		this.disableScratchingLazy();
 	}
 }
@@ -275,6 +294,10 @@ VestaxVCI300.Deck.prototype.updateScratchState = function () {
 	} else {
 		this.disableScratchingLazy();
 	}
+}
+
+VestaxVCI300.Deck.prototype.updateRateRange = function () {
+	this.pitchFineTuneStep = VestaxVCI300.pitchFineTuneStepPercent / (100.0 * engine.getValue(this.group, "rateRange"));
 }
 
 VestaxVCI300.Deck.prototype.initValues = function () {
@@ -298,19 +321,17 @@ VestaxVCI300.Deck.prototype.initValues = function () {
 	engine.softTakeover(this.group, "pregain", true);
 	this.rateDirBackup = engine.getValue(this.group, "rate_dir");
 	engine.setValue(this.group, "rate_dir", -1);
-	this.rateRangeBackup = engine.getValue(this.group, "rateRange");
-	engine.setValue(this.group, "rateRange", VestaxVCI300.pitchRateRange);
 	engine.setValue(this.group, "rate", 0.0);
 	engine.softTakeover(this.group, "rate", true);
 }
 
 VestaxVCI300.Deck.prototype.restoreValues = function () {
 	engine.setValue(this.group, "rate_dir", this.rateDirBackup);
-	engine.setValue(this.group, "rateRange", this.rateRangeBackup);
 }
 
 VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "pfl", this.onPFLValueCB);
+	VestaxVCI300.connectControl(this.group, "rateRange", this.onRateRangeValueCB);
 	VestaxVCI300.connectControl(this.group, "cue_default", this.onCueValueCB);
 	VestaxVCI300.connectControl(this.group, "play", this.onPlayValueCB);
 	VestaxVCI300.connectControl(this.group, "loop_halve", this.onLoopHalveValueCB);
@@ -320,37 +341,36 @@ VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "reverse", this.onReverseValueCB);
 	VestaxVCI300.connectControl(this.group, "PeakIndicator", this.onPeakIndicatorValueCB);
 	VestaxVCI300.connectControl(this.group, "VuMeter", this.onVUMeterValueCB);
-	var hotcueIndex;
-	for (hotcueIndex = 0; hotcueIndex < VestaxVCI300.numberOfHotcues; ++hotcueIndex) {
+	for (var hotcueIndex = 0; hotcueIndex < VestaxVCI300.numberOfHotcues; ++hotcueIndex) {
 		VestaxVCI300.connectControl(
 			this.group,
 			"hotcue_" + (hotcueIndex  + 1) + "_enabled",
 			this.onHotcueValueCB[hotcueIndex]);
 	}
-	for (beats in VestaxVCI300.autoLoopBeatsArray) {
-		VestaxVCI300.connectControl(this.group, "beatloop_" + beats + "_enabled", this.onAutoLoopValueCB);
+	for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
+		VestaxVCI300.connectControl(this.group, "beatloop_" + VestaxVCI300.autoLoopBeatsArray[beatsIndex] + "_enabled", this.onAutoLoopValueCB);
 	}
 }
 
 VestaxVCI300.Deck.prototype.disconnectControls = function () {
-	VestaxVCI300.diconnectControl(this.group, "pfl");
-	VestaxVCI300.diconnectControl(this.group, "cue_default");
-	VestaxVCI300.diconnectControl(this.group, "play");
-	VestaxVCI300.diconnectControl(this.group, "loop_halve");
-	VestaxVCI300.diconnectControl(this.group, "loop_double");
-	VestaxVCI300.diconnectControl(this.group, "keylock");
-	VestaxVCI300.diconnectControl(this.group, "beatsync");
-	VestaxVCI300.diconnectControl(this.group, "reverse");
-	VestaxVCI300.diconnectControl(this.group, "PeakIndicator");
-	VestaxVCI300.diconnectControl(this.group, "VuMeter");
-	var hotcueIndex;
-	for (hotcueIndex = 0; hotcueIndex < VestaxVCI300.numberOfHotcues; ++hotcueIndex) {
-		VestaxVCI300.diconnectControl(
+	VestaxVCI300.disconnectControl(this.group, "pfl");
+	VestaxVCI300.disconnectControl(this.group, "rateRange");
+	VestaxVCI300.disconnectControl(this.group, "cue_default");
+	VestaxVCI300.disconnectControl(this.group, "play");
+	VestaxVCI300.disconnectControl(this.group, "loop_halve");
+	VestaxVCI300.disconnectControl(this.group, "loop_double");
+	VestaxVCI300.disconnectControl(this.group, "keylock");
+	VestaxVCI300.disconnectControl(this.group, "beatsync");
+	VestaxVCI300.disconnectControl(this.group, "reverse");
+	VestaxVCI300.disconnectControl(this.group, "PeakIndicator");
+	VestaxVCI300.disconnectControl(this.group, "VuMeter");
+	for (var hotcueIndex = 0; hotcueIndex < VestaxVCI300.numberOfHotcues; ++hotcueIndex) {
+		VestaxVCI300.disconnectControl(
 			this.group,
 			"hotcue_" + (hotcueIndex  + 1) + "_enabled");
 	}
-	for (beats in VestaxVCI300.autoLoopBeatsArray) {
-		VestaxVCI300.diconnectControl(this.group, "beatloop_" + beats + "_enabled");
+	for (var beats in VestaxVCI300.autoLoopBeatsArray) {
+		VestaxVCI300.disconnectControl(this.group, "beatloop_" + VestaxVCI300.autoLoopBeatsArray[beatsIndex] + "_enabled");
 	}
 }
 
@@ -496,7 +516,7 @@ VestaxVCI300.init = function (id, debug) {
 	VestaxVCI300.connectControls();
 	VestaxVCI300.updateScrollState();
 	for (var group in VestaxVCI300.decksByGroup) {
-		var deck = VestaxVCI300.decksByGroup[group]
+		var deck = VestaxVCI300.decksByGroup[group];
 		deck.initValues();
 		deck.connectControls();
 		deck.updateShiftState();
@@ -508,7 +528,8 @@ VestaxVCI300.shutdown = function () {
 	VestaxVCI300.disconnectControls();
 	VestaxVCI300.restoreValues();
 	for (var group in VestaxVCI300.decksByGroup) {
-		var deck = VestaxVCI300.decksByGroup[group]
+		var deck = VestaxVCI300.decksByGroup[group];
+		deck.resetScratchingTimer();
 		deck.disconnectControls();
 		deck.restoreValues();
 	}
@@ -551,8 +572,18 @@ VestaxVCI300.onCueButton = function (channel, control, value, status, group) {
 
 VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	deck.disableScratching();
-	VestaxVCI300.onToggleButton(group, "play", value);
+	if (deck.shiftState) {
+		if (VestaxVCI300.getButtonPressed(value)) {
+			// repeat
+			VestaxVCI300.toggleBinaryValue(group, "repeat");
+			deck.playLED.trigger(true);
+		} else {
+			engine.trigger(group, "play");
+		}
+	} else {
+		deck.disableScratching();
+		VestaxVCI300.onToggleButton(group, "play", value);
+	}
 }
 
 VestaxVCI300.onCensorReverseButton = function (channel, control, value, status, group) {
@@ -583,7 +614,7 @@ VestaxVCI300.onCensorReverseButton = function (channel, control, value, status, 
 	}
 }
 
-VestaxVCI300.onKeyLockQuartzButton = function (channel, control, value, status, group) {
+VestaxVCI300.onKeyLockButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (deck.shiftState) {
 		if (VestaxVCI300.getButtonPressed(value)) {
@@ -600,15 +631,20 @@ VestaxVCI300.onKeyLockQuartzButton = function (channel, control, value, status, 
 	}
 }
 
-VestaxVCI300.onAutoTempoSyncButton = function (channel, control, value, status, group) {
+VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (deck.shiftState) {
-		// sync
+		if (VestaxVCI300.getButtonPressed(value)) {
+			// quantize
+			VestaxVCI300.toggleBinaryValue(group, "quantize");
+			deck.syncLED.trigger(true);
+		} else {
+			engine.trigger(group, "beatsync");
+		}
+	} else {
+		// beatsync
 		deck.onBeatsyncValueCB(VestaxVCI300.getButtonPressed(value));
 		engine.setValue(group, "beatsync", VestaxVCI300.getButtonPressed(value));
-	} else {
-		// auto tempo
-		VestaxVCI300.onToggleButton(group, "beatsync", value);
 	}
 }
 
@@ -704,7 +740,7 @@ VestaxVCI300.onPitchShiftDownButton = function (channel, control, value, status,
 		// TODO
 	} else {
 		if (VestaxVCI300.getButtonPressed(value)) {
-			engine.setValue(group, "rate", engine.getValue(group, "rate") - VestaxVCI300.pitchFineTuneStep);
+			engine.setValue(group, "rate", engine.getValue(group, "rate") - deck.pitchFineTuneStep);
 		}
 	}
 	deck.pitchShiftDownLED.trigger(VestaxVCI300.getButtonPressed(value));
@@ -716,7 +752,7 @@ VestaxVCI300.onPitchShiftUpButton = function (channel, control, value, status, g
 		// TODO
 	} else {
 		if (VestaxVCI300.getButtonPressed(value)) {
-			engine.setValue(group, "rate", engine.getValue(group, "rate") + VestaxVCI300.pitchFineTuneStep);
+			engine.setValue(group, "rate", engine.getValue(group, "rate") + deck.pitchFineTuneStep);
 		}
 	}
 	deck.pitchShiftUpLED.trigger(VestaxVCI300.getButtonPressed(value));
@@ -784,6 +820,14 @@ VestaxVCI300.onAutoLoopButton = function (channel, control, value, status, group
 	engine.setValue(group, beatloopPrefix + "_toggle", VestaxVCI300.getButtonPressed(value));
 }
 
+VestaxVCI300.onCrossfaderCurve = function (channel, control, value, status, group) {
+	script.crossfaderCurve(value);
+}
+
+VestaxVCI300.onLinefaderCurve = function (channel, control, value, status, group) {
+	// TODO
+}
+
 VestaxVCI300.onCratesButton = function (channel, control, value, status, group) {
 	// TODO
 	VestaxVCI300.cratesLED.trigger(VestaxVCI300.getButtonPressed(value));
@@ -825,6 +869,14 @@ VestaxVCI300.onNavigationTabButton = function (channel, control, value, status, 
 //
 // Engine callback functions for connected controls
 // 
+
+VestaxVCI300.leftDeck.onRateRangeValueCB = function (value) {
+	VestaxVCI300.leftDeck.updateRateRange(value);
+}
+
+VestaxVCI300.rightDeck.onRateRangeValueCB = function (value) {
+	VestaxVCI300.rightDeck.updateRateRange(value);
+}
 
 VestaxVCI300.leftDeck.onVUMeterValueCB = function (value) {
 	VestaxVCI300.leftDeck.updateVUMeterState(value);

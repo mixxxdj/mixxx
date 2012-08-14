@@ -21,6 +21,24 @@
 			</control>
 			<control>
 				<group>[Master]</group>
+				<midino>0x1A</midino>
+				<status>0xB0</status>
+				<key>VestaxVCI300.onCrossfaderCurve</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Master]</group>
+				<midino>0x1B</midino>
+				<status>0xB0</status>
+				<key>VestaxVCI300.onLinefaderCurve</key>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Master]</group>
 				<midino>0x19</midino>
 				<status>0xB0</status>
 				<key>headMix</key>
@@ -336,7 +354,7 @@
 				<group>[Channel1]</group>
 				<midino>0x26</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onKeyLockQuartzButton</key>
+				<key>VestaxVCI300.onKeyLockButton</key>
 				<options>
 					<Script-Binding/>
 				</options>
@@ -345,7 +363,7 @@
 				<group>[Channel2]</group>
 				<midino>0x39</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onKeyLockQuartzButton</key>
+				<key>VestaxVCI300.onKeyLockButton</key>
 				<options>
 					<Script-Binding/>
 				</options>
@@ -354,7 +372,7 @@
 				<group>[Channel1]</group>
 				<midino>0x29</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onAutoTempoSyncButton</key>
+				<key>VestaxVCI300.onAutoTempoButton</key>
 				<options>
 					<Script-Binding/>
 				</options>
