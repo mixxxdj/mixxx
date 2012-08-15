@@ -381,7 +381,7 @@
 				<group>[Channel2]</group>
 				<midino>0x3C</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onAutoTempoSyncButton</key>
+				<key>VestaxVCI300.onAutoTempoButton</key>
 				<options>
 					<Script-Binding/>
 				</options>
@@ -633,7 +633,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Channel1]</group>
+				<group>[Channel2]</group>
 				<midino>0x46</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onAutoLoopButton</key>
