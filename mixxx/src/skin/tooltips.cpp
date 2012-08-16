@@ -406,4 +406,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Flanger LFO Period")
             << tr("Adjusts the wavelength of the flange effect (when active).")
             << QString("%1: %2").arg(rightClick, resetToDefault);
+    
+    add("time")
+            << tr("Clock")
+            << tr("Displays the current time.");
 }

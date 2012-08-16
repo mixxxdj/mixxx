@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-22 07:46+0200\n"
+"POT-Creation-Date: 2012-08-10 12:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -523,14 +523,18 @@ msgid "Crates let you organize your music however you'd like!"
 msgstr ""
 
 #: CrateFeature#20
-msgid "A crate cannot have a blank name."
+msgid "Create new crate"
 msgstr ""
 
 #: CrateFeature#21
-msgid "Creating Crate Failed"
+msgid "A crate cannot have a blank name."
 msgstr ""
 
 #: CrateFeature#22
+msgid "Creating Crate Failed"
+msgstr ""
+
+#: CrateFeature#23
 msgid "A crate by that name already exists."
 msgstr ""
 
@@ -2880,7 +2884,7 @@ msgid "Generic HID Keyboard"
 msgstr ""
 
 #: HidController#5
-msgid "Gereric HID Multiaxis Controller"
+msgid "Generic HID Multiaxis Controller"
 msgstr ""
 
 #: HidController#6
@@ -3484,6 +3488,10 @@ msgid ""
 "different songs in order to maintain the energy of your audience."
 msgstr ""
 
+#: PlaylistFeature#8
+msgid "Create new playlist"
+msgstr ""
+
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
@@ -4031,346 +4039,358 @@ msgid "(while playing)"
 msgstr ""
 
 #: Tooltips#101
-msgid "Cue"
+msgid "(while stopped)"
 msgstr ""
 
 #: Tooltips#102
-msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
+msgid "Cue"
 msgstr ""
 
 #: Tooltips#103
-msgid "Seeks the track to the cue-point and stops."
+msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
 msgstr ""
 
 #: Tooltips#104
-msgid "Headphone"
+msgid "Seeks the track to the cue-point and stops."
 msgstr ""
 
 #: Tooltips#105
-msgid "Sends the selected channel's audio to the headphone output."
+msgid "Headphone"
 msgstr ""
 
 #: Tooltips#106
+msgid "Sends the selected channel's audio to the headphone output."
+msgstr ""
+
+#: Tooltips#107
+msgid "Clock"
+msgstr ""
+
+#: Tooltips#108
+msgid "Displays the current time."
+msgstr ""
+
+#: Tooltips#109
 msgid ""
 "If Vinyl control is enabled, displays time-coded vinyl signal quality (see "
 "Preferences -> Vinyl Control)."
 msgstr ""
 
-#: Tooltips#107
+#: Tooltips#110
 msgid "Shows the current master volume for the right channel."
 msgstr ""
 
-#: Tooltips#108
+#: Tooltips#111
 msgid "Change the crossfader curve in Preferences -> Crossfader"
 msgstr ""
 
-#: Tooltips#109
+#: Tooltips#112
 msgid "Activate Vinyl Control from the Menu -> Options."
 msgstr ""
 
-#: Tooltips#110
+#: Tooltips#113
 msgid "Change the step-size in the Preferences -> Interface menu."
 msgstr ""
 
-#: Tooltips#111
+#: Tooltips#114
 msgid "Change the default cue behavior in Preferences -> Interface."
 msgstr ""
 
-#: Tooltips#112
+#: Tooltips#115
 msgid "selected in Preferences -> Sound Hardware."
 msgstr ""
 
-#: Tooltips#113
+#: Tooltips#116
 msgid "Fast Rewind"
 msgstr ""
 
-#: Tooltips#114
+#: Tooltips#117
 msgid "Fast rewind through the track."
 msgstr ""
 
-#: Tooltips#115
+#: Tooltips#118
 msgid "Fast Forward"
 msgstr ""
 
-#: Tooltips#116
+#: Tooltips#119
 msgid "Fast forward through the track."
 msgstr ""
 
-#: Tooltips#117
+#: Tooltips#120
 msgid "Jumps to the end of the track."
 msgstr ""
 
-#: Tooltips#118
-msgctxt "Tooltips#118"
+#: Tooltips#121
+msgctxt "Tooltips#121"
 msgid "Synchronize"
 msgstr ""
 
-#: Tooltips#119
+#: Tooltips#122
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
 msgstr ""
 
-#: Tooltips#120
+#: Tooltips#123
 msgid "if BPM is detected on both."
 msgstr ""
 
-#: Tooltips#121
+#: Tooltips#124
 msgid "Syncs the tempo (BPM) to that of the other track,"
 msgstr ""
 
-#: Tooltips#122
+#: Tooltips#125
 msgid "Pitch Control"
 msgstr ""
 
-#: Tooltips#123
+#: Tooltips#126
 msgid "Changes the track playback rate."
 msgstr ""
 
-#: Tooltips#124
+#: Tooltips#127
 msgid "Pitch Rate"
 msgstr ""
 
-#: Tooltips#125
+#: Tooltips#128
 msgid "Displays the current playback rate of the track."
 msgstr ""
 
-#: Tooltips#126
+#: Tooltips#129
 msgid "Repeat"
 msgstr ""
 
-#: Tooltips#127
+#: Tooltips#130
 msgid ""
 "When active the track will repeat if you go past the end or reverse before "
 "the start."
 msgstr ""
 
-#: Tooltips#128
+#: Tooltips#131
 msgid "Eject"
 msgstr ""
 
-#: Tooltips#129
+#: Tooltips#132
 msgid "Ejects track from the player."
 msgstr ""
 
-#: Tooltips#130
-msgctxt "Tooltips#130"
+#: Tooltips#133
+msgctxt "Tooltips#133"
 msgid "Hotcue"
 msgstr ""
 
-#: Tooltips#131
+#: Tooltips#134
 msgid "If hotcue is set, jumps to the hotcue."
 msgstr ""
 
-#: Tooltips#132
+#: Tooltips#135
 msgid "If hotcue is not set, sets the hotcue to the current play position."
 msgstr ""
 
-#: Tooltips#133
+#: Tooltips#136
 msgid "If hotcue is set, clears the hotcue."
 msgstr ""
 
-#: Tooltips#134
+#: Tooltips#137
 msgid "Vinyl Control Mode"
 msgstr ""
 
-#: Tooltips#135
+#: Tooltips#138
 msgid "Absolute mode - track position equals needle position and speed."
 msgstr ""
 
-#: Tooltips#136
+#: Tooltips#139
 msgid ""
 "Relative mode - track speed equals needle speed regardless of needle "
 "position."
 msgstr ""
 
-#: Tooltips#137
+#: Tooltips#140
 msgid ""
 "Constant mode - track speed equals last known-steady speed regardless of "
 "needle input."
 msgstr ""
 
-#: Tooltips#138
+#: Tooltips#141
 msgid "Vinyl Status"
 msgstr ""
 
-#: Tooltips#139
+#: Tooltips#142
 msgid "Provides visual feedback for vinyl control status:"
 msgstr ""
 
-#: Tooltips#140
+#: Tooltips#143
 msgid "Green for control enabled."
 msgstr ""
 
-#: Tooltips#141
+#: Tooltips#144
 msgid "Blinking yellow for when the needle reaches the end of the record."
 msgstr ""
 
-#: Tooltips#142
+#: Tooltips#145
 msgid "Red for needle skip detected."
 msgstr ""
 
-#: Tooltips#143
+#: Tooltips#146
 msgid "Loop-In Marker"
 msgstr ""
 
-#: Tooltips#144
+#: Tooltips#147
 msgid "Sets the deck loop-in position to the current play position."
 msgstr ""
 
-#: Tooltips#145
+#: Tooltips#148
 msgid "Loop-Out Marker"
 msgstr ""
 
-#: Tooltips#146
+#: Tooltips#149
 msgid "Sets the deck loop-out position to the current play position."
 msgstr ""
 
-#: Tooltips#147
+#: Tooltips#150
 msgid "Loop Halve"
 msgstr ""
 
-#: Tooltips#148
+#: Tooltips#151
 msgid "Halves the current loop's length by moving the end marker."
 msgstr ""
 
-#: Tooltips#149
+#: Tooltips#152
 msgid "Deck immediately loops if past the new endpoint."
 msgstr ""
 
-#: Tooltips#150
+#: Tooltips#153
 msgid "Loop Double"
 msgstr ""
 
-#: Tooltips#151
+#: Tooltips#154
 msgid "Doubles the current loop's length by moving the end marker."
 msgstr ""
 
-#: Tooltips#152
+#: Tooltips#155
 msgid "Beatloop"
 msgstr ""
 
-#: Tooltips#153
+#: Tooltips#156
 msgid "Setup a loop over X beats."
 msgstr ""
 
-#: Tooltips#154
+#: Tooltips#157
 msgid "Reloop/Exit"
 msgstr ""
 
-#: Tooltips#155
+#: Tooltips#158
 msgid "Toggles the current loop on or off."
 msgstr ""
 
-#: Tooltips#156
+#: Tooltips#159
 msgid "Works only if Loop-In and Loop-Out marker are set."
 msgstr ""
 
-#: Tooltips#157
+#: Tooltips#160
 msgid "Vinyl Cueing Mode"
 msgstr ""
 
-#: Tooltips#158
+#: Tooltips#161
 msgid "Determines how cue points are treated in vinyl control Relative mode:"
 msgstr ""
 
-#: Tooltips#159
+#: Tooltips#162
 msgid "Off - Cue points ignored."
 msgstr ""
 
-#: Tooltips#160
+#: Tooltips#163
 msgid ""
 "One Cue - If needle is dropped after the cue point, track will seek to that "
 "cue point."
 msgstr ""
 
-#: Tooltips#161
+#: Tooltips#164
 msgid "Hot Cue - Track will seek to nearest previous hot cue point."
 msgstr ""
 
-#: Tooltips#162
+#: Tooltips#165
 msgid "Track Time"
 msgstr ""
 
-#: Tooltips#163
+#: Tooltips#166
 msgid "Displays the elapsed or remaining time of the track loaded."
 msgstr ""
 
-#: Tooltips#164
+#: Tooltips#167
 msgid "Click to toggle between time elapsed/remaining time."
 msgstr ""
 
-#: Tooltips#165
+#: Tooltips#168
 msgid "Track Duration"
 msgstr ""
 
-#: Tooltips#166
+#: Tooltips#169
 msgid "Displays the duration of the loaded track."
 msgstr ""
 
-#: Tooltips#167
+#: Tooltips#170
 msgid "Information is loaded from the track's metadata tags."
 msgstr ""
 
-#: Tooltips#168
+#: Tooltips#171
 msgid "Track Artist"
 msgstr ""
 
-#: Tooltips#169
+#: Tooltips#172
 msgid "Displays the artist of the loaded track."
 msgstr ""
 
-#: Tooltips#170
+#: Tooltips#173
 msgid "Track Title"
 msgstr ""
 
-#: Tooltips#171
+#: Tooltips#174
 msgid "Displays the title of the loaded track."
 msgstr ""
 
-#: Tooltips#172
+#: Tooltips#175
 msgid "Track Album"
 msgstr ""
 
-#: Tooltips#173
+#: Tooltips#176
 msgid "Displays the album name of the loaded track."
 msgstr ""
 
-#: Tooltips#174
+#: Tooltips#177
 msgid "Track Artist/Title"
 msgstr ""
 
-#: Tooltips#175
+#: Tooltips#178
 msgid "Displays the artist and title of the loaded track."
 msgstr ""
 
-#: Tooltips#176
+#: Tooltips#179
 msgid "Flanger"
 msgstr ""
 
-#: Tooltips#177
+#: Tooltips#180
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
 msgstr ""
 
-#: Tooltips#178
+#: Tooltips#181
 msgid "Flanger Delay"
 msgstr ""
 
-#: Tooltips#179
+#: Tooltips#182
 msgid "Adjusts the phase delay of the flange effect (when active)."
 msgstr ""
 
-#: Tooltips#180
+#: Tooltips#183
 msgid "Flanger Depth"
 msgstr ""
 
-#: Tooltips#181
+#: Tooltips#184
 msgid "Adjusts the intensity of the flange effect (when active)."
 msgstr ""
 
-#: Tooltips#182
+#: Tooltips#185
 msgid "Flanger LFO Period"
 msgstr ""
 
-#: Tooltips#183
+#: Tooltips#186
 msgid "Adjusts the wavelength of the flange effect (when active)."
 msgstr ""
 
@@ -4465,15 +4485,15 @@ msgid "Remove"
 msgstr ""
 
 #: WTrackTableView#5
-msgid "Hide from library"
+msgid "Hide from Library"
 msgstr ""
 
 #: WTrackTableView#6
-msgid "Unhide from library"
+msgid "Unhide from Library"
 msgstr ""
 
 #: WTrackTableView#7
-msgid "Purge from library"
+msgid "Purge from Library"
 msgstr ""
 
 #: WTrackTableView#8
