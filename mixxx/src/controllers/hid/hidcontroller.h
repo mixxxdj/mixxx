@@ -43,6 +43,8 @@ class HidController : public Controller {
     HidController(const hid_device_info deviceInfo);
     virtual ~HidController();
 
+    virtual QString presetExtension();
+
     virtual ControllerPresetPointer getPreset() const {
         HidControllerPreset* pClone = new HidControllerPreset();
         *pClone = m_preset;

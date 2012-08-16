@@ -1231,9 +1231,11 @@ HIDController.prototype.enableScratch = function(group,status) {
             this.scratchBeta,
             this.rampedScratchEnable
         );
+        if (this.enableScratchCallback!=undefined) this.enableScratchCallback(true);
     } else {
         this.isScratchEnabled = false;
         engine.scratchDisable(deck,this.rampedScratchDisable);
+        if (this.enableScratchCallback!=undefined) this.enableScratchCallback(false);
     }
 }
 

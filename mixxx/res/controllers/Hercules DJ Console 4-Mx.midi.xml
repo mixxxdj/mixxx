@@ -735,9 +735,6 @@
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.8</minimum>
                 <maximum>0.99</maximum>
                 <status>0x90</status>
@@ -749,9 +746,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -763,9 +757,6 @@
                 <group>[Channel1]</group>
                 <key>pfl</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -777,9 +768,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -791,9 +779,6 @@
                 <group>[Channel2]</group>
                 <key>playposition</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.8</minimum>
                 <maximum>0.99</maximum>
                 <status>0x90</status>
@@ -805,9 +790,6 @@
                 <group>[Channel2]</group>
                 <key>pfl</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -819,9 +801,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -833,9 +812,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -847,9 +823,6 @@
                 <group>[Channel2]</group>
                 <key>play</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -861,9 +834,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -875,9 +845,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -889,9 +856,6 @@
                 <group>[Channel2]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -903,9 +867,6 @@
                 <group>[Channel1]</group>
                 <key>play</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -917,9 +878,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -931,9 +889,6 @@
                 <group>[Channel1]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -945,9 +900,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>

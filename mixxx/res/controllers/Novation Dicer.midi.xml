@@ -616,9 +616,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -630,9 +627,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -644,9 +638,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_5_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -658,9 +649,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_5_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -672,9 +660,6 @@
                 <group>[Channel2]</group>
                 <key>beatloop_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9e</status>
@@ -686,9 +671,6 @@
                 <group>[Channel2]</group>
                 <key>beatloop_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9e</status>
@@ -700,9 +682,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -714,9 +693,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -728,9 +704,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_5_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -742,9 +715,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_5_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -756,9 +726,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -770,9 +737,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -784,9 +748,6 @@
                 <group>[Channel2]</group>
                 <key>beatloop_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9e</status>
@@ -798,9 +759,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -812,9 +770,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -826,9 +781,6 @@
                 <group>[Channel1]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9c</status>
@@ -840,9 +792,6 @@
                 <group>[Channel1]</group>
                 <key>beatloop_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9b</status>
@@ -854,9 +803,6 @@
                 <group>[Channel1]</group>
                 <key>beatloop_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9b</status>
@@ -868,9 +814,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -882,9 +825,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -896,9 +836,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -910,9 +847,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -924,9 +858,6 @@
                 <group>[Channel2]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9f</status>
@@ -938,9 +869,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -952,9 +880,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9d</status>
@@ -966,9 +891,6 @@
                 <group>[Channel1]</group>
                 <key>beatloop_16_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9b</status>
@@ -980,9 +902,6 @@
                 <group>[Channel2]</group>
                 <key>beatloop_8_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9e</status>
@@ -994,9 +913,6 @@
                 <group>[Channel1]</group>
                 <key>beatloop_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9b</status>
@@ -1008,9 +924,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -1022,9 +935,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9a</status>
@@ -1036,9 +946,6 @@
                 <group>[Channel1]</group>
                 <key>beatloop_8_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9b</status>
@@ -1050,9 +957,6 @@
                 <group>[Channel2]</group>
                 <key>beatloop_16_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x9e</status>

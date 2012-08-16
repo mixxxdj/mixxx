@@ -29,7 +29,7 @@ QString MidiController::defaultPreset() {
 }
 
 QString MidiController::presetExtension() {
-    return MIDI_MAPPING_EXTENSION;
+    return MIDI_PRESET_EXTENSION;
 }
 
 void MidiController::visit(const MidiControllerPreset* preset) {
