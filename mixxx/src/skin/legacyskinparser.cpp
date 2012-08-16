@@ -687,8 +687,13 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
                                                            pLibrarySidebarPage);
     pLineEditSearch->setup(node);
 
+
+    QWidget* pPrevDeck = parsePreviewDeck(XmlParse::selectNode(node,"PreviewDeck").toElement(),
+                                          pLibrarySidebarPage);
+
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
-    vl->setContentsMargins(0,50,0,0); //leave space for preview deck
+    vl->setContentsMargins(0,0,0,0); //Fill entire space
+    vl->addWidget(pPrevDeck);
     vl->addWidget(pLineEditSearch);
     vl->addWidget(pLibrarySidebar);
     pLibrarySidebarPage->setLayout(vl);
@@ -826,11 +831,29 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     pTabWidget->setStyleSheet(style);
 
-    parsePushButton(node.lastChildElement().previousSiblingElement().previousSiblingElement());
-    parseOverview(node.lastChildElement().previousSiblingElement());
-    parseText(node.lastChildElement());
-
     return pTabWidget;
+}
+
+QWidget* LegacySkinParser::parsePreviewDeck(QDomElement node, QWidget* parent) {
+    qDebug() << "kain88 ok the first part worked";
+
+    // use WWidget instead?
+    QWidget* hw = new QWidget(parent);
+
+    QHBoxLayout* hl = new QHBoxLayout(hw);
+    hl->setContentsMargins(0,0,0,0); //Fill entire space
+    hl->addWidget(parsePushButton(XmlParse::selectNode(node,"PushButton").toElement()));
+    hl->addWidget(parseOverview(XmlParse::selectNode(node,"Overview").toElement()));
+    hw->setLayout(hl);
+
+    QWidget* vw = new QWidget(parent);
+    QVBoxLayout* vl = new QVBoxLayout(vw);
+    vl->setContentsMargins(0,0,0,0); //Fill entire space
+    vl->addWidget(parseText(XmlParse::selectNode(node,"Text").toElement()));
+    vl->addWidget(hw);
+    vw->setLayout(vl);
+
+    return vw;
 }
 
 QString LegacySkinParser::lookupNodeGroup(QDomElement node) {

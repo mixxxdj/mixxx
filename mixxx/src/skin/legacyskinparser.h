@@ -64,6 +64,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseTableView(QDomElement node);
     QWidget* parseStyle(QDomElement node);
     QWidget* parseSpinny(QDomElement node);
+    QWidget* parsePreviewDeck(QDomElement node,QWidget* parent=NULL);
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);

@@ -2087,6 +2087,59 @@
 						<BgColorRowEven>#101010</BgColorRowEven>
 						<BgColorRowUneven>#151515</BgColorRowUneven>
 						-->
+						<PreviewDeck>
+							<PushButton>
+								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_play_sampler.png</Pressed>
+									<Unpressed>btn_play_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Unpressed>btn_play_sampler_over.png</Unpressed>
+								</State>
+								<Pos>0,0</Pos>
+								<Connection>
+									<ConfigKey>[PreviewDeck1],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[PreviewDeck1],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+								</Connection>
+							</PushButton>
+							<Overview>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
+								<Group>[PreviewDeck1]</Group>
+								<Pos>0,0</Pos>
+								<Size>205,25</Size>
+								<SignalColor>#3087BF</SignalColor>
+								<MarkerColor>#00FF00</MarkerColor>
+								<ProgressColor>#3087BF</ProgressColor>
+								<ProgressAlpha>80</ProgressAlpha>
+								<Connection>
+									<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+							<Text>
+								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
+								</Style>
+								<Group>[PreviewDeck1]</Group>
+								<Pos>0,0</Pos>
+								<Size>210,13</Size>
+							</Text>
+						</PreviewDeck>
 					</TableView>
 				</Children>
 			</WidgetGroup>
