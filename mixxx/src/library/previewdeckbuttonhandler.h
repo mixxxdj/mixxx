@@ -16,12 +16,13 @@ class PreviewdeckButtonHandler : public QObject {
                             const QModelIndex &index,
                             QTableView *pTableView);
     virtual ~PreviewdeckButtonHandler();
+    QModelIndex getIndex();
 
   signals:
     void loadTrackToPlayer(TrackPointer Track, QString group);
 
   public slots:
-void buttonclicked();
+    void buttonclicked();
 
   private:
     QModelIndex m_index;

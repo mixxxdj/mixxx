@@ -9,15 +9,16 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column) :
     if (QTableView *tableView = qobject_cast<QTableView *>(parent)) {
         m_pTableView = tableView;
         m_pButton = new QPushButton("", m_pTableView);
+        //TODO(kain88) hm res could also be somewhere else
         m_pButton->setIcon(QIcon("res/btn_play_sampler.png"));
         m_pButton->hide();
-        // m_pTableView->setMouseTracking(true);
+        m_pButtonStop = new QPushButton("", m_pTableView);
+        m_pButtonStop->setIcon(QIcon("res/btn_stop_sampler.png"));
+        m_pButtonStop->hide();
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
                 this, SLOT(cellEntered(QModelIndex)));
 
-        //TODO(kain88) right now this assumes the parent is wtracktableview
-        //and therefore this works, it should check before the connection 
-        //is made and raise an error if not
+        //TODO(kain88) move this to wtracktableview
         connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)), 
                 parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
@@ -30,8 +31,8 @@ PreviewButtonDelegate::~PreviewButtonDelegate() {
 }
 
 QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
-        const QStyleOptionViewItem &option,
-        const QModelIndex &index) const {
+                                              const QStyleOptionViewItem &option,
+                                              const QModelIndex &index) const {
     Q_UNUSED(option);
     QPushButton * btn = new QPushButton(parent);
     btn->setIcon(QIcon("res/btn_play_sampler.png"));
@@ -41,11 +42,19 @@ QWidget * PreviewButtonDelegate::createEditor(QWidget *parent,
     connect(btn,SIGNAL(clicked()),phandle,SLOT(buttonclicked()));
     connect(phandle, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(phandle, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotSavePlayingIndex()));
     return btn;
 }
 
+void PreviewButtonDelegate::slotSavePlayingIndex(){
+    qDebug() << "kain88 so far so good";
+    PreviewdeckButtonHandler* phandle = qobject_cast<PreviewdeckButtonHandler*>(sender());
+    m_index = phandle->getIndex();
+}
+
 void PreviewButtonDelegate::setEditorData(QWidget *editor,
-                                 const QModelIndex &index) const {
+                                          const QModelIndex &index) const {
     Q_UNUSED(editor);
     Q_UNUSED(index);
 }
@@ -65,7 +74,12 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     m_pButton->setGeometry(option.rect);
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
-    QPixmap map = QPixmap::grabWidget(m_pButton);
+    QPixmap map;
+    if (index==m_index) {
+        map = QPixmap::grabWidget(m_pButtonStop);
+    } else {
+        map = QPixmap::grabWidget(m_pButton);
+    }
     painter->drawPixmap(option.rect.x(),option.rect.y(),map);
 }
 
@@ -93,7 +107,7 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
         m_pTableView->openPersistentEditor(index);
         m_isOneCellInEditMode = true;
         m_currentEditedCellIndex = index;
-    } else {
+    } else { // close editor if the mouse leaves the button
         if (m_isOneCellInEditMode) {
             m_isOneCellInEditMode = false;
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
