@@ -7,7 +7,8 @@
 PreviewdeckButtonHandler::PreviewdeckButtonHandler(const QObject *parent, 
                                                    const QModelIndex &index,
                                                    QTableView *pTableView)
-                        : m_index(index),
+                        : QObject(parent),
+                          m_index(index),
                           m_pTableView(pTableView) {
 }
 
@@ -29,4 +30,8 @@ void PreviewdeckButtonHandler::buttonclicked(){
         emit(loadTrackToPlayer(Track,"[PreviewDeck1]"));
         playStatus->slotSet(PLAYING);
     }
+}
+
+QModelIndex PreviewdeckButtonHandler::getIndex(){
+    return m_index;
 }
