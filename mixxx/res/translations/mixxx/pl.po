@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-08-12 09:44+0000\n"
-"Last-Translator: Kamil Piszczek <Kamilos5555@gmail.com>\n"
+"PO-Revision-Date: 2012-08-16 10:16+0000\n"
+"Last-Translator: AreYouLoco? <orest.orko@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-13 05:13+0000\n"
-"X-Generator: Launchpad (build 15791)\n"
+"X-Launchpad-Export-Date: 2012-08-17 04:36+0000\n"
+"X-Generator: Launchpad (build 15810)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -539,7 +539,7 @@ msgstr "Skrzynki pozwalają Ci organizować muzyke jak chcesz!"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Stwórz nową skrzynkę"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -863,7 +863,7 @@ msgstr "Przełącz tryb powtarzania"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
-msgstr ""
+msgstr "Wysuń ścieżkę"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
