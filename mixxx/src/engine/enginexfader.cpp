@@ -7,7 +7,7 @@ float EngineXfader::getCalibration(float transform)
     return pow(.5, 1./transform);
 }
 
-void EngineXfader::getXfadeGains(float &gain1, float &gain2, float xfadePosition, float transform, float calibration, bool constPower)
+void EngineXfader::getXfadeGains(float &gain1, float &gain2, float xfadePosition, float transform, float calibration, bool constPower, bool reverse)
 {
     // Slow-fade/fast-cut
     float xfadePositionLeft = xfadePosition;
@@ -42,4 +42,10 @@ void EngineXfader::getXfadeGains(float &gain1, float &gain2, float xfadePosition
     if(gain2 < 0.)
         gain2 = 0.;
 
+    if(reverse)
+    {
+        float gaint = gain1;
+        gain1 = gain2;
+        gain2 = gaint;
+    }
 }

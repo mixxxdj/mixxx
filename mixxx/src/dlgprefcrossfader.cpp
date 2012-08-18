@@ -38,6 +38,7 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
         , m_COTMode(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderMode")))
         , m_COTCurve(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve")))
         , m_COTCalibration(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration")))
+        , m_COTReverse(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderReverse")))
 {
     config = _config;
     m_pxfScene = NULL;
@@ -48,23 +49,22 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
 
     setupUi(this);
 
-    connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
-    connect(SliderXFader,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateXFader()));
-    connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
-    connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
-
     connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
-
-    //Update the crossfader curve graph and other setings when the crossfader mode is changed.
-    connect(radioButtonAdditive,        SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
-    connect(radioButtonConstantPower,   SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
 
     QButtonGroup crossfaderModes;
     crossfaderModes.addButton(radioButtonAdditive);
     crossfaderModes.addButton(radioButtonConstantPower);
 
-	loadSettings();
+    loadSettings();
 
+    connect(SliderXFader,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
+    connect(SliderXFader,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateXFader()));
+    connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
+    connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
+
+    //Update the crossfader curve graph and other setings when the crossfader mode is changed.
+    connect(radioButtonAdditive,        SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
+    connect(radioButtonConstantPower,   SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
 }
 
 DlgPrefCrossfader::~DlgPrefCrossfader()
@@ -80,10 +80,7 @@ void DlgPrefCrossfader::loadSettings()
 	double sliderVal = SliderXFader->maximum() / MIXXX_XFADER_STEEPNESS_COEFF * (sliderTransform - 1.);
 	SliderXFader->setValue((int)sliderVal);
 
-    // FIXME - this always returns 0 no matter what's in the config file
     m_xFaderMode = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderMode")).toInt();
-
-    qDebug() << "loadSettings:" << sliderTransform << sliderVal << (m_xFaderMode == MIXXX_XFADER_CONSTPWR ? "Constant Power" : "Additive");
 
     if (m_xFaderMode == MIXXX_XFADER_CONSTPWR)
     {
@@ -96,9 +93,11 @@ void DlgPrefCrossfader::loadSettings()
 //         SliderXFader->setEnabled(false);
     }
 
-	slotUpdateXFader();
-	slotApply();
-    drawXfaderDisplay();
+    bool xFaderReverse = config->getValueString(ConfigKey(CONFIG_KEY, "xFaderReverse")).toInt() == 1;
+    checkBoxReverse->setChecked(xFaderReverse);
+
+    slotUpdateXFader();
+    slotApply();
 }
 
 /** Set the default values for all the widgets */
@@ -108,6 +107,7 @@ void DlgPrefCrossfader::setDefaults()
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);
     SliderXFader->setValue(SliderXFader->minimum());
+    checkBoxReverse->setChecked(false);
     slotUpdate();
     slotApply();
 }
@@ -118,8 +118,7 @@ void DlgPrefCrossfader::slotApply()
     m_COTMode.slotSet(m_xFaderMode);
     m_COTCurve.slotSet(m_transform);
     m_COTCalibration.slotSet(m_cal);
-
-    qDebug() << "slotApply crossfader:" << m_transform << (m_xFaderMode == MIXXX_XFADER_CONSTPWR ? "Constant Power" : "Additive");
+    m_COTReverse.slotSet(checkBoxReverse->isChecked());
 }
 
 /** Update the dialog when the crossfader mode is changed */
@@ -184,7 +183,8 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
         EngineXfader::getXfadeGains(gain1, gain2, (-1. + (xfadeStep * (double) i)),
                                     m_transform, m_cal,
-                                    (m_xFaderMode == MIXXX_XFADER_CONSTPWR));
+                                    (m_xFaderMode == MIXXX_XFADER_CONSTPWR),
+                                    checkBoxReverse->isChecked());
 
 		double sum = gain1 + gain2;
 		//scale for graph
@@ -220,13 +220,14 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 /** Update and save the crossfader's parameters from the dialog's widgets. **/
 void DlgPrefCrossfader::slotUpdateXFader()
 {
-	m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum() * MIXXX_XFADER_STEEPNESS_COEFF);
+    m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum() * MIXXX_XFADER_STEEPNESS_COEFF);
 
     m_cal = EngineXfader::getCalibration(m_transform);
 	QString QS_transform = QString::number(m_transform);
     config->set(ConfigKey(CONFIG_KEY, "xFaderMode"), ConfigValue(m_xFaderMode));
 	config->set(ConfigKey(CONFIG_KEY, "xFaderCurve"), ConfigValue(QS_transform));
 	//config->set(ConfigKey(CONFIG_KEY, "xFaderCalibration"), ConfigValue(m_cal)); //FIXME: m_cal is a double - be forewarned
+    config->set(ConfigKey(CONFIG_KEY, "xFaderReverse"), ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
 
-	drawXfaderDisplay();
+    drawXfaderDisplay();
 }
