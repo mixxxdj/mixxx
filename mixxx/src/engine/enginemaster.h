@@ -150,7 +150,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineSideChain *sidechain;
 
     ControlPotmeter *crossfader, *head_mix, *m_pBalance,
-        *xFaderMode, *xFaderCurve, *xFaderCalibration;
+        *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
