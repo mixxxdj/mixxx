@@ -12,11 +12,10 @@
 class PreviewdeckButtonHandler : public QObject {
   Q_OBJECT
   public :
-    PreviewdeckButtonHandler(const QObject *parent,
-                            const QModelIndex &index,
-                            QTableView *pTableView);
+    PreviewdeckButtonHandler(QObject *parent,
+                             const QModelIndex &index,
+                             QTableView *pTableView);
     virtual ~PreviewdeckButtonHandler();
-    QModelIndex getIndex();
 
   signals:
     void loadTrackToPlayer(TrackPointer Track, QString group);
