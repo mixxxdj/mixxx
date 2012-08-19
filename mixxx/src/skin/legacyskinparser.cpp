@@ -688,8 +688,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     pLineEditSearch->setup(node);
 
 
-    QWidget* pPrevDeck = parsePreviewDeck(XmlParse::selectNode(node,"PreviewDeck").toElement(),
-                                          pLibrarySidebarPage);
+    QWidget* pPrevDeck = parsePreviewDeck(XmlParse::selectNode(node,"PreviewDeck").toElement());
 
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
     vl->setContentsMargins(0,0,0,0); //Fill entire space
@@ -835,7 +834,6 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parsePreviewDeck(QDomElement node, QWidget* parent) {
-    qDebug() << "kain88 ok the first part worked";
 
     // use WWidget instead?
     QWidget* hw = new QWidget(parent);

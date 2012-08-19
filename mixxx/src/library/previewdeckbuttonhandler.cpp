@@ -4,7 +4,7 @@
 #include "library/trackmodel.h"
 #include "trackinfoobject.h"
 
-PreviewdeckButtonHandler::PreviewdeckButtonHandler(const QObject *parent, 
+PreviewdeckButtonHandler::PreviewdeckButtonHandler(QObject *parent, 
                                                    const QModelIndex &index,
                                                    QTableView *pTableView)
                         : QObject(parent),
@@ -30,8 +30,4 @@ void PreviewdeckButtonHandler::buttonclicked(){
         emit(loadTrackToPlayer(Track,"[PreviewDeck1]"));
         playStatus->slotSet(PLAYING);
     }
-}
-
-QModelIndex PreviewdeckButtonHandler::getIndex(){
-    return m_index;
 }

@@ -69,8 +69,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     createIcons();
     //contentsTreeWidget->setCurrentRow(0);
 
-    while (pagesWidget->count() > 0)
-    {
+    while (pagesWidget->count() > 0) {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
     m_pageSizeHint = QSize(0,0);

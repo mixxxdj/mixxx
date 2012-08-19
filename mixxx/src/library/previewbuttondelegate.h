@@ -11,7 +11,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
   Q_OBJECT
 
   public:
-    explicit PreviewButtonDelegate(QObject *parent = 0, int column=0);
+    explicit PreviewButtonDelegate(QObject *parent = NULL, int column=0);
     virtual ~PreviewButtonDelegate();
 
     QWidget* createEditor(QWidget *parent,
@@ -33,16 +33,13 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
 
   public slots:
     void cellEntered(const QModelIndex &index);
-    void slotSavePlayingIndex();
 
   private:
     QTableView *m_pTableView;
     QPushButton *m_pButton;
-    QPushButton *m_pButtonStop;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;
-    QModelIndex m_index;
 };
 
 #endif // BUTTONCOLUMNDELEGATE_H
