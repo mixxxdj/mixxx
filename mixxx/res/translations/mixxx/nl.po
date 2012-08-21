@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-08-05 19:41+0000\n"
-"Last-Translator: Marc van Remmen <mixxx@chepro.nl>\n"
+"PO-Revision-Date: 2012-08-18 12:25+0000\n"
+"Last-Translator: maxim gurdebeke <maxim.gurdebeke@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-12 04:40+0000\n"
-"X-Generator: Launchpad (build 15780)\n"
+"X-Launchpad-Export-Date: 2012-08-21 04:39+0000\n"
+"X-Generator: Launchpad (build 15810)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1582,7 +1582,7 @@ msgstr ""
 #: DlgPrefControlsDlg#41
 msgctxt "DlgPrefControlsDlg#41"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniseer"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1697,7 +1697,7 @@ msgstr ""
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
-msgstr ""
+msgstr "Geen controllers beschikbaar"
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
