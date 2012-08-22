@@ -31,6 +31,31 @@ flags = build.flags
 #=========================
 if build.platform_is_windows:
         dist_dir = 'dist%s' % build.bitwidth
+        # Populate the stuff that changes in the .rc file
+        fo = open(File('#src/mixxx.rc.include').abspath, "w")
+
+        str_list = []
+        str_list.append('#define VER_FILEVERSION             ')
+        # Remove anything after ~ or - in the version number and replace the dots with commas
+        str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
+        str_list.append(','+str(bazaar_revision)+'\n')
+        
+        str_list.append('#define VER_PRODUCTVERSION          ')
+        str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
+        str_list.append(','+str(bazaar_revision)+'\n')
+        
+        import datetime
+        now = datetime.datetime.now()
+        str_list.append('#define CUR_YEAR                    "'+str(now.year)+'"\n\n')
+        
+        if build.msvcdebug:
+            str_list.append('#define DEBUG                       1\n')
+        if mixxx_version.lower().find('pre') != -1:
+            str_list.append('#define PRERELEASE                  1\n')
+        
+        fo.write(''.join(str_list))
+        fo.close()
+        
         mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -460,9 +485,24 @@ def BuildRelease(target, source, env):
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         if build.toolchain_is_msvs:
-            mssdk_path = util.get_mssdk_path()
-            print "Detected MSSDK path:", mssdk_path
-            print "Extracting Visual C++ DLL installer..."
+            redist_file = 'vcredist_%s.exe' % arch
+            print "Searching for the Visual C++ DLL installer package",redist_file
+
+            # First check one level above the winlib directory
+            redist_path = '%s' % os.path.join(os.path.dirname(mixxx_winlib_path), redist_file)
+            print "   ",redist_path,
+            if not os.path.isfile(redist_path):
+                print "not found"
+                # If it's not there, look in the MS SDK directory
+                mssdk_path = util.get_mssdk_path()
+                #print "   Detected MS SDK path:", mssdk_path
+                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
+                print "   ",redist_path,
+                if not os.path.isfile(redist_path):
+                    print "not found"
+                    raise Exception('Cannot find the Visual C++ DLL installer.')
+
+            print "Extracting needed files..."
             szip_path = None
             try:
                 szip_directory = win32_find_program_via_registry("7-Zip")
@@ -471,19 +511,16 @@ def BuildRelease(target, source, env):
                 pass
             if szip_path is None:
                 print "Cannot find 7-Zip. Do you have it installed?"
+                raise Exception('Cannot find 7-Zip. Do you have it installed?')
             else:
-                redist_file = 'vcredist_%s.exe' % arch
-                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
                 output_path = '%s' % os.path.join(mixxx_winlib_path,'VC_redist')
-                args = [szip_path,"x","-y","-ir!vc_red.*",redist_path,"-o"+output_path]
+                args = [szip_path,"x","-y","-ir!vc_red.*","-ir!*.msp",redist_path,"-o"+output_path]
                 print "Executing:", ' '.join(args)
                 proc = subprocess.Popen(args)
                 data, err = proc.communicate()
                 rv = proc.wait()
                 if rv:
-                    print "====="
-                    print err
-                    print "====="
+                    raise Exception('There was a problem extracting the installer files. See above for details.')
         print "Now building installation package..."
         command_flag = None
         nsis_path = None
