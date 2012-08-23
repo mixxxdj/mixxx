@@ -36,6 +36,7 @@ XoneK2.leds =  [0x34,   0x35,   0x36,   0x37,
 
 XoneK2.init = function (id) {    // called when the MIDI device is opened & set up
     print ("XoneK2 id: \""+id+"\" initialized.");
+    //one-shot to clear lights.  If we don't delay this call, nothing happens
     if (engine.beginTimer(2000,"XoneK2.clearlights()",true) == 0) {
         print("Clearlights timer setup failed");
     }
@@ -48,7 +49,7 @@ XoneK2.shutdown = function(id) {
 
 XoneK2.clearlights = function () {
 	for ( var LED in XoneK2.leds ) {
-        print("Clear LED: " + LED+" "+XoneK2.leds[LED]);
+        print("Clear LED: #" + LED +" --> "+XoneK2.leds[LED]);
         midi.sendShortMsg(0x9F, XoneK2.leds[LED], 0x0);
     }
 }	
@@ -70,10 +71,14 @@ XoneK2.encoderJog4 = function (channel, control, value, status) {
 }
 
 XoneK2.encoderJog = function (value,deck) {
+    shift_mult = 1;
+    if (XoneK2.shift_status)
+        shift_mult = 5;
+        
     if (value == 127)
-        jogValue = -2;
+        jogValue = -2 * shift_mult;
     else
-        jogValue = 2;
+        jogValue = 2 * shift_mult;
     if (engine.getValue("[Channel"+deck+"]","play")==1 && engine.getValue("[Channel"+deck+"]","reverse")==1) jogValue= -(jogValue);
     engine.setValue("[Channel"+deck+"]","jog",jogValue);
 }
@@ -90,20 +95,18 @@ XoneK2.leftBottomKnob = function (channel, control, value, status) {
     {   
         cur_vol = engine.getValue("[Master]", "headVolume");
         if (value == 1)
-            cur_vol += 0.05;
+            cur_vol += 0.02;
         else
-            cur_vol -= 0.05;
-        print ("set headVolume to " +cur_vol);
+            cur_vol -= 0.02;
         engine.setValue("[Master]", "headVolume", cur_vol);
     }
     else
     {
         cur_vol = engine.getValue("[Master]", "headMix");
         if (value == 1)
-            cur_vol += 0.05;
+            cur_vol += 0.02;
         else
-            cur_vol -= 0.05;
-        print ("set headMix to " +cur_vol);
+            cur_vol -= 0.02;
         engine.setValue("[Master]", "headMix", cur_vol);
     }
 }
@@ -113,15 +116,14 @@ XoneK2.rightBottomKnob = function (channel, control, value, status) {
     {   
         cur_vol = engine.getValue("[Master]", "volume");
         if (value == 1)
-            cur_vol += 0.05;
+            cur_vol += 0.02;
         else
-            cur_vol -= 0.05;
+            cur_vol -= 0.02;
         print ("set volume to " +cur_vol);
         engine.setValue("[Master]", "volume", cur_vol);
     }
     else
     {
-        print ("track selection");
         if (value == 1)
             engine.setValue("[Playlist]", "SelectNextTrack", 1);
         else
