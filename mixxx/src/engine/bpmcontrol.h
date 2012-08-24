@@ -45,6 +45,8 @@ class BpmControl : public EngineControl {
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotMasterBeatDistanceChanged(double);
+    void slotSyncMasterChanged(double);
+    void slotSyncSlaveChanged(double);
 
   private:
     EngineBuffer* pickSyncTarget();
@@ -59,6 +61,7 @@ class BpmControl : public EngineControl {
     ControlObject* m_pRateDir;
     
     ControlObject *m_pMasterBeatDistance;
+    ControlObject *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
     int m_iSyncState;
     double m_dSyncAdjustment;
     bool m_bUserTweakingSync;

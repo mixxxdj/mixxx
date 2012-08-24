@@ -56,17 +56,20 @@ class EngineSync : public EngineControl {
         void slotSourceRateChanged(double);
         void slotSourceBeatDistanceChanged(double);
         void slotSampleRateChanged(double);
+        void slotSyncMasterChanged(double);
         
     protected:
         EngineBuffer* chooseMasterBuffer(void);
         void disconnectMaster(void);
         void updateSamplesPerBeat(void);
+        void resetInternalBeatDistance(void);
 
         EngineMaster* m_pEngineMaster;    
         EngineBuffer* m_pMasterBuffer;
         ControlObject *m_pSourceRate, *m_pMasterBpm;
         ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
         ControlObject *m_pSampleRate;
+        ControlPushButton *m_pSyncInternalEnabled;
         
         int m_iSyncSource;
         int m_iSampleRate;

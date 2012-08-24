@@ -153,25 +153,29 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
      
+    // the actual rate of playback as a multiple.  (ie 1.0 for native speed of file)
     m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
             
-    /*m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
-    connect(m_pSyncState, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncStateChanged(double)),
-                Qt::DirectConnection);*/
+    m_pSyncMasterEnabled = new ControlPushButton(ConfigKey(_group, "sync_master"));
+    m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncMasterChanged(double)),
+                Qt::DirectConnection);
                 
-    //(XXX) TEMP DEBUG
-    qDebug() << "===========================================GROUP" << _group;
-    m_iSyncState = SYNC_SLAVE;
-/*    if (QString("[Channel1]") != _group)
-    {
-        m_iSyncState = SYNC_SLAVE;
-    }
-    else
-    {
-        m_iSyncState = SYNC_MASTER;
-    }*/
-
+    m_pSyncSlaveEnabled = new ControlPushButton(ConfigKey(_group, "sync_slave"));
+    m_pSyncSlaveEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncSlaveChanged(double)),
+                Qt::DirectConnection);
+                
+    m_pSyncInternalEnabled = ControlObject::getControl(ConfigKey("[Master]", "sync_master"));
+    connect(m_pSyncInternalEnabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncInternalChanged(double)),
+                Qt::DirectConnection);
+                
+    m_pSyncMasterEnabled->set(FALSE);
+    m_pSyncSlaveEnabled->set(FALSE);
+    m_iSyncState = SYNC_NONE;
 
 #ifdef __VINYLCONTROL__
     ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
@@ -229,11 +233,14 @@ RateControl::~RateControl() {
 
 void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     EngineControl::setEngineMaster(pEngineMaster);
-    //m_pEngineMaster = pEngineMaster;
+    m_pEngineMaster = pEngineMaster;
     
     //TODO: should we only hook these up if we are a slave?  beat distance
     //is updated on every iteration so it's heavy
     m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
+    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
+                this, SLOT(slotMasterBpmChanged(double)),
+                Qt::DirectConnection);
     connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotMasterBpmChanged(double)),
                 Qt::DirectConnection);
@@ -244,13 +251,6 @@ void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
 
-                
-    //(XXX) temp debug
-    if (m_iSyncState == SYNC_MASTER)
-    {
-        qDebug() << "forcibly setting ourselves as master";
-        pEngineMaster->setMasterSync("[Channel1]");
-    }
 }
 
 
@@ -404,6 +404,7 @@ void RateControl::slotFileBpmChanged(double bpm) {
 
 void RateControl::slotMasterBpmChanged(double syncbpm)
 {
+    qDebug() << m_sGroup << "got a master bpm change" << syncbpm;
     if (m_iSyncState == SYNC_SLAVE)
     {
         // if we're a slave, update the rate value -- we don't set anything here,
@@ -437,10 +438,99 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
     }
 }
 
-void RateControl::slotSyncStateChanged(double state)
+void RateControl::slotSyncMasterChanged(double state)
 {
-    m_iSyncState = int(state);
+    // TODO(Owen):
+    // We should probably have the logic that talks to master sync
+    // in enginemaster.cpp.  However, I'm not sure how best to create signals
+    // for an arbitrary number off channels without making slotChannel1Changed
+    // etc.  So for now we do it here.
+    
+    if (state)
+    {
+        if (m_iSyncState == SYNC_MASTER){
+            qDebug() << "already master";
+            return;
+        }
+        
+        m_iSyncState = SYNC_MASTER;
+        qDebug() << m_sGroup << "setting ourselves as master";
+        m_pEngineMaster->getMasterSync()->setDeckMaster(m_sGroup);
+        m_pSyncSlaveEnabled->set(FALSE);
+    } 
+    else
+    {
+        // For now, turning off master turns on slave mode
+        if (m_iSyncState != SYNC_MASTER) {
+            qDebug() << "was already off??";
+            return;
+        }
+        //unset ourselves
+        qDebug() << m_sGroup << "unsetting ourselves as master (now slave)";
+        m_pEngineMaster->getMasterSync()->setDeckMaster("");
+        
+        m_iSyncState = SYNC_SLAVE;
+        m_pSyncSlaveEnabled->set(TRUE);
+    }
 }
+
+void RateControl::slotSyncSlaveChanged(double state)
+{
+    if (state)
+    {
+        if (m_iSyncState == SYNC_SLAVE) {
+            qDebug() << "already slave";
+            return;
+        }
+        if (m_iSyncState == SYNC_MASTER) {
+            qDebug() << "changing to slave status, unsetting master";
+            m_pEngineMaster->getMasterSync()->setDeckMaster("");
+        }
+        qDebug() << m_sGroup << "setting ourselves as slave";
+        m_iSyncState = SYNC_SLAVE;
+        slotMasterBpmChanged(m_pMasterBpm->get()); //make sure we have a synced rate
+        m_pSyncMasterEnabled->set(FALSE);
+    } 
+    else
+    {
+        // For now, turning off slave turns off syncing
+        qDebug() << m_sGroup << "sync off (might have been already)";
+        m_iSyncState = SYNC_NONE;
+    }
+}
+
+void RateControl::slotSyncInternalChanged(double state)
+{
+    if (state)
+    {
+        if (m_iSyncState == SYNC_MASTER)
+        {
+            m_iSyncState = SYNC_SLAVE;
+            m_pSyncSlaveEnabled->set(TRUE);
+            m_pSyncMasterEnabled->set(FALSE);  //this will happen
+        }
+    }
+    else
+    {
+        qDebug() << "internal sync is off";
+        if (m_iSyncState == SYNC_SLAVE)
+        {
+            //happy-fun race condition.  maybe one of the decks should set
+            //itself to be master?
+            if (m_pEngineMaster->getMasterSync()->getMaster() != NULL) {
+                qDebug() << m_sGroup << "a new master has already been chosen, doesn't need to be us";
+                return;
+            }
+            
+            if (m_pTrueRate->get() > 0.0) {
+                qDebug() << m_sGroup << "we are playing, so we set ourselves to master";
+                m_pSyncMasterEnabled->set(TRUE);
+                m_pSyncSlaveEnabled->set(FALSE); //this will happen
+            }
+        }
+    }
+}
+
 
 
 double RateControl::getRawRate() {

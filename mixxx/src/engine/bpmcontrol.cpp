@@ -104,16 +104,19 @@ BpmControl::BpmControl(const char* _group,
                 this, SLOT(slotMasterBeatDistanceChanged(double)),
                 Qt::DirectConnection);
                 
-    //(XXX) TEMP DEBUG
-    m_iSyncState = SYNC_SLAVE;
-/*    if (QString("[Channel1]") != _group)
-    {
-        m_iSyncState = SYNC_SLAVE;
-    }
-    else
-    {
-        m_iSyncState = SYNC_MASTER;
-    }*/
+    m_pSyncMasterEnabled = ControlObject::getControl(ConfigKey(_group, "sync_master"));
+    connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncMasterChanged(double)),
+                Qt::DirectConnection);
+                
+    m_pSyncSlaveEnabled = ControlObject::getControl(ConfigKey(_group, "sync_slave"));
+    connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncSlaveChanged(double)),
+                Qt::DirectConnection);
+                
+    m_pSyncMasterEnabled->set(FALSE);
+    m_pSyncSlaveEnabled->set(FALSE);
+    m_iSyncState = SYNC_NONE;
 }
 
 BpmControl::~BpmControl() {
@@ -212,6 +215,27 @@ void BpmControl::slotControlBeatSync(double v) {
         syncPhase();
     }
 }
+
+void BpmControl::slotSyncMasterChanged(double state)
+{
+    if (state) {
+        m_iSyncState = SYNC_MASTER;    
+    } else {
+        // For now, turning off master turns on slave mode
+        m_iSyncState = SYNC_SLAVE;
+    }
+}
+
+void BpmControl::slotSyncSlaveChanged(double state)
+{
+    if (state) {
+        m_iSyncState = SYNC_SLAVE;    
+    } else {
+        // For now, turning off slave turns off syncing
+        m_iSyncState = SYNC_NONE;
+    }
+}
+
 
 bool BpmControl::syncTempo() {
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
@@ -415,7 +439,7 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     
     if (m_bUserTweakingSync)
     {
-        //qDebug() << "user is tweaking sync, let's use their value" << sample_offset;
+        qDebug() << "user is tweaking sync, let's use their value" << sample_offset;
         m_dUserOffset = percent_offset;
         
         //don't do anything else, leave it

@@ -62,9 +62,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Master sync controller
     m_pMasterSync = new EngineSync(this, _config);
     //(XXX) DEBUG TEMP
-    m_pMasterSync->setDeckMaster("[Channel1]");
-    m_pMasterSync->setInternalMaster();
-    qDebug() << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-here we are setting bpm";
+    //m_pMasterSync->setDeckMaster("[Channel1]");
+    //m_pMasterSync->setInternalMaster();
+    //qDebug() << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-here we are setting bpm";
     ControlObject::getControl(ConfigKey("[Master]","sync_bpm"))->set(124.0);
 
 #ifdef __LADSPA__

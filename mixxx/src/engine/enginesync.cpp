@@ -18,6 +18,7 @@
 
 #include <QStringList>
 
+#include "controlpushbutton.h"
 #include "engine/enginesync.h"
 
 EngineSync::EngineSync(EngineMaster *master,
@@ -52,8 +53,15 @@ EngineSync::EngineSync(EngineMaster *master,
             this, SLOT(slotMasterBpmChanged(double)),
             Qt::DirectConnection);
             
+    m_pSyncInternalEnabled = new ControlPushButton(ConfigKey("[Master]", "sync_master"));
+    m_pSyncInternalEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pSyncInternalEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSyncMasterChanged(double)),
+            Qt::DirectConnection);
+            
     //TODO: get this from configuration
     m_pMasterBpm->set(m_dMasterBpm); //this will initialize all our values
+    updateSamplesPerBeat();
 }
 
 EngineSync::~EngineSync()
@@ -74,6 +82,7 @@ void EngineSync::disconnectMaster()
         m_pSourceBeatDistance->disconnect();
         m_pSourceBeatDistance = NULL;
     }
+    qDebug() << "UNSETTING master buffer (disconnected master)";
     m_pMasterBuffer = NULL;
 }
 
@@ -86,6 +95,7 @@ bool EngineSync::setInternalMaster(void)
     qDebug() << "*****************WHEEEEEEEEEEEEEEE INTERNAL";
     //this is all we have to do, we'll start using the pseudoposition right away
     m_iSyncSource = SYNC_INTERNAL;
+    m_pSyncInternalEnabled->set(TRUE);
     return true;
 }
 
@@ -106,8 +116,10 @@ bool EngineSync::setDeckMaster(QString deck)
     qDebug() << "**************************************************************************asked to set a new master:" << deck;
     
     if (pChannel) {
-        m_pMasterBuffer = pChannel->getEngineBuffer();
         disconnectMaster();
+        m_pMasterBuffer = pChannel->getEngineBuffer();
+        if (m_pMasterBuffer == NULL)
+            qDebug() << "master buffer is null????";    
             
         m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "true_rate"));
         if (m_pSourceRate == NULL)
@@ -129,8 +141,10 @@ bool EngineSync::setDeckMaster(QString deck)
                 this, SLOT(slotSourceBeatDistanceChanged(double)),
                 Qt::DirectConnection);
         
+        resetInternalBeatDistance(); //reset internal beat distance to equal the new master
         qDebug() << "----------------------------setting new master" << deck;
         m_iSyncSource = SYNC_DECK;
+        m_pSyncInternalEnabled->set(FALSE);
         return true;
     }
     else
@@ -187,7 +201,11 @@ EngineBuffer* EngineSync::chooseMasterBuffer(void)
 
 void EngineSync::slotSourceRateChanged(double true_rate)
 {
-    if (true_rate != m_dSourceRate)
+    qDebug() << "got a true rate update";
+    //master buffer can be null due to timing issues
+    if (m_pMasterBuffer == NULL)
+        qDebug() << "but master buffer is null";
+    if (true_rate != m_dSourceRate && m_pMasterBuffer != NULL)
     {
         m_dSourceRate = true_rate;
         
@@ -200,7 +218,7 @@ void EngineSync::slotSourceRateChanged(double true_rate)
 
 void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
 {
-    //this is absolute samples, so just pass it on
+    //just pass it on
     m_pMasterBeatDistance->set(beat_dist);
 }
 
@@ -242,11 +260,36 @@ void EngineSync::slotSampleRateChanged(double srate)
     
 }
 
+void EngineSync::slotSyncMasterChanged(double state)
+{
+    if (state) {
+        setInternalMaster();
+    } else {
+        // XXX: TEMP
+        //setDeckMaster("[Channel1]");
+        // need to choose a new master, here.
+    }
+}
+
 double EngineSync::getInternalBeatDistance(void)
 {
     //returns number of samples distance from the last beat.
-    Q_ASSERT(m_dPseudoBufferPos > 0);
+    Q_ASSERT(m_dPseudoBufferPos >= 0);
     return m_dPseudoBufferPos / m_dSamplesPerBeat;
+}
+
+void EngineSync::resetInternalBeatDistance()
+{
+    if (m_pSourceBeatDistance != NULL)
+    {
+        qDebug() << "Resetting internal beat distance to new master";
+        m_dPseudoBufferPos = m_pSourceBeatDistance->get() * m_dSamplesPerBeat;
+    }
+    else
+    {
+        qDebug() << "Resetting internal beat distance to 0 (no master)";
+        m_dPseudoBufferPos = 0;
+    }
 }
 
 void EngineSync::updateSamplesPerBeat(void)
@@ -283,7 +326,6 @@ void EngineSync::incrementPseudoPosition(int bufferSize)
     Q_ASSERT(m_dSamplesPerBeat > 0);
     while (m_dPseudoBufferPos >= m_dSamplesPerBeat)
     {
-        qDebug() << "beat";
         m_dPseudoBufferPos -= m_dSamplesPerBeat;
     }
     
