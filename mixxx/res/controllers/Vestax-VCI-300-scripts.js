@@ -35,6 +35,8 @@
  *             Shift + Cue sets a cue point while playing
  *             Scroll + Auto Tempo = BPM tap
  *             Switch hotcue behaviour to default
+ * 2012-08-24  Fix pitch shift buttons & LEDs
+ *             Use fixed-point calculations for pitch shift up/down
  * ...to be continued...
  *****************************************************************************/
 
@@ -43,7 +45,7 @@ function VestaxVCI300() {}
 
 VestaxVCI300.group = "[Master]";
 
-VestaxVCI300.pitchFineTuneStepPercent = 0.01;
+VestaxVCI300.pitchFineTuneStepPercent100 = 1; // 1/100 %
 
 VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3
 VestaxVCI300.scratchAlpha = 1.0 / 8.0;
@@ -57,7 +59,6 @@ VestaxVCI300.jogPitchBendSensitivity = 0.8; // 1.0 = linear
 VestaxVCI300.jogSearchScale = VestaxVCI300.jogOutputRange / VestaxVCI300.jogInputRange;
 VestaxVCI300.jogScrollDeltaStepsPerTrack = 8; // 1664 / 8 = 208 tracks per revolution
 VestaxVCI300.jogScrollDeltaAdjustment = VestaxVCI300.jogScrollDeltaStepsPerTrack / 2;
-VestaxVCI300.numberOfHotcues = 6;
 
 VestaxVCI300.autoLoopBeatsArray = [
 	"0.0625",
@@ -187,7 +188,8 @@ VestaxVCI300.Deck = function (number) {
 	this.number = number;
 	this.group = "[Channel" + this.number + "]";
 	VestaxVCI300.decksByGroup[this.group] = this;
-	this.onHotcueValueCB = [];
+	this.onCueInValueCB = [];
+	this.onOutLoopValueCB = [];
 }
 
 VestaxVCI300.leftDeck = new VestaxVCI300.Deck(1);
@@ -302,7 +304,11 @@ VestaxVCI300.Deck.prototype.updateScratchState = function () {
 }
 
 VestaxVCI300.Deck.prototype.updateRateRange = function () {
-	this.pitchFineTuneStep = VestaxVCI300.pitchFineTuneStepPercent / (100.0 * engine.getValue(this.group, "rateRange"));
+	this.rateRangePercent100 = Math.round(10000.0 * engine.getValue(this.group, "rateRange")); // example: +/-6% = 0.06
+	// Workaround: Explicitly (re-)set "rate" after changing "rateRange"!
+	// Otherwise the first button press on one of the pitch shift buttons
+	// is ignored.
+	engine.setValue(this.group, "rate", engine.getValue(this.group, "rate"));
 }
 
 VestaxVCI300.Deck.prototype.initValues = function () {
@@ -328,6 +334,7 @@ VestaxVCI300.Deck.prototype.initValues = function () {
 	engine.setValue(this.group, "rate_dir", -1);
 	engine.setValue(this.group, "rate", 0.0);
 	engine.softTakeover(this.group, "rate", true);
+	engine.setValue(this.group, "keylock", true);
 }
 
 VestaxVCI300.Deck.prototype.restoreValues = function () {
@@ -346,12 +353,12 @@ VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "reverse", this.onReverseValueCB);
 	VestaxVCI300.connectControl(this.group, "PeakIndicator", this.onPeakIndicatorValueCB);
 	VestaxVCI300.connectControl(this.group, "VuMeter", this.onVUMeterValueCB);
-	for (var hotcueIndex = 0; hotcueIndex < VestaxVCI300.numberOfHotcues; ++hotcueIndex) {
-		VestaxVCI300.connectControl(
-			this.group,
-			"hotcue_" + (hotcueIndex  + 1) + "_enabled",
-			this.onHotcueValueCB[hotcueIndex]);
-	}
+	VestaxVCI300.connectControl(this.group, "hotcue_1_enabled", this.onCueInValueCB[0]);
+	VestaxVCI300.connectControl(this.group, "hotcue_2_enabled", this.onCueInValueCB[1]);
+	VestaxVCI300.connectControl(this.group, "hotcue_3_enabled", this.onCueInValueCB[2]);
+	VestaxVCI300.connectControl(this.group, "hotcue_11_enabled", this.onOutLoopValueCB[0]);
+	VestaxVCI300.connectControl(this.group, "hotcue_22_enabled", this.onOutLoopValueCB[1]);
+	VestaxVCI300.connectControl(this.group, "hotcue_33_enabled", this.onOutLoopValueCB[2]);
 	for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
 		VestaxVCI300.connectControl(this.group, "beatloop_" + VestaxVCI300.autoLoopBeatsArray[beatsIndex] + "_enabled", this.onAutoLoopValueCB);
 	}
@@ -369,11 +376,12 @@ VestaxVCI300.Deck.prototype.disconnectControls = function () {
 	VestaxVCI300.disconnectControl(this.group, "reverse");
 	VestaxVCI300.disconnectControl(this.group, "PeakIndicator");
 	VestaxVCI300.disconnectControl(this.group, "VuMeter");
-	for (var hotcueIndex = 0; hotcueIndex < VestaxVCI300.numberOfHotcues; ++hotcueIndex) {
-		VestaxVCI300.disconnectControl(
-			this.group,
-			"hotcue_" + (hotcueIndex  + 1) + "_enabled");
-	}
+	VestaxVCI300.disconnectControl(this.group, "hotcue_1_enabled");
+	VestaxVCI300.disconnectControl(this.group, "hotcue_2_enabled");
+	VestaxVCI300.disconnectControl(this.group, "hotcue_3_enabled");
+	VestaxVCI300.disconnectControl(this.group, "hotcue_11_enabled");
+	VestaxVCI300.disconnectControl(this.group, "hotcue_22_enabled");
+	VestaxVCI300.disconnectControl(this.group, "hotcue_33_enabled");
 	for (var beatsIndex in VestaxVCI300.autoLoopBeatsArray) {
 		VestaxVCI300.disconnectControl(this.group, "beatloop_" + VestaxVCI300.autoLoopBeatsArray[beatsIndex] + "_enabled");
 	}
@@ -428,9 +436,9 @@ VestaxVCI300.init = function (id, debug) {
 	VestaxVCI300.leftDeck.autoLoopLED =
 		new VestaxVCI300.LED(0x29);
 	VestaxVCI300.leftDeck.pitchShiftDownLED =
-		new VestaxVCI300.LED(0x3C);
-	VestaxVCI300.leftDeck.pitchShiftUpLED =
 		new VestaxVCI300.LED(0x3B);
+	VestaxVCI300.leftDeck.pitchShiftUpLED =
+		new VestaxVCI300.LED(0x3C);
 	VestaxVCI300.leftDeck.pflLED =
 		new VestaxVCI300.LED(0x2D);
 	VestaxVCI300.leftDeck.keylockLED =
@@ -456,13 +464,20 @@ VestaxVCI300.init = function (id, debug) {
 	];
 	VestaxVCI300.leftDeck.peakIndicatorLED =
 		new VestaxVCI300.LED(0x59);
-	VestaxVCI300.leftDeck.hotcueLEDs = [
-		[ new VestaxVCI300.LED(0x41) /*red*/, new VestaxVCI300.LED(0x47) /*green*/ ],
-		[ new VestaxVCI300.LED(0x43) /*yellow*/, new VestaxVCI300.LED(0x49) /*green*/ ],
-		[ new VestaxVCI300.LED(0x45) /*blue*/, new VestaxVCI300.LED(0x4B) /*green*/ ],
-		[ new VestaxVCI300.LED(0x42) /*red*/, new VestaxVCI300.LED(0x48) /*green*/ ],
-		[ new VestaxVCI300.LED(0x44) /*yellow*/, new VestaxVCI300.LED(0x4A) /*green*/ ],
-		[ new VestaxVCI300.LED(0x46) /*blue*/, new VestaxVCI300.LED(0x4C) /*green*/ ]
+	VestaxVCI300.leftDeck.cueInLEDs = [
+		new VestaxVCI300.LED(0x41) /*red*/,
+		new VestaxVCI300.LED(0x43) /*yellow*/,
+		new VestaxVCI300.LED(0x45) /*blue*/
+	];
+	VestaxVCI300.leftDeck.outLoopLEDs = [
+		new VestaxVCI300.LED(0x42) /*red*/,
+		new VestaxVCI300.LED(0x44) /*yellow*/,
+		new VestaxVCI300.LED(0x46) /*blue*/
+	];
+	VestaxVCI300.leftDeck.loopingLEDs = [
+		[ new VestaxVCI300.LED(0x47) /*green*/, new VestaxVCI300.LED(0x48) /*green*/ ],
+		[ new VestaxVCI300.LED(0x49) /*green*/, new VestaxVCI300.LED(0x4A) /*green*/ ],
+		[ new VestaxVCI300.LED(0x4B) /*green*/, new VestaxVCI300.LED(0x4C) /*green*/ ]
 	];
 	VestaxVCI300.rightDeck.shiftLED =
 		new VestaxVCI300.LED(0x37);
@@ -483,9 +498,9 @@ VestaxVCI300.init = function (id, debug) {
 	VestaxVCI300.rightDeck.autoLoopLED =
 		new VestaxVCI300.LED(0x35);
 	VestaxVCI300.rightDeck.pitchShiftDownLED =
-		new VestaxVCI300.LED(0x3E);
-	VestaxVCI300.rightDeck.pitchShiftUpLED =
 		new VestaxVCI300.LED(0x3D);
+	VestaxVCI300.rightDeck.pitchShiftUpLED =
+		new VestaxVCI300.LED(0x3E);
 	VestaxVCI300.rightDeck.pflLED =
 		new VestaxVCI300.LED(0x31);
 	VestaxVCI300.rightDeck.keylockLED =
@@ -509,13 +524,20 @@ VestaxVCI300.init = function (id, debug) {
 		new VestaxVCI300.LED(0x66) ];
 	VestaxVCI300.rightDeck.peakIndicatorLED =
 		new VestaxVCI300.LED(0x65);
-	VestaxVCI300.rightDeck.hotcueLEDs = [
-		[ new VestaxVCI300.LED(0x4D) /*red*/, new VestaxVCI300.LED(0x53) /*green*/ ],
-		[ new VestaxVCI300.LED(0x4F) /*yellow*/, new VestaxVCI300.LED(0x55) /*green*/ ],
-		[ new VestaxVCI300.LED(0x51) /*blue*/, new VestaxVCI300.LED(0x57) /*green*/ ],
-		[ new VestaxVCI300.LED(0x4E) /*red*/, new VestaxVCI300.LED(0x54) /*green*/ ],
-		[ new VestaxVCI300.LED(0x50) /*yellow*/, new VestaxVCI300.LED(0x56) /*green*/ ],
-		[ new VestaxVCI300.LED(0x52) /*blue*/, new VestaxVCI300.LED(0x58) /*green*/ ]
+	VestaxVCI300.rightDeck.cueInLEDs = [
+		new VestaxVCI300.LED(0x4D) /*red*/,
+		new VestaxVCI300.LED(0x4F) /*yellow*/,
+		new VestaxVCI300.LED(0x51) /*blue*/
+	];
+	VestaxVCI300.rightDeck.outLoopLEDs = [
+		new VestaxVCI300.LED(0x4E) /*red*/,
+		new VestaxVCI300.LED(0x50) /*yellow*/,
+		new VestaxVCI300.LED(0x52) /*blue*/
+	];
+	VestaxVCI300.rightDeck.loopingLEDs = [
+		[ new VestaxVCI300.LED(0x53) /*green*/, new VestaxVCI300.LED(0x54) /*green*/ ],
+		[ new VestaxVCI300.LED(0x55) /*green*/, new VestaxVCI300.LED(0x56) /*green*/ ],
+		[ new VestaxVCI300.LED(0x57) /*green*/, new VestaxVCI300.LED(0x58) /*green*/ ]
 	];
 	VestaxVCI300.initValues();
 	VestaxVCI300.connectControls();
@@ -760,13 +782,19 @@ VestaxVCI300.onPitchLowValue = function (channel, control, value, status, group)
 	VestaxVCI300.updatePitchValue(group, deck.pitchHighValue, value);
 }
 
+VestaxVCI300.adjustRate = function(deck, rateDeltaPercent100) {
+	var ratePercent100 = Math.round(engine.getValue(deck.group, "rate") * deck.rateRangePercent100);
+	ratePercent100 -= rateDeltaPercent100; // inverse pitch range -> sub instead of add!
+	engine.setValue(deck.group, "rate", Math.max(-1.0, Math.min(1.0, ratePercent100 / deck.rateRangePercent100)))
+}
+
 VestaxVCI300.onPitchShiftDownButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (deck.shiftState) {
 		// TODO
 	} else {
 		if (VestaxVCI300.getButtonPressed(value)) {
-			engine.setValue(group, "rate", engine.getValue(group, "rate") - deck.pitchFineTuneStep);
+			VestaxVCI300.adjustRate(deck, -VestaxVCI300.pitchFineTuneStepPercent100);
 		}
 	}
 	deck.pitchShiftDownLED.trigger(VestaxVCI300.getButtonPressed(value));
@@ -778,7 +806,7 @@ VestaxVCI300.onPitchShiftUpButton = function (channel, control, value, status, g
 		// TODO
 	} else {
 		if (VestaxVCI300.getButtonPressed(value)) {
-			engine.setValue(group, "rate", engine.getValue(group, "rate") + deck.pitchFineTuneStep);
+			VestaxVCI300.adjustRate(deck, VestaxVCI300.pitchFineTuneStepPercent100);
 		}
 	}
 	deck.pitchShiftUpLED.trigger(VestaxVCI300.getButtonPressed(value));
@@ -823,15 +851,15 @@ VestaxVCI300.onCue3InButton = function (channel, control, value, status, group) 
 }
 
 VestaxVCI300.onOut1LoopButton = function (channel, control, value, status, group) {
-	VestaxVCI300.onHotcueButton(group, 4, value);
+	VestaxVCI300.onHotcueButton(group, 11, value);
 }
 
 VestaxVCI300.onOut2LoopButton = function (channel, control, value, status, group) {
-	VestaxVCI300.onHotcueButton(group, 5, value);
+	VestaxVCI300.onHotcueButton(group, 22, value);
 }
 
 VestaxVCI300.onOut3LoopButton = function (channel, control, value, status, group) {
-	VestaxVCI300.onHotcueButton(group, 6, value);
+	VestaxVCI300.onHotcueButton(group, 33, value);
 }
 
 VestaxVCI300.onAutoLoopButton = function (channel, control, value, status, group) {
@@ -996,63 +1024,51 @@ VestaxVCI300.rightDeck.onAutoLoopValueCB = function (value) {
 	VestaxVCI300.rightDeck.updateAutoLoopState();
 }
 
-VestaxVCI300.leftDeck.onHotcueValueCB[0] = function (value) {
-	VestaxVCI300.leftDeck.hotcueLEDs[0][0].trigger(value);
-	//VestaxVCI300.leftDeck.hotcueLEDs[0][1].trigger(value);
+VestaxVCI300.leftDeck.onCueInValueCB[0] = function (value) {
+	VestaxVCI300.leftDeck.cueInLEDs[0].trigger(value);
 }
 
-VestaxVCI300.rightDeck.onHotcueValueCB[0] = function (value) {
-	VestaxVCI300.rightDeck.hotcueLEDs[0][0].trigger(value);
-	//VestaxVCI300.rightDeck.hotcueLEDs[0][1].trigger(value);
+VestaxVCI300.rightDeck.onCueInValueCB[0] = function (value) {
+	VestaxVCI300.rightDeck.cueInLEDs[0].trigger(value);
 }
 
-VestaxVCI300.leftDeck.onHotcueValueCB[1] = function (value) {
-	VestaxVCI300.leftDeck.hotcueLEDs[1][0].trigger(value);
-	//VestaxVCI300.leftDeck.hotcueLEDs[1][1].trigger(value);
+VestaxVCI300.leftDeck.onCueInValueCB[1] = function (value) {
+	VestaxVCI300.leftDeck.cueInLEDs[1].trigger(value);
 }
 
-VestaxVCI300.rightDeck.onHotcueValueCB[1] = function (value) {
-	VestaxVCI300.rightDeck.hotcueLEDs[1][0].trigger(value);
-	//VestaxVCI300.rightDeck.hotcueLEDs[1][1].trigger(value);
+VestaxVCI300.rightDeck.onCueInValueCB[1] = function (value) {
+	VestaxVCI300.rightDeck.cueInLEDs[1].trigger(value);
 }
 
-VestaxVCI300.leftDeck.onHotcueValueCB[2] = function (value) {
-	VestaxVCI300.leftDeck.hotcueLEDs[2][0].trigger(value);
-	//VestaxVCI300.leftDeck.hotcueLEDs[2][1].trigger(value);
+VestaxVCI300.leftDeck.onCueInValueCB[2] = function (value) {
+	VestaxVCI300.leftDeck.cueInLEDs[2].trigger(value);
 }
 
-VestaxVCI300.rightDeck.onHotcueValueCB[2] = function (value) {
-	VestaxVCI300.rightDeck.hotcueLEDs[2][0].trigger(value);
-	//VestaxVCI300.rightDeck.hotcueLEDs[2][1].trigger(value);
+VestaxVCI300.rightDeck.onCueInValueCB[2] = function (value) {
+	VestaxVCI300.rightDeck.cueInLEDs[2].trigger(value);
 }
 
-VestaxVCI300.leftDeck.onHotcueValueCB[3] = function (value) {
-	//VestaxVCI300.leftDeck.hotcueLEDs[3][0].trigger(value);
-	VestaxVCI300.leftDeck.hotcueLEDs[3][1].trigger(value);
+VestaxVCI300.leftDeck.onOutLoopValueCB[0] = function (value) {
+	VestaxVCI300.leftDeck.outLoopLEDs[0].trigger(value);
 }
 
-VestaxVCI300.rightDeck.onHotcueValueCB[3] = function (value) {
-	//VestaxVCI300.rightDeck.hotcueLEDs[3][0].trigger(value);
-	VestaxVCI300.rightDeck.hotcueLEDs[3][1].trigger(value);
+VestaxVCI300.rightDeck.onOutLoopValueCB[0] = function (value) {
+	VestaxVCI300.rightDeck.outLoopLEDs[0].trigger(value);
 }
 
-VestaxVCI300.leftDeck.onHotcueValueCB[4] = function (value) {
-	VestaxVCI300.leftDeck.hotcueLEDs[4][0].trigger(value);
-	VestaxVCI300.leftDeck.hotcueLEDs[4][1].trigger(value);
+VestaxVCI300.leftDeck.onOutLoopValueCB[1] = function (value) {
+	VestaxVCI300.leftDeck.outLoopLEDs[1].trigger(value);
 }
 
-VestaxVCI300.rightDeck.onHotcueValueCB[4] = function (value) {
-	VestaxVCI300.rightDeck.hotcueLEDs[4][0].trigger(value);
-	VestaxVCI300.rightDeck.hotcueLEDs[4][1].trigger(value);
+VestaxVCI300.rightDeck.onOutLoopValueCB[1] = function (value) {
+	VestaxVCI300.rightDeck.outLoopLEDs[1].trigger(value);
 }
 
-VestaxVCI300.leftDeck.onHotcueValueCB[5] = function (value) {
-	VestaxVCI300.leftDeck.hotcueLEDs[5][0].trigger(value);
-	VestaxVCI300.leftDeck.hotcueLEDs[5][1].trigger(value);
+VestaxVCI300.leftDeck.onOutLoopValueCB[2] = function (value) {
+	VestaxVCI300.leftDeck.outLoopLEDs[2].trigger(value);
 }
 
-VestaxVCI300.rightDeck.onHotcueValueCB[5] = function (value) {
-	VestaxVCI300.rightDeck.hotcueLEDs[5][0].trigger(value);
-	VestaxVCI300.rightDeck.hotcueLEDs[5][1].trigger(value);
+VestaxVCI300.rightDeck.onOutLoopValueCB[2] = function (value) {
+	VestaxVCI300.rightDeck.outLoopLEDs[2].trigger(value);
 }
 
