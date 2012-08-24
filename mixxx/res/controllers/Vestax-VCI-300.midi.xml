@@ -406,7 +406,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<midino>0x3B</midino>
+				<midino>0x3A</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onPitchShiftDownButton</key>
 				<options>
@@ -415,7 +415,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<midino>0x3A</midino>
+				<midino>0x3B</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onPitchShiftUpButton</key>
 				<options>
