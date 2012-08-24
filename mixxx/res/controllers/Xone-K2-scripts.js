@@ -1,13 +1,19 @@
 /****************************************************************/
-/*      Stanton SCS.1m MIDI controller script v1.20             */
-/*          Copyright (C) 2009-2011, Sean M. Pappalardo         */
+/*             Xone K2 MIDI controller script v1.20             */
+/*          Copyright (C) 2012, Owen Williams                   */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.9.x                                 */
+/*      For Mixxx version 1.11                                  */
 /****************************************************************/
 
 function XoneK2() {}
 
 XoneK2.shift_status = false;
+
+// USER OPTION:
+// shift_lock = true; means that pressing shift will turn on shift and it will
+// stay on.
+// shift_lock = false; means that shift is only active when the button is held
+XoneK2.shift_lock = false;
 
 XoneK2.leds =  [0x34,   0x35,   0x36,   0x37,
                 0x58,	0x59,   0x5A,	0x5B,
@@ -71,23 +77,39 @@ XoneK2.encoderJog4 = function (channel, control, value, status) {
 }
 
 XoneK2.encoderJog = function (value,deck) {
-    shift_mult = 1;
-    if (XoneK2.shift_status)
-        shift_mult = 5;
-        
     if (value == 127)
-        jogValue = -2 * shift_mult;
+        jogValue = -1;
     else
-        jogValue = 2 * shift_mult;
+        jogValue = 1;
+        
+    //faster seek with shift held
+    if (XoneK2.shift_status)
+        jogValue *= 5;
+        
     if (engine.getValue("[Channel"+deck+"]","play")==1 && engine.getValue("[Channel"+deck+"]","reverse")==1) jogValue= -(jogValue);
     engine.setValue("[Channel"+deck+"]","jog",jogValue);
 }
 
 XoneK2.shift_on = function (channel, control, value, status) {
-    if (value == 127)
-        XoneK2.shift_status = true;
+    if (XoneK2.shift_lock) {
+        if (value == 127) {
+            XoneK2.shift_status = !XoneK2.shift_status;
+        }
+    } 
     else
-        XoneK2.shift_status = false;
+    {
+        if (value == 127) {
+            XoneK2.shift_status = true;
+        } else {
+            XoneK2.shift_status = false;
+        }
+    }
+    
+    if (XoneK2.shift_status) {
+        midi.sendShortMsg(0x9F, 0xF, 0x7F);
+    } else {
+        midi.sendShortMsg(0x9F, 0xF, 0x0);
+    }
 }
 
 XoneK2.leftBottomKnob = function (channel, control, value, status) {
