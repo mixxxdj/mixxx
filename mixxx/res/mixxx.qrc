@@ -17,6 +17,7 @@
         <file>images/preferences/ic_preferences_sampler.png</file>
         <file>images/preferences/ic_preferences_soundhardware.png</file>
         <file>images/preferences/ic_preferences_vinyl.png</file>
+        <file>images/preferences/ic_preferences_warning.png</file>
         <file>images/library/crates_art.png</file>
         <file>images/library/ic_library_autodj.png</file>
         <file>images/library/ic_library_browse.png</file>
@@ -77,6 +78,7 @@
         <file>translations/mixxx_sl.qm</file>
         <file>translations/mixxx_sr.qm</file>
         <file>translations/mixxx_sv.qm</file>
+        <file>translations/mixxx_te.qm</file>
         <file>translations/mixxx_tr.qm</file>
         <file>translations/mixxx_uk.qm</file>
         <file>translations/mixxx_uz.qm</file>

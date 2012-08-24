@@ -8,6 +8,7 @@
 #include "library/basesqltablemodel.h"
 
 #include "library/starrating.h"
+#include "library/stardelegate.h"
 #include "mixxxutils.cpp"
 
 const bool sDebug = false;
@@ -18,6 +19,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
            TrackModel(db, settingsNamespace),
+           m_currentSearch(""),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_database(db) {
@@ -201,10 +203,12 @@ void BaseSqlTableModel::select() {
         Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
         tableColumnIndices.push_back(record.indexOf(column));
     }
-    int rows = query.size();
-    if (sDebug) {
-        qDebug() << "Rows returned" << rows << m_rowInfo.size();
-    }
+
+	// sqlite does not set size and m_rowInfo was just cleared    
+    //int rows = query.size();
+    //if (sDebug) {
+    //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
+    //}
 
     QVector<RowInfo> rowInfo;
     QSet<int> trackIds;
@@ -214,7 +218,7 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size();
+        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located        
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
@@ -439,15 +443,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (qVariantCanConvert<int>(value))
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
-                // Convert to a bool. Not really that useful since it gets
-                // converted right back to a QVariant
-                value = (value == "true") ? true : false;
+                value = value.toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
                 value = value.toDateTime();
             } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
                 value = value.toDateTime().time();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
-                value = (value == "true") ? true : false;
+                value = value.toBool();
             }
             break;
         case Qt::EditRole:
@@ -520,6 +522,9 @@ bool BaseSqlTableModel::setData(
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
     TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    if (!pTrack) {
+        return false;
+    }
     setTrackValueForColumn(pTrack, column, value);
 
     // Do not save the track here. Changing the track dirties it and the caching
@@ -741,3 +746,26 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
     mimeData->setUrls(urls);
     return mimeData;
 }
+
+QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+    if (i == fieldIndex(LIBRARYTABLE_RATING)) {
+        return new StarDelegate(pParent);
+    }
+    return NULL;
+}
+
+void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
+    foreach (QModelIndex index, indices) {
+        int trackId = getTrackId(index);
+        trackIds.append(trackId);
+    }
+
+    m_trackDAO.hideTracks(trackIds);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
+}
+
+

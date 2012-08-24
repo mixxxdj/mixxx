@@ -34,7 +34,7 @@ Upgrade::~Upgrade()
 
 // We return the ConfigObject here because we have to make changes to the
 // configuration and the location of the file may change between releases.
-ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
+ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) {
 
 /*  Pre-1.7.0:
 *
@@ -53,8 +53,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
     if (pre170Config->exists()) {
 
         // Move the files to their new location
-        QString newLocation = QDir::homePath().append("/").append(SETTINGS_PATH);
-
+        QString newLocation = settingsPath;
+        
         if (!QDir(newLocation).exists()) {
             qDebug() << "Creating new settings directory" << newLocation;
             QDir().mkpath(newLocation);
@@ -150,7 +150,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 ****************************************************************************/
 
     // Read the config file from home directory
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(settingsPath + SETTINGS_FILE);
 
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
@@ -228,7 +228,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         // Upgrade tasks go here
 #ifdef __APPLE__
         QString OSXLocation180 = QDir::homePath().append("/").append(".mixxx");
-        QString OSXLocation190 = QDir::homePath().append("/").append(SETTINGS_PATH);
+        QString OSXLocation190 = settingsPath;
         QDir newOSXDir(OSXLocation190);
         newOSXDir.mkpath(OSXLocation190);
 
@@ -264,11 +264,11 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
             }
 
             //Rename the old directory.
-            newOSXDir.rename(OSXLocation180, OSXLocation180+ "-1.8");
+            newOSXDir.rename(OSXLocation180, OSXLocation180 + "-1.8");
         }
         //Reload the configuration file from the new location.
         //(We want to make sure we save to the new location...)
-        config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+        config = new ConfigObject<ConfigValue>(settingsPath + SETTINGS_FILE);
 #endif
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));

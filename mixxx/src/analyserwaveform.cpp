@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "analyserwaveform.h"
+#include "engine/engineobject.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilteriir.h"
 #include "library/trackcollection.h"
@@ -13,7 +14,7 @@
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"
 
-AnalyserWaveform::AnalyserWaveform() {
+AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) {
     qDebug() << "AnalyserWaveform::AnalyserWaveform()";
     m_skipProcessing = false;
 
@@ -31,7 +32,7 @@ AnalyserWaveform::AnalyserWaveform() {
     m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
-        m_database.setDatabaseName(MIXXX_DB_PATH);
+        m_database.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
         m_database.setUserName("mixxx");
         m_database.setPassword("mixxx");
 
@@ -69,8 +70,6 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     int trackId = tio->getId();
     bool missingWaveform = m_waveform->getDataSize() == 0;
     bool missingWavesummary = m_waveformSummary->getDataSize() == 0;
-    bool foundWaveform = false;
-    bool foundWavesummary = false;
     bool loadedWaveform = false;
     bool loadedWavesummary = false;
 
@@ -83,10 +82,11 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
             const AnalysisDao::AnalysisInfo& analysis = it.next();
 
             if (analysis.type == AnalysisDao::TYPE_WAVEFORM &&
-                    missingWaveform && !loadedWaveform) {
-                foundWaveform = true;
+                analysis.version == WaveformFactory::getPreferredWaveformVersion() &&
+                missingWaveform && !loadedWaveform) {
                 Waveform* pLoadedWaveform =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
+
                 if (pLoadedWaveform && pLoadedWaveform->isValid()) {
                     m_waveform = pLoadedWaveform;
                     loadedWaveform = true;
@@ -96,8 +96,8 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
                 }
             } else if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY &&
+                       analysis.version == WaveformFactory::getPreferredWaveformSummaryVersion() &&
                        missingWavesummary && !loadedWavesummary) {
-                foundWavesummary = true;
                 Waveform* pLoadedWaveformSummary =
                         WaveformFactory::loadWaveformFromAnalysis(tio, analysis);
                 if (pLoadedWaveformSummary && pLoadedWaveformSummary->isValid()) {
@@ -113,8 +113,8 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
-    if ((!missingWaveform || (missingWaveform && foundWaveform && loadedWaveform)) &&
-        (!missingWavesummary || (missingWavesummary && foundWavesummary && loadedWavesummary))) {
+    if ((!missingWaveform || loadedWaveform) &&
+        (!missingWavesummary || loadedWavesummary)) {
         qDebug() << "AnalyserWaveform::initialise - Waveform loaded";
         m_skipProcessing = true;
         return false;
@@ -150,7 +150,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     const double mainSummaryRatio = m_waveform->getVisualSampleRate() / m_waveformSummary->getVisualSampleRate();
     const int summaryStrideLength = ceil(mainSummaryRatio);
     m_strideSummary.init(summaryStrideLength);
-    m_strideSummary.m_convertionFactor /= (double)mainSummaryRatio;
+    m_strideSummary.m_conversionFactor /= (double)mainSummaryRatio;
 
     m_currentStride = 0;
     m_currentSummaryStride = 0;
@@ -167,10 +167,15 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 }
 
 void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
+    Q_UNUSED(tio);
+    Q_UNUSED(sampleRate);
     //TODO: (vRince) bind this with *actual* filter values ...
-    m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
-    m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
-    m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
+    // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
+    // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
+    // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
+    m_filter[Low] = new EngineFilterIIR(bessel_lowpass4, 4);
+    m_filter[Mid] = new EngineFilterIIR(bessel_bandpass, 8);
+    m_filter[High] = new EngineFilterIIR(bessel_highpass4, 4);
 }
 
 void AnalyserWaveform::destroyFilters() {
@@ -197,16 +202,45 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     m_filter[Mid]->process(buffer, &m_buffers[Mid][0], bufferLength);
     m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
+    CSAMPLE cmaxLow[2];
+    cmaxLow[Left] = 0;
+    cmaxLow[Right] = 0;
+    CSAMPLE cmaxBand[2];
+    cmaxBand[Left] = 0;
+    cmaxBand[Right] = 0;
+    CSAMPLE cmaxHigh[2];
+    cmaxHigh[Left] = 0;
+    cmaxHigh[Right] = 0;
+    CSAMPLE cmaxAll[2];
+    cmaxAll[Left] = 0;
+    cmaxAll[Right] = 0;
+
     for( int i = 0; i < bufferLength; i+=2) {
-        //accumulate signal power of the stride
-        m_stride.m_overallData[Right] += buffer[i]*buffer[i];
-        m_stride.m_overallData[ Left] += buffer[i+1]*buffer[i+1];
-        m_stride.m_filteredData[Right][ Low] += m_buffers[ Low][i  ]*m_buffers[ Low][i];
-        m_stride.m_filteredData[ Left][ Low] += m_buffers[ Low][i+1]*m_buffers[ Low][i+1];
-        m_stride.m_filteredData[Right][ Mid] += m_buffers[ Mid][i  ]*m_buffers[ Mid][i];
-        m_stride.m_filteredData[ Left][ Mid] += m_buffers[ Mid][i+1]*m_buffers[ Mid][i+1];
-        m_stride.m_filteredData[Right][High] += m_buffers[High][i  ]*m_buffers[High][i];
-        m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];
+        // Take max value, not average of data
+        CSAMPLE cover[2] = { fabs(buffer[i]), fabs(buffer[i+1]) };
+        CSAMPLE clow[2] =  { fabs(m_buffers[ Low][i]), fabs(m_buffers[ Low][i+1]) };
+        CSAMPLE cmid[2] =  { fabs(m_buffers[ Mid][i]), fabs(m_buffers[ Mid][i+1]) };
+        CSAMPLE chigh[2] = { fabs(m_buffers[High][i]), fabs(m_buffers[High][i+1]) };
+
+        cmaxAll[Left] = math_max(cmaxAll[Left], cover[Left]);
+        cmaxAll[Right] = math_max(cmaxAll[Right], cover[Right]);
+        cmaxLow[Left] = math_max(cmaxLow[Left], clow[Left]);
+        cmaxLow[Right] = math_max(cmaxLow[Right], clow[Right]);
+        cmaxBand[Left] = math_max(cmaxBand[Left], cmid[Left]);
+        cmaxBand[Right] = math_max(cmaxBand[Right], cmid[Right]);
+        cmaxHigh[Left] = math_max(cmaxHigh[Left], chigh[Left]);
+        cmaxHigh[Right] = math_max(cmaxHigh[Right], chigh[Right]);
+
+        // This is for if you want to experiment with averaging instead of
+        // maxing.
+        // m_stride.m_overallData[Right] += buffer[i]*buffer[i];
+        // m_stride.m_overallData[ Left] += buffer[i+1]*buffer[i+1];
+        // m_stride.m_filteredData[Right][ Low] += m_buffers[ Low][i  ]*m_buffers[ Low][i];
+        // m_stride.m_filteredData[ Left][ Low] += m_buffers[ Low][i+1]*m_buffers[ Low][i+1];
+        // m_stride.m_filteredData[Right][ Mid] += m_buffers[ Mid][i  ]*m_buffers[ Mid][i];
+        // m_stride.m_filteredData[ Left][ Mid] += m_buffers[ Mid][i+1]*m_buffers[ Mid][i+1];
+        // m_stride.m_filteredData[Right][High] += m_buffers[High][i  ]*m_buffers[High][i];
+        // m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];
 
         if( m_stride.m_position >= m_stride.m_length) {
             if (m_currentStride + ChannelCount > m_waveformDataSize) {
@@ -214,17 +248,27 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
                 return;
             }
 
+            // Record the max across this stride.
+            m_stride.m_overallData[Left] = cmaxAll[Left];
+            m_stride.m_overallData[Right] = cmaxAll[Right];
+            m_stride.m_filteredData[ Left][ Low] = cmaxLow[Left];
+            m_stride.m_filteredData[Right][ Low] = cmaxLow[Right];
+            m_stride.m_filteredData[ Left][ Mid] = cmaxBand[Left];
+            m_stride.m_filteredData[Right][ Mid] = cmaxBand[Right];
+            m_stride.m_filteredData[ Left][High] = cmaxHigh[Left];
+            m_stride.m_filteredData[Right][High] = cmaxHigh[Right];
+
             m_stride.store(m_waveformData + m_currentStride);
 
-            //summary
-            m_strideSummary.m_overallData[Right] += m_stride.m_overallData[Right];
-            m_strideSummary.m_overallData[ Left] += m_stride.m_overallData[ Left];
-            m_strideSummary.m_filteredData[Right][ Low] += m_stride.m_filteredData[Right][ Low];
+            // summary is an average of the maxes
+            m_strideSummary.m_overallData[Left] += m_stride.m_overallData[ Left];
+            m_strideSummary.m_overallData[Right] += m_stride.m_overallData[ Right];
             m_strideSummary.m_filteredData[ Left][ Low] += m_stride.m_filteredData[ Left][ Low];
-            m_strideSummary.m_filteredData[Right][ Mid] += m_stride.m_filteredData[Right][ Mid];
+            m_strideSummary.m_filteredData[Right][ Low] += m_stride.m_filteredData[Right][ Low];
             m_strideSummary.m_filteredData[ Left][ Mid] += m_stride.m_filteredData[ Left][ Mid];
-            m_strideSummary.m_filteredData[Right][High] += m_stride.m_filteredData[Right][High];
+            m_strideSummary.m_filteredData[Right][ Mid] += m_stride.m_filteredData[Right][ Mid];
             m_strideSummary.m_filteredData[ Left][High] += m_stride.m_filteredData[ Left][High];
+            m_strideSummary.m_filteredData[Right][High] += m_stride.m_filteredData[Right][High];
 
             //NOTE: (vrince) test save main max in summary
             /*
@@ -274,18 +318,27 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
                 m_strideSummary.store(m_waveformSummaryData + m_currentSummaryStride);
                 m_strideSummary.reset();
 
-                /*
-                qDebug() << "m_strideSummary"
+
+/*                qDebug() << "m_strideSummary"
                          << (m_waveformSummaryData + m_currentSummaryStride)->filtered.all
                          << (m_waveformSummaryData + m_currentSummaryStride)->filtered.low
                          << (m_waveformSummaryData + m_currentSummaryStride)->filtered.mid
-                         << (m_waveformSummaryData + m_currentSummaryStride)->filtered.high;
-                         */
+                         << (m_waveformSummaryData + m_currentSummaryStride)->filtered.high;*/
+
 
                 m_currentSummaryStride += 2;
             }
             m_strideSummary.m_position += 2;
             m_stride.reset();
+            cmaxAll[Left] = 0;
+            cmaxAll[Right] = 0;
+            cmaxLow[Left] = 0;
+            cmaxLow[Right] = 0;
+            cmaxBand[Left] = 0;
+            cmaxBand[Right] = 0;
+            cmaxHigh[Left] = 0;
+            cmaxHigh[Right] = 0;
+
             m_currentStride += 2;
         }
         m_stride.m_position += 2;
@@ -299,77 +352,42 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
 }
 
 void AnalyserWaveform::cleanup(TrackPointer tio) {
+    Q_UNUSED(tio);
     if (m_skipProcessing) {
         return;
     }
-    
-    Waveform* pWaveform = tio->getWaveform();
-    if (pWaveform) {
-        pWaveform->reset();
+
+    if (m_waveform) {
+        m_waveform->reset();
     }
-    
-    Waveform* pWaveformSummary = tio->getWaveformSummary();
-    if (pWaveformSummary) {
-        pWaveformSummary->reset();
+
+    if (m_waveformSummary) {
+        m_waveformSummary->reset();
     }
 }
 
 void AnalyserWaveform::finalise(TrackPointer tio) {
-    if (m_waveform == NULL || m_waveformSummary == NULL) {
+    if (m_skipProcessing || m_waveform == NULL || m_waveformSummary == NULL) {
         return;
     }
 
     QMutexLocker waveformLocker(m_waveform->getMutex());
-    QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
-
     // Force completion to waveform size
     m_waveform->setCompletion(m_waveform->getDataSize());
+    m_waveform->setVersion(WaveformFactory::getPreferredWaveformVersion());
+    m_waveform->setDescription(WaveformFactory::getPreferredWaveformDescription());
+
+    QMutexLocker waveformSummaryLocker(m_waveformSummary->getMutex());
+    // Force completion to waveform size
     m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
+    m_waveformSummary->setVersion(WaveformFactory::getPreferredWaveformSummaryVersion());
+    m_waveformSummary->setDescription(WaveformFactory::getPreferredWaveformSummaryDescription());
+
 
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");
 #endif
 
-    if (!m_skipProcessing) {
-        int trackId = tio->getId();
-        Waveform* pWaveform = tio->getWaveform();
-        Waveform* pWaveSummary = tio->getWaveformSummary();
-
-        qDebug() << "Done building waveform for track" << trackId;
-
-        if (trackId != -1 && pWaveform && pWaveSummary) {
-            AnalysisDao::AnalysisInfo analysis;
-            analysis.trackId = trackId;
-
-            if (pWaveform->getId() != -1) {
-                analysis.analysisId = pWaveform->getId();
-            }
-            analysis.type = AnalysisDao::TYPE_WAVEFORM;
-            analysis.description = "Waveform 2.0";
-            analysis.version = "Waveform-2.0";
-            analysis.data = pWaveform->toByteArray();
-
-            bool success = m_analysisDao->saveAnalysis(&analysis);
-            qDebug() << (success ? "Saved" : "Failed to save")
-                     << "waveform analysis for trackId" << trackId
-                     << "analysisId" << analysis.analysisId;
-
-            if (pWaveSummary->getId() != -1) {
-                analysis.analysisId = pWaveSummary->getId();
-            }
-
-            // Clear analysisId since we are re-using the AnalysisInfo
-            analysis.analysisId = -1;
-            analysis.type = AnalysisDao::TYPE_WAVESUMMARY;
-            analysis.description = "Waveform Summary 2.0";
-            analysis.version = "WaveformSummary-2.0";
-            analysis.data = pWaveSummary->toByteArray();
-
-            success = m_analysisDao->saveAnalysis(&analysis);
-            qDebug() << (success ? "Saved" : "Failed to save")
-                     << "waveform summary analysis for trackId" << trackId
-                     << "analysisId" << analysis.analysisId;
-        }
-        qDebug() << "Waveform generation done" << m_timer->elapsed()/1000.0 << "s";
-    }
+    qDebug() << "Waveform generation for track" << tio->getId() << "done"
+             << m_timer->elapsed()/1000.0 << "s";
 }

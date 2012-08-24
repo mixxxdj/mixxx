@@ -14,6 +14,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
+#include "preparefeature.h"
 
 class TrackModel;
 class TrackCollection;
@@ -66,8 +67,8 @@ public slots:
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group);
     void restoreSearch(const QString&);
 
 private:
@@ -81,6 +82,7 @@ private:
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
+    PrepareFeature* m_pPrepareFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
 };

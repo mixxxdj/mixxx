@@ -33,7 +33,6 @@ mixxxminimal_sources = [
 	"dsp/MathUtilities.cpp",
 	"plugins/BarBeatTrack.cpp",
 	"plugins/KeyDetect.cpp",
-	"plugins/replaygain.cpp",
 	"plugins/BeatTrack.cpp",
 	"plugins/TonalChangeDetect.cpp",
 	"libmain.cpp",

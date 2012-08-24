@@ -40,7 +40,8 @@ class StarRating
 
     StarRating(int starCount = 1, int maxStarCount = 5);
 
-    void paint(QPainter *painter, const QRect &rect, const QPalette &palette, EditMode mode) const;
+    void paint(QPainter *painter, const QRect &rect, const QPalette &palette, EditMode mode,
+                bool isSelected) const;
     QSize sizeHint() const;
 
     int starCount() const { return m_myStarCount; }

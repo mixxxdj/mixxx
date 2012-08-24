@@ -1,0 +1,19 @@
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="1.11+">
+    <info>
+        <name>Nintendo Wii Remote</name>
+        <author>Ilkka Tuohela</author>
+        <description>HID mapping for Nintendo Wii Remote Game Controller</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3939</forums>
+        <devices>
+            <product protocol="hid" vendor_id="0x57e" product_id="0x306" usage_page="0x1" usage="0x5" interface_number="0x1" />
+            <!-- TODO check correct usage page/usage for wii remote plus -->
+            <product protocol="hid" vendor_id="0x57e" product_id="0x330" usage_page="0x1" usage="0x5" interface_number="0x1" />
+        </devices>
+    </info>
+    <controller id="Nintendo Wii Remote Controller">
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file filename="Nintendo-Wiimote.js" functionprefix="Wiimote"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

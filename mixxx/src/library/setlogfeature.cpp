@@ -19,7 +19,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
                               "SETLOGHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.setlog");
+                                                   "mixxx.db.model.setlog",
+                                                   true);//show all tracks
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -126,8 +127,8 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     menu.exec(globalPos);
 }
 
-bool SetlogFeature::dropAcceptChild(const QModelIndex& index, QUrl url){
-    Q_UNUSED(url);
+bool SetlogFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
+    Q_UNUSED(urls);
     Q_UNUSED(index);
     return false;
 }
@@ -242,15 +243,37 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (!currentPlayingTrack) {
             return;
         }
+
         int currentPlayingTrackId = currentPlayingTrack->getId();
+        bool track_played_recently = false;
+        if (currentPlayingTrackId >= 0) {
+            // Remove the track from the recent tracks list if it's present and put
+            // at the front of the list.
+            track_played_recently = m_recentTracks.removeOne(currentPlayingTrackId);
+            m_recentTracks.push_front(currentPlayingTrackId);
+
+            // Keep a window of 6 tracks (inspired by 2 decks, 4 samplers)
+            const int kRecentTrackWindow = 6;
+            while (m_recentTracks.size() > kRecentTrackWindow) {
+                m_recentTracks.pop_back();
+            }
+        }
+
+        // If the track was recently played, don't increment the playcount or
+        // add it to the history.
+        if (track_played_recently) {
+            return;
+        }
+
+        // If the track is not present in the recent tracks list, mark it
+        // played and update its playcount.
+        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
+
         // We can only add tracks that are Mixxx library tracks, not external
         // sources.
         if (currentPlayingTrackId < 0) {
             return;
         }
-
-        // Here the song is realy played, not only loaded.
-        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
 
         if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
             // View needs a refresh

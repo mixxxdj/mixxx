@@ -9,7 +9,6 @@
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-
 #include "mixxxutils.cpp"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
@@ -128,9 +127,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
         foreach (QModelIndex index, indices) {
             trackIds.append(getTrackId(index));
         }
-        foreach (int trackId, trackIds) {
-            crateDao.removeTrackFromCrate(trackId, m_iCrateId);
-        }
+        crateDao.removeTracksFromCrate(trackIds, m_iCrateId);
         select();
     }
 }
@@ -180,10 +177,6 @@ bool CrateTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
-}
-
-QItemDelegate* CrateTableModel::delegateForColumn(int i) {
-    return NULL;
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {

@@ -6,6 +6,7 @@
 */
 
 #include <QApplication>
+#include <QScriptValue>
 
 #include "controllers/controller.h"
 #include "controllers/defs_controllers.h"
@@ -31,10 +32,6 @@ Controller::~Controller() {
 QString Controller::defaultPreset() {
     return USER_PRESETS_PATH.append("controllers/")
             .append(m_sDeviceName.replace(" ", "_") + presetExtension());
-}
-
-QString Controller::presetExtension() {
-    return CONTROLLER_PRESET_EXTENSION;
 }
 
 void Controller::startEngine()
@@ -63,26 +60,24 @@ void Controller::stopEngine()
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset(QString configPath) {
+void Controller::applyPreset(QString resourcePath) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
 
     // Load the script code into the engine
-    if (m_pEngine != NULL) {
-        const QStringList scriptFunctions = m_pEngine->getScriptFunctions();
-        if (scriptFunctions.isEmpty() && pPreset->scriptFileNames.isEmpty()) {
-            qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
-        } else {
-            if (scriptFunctions.isEmpty()) {
-                m_pEngine->loadScriptFiles(configPath,
-                                           pPreset->scriptFileNames);
-            }
-            m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
-        }
-    } else {
+    if (m_pEngine == NULL) {
         qWarning() << "Controller::applyPreset(): No engine exists!";
+        return;
     }
+
+    if (pPreset->scriptFileNames.isEmpty()) {
+        qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
+        return;
+    }
+
+    m_pEngine->loadScriptFiles(resourcePath, pPreset->scriptFileNames);
+    m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
 }
 
 void Controller::learn(MixxxControl control) {
@@ -136,8 +131,10 @@ void Controller::receive(const QByteArray data) {
             continue;
         }
         function.append(".incomingData");
-        if (!m_pEngine->execute(function, data)) {
+        QScriptValue incomingData = m_pEngine->resolveFunction(function, true);
+        if (!m_pEngine->execute(incomingData, data)) {
             qWarning() << "Controller: Invalid script function" << function;
         }
     }
 }
+

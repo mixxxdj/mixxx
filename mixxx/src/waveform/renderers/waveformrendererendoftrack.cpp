@@ -84,10 +84,14 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     m_endOfTrackEnabled = m_endOfTrackControl->get() > 0.5;
 
+    //special case of track not long enougth
+    const double trackLength = 0.5 * trackSamples / sampleRate;
+
     if (sampleRate < 0.1 //not ready
             || trackSamples < 0.1 //not ready
             || m_playControl->get() < 0.5 //not playing
             || m_loopControl->get() > 0.5 //in loop
+            || trackLength <= m_remainingTimeTriggerSeconds //track too short
             ) {
         if(m_endOfTrackEnabled && m_endOfTrackControl->getControlObject()) {
             m_endOfTrackControl->getControlObject()->set(0.);

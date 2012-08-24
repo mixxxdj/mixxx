@@ -32,7 +32,8 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     m_ui.setupUi(this);
     m_pLayout = m_ui.gridLayout_4;
     const ControllerPresetPointer pPreset = controller->getPreset();
-    m_ui.labelLoadedPreset->setText(presetShortName(pPreset));
+
+    slotPresetLoaded(pPreset);
 
     //m_pVerticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     //m_pLayout->addItem(m_pVerticalSpacer, 4, 0, 1, 3);
@@ -42,11 +43,21 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     //setLayout(vLayout);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
+    QString category = m_pController->getCategory();
+    if (category!="") {
+        m_ui.labelDeviceCategory->setText(category);
+    } else {
+        m_ui.labelDeviceCategory->hide();
+    }
 
     connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
             this, SLOT(slotLoadPreset(const QString&)));
     connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
             this, SLOT(slotDirty()));
+
+    // Connect if we wish to automatically set current mapping as autoload
+    // connect(m_ui.comboBoxPreset, SIGNAL(currentIndexChanged(const QString&)),
+    //        this, SLOT(slotDirty()));
 
     connect(this, SIGNAL(openController(Controller*)),
             m_pControllerManager, SLOT(openController(Controller*)));
@@ -54,9 +65,6 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
             m_pControllerManager, SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, QString, bool)),
             m_pControllerManager, SLOT(loadPreset(Controller*, QString, bool)));
-
-    // Load the list of presets into the presets combobox.
-    enumeratePresets();
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -78,6 +86,36 @@ QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset
     return presetName;
 }
 
+QString DlgPrefController::presetDescription(const ControllerPresetPointer pPreset) const {
+    QString description = tr("No Description");
+    if (pPreset) {
+        QString descr = pPreset->description();
+        if (description.length() > 0)
+            description = descr;
+    }
+    return description;
+}
+
+QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset) const {
+    QString url;
+    if (pPreset) {
+        QString link = pPreset->forumlink();
+        if (link.length() > 0)
+            url = "<a href=\"" + link + "\">Mixxx Forums</a>";
+    }
+    return url;
+}
+
+QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset) const {
+    QString url;
+    if (pPreset) {
+        QString link = pPreset->wikilink();
+        if (link.length() > 0)
+            url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
+    }
+    return url;
+}
+
 void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
     // Remove the vertical spacer since we're adding stuff
     //m_pLayout->removeItem(m_pVerticalSpacer);
@@ -91,18 +129,34 @@ void DlgPrefController::slotDirty() {
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
+    // qDebug() << "Enumerating presets for controller" << m_pController->getName();
+
     //Insert a dummy "..." item at the top to try to make it less confusing.
     //(We don't want the first found file showing up as the default item
     // when a user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
 
+    m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
-    QList<QString> presetsList =
-        m_pControllerManager->getPresetList(m_pController->presetExtension());
+    PresetInfoEnumerator* pie =  m_pControllerManager->getPresetInfoManager();
+    QList<PresetInfo> presets = pie->getPresets(m_pController->presetExtension());
 
-    //Sort in alphabetical order
-    qSort(presetsList);
-    m_ui.comboBoxPreset->addItems(presetsList);
+    PresetInfo match;
+    foreach (PresetInfo preset, presets) {
+        // QVariant userdata = preset;
+        m_ui.comboBoxPreset->addItem(preset.getName());
+        if (m_pController->matchPreset(preset)) {
+            match = preset;
+            break;
+        }
+    }
+
+    // Jump to matching device in list if it was found.
+    if (match.isValid()) {
+        int index = m_ui.comboBoxPreset->findText(match.getName());
+        if (index != -1)
+            m_ui.comboBoxPreset->setCurrentIndex(index);
+    }
 }
 
 void DlgPrefController::slotUpdate() {
@@ -137,14 +191,30 @@ void DlgPrefController::slotApply() {
 }
 
 void DlgPrefController::slotLoadPreset(const QString &name) {
-    if (name != "...") {
-        emit(loadPreset(m_pController, name, true));
-        // It's applied on prefs close
+    if (name == "...")
+        return;
+
+    // Lookup the name in preset from actual preset data
+    PresetInfoEnumerator* presetmanager =  m_pControllerManager->getPresetInfoManager();
+    PresetInfo preset = presetmanager->getPresetInfo(m_pController->presetExtension(), name);
+    if (!preset.isValid()) {
+        qDebug() << "ERROR preset matching name not found: " << name;
+        return;
     }
+    // qDebug() << "PRESET path" << preset.getPath();
+
+    // Applied on prefs close
+    emit(loadPreset(m_pController, preset.getPath(), true));
 }
 
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetShortName(preset));
+    m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
+    QString support = presetForumLink(preset) + presetWikiLink(preset);
+    if (support.length() == 0) {
+        support = tr("No support available.");
+    }
+    m_ui.labelLoadedPresetSupportLinks->setText(support);
 }
 
 void DlgPrefController::slotDeviceState(int state) {

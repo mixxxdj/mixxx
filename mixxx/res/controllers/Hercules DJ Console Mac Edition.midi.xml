@@ -2,8 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>Hercules DJ Console Mac Edition</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file Hercules DJ Console Mac Edition.midi.xml for Mixxx 1.6.2</description>
+    <author>Daniel Svensson</author>
+    <description>MIDI Mapping for Hercules DJ Console (Mac Edition)</description>
   </info>
   <controller id="Hercules DJ Console Mac Edition" port="Port">
     <controls>

@@ -71,6 +71,7 @@ public slots:
     void slotSetVisualGainLow(double gain);
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
+    void slotSetNormalizeOverview( bool normalize);
 
     virtual void onShow();
     virtual void onHide();
@@ -81,6 +82,7 @@ protected:
 private:
     void initWaveformControl();
     void notifyRebootNecessary();
+    bool checkSkinResolution(QString skin);
 
 private:
     /** Pointer to ConfigObject */

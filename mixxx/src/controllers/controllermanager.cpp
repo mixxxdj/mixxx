@@ -7,6 +7,7 @@
 
 #include <QSet>
 
+#include "util/sleepableqthread.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
@@ -23,7 +24,13 @@
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
+#ifdef __LINUX__
+// Many Linux distros ship with the system tick set to 250Hz so 1ms timer
+// reportedly causes CPU hosage. See Bug #990992 rryan 6/2012
+const int kPollIntervalMillis = 5;
+#else
 const int kPollIntervalMillis = 1;
+#endif
 
 QString firstAvailableFilename(QSet<QString>& filenames,
                                const QString originalFilename) {
@@ -35,6 +42,10 @@ QString firstAvailableFilename(QSet<QString>& filenames,
     }
     filenames.insert(filename);
     return filename;
+}
+
+bool controllerCompare(Controller *a,Controller *b) {
+    return a->getName() < b->getName();
 }
 
 ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
@@ -57,6 +68,9 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
         qDebug() << "Creating local controller presets directory:" << LOCAL_PRESETS_PATH;
         QDir().mkpath(LOCAL_PRESETS_PATH);
     }
+
+    // Initialize preset info parsers
+    m_pPresetInfoManager = new PresetInfoEnumerator(m_pConfig);
 
     // Instantiate all enumerators
     m_enumerators.append(new PortMidiEnumerator());
@@ -93,6 +107,7 @@ ControllerManager::~ControllerManager() {
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
+    delete m_pPresetInfoManager;
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
@@ -207,7 +222,7 @@ int ControllerManager::slotSetUpDevices() {
             }
             continue;
         }
-        pController->applyPreset(m_pConfig->getConfigPath());
+        pController->applyPreset(m_pConfig->getResourcePath());
     }
 
     maybeStartOrStopPolling();
@@ -246,40 +261,16 @@ void ControllerManager::stopPolling() {
 }
 
 void ControllerManager::pollDevices() {
-    foreach (Controller* pDevice, m_controllers) {
-        if (pDevice->isOpen() && pDevice->isPolling()) {
-            pDevice->poll();
-        }
-    }
-}
-
-QList<QString> ControllerManager::getPresetList(QString extension) {
-    // Paths to search for controller presets
-    QList<QString> controllerDirPaths;
-    QString configPath = m_pConfig->getConfigPath();
-    controllerDirPaths.append(configPath.append("controllers/"));
-    controllerDirPaths.append(LOCAL_PRESETS_PATH);
-
-    // Should we also show the presets from USER_PRESETS_PATH? That could be
-    // confusing.
-
-    QList<QString> presets;
-    foreach (QString dirPath, controllerDirPaths) {
-        QDirIterator it(dirPath);
-        while (it.hasNext()) {
-            // Advance iterator. We get the filename from the next line. (It's a
-            // bit weird.)
-            it.next();
-
-            QString curPreset = it.fileName();
-            if (curPreset.endsWith(extension)) {
-                curPreset.chop(QString(extension).length()); //chop off the extension
-                presets.append(curPreset);
+    bool eventsProcessed(false);
+    // Continue to poll while any device returned data.
+    do {
+        eventsProcessed = false;
+        foreach (Controller* pDevice, m_controllers) {
+            if (pDevice->isOpen() && pDevice->isPolling()) {
+                eventsProcessed = pDevice->poll() || eventsProcessed;
             }
         }
-    }
-    qSort(presets);
-    return presets;
+    } while (eventsProcessed);
 }
 
 void ControllerManager::openController(Controller* pController) {
@@ -295,7 +286,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(m_pConfig->getConfigPath());
+        pController->applyPreset(m_pConfig->getResourcePath());
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->set(ConfigKey(
@@ -329,7 +320,6 @@ bool ControllerManager::loadPreset(Controller* pController,
     return true;
 }
 
-
 bool ControllerManager::loadPreset(Controller* pController,
                                    const QString &filename,
                                    const bool force) {
@@ -340,8 +330,18 @@ bool ControllerManager::loadPreset(Controller* pController,
         return false;
     }
 
-    QString filenameWithExt = filename + pController->presetExtension();
-    QString filepath = USER_PRESETS_PATH + filenameWithExt;
+    // Handle case when filename is already valid full path to mapping
+    // (coming from presetInfo.path)
+    QString filenameWithExt;
+    QString filepath;
+    QFileInfo fileinfo(filename);
+    if (fileinfo.isFile()) {
+        filenameWithExt = fileinfo.baseName();
+        filepath = fileinfo.absoluteFilePath();
+    } else {
+        filenameWithExt = filename + pController->presetExtension();
+        filepath = USER_PRESETS_PATH + filenameWithExt;
+    }
 
     // If the file isn't present in the user's directory, check the local
     // presets path.
@@ -351,7 +351,7 @@ bool ControllerManager::loadPreset(Controller* pController,
 
     // If the file isn't present in the user's directory, check res/
     if (!QFile::exists(filepath)) {
-        filepath = m_pConfig->getConfigPath()
+        filepath = m_pConfig->getResourcePath()
                 .append("controllers/") + filenameWithExt;
     }
 
@@ -372,6 +372,10 @@ bool ControllerManager::loadPreset(Controller* pController,
     loadPreset(pController, pPreset);
     //qDebug() << "Successfully loaded preset" << filepath;
     return true;
+}
+
+PresetInfoEnumerator* ControllerManager::getPresetInfoManager() {
+    return m_pPresetInfoManager;
 }
 
 void ControllerManager::slotSavePresets(bool onlyActive) {

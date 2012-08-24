@@ -1,6 +1,7 @@
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 
+#include "widget/wwidget.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "defs.h"
@@ -117,7 +118,9 @@ void WaveformWidgetRenderer::onPreRender() {
     m_rate = m_rateControlObject->get();
     m_rateDir = m_rateDirControlObject->get();
     m_rateRange = m_rateRangeControlObject->get();
-    m_gain = m_gainControlObject->get();
+    // This gain adjustment compensates for an arbitrary /2 gain chop in
+    // EnginePregain. See the comment there.
+    m_gain = m_gainControlObject->get() * 2;
 
     //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
@@ -165,12 +168,11 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
             m_rendererStack[0]->draw( painter, event);
         return;
     } else {
-
         for( int i = 0; i < m_rendererStack.size(); ++i)
             m_rendererStack[i]->draw( painter, event);
 
-        painter->setPen(QColor(255,255,255,200));
-        painter->drawLine( m_width/2, 0, m_width/2, m_height);
+        painter->setPen(m_axesColor);
+        painter->drawLine(m_width/2,0,m_width/2,m_height);
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -218,6 +220,12 @@ void WaveformWidgetRenderer::resize( int width, int height) {
 }
 
 void WaveformWidgetRenderer::setup( const QDomNode& node) {
+
+    m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
+
+    if( !m_axesColor.isValid())
+        m_axesColor = QColor(245,245,245,200);
+
     for( int i = 0; i < m_rendererStack.size(); ++i)
         m_rendererStack[i]->setup(node);
 }

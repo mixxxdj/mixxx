@@ -26,11 +26,9 @@ const int COLUMN_TYPE = 12;
 const int COLUMN_BITRATE = 13;
 const int COLUMN_LOCATION = 14;
 
-/*
- * The BrowseTable models displays tracks
- * of given directory on the HDD.
- * Usage: Recording and Browse feature.
- */
+// The BrowseTable models displays tracks
+// of given directory on the HDD.
+// Usage: Recording and Browse feature.
 class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     Q_OBJECT
 
@@ -44,8 +42,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     virtual int getTrackId(const QModelIndex& index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;
     virtual const QLinkedList<int> getTrackRows(int trackId) const;
-		virtual void search(const QString& searchText);
-		virtual void removeTrack(const QModelIndex& index);
+    virtual void search(const QString& searchText);
+    virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;

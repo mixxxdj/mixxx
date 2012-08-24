@@ -1,6 +1,9 @@
 <MixxxMIDIPreset mixxxVersion="1.8.0+" schemaVersion="1">
   <info>
     <name>DJ-Tech i-Mix Reload</name>
+    <author>vininim</author>
+    <description>MIDI mapping for DJ-Tech i-Mix Reload</description>
+    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=1637</forums>
   </info>
   <controller id="DJ-Tech i-Mix Reload">
     <scriptfiles>

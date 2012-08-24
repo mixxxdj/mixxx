@@ -9,14 +9,14 @@ IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
 // It should also adjust FILEFLAGS below to include VS_FF_PRIVATEBUILD and/or VS_FF_PRERELEASE as appropriate
 
 // Version number should be major, minor, bugfix, branch revison number
-#define VER_FILEVERSION             1,11,0,2804
-#define VER_PRODUCTVERSION          1,11,0,2804
+#define VER_FILEVERSION             1,11,0,3303
+#define VER_PRODUCTVERSION          1,11,0,3303
 
 #define CUR_YEAR                    "2012"
 // ---- End to-be-generated lines
 
 #define VER_PRODUCTNAME_STR         "Mixxx\0"
-#define VER_FILEDESCRIPTION_STR     "Digital DJ application"
+#define VER_FILEDESCRIPTION_STR     "Mixxx digital DJ software"
 #define VER_COMPANYNAME_STR         "The Mixxx Development Team"
 #define VER_LEGALCOPYRIGHT_STR      "Copyright ©" CUR_YEAR " The Mixxx Development Team and/or its subsidiary(-ies).\0"
 

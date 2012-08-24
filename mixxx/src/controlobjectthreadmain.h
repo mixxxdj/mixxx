@@ -1,5 +1,5 @@
 //
-// C++ Interface: controlobjecthreadmain.h
+// C++ Interface: controlobjectthreadmain.h
 //
 // Description:
 //
