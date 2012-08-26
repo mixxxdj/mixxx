@@ -665,9 +665,6 @@
                 <group>[Channel2]</group>
                 <key>filterLowKill</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -679,9 +676,6 @@
                 <group>[Channel2]</group>
                 <key>playposition</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.75</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -693,9 +687,6 @@
                 <group>[Channel1]</group>
                 <key>beat_active</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -707,9 +698,6 @@
                 <group>[Channel1]</group>
                 <key>pfl</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -721,9 +709,6 @@
                 <group>[Channel1]</group>
                 <key>cue_point</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -735,9 +720,6 @@
                 <group>[Channel2]</group>
                 <key>keylock</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -749,9 +731,6 @@
                 <group>[Channel1]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -763,9 +742,6 @@
                 <group>[Channel1]</group>
                 <key>filterLowKill</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -777,9 +753,6 @@
                 <group>[Channel1]</group>
                 <key>keylock</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -791,9 +764,6 @@
                 <group>[Channel2]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -805,9 +775,6 @@
                 <group>[Channel2]</group>
                 <key>rate</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>-0.05</minimum>
                 <maximum>0.05</maximum>
                 <status>0x90</status>
@@ -819,9 +786,6 @@
                 <group>[Channel2]</group>
                 <key>filterHighKill</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -833,9 +797,6 @@
                 <group>[Channel2]</group>
                 <key>play</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -847,9 +808,6 @@
                 <group>[Channel2]</group>
                 <key>filterMidKill</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -861,9 +819,6 @@
                 <group>[Channel2]</group>
                 <key>cue_point</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -875,9 +830,6 @@
                 <group>[Channel1]</group>
                 <key>rate</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>-0.05</minimum>
                 <maximum>0.05</maximum>
                 <status>0x90</status>
@@ -889,9 +841,6 @@
                 <group>[Channel1]</group>
                 <key>filterHighKill</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -903,9 +852,6 @@
                 <group>[Channel1]</group>
                 <key>play</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -917,9 +863,6 @@
                 <group>[Channel1]</group>
                 <key>filterMidKill</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -931,9 +874,6 @@
                 <group>[Channel2]</group>
                 <key>beat_active</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -945,9 +885,6 @@
                 <group>[Channel2]</group>
                 <key>pfl</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -959,9 +896,6 @@
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.75</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
