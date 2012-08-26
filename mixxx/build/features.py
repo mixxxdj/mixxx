@@ -37,9 +37,10 @@ class HSS1394(Feature):
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
-            if not conf.CheckLib(['libhss1394', 'hss1394']):
-                raise Exception('Did not find HSS1394 development library')
-                return
+            if not build.msvcdebug or not conf.CheckLib(['libhss1394-debug', 'hss1394-debug', 'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']):
+                if not conf.CheckLib(['libhss1394', 'hss1394', 'libHSS1394_x64_Release', 'libHSS1394_x86_Release']):
+                    raise Exception('Did not find HSS1394 development library')
+                    return
 
         build.env.Append(CPPDEFINES = '__HSS1394__')
         
@@ -273,6 +274,8 @@ class IPod(Feature):
         return ['wipodtracksmodel.cpp']
 
 class MSVCDebug(Feature):
+    # FIXME: this flag is also detected in mixxx.py at line 100 because it's needed sooner than this is processed
+    #   I don't know the best way to fix this and still have it show up with scons -h. - Sean, Aug 2012
     def description(self):
         return "MSVC Debugging"
 
@@ -291,10 +294,12 @@ class MSVCDebug(Feature):
             if not build.toolchain_is_msvs:
                 raise Exception("Error, msvcdebug flag set when toolchain is not MSVS.")
 
-            if build.static_dependencies:
-                build.env.Append(CCFLAGS = '/MTd')
-            else:
-                build.env.Append(CCFLAGS = '/MDd')
+            #if build.static_dependencies:
+            #    build.env.Append(CCFLAGS = '/MTd')
+            #else:
+            #    build.env.Append(CCFLAGS = '/MDd')
+            build.env.Append(CCFLAGS = '/MDd')
+            
             build.env.Append(LINKFLAGS = '/DEBUG')
             build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
@@ -303,11 +308,11 @@ class MSVCDebug(Feature):
             else:
                 build.env.Append(CCFLAGS = '/ZI')
         elif build.toolchain_is_msvs:
-            if build.static_dependencies:
-                build.env.Append(CCFLAGS = '/MT')
-            else:
-                build.env.Append(CCFLAGS = '/MD')
-
+            #if build.static_dependencies:
+            #    build.env.Append(CCFLAGS = '/MT')
+            #else:
+            #    build.env.Append(CCFLAGS = '/MD')
+            build.env.Append(CCFLAGS = '/MD')
 
 class HifiEq(Feature):
     def description(self):
@@ -531,6 +536,8 @@ class AsmLib(Feature):
         return "Agner Fog\'s ASMLIB"
 
     def enabled(self, build):
+        if build.msvcdebug:
+            return False
         build.flags['asmlib'] = util.get_flags(build.env, 'asmlib', 0)
         if int(build.flags['asmlib']):
             return True
@@ -540,6 +547,9 @@ class AsmLib(Feature):
         vars.Add('asmlib','Set to 1 to enable linking against Agner Fog\'s hand-optimized asmlib, found at http://www.agner.org/optimize/', 0)
 
     def configure(self, build, conf):
+        if build.msvcdebug:
+            self.status = "Disabled (due to MSVC debug mode)"
+            return
         if not self.enabled(build):
             return
 
