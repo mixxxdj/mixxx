@@ -676,9 +676,6 @@
                 <group>[Sampler3]</group>
                 <key>play</key>
                 <description>Sampler 3 LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -690,9 +687,6 @@
                 <group>[Sampler3]</group>
                 <key>play</key>
                 <description>Sampler 3 LED Deck B</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -704,9 +698,6 @@
                 <group>[Channel1]</group>
                 <key>beat_active</key>
                 <description>Sync LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>1</maximum>
                 <status>0x0</status>
@@ -718,9 +709,6 @@
                 <group>[Channel2]</group>
                 <key>quantize</key>
                 <description>Quantize Loops/Hot-Cues Deck B LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -732,9 +720,6 @@
                 <group>[Channel1]</group>
                 <key>pfl</key>
                 <description>Listen Button Deck A LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -746,9 +731,6 @@
                 <group>[Sampler2]</group>
                 <key>play</key>
                 <description>Sampler 2 LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -760,9 +742,6 @@
                 <group>[Sampler2]</group>
                 <key>play</key>
                 <description>Sampler 2 LED Deck B</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -774,9 +753,6 @@
                 <group>[Channel2]</group>
                 <key>keylock</key>
                 <description>Keylock Deck B LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -788,9 +764,6 @@
                 <group>[Channel1]</group>
                 <key>flanger</key>
                 <description>FX button LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x0</status>
@@ -802,9 +775,6 @@
                 <group>[Sampler1]</group>
                 <key>play</key>
                 <description>Sampler 1 LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -816,9 +786,6 @@
                 <group>[Sampler1]</group>
                 <key>play</key>
                 <description>Sampler 1 LED Deck B</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -830,9 +797,6 @@
                 <group>[Channel1]</group>
                 <key>keylock</key>
                 <description>Keylock Deck A LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -844,9 +808,6 @@
                 <group>[Channel2]</group>
                 <key>flanger</key>
                 <description>FX button LED Deck B</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x0</status>
@@ -858,9 +819,6 @@
                 <group>[Channel1]</group>
                 <key>loop_enabled</key>
                 <description>ReLoop Exit Deck A LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -872,9 +830,6 @@
                 <group>[Channel2]</group>
                 <key>play</key>
                 <description>Play Button LED Deck B</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -886,9 +841,6 @@
                 <group>[Channel2]</group>
                 <key>loop_enabled</key>
                 <description>ReLoop Exit Deck B LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -900,9 +852,6 @@
                 <group>[Channel1]</group>
                 <key>beats_translate_curpos</key>
                 <description>Move Beatgrid to align with current playposition Deck A LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -914,9 +863,6 @@
                 <group>[Channel2]</group>
                 <key>beats_translate_curpos</key>
                 <description>Move Beatgrid to align with current playposition Deck B LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -928,9 +874,6 @@
                 <group>[Channel1]</group>
                 <key>play</key>
                 <description>Play Button LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -942,9 +885,6 @@
                 <group>[Channel2]</group>
                 <key>beat_active</key>
                 <description>Sync LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>1</maximum>
                 <status>0x0</status>
@@ -956,9 +896,6 @@
                 <group>[Channel2]</group>
                 <key>pfl</key>
                 <description>Listen Button Deck B LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -970,9 +907,6 @@
                 <group>[Channel1]</group>
                 <key>quantize</key>
                 <description>Quantize Loops/Hot-Cues Deck A LED</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -984,9 +918,6 @@
                 <group>[Sampler4]</group>
                 <key>play</key>
                 <description>Sampler 4 LED Deck A</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -998,9 +929,6 @@
                 <group>[Sampler4]</group>
                 <key>play</key>
                 <description>Sampler 4 LED Deck B</description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.1</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
