@@ -17,6 +17,7 @@
 				<key>crossfader</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -229,6 +230,7 @@
 				<key>pregain</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -238,6 +240,7 @@
 				<key>pregain</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -247,6 +250,7 @@
 				<key>volume</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -256,6 +260,7 @@
 				<key>volume</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 <!-- Deck Filter Controls -->
@@ -266,6 +271,7 @@
 				<key>filterHigh</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -275,6 +281,7 @@
 				<key>filterMid</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -284,6 +291,7 @@
 				<key>filterLow</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -293,6 +301,7 @@
 				<key>filterHigh</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -302,6 +311,7 @@
 				<key>filterMid</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 			<control>
@@ -311,6 +321,7 @@
 				<key>filterLow</key>
 				<options>
 					<normal/>
+					<soft-takeover/>
 				</options>
 			</control>
 <!-- Deck Pitch/Sync Controls -->

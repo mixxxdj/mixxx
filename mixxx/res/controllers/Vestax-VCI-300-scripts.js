@@ -43,12 +43,12 @@
  *
  * Open issues / TODOs
  * -------------------
- * - Soft takeover does not seem to work as expected for sliders and knobs
  * - Manipulating the crossfader curve does not seem to work as expected
  * - Keylock is turned off when starting to scratch to avoid unnatural noise.
  *   It remains turned off even when scratching is disabled, because otherwise
  *   the engine produces audible glitches.
  * - ITCH-like looping seems impossible with Mixxx 1.x controls(?)
+ * - TODO: Implement soft-takeover for "rate"
  * - TODO: Crates/Files/Browse buttons are connected but currently unused
  * - TODO: Navigation tab button is connected but currently unused
  * - TODO: Line fader curve knob is connected but currently unused
@@ -92,6 +92,7 @@
  * 2012-08-27  Code cleanup and minor fixes
  *             Take into account if deck is playing when disabling scratching
  *             Restore non-linear jog response
+ * 2012-08-28  Soft-takeover moved to XML mapping file
  * ...to be continued...
  *****************************************************************************/
 
@@ -160,9 +161,7 @@ VestaxVCI300.initValues = function () {
 	VestaxVCI300.numDecksBackup = engine.getValue(VestaxVCI300.group, "num_decks");
 	engine.setValue(VestaxVCI300.group, "num_decks", 2);
 	engine.setValue(VestaxVCI300.group, "crossfader", 0.0);
-	engine.softTakeover(VestaxVCI300.group, "crossfader", true);
 	engine.setValue(VestaxVCI300.group, "headMix", 0.0);
-	engine.softTakeover(VestaxVCI300.group, "headMix", true);
 };
 
 VestaxVCI300.restoreValues = function () {
@@ -421,19 +420,13 @@ VestaxVCI300.Deck.prototype.initValues = function () {
 	this.redVUMeterOffset = VestaxVCI300.vuMeterYellowThreshold;
 	this.redVUMeterScale = (1.0 - this.redVUMeterOffset) / this.redVUMeterLEDs.length;
 	engine.setValue(this.group, "volume", 0.0);
-	engine.softTakeover(this.group, "volume", true);
 	engine.setValue(this.group, "filterHigh", 1.0);
-	engine.softTakeover(this.group, "filterHigh", true);
 	engine.setValue(this.group, "filterMid", 1.0);
-	engine.softTakeover(this.group, "filterMid", true);
 	engine.setValue(this.group, "filterLow", 1.0);
-	engine.softTakeover(this.group, "filterLow", true);
 	engine.setValue(this.group, "pregain", 1.0);
-	engine.softTakeover(this.group, "pregain", true);
 	this.rateDirBackup = engine.getValue(this.group, "rate_dir");
 	engine.setValue(this.group, "rate_dir", -1);
 	engine.setValue(this.group, "rate", 0.0);
-	engine.softTakeover(this.group, "rate", true);
 	engine.setValue(this.group, "keylock", true);
 };
 
