@@ -387,6 +387,18 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     const double MAGIC_FUZZ = 0.01;
     const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
     
+    if (!m_pPlayButton->get()) {
+        qDebug() << m_sGroup << "not playing, don't tweak sync";
+        return;
+    }
+    
+    //If we aren't quantized, don't worry about offset
+    if (!m_pQuantize->get()) {
+        m_dSyncAdjustment = 0;
+        return;
+    }
+    
+    
     double dThisPosition = getCurrentSample();
     
     double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition); 
@@ -411,15 +423,21 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     // beat wraparound -- any other way to account for this?
     // if we're at .99% and the master is 0.1%, we are *not* 98% off!
     
+    ////don't do anything if we're at the edges of the beat (wraparound issues)
+    if (my_distance < 0.1 || my_distance > 0.9 ||
+        master_distance < 0.1 || master_distance > 0.9)
+            return;
+    
     //XXX doublecheck math for applying the user offset here (almost certainly wrong)
-    if (my_distance - m_dUserOffset > 0.9 && master_distance < 0.1)
+    /*if (my_distance - m_dUserOffset > 0.9 && master_distance < 0.1)
     {
+        qDebug() << "master wraparound";
         master_distance += 1.0;
     }
     else if (my_distance - m_dUserOffset < 0.1 && master_distance > 0.9)
     {
         my_distance += 1.0;
-    }
+    }*/
     
     //e.g. if my position is .8, and theirs is .6
     //then sample_offset = beatlength * .8 - beatlength * .6
@@ -428,7 +446,9 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     double percent_offset = my_distance - master_distance;
     double sample_offset = beat_length * percent_offset;
     
-    //qDebug() << m_sGroup << sample_offset << m_dUserOffset;
+    /*qDebug() << "master beat distance:" << master_distance;
+    qDebug() << "my     beat distance:" << my_distance;
+    qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
     
     m_dSyncAdjustment = 0.0;
     
@@ -441,7 +461,6 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     {
         qDebug() << "user is tweaking sync, let's use their value" << sample_offset;
         m_dUserOffset = percent_offset;
-        
         //don't do anything else, leave it
     } 
     else

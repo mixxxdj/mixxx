@@ -405,7 +405,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             }
         }
     }
-    
 
     it = m_channels.begin();
     for (unsigned int channel_number = 0;

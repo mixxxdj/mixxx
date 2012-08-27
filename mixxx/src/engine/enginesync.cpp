@@ -38,6 +38,9 @@ EngineSync::EngineSync(EngineMaster *master,
     connect(m_pSampleRate, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotSampleRateChanged(double)),
             Qt::DirectConnection);
+    connect(m_pSampleRate, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSampleRateChanged(double)),
+            Qt::DirectConnection);
             
     m_iSampleRate = m_pSampleRate->get();
     if (m_iSampleRate == 0)
@@ -251,7 +254,7 @@ void EngineSync::slotSampleRateChanged(double srate)
     double internal_position = getInternalBeatDistance();
     if (new_rate != m_iSampleRate)
     {
-        qDebug() << "new samplerate" << srate;
+        qDebug() << "new samplerate!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << srate;
         m_iSampleRate = new_rate;
         //recalculate pseudo buffer position based on new sample rate
         m_dPseudoBufferPos = new_rate * internal_position / m_dSamplesPerBeat;
@@ -282,8 +285,8 @@ void EngineSync::resetInternalBeatDistance()
 {
     if (m_pSourceBeatDistance != NULL)
     {
-        qDebug() << "Resetting internal beat distance to new master";
         m_dPseudoBufferPos = m_pSourceBeatDistance->get() * m_dSamplesPerBeat;
+        qDebug() << "Resetting internal beat distance to new master" << m_dPseudoBufferPos;
     }
     else
     {
@@ -312,7 +315,7 @@ void EngineSync::updateSamplesPerBeat(void)
         qDebug() << "something went horribly wrong";
         m_dSamplesPerBeat = m_iSampleRate;
     }
-    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~`new samples per beat" << m_dSamplesPerBeat;
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~new samples per beat" << m_dSamplesPerBeat << m_iSampleRate;
 }
 
 void EngineSync::incrementPseudoPosition(int bufferSize)

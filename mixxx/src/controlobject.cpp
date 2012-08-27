@@ -181,7 +181,7 @@ ControlObject * ControlObject::getControl(ConfigKey key)
     }
     m_sqCOHashMutex.unlock();
 
-    qWarning() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
+    //qWarning() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
     return NULL;
 }
 
