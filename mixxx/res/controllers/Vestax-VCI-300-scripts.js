@@ -90,6 +90,7 @@
  *             3 hotcues + looping
  *             Smart PFL switching
  * 2012-08-27  Code cleanup and minor fixes
+ *             Take into account if deck is playing when disabling scratching
  * ...to be continued...
  *****************************************************************************/
 
@@ -100,11 +101,15 @@ VestaxVCI300.group = "[Master]";
 
 VestaxVCI300.pitchFineTuneStepPercent100 = 1; // 1/100 %
 
+VestaxVCI300.jogResolution = 1664; // steps per revolution
+
 VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3
 VestaxVCI300.scratchAlpha = 1.0 / 8.0;
 VestaxVCI300.scratchBeta = VestaxVCI300.scratchAlpha / 32.0;
+VestaxVCI300.disableScratchingJogDeltaThreshold = 1;
+VestaxVCI300.disableScratchingPlayNegJogDeltaThreshold = 4;
+VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold = 7;
 VestaxVCI300.disableScratchingTimeoutMillisec = 20;
-VestaxVCI300.jogResolution = 1664; // steps per revolution
 
 VestaxVCI300.jogInputRange = VestaxVCI300.jogResolution / VestaxVCI300.scratchRPM;
 VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0
@@ -278,7 +283,21 @@ VestaxVCI300.rightDeck.disableScratchingTimerCB = function () {
 };
 
 VestaxVCI300.Deck.prototype.disableScratchingLazy = function () {
-	if ((undefined == this.jogDelta) || (Math.abs(this.jogDelta) < 1.0)) {
+	var jogDeltaThreshold = VestaxVCI300.disableScratchingJogDeltaThreshold;
+	var absJogDelta;
+	if (undefined == this.jogDelta) {
+		absJogDelta = 0;
+	} else {
+		absJogDelta = Math.abs(this.jogDelta);
+		if (engine.getValue(this.group, "play")) {
+			if (0 > this.jogDelta) {
+				jogDeltaThreshold = VestaxVCI300.disableScratchingPlayNegJogDeltaThreshold;
+			} else {
+				jogDeltaThreshold = VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold;
+			}
+		}
+	}
+	if (absJogDelta < jogDeltaThreshold) {
 		this.disableScratching();
 	} else {
 		this.resetScratchingTimer();
