@@ -91,6 +91,7 @@
  *             Smart PFL switching
  * 2012-08-27  Code cleanup and minor fixes
  *             Take into account if deck is playing when disabling scratching
+ *             Restore non-linear jog response
  * ...to be continued...
  *****************************************************************************/
 
@@ -99,24 +100,23 @@ function VestaxVCI300() {}
 
 VestaxVCI300.group = "[Master]";
 
-VestaxVCI300.pitchFineTuneStepPercent100 = 1; // 1/100 %
-
 VestaxVCI300.jogResolution = 1664; // steps per revolution
-
-VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3
-VestaxVCI300.scratchAlpha = 1.0 / 8.0;
-VestaxVCI300.scratchBeta = VestaxVCI300.scratchAlpha / 32.0;
-VestaxVCI300.disableScratchingJogDeltaThreshold = 1;
-VestaxVCI300.disableScratchingPlayNegJogDeltaThreshold = 4;
-VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold = 7;
-VestaxVCI300.disableScratchingTimeoutMillisec = 20;
-
-VestaxVCI300.jogInputRange = VestaxVCI300.jogResolution / VestaxVCI300.scratchRPM;
 VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0
-VestaxVCI300.jogPitchBendSensitivity = 0.8; // 1.0 = linear
-VestaxVCI300.jogSearchScale = VestaxVCI300.jogOutputRange / VestaxVCI300.jogInputRange;
-VestaxVCI300.jogScrollDeltaStepsPerTrack = 16; // 1664 / 16 = 104 tracks per revolution
+VestaxVCI300.jogDeltaScale = 12.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogSensitivity = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
+
+VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3 /*TUNABLE PARAM*/
+VestaxVCI300.scratchAlpha = 1.0 / 8.0; /*TUNABLE PARAM*/
+VestaxVCI300.scratchBeta = VestaxVCI300.scratchAlpha / 32.0; /*TUNABLE PARAM*/
+VestaxVCI300.disableScratchingJogDeltaThreshold = 1; /*TUNABLE PARAM*/
+VestaxVCI300.disableScratchingPlayNegJogDeltaThreshold = 4; /*TUNABLE PARAM*/
+VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold = 7; /*TUNABLE PARAM*/
+VestaxVCI300.disableScratchingTimeoutMillisec = 20; // Mixxx minimum timeout = 20 ms
+
+VestaxVCI300.jogScrollDeltaStepsPerTrack = 16; // 1664 / 16 = 104 tracks per revolution /*TUNABLE PARAM*/
 VestaxVCI300.jogScrollDeltaAdjustment = VestaxVCI300.jogScrollDeltaStepsPerTrack / 2;
+
+VestaxVCI300.pitchFineTuneStepPercent100 = 1; // 1/100 %
 
 VestaxVCI300.autoLoopBeatsArray = [
 	"0.0625",
@@ -347,7 +347,14 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 				engine.scratchTick(this.number, this.jogDelta);
 			} else {
 				// jog movement
-				engine.setValue(this.group, "jog", this.jogDelta * VestaxVCI300.jogSearchScale);
+				var jogDeltaSign;
+				if (0 > this.jogDelta) {
+					jogDeltaSign = -1;
+				} else {
+					jogDeltaSign = 1;
+				}
+				var normalizedAbsJogDelta =  Math.pow(Math.abs(this.jogDelta) * VestaxVCI300.jogDeltaScale, VestaxVCI300.jogSensitivity);
+				engine.setValue(this.group, "jog", jogDeltaSign * normalizedAbsJogDelta * VestaxVCI300.jogOutputRange);
 			}
 		}
 	}
