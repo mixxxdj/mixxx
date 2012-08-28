@@ -93,6 +93,7 @@
  *             Take into account if deck is playing when disabling scratching
  *             Restore non-linear jog response
  * 2012-08-28  Soft-takeover moved to XML mapping file
+ *             Fix smart PFL switching
  * ...to be continued...
  *****************************************************************************/
 
@@ -427,6 +428,7 @@ VestaxVCI300.Deck.prototype.initValues = function () {
 	this.rateDirBackup = engine.getValue(this.group, "rate_dir");
 	engine.setValue(this.group, "rate_dir", -1);
 	engine.setValue(this.group, "rate", 0.0);
+	engine.softTakeover(this.group, "rate", true); // TODO: does not seem to work
 	engine.setValue(this.group, "keylock", true);
 };
 
@@ -823,24 +825,23 @@ VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, grou
 
 VestaxVCI300.onPFLButton = function (channel, control, value, status, group) {
 	var switchPFL = false;
-	if (VestaxVCI300.scrollState) {
-		if (VestaxVCI300.getButtonPressed(value)) {
+	if (VestaxVCI300.getButtonPressed(value)) {
+		if (VestaxVCI300.scrollState) {
 			// load selected track into deck
 			engine.setValue(group, "LoadSelectedTrack", true);
 			switchPFL = true;
+		} else {
+			if (engine.getValue(group, "pfl")) {
+				engine.setValue(group, "pfl", false);
+			} else {
+				switchPFL = true;
+			}
 		}
-	} else {
-		switchPFL = VestaxVCI300.getButtonPressed(value);
 	}
 	if (switchPFL) {
-		// smart PFL switching
-		if (engine.getValue(group, "pfl")) {
-			engine.setValue(group, "pfl", false);
-		} else {			
-			engine.setValue(VestaxVCI300.leftDeck.group, "pfl", false);
-			engine.setValue(VestaxVCI300.rightDeck.group, "pfl", false);
-			engine.setValue(group, "pfl", true);
-		}
+		engine.setValue(VestaxVCI300.leftDeck.group, "pfl", false);
+		engine.setValue(VestaxVCI300.rightDeck.group, "pfl", false);
+		engine.setValue(group, "pfl", true);
 	}
 };
 
