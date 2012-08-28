@@ -273,6 +273,8 @@ void EngineSync::addDeck(QString deck)
     ControlObject *deck_master_enabled = ControlObject::getControl(ConfigKey(deck, "sync_master"));
     connect(deck_master_enabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotDeckMasterChanged(double)));
+    connect(deck_master_enabled, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotDeckMasterChanged(double)));
     ControlObject *deck_slave_enabled = ControlObject::getControl(ConfigKey(deck, "sync_slave"));
     connect(deck_slave_enabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotDeckSlaveChanged(double)));
