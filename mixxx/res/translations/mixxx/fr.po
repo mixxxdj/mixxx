@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-07-10 17:04+0000\n"
-"Last-Translator: Arnaud Quette <aquette.dev@gmail.com>\n"
+"PO-Revision-Date: 2012-08-23 14:03+0000\n"
+"Last-Translator: Groberto <roobertoo@live.fr>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-12 04:41+0000\n"
-"X-Generator: Launchpad (build 15780)\n"
+"X-Launchpad-Export-Date: 2012-08-28 05:16+0000\n"
+"X-Generator: Launchpad (build 15864)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -3709,16 +3709,16 @@ msgstr ""
 
 #: PlaylistFeature#8
 msgid "Create new playlist"
-msgstr ""
+msgstr "Créer une nouvelle playlist"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
-msgstr "Analyse"
+msgstr "Analyser"
 
 #: QObject#1
 msgid "Invalid"
-msgstr "Non valide"
+msgstr "Invalide"
 
 #: QObject#2
 msgid "Master"
@@ -4316,11 +4316,11 @@ msgstr "Envoie le son du canal sélectionné vers la sortie casque."
 
 #: Tooltips#107
 msgid "Clock"
-msgstr ""
+msgstr "Horloge"
 
 #: Tooltips#108
 msgid "Displays the current time."
-msgstr ""
+msgstr "Afficher l'heure actuelle"
 
 #: Tooltips#109
 msgid ""
@@ -4379,7 +4379,7 @@ msgstr "Va à la fin du morceau."
 #: Tooltips#121
 msgctxt "Tooltips#121"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: Tooltips#122
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4432,7 +4432,7 @@ msgstr "Ejecte le morceau du lecteur."
 #: Tooltips#133
 msgctxt "Tooltips#133"
 msgid "Hotcue"
-msgstr ""
+msgstr "Point de repère"
 
 #: Tooltips#134
 msgid "If hotcue is set, jumps to the hotcue."

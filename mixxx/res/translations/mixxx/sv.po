@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-02-23 19:31+0000\n"
-"Last-Translator: Rikard Edgren <Unknown>\n"
+"PO-Revision-Date: 2012-08-21 16:43+0000\n"
+"Last-Translator: Ture <ture393@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-12 04:43+0000\n"
-"X-Generator: Launchpad (build 15780)\n"
+"X-Launchpad-Export-Date: 2012-08-28 05:16+0000\n"
+"X-Generator: Launchpad (build 15864)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,104 +24,104 @@ msgstr "Auto-DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Lägg till Auto DJ kö (botten)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Lägg till Auto DJ kö (överst)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importera spellista"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Spellistan gick inte att skapa"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Ett okänt fel uppstod när spellistan skapades "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Ny spellista"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Lägg till Auto DJ kö (botten)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Lägg till Auto DJ kö (överst)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Ta bort"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Byt namn"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "Lås"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importera spellista"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportera spellista"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Döp om spellista"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr ""
+msgstr "Nytt namn på spellista:"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Döpa om spellista misslyckades"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "En spellista med det namnet finns redan."
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "En spellista kan inte vara utan namn."
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr ""
+msgstr "Spellistans namn:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Spellistan gick inte att skapa"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Ett okänt fel uppstod när spellistan skapades "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Spellista (*. M3u *. M3U8 *. Pls *. CSV)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -129,6 +129,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"M3U spellista (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text "
+"CSV (*.csv);;Readable Text (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -157,32 +159,32 @@ msgstr "Genre"
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr ""
+msgstr "Kompositör"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "År"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "Typ:"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "Plats"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "Varaktighet"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -191,21 +193,21 @@ msgstr "Betyg"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitfrekvens"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "Taktslag/min"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "Spår"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
-msgstr "Tillagt"
+msgstr "Datum tillagd"
 
 #: BaseSqlTableModel#17
 msgid "#"
@@ -213,16 +215,16 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "Tidsstämpel"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr ""
+msgstr "Nyckel"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
-msgstr ""
+msgstr "BPM Lås"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -230,11 +232,11 @@ msgstr "Kunde inte ladda in spår"
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "Lägg till Snabblänkar"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "Ta bort från  Snabblänkar"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -246,13 +248,15 @@ msgstr "Enheter"
 
 #: BrowseFeature#5
 msgid "Removable Devices"
-msgstr "Externa enheter"
+msgstr "Flyttbara enheter"
 
 #: BrowseFeature#6
 msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Bläddra låter dig navigera, visa och ladda låtar från mappar på hårddisken "
+"och externa enheter"
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -295,46 +299,46 @@ msgstr "Genre"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "Kompositör"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Varaktighet"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "Taktslag/min"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Key"
-msgstr ""
+msgstr "Nyckel"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr ""
+msgstr "Typ:"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitfrekvens"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr ""
+msgstr "Plats"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx-bibliotek"
 
 #: BrowseTableModel#17
 msgid ""
@@ -362,23 +366,23 @@ msgstr ""
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "Uppdatering av metadatan misslyckades"
+msgstr "Uppdatering av metiadatan misslyckades"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Ohanterade undantag på rad% 1 i filen% 2:% 3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "undantag på rad% 1 i passerade kod:% 2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr ""
+msgstr "kontroll skriptfel"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "En kontroll som du  använder fungerar inte korrekt."
 
 #: ControllerEngine#5
 msgid ""
@@ -387,22 +391,27 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>( script koden behöver fixas .)<br>nu kan du:<ul><li>Ignorera detta "
+"fel för den här sessionen you may experience erratic behavior</li><li>Try to "
+"recover by resetting your controller</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialog"
 
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Ingång"
 
 #: ControllerMappingDlg#3
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
 msgstr ""
+"Nedanstående ruta är under uppbyggnad och kommer att förbli tomma i denna "
+"version av mixxx."
 
 #: ControllerMappingDlg#4
 msgid "Controls"
@@ -411,12 +420,12 @@ msgstr "Kontroller"
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
 msgid "Add"
-msgstr ""
+msgstr "Lägg till"
 
 #: ControllerMappingDlg#6
 msgctxt "ControllerMappingDlg#6"
 msgid "Remove"
-msgstr ""
+msgstr "Ta bort"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
@@ -424,12 +433,12 @@ msgstr ""
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr ""
+msgstr "Rensa alla"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr ""
+msgstr "Utgång"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
@@ -441,7 +450,7 @@ msgstr "Rensa allt"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Låda"
+msgstr "Ny Låda"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -503,7 +512,7 @@ msgstr "Omdöpning av låda misslyckades"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Spellista (*. M3u *. M3U8 *. Pls *. CSV)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -511,25 +520,31 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"M3U spellista (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text "
+"CSV (*.csv);;Readable Text (*.txt)"
 
 #: CrateFeature#17
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Lådor är ett utmärkt sätt att hjälpa till att organisera den musik du vill "
+"mixa med."
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Gör en låda för din nästa spelning, för din favorit electrohouse spår, eller "
+"för dina mest efterfrågade låtarna."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "Med lådor kan du organisera din musik hur du vill"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Skapa ny låda Här"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -553,11 +568,11 @@ msgstr "<a href=\"http://mixxx.org/\">Officiell Webbplats</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "Ett spår måste stoppas för att aktivera Auto-DJ läge."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -565,27 +580,27 @@ msgstr "Avaktivera Auto-dj"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "Blanda innehållet i Auto DJ spellistan."
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "Slumpvis"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "Hoppa över nästa spår i Auto DJ spellistan."
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "Skippa låt"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Utlös övergången till nästa spår."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Tona bort nu"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
@@ -593,15 +608,15 @@ msgstr ""
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "Sekunder"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "sek."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Slå Auto DJ på eller av"
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -610,11 +625,11 @@ msgstr "Starta Auto-dj"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "Hantera"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Slå på Detection Inställningar"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -4590,15 +4605,15 @@ msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Visa eller dölj kolumner."
 
 #: WaveformWidgetFactory#1
 msgid "(GLSL)"
-msgstr ""
+msgstr "(GLSL)"
 
 #: WaveformWidgetFactory#2
 msgid "(GL)"
-msgstr ""
+msgstr "(GL)"
 
 #~ msgctxt "BaseSqlTableModel#9"
 #~ msgid "Comment"
