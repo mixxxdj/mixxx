@@ -42,6 +42,8 @@ class EngineSync : public EngineControl {
     public:
         EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
         ~EngineSync();
+        void addDeck(QString group);
+        bool setMaster(QString group);
         bool setDeckMaster(QString deck);
         bool setInternalMaster(void);
         bool setMidiMaster(void);
@@ -56,11 +58,14 @@ class EngineSync : public EngineControl {
         void slotSourceRateChanged(double);
         void slotSourceBeatDistanceChanged(double);
         void slotSampleRateChanged(double);
-        void slotSyncMasterChanged(double);
+        void slotInternalMasterChanged(double);
+        void slotDeckMasterChanged(double);
+        void slotDeckSlaveChanged(double);
         
     protected:
-        EngineBuffer* chooseMasterBuffer(void);
+        QString chooseNewMaster(void);
         void disconnectMaster(void);
+        void disableDeckMaster(QString deck);
         void updateSamplesPerBeat(void);
         void resetInternalBeatDistance(void);
 
@@ -70,6 +75,8 @@ class EngineSync : public EngineControl {
         ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
         ControlObject *m_pSampleRate;
         ControlPushButton *m_pSyncInternalEnabled;
+        
+        QList<QString> m_sDeckList;
         
         int m_iSyncSource;
         int m_iSampleRate;

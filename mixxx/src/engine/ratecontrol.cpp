@@ -455,21 +455,21 @@ void RateControl::slotSyncMasterChanged(double state)
         
         m_iSyncState = SYNC_MASTER;
         qDebug() << m_sGroup << "setting ourselves as master";
-        m_pEngineMaster->getMasterSync()->setDeckMaster(m_sGroup);
-        m_pSyncSlaveEnabled->set(FALSE);
+        //m_pEngineMaster->getMasterSync()->setDeckMaster(m_sGroup);
+        //m_pSyncSlaveEnabled->set(FALSE);
     } 
     else
     {
         // For now, turning off master turns on slave mode
         if (m_iSyncState != SYNC_MASTER) {
-            qDebug() << "was already off??";
+            //qDebug() << "was already off??";
             return;
         }
         //unset ourselves
         qDebug() << m_sGroup << "unsetting ourselves as master (now slave)";
-        m_pEngineMaster->getMasterSync()->setDeckMaster("");
+        //m_pEngineMaster->getMasterSync()->setDeckMaster("");
         
-        m_iSyncState = SYNC_SLAVE;
+        //m_iSyncState = SYNC_SLAVE;
         m_pSyncSlaveEnabled->set(TRUE);
     }
 }
@@ -482,10 +482,10 @@ void RateControl::slotSyncSlaveChanged(double state)
             qDebug() << "already slave";
             return;
         }
-        if (m_iSyncState == SYNC_MASTER) {
-            qDebug() << "changing to slave status, unsetting master";
-            m_pEngineMaster->getMasterSync()->setDeckMaster("");
-        }
+        //if (m_iSyncState == SYNC_MASTER) {
+        //    qDebug() << "changing to slave status, unsetting master";
+        //    m_pEngineMaster->getMasterSync()->setDeckMaster("");
+        //}
         qDebug() << m_sGroup << "setting ourselves as slave";
         m_iSyncState = SYNC_SLAVE;
         slotMasterBpmChanged(m_pMasterBpm->get()); //make sure we have a synced rate
@@ -513,21 +513,21 @@ void RateControl::slotSyncInternalChanged(double state)
     else
     {
         qDebug() << "internal sync is off";
-        if (m_iSyncState == SYNC_SLAVE)
-        {
-            //happy-fun race condition.  maybe one of the decks should set
-            //itself to be master?
-            if (m_pEngineMaster->getMasterSync()->getMaster() != NULL) {
-                qDebug() << m_sGroup << "a new master has already been chosen, doesn't need to be us";
-                return;
-            }
-            
-            if (m_pTrueRate->get() > 0.0) {
-                qDebug() << m_sGroup << "we are playing, so we set ourselves to master";
-                m_pSyncMasterEnabled->set(TRUE);
-                m_pSyncSlaveEnabled->set(FALSE); //this will happen
-            }
-        }
+        //if (m_iSyncState == SYNC_SLAVE)
+        //{
+        //    //happy-fun race condition.  maybe one of the decks should set
+        //    //itself to be master?
+        //    if (m_pEngineMaster->getMasterSync()->getMaster() != NULL) {
+        //        qDebug() << m_sGroup << "a new master has already been chosen, doesn't need to be us";
+        //        return;
+        //    }
+        //    
+        //    if (m_pTrueRate->get() > 0.0) {
+        //        qDebug() << m_sGroup << "we are playing, so we set ourselves to master";
+        //        m_pSyncMasterEnabled->set(TRUE);
+        //        m_pSyncSlaveEnabled->set(FALSE); //this will happen
+        //    }
+        //}
     }
 }
 
