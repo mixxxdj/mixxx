@@ -63,7 +63,7 @@ class EngineSync : public EngineControl {
         void slotDeckSlaveChanged(double);
         
     protected:
-        QString chooseNewMaster(void);
+        QString chooseNewMaster(QString dontpick);
         void disconnectMaster(void);
         void disableDeckMaster(QString deck);
         void updateSamplesPerBeat(void);

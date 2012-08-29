@@ -388,7 +388,6 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
     
     if (!m_pPlayButton->get()) {
-        qDebug() << m_sGroup << "not playing, don't tweak sync";
         return;
     }
     
@@ -499,8 +498,12 @@ double BpmControl::getBeatDistance()
     double dThisPosition = getCurrentSample();
     double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition); 
     double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
+    if (fabs(dNextBeat - dPrevBeat) < 0.01)
+    {
+        //we are on a beat
+        return 0;
+    }
     return (dThisPosition - dPrevBeat) / (dNextBeat - dPrevBeat);
-    //return dThisPosition - dPrevBeat;
 }
 
 bool BpmControl::syncPhase()
