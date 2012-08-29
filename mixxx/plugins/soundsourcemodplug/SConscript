@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import SCons
+import shutil
+
+Import('build')
+
+
+# On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
+
+modplug_sources = [
+    "soundsource.cpp", # required to subclass soundsource
+    "soundsourcemodplug.cpp",  # Module support through libmodplug
+]
+
+
+#Tell SCons to build the SoundSourceModPlug plugin
+#=========================
+if int(build.flags['modplug']):
+    env = build.env.Clone()
+
+    conf = Configure(env)
+
+    have_modplug_h = conf.CheckHeader('modplug.h')
+    have_modplug = (have_modplug_h and conf.CheckLib(['modplug', 'libmodplug']))
+
+    env = conf.Finish()
+    SHLIBPREFIX='lib' #Makes the filename "libsoundsourcemodplug" consistently across platforms to make our lives easier.
+    if build.platform_is_windows:
+        env["LINKFLAGS"].remove("/entry:mainCRTStartup")
+        env["LINKFLAGS"].remove("/subsystem:windows")
+        ssmodplug_bin = env.SharedLibrary('soundsourcemodplug', modplug_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+    else:
+        ssmodplug_bin = env.SharedLibrary('soundsourcemodplug', modplug_sources)
+
+    #Pass this soundsourcemodplug library object file back to the SConscript above us.
+    Return("ssmodplug_bin")
+else:
+    Return("")
+
+
+

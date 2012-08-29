@@ -47,6 +47,7 @@ available_features = [features.HifiEq,
                       features.Optimize,
                       features.FAAD,
                       features.WavPack,
+                      features.ModPlug,
                       features.TestSuite,
                       features.LADSPA,
                       features.MSVCDebug,
@@ -78,6 +79,7 @@ Import('sources')
 VariantDir("plugins/soundsourcem4a", "src", duplicate=0)
 VariantDir("plugins/soundsourcewv", "src", duplicate=0)
 VariantDir("plugins/soundsourcemediafoundation", "src", duplicate=0)
+VariantDir("plugins/soundsourcemodplug", "src", duplicate=0)
 
 # Build our soundsource plugins
 soundsource_plugins = SConscript(

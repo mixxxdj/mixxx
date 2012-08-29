@@ -448,6 +448,34 @@ class Vamp(Feature):
                             '%s/RealTime.cpp'])
         return sources
 
+
+class ModPlug(Feature):
+    def description(self):
+        return "ModPlug Tracker decoder plugin"
+
+    def enabled(self, build):
+        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 0)
+        if int(build.flags['modplug']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('modplug', 'Set to 1 to enable building the ModPlug module plugin.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        have_modplug_h = conf.CheckHeader('libmodplug/modplug.h')
+        have_modplug = conf.CheckLib(['modplug','libmodplug'], autoadd=True)
+
+        if not have_modplug_h:
+            raise Exception('Could not find libmodplug development headers.')
+
+        if not have_modplug:
+            raise Exception('Could not find libmodplug shared library.')
+
+
 class FAAD(Feature):
     def description(self):
         return "FAAD AAC audio file decoder plugin"

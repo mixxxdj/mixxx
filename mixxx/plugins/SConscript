@@ -23,4 +23,10 @@ soundsourcemediafoundation = SConscript(
     duplicate=0, exports=['build'])
 plugins.extend(soundsourcemediafoundation)
 
+soundsourcemodplug = SConscript(
+    File('soundsourcemodplug/SConscript'),
+    variant_dir=Dir(build.build_dir + "/modplug"),
+    duplicate=0, exports=['build'])
+plugins.extend(soundsourcemodplug)
+
 Return("plugins")
