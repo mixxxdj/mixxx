@@ -67,6 +67,7 @@ class EngineSync : public EngineControl {
         void disconnectMaster(void);
         void disableDeckMaster(QString deck);
         void updateSamplesPerBeat(void);
+        void setPseudoPosition(double percent);
         void resetInternalBeatDistance(void);
 
         EngineMaster* m_pEngineMaster;    

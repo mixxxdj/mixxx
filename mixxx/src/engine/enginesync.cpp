@@ -73,6 +73,26 @@ EngineSync::~EngineSync()
     delete m_pMasterBeatDistance;
 }
 
+void EngineSync::addDeck(QString deck)
+{
+    if (m_sDeckList.contains(deck))
+    {
+        qDebug() << "EngineSync: already has deck for deck" << deck;
+        return;
+    }
+    m_sDeckList.append(deck);
+    
+    // Connect objects so we can react when the user changes the settings
+    ControlObject *deck_master_enabled = ControlObject::getControl(ConfigKey(deck, "sync_master"));
+    connect(deck_master_enabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotDeckMasterChanged(double)));
+    //connect(deck_master_enabled, SIGNAL(valueChangedFromEngine(double)),
+    //            this, SLOT(slotDeckMasterChanged(double)));
+    ControlObject *deck_slave_enabled = ControlObject::getControl(ConfigKey(deck, "sync_slave"));
+    connect(deck_slave_enabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotDeckSlaveChanged(double)));
+}
+
 void EngineSync::disconnectMaster()
 {
     if (m_pSourceRate != NULL)
@@ -92,6 +112,7 @@ void EngineSync::disconnectMaster()
 
 void EngineSync::disableDeckMaster(QString deck)
 {
+    //this merely unsets the control objects (midi lights)
     if (deck == "")
     {
         foreach (deck, m_sDeckList)
@@ -129,6 +150,8 @@ void EngineSync::disableDeckMaster(QString deck)
 
 bool EngineSync::setMaster(QString group)
 {
+    // Convenience function that can split out to either set internal
+    // or set deck master.
     //TODO: midi master? or is that just internal?
     if (group == "[Master]") {
         return setInternalMaster();
@@ -268,26 +291,6 @@ QString EngineSync::chooseNewMaster(QString dontpick="")
     return fallback;
 }
 
-void EngineSync::addDeck(QString deck)
-{
-    if (m_sDeckList.contains(deck))
-    {
-        qDebug() << "EngineSync: already has deck for deck" << deck;
-        return;
-    }
-    m_sDeckList.append(deck);
-    
-    // Connect objects so we can react when the user changes the settings
-    ControlObject *deck_master_enabled = ControlObject::getControl(ConfigKey(deck, "sync_master"));
-    connect(deck_master_enabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotDeckMasterChanged(double)));
-    //connect(deck_master_enabled, SIGNAL(valueChangedFromEngine(double)),
-    //            this, SLOT(slotDeckMasterChanged(double)));
-    ControlObject *deck_slave_enabled = ControlObject::getControl(ConfigKey(deck, "sync_slave"));
-    connect(deck_slave_enabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotDeckSlaveChanged(double)));
-}
-
 void EngineSync::slotSourceRateChanged(double true_rate)
 {
     //qDebug() << "got a true rate update";
@@ -309,8 +312,9 @@ void EngineSync::slotSourceRateChanged(double true_rate)
 
 void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
 {
-    //just pass it on
+    //pass it on to slaves and update internal position marker
     m_pMasterBeatDistance->set(beat_dist);
+    setPseudoPosition(beat_dist);
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm)
@@ -341,6 +345,7 @@ void EngineSync::slotMasterBpmChanged(double new_bpm)
         updateSamplesPerBeat();
         
         //this change could hypothetically push us over distance 1.0, so check
+        //XXX: is this code correct?  I think it'll work but it seems off
         Q_ASSERT(m_dSamplesPerBeat > 0);
         while (m_dPseudoBufferPos >= m_dSamplesPerBeat)
         {
@@ -385,6 +390,7 @@ void EngineSync::slotDeckMasterChanged(double state)
     //qDebug() << "got a master state change from" << group;
     
     if (state) {
+        // Figure out who the old master was and turn them off
         foreach (QString deck, m_sDeckList)
         {
             ControlObject *sync_master = ControlObject::getControl(ConfigKey(deck, "sync_master"));
@@ -427,6 +433,7 @@ void EngineSync::slotDeckSlaveChanged(double state)
     //qDebug() << "got a slave state change from" << group;
     
     if (state) {
+        // Was this deck master before?  If so do a handoff
         ControlObject *sync_master = ControlObject::getControl(ConfigKey(group, "sync_master"));
         if (sync_master->get()) {
             sync_master->set(FALSE);
@@ -482,8 +489,15 @@ void EngineSync::updateSamplesPerBeat(void)
 
 void EngineSync::incrementPseudoPosition(int bufferSize)
 {
+    //enginemaster calls this function, it is used to keep track of the internal
+    //clock (when there is no other master like a deck or MIDI
     //the pseudo position is a double because we want to be precise,
     //and bpms may not line up exactly with samples.
+    
+    if (m_iSyncSource != SYNC_INTERNAL) {
+        //we don't care, it will get set in setPseudoPosition
+        return;
+    }
     
     m_dPseudoBufferPos += bufferSize / 2; //stereo samples, so divide by 2
     
@@ -494,9 +508,12 @@ void EngineSync::incrementPseudoPosition(int bufferSize)
         m_dPseudoBufferPos -= m_dSamplesPerBeat;
     }
     
-    if (m_iSyncSource == SYNC_INTERNAL) {
-        m_pMasterBeatDistance->set(getInternalBeatDistance());
-    }
+    m_pMasterBeatDistance->set(getInternalBeatDistance());
+}
+
+void EngineSync::setPseudoPosition(double percent)
+{
+    m_dPseudoBufferPos = percent * m_dSamplesPerBeat;
 }
 
 EngineBuffer* EngineSync::getMaster()
