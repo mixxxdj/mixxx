@@ -418,11 +418,6 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
         //TODO: let's ignore x2, /2 issues for now
         //this is reproduced from bpmcontrol::syncTempo -- should break this out
         double dDesiredRate;
-        /*if (m_dFileBpm == 0.0)
-        {
-            //make sure we have something just in case?
-            m_dFileBpm = m_pFileBpm->get();
-        }*/
         if (m_dFileBpm == 0.0)
         {
             //XXX TODO: what to do about this case
@@ -430,17 +425,14 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
             dDesiredRate = 0.0;
         }
         else {
-            //qDebug() << "yay non-zero" << syncbpm << m_dFileBpm;
             dDesiredRate = syncbpm / m_dFileBpm;
-            //qDebug() << "so how about" << dDesiredRate;
-            //normalize around 1
-            //dDesiredRate -= 1.0;
         }
-        //if (m_dSyncedRate != dDesiredRate)
-        //{
-        //    qDebug() << "Updating slave rate to:" << dDesiredRate;
-        //}
         m_dSyncedRate = dDesiredRate;
+        if (m_dSyncedRate != 0) {
+            m_pRateSlider->set(((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
+        } else {
+            m_pRateSlider->set(0);
+        }
     }
 }
 
@@ -562,11 +554,11 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     // if master sync is on, respond to it
     if (m_iSyncState == SYNC_SLAVE && !paused)
     {
-        if (m_dSyncedRate != 0) {
-            //if (m_dSyncedRate != m_dOldRate) {
-            //    qDebug() << "we are a slave, set rate to " << m_dSyncedRate << baserate;
-            //}
-        }
+        //if (m_dSyncedRate != 0) {
+        //    //if (m_dSyncedRate != m_dOldRate) {
+        //    //    qDebug() << "we are a slave, set rate to " << m_dSyncedRate << baserate;
+        //    //}
+        //}
         m_dOldRate = m_dSyncedRate;
         rate = m_dSyncedRate;
         //rate = ((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get();
@@ -579,7 +571,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         //    qDebug() << "ratecontrol: user is tweaking sync" << oldrate << userTweak << rate;
         //}
         
-        m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
+        //Don't set the rate slider for all changes
+        //m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
         m_pTrueRate->set(rate);
         //return rate * baserate;
         //qDebug() << m_dSyncedRate << rate;

@@ -324,6 +324,15 @@ void EngineSync::slotMasterBpmChanged(double new_bpm)
             //XXX(Owen):
             //it looks like this is Good Enough for preventing accidental
             //tweaking of rate.  But maybe it should set master to internal?
+            
+            //Changing to internal is weird, feels like a bug having master
+            //designation turn off
+            //setInternalMaster();
+            
+            //how about just setting the bpm value for the deck master?
+            //problem with that is here we have bpm, but deck expects
+            //a percentage.  Let's keep this to "no you can't do that" for now
+            
             m_pMasterBpm->set(m_dMasterBpm);
             return;
         }

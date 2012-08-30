@@ -527,9 +527,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         
         if (!paused) {
             rate += m_pBpmControl->getSyncAdjustment();
-            //don't allow negative speed
-            rate = math_max(0.0f, rate);
-            //qDebug() << group << "sync adjusted rate (clamped > 0)" << rate;
         }
         
         // Scratching always disables keylock because keylock sounds terrible
