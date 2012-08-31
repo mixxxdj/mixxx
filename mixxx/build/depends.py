@@ -87,9 +87,9 @@ class OggVorbis(Dependence):
 class SndFile(Dependence):
 
     def configure(self, build, conf):
-        #if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
+        #if not conf.CheckLibWithHeader(['sndfile', 'libsndfile', 'libsndfile-1'], 'sndfile.h', 'C'):
         # TODO: check for debug version on Windows when one is available
-        if not conf.CheckLib(['sndfile', 'libsndfile']):
+        if not conf.CheckLib(['sndfile', 'libsndfile', 'libsndfile-1']):
             raise Exception("Did not find libsndfile or it\'s development headers")
         build.env.Append(CPPDEFINES = '__SNDFILE__')
 
