@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-08-23 14:03+0000\n"
-"Last-Translator: Groberto <roobertoo@live.fr>\n"
+"PO-Revision-Date: 2012-08-30 15:08+0000\n"
+"Last-Translator: Fafa <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-28 05:16+0000\n"
-"X-Generator: Launchpad (build 15864)\n"
+"X-Launchpad-Export-Date: 2012-08-31 04:35+0000\n"
+"X-Generator: Launchpad (build 15887)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -3062,7 +3062,7 @@ msgstr ""
 
 #: HidController#6
 msgid "Unknown HID Desktop Device"
-msgstr ""
+msgstr "Périphérique HID de bureau inconnu"
 
 #: HidController#7
 msgid "HID Infrared Control"
@@ -4711,10 +4711,12 @@ msgstr "Ne peux mettre a jour le schéma de la base de données"
 #: TrackCollection#5
 msgid "Unable to upgrade your database schema to version %1"
 msgstr ""
+"Impossible de mettre à jour votre schéma de base de données vers la version "
+"%1"
 
 #: TrackCollection#6
 msgid "Your %1 file may be outdated."
-msgstr ""
+msgstr "Votre fichier %1 est obsolète"
 
 #: TrackCollection#7
 msgid "Your mixxxdb.sqlite file may be corrupt."
@@ -4726,7 +4728,7 @@ msgstr "Essayez de le renommer et redémarrez de Mixxx."
 
 #: TrackCollection#9
 msgid "Your %1 file may be missing or invalid."
-msgstr ""
+msgstr "Le fichier %1 manque ou est invalide"
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -4832,7 +4834,7 @@ msgstr "Charger dans la Platine %1"
 #: WTrackTableView#18
 msgctxt "WTrackTableView#18"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Échantillonneur %1"
 
 #: WTrackTableView#19
 msgid ""
