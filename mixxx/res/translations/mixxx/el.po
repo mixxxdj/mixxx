@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-06-17 08:12+0000\n"
-"Last-Translator: tzem <athmakrigiannis@gmail.com>\n"
+"PO-Revision-Date: 2012-09-01 14:03+0000\n"
+"Last-Translator: Michalis Gkiokas <michalis.giokas@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-12 04:41+0000\n"
-"X-Generator: Launchpad (build 15780)\n"
+"X-Launchpad-Export-Date: 2012-09-02 04:36+0000\n"
+"X-Generator: Launchpad (build 15890)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -24,12 +24,12 @@ msgstr "Αυτόματος DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Προσθήκη στον Αυτόματο DJ (στο τέλος)"
+msgstr "Προσθήκη στην Λίστα του Αυτόματου DJ (στο τέλος)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Προσθήκη στον Αυτόματο DJ (στην αρχή)"
+msgstr "Προσθήκη στην Λίστα του Αυτόματου DJ (στην αρχή)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -63,7 +63,7 @@ msgstr "Προσθήκη στην Λίστα του Αυτόματου DJ (στ�
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Αφαίρεση"
+msgstr "Διαγραφή"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
@@ -147,12 +147,12 @@ msgstr "Τίτλος"
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "Άλμπουμ"
+msgstr "Συλλογή"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Είδος μουσικής"
+msgstr "Είδος"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
@@ -162,7 +162,7 @@ msgstr "Συνθέτης"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr "Χρονολογία"
+msgstr "Έτος"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
@@ -196,7 +196,7 @@ msgstr "Ρυθμός μετάδοσης bit"
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "BPM"
-msgstr "BPM"
+msgstr "Beats Ανά Λεπτό"
 
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
@@ -253,10 +253,12 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Ο περιηγητής σας επιτρέπει να πλοηγήστε,να βλέπετε και να φορτώνετε κομμάτια "
+"απο φακέλους του σκληρου δίσκου η εξωτερικές συσκευές."
 
 #: BrowseFeature#7
 msgid "Browse"
-msgstr "Εξερεύνηση"
+msgstr "Περιηγητής"
 
 #: BrowseTableModel#1
 msgid "Filename"
@@ -334,7 +336,7 @@ msgstr "Θέση"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr "Συλλογή του Μιχχχ"
+msgstr "Βιβλιοθήκη του Mixxx"
 
 #: BrowseTableModel#17
 msgid ""
@@ -368,19 +370,19 @@ msgstr "Αδυναμία ενημέρωσης των metadata του αρχεί�
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Uncaught exception at line %1 in file %2: %3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Uncaught exception at line %1 in passed code: %2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr ""
+msgstr "Controller script error"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr ""
+msgstr "Κάποιος Ελεγκτής που χρησιμοποιήσατε δε λειτουργεί σωστά"
 
 #: ControllerEngine#5
 msgid ""
@@ -389,6 +391,10 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Ο κώδικας αυτου του script πρεπει να διορθωθεί.)<br>Προς το παρόν, "
+"μπορείτε να:<ul><li>Αγνοήσετε αυτο το σφάλμα σε αυτή τη συνεδρία αλλα "
+"υπάρχει περίπτωση να λάβετε εσφαλμένη απόκριση</li><li>Προσπαθήστε να "
+"επιδιορθώσετε επανεκκινόντας τον ελεγκτή σας</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
@@ -410,7 +416,7 @@ msgstr ""
 
 #: ControllerMappingDlg#4
 msgid "Controls"
-msgstr "Στοιχεία Ελέγχου"
+msgstr "Ελεγκτές"
 
 #: ControllerMappingDlg#5
 msgctxt "ControllerMappingDlg#5"
@@ -424,7 +430,7 @@ msgstr "Αφαίρεση"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr ""
+msgstr "Οδηγός εκμάθησης"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
@@ -455,7 +461,7 @@ msgstr "Αφαίρεση"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Μετοναμασία"
+msgstr "Μετονομασία"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -515,29 +521,36 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"M3U Λίστα αναπαραγωγής (*.m3u);;M3U8 Λίστα αναπαραγωγής (*.m3u8);;PLS Λίστα "
+"αναπαραγωγής (*.pls);;Text CSV (*.csv);;Αναγνώσιμο Κείμενο (*.txt)"
 
 #: CrateFeature#17
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
+"Τα κιβώτια ειναι ενας φοβερός τρόπος που βοηθάει την οργάνωση της μουσικής "
+"που θέλετε να αναπαράγετε"
 
 #: CrateFeature#18
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"Δημιουργήστε ενα κιβώτιο για την επόμενη σας παρουσίαση, για τα αγαπημένα "
+"σας electrohouse κομμάτια ή για τα πιό πολυζητημένα τραγούδια."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
 msgstr ""
+"Τα κιβώτια σας επιτρέπουν να οργανώσετε τη μουσική σας όπως σας αρέσει!"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Δημιουργία Νέου Κιβωτίου"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
-msgstr "Το κιβώτιο δεν μπορεί να έχει άδειο όνομα."
+msgstr "Το όνομα ενός Κιβωτίου δε μπορεί να είναι Κενό"
 
 #: CrateFeature#22
 msgid "Creating Crate Failed"
@@ -562,10 +575,11 @@ msgstr "Αυτόματος  - Dj"
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
 msgstr ""
+"Ένα Deck πρεπει να σταματήσει για να ενεργοποιηθεί η λειτουργία Αυτόματου DJ."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
-msgstr "Απενεργοποίηση"
+msgstr "Απενεργοποίηση Αυτόματου DJ"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
@@ -618,7 +632,7 @@ msgstr "Διαχείριση"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "Ρυθμίσεις ανίχνευσης ρυθμού"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -626,10 +640,14 @@ msgid ""
 "of your tracks, automatically shows a beat-grid for them, and allows you to "
 "synchronize tracks using their beat information."
 msgstr ""
+"Όταν η ανίχνευση ρυθμού ειναι ενεργοποιημένη, το Mixxx ανιχνεύει τους "
+"χτύπους (beats) ανά λεπτό των κομματιών σας, αυτόματα παρουσιάζοντας τον "
+"πίνακα ρυθμών τους, και επιτρέπει να συγχρονίζονται κομμάτια χρησιμοποιώντας "
+"απλα την πληροφορία των ρυθμών τους"
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr ""
+msgstr "Ενεργοποιηση Χτυπων ανα λεπτό και ανίχνευση ρυθμού"
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
@@ -637,11 +655,11 @@ msgstr "Επιλογή Αναλυτή"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr ""
+msgstr "Αναλυτής ρυθμού"
 
 #: DlgBeatsDlg#6
 msgid "Choose between different algorithms to detect beats."
-msgstr ""
+msgstr "Επιλογή ανάμεσα σε διαφορετικούς αλγόριθμους ανίχνευσης ρυθμού"
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
@@ -653,6 +671,10 @@ msgid ""
 "minute of a track for beat information. This can speed up beat detection on "
 "slower computers but may result in lower quality beatgrids."
 msgstr ""
+"Ενεργοποίηση γρήγορης ανίχνευσης ρυθμού. Αν ενεργοποιηθεί, το Mixxx αναλύει "
+"μονο το πρώτο λεπτό για πληροφορία ρυθμού. Αυτό μπορεί να κανει την "
+"ανίχνευση ρυθμού πιο γρήγορη σε αργούς υπολλογιστές αλλα πιθανόν να οδηγήσει "
+"σε κατώτερης ποιότητας Πίνακες Ρυθμου."
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
@@ -667,10 +689,15 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Μετατρέπει χτύπους που ανιχνεύθηκαν στον αναλυτή σε ένα σταθερού μετρου "
+"πινακα ρυθμών. Χρησιμοποιήστε αυτη την ρύθμιση αν τα κομμάτια σας εχουν "
+"σταθερό μέτρο (λ.χ όπως το μεγαλύτερο μέρος της ηλεκτρονικής μουσικής). "
+"Συνήθως έχει ως αποτέλεσμα υψηλότερης ποιότητας πινακες ρυθμών, αλλα δε "
+"λειτουργει επαρκώς σε κομμάτια που έχουν μεταβλητό μέτρο."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
-msgstr ""
+msgstr "Υποθέτει Σταθερό Μέτρο (Ρυθμό) (Προτείνεται)"
 
 #: DlgBeatsDlg#12
 msgid ""
@@ -740,7 +767,7 @@ msgstr "Ανάλυση ολόκληρου του κομματιού"
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr ""
+msgstr "Οδηγός Εκμάθησης Ελεγκτή"
 
 #: DlgControllerLearning#2
 msgid ""
