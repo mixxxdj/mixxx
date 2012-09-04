@@ -3,24 +3,15 @@ IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
 #include <windows.h>
 #include <defs_version.h>
 
-//#include "mixxx.rc.include"
-
-// TODO: have the SConscript generate these lines into mixxx.rc.include
-// It should also adjust FILEFLAGS below to include VS_FF_PRIVATEBUILD and/or VS_FF_PRERELEASE as appropriate
-
-// Version number should be major, minor, bugfix, branch revison number
-#define VER_FILEVERSION             1,11,0,3303
-#define VER_PRODUCTVERSION          1,11,0,3303
-
-#define CUR_YEAR                    "2012"
-// ---- End to-be-generated lines
+#include "mixxx.rc.include"
 
 #define VER_PRODUCTNAME_STR         "Mixxx\0"
 #define VER_FILEDESCRIPTION_STR     "Mixxx digital DJ software"
 #define VER_COMPANYNAME_STR         "The Mixxx Development Team"
-#define VER_LEGALCOPYRIGHT_STR      "Copyright ©" CUR_YEAR " The Mixxx Development Team and/or its subsidiary(-ies).\0"
+#define VER_LEGALCOPYRIGHT_STR      "Copyright ©2001-" CUR_YEAR " The Mixxx Development Team and/or its subsidiary(-ies).\0"
+#define VER_ORIGINALFILENAME_STR         "Mixxx.exe"
 
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+#if defined(AMD64) || defined(INTEL64) || defined(EM64T) || defined(x86_64)
     #define BITS                    " x64"
 #elif defined(IA64)
     #define BITS                    " Itanium"
@@ -37,11 +28,17 @@ IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
     #define VER_DEBUG               VS_FF_DEBUG
 #endif
 
+#ifndef PRERELEASE
+    #define VER_PRERELEASE          0
+#else
+    #define VER_PRERELEASE          VS_FF_PRERELEASE
+#endif
+
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION    	VER_FILEVERSION
 PRODUCTVERSION 	VER_PRODUCTVERSION
 FILEFLAGSMASK  	VS_FFI_FILEFLAGSMASK
-FILEFLAGS      	(VER_DEBUG|VS_FF_PRERELEASE)
+FILEFLAGS      	(VER_DEBUG|VER_PRERELEASE)
 FILEOS         	VOS__WINDOWS32
 FILETYPE       	VFT_APP
 BEGIN
@@ -56,7 +53,7 @@ BEGIN
             VALUE "LegalCopyright",   VER_LEGALCOPYRIGHT_STR
             //VALUE "LegalTrademarks1", VER_LEGALTRADEMARKS1_STR
             //VALUE "LegalTrademarks2", VER_LEGALTRADEMARKS2_STR
-            //VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR
+            VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR
             VALUE "ProductName",      VER_PRODUCTNAME_STR
             VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
         END

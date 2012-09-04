@@ -31,6 +31,31 @@ flags = build.flags
 #=========================
 if build.platform_is_windows:
         dist_dir = 'dist%s' % build.bitwidth
+        # Populate the stuff that changes in the .rc file
+        fo = open(File('#src/mixxx.rc.include').abspath, "w")
+
+        str_list = []
+        str_list.append('#define VER_FILEVERSION             ')
+        # Remove anything after ~ or - in the version number and replace the dots with commas
+        str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
+        str_list.append(','+str(bazaar_revision)+'\n')
+        
+        str_list.append('#define VER_PRODUCTVERSION          ')
+        str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
+        str_list.append(','+str(bazaar_revision)+'\n')
+        
+        import datetime
+        now = datetime.datetime.now()
+        str_list.append('#define CUR_YEAR                    "'+str(now.year)+'"\n\n')
+        
+        if build.msvcdebug:
+            str_list.append('#define DEBUG                       1\n')
+        if mixxx_version.lower().find('pre') != -1:
+            str_list.append('#define PRERELEASE                  1\n')
+        
+        fo.write(''.join(str_list))
+        fo.close()
+        
         mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -171,11 +196,39 @@ elif build.crosscompile and build.platform_is_osx:
 else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
-dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
+if build.msvcdebug:
+    dll_files += Split("""$QTDIR/lib/QtWebKitd4.dll""")
+else:
+    dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
 
-# if not int(build.flags['staticlibs']):
-dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtXmlPatterns4.dll $QTDIR/lib/QtSvg4.dll  $QTDIR/lib/phonon4.dll $QTDIR/lib/QtScript4.dll""")
+if build.msvcdebug:
+    dll_files += Split("""$QTDIR/lib/QtCored4.dll
+                          $QTDIR/lib/QtGuid4.dll
+                          $QTDIR/lib/QtNetworkd4.dll
+                          $QTDIR/lib/QtOpenGLd4.dll
+                          $QTDIR/lib/QtSqld4.dll
+                          $QTDIR/lib/QtXmld4.dll
+                          $QTDIR/lib/QtXmlPatternsd4.dll
+                          $QTDIR/lib/QtSvgd4.dll
+                          $QTDIR/lib/phonond4.dll
+                          $QTDIR/lib/QtScriptd4.dll""")
+else:
+    # if not int(build.flags['staticlibs']):
+    dll_files += Split("""$QTDIR/lib/QtCore4.dll
+                          $QTDIR/lib/QtGui4.dll
+                          $QTDIR/lib/QtNetwork4.dll
+                          $QTDIR/lib/QtOpenGL4.dll
+                          $QTDIR/lib/QtSql4.dll
+                          $QTDIR/lib/QtXml4.dll
+                          $QTDIR/lib/QtXmlPatterns4.dll
+                          $QTDIR/lib/QtSvg4.dll
+                          $QTDIR/lib/phonon4.dll
+                          $QTDIR/lib/QtScript4.dll""")
+
 if int(flags.get('sqlitedll', 0)):
+    if build.msvcdebug:
+        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+    else:
         sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
 if build.platform_is_linux or build.platform_is_bsd:
@@ -432,9 +485,24 @@ def BuildRelease(target, source, env):
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         if build.toolchain_is_msvs:
-            mssdk_path = util.get_mssdk_path()
-            print "Detected MSSDK path:", mssdk_path
-            print "Extracting Visual C++ DLL installer..."
+            redist_file = 'vcredist_%s.exe' % arch
+            print "Searching for the Visual C++ DLL installer package",redist_file
+
+            # First check one level above the winlib directory
+            redist_path = '%s' % os.path.join(os.path.dirname(mixxx_winlib_path), redist_file)
+            print "   ",redist_path,
+            if not os.path.isfile(redist_path):
+                print "not found"
+                # If it's not there, look in the MS SDK directory
+                mssdk_path = util.get_mssdk_path()
+                #print "   Detected MS SDK path:", mssdk_path
+                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
+                print "   ",redist_path,
+                if not os.path.isfile(redist_path):
+                    print "not found"
+                    raise Exception('Cannot find the Visual C++ DLL installer.')
+
+            print "Extracting needed files..."
             szip_path = None
             try:
                 szip_directory = win32_find_program_via_registry("7-Zip")
@@ -443,19 +511,16 @@ def BuildRelease(target, source, env):
                 pass
             if szip_path is None:
                 print "Cannot find 7-Zip. Do you have it installed?"
+                raise Exception('Cannot find 7-Zip. Do you have it installed?')
             else:
-                redist_file = 'vcredist_%s.exe' % arch
-                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
                 output_path = '%s' % os.path.join(mixxx_winlib_path,'VC_redist')
-                args = [szip_path,"x","-y","-ir!vc_red.*",redist_path,"-o"+output_path]
+                args = [szip_path,"x","-y","-ir!vc_red.*","-ir!*.msp",redist_path,"-o"+output_path]
                 print "Executing:", ' '.join(args)
                 proc = subprocess.Popen(args)
                 data, err = proc.communicate()
                 rv = proc.wait()
                 if rv:
-                    print "====="
-                    print err
-                    print "====="
+                    raise Exception('There was a problem extracting the installer files. See above for details.')
         print "Now building installation package..."
         command_flag = None
         nsis_path = None

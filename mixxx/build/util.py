@@ -59,7 +59,7 @@ def get_mixxx_version():
     version = ""
 
     for line in open(str(defs)).readlines():
-        if line.strip().startswith("#define VERSION"):
+        if line.strip().startswith("#define VERSION "):
             version = line
             break
 
