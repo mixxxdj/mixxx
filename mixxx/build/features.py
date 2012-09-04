@@ -120,7 +120,8 @@ class Bulk(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('bulk', 'Set to 1 to enable USB Bulk controller support.', 1)
+        is_default = 1 if build.platform_is_linux else 0
+        vars.Add('bulk', 'Set to 1 to enable USB Bulk controller support.', is_default)
 
     def configure(self, build, conf):
         if not self.enabled(build):
