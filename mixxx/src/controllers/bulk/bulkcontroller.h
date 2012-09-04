@@ -42,6 +42,8 @@ class BulkController : public Controller {
     BulkController(libusb_device_handle *handle, struct libusb_device_descriptor *desc);
     virtual ~BulkController();
 
+    virtual QString presetExtension();
+
     virtual ControllerPresetPointer getPreset() const {
         HidControllerPreset* pClone = new HidControllerPreset();
         *pClone = m_preset;
