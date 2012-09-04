@@ -176,87 +176,6 @@
                      <Script-Binding />
                 </options>
             </control>
-            <control>
-                <status>0x94</status>
-                <midino>0xb</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.hotCue1Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x94</status>
-                <midino>0xc</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.hotCue2Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x94</status>
-                <midino>0xd</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.hotCue3Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x94</status>
-                <midino>0xe</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.hotCue4Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0xb</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.hotCue1Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0xc</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.hotCue2Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0xd</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.hotCue3Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0xe</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.hotCue4Activate</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-
 <!-- HOT CUE DELETE BUTTON -->
             <control>
                 <status>0x92</status>
@@ -350,6 +269,16 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <status>0xb3</status>
+                <midino>0xc</midino>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <!-- Play Buttons -->
             <control>
                 <status>0x92</status>
@@ -392,45 +321,6 @@
                     <Script-Binding />
                 </options>
             </control>
-<<<<<<< TREE
-            <control>
-                <status>0x94</status>
-                <midino>0x23</midino>
-                <group>[Sampler1]</group>
-                <key>start_play</key>
-                <description></description>
-                <options>
-                </options>
-            </control>
-            <control>
-                <status>0x94</status>
-                <midino>0x24</midino>
-                <group>[Sampler2]</group>
-                <key>start_play</key>
-                <description></description>
-                <options>
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0x25</midino>
-                <group>[Sampler3]</group>
-                <key>start_play</key>
-                <description></description>
-                <options>
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0x26</midino>
-                <group>[Sampler4]</group>
-                <key>start_play</key>
-                <description></description>
-                <options>
-                </options>
-            </control>
-=======
->>>>>>> MERGE-SOURCE
 
              <!-- CUE buttons -->
              <control>
@@ -587,26 +477,6 @@
                 </options>
             </control>
             <control>
-                <status>0x94</status>
-                <midino>0x14</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.beatLoop</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0x14</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.beatLoop</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
                 <status>0xB2</status>
                 <midino>0x06</midino>
                 <group>[Channel1]</group>
@@ -626,143 +496,9 @@
                      <Script-Binding />
                 </options>
             </control>
-            <control>
-                <status>0xB4</status>
-                <midino>0x06</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.beatLengthWheel</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0xB5</status>
-                <midino>0x06</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.beatLengthWheel</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-
             <!-- END BEAT LOOP -->
 
             <control>
-<<<<<<< TREE
-                <status>0xb5</status>
-                <midino>0xc</midino>
-                <group>[Channel4]</group>
-                <key>pregain</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb5</status>
-                <midino>0xd</midino>
-                <group>[Channel4]</group>
-                <key>filterHigh</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb5</status>
-                <midino>0xe</midino>
-                <group>[Channel4]</group>
-                <key>filterMid</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb5</status>
-                <midino>0xf</midino>
-                <group>[Channel4]</group>
-                <key>filterLow</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb5</status>
-                <midino>0x11</midino>
-                <group>[Channel4]</group>
-                <key>volume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
-                <status>0xb4</status>
-                <midino>0xc</midino>
-                <group>[Channel3]</group>
-                <key>pregain</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb4</status>
-                <midino>0xd</midino>
-                <group>[Channel3]</group>
-                <key>filterHigh</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb4</status>
-                <midino>0xe</midino>
-                <group>[Channel3]</group>
-                <key>filterMid</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb4</status>
-                <midino>0xf</midino>
-                <group>[Channel3]</group>
-                <key>filterLow</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb4</status>
-                <midino>0x11</midino>
-                <group>[Channel3]</group>
-                <key>volume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
-                <status>0xb3</status>
-                <midino>0xc</midino>
-                <group>[Channel2]</group>
-                <key>pregain</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <status>0xb3</status>
                 <midino>0xe</midino>
                 <group>[Channel2]</group>
@@ -863,129 +599,6 @@
                     <normal/>
                 </options>
             </control>
-            <control>
-                <status>0xb4</status>
-                <midino>0x12</midino>
-                <group>[Channel3]</group>
-                <key>rate</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb5</status>
-                <midino>0x12</midino>
-                <group>[Channel4]</group>
-                <key>rate</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-=======
-                <status>0xb3</status>
-                <midino>0xe</midino>
-                <group>[Channel2]</group>
-                <key>filterMid</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb3</status>
-                <midino>0xf</midino>
-                <group>[Channel2]</group>
-                <key>filterLow</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb3</status>
-                <midino>0x11</midino>
-                <group>[Channel2]</group>
-                <key>volume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb2</status>
-                <midino>0xc</midino>
-                <group>[Channel1]</group>
-                <key>pregain</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
-                <status>0xb2</status>
-                <midino>0xd</midino>
-                <group>[Channel1]</group>
-                <key>filterHigh</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb2</status>
-                <midino>0xe</midino>
-                <group>[Channel1]</group>
-                <key>filterMid</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb2</status>
-                <midino>0xf</midino>
-                <group>[Channel1]</group>
-                <key>filterLow</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb2</status>
-                <midino>0x11</midino>
-                <group>[Channel1]</group>
-                <key>volume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb2</status>
-                <midino>0x12</midino>
-                <group>[Channel1]</group>
-                <key>rate</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb3</status>
-                <midino>0x12</midino>
-                <group>[Channel2]</group>
-                <key>rate</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
->>>>>>> MERGE-SOURCE
             <!-- File Browser: Track selection -->
             <control>
                 <status>0xbe</status>
@@ -1018,46 +631,6 @@
                 </options>
             </control>
             <control>
-                <status>0x95</status>
-                <midino>0x1</midino>
-                <group>[Channel4]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0x2</midino>
-                <group>[Channel4]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x94</status>
-                <midino>0x1</midino>
-                <group>[Channel3]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x94</status>
-                <midino>0x2</midino>
-                <group>[Channel3]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <status>0x93</status>
                 <midino>0x1</midino>
                 <group>[Channel2]</group>
@@ -1071,26 +644,6 @@
                 <status>0x93</status>
                 <midino>0x2</midino>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-                        <control>
-                <status>0x92</status>
-                <midino>0x1</midino>
-                <group>[Channel1]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x92</status>
-                <midino>0x2</midino>
-                <group>[Channel1]</group>
                 <key>LoadSelectedTrack</key>
                 <description></description>
                 <options>
@@ -1189,48 +742,27 @@
                      <Script-Binding />
                 </options>
             </control>
-            <control>
-                <status>0x94</status>
-                <midino>0x9</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.loopIn</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x94</status>
-                <midino>0xa</midino>
-                <group>[Channel3]</group>
-                <key>VestaxVCI400.loopOut</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0x9</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.loopIn</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-            <control>
-                <status>0x95</status>
-                <midino>0xa</midino>
-                <group>[Channel4]</group>
-                <key>VestaxVCI400.loopOut</key>
-                <description></description>
-                <options>
-                     <Script-Binding />
-                </options>
-            </control>
-
             <!-- End looping -->
+            <control>
+                <status>0x92</status>
+                <midino>0x1</midino>
+                <group>[Channel1]</group>
+                <key>beatsync</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x92</status>
+                <midino>0x2</midino>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <control>
                 <status>0x9d</status>
                 <midino>0x1</midino>
