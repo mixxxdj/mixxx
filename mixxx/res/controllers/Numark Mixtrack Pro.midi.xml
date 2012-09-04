@@ -608,7 +608,7 @@ Modify by Darío José Freije 6/2/2012-->
                 <key>flanger</key>
                 <options>
                     <normal/>
-                </options>
+                </options> 
             </control>
         </controls>
 
@@ -619,9 +619,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -633,9 +630,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>LoadSelectedTrack</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -647,9 +641,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>beatsync</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -660,9 +651,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -673,9 +661,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>keylock</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -686,9 +671,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -699,9 +681,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>-0.1</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -713,9 +692,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -727,9 +703,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>LoadSelectedTrack</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -741,9 +714,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>beatsync</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -755,9 +725,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -768,9 +735,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>keylock</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -781,9 +745,6 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -794,9 +755,6 @@ Modify by Darío José Freije 6/2/2012-->
 	    <output>
                 <group>[Channel2]</group>
                 <key>rate</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>-0.1</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>

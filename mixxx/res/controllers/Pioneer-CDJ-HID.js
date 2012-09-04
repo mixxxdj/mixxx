@@ -38,6 +38,7 @@ function PioneerCDJController() {
         packet.addControl("hid","cue_next",2,"B",0x40);
         packet.addControl("hid","cue_memory",2,"B",0x80);
         packet.addControl("hid","jog_mode",3,"B",0x2);
+        packet.addControl("hid","tempo_reset",3,"B",0x4);
         packet.addControl("hid","master_tempo",3,"B",0x8);
         packet.addControl("hid","tempo_range",3,"B",0x10);
         packet.addControl("hid","browse_press",3,"B",0x20);
@@ -47,12 +48,19 @@ function PioneerCDJController() {
         packet.addControl("hid","beatloop_8",4,"B",0x20);
         packet.addControl("hid","beatloop_4",4,"B",0x40);
         packet.addControl("hid","beatloop_2",4,"B",0x80);
+        packet.addControl("hid","hotcue_rec",5,"B",0x1);
+        packet.addControl("hid","hotcue_3",5,"B",0x20);
+        packet.addControl("hid","hotcue_2",5,"B",0x40);
+        packet.addControl("hid","hotcue_1",5,"B",0x80);
         packet.addControl("hid","tag_track",6,"B",0x1);
+        packet.addControl("hid","lock_unlock",6,"B",0x40);
+        packet.addControl("hid","browse_taglist",6,"B",0x80);
         packet.addControl("hid","reverse",7,"B",0x1);
         packet.addControl("hid","jog_touch",7,"B",0x20);
         //packet.addControl("hid","jog_direction",7,"B",0x40);
         //packet.addControl("hid","jog_move",7,"B",0x80);
         packet.addControl("hid","vinyl_speed_knob",8,"B");
+        packet.addControl("hid","release_start_knob",9,"B");
         packet.addControl("hid","browse_knob",10,"H",undefined,true);
         packet.addControl("hid","pitch_slider",12,"h");
         packet.addControl("hid","jog_wheel",14,"h",undefined,true);
@@ -74,13 +82,20 @@ function PioneerCDJController() {
         packet = new HIDPacket("lights", [0x1],36);
         packet.addOutput("hid","screen_acue",4,"B",0x1);
         packet.addOutput("hid","remain",4,"B",0x2);
+        packet.addOutput("hid","screen_flag_1",4,"B",0x4);
         packet.addOutput("hid","reloop_exit",4,"B",0x8);
         packet.addOutput("hid","cue_out",4,"B",0x10);
         packet.addOutput("hid","cue_in",4,"B",0x20);
         packet.addOutput("hid","cue",4,"B",0x40);
         packet.addOutput("hid","play",4,"B",0x80);
         packet.addOutput("hid","screen_memory",5,"B",0x1);
+        packet.addOutput("hid","screen_flag_2",5,"B",0x2);
+        packet.addOutput("hid","screen_flag_3",5,"B",0x4);
         packet.addOutput("hid","screen_wide",5,"B",0x8);
+        packet.addOutput("hid","screen_flag_4",5,"B",0x1);
+        packet.addOutput("hid","screen_flag_5",5,"B",0x2);
+        packet.addOutput("hid","screen_flag_6",5,"B",0x4);
+        packet.addOutput("hid","screen_flag_7",5,"B",0x8);
         packet.addOutput("hid","screen_16_percent",5,"B",0x10);
         packet.addOutput("hid","screen_10_percent",5,"B",0x20);
         packet.addOutput("hid","screen_6_percent",5,"B",0x40);
@@ -92,14 +107,32 @@ function PioneerCDJController() {
         packet.addOutput("hid","reverse",6,"B",0x10);
         packet.addOutput("hid","jog_dashed_circle",6,"B",0x20);
         packet.addOutput("hid","jog_vinyl_logo",6,"B",0x40);
+        packet.addOutput("hid","jog_mode",6,"B",0x80);
+        packet.addOutput("hid","jog_touch_highlight",7,"B",0x1);
+        packet.addOutput("hid","screen_flag_9",7,"B",0x2);
+        packet.addOutput("hid","hotcue_3_green",7,"B",0x4);
+        packet.addOutput("hid","hotcue_3_red",7,"B",0x8);
+        packet.addOutput("hid","hotcue_2_green",7,"B",0x10);
+        packet.addOutput("hid","hotcue_2_red",7,"B",0x20);
+        packet.addOutput("hid","hotcue_1_green",7,"B",0x40);
+        packet.addOutput("hid","hotcue_1_red",7,"B",0x80);
         packet.addOutput("hid","browse",8,"B",0x1);
+        packet.addOutput("hid","screen_flag_10",8,"B",0x2);
         packet.addOutput("hid","info",8,"B",0x4);
+        packet.addOutput("hid","screen_flag_11",8,"B",0x8);
+        packet.addOutput("hid","screen_flag_12",8,"B",0x10);
+        packet.addOutput("hid","screen_flag_13",8,"B",0x20);
         packet.addOutput("hid","menu",8,"B",0x40);
         packet.addOutput("hid","taglist",8,"B",0x80);
-        packet.addOutput("hid","set_time_mode",11,"B");
+        packet.addOutput("hid","flags_9",9,"B");
+        packet.addOutput("hid","flags_10",10,"B");
+        packet.addOutput("hid","screen_flags",11,"B");
         packet.addOutput("hid","time_minutes",12,"B");
         packet.addOutput("hid","time_seconds",13,"B");
         packet.addOutput("hid","time_frames",14,"B");
+        packet.addOutput("hid","wave_summary_1",15,"B");
+        packet.addOutput("hid","wave_summary_2",16,"B");
+        packet.addOutput("hid","wave_summary_3",17,"B");
         packet.addOutput("hid","tracknumber",18,"B");
         packet.addOutput("hid","bpm",20,"H");
         packet.addOutput("hid","rate",22,"h");
@@ -112,7 +145,6 @@ function PioneerCDJController() {
         packet = new HIDPacket("request_hid_mode",[0x1],0x20);
         packet.addControl("hid","mode",0,"B",1);
         this.controller.registerOutputPacket(packet);
-
 
         // Control packet for screen text control
         // TODO - Sean: this is just a silly example how to register
@@ -182,9 +214,49 @@ function PioneerCDJController() {
             packet.send();
         }
 
-        // Set this value permanently to 0xc0
-        controller.setOutput("hid","set_time_mode",0xc0);
+        controller.setOutput("hid","screen_flag_1",0);
+        controller.setOutput("hid","screen_flag_2",0);
+        controller.setOutput("hid","screen_flag_3",0);
+        controller.setOutput("hid","screen_flag_4",0); // screen_memory_2000
+        controller.setOutput("hid","screen_flag_5",0);
+        controller.setOutput("hid","screen_flag_6",0);
+        controller.setOutput("hid","screen_flag_7",0); // screen_wide_2000
+        controller.setOutput("hid","screen_flag_8",0); // jog_touch_highlight
+        controller.setOutput("hid","screen_flag_9",0);
+        controller.setOutput("hid","screen_flag_10",0);
+        controller.setOutput("hid","screen_flag_11",0);
+        controller.setOutput("hid","screen_flag_12",0);
+
+        controller.setOutput("hid","flag_6_1",0);
+        controller.setOutput("hid","flag_6_2",0);
+        controller.setOutput("hid","flag_6_4",0);
+        controller.setOutput("hid","flag_6_8",0);
+
+        controller.setOutput("hid","flags_9",0x0
+            //0x1|0x2|0x4|0x8|0x10|0x20|0x40|0x80 
+        );
+        controller.setOutput("hid","flags_10",0x0
+            //0x1|0x2|0x4|0x8|0x10|0x20|0x40|0x80 
+        );
         controller.setOutput("hid","jog_vinyl_logo",1);
+
+        if ( PioneerCDJHID.id=="PIONEER CDJ-900" || 
+             PioneerCDJHID.id=="PIONEER CDJ-2000") {
+            
+            //tracknumber frames/ms control 0x1
+            //rate control 0x10
+            //bpm control 0x20
+            //tracknumber control 0x40
+            //jog control 0x80
+            controller.setOutput("hid","screen_flags",
+                0x1|0x2|0x4|0x8|0x10|0x20|0x40|0x80
+            );
+
+        } else if ( PioneerCDJHID.id=="PIONEER CDJ-850") {
+            controller.setOutput("hid","screen_flags",0x1|0x10|0x20|0x40|0x80);
+        } else {
+            HIDDebug("Unsupported CDJ device name: " +  PioneerCDJHID.id);
+        }
     }
 
 }
@@ -193,10 +265,14 @@ PioneerCDJHID = new PioneerCDJController();
 
 // Initialize device state
 PioneerCDJHID.init = function(id) {
+    id = id.replace(/(^\s*)|(\s*$)/gi,"");
+    id = id.replace(/[ ]{2,}/gi," ");
+    id = id.replace(/\n /,"\n");
     PioneerCDJHID.id = id;
 
     var controller = PioneerCDJHID.controller;
     controller.activeDeck = 1;
+    controller.enableScratchCallback = PioneerCDJHID.enableScratchCallback;
 
     // Map beatloop sizes to actual mixxx values
     PioneerCDJHID.beatLoopSizeMap = {
@@ -222,10 +298,6 @@ PioneerCDJHID.init = function(id) {
     controller.rampedScratchEnable = true;
     controller.toggleButtons = [ "play", "quantize", "keylock", "pfl" ];
 
-    // Declare some fields as soft takeover mode
-    engine.softTakeover("[Channel1]","pregain",true);
-    engine.softTakeover("[Channel2]","pregain",true);
-   
     // Set deck switch local callbacks
     controller.disconnectDeck = PioneerCDJHID.disconnectDeck;
     controller.connectDeck = PioneerCDJHID.connectDeck;
@@ -236,6 +308,13 @@ PioneerCDJHID.init = function(id) {
 
 // Device cleanup function
 PioneerCDJHID.shutdown = function() {
+}
+
+PioneerCDJHID.enableScratchCallback = function(value) {
+    HIDDebug("SCRATCH " + value);
+    var controller = PioneerCDJHID.controller;
+    controller.setOutput("hid","jog_touch_highlight",value);
+
 }
 
 // Scaling of pregain (0-0xff) to gain value
@@ -267,6 +346,7 @@ PioneerCDJHID.registerCallbacks = function() {
     controller.linkControl("hid","seek_forward","deck","fwd");
     controller.setCallback("control","hid","previous_track",PioneerCDJHID.track);
     controller.setCallback("control","hid","next_track",PioneerCDJHID.track);
+    controller.setCallback("control","hid","tempo_reset",PioneerCDJHID.resetrate);
 
     // Knob to browse tracks right of screen
     controller.linkControl("hid","browse_press","deck","LoadSelectedTrack");
@@ -280,11 +360,16 @@ PioneerCDJHID.registerCallbacks = function() {
     controller.linkControl("hid","cue_in","deck","loop_in");
     controller.linkControl("hid","cue_out","deck","loop_out");
     controller.setCallback("control","hid","reloop_exit",PioneerCDJHID.reloop_exit);
+    controller.setCallback("control","hid","needle_search",PioneerCDJHID.needlesearch);
 
     // Handle beatloop buttons with modifier + callback
     controller.linkModifier("hid","beat_select","beatloop_size");
+    controller.linkModifier("hid","hotcue_rec","hotcue_rec");
     controller.linkModifier("hid","cue_memory","hotcue_set");
     controller.linkModifier("hid","cue_delete","hotcue_delete");
+    controller.setCallback("control","hid","hotcue_1",PioneerCDJHID.hotcue);
+    controller.setCallback("control","hid","hotcue_2",PioneerCDJHID.hotcue);
+    controller.setCallback("control","hid","hotcue_3",PioneerCDJHID.hotcue);
     controller.setCallback("control","hid","beatloop_16",PioneerCDJHID.beatloop);
     controller.setCallback("control","hid","beatloop_8",PioneerCDJHID.beatloop);
     controller.setCallback("control","hid","beatloop_4",PioneerCDJHID.beatloop);
@@ -308,10 +393,6 @@ PioneerCDJHID.registerCallbacks = function() {
     controller.linkControl("hid","master_tempo","deck","beatsync");
     controller.linkControl("hid","tempo_range","deck","beats_translate_curpos");
     controller.linkControl("hid","jog_mode","deck","pfl");
-
-    // Use vinyl speed adjustment for pregain
-    controller.linkControl("hid","vinyl_speed_knob","deck","pregain");
-    controller.setScaler("pregain",PioneerCDJHID.pregainScaler);
      
     // Unused buttons
     // controller.linkControl("hid","menu_back","deck","");
@@ -327,6 +408,9 @@ PioneerCDJHID.registerCallbacks = function() {
 
     // Use 'eject' button for deck switching
     controller.setCallback("control","hid","eject",PioneerCDJHID.switchDeck);
+
+    // Use vinyl speed adjustment for pregain
+    controller.setCallback("control","hid","vinyl_speed_knob",PioneerCDJHID.touchrelease);
 
     HIDDebug("CDJ Controls And Callbacks Registered");
 }
@@ -366,10 +450,11 @@ PioneerCDJHID.connectDeck = function() {
     engine.connectControl(group,"duration","PioneerCDJHID.durationCallback");
     engine.connectControl(group,"playposition","PioneerCDJHID.positionCallback");
 
-    if (PioneerCDJHID.remain_mode) 
+    if (PioneerCDJHID.remain_mode) {
         controller.setOutput("hid","remain",1);
-    else
+    } else {
         controller.setOutput("hid","remain",0);
+    }
 
     PioneerCDJHID.setBPM();
     PioneerCDJHID.setRate();
@@ -427,37 +512,79 @@ PioneerCDJHID.setRate = function(value) {
 // Set current time value to packet
 PioneerCDJHID.setTime = function(value) {
     var controller = PioneerCDJHID.controller;
+    var minutes,seconds,frames;
     if (value==undefined) 
         value = engine.getValue(
             controller.resolveDeckGroup(controller.activeDeck),
             "playposition"
         );
-    if (PioneerCDJHID.remain_mode==true) {
-        if (value>=1) {
-            controller.setOutput("hid","time_minutes",0x76);
-            controller.setOutput("hid","time_seconds",0x8d);
-            controller.setOutput("hid","time_frames",0x79);
+
+    // CDJ 850 time control
+    if (PioneerCDJHID.id=="PIONEER CDJ-850") {
+
+        if (PioneerCDJHID.remain_mode==true) {
+            if (value>=1) {
+                minutes = 0x76; seconds = 0x8d; frames = 0x79;
+            } else {
+                position = PioneerCDJHID.track_length - PioneerCDJHID.track_length*value;
+                minutes = Math.floor(0x77-(position/60));
+                seconds = Math.floor(0x8d-(position%60));
+                frames = 0x79-Math.floor((position-Math.floor(position))*100);
+            }
         } else {
-            position = PioneerCDJHID.track_length - PioneerCDJHID.track_length*value;
-            controller.setOutput("hid","time_minutes",0x77-(position/60));
-            controller.setOutput("hid","time_seconds",0x8d-(position%60));
-            controller.setOutput("hid","time_frames",
-                0x79-Math.floor((position-Math.floor(position))*75) 
-            );
+            if (value<=0) {
+                position = 0; minutes = 0; seconds = 0;
+            } else {
+                position = PioneerCDJHID.track_length*value;
+                minutes = Math.floor(position/60);
+                seconds = Math.floor(position%60);
+                frames = Math.floor((position-Math.floor(position))*100);
+            }
         }
-    } else {
-        if (value<=0) {
-            controller.setOutput("hid","time_minutes",0);
-            controller.setOutput("hid","time_seconds",0);
-            controller.setOutput("hid","time_frames",0);
+
+        controller.setOutput("hid","time_minutes",minutes);
+        controller.setOutput("hid","time_seconds",seconds);
+        controller.setOutput("hid","time_frames",frames);
+        //controller.setOutput("hid","wave_summary_3",minutes);
+        //controller.setOutput("hid","wave_summary_2",seconds);
+        //controller.setOutput("hid","wave_summary_1",frames);
+
+    } else if (PioneerCDJHID.id=="PIONEER CDJ-900" ||
+               PioneerCDJHID.id=="PIONEER CDJ-2000") {
+
+        if (PioneerCDJHID.remain_mode==true) {
+            controller.setOutput("hid","wave_summary_1",0x80);
+            controller.setOutput("hid","wave_summary_2",0x20);
+            controller.setOutput("hid","wave_summary_3",0x10);
+            if (value>=1) {
+                minutes = 0x74; seconds = 0x8d; frames = 0x79;
+            } else {
+                position = PioneerCDJHID.track_length - PioneerCDJHID.track_length*value;
+                minutes = Math.floor(0x77-(position/60));
+                seconds = Math.floor(0x8d-(position%60));
+                frames = 0x79-Math.floor((position-Math.floor(position))*100);
+            }
+            controller.setOutput("hid","wave_summary_1",0x76);
+            controller.setOutput("hid","wave_summary_2",0x8d);
+            controller.setOutput("hid","wave_summary_3",0x79);
         } else {
-            position = PioneerCDJHID.track_length*value;
-            controller.setOutput("hid","time_minutes",position/60);
-            controller.setOutput("hid","time_seconds",position%60);
-            controller.setOutput("hid","time_frames",
-                Math.floor((position-Math.floor(position))*75) 
-            );
+            controller.setOutput("hid","wave_summary_1",0);
+            controller.setOutput("hid","wave_summary_2",0);
+            controller.setOutput("hid","wave_summary_3",0);
+            if (value<=0) {
+                minutes = 0; seconds = 0; frames = 0;
+            } else {
+                position = PioneerCDJHID.track_length*value;
+                minutes = Math.floor(position/60);
+                seconds = Math.floor(position%60);
+                frames = Math.floor((position-Math.floor(position))*100);
+            }
         }
+        //HIDDebug("TIME " +minutes+" "+seconds+" "+frames);
+        controller.setOutput("hid","time_minutes",minutes);
+        controller.setOutput("hid","time_seconds",seconds);
+        controller.setOutput("hid","time_frames",frames);
+
     }
 }
 
@@ -532,6 +659,43 @@ PioneerCDJHID.track = function(field) {
     }
 }
 
+PioneerCDJHID.needlesearch = function(field) {
+    var controller = PioneerCDJHID.controller;
+    var group = controller.resolveDeckGroup(controller.activeDeck); 
+    var value = field.value / 400;
+    if (value==0) 
+        return;
+    engine.setValue(group,"play",false);
+    engine.setValue(group,"playposition",value);
+    
+}
+
+PioneerCDJHID.hotcue = function(field) {
+    var controller = PioneerCDJHID.controller;
+    var group = controller.resolveDeckGroup(controller.activeDeck); 
+    var control;
+    if (field.value==controller.buttonStates.released) {
+        controller.setOutput("hid",field.name+"_red",0);
+        return;
+    }
+
+    if (controller.modifiers.get("hotcue_delete")) {
+        control = field.name + '_activate';
+        controller.setOutput("hid",field.name+"_red",0);
+        controller.setOutput("hid",field.name+"_green",0);
+        control = field.name + '_clear';
+    } else if (controller.modifiers.get("hotcue_rec")) {
+        control = field.name + '_set';
+        controller.setOutput("hid",field.name+"_red",1);
+        controller.setOutput("hid",field.name+"_green",1);
+    } else {
+        control = field.name + '_activate';
+        controller.setOutput("hid",field.name+"_red",0);
+        controller.setOutput("hid",field.name+"_green",1);
+    }
+    engine.setValue(group,control,true);
+}
+
 // Set given size beatloop or a hotcue, light LED for beatloop
 PioneerCDJHID.beatloop = function(field) {
     var controller = PioneerCDJHID.controller;
@@ -587,6 +751,22 @@ PioneerCDJHID.reloop_exit = function(field) {
     controller.setOutput("hid","beatloop_2",controller.LEDColors.off);
     controller.setOutput("hid",field.name,controller.LEDColors.on);
     output_packet.send();
+}
+
+PioneerCDJHID.resetrate = function (field) {
+    var controller = PioneerCDJHID.controller;
+    engine.setValue(
+        controller.resolveDeckGroup(controller.activeDeck),
+        "rate",
+        0
+    )
+}
+
+// Adjust deck touch/release rate: note, since mixxx doesn't yet have function
+// to adjust scratch2 ramp rate, we just have a stub waiting for this call
+PioneerCDJHID.touchrelease = function (field) {
+    var controller = PioneerCDJHID.controller;
+    HIDDebug("TOUCH_RELEASE " + controller.activeDeck + " " + field.value);
 }
 
 // Adjust pregain with deck mode knob
