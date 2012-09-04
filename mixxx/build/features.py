@@ -106,6 +106,37 @@ class HID(Feature):
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
         return sources
 
+class Bulk(Feature):
+    def description(self):
+        return "USB Bulk controller support"
+
+    def enabled(self, build):
+        build.flags['bulk'] = util.get_flags(build.env, 'bulk', 1)
+        if int(build.flags['bulk']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('bulk', 'Set to 1 to enable USB Bulk controller support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+        if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+            not conf.CheckHeader('libusb-1.0/libusb.h')):
+            raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
+
+        build.env.Append(CPPDEFINES = '__BULK__')
+
+    def sources(self, build):
+        sources = ['controllers/bulk/bulkcontroller.cpp',
+                   'controllers/bulk/bulkenumerator.cpp']
+
+        return sources
+
+
 class Mad(Feature):
     def description(self):
         return "MAD MP3 Decoder"
