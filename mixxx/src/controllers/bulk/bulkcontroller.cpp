@@ -5,30 +5,12 @@
   * @brief USB Bulk controller backend
   *
   */
-
-#include "controllers/bulk/bulkcontroller.h"
-#include "controllers/bulk/bulksupported.h"
-
 #include <time.h>
 #include <stdio.h>
 
-
-/* This is for my debugging, because I like typing
-       DUMP();
-   more than typing
-       qDebug() << "foo";
- */
-#ifdef NODUMP
-#  define DUMPf(fmt, args...)
-#else
-#  define DUMPf(fmt, args...) fprintf(stderr, "%s:%s:%d " fmt "\n", __FILE__, __FUNCTION__, __LINE__, ##args)
-#endif
-#define DUMP() DUMPf("")
-#define DUMP_d(v) DUMPf("%s = %d", #v, v)
-#define DUMP_x(v) DUMPf("%s = 0x%x", #v, v)
-#define DUMP_s(v) DUMPf("%s = %s", #v, v)
-#define DUMP_c(v) DUMPf("%s = '%c' (0x%02x)", #v, v, v)
-#define DUMP_p(v) DUMPf("%s = %p", #v, v)
+#include "controllers/bulk/bulkcontroller.h"
+#include "controllers/bulk/bulksupported.h"
+#include "controllers/defs_controllers.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread() {
@@ -61,36 +43,30 @@ void BulkReader::run() {
 
         result = libusb_bulk_transfer(m_phandle,
                                       m_in_epaddr,
-                                      data, sizeof data,
+                                      data, sizeof(data),
                                       &transferred, 500);
         if (result >= 0) {
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
-            QByteArray outData((char *)data, transferred);
+            QByteArray outData((char*)data, transferred);
             emit(incomingData(outData));
         }
-
     }
     qDebug() << "Stopped Reader";
 }
 
-static QString
-get_string(libusb_device_handle *handle, u_int8_t id)
-{
-    unsigned char buf[128];
-    QString s;
+static QString get_string(libusb_device_handle *handle, u_int8_t id) {
+    unsigned char buf[128] = { 0 };
 
-    buf[0] = 0;
     if (id) {
-        (void)libusb_get_string_descriptor_ascii(handle, id, buf, sizeof buf);
-    } 
+        libusb_get_string_descriptor_ascii(handle, id, buf, sizeof(buf));
+    }
 
-    return QString::fromAscii((char *)buf);
+    return QString::fromAscii((char*)buf);
 }
 
 
 BulkController::BulkController(libusb_device_handle *handle,
-                               struct libusb_device_descriptor *desc)
-{
+                               struct libusb_device_descriptor *desc) {
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
@@ -111,6 +87,10 @@ BulkController::~BulkController() {
     close();
 }
 
+QString BulkController::presetExtension() {
+    return BULK_PRESET_EXTENSION;
+}
+
 void BulkController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
@@ -129,16 +109,17 @@ bool BulkController::savePreset(const QString fileName) const {
 }
 
 bool BulkController::matchPreset(const PresetInfo& preset) {
-    const QList< QHash<QString,QString> > products = preset.getProducts();
+    const QList<QHash<QString, QString> > products = preset.getProducts();
     QHash <QString, QString> product;
     foreach (product, products) {
-        if (matchProductInfo(product))
+        if (matchProductInfo(product)) {
             return true;
+        }
     }
     return false;
 }
 
-bool BulkController::matchProductInfo(QHash <QString,QString > info) {
+bool BulkController::matchProductInfo(QHash <QString, QString> info) {
     int value;
     bool ok;
     // Product and vendor match is always required
@@ -152,16 +133,14 @@ bool BulkController::matchProductInfo(QHash <QString,QString > info) {
 }
 
 int BulkController::open() {
-    int i;
-
     if (isOpen()) {
         qDebug() << "USB Bulk device" << getName() << "already open";
         return -1;
     }
 
     /* Look up endpoint addresses in supported database */
-    for (i = 0; bulk_supported[i].vendor_id; i += 1) {
-        if ((bulk_supported[i].vendor_id == vendor_id) && 
+    for (int i = 0; bulk_supported[i].vendor_id; ++i) {
+        if ((bulk_supported[i].vendor_id == vendor_id) &&
             (bulk_supported[i].product_id == product_id)) {
             in_epaddr = bulk_supported[i].in_epaddr;
             out_epaddr = bulk_supported[i].out_epaddr;
@@ -177,7 +156,8 @@ int BulkController::open() {
 
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == NULL) {
-        m_phandle = libusb_open_device_with_vid_pid(NULL, vendor_id, product_id);
+        m_phandle = libusb_open_device_with_vid_pid(
+            NULL, vendor_id, product_id);
     }
 
     if (m_phandle == NULL) {
@@ -227,8 +207,8 @@ int BulkController::close() {
         m_pReader = NULL;
     }
 
-    // Stop controller engine here to ensure it's done before the device is closed
-    //  incase it has any final parting messages
+    // Stop controller engine here to ensure it's done before the device is
+    // closed incase it has any final parting messages
     stopEngine();
 
     // Close device
@@ -259,14 +239,8 @@ void BulkController::send(QByteArray data) {
                                (unsigned char *)data.constData(), data.size(),
                                &transferred, 0);
     if (ret < 0) {
-        if (debugging()) {
-            qWarning() << "Unable to send data to" << getName()
-                       << "serial #" << m_sUID << ":"
-                       << QString::fromAscii(libusb_error_name(ret));
-        } else {
-            qWarning() << "Unable to send data to" << getName() << ":"
-                       << QString::fromAscii(libusb_error_name(ret));
-        }
+        qWarning() << "Unable to send data to" << getName()
+                   << "serial #" << m_sUID;
     } else if (debugging()) {
         qDebug() << ret << "bytes sent to" << getName()
                  << "serial #" << m_sUID;

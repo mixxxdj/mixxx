@@ -23,24 +23,18 @@ BulkEnumerator::~BulkEnumerator() {
     libusb_exit(NULL);
 }
 
-static int
-is_interesting(struct libusb_device_descriptor *desc)
-{
-    int i;
-
-    for (i = 0; bulk_supported[i].vendor_id; i += 1) {
-        if ((bulk_supported[i].vendor_id == desc->idVendor) && 
+static bool is_interesting(struct libusb_device_descriptor *desc) {
+    for (int i = 0; bulk_supported[i].vendor_id; ++i) {
+        if ((bulk_supported[i].vendor_id == desc->idVendor) &&
             (bulk_supported[i].product_id == desc->idProduct)) {
-            return 1;
+            return true;
         }
     }
-
-    return 0;
+    return false;
 }
 
 QList<Controller*> BulkEnumerator::queryDevices() {
     qDebug() << "Scanning USB Bulk devices:";
-
     libusb_device **list;
     ssize_t cnt = libusb_get_device_list(NULL, &list);
     ssize_t i = 0;
@@ -52,8 +46,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
 
         libusb_get_device_descriptor(device, &desc);
         if (is_interesting(&desc)) {
-            struct libusb_device_handle *handle;
-
+            struct libusb_device_handle *handle = NULL;
             err = libusb_open(device, &handle);
             if (err) {
                 qDebug() << "Error opening a device";
@@ -64,8 +57,6 @@ QList<Controller*> BulkEnumerator::queryDevices() {
             m_devices.push_back(currentDevice);
         }
     }
-
     libusb_free_device_list(list, 1);
-
     return m_devices;
 }
