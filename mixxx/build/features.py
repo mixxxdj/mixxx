@@ -43,7 +43,7 @@ class HSS1394(Feature):
                     return
 
         build.env.Append(CPPDEFINES = '__HSS1394__')
-        
+
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('user32')
 
@@ -105,6 +105,40 @@ class HID(Feature):
         elif build.platform_is_osx:
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
         return sources
+
+class Bulk(Feature):
+    def description(self):
+        return "USB Bulk controller support"
+
+    def enabled(self, build):
+        # For now only make Bulk default on Linux only. Turn on for all
+        # platforms after the 1.11.0 release.
+        is_default = 1 if build.platform_is_linux else 0
+        build.flags['bulk'] = util.get_flags(build.env, 'bulk', is_default)
+        if int(build.flags['bulk']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('bulk', 'Set to 1 to enable USB Bulk controller support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+        if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+            not conf.CheckHeader('libusb-1.0/libusb.h')):
+            raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
+
+        build.env.Append(CPPDEFINES = '__BULK__')
+
+    def sources(self, build):
+        sources = ['controllers/bulk/bulkcontroller.cpp',
+                   'controllers/bulk/bulkenumerator.cpp']
+
+        return sources
+
 
 class Mad(Feature):
     def description(self):
@@ -299,7 +333,7 @@ class MSVCDebug(Feature):
             #else:
             #    build.env.Append(CCFLAGS = '/MDd')
             build.env.Append(CCFLAGS = '/MDd')
-            
+
             build.env.Append(LINKFLAGS = '/DEBUG')
             build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
@@ -728,13 +762,13 @@ class Shoutcast(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-            
+
         libshout_found = conf.CheckLib(['libshout','shout'])
         build.env.Append(CPPDEFINES = '__SHOUTCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
-        
+
         # libvorbisenc only exists on Linux, OSX and mingw32 on Windows. On
         # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
         # libogg are included from build.py so don't add here.
@@ -742,7 +776,7 @@ class Shoutcast(Feature):
             vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-        
+
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')

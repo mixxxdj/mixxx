@@ -46,8 +46,7 @@ void Controller::startEngine()
     m_pEngine = new ControllerEngine(this);
 }
 
-void Controller::stopEngine()
-{
+void Controller::stopEngine() {
     if (debugging()) {
         qDebug() << "  Shutting down engine";
     }
