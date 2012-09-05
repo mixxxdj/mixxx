@@ -14,7 +14,7 @@ class PortAudio(Dependence):
 
         #Turn on PortAudio support in Mixxx
         build.env.Append(CPPDEFINES = '__PORTAUDIO__')
-        
+
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('advapi32')
 
@@ -71,7 +71,7 @@ class OggVorbis(Dependence):
             if not conf.CheckLib(['libvorbisfile', 'vorbisfile', 'libvorbisfile_static', 'vorbisfile_static']):
                 Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
                     'or the libvorbisfile development headers.')
-                
+
         if not build.msvcdebug or not conf.CheckLib(['libvorbis_static-debug','vorbis_static-debug','libvorbis-debug','vorbis-debug']):
             if not conf.CheckLib(['libvorbis', 'vorbis', 'libvorbis_static', 'vorbis_static']):
                 raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
@@ -104,10 +104,10 @@ class FLAC(Dependence):
             if not build.msvcdebug or not conf.CheckLib(['libFLAC-debug', 'FLAC-debug', 'libFLAC_static-debug', 'FLAC_static-debug']):
                 if not conf.CheckLib(['libFLAC', 'FLAC', 'libFLAC_static', 'FLAC_static']):
                     raise Exception('Did not find libFLAC development libraries')
-            
+
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES = 'FLAC__NO_DLL')
-        
+
         return
 
     def sources(self, build):
@@ -119,6 +119,14 @@ class Qt(Dependence):
                       'osx': '/Library/Frameworks',
                       'windows': 'C:\\qt\\4.6.0'}
 
+    @staticmethod
+    def find_framework_path(qtdir):
+        for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
+            core = os.path.join(d,'QtCore.framework')
+            if os.path.isdir(core):
+                return d
+        return None
+
     def satisfy(self):
         pass
 
@@ -127,36 +135,37 @@ class Qt(Dependence):
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
 
+        qt_modules = [
+            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
+            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtWebKit',
+            'QtNetwork'
+            #'QtUiTools', #'QtDesigner',
+        ]
+
         # Enable Qt include paths
         if build.platform_is_linux:
             if not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
 
-            #Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
             #(This hopefully respects our qtdir=blah flag while linking now.)
-            build.env.EnableQt4Modules(['QtCore',
-                                        'QtGui',
-                                        'QtOpenGL',
-                                        'QtXml',
-                                        'QtSvg',
-                                        'QtSql',
-                                        'QtScript',
-                                        'QtXmlPatterns',
-                                        'QtWebKit'
-                                        #'QtUiTools',
-                                        #'QtDesigner',
-                                        ],
-                                       debug=False)
+            build.env.EnableQt4Modules(qt_modules,debug=False)
+
         elif build.platform_is_osx:
-            build.env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
-            build.env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
-                                        '/Library/Frameworks/QtOpenGL.framework/Headers/',
-                                        '/Library/Frameworks/QtGui.framework/Headers/',
-                                        '/Library/Frameworks/QtXml.framework/Headers/',
-                                        '/Library/Frameworks/QtNetwork.framework/Headers/',
-                                        '/Library/Frameworks/QtSql.framework/Headers/',
-                                        '/Library/Frameworks/QtWebKit.framework/Headers/',
-                                        '/Library/Frameworks/QtScript.framework/Headers/'])
+            qtdir = build.env['QTDIR']
+            build.env.Append(
+                LINKFLAGS=' '.join('-framework %s' % m for m in qt_modules)
+            )
+            framework_path = Qt.find_framework_path(qtdir)
+            if not framework_path:
+                raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
+            # Necessary for raw includes of headers like #include <qobject.h>
+            build.env.Append(CPPPATH = [os.path.join(framework_path, '%s.framework' % m, 'Headers')
+                                        for m in qt_modules])
+            # Framework path needs to be altered for CCFLAGS as well since a
+            # header include of QtCore/QObject.h looks for a QtCore.framework on
+            # the search path and a QObject.h in QtCore.framework/Headers.
+            build.env.Append(CCFLAGS = ['-F%s' % os.path.join(framework_path)])
+            build.env.Append(LINKFLAGS = ['-F%s' % os.path.join(framework_path)])
 
         # Setup Qt library includes for non-OSX
         if build.platform_is_linux or build.platform_is_bsd:
@@ -169,7 +178,7 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
-            
+
             if build.msvcdebug:
                 # Since we use WebKit, that's only available dynamically
                 build.env.Append(LIBS = 'QtWebKitd4')
@@ -192,7 +201,7 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'QtScript4')
                 build.env.Append(LIBS = 'QtNetwork4')
                 build.env.Append(LIBS = 'QtOpenGL4')
-            
+
             # if build.static_dependencies:
                 # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
                 # # QtCore
@@ -233,7 +242,13 @@ class Qt(Dependence):
         if build.platform_is_osx:
             compiling_on_104 = (os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
-            build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
+            qtdir = build.env['QTDIR']
+            # TODO(XXX) should we use find_framework_path here or keep lib
+            # hardcoded?
+            framework_path = os.path.join(qtdir, 'lib')
+            if os.path.isdir(framework_path):
+                build.env.Append(LINKFLAGS = "-Wl,-rpath," + framework_path)
+                build.env.Append(LINKFLAGS = "-L," + framework_path)
 
         #QtSQLite DLL
         if build.platform_is_windows:
@@ -328,7 +343,7 @@ class TagLib(Dependence):
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
-        
+
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES = 'TAGLIB_STATIC')
 
@@ -765,16 +780,19 @@ class MixxxCore(Feature):
 
         elif build.platform_is_osx:
             #Stuff you may have compiled by hand
-            build.env.Append(LIBPATH = ['/usr/local/lib'])
-            build.env.Append(CPPPATH = ['/usr/local/include'])
+            if os.path.isdir('/usr/local/include'):
+                build.env.Append(LIBPATH = ['/usr/local/lib'])
+                build.env.Append(CPPPATH = ['/usr/local/include'])
 
             #Non-standard libpaths for fink and certain (most?) darwin ports
-            build.env.Append(LIBPATH = ['/sw/lib'])
-            build.env.Append(CPPPATH = ['/sw/include'])
+            if os.path.isdir('/sw/include'):
+                build.env.Append(LIBPATH = ['/sw/lib'])
+                build.env.Append(CPPPATH = ['/sw/include'])
 
             #Non-standard libpaths for darwin ports
-            build.env.Append(LIBPATH = ['/opt/local/lib'])
-            build.env.Append(CPPPATH = ['/opt/local/include'])
+            if os.path.isdir('/opt/local/include'):
+                build.env.Append(LIBPATH = ['/opt/local/lib'])
+                build.env.Append(CPPPATH = ['/opt/local/include'])
 
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
@@ -842,7 +860,7 @@ class MixxxCore(Feature):
                 if not build.static_dependencies or build.msvcdebug:
                     build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
                                                   '/nodefaultlib:LIBCMTd.lib'])
-                
+
                 build.env.Append(LINKFLAGS = '/entry:mainCRTStartup')
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
