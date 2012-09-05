@@ -222,7 +222,7 @@ class Qt(Dependence):
             # Since we use WebKit, that's only available dynamically
             qt_libs = ['QtCore4',
                        'QtGui4',
-                       'QtOpenGL4'
+                       'QtOpenGL4',
                        'QtXml4',
                        'QtWebKit4',
                        'QtNetwork4',
