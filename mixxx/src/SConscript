@@ -50,7 +50,7 @@ if build.platform_is_windows:
 
         if build.msvcdebug:
             str_list.append('#define DEBUG                       1\n')
-        if mixxx_version.lower().find('pre') != -1:
+        if 'pre' in mixxx_version.lower():
             str_list.append('#define PRERELEASE                  1\n')
 
         fo.write(''.join(str_list))
