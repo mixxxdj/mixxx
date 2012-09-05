@@ -139,7 +139,8 @@ int BulkController::open() {
     }
 
     /* Look up endpoint addresses in supported database */
-    for (int i = 0; bulk_supported[i].vendor_id; ++i) {
+    int i;
+    for (i = 0; bulk_supported[i].vendor_id; ++i) {
         if ((bulk_supported[i].vendor_id == vendor_id) &&
             (bulk_supported[i].product_id == product_id)) {
             in_epaddr = bulk_supported[i].in_epaddr;
