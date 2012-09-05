@@ -158,8 +158,13 @@ class Qt(Dependence):
             framework_path = Qt.find_framework_path(qtdir)
             if not framework_path:
                 raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
+            # Necessary for raw includes of headers like #include <qobject.h>
             build.env.Append(CPPPATH = [os.path.join(framework_path, '%s.framework' % m, 'Headers')
                                         for m in qt_modules])
+            # Framework path needs to be altered for CCFLAGS as well since a
+            # header include of QtCore/QObject.h looks for a QtCore.framework on
+            # the search path and a QObject.h in QtCore.framework/Headers.
+            build.env.Append(CCFLAGS = ['-F%s' % os.path.join(framework_path)])
             build.env.Append(LINKFLAGS = ['-F%s' % os.path.join(framework_path)])
 
         # Setup Qt library includes for non-OSX
