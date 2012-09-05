@@ -9,7 +9,7 @@ import subprocess
 import time
 import SCons.Script as SCons
 
-from build import util
+from build import util, depends
 
 mixxx_version = util.get_mixxx_version()
 branch_name = util.get_bzr_branch_name()
@@ -39,23 +39,23 @@ if build.platform_is_windows:
         # Remove anything after ~ or - in the version number and replace the dots with commas
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
         str_list.append(','+str(bazaar_revision)+'\n')
-        
+
         str_list.append('#define VER_PRODUCTVERSION          ')
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
         str_list.append(','+str(bazaar_revision)+'\n')
-        
+
         import datetime
         now = datetime.datetime.now()
         str_list.append('#define CUR_YEAR                    "'+str(now.year)+'"\n\n')
-        
+
         if build.msvcdebug:
             str_list.append('#define DEBUG                       1\n')
         if mixxx_version.lower().find('pre') != -1:
             str_list.append('#define PRERELEASE                  1\n')
-        
+
         fo.write(''.join(str_list))
         fo.close()
-        
+
         mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -327,7 +327,15 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         for tfile in translation_files:
                 resource_map[str(tfile)] = 'translations'
 
+        qtdir = build.env['QTDIR']
+        qt_frameworks = depends.Qt.find_framework_path(qtdir)
+        if not qt_frameworks:
+                raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
+        #qt_menu.nib for Cocoa Qt 4.7+
+        menu_nib = os.path.join(qt_frameworks, 'QtGui.framework',
+                                'Resources', 'qt_menu.nib')
         otool_local_paths = [os.path.expanduser("~/Library/Frameworks"),
+                             qt_frameworks,
                              "/Library/Frameworks",
                              "/Network/Library/Frameworks",
                              "/usr/local/lib",
@@ -342,7 +350,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 
         qtplugindir = SCons.ARGUMENTS.get('qtplugindir', None)
         if not qtplugindir:
-                qtplugindir = '/Developer/Applications/Qt/'
+                #qtplugindir = '/Developer/Applications/Qt/'
+                qtplugindir = qtdir
         bundle = env.App(
                 "Mixxx",
                 [mixxx_bin, '#res/osx/application.icns',
@@ -354,7 +363,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                  Dir('#res/ladspa_presets'),
                  Dir('#res/doc/'),
                  Dir('#res/promo/'),
-                 Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib'),  #qt_menu.nib for Cocoa Qt 4.7+
+                 Dir(menu_nib),
                  File("#README"),
                  File("#LICENSE")],
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
