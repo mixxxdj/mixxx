@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-08-07 00:15+0000\n"
-"Last-Translator: almonacilo <david@almocuba.com>\n"
+"PO-Revision-Date: 2012-09-05 00:28+0000\n"
+"Last-Translator: richiguada <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-12 04:43+0000\n"
-"X-Generator: Launchpad (build 15780)\n"
+"X-Launchpad-Export-Date: 2012-09-05 04:36+0000\n"
+"X-Generator: Launchpad (build 15901)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -4354,7 +4354,7 @@ msgstr "Salta al final de la pista."
 #: Tooltips#121
 msgctxt "Tooltips#121"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: Tooltips#122
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4370,7 +4370,7 @@ msgstr "Sincroniza el tempo (BPM) de esta pista, con la otra,"
 
 #: Tooltips#125
 msgid "Pitch Control"
-msgstr ""
+msgstr "Control del pitch"
 
 #: Tooltips#126
 msgid "Changes the track playback rate."
@@ -4407,7 +4407,7 @@ msgstr "Expulsa la pista del reproductor."
 #: Tooltips#133
 msgctxt "Tooltips#133"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#134
 msgid "If hotcue is set, jumps to the hotcue."
@@ -4536,7 +4536,7 @@ msgstr ""
 
 #: Tooltips#162
 msgid "Off - Cue points ignored."
-msgstr ""
+msgstr "Off - Los puntos CUE se ignoran"
 
 #: Tooltips#163
 msgid ""
@@ -4747,7 +4747,7 @@ msgstr ""
 
 #: WTrackTableView#8
 msgid "Properties"
-msgstr ""
+msgstr "Propiedades"
 
 #: WTrackTableView#9
 msgid "Open in File Browser"
@@ -4788,7 +4788,7 @@ msgstr "Cargar al deck %1"
 #: WTrackTableView#18
 msgctxt "WTrackTableView#18"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: WTrackTableView#19
 msgid ""
