@@ -125,18 +125,29 @@ void WaveformWidgetRenderer::onPreRender() {
     //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
 
-    //rate adjst may have change sampling per
-    updateVisualSamplingPerPixel();
+    //rate adjust may have change sampling per
+    //vRince for the moment only more than one sample per pixel is supported
+    //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
+    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
+    m_visualSamplePerPixel = math_max( 1.0, visualSamplePerPixel);
 
     if (m_trackInfoObject) {
-        updateAudioSamplingPerPixel();
-        double displayedLength = 2.0*(double)m_width * getAudioSamplePerPixel() / ((double)m_trackSamples);
-        m_firstDisplayedPosition = m_playPos - displayedLength / 2.0;
-        m_lastDisplayedPosition = m_playPos + displayedLength / 2.0;
+        m_audioSamplePerPixel = m_visualSamplePerPixel * m_trackInfoObject->getWaveform()->getAudioVisualRatio();
+    } else {
+        m_audioSamplePerPixel = 0.0;
+    }
+
+    if (m_audioSamplePerPixel) {
+        double trackPixel = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
+        double displayedLengthHalf = static_cast<double>(m_width) / trackPixel / 2.0;
+        // Avoid pixel jitter in play position by rounding to the nearest track
+        // pixel.
+        m_playPos = round(m_playPosControlObject->get() * trackPixel) / trackPixel;
+        m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
+        m_lastDisplayedPosition = m_playPos + displayedLengthHalf;
         m_rendererTransformationOffset = - m_firstDisplayedPosition;
         m_rendererTransformationGain = m_width / (m_lastDisplayedPosition - m_firstDisplayedPosition);
-    }
-    else {
+    } else {
         m_firstDisplayedPosition = 0.0;
         m_lastDisplayedPosition = 0.0;
         m_rendererTransformationOffset = 0.0;
@@ -157,12 +168,11 @@ void WaveformWidgetRenderer::onPreRender() {
 void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
-    m_lastSystemFrameTime = m_timer->elapsed();
-    m_timer->restart();
+    m_lastSystemFrameTime = m_timer->restart();
 #endif
 
     //not ready to display need to wait until track initialization is done
-    //draw only first is stack (backgroung)
+    //draw only first is stack (background)
     if( m_trackSamples < 0.0) {
         if( !m_rendererStack.empty())
             m_rendererStack[0]->draw( painter, event);
@@ -199,8 +209,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
                       QString::number(m_rateDir) + " | " +
                       QString::number(m_zoomFactor));
 
-    m_lastFrameTime = m_timer->elapsed();
-    m_timer->restart();
+    m_lastFrameTime = m_timer->restart();
 
     ++currentFrame;
     currentFrame = currentFrame%100;
@@ -234,31 +243,10 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = zoom;
     m_zoomFactor = math_max( s_waveformMinZoom, math_min( m_zoomFactor, s_waveformMaxZoom));
-    updateVisualSamplingPerPixel();
-    updateAudioSamplingPerPixel();
-}
-
-//vRince for the moment only more than one sample per pixel is supported
-//due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
-void WaveformWidgetRenderer::updateVisualSamplingPerPixel() {
-    m_visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
-    m_visualSamplePerPixel = math_max( 1.0, m_visualSamplePerPixel);
-}
-
-void WaveformWidgetRenderer::updateAudioSamplingPerPixel() {
-    if( !m_trackInfoObject) {
-        m_audioSamplePerPixel = 0.0;
-        return;
-    }
-    m_audioSamplePerPixel = getVisualSamplePerPixel()*m_trackInfoObject->getWaveform()->getAudioVisualRatio();
 }
 
 double WaveformWidgetRenderer::getVisualSamplePerPixel() const {
     return m_visualSamplePerPixel;
-}
-
-double WaveformWidgetRenderer::getAudioSamplePerPixel() const {
-    return m_audioSamplePerPixel;
 }
 
 void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {
@@ -266,14 +254,6 @@ void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {
         return;
 
     sampleIndex -= sampleIndex%(2*int(m_visualSamplePerPixel));
-}
-
-void WaveformWidgetRenderer::regulateAudioSample(int& sampleIndex) const
-{
-    if( m_audioSamplePerPixel < 1.0)
-        return;
-
-    sampleIndex -= sampleIndex%(2*(int)m_audioSamplePerPixel);
 }
 
 double WaveformWidgetRenderer::transformSampleIndexInRendererWorld( int sampleIndex) const
