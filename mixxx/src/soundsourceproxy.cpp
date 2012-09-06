@@ -172,65 +172,86 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
-    QLibrary* plugin;
-    if (m_plugins.contains(lib_filename))
-    	plugin = m_plugins.value(lib_filename);
-    else {
-    	plugin = new QLibrary(lib_filename);
-        if (!plugin->load()) {
-            qDebug() << "Failed to dynamically load" << lib_filename << plugin->errorString();
-        } else {
-            qDebug() << "Dynamically loaded" << lib_filename;
-            //Add the plugin to our list of loaded QLibraries/plugins
-            m_plugins.insert(lib_filename, plugin);
 
-            bool incompatible = false;
-            //Plugin API version check
-            getSoundSourceAPIVersionFunc getver = (getSoundSourceAPIVersionFunc)plugin->resolve("getSoundSourceAPIVersion");
-            if (getver) {
-                int pluginAPIVersion = getver();
-                if (pluginAPIVersion != MIXXX_SOUNDSOURCE_API_VERSION) {
-                    //SoundSource API version mismatch
-                    incompatible = true;
-                }
-            } else {
-                //Missing getSoundSourceAPIVersion symbol
-                incompatible = true;
-            }
-            if (incompatible)
-            {
-                //Plugin is using an older/incompatible version of the
-                //plugin API!
-                qDebug() << "Plugin" << lib_filename << "is incompatible with your version of Mixxx!";
-                return NULL;
-            }
-
-            //Map the file extensions this plugin supports onto a function
-            //pointer to the "getter" function that gets a SoundSourceBlah.
-            getSoundSourceFunc getter = (getSoundSourceFunc)plugin->resolve("getSoundSource");
-            Q_ASSERT(getter); //Getter function not found.
-                              //Did you export it properly in your plugin?
-            getSupportedFileExtensionsFunc getFileExts = (getSupportedFileExtensionsFunc)plugin->resolve("supportedFileExtensions");
-            Q_ASSERT(getFileExts);
-            freeFileExtensionsFunc freeFileExts =
-                reinterpret_cast<freeFileExtensionsFunc>(
-                    plugin->resolve("freeFileExtensions"));
-            Q_ASSERT(freeFileExts);
-            char** supportedFileExtensions = getFileExts();
-            int i = 0;
-            while (supportedFileExtensions[i] != NULL)
-            {
-                qDebug() << "Plugin supports:" << supportedFileExtensions[i];
-                m_extensionsSupportedByPlugins.insert(QString(supportedFileExtensions[i]), getter);
-                i++;
-            }
-            freeFileExts(supportedFileExtensions);
-            //So now we have a list of file extensions (eg. "m4a", "mp4", etc)
-            //that map onto the getter function for this plugin (eg. the
-            //function that returns a SoundSourceM4A object)
-        }
+    if (m_plugins.contains(lib_filename)) {
+    	return m_plugins.value(lib_filename);
     }
-    return plugin;
+    QScopedPointer<QLibrary> plugin(new QLibrary(lib_filename));
+    if (!plugin->load()) {
+	qDebug() << "Failed to dynamically load" << lib_filename << plugin->errorString();
+	return NULL;
+    }
+    qDebug() << "Dynamically loaded" << lib_filename;
+
+    bool incompatible = false;
+    //Plugin API version check
+    getSoundSourceAPIVersionFunc getver = (getSoundSourceAPIVersionFunc)
+	    plugin->resolve("getSoundSourceAPIVersion");
+    if (getver) {
+	int pluginAPIVersion = getver();
+	if (pluginAPIVersion != MIXXX_SOUNDSOURCE_API_VERSION) {
+	    //SoundSource API version mismatch
+	    incompatible = true;
+	}
+    } else {
+	//Missing getSoundSourceAPIVersion symbol
+	incompatible = true;
+    }
+    if (incompatible)
+    {
+	//Plugin is using an older/incompatible version of the
+	//plugin API!
+	qDebug() << "Plugin" << lib_filename << "is incompatible with your version of Mixxx!";
+	return NULL;
+    }
+
+    //Map the file extensions this plugin supports onto a function
+    //pointer to the "getter" function that gets a SoundSourceBlah.
+    getSoundSourceFunc getter = (getSoundSourceFunc)
+	    plugin->resolve("getSoundSource");
+    // Getter function not found.
+    if (getter == NULL) {
+	qDebug() << "ERROR: Couldn't resolve getter function. Plugin"
+		 << lib_filename << "corrupt.";
+	return NULL;
+    }
+
+    // Did you export it properly in your plugin?
+    getSupportedFileExtensionsFunc getFileExts = (getSupportedFileExtensionsFunc)
+	    plugin->resolve("supportedFileExtensions");
+    if (getFileExts == NULL) {
+	qDebug() << "ERROR: Couldn't resolve getFileExts function. Plugin"
+		 << lib_filename << "corrupt.";
+	return NULL;
+    }
+
+    freeFileExtensionsFunc freeFileExts =
+	    reinterpret_cast<freeFileExtensionsFunc>(
+		plugin->resolve("freeFileExtensions"));
+    if (freeFileExts == NULL) {
+	qDebug() << "ERROR: Couldn't resolve freeFileExts function. Plugin"
+		 << lib_filename << "corrupt.";
+	return NULL;
+    }
+
+    char** supportedFileExtensions = getFileExts();
+    int i = 0;
+    while (supportedFileExtensions[i] != NULL) {
+	qDebug() << "Plugin supports:" << supportedFileExtensions[i];
+	m_extensionsSupportedByPlugins.insert(QString(supportedFileExtensions[i]), getter);
+	i++;
+    }
+    freeFileExts(supportedFileExtensions);
+
+    QLibrary* pPlugin = plugin.take();
+    // Add the plugin to our list of loaded QLibraries/plugins and take
+    // ownership of the QLibrary from its QScopedPointer so it is not deleted.
+    m_plugins.insert(lib_filename, pPlugin);
+
+    // So now we have a list of file extensions (eg. "m4a", "mp4", etc) that map
+    // onto the getter function for this plugin (eg. the function that returns a
+    // SoundSourceM4A object)
+    return pPlugin;
 }
 
 

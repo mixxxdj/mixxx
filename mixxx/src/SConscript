@@ -50,7 +50,7 @@ if build.platform_is_windows:
 
         if build.msvcdebug:
             str_list.append('#define DEBUG                       1\n')
-        if mixxx_version.lower().find('pre') != -1:
+        if 'pre' in mixxx_version.lower():
             str_list.append('#define PRERELEASE                  1\n')
 
         fo.write(''.join(str_list))
@@ -668,6 +668,11 @@ def BuildUbuntuPackage(target, source, env):
                 print "* Applying post export patch"
                 print
                 os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
+
+        # Write a build.h to the exported directory. Later code looks for a
+        # build.h in the mixxx/ directory and moves it to build.build_dir/
+        # instead of generating.
+        util.write_build_header(os.path.join(build_dir, 'build.h'))
 
         os.chdir('ubuntu')
 

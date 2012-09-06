@@ -37,10 +37,14 @@ class HSS1394(Feature):
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
-            if not build.msvcdebug or not conf.CheckLib(['libhss1394-debug', 'hss1394-debug', 'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']):
-                if not conf.CheckLib(['libhss1394', 'hss1394', 'libHSS1394_x64_Release', 'libHSS1394_x86_Release']):
-                    raise Exception('Did not find HSS1394 development library')
-                    return
+            libs = ['libhss1394', 'hss1394']
+            if build.platform_is_windows:
+                if build.msvcdebug:
+                    libs = ['libhss1394-debug', 'hss1394-debug', 'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']
+                else:
+                    libs = ['libhss1394', 'hss1394', 'libHSS1394_x64_Release', 'libHSS1394_x86_Release']
+            if not conf.CheckLib(libs):
+                raise Exception('Did not find HSS1394 development library')
 
         build.env.Append(CPPDEFINES = '__HSS1394__')
 

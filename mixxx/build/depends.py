@@ -8,9 +8,11 @@ import SCons.Script as SCons
 class PortAudio(Dependence):
 
     def configure(self, build, conf):
-        if not build.msvcdebug or not conf.CheckLib(['portaudiod','portaudio-debug']):
-            if not conf.CheckLib('portaudio'):
-                raise Exception('Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files.')
+        libs = ['portaudio']
+        if build.msvcdebug:
+            libs = ['portaudiod','portaudio-debug']
+        if not conf.CheckLib(libs):
+            raise Exception('Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files.')
 
         #Turn on PortAudio support in Mixxx
         build.env.Append(CPPDEFINES = '__PORTAUDIO__')
@@ -24,15 +26,31 @@ class PortAudio(Dependence):
 class PortMIDI(Dependence):
 
     def configure(self, build, conf):
-        #Check for PortTime
-        if not build.msvcdebug or not conf.CheckLib(['porttimed','porttime-debug']):
-            if not conf.CheckLib(['porttime', 'libporttime']) and \
-                    not conf.CheckHeader(['porttime.h']):
-                raise Exception("Did not find PortTime or its development headers.")
-        if not build.msvcdebug or not conf.CheckLib(['portmidi_sd','portmidi_s-debug','portmidid','portmidi-debug']):
-            if not conf.CheckLib(['portmidi_s','portmidi', 'libportmidi']) and \
-                    not conf.CheckHeader(['portmidi.h']):
-                raise Exception('Did not find PortMidi or its development headers.')
+        # Check for PortTime
+        libs = ['porttime', 'libporttime']
+        headers = ['porttime.h']
+        if build.msvcdebug:
+            libs = ['porttimed', 'porttime-debug']
+
+        # Depending on the library configuration PortTime might be statically
+        # linked with PortMidi. We treat either presence of the lib or the
+        # header as success.
+        if not conf.CheckLib(libs) and not conf.CheckHeader(headers):
+            raise Exception("Did not find PortTime or its development headers.")
+
+        # Check for PortMidi
+        libs = ['portmidi', 'libportmidi']
+        headers = ['portmidi.h']
+        if build.platform_is_windows:
+            # We have this special branch here because on Windows we might want
+            # to link PortMidi statically which we don't want to do on other
+            # platforms.
+            if build.msvcdebug:
+                libs = ['portmidi_sd', 'portmidi_s-debug', 'portmidid', 'portmidi-debug']
+            else:
+                libs = ['portmidi_s','portmidi', 'libportmidi']
+        if not conf.CheckLib(libs) or not conf.CheckHeader(headers):
+            raise Exception("Did not find PortMidi or its development headers.")
 
     def sources(self, build):
         return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
@@ -67,18 +85,33 @@ class OggVorbis(Dependence):
 #            if not conf.CheckLib('vorbisfile_static'):
 #                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
 #        else:
-        if not build.msvcdebug or not conf.CheckLib(['libvorbisfile_static-debug','vorbisfile_static-debug','vorbisfile-debug','libvorbisfile-debug']):
-            if not conf.CheckLib(['libvorbisfile', 'vorbisfile', 'libvorbisfile_static', 'vorbisfile_static']):
-                Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
-                    'or the libvorbisfile development headers.')
+        libs = ['libvorbisfile', 'vorbisfile']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libvorbisfile_static-debug','vorbisfile_static-debug','vorbisfile-debug','libvorbisfile-debug']
+            else:
+                libs = ['libvorbisfile', 'vorbisfile', 'libvorbisfile_static', 'vorbisfile_static']
+        if not conf.CheckLib(libs):
+            Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
+                      'or the libvorbisfile development headers.')
 
-        if not build.msvcdebug or not conf.CheckLib(['libvorbis_static-debug','vorbis_static-debug','libvorbis-debug','vorbis-debug']):
-            if not conf.CheckLib(['libvorbis', 'vorbis', 'libvorbis_static', 'vorbis_static']):
-                raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
+        libs = ['libvorbis', 'vorbis']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libvorbis_static-debug','vorbis_static-debug','libvorbis-debug','vorbis-debug']
+            else:
+                libs = ['libvorbis', 'vorbis', 'libvorbis_static', 'vorbis_static']
+        if not conf.CheckLib(libs):
+            raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbis development headers.')
 
-        if not build.msvcdebug or not conf.CheckLib(['libogg_static-debug','ogg_static-debug','ogg-debug','libogg-debug']):
-            if not conf.CheckLib(['libogg', 'ogg', 'libogg_static', 'ogg_static']):
-                raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers')
+        libs = ['libogg', 'ogg']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libogg_static-debug','ogg_static-debug','ogg-debug','libogg-debug']
+            else:
+                libs = ['libogg', 'ogg', 'libogg_static', 'ogg_static']
+        if not conf.CheckLib(libs):
+            raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers')
 
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
@@ -100,15 +133,17 @@ class FLAC(Dependence):
     def configure(self, build, conf):
         if not conf.CheckHeader('FLAC/stream_decoder.h'):
             raise Exception('Did not find libFLAC development headers')
-        else:
-            if not build.msvcdebug or not conf.CheckLib(['libFLAC-debug', 'FLAC-debug', 'libFLAC_static-debug', 'FLAC_static-debug']):
-                if not conf.CheckLib(['libFLAC', 'FLAC', 'libFLAC_static', 'FLAC_static']):
-                    raise Exception('Did not find libFLAC development libraries')
+        libs = ['libFLAC', 'FLAC']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libFLAC-debug', 'FLAC-debug', 'libFLAC_static-debug', 'FLAC_static-debug']
+            else:
+                libs = ['libFLAC', 'FLAC', 'libFLAC_static', 'FLAC_static']
+        if not conf.CheckLib(libs):
+            raise Exception('Did not find libFLAC development libraries')
 
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES = 'FLAC__NO_DLL')
-
-        return
 
     def sources(self, build):
         return ['soundsourceflac.cpp',]
@@ -134,6 +169,11 @@ class Qt(Dependence):
         # Emit various Qt defines
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
+
+        # TODO(XXX) what is with the slightly differing modules used for each
+        # platform here? Document the differences and make them all
+        # programmatically driven from one list instead of hard-coded multiple
+        # times.
 
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
@@ -169,38 +209,31 @@ class Qt(Dependence):
 
         # Setup Qt library includes for non-OSX
         if build.platform_is_linux or build.platform_is_bsd:
-            build.env.Append(LIBS = 'QtXml')
-            build.env.Append(LIBS = 'QtGui')
             build.env.Append(LIBS = 'QtCore')
-            build.env.Append(LIBS = 'QtNetwork')
+            build.env.Append(LIBS = 'QtGui')
             build.env.Append(LIBS = 'QtOpenGL')
+            build.env.Append(LIBS = 'QtXml')
             build.env.Append(LIBS = 'QtWebKit')
+            build.env.Append(LIBS = 'QtNetwork')
+
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
+            # Since we use WebKit, that's only available dynamically
+            qt_libs = ['QtCore4',
+                       'QtGui4',
+                       'QtOpenGL4',
+                       'QtXml4',
+                       'QtWebKit4',
+                       'QtNetwork4',
+                       'QtXmlPatterns4',
+                       'QtSql4',
+                       'QtScript4',]
 
+            # Use the debug versions of the libs if we are building in debug mode.
             if build.msvcdebug:
-                # Since we use WebKit, that's only available dynamically
-                build.env.Append(LIBS = 'QtWebKitd4')
-                build.env.Append(LIBS = 'QtXmld4')
-                build.env.Append(LIBS = 'QtXmlPatternsd4')
-                build.env.Append(LIBS = 'QtSqld4')
-                build.env.Append(LIBS = 'QtGuid4')
-                build.env.Append(LIBS = 'QtCored4')
-                build.env.Append(LIBS = 'QtScriptd4')
-                build.env.Append(LIBS = 'QtNetworkd4')
-                build.env.Append(LIBS = 'QtOpenGLd4')
-            else:
-                # Since we use WebKit, that's only available dynamically
-                build.env.Append(LIBS = 'QtWebKit4')
-                build.env.Append(LIBS = 'QtXml4')
-                build.env.Append(LIBS = 'QtXmlPatterns4')
-                build.env.Append(LIBS = 'QtSql4')
-                build.env.Append(LIBS = 'QtGui4')
-                build.env.Append(LIBS = 'QtCore4')
-                build.env.Append(LIBS = 'QtScript4')
-                build.env.Append(LIBS = 'QtNetwork4')
-                build.env.Append(LIBS = 'QtOpenGL4')
+                qt_libs = [lib.replace('4', 'd4') for lib in qt_libs]
+            build.env.Append(LIBS=qt_libs)
 
             # if build.static_dependencies:
                 # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
@@ -227,12 +260,12 @@ class Qt(Dependence):
         if not build.platform_is_osx:
             build.env.Append(CPPPATH=['$QTDIR/include/QtCore',
                                       '$QTDIR/include/QtGui',
-                                      '$QTDIR/include/QtXml',
-                                      '$QTDIR/include/QtNetwork',
-                                      '$QTDIR/include/QtScript',
-                                      '$QTDIR/include/QtSql',
                                       '$QTDIR/include/QtOpenGL',
+                                      '$QTDIR/include/QtXml',
                                       '$QTDIR/include/QtWebKit',
+                                      '$QTDIR/include/QtNetwork',
+                                      '$QTDIR/include/QtSql',
+                                      '$QTDIR/include/QtScript',
                                       '$QTDIR/include/Qt'])
 
         # Set the rpath for linux/bsd/osx.
@@ -334,9 +367,11 @@ class SoundTouch(Dependence):
 
 class TagLib(Dependence):
     def configure(self, build, conf):
-        if not build.msvcdebug or not conf.CheckLib(['tag-debug']):
-            if not conf.CheckLib('tag'):
-                raise Exception("Could not find libtag or its development headers.")
+        libs = ['tag']
+        if build.msvcdebug:
+            libs = ['tag-debug']
+        if not conf.CheckLib(libs):
+            raise Exception("Could not find libtag or its development headers.")
 
         # Karmic seems to have an issue with mp4tag.h where they don't include
         # the files correctly. Adding this folder ot the include path should fix
@@ -349,9 +384,11 @@ class TagLib(Dependence):
 
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
-        if not build.msvcdebug or not conf.CheckLib(['libprotobuf-lite-debug','protobuf-lite-debug','libprotobuf-debug','protobuf-debug']):
-            if not conf.CheckLib(['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']):
-                raise Exception("Could not find libprotobuf or its development headers.")
+        libs = ['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']
+        if build.msvcdebug:
+            libs = ['libprotobuf-lite-debug','protobuf-lite-debug','libprotobuf-debug','protobuf-debug']
+        if not conf.CheckLib(libs):
+            raise Exception("Could not find libprotobuf or its development headers.")
 
 class MixxxCore(Feature):
 
