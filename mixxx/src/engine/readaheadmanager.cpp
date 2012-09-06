@@ -20,8 +20,10 @@ ReadAheadManager::~ReadAheadManager() {
 
 int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                                      int requested_samples) {
-    Q_ASSERT(even(requested_samples));
-
+    if (!even(requested_samples)) {
+        qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
+        requested_samples--;
+    }
     bool in_reverse = dRate < 0;
     int start_sample = m_iCurrentPosition;
     //qDebug() << "start" << start_sample << requested_samples;
@@ -55,9 +57,15 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }*/
     }
 
-    // Sanity checks
+    // Sanity checks.
+
+    // This check is no longer valid since pre-roll is transparently provided by
+    // CachingReader.
     //Q_ASSERT(start_sample >= 0);
-    Q_ASSERT(samples_needed >= 0);
+    if (samples_needed < 0) {
+        qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
+        return 0;
+    }
 
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
@@ -109,7 +117,9 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 }
 
 void ReadAheadManager::addEngineControl(EngineControl* pControl) {
-    Q_ASSERT(pControl);
+    if (pControl == NULL) {
+        return;
+    }
     m_sEngineControls.append(pControl);
 }
 
