@@ -25,6 +25,7 @@ class EngineClipping : public EngineObject
 private:
     bool clipped;
     ControlPotmeter *m_ctrlClipping;
+    int m_duration;
 public:
     EngineClipping(const char *group);
     ~EngineClipping();
