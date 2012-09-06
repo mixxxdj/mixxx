@@ -1,12 +1,12 @@
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
+#include <QPainter>
 
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
 #include "widget/wwidget.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "defs.h"
-
-#include <QPainter>
+#include "mathstuff.h"
 
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
