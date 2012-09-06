@@ -113,3 +113,16 @@ def CheckForPKG( context, name, version="" ):
         ret = context.TryAction( "pkg-config --atleast-version=%s '%s'" % (version,name) )[0]
         context.Result( ret )
     return ret
+
+def write_build_header(path):
+    f = open(path, 'w')
+    try:
+        branch_name = get_bzr_branch_name()
+        modified = get_bzr_modified() > 0
+        # Do not emit BUILD_BRANCH on release branches.
+        if not branch_name.startswith('release'):
+            f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
+        f.write('#define BUILD_REV "%s%s"\n' % (util.get_bzr_revision(),
+                                                '+' if modified else ''))
+    finally:
+        f.close()

@@ -669,8 +669,10 @@ def BuildUbuntuPackage(target, source, env):
                 print
                 os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
 
-        # Copy build.h to the build directory.
-        os.system('cp src/build.h %s/src/' % build_dir)
+        # Write a build.h to the exported directory. Later code looks for a
+        # build.h in the mixxx/ directory and moves it to build.build_dir/
+        # instead of generating.
+        util.write_build_header(os.path.join(build_dir, 'build.h'))
 
         os.chdir('ubuntu')
 
