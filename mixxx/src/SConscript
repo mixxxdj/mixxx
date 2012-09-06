@@ -669,6 +669,9 @@ def BuildUbuntuPackage(target, source, env):
                 print
                 os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
 
+        # Copy build.h to the build directory.
+        os.system('cp src/build.h %s/src/' % build_dir)
+
         os.chdir('ubuntu')
 
         # Tar the source code
