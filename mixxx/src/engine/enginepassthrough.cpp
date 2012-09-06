@@ -91,7 +91,7 @@ void EnginePassthrough::receiveBuffer(AudioInput input, const short* pBuffer, un
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the deck spits out samples just as fast as they
         // come in, right?
-        Q_ASSERT(false);
+        qWarning() << "ERROR: Buffer overflow in EnginePassthrough. Dropping samples on the floor.";
     }
 }
 
@@ -107,7 +107,8 @@ void EnginePassthrough::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, c
             // Buffer underflow. There aren't getting samples fast enough. This
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
-            Q_ASSERT(false);
+            qWarning() << "ERROR: Buffer underflow in EnginePassthrough. Playing silence.";
+            SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
         }
     } else {
         SampleUtil::applyGain(pOut, 0.0, iBufferSize);

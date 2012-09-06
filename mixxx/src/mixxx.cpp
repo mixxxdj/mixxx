@@ -1432,9 +1432,9 @@ void MixxxApp::rebootMixxxView() {
     slotOptionsFullScreen(false);
 
     //delete the view cause swaping central widget do not remove the old one !
-    if( m_pView)
+    if (m_pView) {
         delete m_pView;
-
+    }
     m_pView = new QFrame();
 
     // assignment in next line intentional
