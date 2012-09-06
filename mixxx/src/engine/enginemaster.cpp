@@ -113,6 +113,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
         ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
     xFaderCalibration = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+    xFaderReverse = new ControlPotmeter(
+        ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
 }
 
 EngineMaster::~EngineMaster()
@@ -127,7 +129,8 @@ EngineMaster::~EngineMaster()
     delete vumeter;
     delete head_clipping;
     delete sidechain;
-
+    
+    delete xFaderReverse;
     delete xFaderCalibration;
     delete xFaderCurve;
     delete xFaderMode;
@@ -382,7 +385,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     EngineXfader::getXfadeGains(c1_gain, c2_gain,
                                 crossfader->get(), xFaderCurve->get(),
                                 xFaderCalibration->get(),
-                                xFaderMode->get()==MIXXX_XFADER_CONSTPWR);
+                                xFaderMode->get()==MIXXX_XFADER_CONSTPWR,
+                                xFaderReverse->get()==1.0);
 
     // Now set the gains for overall volume and the left, center, right gains.
     m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);

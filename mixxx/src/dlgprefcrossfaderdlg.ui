@@ -187,6 +187,19 @@
         </item>
        </layout>
       </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxReverse">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Reverse crossfader (hamster style)</string>
+        </property>
+       </widget>
+      </item>
      </layout>
      <zorder>radioButtonConstantPower</zorder>
      <zorder>radioButtonAdditive</zorder>
