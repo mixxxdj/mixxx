@@ -455,8 +455,6 @@ void LoopingControl::slotLoopEndPos(double pos) {
 
 void LoopingControl::notifySeek(double dNewPlaypos) {
     if (m_bLoopingEnabled) {
-        Q_ASSERT(m_iLoopStartSample != -1);
-        Q_ASSERT(m_iLoopEndSample != -1);
         if (dNewPlaypos < m_iLoopStartSample || dNewPlaypos > m_iLoopEndSample) {
             setLoopingEnabled(false);
         }
