@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-09-05 00:28+0000\n"
+"PO-Revision-Date: 2012-09-06 01:53+0000\n"
 "Last-Translator: richiguada <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-05 04:36+0000\n"
-"X-Generator: Launchpad (build 15901)\n"
+"X-Launchpad-Export-Date: 2012-09-06 04:34+0000\n"
+"X-Generator: Launchpad (build 15909)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3695,7 +3695,7 @@ msgstr ""
 
 #: PlaylistFeature#8
 msgid "Create new playlist"
-msgstr ""
+msgstr "Crear nueva lista de reproducción"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
