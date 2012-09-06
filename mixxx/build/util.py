@@ -122,7 +122,7 @@ def write_build_header(path):
         # Do not emit BUILD_BRANCH on release branches.
         if not branch_name.startswith('release'):
             f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
-        f.write('#define BUILD_REV "%s%s"\n' % (util.get_bzr_revision(),
+        f.write('#define BUILD_REV "%s%s"\n' % (get_bzr_revision(),
                                                 '+' if modified else ''))
     finally:
         f.close()
