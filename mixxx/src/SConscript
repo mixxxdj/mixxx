@@ -101,6 +101,8 @@ def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
         # In release mode, we only use the version.
         if build.build_is_release:
                 return mixxx_version
+        elif branch_name.startswith('release-'):
+                return '%s-bzr%s' % (mixxx_version, bazaar_revision)
         # In a debug build, include the branch name and revision number
         return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
