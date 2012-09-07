@@ -112,7 +112,7 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
         if build.build_is_release:
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
-                return "%s-%s~bzr%s" % (mixxx_version, ubuntu_version, bazaar_revision)
+                return "%s-bzr%s" % (mixxx_version, bazaar_revision)
         # In a debug build, include the branch name and revision number
         return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
                                    branch_name, bazaar_revision)
@@ -121,6 +121,8 @@ def windows_construct_version(build, mixxx_version, branch_name, bazaar_revision
         # In release mode, we only use the version
         if build.build_is_release:
                 return mixxx_version
+        elif branch_name.startswith('release-'):
+                return '%s-bzr%s' % (mixxx_version, bazaar_revision)
         # In a debug build, include the branch name and revision number
         return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
