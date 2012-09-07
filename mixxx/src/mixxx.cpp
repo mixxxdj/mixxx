@@ -329,6 +329,9 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
+    
+    (new ControlObject(ConfigKey("[Spinny1]", "show_spinny")))->set(1);
+    (new ControlObject(ConfigKey("[Spinny2]", "show_spinny")))->set(1);
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, m_pConfig);
