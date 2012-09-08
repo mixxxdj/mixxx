@@ -4,14 +4,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-08-13 05:58+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2012-09-07 17:39+0000\n"
+"Last-Translator: Daniel Schürmann <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-14 04:34+0000\n"
-"X-Generator: Launchpad (build 15791)\n"
+"X-Launchpad-Export-Date: 2012-09-08 04:35+0000\n"
+"X-Generator: Launchpad (build 15914)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -2062,11 +2062,11 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr "Anfängliche Anhebung"
+msgstr "Vorab-Anhebung"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr "Anfängliche Gain-Anhebung"
+msgstr "Vorab-Gain-Anhebung"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
