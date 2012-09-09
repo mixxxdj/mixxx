@@ -313,9 +313,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel1]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -326,9 +323,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel1]</group>
                 <key>cue_default</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -339,9 +333,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel1]</group>
                 <key>beatsync</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -352,9 +343,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel1]</group>
                 <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -365,9 +353,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -379,9 +364,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel1]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -392,9 +374,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>-0.1</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -406,9 +385,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel2]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -419,9 +395,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel2]</group>
                 <key>cue_default</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -432,9 +405,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel2]</group>
                 <key>beatsync</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -445,9 +415,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -458,9 +425,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel2]</group>
                 <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -472,9 +436,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
             <output>
                 <group>[Channel2]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -485,9 +446,6 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
 	    <output>
                 <group>[Channel2]</group>
                 <key>rate</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>-0.1</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>

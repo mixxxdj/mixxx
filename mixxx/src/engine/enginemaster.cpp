@@ -54,6 +54,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Latency control
     m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"));
+    m_pMasterUnderflowCount = new ControlObject(ConfigKey(group, "underflow_count"));
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);

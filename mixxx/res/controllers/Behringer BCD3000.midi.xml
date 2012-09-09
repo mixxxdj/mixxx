@@ -483,9 +483,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -496,9 +493,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>filterHighKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -509,9 +503,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>loop_enabled</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -522,9 +513,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>filterMidKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -535,9 +523,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -548,9 +533,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>cue_default</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -561,9 +543,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -574,9 +553,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>filterMidKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -587,9 +563,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>filterHighKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -600,9 +573,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>cue_default</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -613,9 +583,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -626,9 +593,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -639,9 +603,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -652,9 +613,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -665,9 +623,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>loop_enabled</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -678,9 +633,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
