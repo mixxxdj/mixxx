@@ -17,7 +17,11 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
-v1.11.0.09	(04/08/2012)
+v1.11.0.07	(09/09/2012)
+* Feature: Support beatlooproll_X_activate , lp:703585
+  Right-click of the loop buttons now activates a rolling loop.
+
+v1.11.0.06	(04/08/2012)
 * Fix: Show correct tooltip for artist/track name display in sample decks
 
 v1.11.0.05	(25/05/2012)
