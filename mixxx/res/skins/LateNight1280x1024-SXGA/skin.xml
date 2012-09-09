@@ -4259,6 +4259,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_0125.png</Pressed>
@@ -4274,7 +4275,11 @@
 							<ConfigKey>[Channel1],beatloop_0.125_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_0.125_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_0.125_enabled</ConfigKey>
@@ -4286,6 +4291,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_0250.png</Pressed>
@@ -4301,7 +4307,11 @@
 							<ConfigKey>[Channel1],beatloop_0.25_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_0.25_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_0.25_enabled</ConfigKey>
@@ -4313,6 +4323,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_0500.png</Pressed>
@@ -4328,7 +4339,11 @@
 							<ConfigKey>[Channel1],beatloop_0.5_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_0.5_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_0.5_enabled</ConfigKey>
@@ -4340,6 +4355,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_1.png</Pressed>
@@ -4355,7 +4371,11 @@
 							<ConfigKey>[Channel1],beatloop_1_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_1_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_1_enabled</ConfigKey>
@@ -4367,6 +4387,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_2.png</Pressed>
@@ -4382,7 +4403,11 @@
 							<ConfigKey>[Channel1],beatloop_2_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_2_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_2_enabled</ConfigKey>
@@ -4394,6 +4419,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_4.png</Pressed>
@@ -4409,7 +4435,11 @@
 							<ConfigKey>[Channel1],beatloop_4_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_4_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_4_enabled</ConfigKey>
@@ -4421,6 +4451,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_8.png</Pressed>
@@ -4436,7 +4467,11 @@
 							<ConfigKey>[Channel1],beatloop_8_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_8_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_8_enabled</ConfigKey>
@@ -4448,6 +4483,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop1_16.png</Pressed>
@@ -4463,7 +4499,11 @@
 							<ConfigKey>[Channel1],beatloop_16_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatlooproll_16_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel1],beatloop_16_enabled</ConfigKey>
@@ -5202,6 +5242,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_0125.png</Pressed>
@@ -5217,7 +5258,11 @@
 							<ConfigKey>[Channel2],beatloop_0.125_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_0.125_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_0.125_enabled</ConfigKey>
@@ -5229,6 +5274,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_0250.png</Pressed>
@@ -5244,7 +5290,11 @@
 							<ConfigKey>[Channel2],beatloop_0.25_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_0.25_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_0.25_enabled</ConfigKey>
@@ -5256,6 +5306,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_0500.png</Pressed>
@@ -5271,7 +5322,11 @@
 							<ConfigKey>[Channel2],beatloop_0.5_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_0.5_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_0.5_enabled</ConfigKey>
@@ -5283,6 +5338,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_1.png</Pressed>
@@ -5298,7 +5354,11 @@
 							<ConfigKey>[Channel2],beatloop_1_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_1_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_1_enabled</ConfigKey>
@@ -5310,6 +5370,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_2.png</Pressed>
@@ -5325,7 +5386,11 @@
 							<ConfigKey>[Channel2],beatloop_2_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_2_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_2_enabled</ConfigKey>
@@ -5337,6 +5402,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_4.png</Pressed>
@@ -5352,7 +5418,11 @@
 							<ConfigKey>[Channel2],beatloop_4_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_4_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_4_enabled</ConfigKey>
@@ -5364,6 +5434,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_8.png</Pressed>
@@ -5379,7 +5450,11 @@
 							<ConfigKey>[Channel2],beatloop_8_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_8_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_8_enabled</ConfigKey>
@@ -5391,6 +5466,7 @@
 						<Style></Style>
 						<NumberStates>2</NumberStates>
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_beatloop2_16.png</Pressed>
@@ -5406,7 +5482,11 @@
 							<ConfigKey>[Channel2],beatloop_16_toggle</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatlooproll_16_activate</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 						<Connection>
 							<ConfigKey>[Channel2],beatloop_16_enabled</ConfigKey>
