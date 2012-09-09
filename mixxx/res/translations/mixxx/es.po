@@ -11,105 +11,105 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-09-06 01:53+0000\n"
-"Last-Translator: richiguada <Unknown>\n"
+"PO-Revision-Date: 2012-09-09 04:07+0000\n"
+"Last-Translator: Agustin Aramayo <djblackmixer01@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-07 04:36+0000\n"
+"X-Launchpad-Export-Date: 2012-09-09 04:34+0000\n"
 "X-Generator: Launchpad (build 15914)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Auto DJ"
+msgstr "Español"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Añadir a la cola de Auto DJ (al final)"
+msgstr "Español"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Añadir a la cola de Auto DJ (al principio)"
+msgstr "Español"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr "Importar Lista de Reproducción"
+msgstr "Español"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "Falló la creación de la lista de reproducción"
+msgstr "Español"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Se produjo un error desconocido al crear la lista de reproducción: "
+msgstr "Español "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Lista de reproducción nueva"
+msgstr "Español"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Añadir a la cola de Auto DJ (al final)"
+msgstr "Español"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Añadir a la cola de Auto DJ (al principio)"
+msgstr "Español"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Quitar"
+msgstr "Español"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "Renombrar"
+msgstr "Español"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr "Bloquear"
+msgstr "Español"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Importar lista de reproducción"
+msgstr "Español"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Exportar lista de reproducción"
+msgstr "Español"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Renombrar la lista de reproducción"
+msgstr "Español"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "Nuevo nombre de lista de reproducción"
+msgstr "Español"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "Renombrar lista de reproducción fallo"
+msgstr "Español"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "Ya existe una lista de reproducción con ese nombre."
+msgstr "Español"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "El nombre  de la lista de reproducción no puede quedar en blanco."
+msgstr "Español"
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr "Nombre:"
+msgstr "Español"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
@@ -548,7 +548,7 @@ msgstr "Los cajones permiten organizar tu música como tu quieras!"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Crear un nuevo cajón"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -3034,11 +3034,11 @@ msgstr "Ratón HID genérico"
 
 #: HidController#2
 msgid "Generic HID Joystick"
-msgstr ""
+msgstr "Joystick HID genérico"
 
 #: HidController#3
 msgid "Generic HID Gamepad"
-msgstr ""
+msgstr "Gamepad HID genérico"
 
 #: HidController#4
 msgid "Generic HID Keyboard"
@@ -3054,7 +3054,7 @@ msgstr "Dispositivo de escritorio HID desconocido"
 
 #: HidController#7
 msgid "HID Infrared Control"
-msgstr ""
+msgstr "Control de infrarrojos HID"
 
 #: HidController#8
 msgid "Unknown Apple HID Device"
@@ -3062,11 +3062,11 @@ msgstr ""
 
 #: HidController#9
 msgid "HID Unknown Device"
-msgstr ""
+msgstr "Dispositivo HID desconocido"
 
 #: HidController#10
 msgid "HID Interface Number"
-msgstr ""
+msgstr "Número de interfaz HID"
 
 #: ITunesFeature#1
 msgid "iTunes"
@@ -4009,7 +4009,7 @@ msgstr "Orientación de la mezcla"
 
 #: Tooltips#40
 msgid "Set the channel's mix orientation."
-msgstr ""
+msgstr "Configurar la orientación de los canales de la mezcla"
 
 #: Tooltips#41
 msgid ""
@@ -4065,7 +4065,7 @@ msgstr "mezcla la entrada de micrófono en la salida maestra."
 
 #: Tooltips#53
 msgid "Raise Pitch"
-msgstr ""
+msgstr "Aumentar del pitch"
 
 #: Tooltips#54
 msgid "Sets the pitch higher."
@@ -4206,7 +4206,7 @@ msgstr ""
 
 #: Tooltips#86
 msgid "Key-Lock"
-msgstr ""
+msgstr "Key-Lock"
 
 #: Tooltips#87
 msgid "Prevents the pitch from from changing when the rate changes."
@@ -4269,7 +4269,7 @@ msgstr "(estando en reproducción)"
 
 #: Tooltips#101
 msgid "(while stopped)"
-msgstr ""
+msgstr "(mientras está parado)"
 
 #: Tooltips#102
 msgid "Cue"
@@ -4297,7 +4297,7 @@ msgstr ""
 
 #: Tooltips#108
 msgid "Displays the current time."
-msgstr ""
+msgstr "Muestra la hora actual"
 
 #: Tooltips#109
 msgid ""
@@ -4445,7 +4445,7 @@ msgstr ""
 
 #: Tooltips#141
 msgid "Vinyl Status"
-msgstr ""
+msgstr "Estado del vinilo"
 
 #: Tooltips#142
 msgid "Provides visual feedback for vinyl control status:"
@@ -4546,7 +4546,7 @@ msgstr ""
 
 #: Tooltips#164
 msgid "Hot Cue - Track will seek to nearest previous hot cue point."
-msgstr ""
+msgstr "Hot Cue - La canción buscará el punto previo hot cue más cercano"
 
 #: Tooltips#165
 msgid "Track Time"
@@ -4615,7 +4615,7 @@ msgstr ""
 
 #: Tooltips#181
 msgid "Flanger Delay"
-msgstr ""
+msgstr "Retraso del flanger"
 
 #: Tooltips#182
 msgid "Adjusts the phase delay of the flange effect (when active)."
@@ -4623,15 +4623,15 @@ msgstr "Ajusta el Delay del efecto de Flanger (cuando está activo)."
 
 #: Tooltips#183
 msgid "Flanger Depth"
-msgstr ""
+msgstr "Intensidad del flanger"
 
 #: Tooltips#184
 msgid "Adjusts the intensity of the flange effect (when active)."
-msgstr ""
+msgstr "Ajusta la intensidad de los efectos del flanger (cuando está activo)"
 
 #: Tooltips#185
 msgid "Flanger LFO Period"
-msgstr ""
+msgstr "Periodo LFO del flanger"
 
 #: Tooltips#186
 msgid "Adjusts the wavelength of the flange effect (when active)."
@@ -4743,7 +4743,7 @@ msgstr ""
 
 #: WTrackTableView#7
 msgid "Purge from Library"
-msgstr ""
+msgstr "Eliminar de la biblioteca"
 
 #: WTrackTableView#8
 msgid "Properties"
@@ -4751,7 +4751,7 @@ msgstr "Propiedades"
 
 #: WTrackTableView#9
 msgid "Open in File Browser"
-msgstr ""
+msgstr "Abrir en el explorador de archivos"
 
 #: WTrackTableView#10
 msgid "Add to Auto-DJ Queue (bottom)"
