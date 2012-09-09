@@ -16,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.07	(09/09/2012)
+* Feature: Support beatlooproll_X_activate , lp:703585
+  Right-click of the loop buttons now activates a rolling loop.
+
 v1.11.0.06	(04/07/2012)
 * Fix: Deactivate stylesheets for tooltips in skins which use color scheme support, workaround for lp:1021031
 
