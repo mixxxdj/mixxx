@@ -11,62 +11,62 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-08-10 12:07+0200\n"
-"PO-Revision-Date: 2012-09-09 04:07+0000\n"
-"Last-Translator: Agustin Aramayo <djblackmixer01@gmail.com>\n"
+"PO-Revision-Date: 2012-09-09 05:42+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-09 04:34+0000\n"
-"X-Generator: Launchpad (build 15914)\n"
+"X-Launchpad-Export-Date: 2012-09-10 04:37+0000\n"
+"X-Generator: Launchpad (build 15924)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Español"
+msgstr "Auto DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Español"
+msgstr "Añadir a la cola de Auto DJ (al final)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Español"
+msgstr "Añadir a la cola de Auto DJ (al principio)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr "Español"
+msgstr "Importar lista de reproducción"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "Español"
+msgstr "Falló la creación de la lista de reproducción"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr "Español "
+msgstr "Se produjo un error desconocido al crear la lista de reproducción: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Español"
+msgstr "Lista de reproducción nueva"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Español"
+msgstr "Añadir a la cola de Auto DJ (al final)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Español"
+msgstr "Añadir a la cola de Auto DJ (al principio)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Español"
+msgstr "Quitar"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
@@ -76,36 +76,36 @@ msgstr "Español"
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr "Español"
+msgstr "Bloquear"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Español"
+msgstr "Importar lista de reproducción"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Español"
+msgstr "Exportar lista de reproducción"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Español"
+msgstr "Renombrar lista de reproducción"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr "Español"
+msgstr "Nuevo nombre lista de reproducción"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "Español"
+msgstr "Renombrar lista de reproducción fallo"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "Español"
+msgstr "Ya existe una lista de reproducción con ese nombre."
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr "Español"
+msgstr "El nombre  de la lista de reproducción no puede quedar en blanco."
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
