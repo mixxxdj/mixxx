@@ -316,7 +316,6 @@ def emit_app(target, source, env):
 
     assert len(target) == 1
     bundle = target[0]
-    original_bundle = target[0]
     #pull the binary off the front since it's a special case
     binary, resources = source[0], source[1:]
     try:
@@ -440,7 +439,7 @@ def do_codesign(target, source, env):
         print "Codesigning App:"
         command = "codesign -s '%s'%s %s" % (identity,
                                             ' --keychain %s' % keychain if keychain else '',
-                                             original_bundle)
+                                             bundle)
         if system(command) != 0:
             raise Exception('codesign failed')
 
