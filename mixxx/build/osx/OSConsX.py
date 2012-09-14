@@ -440,6 +440,7 @@ def do_codesign(target, source, env):
     # folder.
     if not bundle.endswith('.app'):
         bundle += '.app'
+
     keychain = env.get('CODESIGN_KEYCHAIN', None)
     keychain_password = env.get('CODESIGN_KEYCHAIN_PASSWORD', None)
     identity = env.get('CODESIGN_IDENTITY', None)
@@ -454,6 +455,7 @@ def do_codesign(target, source, env):
                                              bundle)
         if system(command) != 0:
             raise Exception('codesign failed')
+    return Bundle(bundle), []
 
 CodeSign = Builder(action = do_codesign, emitter = no_sources)
 
