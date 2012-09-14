@@ -426,8 +426,11 @@ App = Builder(action = build_app, emitter = emit_app)
 
 
 def do_codesign(target, source, env):
-    bundle = target[0]
+    # target[0] is a File object, coerce to string to get its path (usually
+    # something like osxXX_build/Mixxx)
+    bundle = str(target[0])
     print "Bundle:", bundle
+
     # HACK(XXX) SCons can't have a Dir which is a target so we append .app here
     # since our actual target (the thing we want to codesign) is the bundle
     # folder.
