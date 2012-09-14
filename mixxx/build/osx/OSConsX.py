@@ -293,6 +293,16 @@ def build_app(target, source, env):
         Execute(Copy(embedded_p, p)) #:/
         patch_lib(str(embedded_p))
 
+    keychain = env.get('CODESIGN_KEYCHAIN', None)
+    identity = env.get('CODESIGN_IDENTITY', None)
+    if identity is not None:
+        print "Codesigning App:"
+        command = "codesign -s '%s'%s %s" % (identity,
+                                            ' --keychain %s' % keychain if keychain else '',
+                                             bundle)
+        if system(command) != 0:
+            raise Exception('codesign failed')
+
 
 def emit_app(target, source, env):
     """The first source is the binary program file, the rest are files/folders to include in the App's Resources directory.

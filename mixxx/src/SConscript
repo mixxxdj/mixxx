@@ -356,6 +356,10 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         if not qtplugindir:
                 #qtplugindir = '/Developer/Applications/Qt/'
                 qtplugindir = qtdir
+
+        codesign_identity = SCons.ARGUMENTS.get('osx_codesign_identity', None)
+        codesign_keychain = SCons.ARGUMENTS.get('osx_codesign_keychain', None)
+
         bundle = env.App(
                 "Mixxx",
                 [mixxx_bin, '#res/osx/application.icns',
@@ -381,7 +385,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
-                OTOOL_SYSTEM_PATHS=otool_system_paths
+                OTOOL_SYSTEM_PATHS=otool_system_paths,
+                CODESIGN_IDENTITY=codesign_identity,
+                CODESIGN_KEYCHAIN=codesign_keychain
                 )
         #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
         env.Alias('bundle', bundle)
