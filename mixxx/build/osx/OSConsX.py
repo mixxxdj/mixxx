@@ -421,6 +421,14 @@ def emit_app(target, source, env):
 
     plugins = env['PLUGINS']
 
+    return bundle, source+plugins #+[installed_bin]
+
+App = Builder(action = build_app, emitter = emit_app)
+
+
+def do_codesign(target, source, env):
+    bundle = target[0]
+    print "Bundle:", bundle
     keychain = env.get('CODESIGN_KEYCHAIN', None)
     keychain_password = env.get('CODESIGN_KEYCHAIN_PASSWORD', None)
     identity = env.get('CODESIGN_IDENTITY', None)
@@ -436,13 +444,7 @@ def emit_app(target, source, env):
         if system(command) != 0:
             raise Exception('codesign failed')
 
-    return bundle, source+plugins #+[installed_bin]
-
-
-
-
-App = Builder(action = build_app, emitter = emit_app)
-
+CodeSign = Builder(action = do_codesign, emitter = no_sources)
 
 
 def build_plist(target, source, env):
@@ -481,7 +483,8 @@ def generate(env):
     env['BUILDERS']['Dmg'] = Dmg
     env['BUILDERS']['Plist'] = Plist
     env['BUILDERS']['Writer'] = Writer #this should be in a different module, really
-    env['BUILDERS']
+    env['BUILDERS']['CodeSign'] = CodeSign
+
 
 def exists(env):
     return os.platform == 'darwin'
