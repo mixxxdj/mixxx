@@ -383,7 +383,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
                 OTOOL_SYSTEM_PATHS=otool_system_paths,
-
+                FOR_APP_STORE=True,
                 )
         #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
         env.Alias('bundle', bundle)

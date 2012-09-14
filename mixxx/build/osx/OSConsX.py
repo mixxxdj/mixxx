@@ -356,6 +356,7 @@ def emit_app(target, source, env):
     human_readable_copyright = env['COPYRIGHT']
     application_category_type = env['CATEGORY']
 
+
     #BUG: if the icon file is changed but nothing else then the plist doesn't get rebuilt (but since it's a str() and not a Node() there's no clean way to hook this in)
 
     #Precache some the important paths
@@ -379,16 +380,19 @@ def emit_app(target, source, env):
     env.Writer(File(os.path.join(str(contents),"PkgInfo")), [], DATA = "%s%s" % (bundle_type, bundle_signature))
 
     #.title() in the next line is used to make sure the titlebar on OS X has the capitalized name of the app
-    env.Plist(os.path.join(str(contents), "Info"),
-                PLIST={'CFBundleExecutable': binary.name.title(),
-                       'CFBundleIconFile': icon,
-                       'CFBundlePackageType': bundle_type,
-                       'CFBundleSignature': bundle_signature,
-                       'CFBundleIdentifier': bundle_identifier,
-                       'CFBundleDisplayName': bundle_display_name,
-                       'CFBundleShortVersionString' : bundle_short_version_string,
-                       'NSHumanReadableCopyright' : human_readable_copyright,
-                       'LSApplicationCategoryType' : application_category_type})
+    plist_data = {'CFBundleExecutable': binary.name.title(),
+                  'CFBundleIconFile': icon,
+                  'CFBundlePackageType': bundle_type,
+                  'CFBundleSignature': bundle_signature,
+                  'CFBundleIdentifier': bundle_identifier,
+                  'CFBundleDisplayName': bundle_display_name,
+                  'CFBundleShortVersionString' : bundle_short_version_string,
+                  'NSHumanReadableCopyright' : human_readable_copyright,
+                  'LSApplicationCategoryType' : application_category_type}
+    if env['FOR_APP_STORE']:
+        plist_data['ForAppStore'] = 'yes'
+    env.Plist(os.path.join(str(contents), "Info"), PLIST=plist_data)
+
     #NB: only need CFBundleExecutale if the binary name differs from the bundle name
     #todo:
     """Application Keys
