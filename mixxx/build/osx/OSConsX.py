@@ -294,8 +294,13 @@ def build_app(target, source, env):
         patch_lib(str(embedded_p))
 
     keychain = env.get('CODESIGN_KEYCHAIN', None)
+    keychain_password = env.get('CODESIGN_KEYCHAIN_PASSWORD', None)
     identity = env.get('CODESIGN_IDENTITY', None)
     if identity is not None:
+        if keychain and keychain_password is not None:
+            print "Unlocking keychain:"
+            if system("security unlock-keychain -p '%s' %s" % (keychain_password, keychain)) != 0:
+                raise Exception('Could not unlock keychain.')
         print "Codesigning App:"
         command = "codesign -s '%s'%s %s" % (identity,
                                             ' --keychain %s' % keychain if keychain else '',
