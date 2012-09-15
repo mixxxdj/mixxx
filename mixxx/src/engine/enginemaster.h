@@ -144,6 +144,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
     ControlObject* m_pWaveformZoomFactor;
+    ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
     ControlPushButton *m_pBypassEq;
     EngineClipping *clipping, *head_clipping;
@@ -163,7 +164,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     //QFile df;
     //QTextStream writer;
     ControlPotmeter *crossfader, *head_mix, *m_pBalance,
-        *xFaderMode, *xFaderCurve, *xFaderCalibration;
+        *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;

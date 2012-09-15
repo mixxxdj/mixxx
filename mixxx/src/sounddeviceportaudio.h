@@ -37,12 +37,17 @@ class SoundDevicePortAudio;
 class SoundDevicePortAudio : public SoundDevice
 {
     public:
-        SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm, const PaDeviceInfo *deviceInfo, unsigned int devIndex);
+        SoundDevicePortAudio(ConfigObject<ConfigValue> *config,
+                SoundManager *sm, const PaDeviceInfo *deviceInfo,
+                unsigned int devIndex);
         ~SoundDevicePortAudio();
         int open();
         int close();
         QString getError() const;
-        int callbackProcess(unsigned long framesPerBuffer, float *output, short *in);
+        int callbackProcess(unsigned long framesPerBuffer,
+                float *output, short *in,
+                const PaStreamCallbackTimeInfo *timeInfo,
+                PaStreamCallbackFlags statusFlags);
     private:
         /** PortAudio stream for this device. */
         PaStream *m_pStream;
@@ -60,8 +65,11 @@ class SoundDevicePortAudio : public SoundDevice
 	    PaStreamParameters m_inputParams;
         /** A string describing the last PortAudio error to occur */
         QString m_lastError;
-  private:
-    bool m_bSetThreadPriority;
+
+        bool m_bSetThreadPriority;
+
+        ControlObject* m_pMasterUnderflowCount;
+        int m_undeflowUpdateCount;
 };
 
 

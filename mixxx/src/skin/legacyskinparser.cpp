@@ -173,7 +173,9 @@ bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
 }
 
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
-    Q_ASSERT(!m_pParent);
+    if (m_pParent) {
+        qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
+    }
     /*
      * Long explaination because this took too long to figure:
      * Parent all the mixxx widgets (subclasses of wwidget) to

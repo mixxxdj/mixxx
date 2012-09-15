@@ -292,8 +292,8 @@ QDateTime TrackInfoObject::getCreateDate() const
 bool TrackInfoObject::exists()  const
 {
     QMutexLocker lock(&m_qMutex);
-    // return here a fresh calculated value to be sure 
-    // the file is not deleted or gone with an USB-Stick 
+    // return here a fresh calculated value to be sure
+    // the file is not deleted or gone with an USB-Stick
     // because it will probably stop the Auto-DJ
     return QFile::exists(m_sLocation);
 }
@@ -383,7 +383,6 @@ void TrackInfoObject::setBeats(BeatsPointer pBeats) {
     if (m_pBeats) {
         bpm = m_pBeats->getBpm();
         pObject = dynamic_cast<QObject*>(m_pBeats.data());
-        Q_ASSERT(pObject);
         if (pObject) {
             connect(pObject, SIGNAL(updated()),
                     this, SLOT(slotBeatsUpdated()));

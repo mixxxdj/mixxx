@@ -207,14 +207,14 @@ private:
     /** Used in update of playpos slider */
     int m_iSamplesCalculated;
     int m_iUiSlowTick;
-    
-    /** The location where the track would have been had slip not been engaged */
+
+    // The location where the track would have been had slip not been engaged
     double m_dSlipPosition;
-    /** Saved value of rate for slip mode */
+    // Saved value of rate for slip mode
     double m_dSlipRate;
-    /** Slip Status */
+    // Slip Status
     bool m_bSlipEnabled;
-    
+
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
@@ -222,6 +222,7 @@ private:
     ControlPushButton *m_pSlipButton;
     ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
+    ControlPushButton *m_pSlipButton;
 
     ControlObject *rateEngine;
     ControlObject *visualBpm;

@@ -166,6 +166,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlSlip(double)),
             Qt::DirectConnection);
 
+    m_pSlipButton = new ControlPushButton(ConfigKey(group, "slip_enabled"));
+    m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pSlipButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlSlip(double)),
+            Qt::DirectConnection);
+    connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlSlip(double)),
+            Qt::DirectConnection);
+
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
@@ -309,6 +318,7 @@ EngineBuffer::~EngineBuffer()
 #endif
 
     delete [] m_pDitherBuffer;
+    delete [] m_pCrossFadeBuffer;
 
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
@@ -360,6 +370,15 @@ void EngineBuffer::setNewPlaypos(double newpos)
 {
     //qDebug() << "engine new pos " << newpos;
     
+    // Before seeking, read extra buffer for crossfading
+    CSAMPLE *fadeout;
+    fadeout = m_pScale->scale(0,
+                             m_iLastBufferSize,
+                             0,
+                             0);
+    m_iCrossFadeSamples = m_iLastBufferSize;
+    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
+
     // Before seeking, read extra buffer for crossfading
     CSAMPLE *fadeout;
     fadeout = m_pScale->scale(0,
@@ -542,16 +561,16 @@ void EngineBuffer::slotControlSlip(double v)
     if (enabled == m_bSlipEnabled) {
         return;
     }
-    
+
     m_bSlipEnabled = enabled;
-    
+
     if (enabled) {
+        // TODO(rryan): Should this filepos instead be the RAMAN current
+        // position? filepos_play could be out of date.
         m_dSlipPosition = filepos_play;
         m_dSlipRate = rate_old;
-    }
-    else
-    {
-        //TODO(owen) assuming that looping will get cancelled properly
+    } else {
+        // TODO(owen) assuming that looping will get cancelled properly
         slotControlSeekAbs(m_dSlipPosition);
     }
 }
@@ -595,6 +614,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
         }
         
+
+        // Update the slipped position
+        if (m_bSlipEnabled) {
+            m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
+        }
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
@@ -723,6 +747,29 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 #endif        
+
+        //Crossfade if we just did a seek
+        if (m_iCrossFadeSamples > 0) {
+            int i = 0;
+            double cross_len = 0;
+            if (m_iCrossFadeSamples >= iBufferSize) {
+                i = m_iCrossFadeSamples - iBufferSize;
+                cross_len = static_cast<double>(iBufferSize) / 2.0;
+            } else {
+                cross_len = static_cast<double>(m_iCrossFadeSamples) / 2.0;
+            }
+
+            double cross_mix = 0.0;
+            double cross_inc = 1.0 / cross_len;
+
+            // Do crossfade from old fadeout buffer to this new data
+            for (int j = 0; j < iBufferSize && i < m_iCrossFadeSamples; i += 2, j += 2) {
+                pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
+                pOutput[j+1] = pOutput[j+1] * cross_mix + m_pCrossFadeBuffer[i+1] * (1.0 - cross_mix);
+                cross_mix += cross_inc;
+            }
+            m_iCrossFadeSamples = 0;
+        }
 
         m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
@@ -922,6 +969,15 @@ void EngineBuffer::hintReader(const double dRate,
     //if slipping, hint about virtual position so we're ready for it
     if (m_bSlipEnabled)
     {
+        Hint hint;
+        hint.length = 2048; //default length please
+        hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
+        hint.priority = 1;
+        m_hintList.append(hint);
+    }
+
+    //if slipping, hint about virtual position so we're ready for it
+    if (m_bSlipEnabled) {
         Hint hint;
         hint.length = 2048; //default length please
         hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;

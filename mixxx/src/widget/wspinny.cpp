@@ -115,9 +115,6 @@ void WSpinny::setup(QDomNode node, QString group)
     m_pScratchPos = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "scratch_position")));
 
-    Q_ASSERT(m_pPlayPos);
-    Q_ASSERT(m_pDuration);
-
     //Repaint when visual_playposition changes.
     connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
             this, SLOT(updateAngle(double)));

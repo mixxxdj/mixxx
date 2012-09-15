@@ -12,20 +12,22 @@
 
 ReadAheadManager::ReadAheadManager(CachingReader* pReader) :
     m_iCurrentPosition(0),
-    m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
-    m_pReader(pReader) {
-
-    //zero out crossfade buffer
+    m_pReader(pReader),
+    m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]) {
+    // zero out crossfade buffer
     SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
 }
 
 ReadAheadManager::~ReadAheadManager() {
+    delete [] m_pCrossFadeBuffer;
 }
 
 int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                                      int requested_samples) {
-    Q_ASSERT(even(requested_samples));
-
+    if (!even(requested_samples)) {
+        qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
+        requested_samples--;
+    }
     bool in_reverse = dRate < 0;
     int start_sample = m_iCurrentPosition;
     //qDebug() << "start" << start_sample << requested_samples;
@@ -50,20 +52,23 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }
         samples_needed = math_max(0, math_min(samples_needed,
                                               samples_available));
+
         if (in_reverse) {
             preloop_samples = m_iCurrentPosition - next_loop.second;
         } else {
-            preloop_samples =  next_loop.second - m_iCurrentPosition;
+            preloop_samples = next_loop.second - m_iCurrentPosition;
         }
-        
     }
 
     if (in_reverse) {
         start_sample = m_iCurrentPosition - samples_needed;
     }
 
-    // Sanity checks
-    Q_ASSERT(samples_needed >= 0);
+    // Sanity checks.
+    if (samples_needed < 0) {
+        qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
+        return 0;
+    }
 
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
@@ -91,35 +96,27 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         if (loop_target != kNoTrigger &&
             ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
             (!in_reverse && m_iCurrentPosition >= loop_trigger))) {
-            
+
             m_iCurrentPosition = loop_target;
-            
+
+            int loop_read_position = m_iCurrentPosition;
             if (in_reverse) {
-                m_iCurrentPosition += preloop_samples;
+                loop_read_position += preloop_samples;
             } else {
-                m_iCurrentPosition -= preloop_samples;
+                loop_read_position -= preloop_samples;
             }
-            
-            int looping_samples_read = m_pReader->read(m_iCurrentPosition, samples_read,
-                                               m_pCrossFadeBuffer);
-                                               
+
+            int looping_samples_read = m_pReader->read(
+                loop_read_position, samples_read, m_pCrossFadeBuffer);
+
             if (looping_samples_read != samples_read) {
-                qDebug() << "ERROR: Couldn't get samples for crossfade? (should assert?)";
+                qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
             }
-            
-            // Add log entry so we don't notify seeks
-            if (in_reverse) {
-                m_iCurrentPosition -= looping_samples_read;
-            } else {
-                m_iCurrentPosition += looping_samples_read;
-            }
-            addReadLogEntry(loop_target, m_iCurrentPosition);
-            
-            //do crossfade from the current buffer into the new loop beginning
+
+            // do crossfade from the current buffer into the new loop beginning
             double mix_amount = 0.0;
             double mix_inc = 2.0 / static_cast<double>(samples_read);
-            for (int i=0; i<samples_read; i+=2)
-            {
+            for (int i = 0; i < samples_read; i += 2) {
                 base_buffer[i] = base_buffer[i] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i] * mix_amount;
                 base_buffer[i+1] = base_buffer[i+1] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i+1] * mix_amount;
                 mix_amount += mix_inc;
@@ -147,7 +144,9 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 }
 
 void ReadAheadManager::addEngineControl(EngineControl* pControl) {
-    Q_ASSERT(pControl);
+    if (pControl == NULL) {
+        return;
+    }
     m_sEngineControls.append(pControl);
 }
 

@@ -512,21 +512,23 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST)) {
         m_pPlaylistMenu->clear();
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        QMap<QString,int> playlists;
         int numPlaylists = playlistDao.playlistCount();
-
         for (int i = 0; i < numPlaylists; ++i) {
             int iPlaylistId = playlistDao.getPlaylistId(i);
-
-            if (!playlistDao.isHidden(iPlaylistId)) {
-
-                QString playlistName = playlistDao.getPlaylistName(iPlaylistId);
+            playlists.insert(playlistDao.getPlaylistName(iPlaylistId), iPlaylistId);
+        }
+        QMapIterator<QString, int> it(playlists);
+        while (it.hasNext()) {
+            it.next();
+            if (!playlistDao.isHidden(it.value())) {
                 // No leak because making the menu the parent means they will be
                 // auto-deleted
-                QAction* pAction = new QAction(playlistName, m_pPlaylistMenu);
-                bool locked = playlistDao.isPlaylistLocked(iPlaylistId);
+                QAction* pAction = new QAction(it.key(), m_pPlaylistMenu);
+                bool locked = playlistDao.isPlaylistLocked(it.value());
                 pAction->setEnabled(!locked);
                 m_pPlaylistMenu->addAction(pAction);
-                m_playlistMapper.setMapping(pAction, iPlaylistId);
+                m_playlistMapper.setMapping(pAction, it.value());
                 connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
             }
         }
@@ -537,16 +539,22 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
         CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+        QMap<QString , int> crates;
         int numCrates = crateDao.crateCount();
         for (int i = 0; i < numCrates; ++i) {
             int iCrateId = crateDao.getCrateId(i);
+            crates.insert(crateDao.crateName(iCrateId),iCrateId);
+        }
+        QMapIterator<QString, int> it(crates);
+        while (it.hasNext()) {
+            it.next();
             // No leak because making the menu the parent means they will be
             // auto-deleted
-            QAction* pAction = new QAction(crateDao.crateName(iCrateId), m_pCrateMenu);
-            bool locked = crateDao.isCrateLocked(iCrateId);
+            QAction* pAction = new QAction(it.key(), m_pCrateMenu);
+            bool locked = crateDao.isCrateLocked(it.value());
             pAction->setEnabled(!locked);
             m_pCrateMenu->addAction(pAction);
-            m_crateMapper.setMapping(pAction, iCrateId);
+            m_crateMapper.setMapping(pAction, it.value());
             connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
         }
 

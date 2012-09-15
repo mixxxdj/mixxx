@@ -134,7 +134,9 @@ void CueControl::createControls() {
 }
 
 void CueControl::attachCue(Cue* pCue, int hotCue) {
-    Q_ASSERT(hotCue >= 0 && hotCue < m_iNumHotCues);
+    if (hotCue < 0 || hotCue >= m_iNumHotCues) {
+        return;
+    }
     HotcueControl* pControl = m_hotcueControl[hotCue];
     if (pControl->getCue() != NULL) {
         detachCue(pControl->getHotcueNumber());
@@ -149,7 +151,9 @@ void CueControl::attachCue(Cue* pCue, int hotCue) {
 }
 
 void CueControl::detachCue(int hotCue) {
-    Q_ASSERT(hotCue >= 0 && hotCue < m_iNumHotCues);
+    if (hotCue < 0 || hotCue >= m_iNumHotCues) {
+        return;
+    }
     HotcueControl* pControl = m_hotcueControl[hotCue];
     Cue* pCue = pControl->getCue();
     if (!pCue)
@@ -161,11 +165,13 @@ void CueControl::detachCue(int hotCue) {
 }
 
 void CueControl::loadTrack(TrackPointer pTrack) {
-    Q_ASSERT(pTrack);
-
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack)
         unloadTrack(m_pLoadedTrack);
+
+    if (!pTrack) {
+        return;
+    }
 
     m_pLoadedTrack = pTrack;
     connect(pTrack.data(), SIGNAL(cuesUpdated()),
@@ -376,16 +382,16 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
 void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     if (!v)
         return;
-    
+
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack)
         return;
-    
+
     Cue* pCue = pControl->getCue();
-    
+
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-    
+
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
