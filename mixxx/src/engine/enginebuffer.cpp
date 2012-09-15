@@ -379,15 +379,6 @@ void EngineBuffer::setNewPlaypos(double newpos)
     m_iCrossFadeSamples = m_iLastBufferSize;
     SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
 
-    // Before seeking, read extra buffer for crossfading
-    CSAMPLE *fadeout;
-    fadeout = m_pScale->scale(0,
-                             m_iLastBufferSize,
-                             0,
-                             0);
-    m_iCrossFadeSamples = m_iLastBufferSize;
-    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
-
     filepos_play = newpos;
 
     // Ensures that the playpos slider gets updated in next process call
