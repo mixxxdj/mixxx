@@ -72,6 +72,7 @@ int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locati
         fileInfoList.append(QFileInfo(fileLocation));
     }
     QList<int> trackIds = m_trackDao.addTracks(fileInfoList, true);
+    select();
     return trackIds.size();
 }
 

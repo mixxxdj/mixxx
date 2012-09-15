@@ -97,8 +97,8 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
     } else {
         if (e->type() == QEvent::KeyboardLayoutChange) {
             // This event is not fired on ubunty natty, why?
-			// TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811 
-            qDebug() << "QEvent::KeyboardLayoutChange";
+			// TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
+            //qDebug() << "QEvent::KeyboardLayoutChange";
         }
     }
     return false;

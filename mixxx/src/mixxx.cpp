@@ -470,6 +470,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     initActions();
     initMenuBar();
+    connect(this, SIGNAL(newSkinLoaded()),
+            this, SLOT(onNewSkinLoaded()));
 
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame();
@@ -512,6 +514,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     if (args.getStartInFullscreen()) {
         slotOptionsFullScreen(true);
     }
+    emit(newSkinLoaded());
 
     // Refresh the GUI (workaround for Qt 4.6 display bug)
     /* // TODO(bkgood) delete this block if the moving of setCentralWidget
@@ -628,6 +631,42 @@ MixxxApp::~MixxxApp()
 
    delete m_pKeyboard;
    delete m_pKbdConfigEmpty;
+}
+
+void toggleVisibility(ConfigKey key, bool enable) {
+    ControlObject* pShowControl = ControlObject::getControl(key);
+    if (pShowControl == NULL) {
+        return;
+    }
+    qDebug() << "Setting visibility for" << key.group << key.item << enable;
+    pShowControl->set(enable ? 1.0 : 0.0);
+}
+
+void MixxxApp::slotOptionsShowSamplers(bool enable) {
+    toggleVisibility(ConfigKey("[Samplers]", "show_samplers"), enable);
+}
+
+void MixxxApp::slotOptionsShowVinylControl(bool enable) {
+    toggleVisibility(ConfigKey("[Vinylcontrol]", "show_vinylcontrol"), enable);
+}
+
+void MixxxApp::slotOptionsShowMicrophone(bool enable) {
+    toggleVisibility(ConfigKey("[Microphone]", "show_microphone"), enable);
+}
+
+void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
+    ControlObject* pVisibilityControl = ControlObject::getControl(key);
+    pAction->setEnabled(pVisibilityControl != NULL);
+    pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
+}
+
+void MixxxApp::onNewSkinLoaded() {
+    setVisibilityOptionState(m_pOptionsShowVinylControl,
+                             ConfigKey("[Vinylcontrol]", "show_vinylcontrol"));
+    setVisibilityOptionState(m_pOptionsShowSamplers,
+                             ConfigKey("[Samplers]", "show_samplers"));
+    setVisibilityOptionState(m_pOptionsShowMicrophone,
+                             ConfigKey("[Microphone]", "show_microphone"));
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -964,6 +1003,42 @@ void MixxxApp::initActions()
             this, SLOT(slotOptionsShoutcast(bool)));
 #endif
 
+    QString mayNotBeSupported = tr("May not be supported on all skins.");
+    QString showSamplersTitle = tr("Show Sample Deck Widgets");
+    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pOptionsShowSamplers = new QAction(showSamplersTitle, this);
+    m_pOptionsShowSamplers->setCheckable(true);
+    m_pOptionsShowSamplers->setShortcut(tr("Ctrl+S"));
+    m_pOptionsShowSamplers->setStatusTip(showSamplersText);
+    m_pOptionsShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
+    connect(m_pOptionsShowSamplers, SIGNAL(toggled(bool)),
+            this, SLOT(slotOptionsShowSamplers(bool)));
+
+    QString showVinylControlTitle = tr("Show Vinyl Control Widgets");
+    QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pOptionsShowVinylControl = new QAction(showVinylControlTitle, this);
+    m_pOptionsShowVinylControl->setCheckable(true);
+    m_pOptionsShowVinylControl->setShortcut(tr("Ctrl+V"));
+    m_pOptionsShowVinylControl->setStatusTip(showVinylControlText);
+    m_pOptionsShowVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
+    connect(m_pOptionsShowVinylControl, SIGNAL(toggled(bool)),
+            this, SLOT(slotOptionsShowVinylControl(bool)));
+
+    QString showMicrophoneTitle = tr("Show Microphone Widgets");
+    QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pOptionsShowMicrophone = new QAction(showMicrophoneTitle, this);
+    m_pOptionsShowMicrophone->setCheckable(true);
+    m_pOptionsShowMicrophone->setShortcut(tr("Ctrl+M"));
+    m_pOptionsShowMicrophone->setStatusTip(showMicrophoneText);
+    m_pOptionsShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
+    connect(m_pOptionsShowMicrophone, SIGNAL(toggled(bool)),
+            this, SLOT(slotOptionsShowMicrophone(bool)));
+
+
+
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
@@ -999,8 +1074,12 @@ void MixxxApp::initMenuBar()
     m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
+    m_pVinylControlMenu->addAction(m_pOptionsShowVinylControl);
     m_pOptionsMenu->addMenu(m_pVinylControlMenu);
 #endif
+    m_pOptionsMenu->addAction(m_pOptionsShowSamplers);
+    m_pOptionsMenu->addAction(m_pOptionsShowMicrophone);
+
     m_pOptionsMenu->addAction(m_pOptionsRecord);
 #ifdef __SHOUTCAST__
     m_pOptionsMenu->addAction(m_pOptionsShoutcast);
@@ -1543,6 +1622,7 @@ void MixxxApp::rebootMixxxView() {
 #endif
 
     qDebug() << "rebootMixxxView DONE";
+    emit(newSkinLoaded());
 }
 
 /** Event filter to block certain events. For example, this function is used

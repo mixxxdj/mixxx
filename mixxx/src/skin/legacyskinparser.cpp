@@ -979,6 +979,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
         // Check that the control exists
         ControlObject * control = ControlObject::getControl(configKey);
 
+        bool created = false;
         if (control == NULL) {
             qWarning() << "Requested control does not exist:" << key << ". Creating it.";
             // Since the usual behavior here is to create a skin-defined push
@@ -986,6 +987,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             ControlPushButton* controlButton = new ControlPushButton(configKey);
             controlButton->setButtonMode(ControlPushButton::TOGGLE);
             control = controlButton;
+            created = true;
         }
 
         QString property = XmlParse::selectNodeQString(con, "BindProperty");
@@ -993,7 +995,13 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             qDebug() << "Making property binder for" << property;
             // Bind this control to a property. Not leaked because it is
             // parented to the widget and so it dies with it.
-            new PropertyBinder(pWidget, property, control);
+            PropertyBinder* pBinder = new PropertyBinder(
+                pWidget, property, control);
+            // If we created this control, bind it to the PropertyBinder so that
+            // it is deleted when the binder is deleted.
+            if (created) {
+                control->setParent(pBinder);
+            }
         } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
                    XmlParse::selectNodeQString(con, "OnOff")=="true") {
             // Connect control proxy to widget. Parented to pWidget so it is not

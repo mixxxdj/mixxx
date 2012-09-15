@@ -37,6 +37,7 @@ signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
+    void valueReset();
 
 public slots:
     void onTrackLoaded( TrackPointer track);
