@@ -249,10 +249,16 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //
     // Set default value in config file, if not present
     if (m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(1));
+        m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(0));
+
+    ComboBoxTooltips->addItem(tr("On"));
+    ComboBoxTooltips->addItem(tr("On (only in Library)"));
+    ComboBoxTooltips->addItem(tr("Off"));
 
     // Update combo box
-    ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
+    ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()));
+
+    connect(ComboBoxTooltips, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetTooltips(int)));
 
     //
     // Ramping Temporary Rate Change configuration
@@ -269,8 +275,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     SliderRateRampSensitivity->setValue(
                 m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
                 );
-
-    connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
     slotUpdate();
 
@@ -413,13 +417,8 @@ void DlgPrefControls::slotSetCueRecall(int)
 
 void DlgPrefControls::slotSetTooltips(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex()+1)%2));
-
-    //This is somewhat confusing, but to disable tooltips in QT4, you need to install an eventFilter
-    //on the QApplication object. That object is located in MixxxApp (mixxx.cpp/h), so that's where
-    //the eventFilter is. The value of the ConfigObject is cached at startup because it's too slow
-    //to refresh it during each Tooltip event (I think), which is why we require a restart.
-    notifyRebootNecessary();
+    m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex())));
+    m_mixxx->setToolTips(ComboBoxTooltips->currentIndex());
 }
 
 void DlgPrefControls::notifyRebootNecessary() {

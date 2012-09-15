@@ -142,16 +142,6 @@
        <property name="font">
         <font/>
        </property>
-       <item>
-        <property name="text">
-         <string>On</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Off</string>
-        </property>
-       </item>
       </widget>
      </item>
      <item row="5" column="0">

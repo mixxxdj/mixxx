@@ -48,6 +48,8 @@
 #include "trackinfoobject.h"
 #include "upgrade.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wwaveformviewer.h"
+#include "widget/wwidget.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -192,6 +194,9 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     } else {
         delete mixxxTranslator;
     }
+
+    // Set the visibility of tooltips
+    m_tooltips = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips")).toInt();
 
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
@@ -1489,6 +1494,10 @@ void MixxxApp::slotHelpManual() {
     QDesktopServices::openUrl(qManualUrl);
 }
 
+void MixxxApp::setToolTips(int tt) {
+    m_tooltips = tt;
+}
+
 void MixxxApp::rebootMixxxView() {
 
     if (!m_pWidgetParent || !m_pView)
@@ -1571,16 +1580,21 @@ void MixxxApp::rebootMixxxView() {
   */
 bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
 {
-    static int tooltips =
-        m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips")).toInt();
-
     if (event->type() == QEvent::ToolTip) {
-        // QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        // unused, remove? TODO(bkgood)
-        if (tooltips == 1)
+        // return true for no tool tips        
+        if (m_tooltips == 1) {
+            // ON (only in Library)            
+            WWidget* pWidget = dynamic_cast<WWidget*>(obj);
+            WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
+            QLabel* pLabel = dynamic_cast<QLabel*>(obj);
+            return (pWidget || pWfViewer || pLabel);
+        } else if (m_tooltips == 0) {
+            // ON            
             return false;
-        else
+        } else {
+            // OFF
             return true;
+        }
     } else {
         // standard event processing
         return QObject::eventFilter(obj, event);
