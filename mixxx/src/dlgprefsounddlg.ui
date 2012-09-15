@@ -67,7 +67,7 @@
      <item>
       <layout class="QHBoxLayout" name="underflowHLayout">
        <item>
-        <widget class="QLabel" name="underfolwLabel">
+        <widget class="QLabel" name="underflowLabel">
          <property name="text">
           <string>Buffer Underflow Count</string>
          </property>
