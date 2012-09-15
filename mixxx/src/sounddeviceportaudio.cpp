@@ -238,10 +238,6 @@ int SoundDevicePortAudio::open()
     pControlObjectSampleRate->slotSet(m_dSampleRate);
     pMasterUnderflowCount->slotSet(0);
 
-    delete pControlObjectLatency;
-    delete pControlObjectSampleRate;
-
-
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
