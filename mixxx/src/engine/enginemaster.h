@@ -140,6 +140,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlObject* m_pHeadVolume;
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
+    ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
     EngineClipping *clipping, *head_clipping;
 
@@ -150,7 +151,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineSideChain *sidechain;
 
     ControlPotmeter *crossfader, *head_mix, *m_pBalance,
-        *xFaderMode, *xFaderCurve, *xFaderCalibration;
+        *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;

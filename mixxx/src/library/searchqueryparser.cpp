@@ -278,6 +278,6 @@ QString SearchQueryParser::parseQuery(const QString& query,
     if (queryFragments.size() > 0) {
         result = "WHERE " + queryFragments.join(" AND ");
     }
-    qDebug() << "Query: \"" << query << "\" parsed to:" << result;
+    //qDebug() << "Query: \"" << query << "\" parsed to:" << result;
     return result;
 }

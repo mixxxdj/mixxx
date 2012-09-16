@@ -39,9 +39,6 @@ public:
 
     void setZoom(int zoom);
 
-    virtual void updateVisualSamplingPerPixel();
-    virtual void updateAudioSamplingPerPixel();
-
     double getVisualSamplePerPixel() const;
     double getAudioSamplePerPixel() const;
 
@@ -49,7 +46,6 @@ public:
     //sample position according to the current visual resampling
     //this make mark and signal deterministic
     void regulateVisualSample(int& sampleIndex) const;
-    void regulateAudioSample(int& sampleIndex) const;
 
     //this "regulate" against visual sampling to make the position in widget
     //stable and deterministic

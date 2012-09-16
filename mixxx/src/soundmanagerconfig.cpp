@@ -335,7 +335,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
             m_sampleRate = sampleRates.first();
         } else {
             qWarning() << "got empty sample rate list from SoundManager, this is a bug";
-            Q_ASSERT(false);
+            m_sampleRate = kDefaultSampleRate;
         }
         m_latency = kDefaultLatency;
     }
