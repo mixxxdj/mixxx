@@ -156,11 +156,6 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineVuMeter *vumeter;
     EngineSideChain *sidechain;
 
-    int m_iLastThruRead[2];
-    int m_iLastThruWrote[2];
-    int m_iThruBufferCount;
-    int m_iThruFill[2];
-    bool m_bFilling[2];
     //QFile df;
     //QTextStream writer;
     ControlPotmeter *crossfader, *head_mix, *m_pBalance,

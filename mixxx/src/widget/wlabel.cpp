@@ -55,7 +55,6 @@ void WLabel::setup(QDomNode node)
     // Text
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
-	m_pLabel->setWordWrap(true);        
     m_pLabel->setText(m_qsText);
 
     // Size

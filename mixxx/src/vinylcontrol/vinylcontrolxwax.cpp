@@ -211,7 +211,7 @@ void VinylControlXwax::run()
 
         //Check if vinyl control is enabled...
         bIsEnabled = checkEnabled(bIsEnabled, enabled->get());
-        
+
         //Get the pitch range from the prefs.
         fRateRange = rateRange->get();
 

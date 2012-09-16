@@ -282,7 +282,7 @@ AnalyserQueue* AnalyserQueue::createAnalyserQueue(QList<Analyser*> analysers) {
         ret->addAnalyser(it.next());
     }
 
-    ret->start(QThread::LowPriority);
+    ret->start(QThread::IdlePriority);
     return ret;
 }
 

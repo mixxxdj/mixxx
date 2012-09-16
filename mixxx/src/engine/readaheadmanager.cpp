@@ -72,7 +72,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
-    
+
     if (samples_read != samples_needed)
         qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
 
@@ -123,7 +123,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
             }
         }
     }
-    
+
     // Reverse the samples in-place
     if (in_reverse) {
         // TODO(rryan) pull this into MixxxUtil or something

@@ -73,7 +73,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
     /** calls readWriteFlags() by default */
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-    
+
     // Set the columns used for searching. Names must correspond to the column
     // names in the table provided to setTable. Must be called after setTable is
     // called.

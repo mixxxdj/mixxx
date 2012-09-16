@@ -154,7 +154,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
     m_currentStride = 0;
     m_currentSummaryStride = 0;
-    
+
     //debug
     //m_waveform->dump();
     //m_waveformSummary->dump();
@@ -185,10 +185,6 @@ void AnalyserWaveform::destroyFilters() {
             m_filter[i] = 0;
         }
     }
-}
-
-inline CSAMPLE square(CSAMPLE x) {
-    return x * x;
 }
 
 void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
@@ -307,7 +303,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
                     qWarning() << "AnalyserWaveform::process - current summary stride >= waveform summary size";
                     return;
                 }
-                
+
 #ifdef TEST_HEAT_MAP
                 QPointF point(float(m_strideSummary.m_filteredData[Right][High]),
                               float(m_strideSummary.m_filteredData[Right][ Mid]));
@@ -347,7 +343,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
         }
         m_stride.m_position += 2;
     }
-    
+
     m_waveform->setCompletion(m_currentStride);
     m_waveformSummary->setCompletion(m_currentSummaryStride);
 

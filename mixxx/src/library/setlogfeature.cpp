@@ -24,7 +24,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
-       
+
     //create a new playlist for today
     QString set_log_name_format;
     QString set_log_name;
@@ -274,7 +274,7 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (currentPlayingTrackId < 0) {
             return;
         }
-        
+
         if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
             // View needs a refresh
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);

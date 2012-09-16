@@ -9,6 +9,7 @@
 #include "controlpotmeter.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"

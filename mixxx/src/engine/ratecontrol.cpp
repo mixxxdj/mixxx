@@ -133,9 +133,7 @@ RateControl::RateControl(const char* _group,
     if (wheel_sense_str.isNull() || wheel_sense_str.isEmpty())
     {
         m_dWheelSensitivity = 1.0f;
-    }
-    else
-    {
+    } else {
         m_dWheelSensitivity = wheel_sense_str.toDouble();
     }
     m_pWheelSensitivity = new ControlPotmeter(ConfigKey("[Master]", "wheelsensitivity"), 0., 2.);
@@ -454,10 +452,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         rate += wheelFactor;
 
         // New scratch behavior - overrides playback speed (and old behavior)
-        if (scratchEnable)
-        {
-       		rate = scratchFactor;
-        }
+        if (scratchEnable) rate = scratchFactor;
         else {
             // Deprecated old scratch behavior
             if (oldScratchFactor < 0.) {

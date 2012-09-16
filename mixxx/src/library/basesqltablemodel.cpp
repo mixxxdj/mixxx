@@ -243,7 +243,6 @@ void BaseSqlTableModel::select() {
     // If we were sorting a table column, then secondary sort by id. TODO(rryan)
     // we should look into being able to drop the secondary sort to save time
     // but going for correctness first.
-
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                  m_currentSearchFilter,
                                  sortColumn, m_eSortOrder,

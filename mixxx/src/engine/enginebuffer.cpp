@@ -156,15 +156,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(endButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlEnd(double)),
             Qt::DirectConnection);
-            
-    m_pSlipButton = new ControlPushButton(ConfigKey(group, "slip_enabled"));
-    m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pSlipButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlSlip(double)),
-            Qt::DirectConnection);
-    connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotControlSlip(double)),
-            Qt::DirectConnection);
 
     m_pSlipButton = new ControlPushButton(ConfigKey(group, "slip_enabled"));
     m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
@@ -344,8 +335,8 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //visualchannel.cpp or something. Need to valgrind this or something.
 
     if (b == true) {
-		m_pScale = m_pScaleST;
-		((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
+        m_pScale = m_pScaleST;
+        ((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
     } else {
         m_pScale = m_pScaleLinear;
     }
@@ -369,7 +360,7 @@ void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
 void EngineBuffer::setNewPlaypos(double newpos)
 {
     //qDebug() << "engine new pos " << newpos;
-    
+
     // Before seeking, read extra buffer for crossfading
     CSAMPLE *fadeout;
     fadeout = m_pScale->scale(0,
@@ -388,7 +379,7 @@ void EngineBuffer::setNewPlaypos(double newpos)
     if (m_pScale)
         m_pScale->clear();
     m_pReadAheadManager->notifySeek(filepos_play);
-    
+
     // Must hold the engineLock while using m_engineControls
     m_engineLock.lock();
     for (QList<EngineControl*>::iterator it = m_engineControls.begin();
@@ -409,7 +400,7 @@ double EngineBuffer::getRate()
     return m_pRateControl->getRawRate();
 }
 
-// WARNING: Always calle<d from the EngineWorker thread pool
+// WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
@@ -426,7 +417,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
-    
+
     pause.unlock();
 
     emit(trackLoaded(pTrack));
@@ -483,7 +474,7 @@ void EngineBuffer::slotControlSeek(double change)
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
         new_playpos--;
-        
+
     setNewPlaypos(new_playpos);
 }
 
@@ -599,12 +590,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                                              &is_scratching);
 
         //qDebug() << "rate" << rate << " paused" << paused;
-        
-        // Update the slipped position
-        if (m_bSlipEnabled) {
-            m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
-        }
-        
 
         // Update the slipped position
         if (m_bSlipEnabled) {
@@ -698,46 +683,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                     m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                         static_cast<int>(filepos_play), samplesRead);
         } // else (bCurBufferPaused)
-        
-        //Crossfade if we just did a seek
-        if (m_iCrossFadeSamples > 0)
-        {
-            int i = 0;
-            double cross_len = 0;
-            if (m_iCrossFadeSamples >= iBufferSize) {
-                i = m_iCrossFadeSamples - iBufferSize;
-                cross_len = static_cast<double>(iBufferSize) / 2.0;
-            } else {
-                cross_len = static_cast<double>(m_iCrossFadeSamples) / 2.0;
-            }
-            
-            double cross_mix = 0.0;
-            double cross_inc = 1.0 / cross_len;
-            
-            // Do crossfade from old fadeout buffer to this new data
-            for (int j=0; i < m_iCrossFadeSamples; i+=2, j+=2)
-            {
-#ifdef __SCALER_DEBUG__
-                double debugorig = pOutput[j];
-#endif
-                pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
-                pOutput[j+1] = pOutput[j+1] * cross_mix + m_pCrossFadeBuffer[i+1] * (1.0 - cross_mix);
-                cross_mix += cross_inc;
-#ifdef __SCALER_DEBUG__
-                writer << pOutput[j] << "," << debugorig << "," << m_pCrossFadeBuffer[i] << "\n";
-#endif
-            }
-            m_iCrossFadeSamples = 0;
-        }
-#ifdef __SCALER_DEBUG__
-        else
-        {
-            for (int i=0; i<iBufferSize; i+=2)
-            {
-                writer << pOutput[i] << ",0,0\n";
-            }
-        }
-#endif        
 
         //Crossfade if we just did a seek
         if (m_iCrossFadeSamples > 0) {
@@ -874,8 +819,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         for (int i=0; i<iBufferSize; i+=2) {
             if (bCurBufferPaused) {
-                m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 float dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
+                m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
                 pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
             } else {
@@ -956,16 +901,6 @@ void EngineBuffer::hintReader(const double dRate,
 
     m_hintList.clear();
     m_pReadAheadManager->hintReader(dRate, m_hintList, iSourceSamples);
-    
-    //if slipping, hint about virtual position so we're ready for it
-    if (m_bSlipEnabled)
-    {
-        Hint hint;
-        hint.length = 2048; //default length please
-        hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
-        hint.priority = 1;
-        m_hintList.append(hint);
-    }
 
     //if slipping, hint about virtual position so we're ready for it
     if (m_bSlipEnabled) {

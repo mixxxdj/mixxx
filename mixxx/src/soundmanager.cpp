@@ -55,7 +55,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
-    
     // It is possible to take them out?
     m_pControlObjectLatency = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Master]", "latency")));

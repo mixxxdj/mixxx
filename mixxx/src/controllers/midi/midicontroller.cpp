@@ -299,7 +299,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
         pEngine->execute(function, args);
         return;
     }
-    
+
     // Only pass values on to valid ControlObjects.
     ControlObject* p = mc.getControlObject();
     if (p == NULL) {

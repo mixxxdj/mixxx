@@ -106,7 +106,6 @@ Library::~Library() {
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
     // we never see the TrackCollection's destructor being called... - Albert
-    // Has to be deleted at last because the features holds references of it.
     delete m_pTrackCollection;
 }
 

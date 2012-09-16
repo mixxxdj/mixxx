@@ -161,7 +161,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         new_playpos = samples_read;
         return buffer;
     }
-    
+
     CSAMPLE* result = do_scale(buffer, buf_size, pBase, iBaseLength, &samples_read);
     new_playpos = samples_read;
     return result;
@@ -179,7 +179,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     float rate_add = rate_add_new;
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
-    
+
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
     m_fOldBaseRate = m_dBaseRate;
@@ -378,7 +378,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     //    buf[i] = 0.0f;
     //    buf[i+1] = 0.0f;
     //}
-    
+
     //Q_ASSERT(i>=buf_size);
     SampleUtil::applyGain(&buf[i], 0.0f, buf_size-i);
 

@@ -85,27 +85,19 @@ void WNumberPos::setValue(double dValue) {
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0f);
     }
-    
-   	QTime durationTime = QTime().addMSecs(durationMillis);
-	QString durationString = durationTime.toString((durationTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
 
-
-	QString valueString;
-	if (valueMillis >= 0)
-	{
-		QTime valueTime = QTime().addMSecs(valueMillis);
-		valueString = valueTime.toString((valueTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
-	}
-	else
-	{
-		QTime valueTime = QTime().addMSecs(0 - valueMillis);
-		valueString = valueTime.toString((valueTime.hour() >= 1) ? "-hh:mm:ss.zzz" : "-mm:ss.zzz");
-	}
+    QString valueString;
+    if (valueMillis >= 0) {
+        QTime valueTime = QTime().addMSecs(valueMillis);
+        valueString = valueTime.toString((valueTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
+    } else {
+        QTime valueTime = QTime().addMSecs(0 - valueMillis);
+        valueString = valueTime.toString((valueTime.hour() >= 1) ? "-hh:mm:ss.zzz" : "-mm:ss.zzz");
+    }
 
     // The format string gives us one extra digit of millisecond precision than
     // we care about. Slice it off.
     valueString = valueString.left(valueString.length() - 1);
-    durationString = durationString.left(durationString.length() - 1);
 
     m_pLabel->setText(QString("%1%2").arg(m_qsText, valueString));
 }

@@ -58,7 +58,7 @@ public:
 
     /** Set tempo */
     double setTempo(double dTempo);
-    
+
     /** Set base rate */
     void setBaseRate(double dBaseRate);
 

@@ -118,7 +118,7 @@ void WSpinny::setup(QDomNode node, QString group)
     //Repaint when visual_playposition changes.
     connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
             this, SLOT(updateAngle(double)));
-            
+
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_speed_type")));
