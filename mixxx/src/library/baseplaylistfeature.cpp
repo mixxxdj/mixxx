@@ -390,10 +390,10 @@ void BasePlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
 void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
     if (QString(link.path())=="create") {
-        slotCreatePlaylist();   
+        slotCreatePlaylist();
     } else {
         qDebug() << "Unknonw playlist link clicked" << link.path();
-    } 
+    }
 }
 
 /**

@@ -85,7 +85,7 @@ void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
     // Clear out buffer and saved sample data
-    buffer_int_size = 0; 
+    buffer_int_size = 0;
     m_dNextSampleIndex = 0;
     m_fPrevSample[0] = 0;
     m_fPrevSample[1] = 0;
@@ -195,7 +195,9 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
 
     // We check for scratch condition in the public function, so this shouldn't
     // happen
-    Q_ASSERT(rate_add_new * rate_add_old >= 0);
+    if (rate_add_new * rate_add_old < 0) {
+        qDebug() << "ERROR: EBSL did not detect scratching correctly.";
+    }
 
     //special case -- no scaling needed!
     if (rate_add_old == 1.0 && rate_add_new == 1.0) {
