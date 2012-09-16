@@ -455,7 +455,7 @@ def do_codesign(target, source, env):
                                              bundle)
         if system(command) != 0:
             raise Exception('codesign failed')
-    return Bundle(bundle), []
+    return Bundle(bundle), source
 
 CodeSign = Builder(action = do_codesign, emitter = no_sources)
 
