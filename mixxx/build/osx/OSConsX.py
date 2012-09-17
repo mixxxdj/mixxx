@@ -455,7 +455,7 @@ def do_codesign(target, source, env):
         if system(command) != 0:
             raise Exception('codesign failed')
 
-CodeSign = Builder(action = do_codesign, emitter = no_sources)
+CodeSign = Builder(action = do_codesign)
 
 
 def build_plist(target, source, env):
