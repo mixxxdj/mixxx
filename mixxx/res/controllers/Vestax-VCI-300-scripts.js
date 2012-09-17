@@ -48,6 +48,7 @@
  *   It remains turned off even when scratching is disabled, because otherwise
  *   the engine produces audible glitches.
  * - ITCH-like looping seems impossible with Mixxx 1.x controls(?)
+ * - TODO: Blinking LEDs during reverse playback, ...
  * - TODO: Implement soft-takeover for "rate"
  * - TODO: Crates/Files/Browse buttons are connected but currently unused
  * - TODO: Navigation tab button is connected but currently unused
@@ -94,6 +95,9 @@
  *             Restore non-linear jog response
  * 2012-08-28  Soft-takeover moved to XML mapping file
  *             Fix smart PFL switching
+ * 2012-09-17  Reduce "smartness" of PFL switching
+ *             Censor: Use slip_enabled in conjunction with reverse playback
+ *             to keep track synchronized
  * ...to be continued...
  *****************************************************************************/
 
@@ -759,22 +763,10 @@ VestaxVCI300.onCensorReverseButton = function (channel, control, value, status, 
 	if (deck.shiftState) {
 		// Reverse
 		VestaxVCI300.onToggleButton(group, "reverse", value);
-		deck.censorPosition = undefined;
 	} else {
-		if (engine.getValue(group, "play")) {
-			if (VestaxVCI300.getButtonPressed(value)) {
-				if (engine.getValue(group, "reverse")) {
-					VestaxVCI300.onToggleButton(group, "reverse", value);
-				} else {
-					deck.censorPosition = engine.getValue(group, "playposition");
-					engine.setValue(group, "reverse", true);
-				}
-			} else if ((deck.censorPosition != undefined) && engine.getValue(group, "reverse")) {
-				var deltaPosition = deck.censorPosition - engine.getValue(group, "playposition");
-				engine.setValue(group, "playposition", deck.censorPosition + deltaPosition);
-				engine.setValue(group, "reverse", false);
-			}
-		}
+		// Censor
+		engine.setValue(group, "slip_enabled", VestaxVCI300.getButtonPressed(value));
+		VestaxVCI300.toggleBinaryValue(group, "reverse");
 	}
 };
 
@@ -824,24 +816,17 @@ VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, grou
 };
 
 VestaxVCI300.onPFLButton = function (channel, control, value, status, group) {
-	var switchPFL = false;
-	if (VestaxVCI300.getButtonPressed(value)) {
-		if (VestaxVCI300.scrollState) {
-			// load selected track into deck
-			engine.setValue(group, "LoadSelectedTrack", true);
-			switchPFL = true;
-		} else {
-			if (engine.getValue(group, "pfl")) {
-				engine.setValue(group, "pfl", false);
-			} else {
-				switchPFL = true;
-			}
-		}
-	}
-	if (switchPFL) {
+	if (VestaxVCI300.scrollState && VestaxVCI300.getButtonPressed(value)) {
+		// load selected track into deck
+		engine.setValue(group, "LoadSelectedTrack", true);
+		// switch PFL to loaded deck:
+		// - disable PFL on all decks
 		engine.setValue(VestaxVCI300.leftDeck.group, "pfl", false);
 		engine.setValue(VestaxVCI300.rightDeck.group, "pfl", false);
+		// - enable PFL on loaded deck only
 		engine.setValue(group, "pfl", true);
+	} else {
+		VestaxVCI300.onToggleButton(group, "pfl", value);
 	}
 };
 
