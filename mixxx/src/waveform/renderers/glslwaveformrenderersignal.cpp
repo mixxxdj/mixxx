@@ -58,11 +58,18 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 
     m_signalMaxShaderProgram->removeAllShaders();
 
-    m_signalMaxShaderProgram->addShaderFromSourceFile(
-        QGLShader::Vertex, ":/shaders/passthrough.vert");
-    m_signalMaxShaderProgram->addShaderFromSourceFile(
-        QGLShader::Fragment, ":/shaders/computemaxsignal.frag");
-
+    if (!m_signalMaxShaderProgram->addShaderFromSourceFile(
+            QGLShader::Vertex, ":/shaders/passthrough.vert")) {
+        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
+                 << m_signalMaxShaderProgram->log();
+        return false;
+    }
+    if (!m_signalMaxShaderProgram->addShaderFromSourceFile(
+            QGLShader::Fragment, ":/shaders/computemaxsignal.frag")) {
+        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
+                 << m_signalMaxShaderProgram->log();
+        return false;
+    }
     if (!m_signalMaxShaderProgram->link()) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - " << m_signalMaxShaderProgram->log();
         return false;
@@ -73,18 +80,24 @@ bool GLSLWaveformRendererSignal::loadShaders() {
         return false;
     }
 
-
     if (m_frameShaderProgram->isLinked()) {
         m_frameShaderProgram->release();
     }
 
     m_frameShaderProgram->removeAllShaders();
 
-    m_frameShaderProgram->addShaderFromSourceFile(
-        QGLShader::Vertex, ":/shaders/passthrough.vert");
-    m_frameShaderProgram->addShaderFromSourceFile(
-        QGLShader::Fragment, ":/shaders/filteredsignal.frag");
-
+    if (!m_frameShaderProgram->addShaderFromSourceFile(
+            QGLShader::Vertex, ":/shaders/passthrough.vert")) {
+        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
+                 << m_signalMaxShaderProgram->log();
+        return false;
+    }
+    if (!m_frameShaderProgram->addShaderFromSourceFile(
+            QGLShader::Fragment, ":/shaders/filteredsignal.frag")) {
+        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
+                 << m_signalMaxShaderProgram->log();
+        return false;
+    }
     if (!m_frameShaderProgram->link()) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - " << m_frameShaderProgram->log();
         return false;
@@ -217,7 +230,7 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
     //qDebug() << bufferWidth;
 }
 
-void GLSLWaveformRendererSignal::onInit(){
+bool GLSLWaveformRendererSignal::onInit(){
     m_loadedWaveform = 0;
 
     if(!m_signalMaxShaderProgram)
@@ -226,9 +239,15 @@ void GLSLWaveformRendererSignal::onInit(){
     if(!m_frameShaderProgram)
         m_frameShaderProgram = new QGLShaderProgram();
 
-    loadShaders();
+    if (!loadShaders()) {
+        return false;
+    }
     createGeometry();
-    loadTexture();
+    if (!loadTexture()) {
+        return false;
+    }
+
+    return true;
 }
 
 void GLSLWaveformRendererSignal::onSetup(const QDomNode& /*node*/) {

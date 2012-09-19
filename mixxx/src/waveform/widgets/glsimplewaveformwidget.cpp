@@ -32,7 +32,7 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* pare
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
-    init();
+    m_initSuccess = init();
 }
 
 GLSimpleWaveformWidget::~GLSimpleWaveformWidget(){

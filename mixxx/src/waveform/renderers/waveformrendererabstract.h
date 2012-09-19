@@ -12,7 +12,7 @@ class WaveformRendererAbstract {
     explicit WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
 
-    virtual void init() = 0;
+    virtual bool init() {return true; }
     virtual void setup(const QDomNode& node) = 0;
     virtual void draw(QPainter* painter, QPaintEvent* event) = 0;
 

@@ -22,9 +22,10 @@ WaveformRenderBeat::~WaveformRenderBeat() {
         delete m_beatActive;
 }
 
-void WaveformRenderBeat::init() {
+bool WaveformRenderBeat::init() {
     m_beatActive = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"beat_active")));
+    return true;
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node) {
