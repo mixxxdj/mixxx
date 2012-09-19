@@ -13,7 +13,7 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRenderBeat();
 
-    virtual void init();
+    virtual bool init();
     virtual void setup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 

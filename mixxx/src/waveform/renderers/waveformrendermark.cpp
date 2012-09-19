@@ -17,9 +17,6 @@ WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRe
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-void WaveformRenderMark::init() {
-}
-
 void WaveformRenderMark::setup( const QDomNode& node) {
     m_marks.setup(m_waveformRenderer->getGroup(),node);
 }
@@ -37,7 +34,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->setWorldMatrixEnabled(false);
 
-    for( unsigned int i = 0; i < m_marks.size(); i++) {
+    for( int i = 0; i < m_marks.size(); i++) {
         WaveformMark& mark = m_marks[i];
 
         if( !mark.m_pointControl)

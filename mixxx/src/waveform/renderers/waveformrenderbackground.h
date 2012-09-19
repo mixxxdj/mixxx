@@ -17,7 +17,6 @@ class WaveformRenderBackground : public WaveformRendererAbstract {
     explicit WaveformRenderBackground(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRenderBackground();
 
-    virtual void init();
     virtual void setup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 

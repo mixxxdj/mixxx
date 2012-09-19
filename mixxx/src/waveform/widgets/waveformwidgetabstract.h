@@ -21,7 +21,7 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     //Type is use by the factory to safely up-cast waveform widgets
     virtual WaveformWidgetType::Type getType() const = 0;
 
-    bool isValid() const { return m_widget; }
+    bool isValid() const { return (m_widget && m_initSuccess); }
     QWidget* getWidget() { return m_widget; }
 
     void hold();
@@ -33,13 +33,9 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     virtual void resize( int width, int height);
 
-    //Those information enable automatic combobox creation and waveform selection
-    virtual QString getWaveformWidgetName() = 0;
-    virtual bool useOpenGl() const = 0;
-    virtual bool useOpenGLShaders() const = 0;
-
   protected:
     QWidget* m_widget;
+    bool m_initSuccess;
 
     WaveformWidgetAbstract();
     //this is the factory resposability to trigger QWidget casting after constructor
