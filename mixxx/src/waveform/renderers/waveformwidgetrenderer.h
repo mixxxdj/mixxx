@@ -24,8 +24,8 @@ public:
     explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
-    void init();
-    virtual void onInit() {}
+    bool init();
+    virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node);
     void onPreRender();

@@ -22,10 +22,6 @@ GLWaveformRendererFilteredSignal::~GLWaveformRendererFilteredSignal() {
 
 }
 
-void GLWaveformRendererFilteredSignal::onInit() {
-
-}
-
 void GLWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
 
 }
