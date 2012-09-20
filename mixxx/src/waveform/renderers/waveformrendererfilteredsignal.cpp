@@ -20,9 +20,6 @@ WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
 WaveformRendererFilteredSignal::~WaveformRendererFilteredSignal() {
 }
 
-void WaveformRendererFilteredSignal::onInit() {
-}
-
 void WaveformRendererFilteredSignal::onResize() {
     m_lowLines.resize(m_waveformRenderer->getWidth());
     m_midLines.resize(m_waveformRenderer->getWidth());

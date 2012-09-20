@@ -18,7 +18,7 @@ public:
             WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererEndOfTrack();
 
-    virtual void init();
+    virtual bool init();
     virtual void setup(const QDomNode& node);
     virtual void onResize();
     virtual void draw(QPainter* painter, QPaintEvent* event);

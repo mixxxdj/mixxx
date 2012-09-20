@@ -30,7 +30,7 @@ GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent)
     setAutoBufferSwap(false);
 
     makeCurrent();
-    init();
+    m_initSuccess = init();
 }
 
 GLSLWaveformWidget::~GLSLWaveformWidget(){

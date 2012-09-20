@@ -25,7 +25,7 @@ SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* pare
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    init();
+    m_initSuccess = init();
 }
 
 SoftwareWaveformWidget::~SoftwareWaveformWidget() {
