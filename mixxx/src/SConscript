@@ -356,20 +356,22 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         if not qtplugindir:
                 #qtplugindir = '/Developer/Applications/Qt/'
                 qtplugindir = qtdir
+        sources = [mixxx_bin,
+                   '#res/osx/application.icns',
+                   Dir('#res/skins/'),
+                   File('#res/schema.xml'),
+                   Dir('#res/controllers/'),
+                   translation_files,
+                   Dir('#res/keyboard/'),
+                   Dir('#res/ladspa_presets'),
+                   Dir('#res/doc/'),
+                   Dir('#res/promo/'),
+                   Dir(menu_nib),
+                   File("#README"),
+                   File("#LICENSE")]
         bundle = env.App(
                 "Mixxx",
-                [mixxx_bin, '#res/osx/application.icns',
-                 Dir('#res/skins/'),
-                 File('#res/schema.xml'),
-                 Dir('#res/controllers/'),
-                 translation_files,
-                 Dir('#res/keyboard/'),
-                 Dir('#res/ladspa_presets'),
-                 Dir('#res/doc/'),
-                 Dir('#res/promo/'),
-                 Dir(menu_nib),
-                 File("#README"),
-                 File("#LICENSE")],
+                sources,
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
                 QT_HACK = [(p_tgt_dir, os.path.join(qtplugindir, "plugins", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
@@ -381,10 +383,25 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
-                OTOOL_SYSTEM_PATHS=otool_system_paths
+                OTOOL_SYSTEM_PATHS=otool_system_paths,
+                FOR_APP_STORE=True,
                 )
         #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
         env.Alias('bundle', bundle)
+
+        codesign_identity = SCons.ARGUMENTS.get('osx_codesign_identity', None)
+        codesign_keychain = SCons.ARGUMENTS.get('osx_codesign_keychain', None)
+        codesign_keychain_password = SCons.ARGUMENTS.get('osx_codesign_keychain_password', None)
+        # CodeSign needs to take sources for it source so that there is an input
+        # that changse. Otherwise SCons will think the CodeSign target is up to
+        # date and not run it.
+        codesign = env.CodeSign(
+                'Mixxx',
+                sources,
+                CODESIGN_IDENTITY=codesign_identity,
+                CODESIGN_KEYCHAIN=codesign_keychain,
+                CODESIGN_KEYCHAIN_PASSWORD=codesign_keychain_password)
+        env.Alias('sign', codesign)
 
         package_name = 'mixxx'
         package_version = osx_construct_version(build, mixxx_version, branch_name, bazaar_revision)

@@ -17,9 +17,6 @@ QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal( WaveformWidgetRe
 QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal(){
 }
 
-void QtWaveformRendererSimpleSignal::onInit(){
-}
-
 void QtWaveformRendererSimpleSignal::onSetup(const QDomNode &node){
     QColor signalColor = m_colors.getSignalColor();
     signalColor.setAlphaF(0.8);

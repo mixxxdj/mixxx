@@ -33,7 +33,7 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent)
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
-    init();
+    m_initSuccess = init();
 }
 
 GLWaveformWidget::~GLWaveformWidget() {

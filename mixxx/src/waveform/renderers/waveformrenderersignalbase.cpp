@@ -41,7 +41,7 @@ void WaveformRendererSignalBase::deleteControls() {
         delete m_highKillControlObject;
 }
 
-void WaveformRendererSignalBase::init() {
+bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
@@ -58,7 +58,7 @@ void WaveformRendererSignalBase::init() {
     m_highKillControlObject = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHighKill")));
 
-    onInit();
+    return onInit();
 }
 
 void WaveformRendererSignalBase::setup(const QDomNode &node) {

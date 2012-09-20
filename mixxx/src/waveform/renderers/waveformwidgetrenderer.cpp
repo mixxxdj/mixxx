@@ -86,7 +86,7 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 #endif
 }
 
-void WaveformWidgetRenderer::init() {
+bool WaveformWidgetRenderer::init() {
 
     //qDebug() << "WaveformWidgetRenderer::init";
 
@@ -103,8 +103,12 @@ void WaveformWidgetRenderer::init() {
     m_trackSamplesControlObject = new ControlObjectThreadMain(
                 ControlObject::getControl( ConfigKey(m_group,"track_samples")));
 
-    for( int i = 0; i < m_rendererStack.size(); ++i)
-        m_rendererStack[i]->init();
+    for (int i = 0; i < m_rendererStack.size(); ++i) {
+        if (!m_rendererStack[i]->init()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void WaveformWidgetRenderer::onPreRender() {
