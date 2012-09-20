@@ -12,10 +12,10 @@ public:
     explicit WaveformRendererSignalBase( WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererSignalBase();
 
-    virtual void init();
+    virtual bool init();
     virtual void setup(const QDomNode &node);
 
-    virtual void onInit() = 0;
+    virtual bool onInit() {return true;}
     virtual void onSetup(const QDomNode &node) = 0;
 
 protected:

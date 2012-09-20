@@ -13,11 +13,11 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
   public:
     virtual ~EmptyWaveformWidget();
 
-    virtual QString getWaveformWidgetName() { return tr("Empty"); }
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::EmptyWaveform; }
 
-    virtual bool useOpenGl() const { return false; }
-    virtual bool useOpenGLShaders() const { return false; }
+    static inline QString getWaveformWidgetName() { return tr("Empty"); }
+    static inline bool useOpenGl() { return false; }
+    static inline bool useOpenGLShaders() { return false; }
 
   protected:
     virtual void castToQWidget();

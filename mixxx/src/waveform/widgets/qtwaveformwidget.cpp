@@ -32,7 +32,7 @@ QtWaveformWidget::QtWaveformWidget( const char* group, QWidget* parent)
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
-    init();
+    m_initSuccess = init();
 }
 
 QtWaveformWidget::~QtWaveformWidget() {

@@ -14,7 +14,7 @@ EmptyWaveformWidget::EmptyWaveformWidget(const char* group, QWidget* parent)
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    init();
+    m_initSuccess = init();
 }
 
 EmptyWaveformWidget::~EmptyWaveformWidget() {
