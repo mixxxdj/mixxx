@@ -3,15 +3,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-10 12:07+0200\n"
+"POT-Creation-Date: 2012-09-20 10:12+0200\n"
 "PO-Revision-Date: 2012-09-07 17:39+0000\n"
 "Last-Translator: Daniel Schürmann <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-08 04:35+0000\n"
-"X-Generator: Launchpad (build 15914)\n"
+"X-Launchpad-Export-Date: 2012-09-21 04:36+0000\n"
+"X-Generator: Launchpad (build 15985)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -364,6 +364,10 @@ msgstr ""
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
 msgstr "Die Metadaten der Datei konnten nicht aktualisiert werden."
+
+#: BulkController#1
+msgid "USB Controller"
+msgstr ""
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -1326,14 +1330,12 @@ msgid "Simple"
 msgstr "Einfach"
 
 #: DlgPrefControls#6
-msgctxt "DlgPrefControls#6"
 msgid "On"
-msgstr "An"
+msgstr ""
 
 #: DlgPrefControls#7
-msgctxt "DlgPrefControls#7"
 msgid "Off"
-msgstr "Aus"
+msgstr ""
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1364,52 +1366,56 @@ msgid "The selected skin is bigger than your screen resolution."
 msgstr "Das ausgewählte Skin ist größer als Ihre Bildschirmauflösung."
 
 #: DlgPrefControls#15
+msgid "On (only in Library)"
+msgstr ""
+
+#: DlgPrefControls#16
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#16
+#: DlgPrefControls#17
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#17
+#: DlgPrefControls#18
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#18
+#: DlgPrefControls#19
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#19
+#: DlgPrefControls#20
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#20
+#: DlgPrefControls#21
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#21
+#: DlgPrefControls#22
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#22
+#: DlgPrefControls#23
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#23
+#: DlgPrefControls#24
 msgid "Up increases speed"
 msgstr "Hoch erhöht Geschwindigkeit"
 
-#: DlgPrefControls#24
-msgctxt "DlgPrefControls#24"
-msgid "Information"
-msgstr "Information"
-
 #: DlgPrefControls#25
+msgctxt "DlgPrefControls#25"
+msgid "Information"
+msgstr ""
+
+#: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr ""
 "Mixxx muss neu gestartet werden, damit die Änderungen wirksam werden."
 
-#: DlgPrefControls#26
+#: DlgPrefControls#27
 msgid "OpenGL not available"
 msgstr "OpenGL nicht verfügbar"
 
@@ -1435,114 +1441,104 @@ msgid "Tool tips"
 msgstr "Kurzhilfen"
 
 #: DlgPrefControlsDlg#6
-msgctxt "DlgPrefControlsDlg#6"
-msgid "On"
-msgstr "An"
-
-#: DlgPrefControlsDlg#7
-msgctxt "DlgPrefControlsDlg#7"
-msgid "Off"
-msgstr "Aus"
-
-#: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
 msgstr "Regler für Tonhöhen-/Geschwindigkeitsbereich"
 
-#: DlgPrefControlsDlg#9
+#: DlgPrefControlsDlg#7
 msgid "Pitch/Rate slider direction"
 msgstr "Richtungsregler für Tonhöhen-/Geschwindigkeitsbereich"
 
-#: DlgPrefControlsDlg#10
+#: DlgPrefControlsDlg#8
 msgid "Track load behaviour"
 msgstr "Verhalten beim Laden von Titeln"
 
-#: DlgPrefControlsDlg#11
+#: DlgPrefControlsDlg#9
 msgid "Cue behaviour"
 msgstr "Cue-Modus"
 
-#: DlgPrefControlsDlg#12
+#: DlgPrefControlsDlg#10
 msgid "Auto Recall Cue"
 msgstr "Positonierung am Cue-Punkt"
 
-#: DlgPrefControlsDlg#13
+#: DlgPrefControlsDlg#11
 msgid "Locale"
 msgstr "Sprache"
 
-#: DlgPrefControlsDlg#14
+#: DlgPrefControlsDlg#12
 msgid "Temporary rate change when left-clicking"
 msgstr "Vorübergehende Geschwindigkeitsänderung beim Linksklick"
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#13
 msgid "Temporary rate change when right-clicking"
 msgstr "Vorübergehende Geschwindigkeitsänderung beim Rechtsklick"
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
 msgstr "Knopf für permanente Tonhöhe/Geschwindigkeit"
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#15
 msgid "Displays which OpenGL version is supported by the current platform."
 msgstr ""
 "Zeigt an welche OpenGL-Version von der aktuellen Plattform unterstützt wird."
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#16
 msgid "Displays the actual frame rate."
 msgstr "Zeigt die tatsächliche Bildwiederholrate."
 
-#: DlgPrefControlsDlg#19
+#: DlgPrefControlsDlg#17
 msgid "Normalize Overview"
 msgstr "Übersicht normalisieren"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#18
 msgid "Left click"
 msgstr "Linksklick"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#19
 msgid "Right click"
 msgstr "Rechtsklick"
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#20
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#21
 msgid "Temporary Pitch/Rate Buttons"
 msgstr "Knopf für vorübergehende Tonhöhe/Geschwindigkeit"
 
-#: DlgPrefControlsDlg#24
+#: DlgPrefControlsDlg#22
 msgid "Ramping Pitchbend"
 msgstr "Weiche Tonhöhenveränderung"
 
-#: DlgPrefControlsDlg#25
+#: DlgPrefControlsDlg#23
 msgid "Pitchbend sensitivity"
 msgstr "Feinheit der Tonhöhenveränderung"
 
-#: DlgPrefControlsDlg#26
-msgctxt "DlgPrefControlsDlg#26"
+#: DlgPrefControlsDlg#24
+msgctxt "DlgPrefControlsDlg#24"
 msgid "Waveform Display"
-msgstr "Wellenformanzeige"
+msgstr ""
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
 msgstr "Synchronisieren der Vergrößerungsstufe in allen Wellenform-Anzeigen."
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#26
 msgid "OpenGl status"
 msgstr "OpenGl-Status"
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#27
 msgid "Display type"
 msgstr "Anzeige-Art"
 
-#: DlgPrefControlsDlg#30
+#: DlgPrefControlsDlg#28
 msgid "Permanent rate change when left-clicking"
 msgstr "Permanente Geschwindigkeitsänderung beim Linksklick"
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#29
 msgid "Permanent rate change when right-clicking"
 msgstr "Permanente Geschwindigkeitsänderung beim Rechtsklick"
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#30
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
@@ -1550,42 +1546,42 @@ msgstr ""
 "Läßt die Knöpfe für vorübergehende Tonhöhen-/Geschwindigkeitsänderungen "
 "diese schrittweise anpassen anstatt auf einmal."
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#31
 msgid "Value in milliseconds"
 msgstr "Wert in Millisekunden"
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#32
 msgid "Visual gain of the high frequencies"
 msgstr "Visuelle Verstärkung der hohen Frequenzen"
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#33
 msgid "Visual gain of the middle frequencies"
 msgstr "Visuelle Verstärkung der mittleren Frequenzen"
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the low frequencies"
 msgstr "Visuelle Verstärkung der tiefen Frequenzen"
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#35
 msgid "Global visual gain"
 msgstr "Globale Visuelle Verstärkung"
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#36
 msgid "Frame rate"
 msgstr "Bildwiederholrate"
 
-#: DlgPrefControlsDlg#39
+#: DlgPrefControlsDlg#37
 msgid "Default zoom"
 msgstr "Standard-Vergrößerung"
 
-#: DlgPrefControlsDlg#40
+#: DlgPrefControlsDlg#38
 msgid "Visual gain"
 msgstr "Visuelle Verstärkung"
 
-#: DlgPrefControlsDlg#41
-msgctxt "DlgPrefControlsDlg#41"
+#: DlgPrefControlsDlg#39
+msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr "Synchronisieren"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1621,9 +1617,13 @@ msgid "Logarithmic"
 msgstr "Logarithmisch"
 
 #: DlgPrefCrossfaderDlg#9
-msgctxt "DlgPrefCrossfaderDlg#9"
+msgid "Reverse crossfader (hamster style)"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#10
+msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr "Auf Standard zurücksetzen"
+msgstr ""
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1636,7 +1636,9 @@ msgstr "Statische EQs (für langsamere CPUs)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
-msgstr "High Shelf EQ"
+msgstr ""
+"High Shelf EQ - Mit diesem EQ können Frequenzen ab der eingestellten "
+"Kennfrequenz angehoben bzw. abgesenkt werden."
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
@@ -1656,7 +1658,9 @@ msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
-msgstr "Low Shelf EQ"
+msgstr ""
+"Low Shelf EQ - Mit diesem EQ werden Frequenzen unterhalb der eingestellten "
+"Frequenz angehoben oder abgesenkt."
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
@@ -2297,48 +2301,51 @@ msgid "Sample Rate"
 msgstr "Abtastrate"
 
 #: DlgPrefSoundDlg#3
+msgid "Buffer Underflow Count"
+msgstr ""
+
+#: DlgPrefSoundDlg#4
+msgid "0"
+msgstr ""
+
+#: DlgPrefSoundDlg#5
 msgid "Latency Tips"
 msgstr "Hinweise zur Latenz"
 
-#: DlgPrefSoundDlg#4
+#: DlgPrefSoundDlg#6
 msgid ""
 "<ul>\n"
-"<li>Increase your latency if you hear pops during playback</li>\n"
+"<li>Increase your latency if the underflow counter is increasing or you hear "
+"pops during playback</li>\n"
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
-"<ul>\n"
-"<li>Erhöhen Sie die Latenz, wenn Aussetzer während der Wiedergabe zu hören "
-"sind.</li>\n"
-"<li>Verringern Sie die Latenz um Mixxx's Reaktionsgeschwindigkeit zu "
-"verbessern.</li>\n"
-"</ul>"
-
-#: DlgPrefSoundDlg#5
-msgctxt "DlgPrefSoundDlg#5"
-msgid "Output"
-msgstr "Ausgang"
-
-#: DlgPrefSoundDlg#6
-msgctxt "DlgPrefSoundDlg#6"
-msgid "Input"
-msgstr "Eingang"
 
 #: DlgPrefSoundDlg#7
-msgid "Query Devices"
-msgstr "Geräte abfragen"
+msgctxt "DlgPrefSoundDlg#7"
+msgid "Output"
+msgstr ""
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
-msgid "Reset to Defaults"
-msgstr "Zurücksetzen"
+msgid "Input"
+msgstr ""
 
 #: DlgPrefSoundDlg#9
-msgctxt "DlgPrefSoundDlg#9"
-msgid "Apply"
-msgstr "Anwenden"
+msgid "Query Devices"
+msgstr "Geräte abfragen"
 
 #: DlgPrefSoundDlg#10
+msgctxt "DlgPrefSoundDlg#10"
+msgid "Reset to Defaults"
+msgstr ""
+
+#: DlgPrefSoundDlg#11
+msgctxt "DlgPrefSoundDlg#11"
+msgid "Apply"
+msgstr ""
+
+#: DlgPrefSoundDlg#12
 msgid "Latency"
 msgstr "Latenz"
 
@@ -3496,26 +3503,66 @@ msgid "Enable Live &Broadcasting"
 msgstr "&Liveübertragung aktivieren"
 
 #: MixxxApp#70
+msgid "May not be supported on all skins."
+msgstr ""
+
+#: MixxxApp#71
+msgid "Show Sample Deck Widgets"
+msgstr ""
+
+#: MixxxApp#72
+msgid "Show the sample deck section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#73
+msgid "Ctrl+S"
+msgstr ""
+
+#: MixxxApp#74
+msgid "Show Vinyl Control Widgets"
+msgstr ""
+
+#: MixxxApp#75
+msgid "Show the vinyl control section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#76
+msgid "Ctrl+V"
+msgstr ""
+
+#: MixxxApp#77
+msgid "Show Microphone Widgets"
+msgstr ""
+
+#: MixxxApp#78
+msgid "Show the microphone section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#79
+msgid "Ctrl+M"
+msgstr ""
+
+#: MixxxApp#80
 msgid "&Options"
 msgstr "&Optionen"
 
-#: MixxxApp#71
+#: MixxxApp#81
 msgid "&Library"
 msgstr "&Bibliothek"
 
-#: MixxxApp#72
+#: MixxxApp#82
 msgid "&View"
 msgstr "&Ansicht"
 
-#: MixxxApp#73
+#: MixxxApp#83
 msgid "&Help"
 msgstr "&Hilfe"
 
-#: MixxxApp#74
+#: MixxxApp#84
 msgid "&Vinyl Control"
 msgstr "&Vinyl-Steuerung"
 
-#: MixxxApp#75
+#: MixxxApp#85
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3524,39 +3571,39 @@ msgstr ""
 "Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-"
 "Hardware-Einstellungen aus."
 
-#: MixxxApp#76
+#: MixxxApp#86
 msgid "Mixxx %1 Development Team"
 msgstr "Mixxx %1 Entwicklerteam"
 
-#: MixxxApp#77
+#: MixxxApp#87
 msgid "With contributions from:"
 msgstr "Mit Beiträgen von:"
 
-#: MixxxApp#78
+#: MixxxApp#88
 msgid "And special thanks to:"
 msgstr "Und besonderen Dank an:"
 
-#: MixxxApp#79
+#: MixxxApp#89
 msgid "Past Developers"
 msgstr "Frühere Entwickler"
 
-#: MixxxApp#80
+#: MixxxApp#90
 msgid "Past Contributors"
 msgstr "Frühere Mitwirkende"
 
-#: MixxxApp#81
+#: MixxxApp#91
 msgid "Error in skin file"
 msgstr "Fehler in Skin-Datei"
 
-#: MixxxApp#82
+#: MixxxApp#92
 msgid "The selected skin cannot be loaded."
 msgstr "Das gewählte Skin kann nicht geladen werden."
 
-#: MixxxApp#83
+#: MixxxApp#93
 msgid "OpenGL Direct Rendering"
 msgstr "Direktes Rendern mit OpenGL"
 
-#: MixxxApp#84
+#: MixxxApp#94
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3576,19 +3623,19 @@ msgstr ""
 "Renden möglicherweise nicht vorhanden, Sie sollen<br>aber keine verminderte "
 "Leistung erleben."
 
-#: MixxxApp#85
+#: MixxxApp#95
 msgid "Confirm Exit"
 msgstr "Beenden bestätigen"
 
-#: MixxxApp#86
+#: MixxxApp#96
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Ein Deck spielt derzeit. Mixxx beenden?"
 
-#: MixxxApp#87
+#: MixxxApp#97
 msgid "The preferences window is still open."
 msgstr "Das Einstellungen-Fenster ist noch geöffnet."
 
-#: MixxxApp#88
+#: MixxxApp#98
 msgid "Discard any changes and exit Mixxx?"
 msgstr "Alle Änderungen verwerfen und Mixxx schließen?"
 
@@ -5898,6 +5945,10 @@ msgstr "(GL)"
 #~ "Kein(e) Eingabegerät(e) ausgewählt.\n"
 #~ "Bitte wählen Sie die Soundkarte(n) in den Sound Hardware-Einstellungen."
 
+#~ msgctxt "DlgPrefSoundDlg#6"
+#~ msgid "Input"
+#~ msgstr "Eingang"
+
 #~ msgid "Output"
 #~ msgstr "Ausgang"
 
@@ -5981,6 +6032,10 @@ msgstr "(GL)"
 
 #~ msgid "8% (Technics SL1210)"
 #~ msgstr "8% (Technics SL1210)"
+
+#~ msgctxt "DlgPrefSoundDlg#9"
+#~ msgid "Apply"
+#~ msgstr "Anwenden"
 
 #~ msgctxt "DlgPrefPlaylistDlg#15"
 #~ msgid "Library"
@@ -6439,6 +6494,19 @@ msgstr "(GL)"
 
 #~ msgid "Choose No to use the existing iPod @ "
 #~ msgstr "Wählen Sie \"Nein“ um den bisherigen iPod zu benutzen @ "
+
+#~ msgid ""
+#~ "<ul>\n"
+#~ "<li>Increase your latency if you hear pops during playback</li>\n"
+#~ "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
+#~ "</ul>"
+#~ msgstr ""
+#~ "<ul>\n"
+#~ "<li>Erhöhen Sie die Latenz, wenn Aussetzer während der Wiedergabe zu hören "
+#~ "sind.</li>\n"
+#~ "<li>Verringern Sie die Latenz um Mixxx's Reaktionsgeschwindigkeit zu "
+#~ "verbessern.</li>\n"
+#~ "</ul>"
 
 #~ msgid "Midi Status Type"
 #~ msgstr "MIDI-Statustyp"

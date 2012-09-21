@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-08-10 12:07+0200\n"
+"POT-Creation-Date: 2012-09-20 10:12+0200\n"
 "PO-Revision-Date: 2012-08-18 12:25+0000\n"
 "Last-Translator: maxim gurdebeke <maxim.gurdebeke@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-08-21 04:39+0000\n"
-"X-Generator: Launchpad (build 15810)\n"
+"X-Launchpad-Export-Date: 2012-09-21 04:36+0000\n"
+"X-Generator: Launchpad (build 15985)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -364,6 +364,10 @@ msgstr "Het bestand kan niet verwijderd worden omdat het in gebruik is."
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
 msgstr "De metadata van het bestand kan niet geüpdate worden."
+
+#: BulkController#1
+msgid "USB Controller"
+msgstr ""
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -1324,14 +1328,12 @@ msgid "Simple"
 msgstr "Eenvoudig"
 
 #: DlgPrefControls#6
-msgctxt "DlgPrefControls#6"
 msgid "On"
-msgstr "Aan"
+msgstr ""
 
 #: DlgPrefControls#7
-msgctxt "DlgPrefControls#7"
 msgid "Off"
-msgstr "Uit"
+msgstr ""
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1362,52 +1364,56 @@ msgid "The selected skin is bigger than your screen resolution."
 msgstr "De geselecteerde skin is groter dan uw schermresolutie"
 
 #: DlgPrefControls#15
+msgid "On (only in Library)"
+msgstr ""
+
+#: DlgPrefControls#16
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#16
+#: DlgPrefControls#17
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#17
+#: DlgPrefControls#18
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#18
+#: DlgPrefControls#19
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#19
+#: DlgPrefControls#20
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#20
+#: DlgPrefControls#21
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#21
+#: DlgPrefControls#22
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#22
+#: DlgPrefControls#23
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#23
+#: DlgPrefControls#24
 msgid "Up increases speed"
 msgstr "Omhoog verhoogt snelheid"
 
-#: DlgPrefControls#24
-msgctxt "DlgPrefControls#24"
-msgid "Information"
-msgstr "Informatie"
-
 #: DlgPrefControls#25
+msgctxt "DlgPrefControls#25"
+msgid "Information"
+msgstr ""
+
+#: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr ""
 "Mixxx moet opnieuw worden gestart voordat de wijzigingen van kracht worden"
 
-#: DlgPrefControls#26
+#: DlgPrefControls#27
 msgid "OpenGL not available"
 msgstr "OpenGL niet beschikbaar"
 
@@ -1433,156 +1439,146 @@ msgid "Tool tips"
 msgstr "Tooltips"
 
 #: DlgPrefControlsDlg#6
-msgctxt "DlgPrefControlsDlg#6"
-msgid "On"
-msgstr "Aan"
-
-#: DlgPrefControlsDlg#7
-msgctxt "DlgPrefControlsDlg#7"
-msgid "Off"
-msgstr "Uit"
-
-#: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
 msgstr "Pitch/ Rate schuif bereik"
 
-#: DlgPrefControlsDlg#9
+#: DlgPrefControlsDlg#7
 msgid "Pitch/Rate slider direction"
 msgstr "Pitch/ Rate schuif richting"
 
-#: DlgPrefControlsDlg#10
+#: DlgPrefControlsDlg#8
 msgid "Track load behaviour"
 msgstr "Gedrag van het te laden nummer"
 
-#: DlgPrefControlsDlg#11
+#: DlgPrefControlsDlg#9
 msgid "Cue behaviour"
 msgstr "Cue gedrag"
 
-#: DlgPrefControlsDlg#12
+#: DlgPrefControlsDlg#10
 msgid "Auto Recall Cue"
 msgstr "Auto Recall Cue"
 
-#: DlgPrefControlsDlg#13
+#: DlgPrefControlsDlg#11
 msgid "Locale"
 msgstr "Taalregio"
 
-#: DlgPrefControlsDlg#14
+#: DlgPrefControlsDlg#12
 msgid "Temporary rate change when left-clicking"
 msgstr "Tijdelijke wijziging bij links-klikken"
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#13
 msgid "Temporary rate change when right-clicking"
 msgstr "Tijdelijke wijziging bij rechts-klikken"
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
 msgstr "Permanente Pitch/Rate Knoppen"
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#15
 msgid "Displays which OpenGL version is supported by the current platform."
 msgstr ""
 "Toont welke OpenGL versie ondersteund wordt door het huidige "
 "besturingssysteem"
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#16
 msgid "Displays the actual frame rate."
 msgstr "Laat de werkelijke frame rate zien"
 
-#: DlgPrefControlsDlg#19
+#: DlgPrefControlsDlg#17
 msgid "Normalize Overview"
 msgstr "Overzicht normalizeren"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#18
 msgid "Left click"
 msgstr "Linkerklik"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#19
 msgid "Right click"
 msgstr "Rechterklik"
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#20
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#21
 msgid "Temporary Pitch/Rate Buttons"
 msgstr "Tijdelijke Pitch/Rate Knoppen"
 
-#: DlgPrefControlsDlg#24
+#: DlgPrefControlsDlg#22
 msgid "Ramping Pitchbend"
 msgstr "Ramping Pitchbend"
 
-#: DlgPrefControlsDlg#25
+#: DlgPrefControlsDlg#23
 msgid "Pitchbend sensitivity"
 msgstr "Pitch verbuigings gevoeligheid"
 
-#: DlgPrefControlsDlg#26
-msgctxt "DlgPrefControlsDlg#26"
+#: DlgPrefControlsDlg#24
+msgctxt "DlgPrefControlsDlg#24"
 msgid "Waveform Display"
 msgstr ""
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
 msgstr ""
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#26
 msgid "OpenGl status"
 msgstr "OpenGl status"
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#27
 msgid "Display type"
 msgstr "Type tonen"
 
-#: DlgPrefControlsDlg#30
+#: DlgPrefControlsDlg#28
 msgid "Permanent rate change when left-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#29
 msgid "Permanent rate change when right-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#30
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
 msgstr ""
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#31
 msgid "Value in milliseconds"
 msgstr "Waarde in milliseconden"
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#32
 msgid "Visual gain of the high frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#33
 msgid "Visual gain of the middle frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the low frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#35
 msgid "Global visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#36
 msgid "Frame rate"
 msgstr ""
 
-#: DlgPrefControlsDlg#39
+#: DlgPrefControlsDlg#37
 msgid "Default zoom"
 msgstr "Standaard zoom"
 
-#: DlgPrefControlsDlg#40
+#: DlgPrefControlsDlg#38
 msgid "Visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#41
-msgctxt "DlgPrefControlsDlg#41"
+#: DlgPrefControlsDlg#39
+msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr "Synchroniseer"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1618,9 +1614,13 @@ msgid "Logarithmic"
 msgstr "Logaritmisch"
 
 #: DlgPrefCrossfaderDlg#9
-msgctxt "DlgPrefCrossfaderDlg#9"
+msgid "Reverse crossfader (hamster style)"
+msgstr ""
+
+#: DlgPrefCrossfaderDlg#10
+msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr "Standaardinstellingen herstellen"
+msgstr ""
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -2282,47 +2282,51 @@ msgid "Sample Rate"
 msgstr "Sample-ratio"
 
 #: DlgPrefSoundDlg#3
+msgid "Buffer Underflow Count"
+msgstr ""
+
+#: DlgPrefSoundDlg#4
+msgid "0"
+msgstr ""
+
+#: DlgPrefSoundDlg#5
 msgid "Latency Tips"
 msgstr "Vertraging Tips"
 
-#: DlgPrefSoundDlg#4
+#: DlgPrefSoundDlg#6
 msgid ""
 "<ul>\n"
-"<li>Increase your latency if you hear pops during playback</li>\n"
+"<li>Increase your latency if the underflow counter is increasing or you hear "
+"pops during playback</li>\n"
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
-"<ul>\n"
-"<li>Verhoog jouw vertraging indien je plop geluiden hoort tijdens het "
-"afspelen</li>\n"
-"<li>Verlaag jouw vertraging om Mixxx's reactiesnelheid te verbeteren</li>\n"
-"</ul>"
 
-#: DlgPrefSoundDlg#5
-msgctxt "DlgPrefSoundDlg#5"
+#: DlgPrefSoundDlg#7
+msgctxt "DlgPrefSoundDlg#7"
 msgid "Output"
 msgstr ""
 
-#: DlgPrefSoundDlg#6
-msgctxt "DlgPrefSoundDlg#6"
+#: DlgPrefSoundDlg#8
+msgctxt "DlgPrefSoundDlg#8"
 msgid "Input"
-msgstr "Invoer"
+msgstr ""
 
-#: DlgPrefSoundDlg#7
+#: DlgPrefSoundDlg#9
 msgid "Query Devices"
 msgstr "Query-apparaten"
 
-#: DlgPrefSoundDlg#8
-msgctxt "DlgPrefSoundDlg#8"
-msgid "Reset to Defaults"
-msgstr "Standaardinstellingen herstellen"
-
-#: DlgPrefSoundDlg#9
-msgctxt "DlgPrefSoundDlg#9"
-msgid "Apply"
-msgstr "Pas toe"
-
 #: DlgPrefSoundDlg#10
+msgctxt "DlgPrefSoundDlg#10"
+msgid "Reset to Defaults"
+msgstr ""
+
+#: DlgPrefSoundDlg#11
+msgctxt "DlgPrefSoundDlg#11"
+msgid "Apply"
+msgstr ""
+
+#: DlgPrefSoundDlg#12
 msgid "Latency"
 msgstr "Latentie"
 
@@ -3461,26 +3465,66 @@ msgid "Enable Live &Broadcasting"
 msgstr ""
 
 #: MixxxApp#70
+msgid "May not be supported on all skins."
+msgstr ""
+
+#: MixxxApp#71
+msgid "Show Sample Deck Widgets"
+msgstr ""
+
+#: MixxxApp#72
+msgid "Show the sample deck section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#73
+msgid "Ctrl+S"
+msgstr ""
+
+#: MixxxApp#74
+msgid "Show Vinyl Control Widgets"
+msgstr ""
+
+#: MixxxApp#75
+msgid "Show the vinyl control section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#76
+msgid "Ctrl+V"
+msgstr ""
+
+#: MixxxApp#77
+msgid "Show Microphone Widgets"
+msgstr ""
+
+#: MixxxApp#78
+msgid "Show the microphone section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#79
+msgid "Ctrl+M"
+msgstr ""
+
+#: MixxxApp#80
 msgid "&Options"
 msgstr "&Opties"
 
-#: MixxxApp#71
+#: MixxxApp#81
 msgid "&Library"
 msgstr "&Bibliotheek"
 
-#: MixxxApp#72
+#: MixxxApp#82
 msgid "&View"
 msgstr "&Weergave"
 
-#: MixxxApp#73
+#: MixxxApp#83
 msgid "&Help"
 msgstr "&Hulp"
 
-#: MixxxApp#74
+#: MixxxApp#84
 msgid "&Vinyl Control"
 msgstr "Vinyl Bediening"
 
-#: MixxxApp#75
+#: MixxxApp#85
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3488,39 +3532,39 @@ msgstr ""
 "Geen input appara(a)t(en) geselecteerd.\n"
 "Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren."
 
-#: MixxxApp#76
+#: MixxxApp#86
 msgid "Mixxx %1 Development Team"
 msgstr "Mixxx %1 ontwikkelaarsteam"
 
-#: MixxxApp#77
+#: MixxxApp#87
 msgid "With contributions from:"
 msgstr "Met bijdragen van:"
 
-#: MixxxApp#78
+#: MixxxApp#88
 msgid "And special thanks to:"
 msgstr "En speciale dank aan:"
 
-#: MixxxApp#79
+#: MixxxApp#89
 msgid "Past Developers"
 msgstr "Oude ontwikkelaars:"
 
-#: MixxxApp#80
+#: MixxxApp#90
 msgid "Past Contributors"
 msgstr "Oude bijdragers:"
 
-#: MixxxApp#81
+#: MixxxApp#91
 msgid "Error in skin file"
 msgstr ""
 
-#: MixxxApp#82
+#: MixxxApp#92
 msgid "The selected skin cannot be loaded."
 msgstr ""
 
-#: MixxxApp#83
+#: MixxxApp#93
 msgid "OpenGL Direct Rendering"
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#94
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3531,19 +3575,19 @@ msgid ""
 "not be present, but you should<br>not experience degraded performance."
 msgstr ""
 
-#: MixxxApp#85
+#: MixxxApp#95
 msgid "Confirm Exit"
 msgstr "Afsluiten bevestigen"
 
-#: MixxxApp#86
+#: MixxxApp#96
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Een deck speelt momenteel. Mixxx Afsluiten?"
 
-#: MixxxApp#87
+#: MixxxApp#97
 msgid "The preferences window is still open."
 msgstr ""
 
-#: MixxxApp#88
+#: MixxxApp#98
 msgid "Discard any changes and exit Mixxx?"
 msgstr ""
 
@@ -5292,8 +5336,16 @@ msgstr "(GL)"
 #~ msgid "Artist"
 #~ msgstr "Artiest"
 
+#~ msgctxt "DlgPrefSoundDlg#9"
+#~ msgid "Apply"
+#~ msgstr "Pas toe"
+
 #~ msgid "Reset to Defaults"
 #~ msgstr "Standaardinstellingen herstellen"
+
+#~ msgctxt "DlgPrefSoundDlg#6"
+#~ msgid "Input"
+#~ msgstr "Invoer"
 
 #~ msgid "Output"
 #~ msgstr "Uitvoer"
@@ -5648,6 +5700,18 @@ msgstr "(GL)"
 #~ msgctxt "DlgPreferences#10"
 #~ msgid "Vinyl Control"
 #~ msgstr "Vinyl Bediening"
+
+#~ msgid ""
+#~ "<ul>\n"
+#~ "<li>Increase your latency if you hear pops during playback</li>\n"
+#~ "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
+#~ "</ul>"
+#~ msgstr ""
+#~ "<ul>\n"
+#~ "<li>Verhoog jouw vertraging indien je plop geluiden hoort tijdens het "
+#~ "afspelen</li>\n"
+#~ "<li>Verlaag jouw vertraging om Mixxx's reactiesnelheid te verbeteren</li>\n"
+#~ "</ul>"
 
 #~ msgid "Track BPM"
 #~ msgstr "BPM nummer"
