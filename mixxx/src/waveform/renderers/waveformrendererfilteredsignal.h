@@ -14,7 +14,6 @@ class WaveformRendererFilteredSignal : public WaveformRendererSignalBase {
         WaveformWidgetRenderer* waveformWidget);
     virtual ~WaveformRendererFilteredSignal();
 
-    virtual void onInit();
     virtual void onSetup(const QDomNode& node);
 
     virtual void draw(QPainter* painter, QPaintEvent* event);

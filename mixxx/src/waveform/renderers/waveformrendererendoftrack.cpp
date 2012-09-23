@@ -33,7 +33,7 @@ WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
     delete m_loopControl;
 }
 
-void WaveformRendererEndOfTrack::init() {
+bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
     m_endOfTrackControl = new ControlObjectThreadMain(
@@ -47,6 +47,7 @@ void WaveformRendererEndOfTrack::init() {
                 ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "play")));
     m_loopControl = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "loop_enabled")));
+    return true;
 }
 
 void WaveformRendererEndOfTrack::setup(const QDomNode& node) {

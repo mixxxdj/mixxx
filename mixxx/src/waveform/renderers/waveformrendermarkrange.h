@@ -25,7 +25,6 @@ class WaveformRenderMarkRange : public WaveformRendererAbstract {
     explicit WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRenderMarkRange();
 
-    virtual void init();
     virtual void setup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 

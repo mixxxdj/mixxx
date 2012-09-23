@@ -17,9 +17,6 @@ WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* wavefor
 WaveformRendererPreroll::~WaveformRendererPreroll() {
 }
 
-void WaveformRendererPreroll::init() {
-}
-
 void WaveformRendererPreroll::setup(const QDomNode& node) {
     m_color.setNamedColor(
         WWidget::selectNodeQString(node, "SignalColor"));
@@ -27,6 +24,7 @@ void WaveformRendererPreroll::setup(const QDomNode& node) {
 }
 
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(event);
     const TrackPointer track = m_waveformRenderer->getTrackInfo();
     if (!track) {
         return;

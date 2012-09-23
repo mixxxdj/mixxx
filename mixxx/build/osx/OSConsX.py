@@ -433,7 +433,6 @@ def do_codesign(target, source, env):
     # target[0] is a File object, coerce to string to get its path (usually
     # something like osxXX_build/Mixxx)
     bundle = str(target[0])
-    print "Bundle:", bundle
 
     # HACK(XXX) SCons can't have a Dir which is a target so we append .app here
     # since our actual target (the thing we want to codesign) is the bundle
@@ -450,14 +449,13 @@ def do_codesign(target, source, env):
             if system("security unlock-keychain -p '%s' %s" % (keychain_password, keychain)) != 0:
                 raise Exception('Could not unlock keychain.')
         print "Codesigning App:"
-        command = "codesign -s '%s'%s %s" % (identity,
-                                            ' --keychain %s' % keychain if keychain else '',
-                                             bundle)
+        command = "codesign -f -s '%s'%s %s" % (identity,
+                                                ' --keychain %s' % keychain if keychain else '',
+                                                bundle)
         if system(command) != 0:
             raise Exception('codesign failed')
-    return Bundle(bundle), []
 
-CodeSign = Builder(action = do_codesign, emitter = no_sources)
+CodeSign = Builder(action = do_codesign)
 
 
 def build_plist(target, source, env):
