@@ -62,6 +62,13 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
         ADJ_DISABLED
     };
 
+    // Gets or sets the crossfader position while normalizing it so that -1 is
+    // all the way mixed to the left side and 1 is all the way mixed to the
+    // right side. (prevents AutoDJ logic from having to check for hamster mode
+    // every time)
+    double getCrossfader() const;
+    void setCrossfader(double value);
+
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
     bool removePlayingTrackFromQueue(QString group);
@@ -92,6 +99,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     ControlObjectThreadMain* m_pCORepeat1;
     ControlObjectThreadMain* m_pCORepeat2;
     ControlObjectThreadMain* m_pCOCrossfader;
+    ControlObjectThreadMain* m_pCOCrossfaderReverse;
     ControlObjectThreadMain* m_pCOTSkipNext;
     ControlObjectThreadMain* m_pCOTFadeNow;
     ControlObjectThreadMain* m_pCOTShufflePlaylist;
