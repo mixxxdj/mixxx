@@ -77,7 +77,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
-    PlaylistDAO& m_playlistDao;
 
     // Makes our Auto DJ logic assume the next track that should be played is
     // already loaded. We need this flag to make our

@@ -24,7 +24,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_pTrackCollection(pTrackCollection),
           m_pTrackTableView(
               new WTrackTableView(this, pConfig, m_pTrackCollection)),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
@@ -45,10 +44,11 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    PlaylistDAO& playlistDao = pTrackCollection->getPlaylistDAO();
+    int playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
-        playlistId = m_playlistDao.createPlaylist(AUTODJ_TABLE,
-                                                  PlaylistDAO::PLHT_AUTO_DJ);
+        playlistId = playlistDao.createPlaylist(AUTODJ_TABLE,
+                                                PlaylistDAO::PLHT_AUTO_DJ);
     }
     m_pAutoDJTableModel->setPlaylist(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
