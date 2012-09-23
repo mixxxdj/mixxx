@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-08-30 15:08+0000\n"
+"PO-Revision-Date: 2012-09-22 15:51+0000\n"
 "Last-Translator: Fafa <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-21 04:36+0000\n"
+"X-Launchpad-Export-Date: 2012-09-23 04:36+0000\n"
 "X-Generator: Launchpad (build 15985)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -372,7 +372,7 @@ msgstr "Impossible de mettre à jour les métadonnées du fichier"
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "Contrôleur USB"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -1340,11 +1340,11 @@ msgstr "Simple"
 
 #: DlgPrefControls#6
 msgid "On"
-msgstr ""
+msgstr "Allumé"
 
 #: DlgPrefControls#7
 msgid "Off"
-msgstr ""
+msgstr "Éteint"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1418,7 +1418,7 @@ msgstr "Haut augmente la vitesse"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1592,7 +1592,7 @@ msgstr "Gain visuel"
 #: DlgPrefControlsDlg#39
 msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1634,7 +1634,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Rétablir les valeurs par défaut"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -2311,7 +2311,7 @@ msgstr ""
 
 #: DlgPrefSoundDlg#4
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: DlgPrefSoundDlg#5
 msgid "Latency Tips"
@@ -2329,12 +2329,12 @@ msgstr ""
 #: DlgPrefSoundDlg#7
 msgctxt "DlgPrefSoundDlg#7"
 msgid "Output"
-msgstr ""
+msgstr "Sortie"
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Input"
-msgstr ""
+msgstr "Entrée"
 
 #: DlgPrefSoundDlg#9
 msgid "Query Devices"
@@ -2343,12 +2343,12 @@ msgstr "Interroger périphériques"
 #: DlgPrefSoundDlg#10
 msgctxt "DlgPrefSoundDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Rétablir les valeurs par défaut"
 
 #: DlgPrefSoundDlg#11
 msgctxt "DlgPrefSoundDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Appliquer"
 
 #: DlgPrefSoundDlg#12
 msgid "Latency"
@@ -3050,11 +3050,11 @@ msgstr "Souris générique HID"
 
 #: HidController#2
 msgid "Generic HID Joystick"
-msgstr ""
+msgstr "Joystick HID Générique"
 
 #: HidController#3
 msgid "Generic HID Gamepad"
-msgstr ""
+msgstr "Gamepad HID Générique"
 
 #: HidController#4
 msgid "Generic HID Keyboard"
@@ -4825,15 +4825,15 @@ msgstr "Supprimer"
 
 #: WTrackTableView#5
 msgid "Hide from Library"
-msgstr ""
+msgstr "Masquer dans la bibliothèque"
 
 #: WTrackTableView#6
 msgid "Unhide from Library"
-msgstr ""
+msgstr "Montrer dans la bibliothèque"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
-msgstr ""
+msgstr "Purger de la bibliothèque"
 
 #: WTrackTableView#8
 msgid "Properties"
