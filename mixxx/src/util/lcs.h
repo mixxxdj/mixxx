@@ -10,14 +10,12 @@ inline QString LCS(const QString& a, const QString& b) {
     const size_t rows = m + 1;
     const size_t cols = n + 1;
 
-    size_t M[rows][cols];
+    QVector<QVector<size_t> > M(rows);
     size_t longest = 0;
     size_t longest_loc = 0;
 
     for (size_t i = 0; i < rows; ++i) {
-        for (size_t j = 0; j < cols; ++j) {
-            M[i][j] = 0;
-        }
+        M[i] = QVector<size_t>(cols, 0);
     }
     for (size_t i = 1; i <= m; ++i) {
         for (size_t j = 1; j <= n; ++j) {
