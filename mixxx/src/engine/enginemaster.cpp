@@ -118,7 +118,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 	//df.open(QIODevice::WriteOnly | QIODevice::Text);
 	//writer.setDevice(&df);
 
-    //X-Fader Setup
+    // X-Fader Setup
     xFaderMode = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
     xFaderCurve = new ControlPotmeter(
@@ -142,7 +142,7 @@ EngineMaster::~EngineMaster()
     delete vumeter;
     delete head_clipping;
     delete sidechain;
-    
+
     delete xFaderReverse;
     delete xFaderCalibration;
     delete xFaderCurve;
