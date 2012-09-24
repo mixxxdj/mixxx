@@ -98,6 +98,8 @@
  * 2012-09-17  Reduce "smartness" of PFL switching
  *             Censor: Use slip_enabled in conjunction with reverse playback
  *             to keep track synchronized
+ * 2012-09-24  Use Auto Tempo LED as a beat indicator
+ *             Reduce sensitivity of playlist scrolling (Scroll + Jog)
  * ...to be continued...
  *****************************************************************************/
 
@@ -119,7 +121,7 @@ VestaxVCI300.disableScratchingPlayNegJogDeltaThreshold = 4; /*TUNABLE PARAM*/
 VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold = 7; /*TUNABLE PARAM*/
 VestaxVCI300.disableScratchingTimeoutMillisec = 20; // Mixxx minimum timeout = 20 ms
 
-VestaxVCI300.jogScrollDeltaStepsPerTrack = 16; // 1664 / 16 = 104 tracks per revolution /*TUNABLE PARAM*/
+VestaxVCI300.jogScrollDeltaStepsPerTrack = 26; // 1664 / 26 = 64 tracks per revolution /*TUNABLE PARAM*/
 VestaxVCI300.jogScrollDeltaAdjustment = VestaxVCI300.jogScrollDeltaStepsPerTrack / 2;
 
 VestaxVCI300.pitchFineTuneStepPercent100 = 1; // 1/100 %
@@ -415,6 +417,13 @@ VestaxVCI300.Deck.prototype.updateCueState = function () {
 	this.cueLED.trigger(0 < engine.getValue(this.group, "cue_point"));
 };
 
+VestaxVCI300.Deck.prototype.updateBeatSyncState = function () {
+	this.beatSyncLED.trigger(
+		engine.getValue(this.group, "beatsync")
+		|| (engine.getValue(this.group, "play")
+		&& engine.getValue(this.group, "beat_active")));
+}
+
 VestaxVCI300.Deck.prototype.initValues = function () {
 	this.shiftState = false;
 	this.scratchState = false;
@@ -448,7 +457,8 @@ VestaxVCI300.Deck.prototype.connectControls = function () {
 	VestaxVCI300.connectControl(this.group, "loop_halve", this.onLoopHalveValueCB);
 	VestaxVCI300.connectControl(this.group, "loop_double", this.onLoopDoubleValueCB);
 	VestaxVCI300.connectControl(this.group, "keylock", this.onKeylockValueCB);
-	VestaxVCI300.connectControl(this.group, "beatsync", this.onBeatsyncValueCB);
+	VestaxVCI300.connectControl(this.group, "beatsync", this.onBeatSyncValueCB);
+	VestaxVCI300.connectControl(this.group, "beat_active", this.onBeatActiveValueCB);
 	VestaxVCI300.connectControl(this.group, "reverse", this.onReverseValueCB);
 	VestaxVCI300.connectControl(this.group, "PeakIndicator", this.onPeakIndicatorValueCB);
 	VestaxVCI300.connectControl(this.group, "VuMeter", this.onVUMeterValueCB);
@@ -473,6 +483,7 @@ VestaxVCI300.Deck.prototype.disconnectControls = function () {
 	VestaxVCI300.disconnectControl(this.group, "loop_double");
 	VestaxVCI300.disconnectControl(this.group, "keylock");
 	VestaxVCI300.disconnectControl(this.group, "beatsync");
+	VestaxVCI300.disconnectControl(this.group, "beat_active");
 	VestaxVCI300.disconnectControl(this.group, "reverse");
 	VestaxVCI300.disconnectControl(this.group, "PeakIndicator");
 	VestaxVCI300.disconnectControl(this.group, "VuMeter");
@@ -531,7 +542,7 @@ VestaxVCI300.init = function (id, debug) {
 		new VestaxVCI300.LED(0x27);
 	VestaxVCI300.leftDeck.scratchLED =
 		new VestaxVCI300.LED(0x26);
-	VestaxVCI300.leftDeck.syncLED =
+	VestaxVCI300.leftDeck.beatSyncLED =
 		new VestaxVCI300.LED(0x25);
 	VestaxVCI300.leftDeck.cueLED =
 		new VestaxVCI300.LED(0x71);
@@ -593,7 +604,7 @@ VestaxVCI300.init = function (id, debug) {
 		new VestaxVCI300.LED(0x37);
 	VestaxVCI300.rightDeck.scratchLED =
 		new VestaxVCI300.LED(0x38);
-	VestaxVCI300.rightDeck.syncLED =
+	VestaxVCI300.rightDeck.beatSyncLED =
 		new VestaxVCI300.LED(0x39);
 	VestaxVCI300.rightDeck.cueLED =
 		new VestaxVCI300.LED(0x73);
@@ -795,7 +806,7 @@ VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, grou
 		// tap bpm
 		engine.setValue(group, "bpm_tap", VestaxVCI300.getButtonPressed(value));
 		if (VestaxVCI300.getButtonPressed(value)) {
-			deck.syncLED.trigger(true);
+			deck.beatSyncLED.trigger(true);
 		} else {
 			engine.trigger(group, "beatsync");
 		}
@@ -804,7 +815,7 @@ VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, grou
 		engine.setValue(group, "bpm_tap", false);
 		if (VestaxVCI300.getButtonPressed(value)) {
 			VestaxVCI300.toggleBinaryValue(group, "quantize");
-			deck.syncLED.trigger(true);
+			deck.beatSyncLED.trigger(true);
 		} else {
 			engine.trigger(group, "beatsync");
 		}
@@ -1144,12 +1155,20 @@ VestaxVCI300.rightDeck.onPlayValueCB = function (value) {
 	VestaxVCI300.rightDeck.playLED.trigger(value);
 };
 
-VestaxVCI300.leftDeck.onBeatsyncValueCB = function (value) {
-	VestaxVCI300.leftDeck.syncLED.trigger(value);
+VestaxVCI300.leftDeck.onBeatSyncValueCB = function (value) {
+	VestaxVCI300.leftDeck.updateBeatSyncState(value);
 };
 
-VestaxVCI300.rightDeck.onBeatsyncValueCB = function (value) {
-	VestaxVCI300.rightDeck.syncLED.trigger(value);
+VestaxVCI300.rightDeck.onBeatSyncValueCB = function (value) {
+	VestaxVCI300.rightDeck.updateBeatSyncState(value);
+};
+
+VestaxVCI300.leftDeck.onBeatActiveValueCB = function (value) {
+	VestaxVCI300.leftDeck.updateBeatSyncState();
+};
+
+VestaxVCI300.rightDeck.onBeatActiveValueCB = function (value) {
+	VestaxVCI300.rightDeck.updateBeatSyncState();
 };
 
 VestaxVCI300.leftDeck.onReverseValueCB = function (value) {
