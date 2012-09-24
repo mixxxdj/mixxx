@@ -24,7 +24,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_pTrackCollection(pTrackCollection),
           m_pTrackTableView(
               new WTrackTableView(this, pConfig, m_pTrackCollection)),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
@@ -45,10 +44,11 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    PlaylistDAO& playlistDao = pTrackCollection->getPlaylistDAO();
+    int playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
-        playlistId = m_playlistDao.createPlaylist(AUTODJ_TABLE,
-                                                  PlaylistDAO::PLHT_AUTO_DJ);
+        playlistId = playlistDao.createPlaylist(AUTODJ_TABLE,
+                                                PlaylistDAO::PLHT_AUTO_DJ);
     }
     m_pAutoDJTableModel->setPlaylist(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
@@ -118,6 +118,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
         ControlObject::getControl(ConfigKey("[Channel2]", "repeat")));
     m_pCOCrossfader = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Master]", "crossfader")));
+    m_pCOCrossfaderReverse = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Mixer Profile]", "xFaderReverse")));
 
     QString str_autoDjTransition = m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
@@ -139,6 +141,7 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pCORepeat1;
     delete m_pCORepeat2;
     delete m_pCOCrossfader;
+    delete m_pCOCrossfaderReverse;
     delete m_pCOSkipNext;
     delete m_pCOShufflePlaylist;
     delete m_pCOToggleAutoDJ;
@@ -191,6 +194,20 @@ void DlgAutoDJ::setup(QDomNode node) {
     // Since we're getting this passed into us already created, shouldn't need
     // to set the palette.
     //m_pTrackTableView->setPalette(pal);
+}
+
+double DlgAutoDJ::getCrossfader() const {
+    if (m_pCOCrossfaderReverse->get() > 0) {
+        return m_pCOCrossfader->get() * -1.0;
+    }
+    return m_pCOCrossfader->get();
+}
+
+void DlgAutoDJ::setCrossfader(double value) {
+    if (m_pCOCrossfaderReverse->get() > 0) {
+        value *= -1.0;
+    }
+    m_pCOCrossfader->slotSet(value);
 }
 
 void DlgAutoDJ::onSearchStarting() {
@@ -260,7 +277,7 @@ void DlgAutoDJ::fadeNow(double value) {
     }
     if (m_eState == ADJ_IDLE) {
         m_bFadeNow = true;
-        double crossfader = m_pCOCrossfader->get();
+        double crossfader = getCrossfader();
         if (crossfader <= 0.3f && m_pCOPlay1Fb->get() == 1.0f) {
             m_posThreshold1 = m_pCOPlayPos1->get() -
                     ((crossfader + 1.0f) / 2 * (m_fadeDuration1));
@@ -382,7 +399,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
     if (m_eState == ADJ_ENABLE_P1LOADED) {
         // Auto DJ Start
         if (!deck1Playing && !deck2Playing) {
-            m_pCOCrossfader->slotSet(-1.0f);  // Move crossfader to the left!
+            setCrossfader(-1.0f);  // Move crossfader to the left!
             m_pCOPlay1->slotSet(1.0f);  // Play the track in player 1
             removePlayingTrackFromQueue("[Channel1]");
         } else {
@@ -405,8 +422,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
     if (m_eState == ADJ_P2FADING) {
         if (deck1Playing && !deck2Playing) {
             // End State
-            m_pCOCrossfader->slotSet(-1.0f);  // Move crossfader to the left!
-            // qDebug() << "1: m_pCOCrossfader->slotSet(_-1.0f_);";
+            setCrossfader(-1.0f);  // Move crossfader to the left!
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             loadNextTrackFromQueue();
@@ -442,7 +458,6 @@ void DlgAutoDJ::player1PositionChanged(double value) {
 
         if (value >= posFadeEnd) {
             // Pre-EndState
-            // m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
 
             m_pCOPlay1->slotSet(0.0f);  // Stop the player
             //m_posThreshold = 1.0f - fadeDuration; // back to default
@@ -456,8 +471,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                     2*(value-m_posThreshold1)/(posFadeEnd-m_posThreshold1);
             // crossfadeValue = -1.0f -> + 1.0f
             // Move crossfader to the right!
-            m_pCOCrossfader->slotSet(crossfadeValue);
-            // qDebug() << "1: m_pCOCrossfader->slotSet " << crossfadeValue;
+            setCrossfader(crossfadeValue);
         }
     }
 }
@@ -482,8 +496,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
         if (!deck1Playing && deck2Playing) {
             // End State
             // Move crossfader to the right!
-            m_pCOCrossfader->slotSet(1.0f);
-            // qDebug() << "1: m_pCOCrossfader->slotSet(_1.0f_);";
+            setCrossfader(1.0f);
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             loadNextTrackFromQueue();
@@ -518,7 +531,6 @@ void DlgAutoDJ::player2PositionChanged(double value) {
 
         if (value >= posFadeEnd) {
             // Pre-End State
-            //m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
 
             m_pCOPlay2->slotSet(0.0f);  // Stop the player
 
@@ -532,8 +544,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             float crossfadeValue = 1.0f -
                     2*(value-m_posThreshold2)/(posFadeEnd-m_posThreshold2);
             // crossfadeValue = 1.0f -> + -1.0f
-            m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
-            // qDebug() << "2: m_pCOCrossfader->slotSet " << crossfadeValue;
+            setCrossfader(crossfadeValue); //Move crossfader to the right!
         }
     }
 }
