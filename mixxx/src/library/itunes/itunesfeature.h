@@ -50,6 +50,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     static QString getiTunesMusicPath();
     //returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
+    void guessMusicLibraryMountpoint(QXmlStreamReader &xml);
     void parseTracks(QXmlStreamReader &xml);
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
