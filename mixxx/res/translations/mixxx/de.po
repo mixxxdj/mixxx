@@ -4,14 +4,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-09-07 17:39+0000\n"
-"Last-Translator: Daniel Schürmann <Unknown>\n"
+"PO-Revision-Date: 2012-09-24 17:19+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-21 04:36+0000\n"
-"X-Generator: Launchpad (build 15985)\n"
+"X-Launchpad-Export-Date: 2012-09-25 04:35+0000\n"
+"X-Generator: Launchpad (build 16019)\n"
 "Language: de\n"
 
 #: AutoDJFeature#1
@@ -367,7 +367,7 @@ msgstr "Die Metadaten der Datei konnten nicht aktualisiert werden."
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "USB-Controller"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -1164,7 +1164,7 @@ msgstr "Vinyl-Steuerung-Bereich ein-/ausblenden"
 
 #: DlgControllerLearning#94
 msgid "Show/hide spinning vinyl widget"
-msgstr "Drehendes Vinyl-Bereich ein-/ausblenden"
+msgstr "Drehendes Vinyl-Widget ein-/ausblenden"
 
 #: DlgControllerLearning#95
 msgid "Ready to map: %1. Now move a control on your controller."
@@ -1331,11 +1331,11 @@ msgstr "Einfach"
 
 #: DlgPrefControls#6
 msgid "On"
-msgstr ""
+msgstr "Ein"
 
 #: DlgPrefControls#7
 msgid "Off"
-msgstr ""
+msgstr "Aus"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1367,7 +1367,7 @@ msgstr "Das ausgewählte Skin ist größer als Ihre Bildschirmauflösung."
 
 #: DlgPrefControls#15
 msgid "On (only in Library)"
-msgstr ""
+msgstr "Ein (Nur in Bibliothek)"
 
 #: DlgPrefControls#16
 msgid "20%"
@@ -1408,7 +1408,7 @@ msgstr "Hoch erhöht Geschwindigkeit"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1458,7 +1458,7 @@ msgstr "Cue-Modus"
 
 #: DlgPrefControlsDlg#10
 msgid "Auto Recall Cue"
-msgstr "Positonierung am Cue-Punkt"
+msgstr "Positionierung am Cue-Punkt"
 
 #: DlgPrefControlsDlg#11
 msgid "Locale"
@@ -1516,7 +1516,7 @@ msgstr "Feinheit der Tonhöhenveränderung"
 #: DlgPrefControlsDlg#24
 msgctxt "DlgPrefControlsDlg#24"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Wellenformanzeige"
 
 #: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
@@ -1581,7 +1581,7 @@ msgstr "Visuelle Verstärkung"
 #: DlgPrefControlsDlg#39
 msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronisieren"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1618,12 +1618,12 @@ msgstr "Logarithmisch"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Reverse crossfader (hamster style)"
-msgstr ""
+msgstr "Crossfader umkehren (Hamster-Stil)"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Zurücksetzen"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -2011,7 +2011,7 @@ msgstr "Album"
 #: DlgPrefRecordDlg#13
 msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr "Diverses"
+msgstr "Verschiedenes"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
@@ -2302,11 +2302,11 @@ msgstr "Abtastrate"
 
 #: DlgPrefSoundDlg#3
 msgid "Buffer Underflow Count"
-msgstr ""
+msgstr "Pufferunterlauf-Zähler"
 
 #: DlgPrefSoundDlg#4
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: DlgPrefSoundDlg#5
 msgid "Latency Tips"
@@ -2320,16 +2320,22 @@ msgid ""
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
+"<ul>\n"
+"<li>Erhöhen Sie die Latenz wenn der Unterlaufzähler ansteigt oder Aussetzer "
+"während der Wiedergabe zu hören sind.</li>\n"
+"<li>Verringern Sie die Latenz um Mixxx's Reaktionsgeschwindigkeit zu "
+"verbessern.</li>\n"
+"</ul>"
 
 #: DlgPrefSoundDlg#7
 msgctxt "DlgPrefSoundDlg#7"
 msgid "Output"
-msgstr ""
+msgstr "Ausgang"
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Input"
-msgstr ""
+msgstr "Eingang"
 
 #: DlgPrefSoundDlg#9
 msgid "Query Devices"
@@ -2338,12 +2344,12 @@ msgstr "Geräte abfragen"
 #: DlgPrefSoundDlg#10
 msgctxt "DlgPrefSoundDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Zurücksetzen"
 
 #: DlgPrefSoundDlg#11
 msgctxt "DlgPrefSoundDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Anwenden"
 
 #: DlgPrefSoundDlg#12
 msgid "Latency"
@@ -2404,8 +2410,8 @@ msgstr ""
 "weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"weight:600;\">Bitte wählen Sie die Audio-Geräte für die Vinyl-Steuerung in "
-"den Sound Hardware-Einstellungen aus.</span></p></body></html>"
+"weight:600;\">Wählen Sie die Audio-Geräte für die Vinyl-Steuerung in den "
+"Sound Hardware-Einstellungen aus.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
@@ -3504,43 +3510,43 @@ msgstr "&Liveübertragung aktivieren"
 
 #: MixxxApp#70
 msgid "May not be supported on all skins."
-msgstr ""
+msgstr "Wird möglicherweise nicht von allen Skins unterstützt."
 
 #: MixxxApp#71
 msgid "Show Sample Deck Widgets"
-msgstr ""
+msgstr "Sample-Deck Widgets einblenden"
 
 #: MixxxApp#72
 msgid "Show the sample deck section of the Mixxx interface."
-msgstr ""
+msgstr "Den Sample-Deck Bereich der Mixxx Benutzeroberfläche einblenden."
 
 #: MixxxApp#73
 msgid "Ctrl+S"
-msgstr ""
+msgstr "Strg+S"
 
 #: MixxxApp#74
 msgid "Show Vinyl Control Widgets"
-msgstr ""
+msgstr "Vinyl-Steuerung Widgets einblenden"
 
 #: MixxxApp#75
 msgid "Show the vinyl control section of the Mixxx interface."
-msgstr ""
+msgstr "Den Vinyl-Steuerung Bereich der Mixxx Benutzeroberfläche einblenden."
 
 #: MixxxApp#76
 msgid "Ctrl+V"
-msgstr ""
+msgstr "Strg+V"
 
 #: MixxxApp#77
 msgid "Show Microphone Widgets"
-msgstr ""
+msgstr "Mikrofon Widgets einblenden"
 
 #: MixxxApp#78
 msgid "Show the microphone section of the Mixxx interface."
-msgstr ""
+msgstr "Den Mikrofon Bereich der Mixxx Benutzeroberfläche einblenden."
 
 #: MixxxApp#79
 msgid "Ctrl+M"
-msgstr ""
+msgstr "Strg+M"
 
 #: MixxxApp#80
 msgid "&Options"

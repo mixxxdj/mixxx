@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-09-10 05:46+0000\n"
-"Last-Translator: Paco Molinero <paco@byasl.com>\n"
+"PO-Revision-Date: 2012-09-24 21:32+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-21 04:38+0000\n"
-"X-Generator: Launchpad (build 15985)\n"
+"X-Launchpad-Export-Date: 2012-09-25 04:35+0000\n"
+"X-Generator: Launchpad (build 16019)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -71,7 +71,7 @@ msgstr "Quitar"
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "Español"
+msgstr "Renombrar"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
@@ -109,7 +109,7 @@ msgstr "El nombre  de la lista de reproducción no puede quedar en blanco."
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr "Español"
+msgstr "Nombre de la lista de reproducción:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
@@ -142,7 +142,7 @@ msgstr "Reproducido"
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Artista:"
+msgstr "Artista"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
@@ -152,7 +152,7 @@ msgstr "Título"
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "discoteca"
+msgstr "Álbum"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
@@ -167,7 +167,7 @@ msgstr "Compositor"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr "Year"
+msgstr "Año"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
@@ -182,7 +182,7 @@ msgstr "Ubicación"
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr "Comentarios"
+msgstr "Comentario"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
@@ -357,7 +357,7 @@ msgstr "Aviso: Esto eliminará permanentemente los siguientes archivos:"
 
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "¿Está seguro de querer eliminar estos archivos de su equipo?"
+msgstr "¿Está seguro de que quiere eliminar estos archivos de su equipo?"
 
 #: BrowseTableModel#20
 msgid ""
@@ -755,7 +755,7 @@ msgstr "Esquema de PPM"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "Nombre de esquema:"
+msgstr "Nombre del esquema:"
 
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
@@ -1221,7 +1221,7 @@ msgstr "Editar"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr "Borrar"
+msgstr "Eliminar"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
@@ -1607,7 +1607,7 @@ msgstr "Scratching"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Linear"
-msgstr "Linear"
+msgstr "Lineal"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Logarithmic"
@@ -1679,19 +1679,19 @@ msgstr ""
 
 #: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
-msgstr "Borrar los Parámetros de Entrada"
+msgstr "Limpiar los enlaces de entrada"
 
 #: DlgPrefMappableController#4
 msgid "Are you sure you want to clear all bindings?"
-msgstr "¿Estas seguro de borrar todos los parámetros?"
+msgstr "¿Está seguro de que quiere eliminar todos los enlaces?"
 
 #: DlgPrefMappableController#5
 msgid "Clear Output Bindings"
-msgstr "Borrar los Parámetros de Salida"
+msgstr "Limpiar los enlaces de salida"
 
 #: DlgPrefMappableController#6
 msgid "Are you sure you want to clear all output bindings?"
-msgstr "¿Estas seguro de borrar todos los parámetros de salida?"
+msgstr "¿Está seguro de que quiere eliminar todos los enlaces de salida?"
 
 #: DlgPrefNoControllersDlg#1
 msgctxt "DlgPrefNoControllersDlg#1"
@@ -1923,7 +1923,7 @@ msgstr "Incorporado"
 
 #: DlgPrefPlaylistDlg#19
 msgid "Available Online..."
-msgstr "Disponible en línea..."
+msgstr "Disponible en línea…"
 
 #: DlgPrefPlaylistDlg#20
 msgid "Bundled Songs"
@@ -1967,7 +1967,7 @@ msgstr "Examinar…"
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
-msgstr "Codificando"
+msgstr "Codificación"
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
@@ -1988,7 +1988,7 @@ msgstr "Etiquetas"
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Title"
-msgstr "Título"
+msgstr "Título"
 
 #: DlgPrefRecordDlg#11
 msgid "Author"
@@ -2006,7 +2006,7 @@ msgstr "Misceláneo"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
-msgstr "Crear un archivo .CUE"
+msgstr "Crear un archivo CUE"
 
 #: DlgPrefRecordDlg#15
 msgid "File Splitting"
@@ -2019,7 +2019,7 @@ msgstr "Dividir grabaciones en"
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr "Opciones de detección de PPM"
+msgstr "Configuración de detección de PPM"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
@@ -2882,20 +2882,19 @@ msgstr ""
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
-msgstr "Mixxx encontrou un problema"
+msgstr "Mixxx encontró un problema"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr "Non se puido asignar shout_t"
+msgstr "No se pudo asignar shout_t"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr "Non se puido asignar shout_metadata_t"
+msgstr "No se pudo asignar shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr ""
-"Error en la configuración del modo \"sin bloqueo\" (Non-blocking Mode)"
+msgstr "Error al establecer el modo de no bloqueo:"
 
 #: EngineShoutcast#5
 msgid "Error setting hostname!"
@@ -2993,11 +2992,11 @@ msgstr "Mixxx se ha desconectado satisfactoriamente del servidor Shoutcast"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
-msgstr "Erro fatal"
+msgstr "Error fatal"
 
 #: ErrorDialogHandler#2
 msgid "Critical error"
-msgstr "Erro crítico"
+msgstr "Error crítico"
 
 #: ErrorDialogHandler#3
 msgid "Warning"
@@ -6671,12 +6670,12 @@ msgstr "(GL)"
 #~ msgid "Load tracks into playing decks"
 #~ msgstr "Cargar canciones en decks en reproducción"
 
-#~ msgid "Playlist Creation Failed"
-#~ msgstr "No se pudo crear lista de reproducción"
-
 #~ msgid ""
 #~ "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 #~ "Would you like to use that skin?"
 #~ msgstr ""
 #~ "La única skin compatible con este tamaño de dispositivo es Outline800x480-"
 #~ "WVGA. Le gustaría usar esa skin?"
+
+#~ msgid "Playlist Creation Failed"
+#~ msgstr "Falló la creación de la lista de reproducción"
