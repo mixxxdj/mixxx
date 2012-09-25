@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-06-26 18:42+0000\n"
+"PO-Revision-Date: 2012-09-25 03:42+0000\n"
 "Last-Translator: Joaquim Carvalho <j.carvalho59@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-21 04:38+0000\n"
-"X-Generator: Launchpad (build 15985)\n"
+"X-Launchpad-Export-Date: 2012-09-25 04:35+0000\n"
+"X-Generator: Launchpad (build 16019)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -373,7 +373,7 @@ msgstr "Não foi possível actualizar os metadados do ficheiro."
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "Controlador USB"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -552,7 +552,7 @@ msgstr "As caixas deixam-no organizar a sua música como quer que prefira"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Criar caixa nova"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -1334,11 +1334,11 @@ msgstr "Modo Vinilo"
 
 #: DlgPrefControls#6
 msgid "On"
-msgstr ""
+msgstr "Activo"
 
 #: DlgPrefControls#7
 msgid "Off"
-msgstr ""
+msgstr "Inactivo"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1370,7 +1370,7 @@ msgstr "O tema seleccionado é maior que a resolução do seu ecrã."
 
 #: DlgPrefControls#15
 msgid "On (only in Library)"
-msgstr ""
+msgstr "Activo (apenas na Biblioteca)"
 
 #: DlgPrefControls#16
 msgid "20%"
@@ -1411,7 +1411,7 @@ msgstr "Para cima aumenta a velocidade"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Informação"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1517,7 +1517,7 @@ msgstr "Sensibilidade"
 #: DlgPrefControlsDlg#24
 msgctxt "DlgPrefControlsDlg#24"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Exibição da Forma de Onda"
 
 #: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
@@ -1582,7 +1582,7 @@ msgstr "Ganho visual"
 #: DlgPrefControlsDlg#39
 msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1619,12 +1619,12 @@ msgstr "Logarítmica"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Reverse crossfader (hamster style)"
-msgstr ""
+msgstr "Atenuador de mistura invertido (estilo hamster)"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Reestabelecer as predefinições"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
