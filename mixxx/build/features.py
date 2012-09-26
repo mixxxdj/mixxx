@@ -102,8 +102,7 @@ class HID(Feature):
         if build.platform_is_windows:
             # Requires setupapi.lib which is included by the above check for
             # setupapi.
-            sources.append("#lib/hidapi-0.7.0/windows/hid.c")
-            return sources
+            sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
         elif build.platform_is_linux:
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
         elif build.platform_is_osx:
