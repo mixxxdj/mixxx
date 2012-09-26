@@ -128,6 +128,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     } else {
         spinBoxTransition->setValue(str_autoDjTransition.toInt());
     }
+    m_backUpTransition = spinBoxTransition->value();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -552,6 +553,11 @@ void DlgAutoDJ::player2PositionChanged(double value) {
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     // Get the track at the top of the playlist...
     TrackPointer nextTrack;
+    int tmp = m_backUpTransition;
+    // This will also signal valueChanged and by that change m_backUpTransition
+    // so we need to copy to orignal value back
+    spinBoxTransition->setValue(m_backUpTransition);
+    m_backUpTransition = tmp;
 
     while (true) {
         nextTrack = m_pAutoDJTableModel->getTrack(
@@ -560,6 +566,9 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
         if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
+                if (nextTrack->getDuration() < m_backUpTransition)
+                    spinBoxTransition->setValue(nextTrack->getDuration()/2);
+                    m_backUpTransition = tmp;
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
@@ -630,7 +639,10 @@ void DlgAutoDJ::player1PlayChanged(double value) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;
 
-            int autoDjTransition = spinBoxTransition->value();
+            // The track might be shorter than the transition period. Use a
+            // sensibile cap.
+            int autoDjTransition = math_min(spinBoxTransition->value(),
+                                            TrackDuration/2);
 
             if (TrackDuration > autoDjTransition) {
                 m_fadeDuration1 = static_cast<float>(autoDjTransition) /
@@ -659,7 +671,10 @@ void DlgAutoDJ::player2PlayChanged(double value) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;
 
-            int autoDjTransition = spinBoxTransition->value();
+            // The track might be shorter than the transition period. Use a
+            // sensibile cap.
+            int autoDjTransition = math_min(spinBoxTransition->value(),
+                                            TrackDuration/2);
 
             if (TrackDuration > autoDjTransition) {
                 m_fadeDuration2 = static_cast<float>(autoDjTransition) /
@@ -690,4 +705,5 @@ void DlgAutoDJ::transitionValueChanged(int value) {
     }
     m_pConfig->set(ConfigKey(CONFIG_KEY, kTransitionPreferenceName),
                    ConfigValue(value));
+    m_backUpTransition = value;
 }
