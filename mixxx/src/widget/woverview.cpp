@@ -425,11 +425,19 @@ void WOverview::paintEvent(QPaintEvent *)
         for( unsigned int i = 0; i < m_markRanges.size(); i++) {
             WaveformMarkRange& currentMarkRange = m_markRanges[i];
 
-            const float startPosition = offset + currentMarkRange.m_markStartPointControl->get() * gain;
-            const float endPosition = offset + currentMarkRange.m_markEndPointControl->get() * gain;
+            const double startValue = currentMarkRange.m_markStartPointControl->get();
+            const double endValue = currentMarkRange.m_markEndPointControl->get();
 
-            if( startPosition < 0.0 && endPosition < 0.0)
+            if (startValue < 0 || endValue < 0) {
                 continue;
+            }
+
+            const float startPosition = offset + startValue * gain;
+            const float endPosition = offset + endValue * gain;
+
+            if (startPosition < 0.0 && endPosition < 0.0) {
+                continue;
+            }
 
             const bool enabled = (currentMarkRange.m_markEnabledControl->get() > 0.0);
 
