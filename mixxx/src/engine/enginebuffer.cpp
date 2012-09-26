@@ -608,7 +608,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //(at_start && backwards) ||
             (at_end && !backwards);
 
-
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
             CSAMPLE *output;
@@ -764,16 +763,29 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // really care about. It will try very hard to keep these in memory
     hintReader(rate, iBufferSize);
 
+    const double kSmallRate = 0.005;
     if (m_bLastBufferPaused && !bCurBufferPaused) {
-        if (fabs(rate) > 0.005) //at very slow forward rates, don't ramp up
+        if (fabs(rate) > kSmallRate) { //at very slow forward rates, don't ramp up
             m_iRampState = ENGINE_RAMP_UP;
+        }
     } else if (!m_bLastBufferPaused && bCurBufferPaused) {
         m_iRampState = ENGINE_RAMP_DOWN;
     } else { //we are not changing state
-        //make sure we aren't accidentally ramping down
-        //this is how we make sure that ramp value will become 1.0 eventually
-        if (fabs(rate) > 0.005 && m_iRampState != ENGINE_RAMP_UP && m_fRampValue < 1.0)
+        // Make sure we aren't accidentally ramping down. This is how we make
+        // sure that ramp value will become 1.0 eventually.
+        //
+        // 9/2012 rryan -- As I understand it this code intends to prevent us
+        // from getting stuck ramped down. If there is a meaningfully large rate
+        // and we aren't ramped up completely then it makes us ramp up. This
+        // causes crazy feedback if you scratch at the non-silent end of a
+        // track. See Bug #1006111. I added a !bCurBufferPaused term here because
+        // if rate > 0 and bCurBufferPaused then basically you are at the end of
+        // the track and trying to jog forward so this uniquely blocks that
+        // situation.
+        if (fabs(rate) > kSmallRate && !bCurBufferPaused &&
+            m_iRampState != ENGINE_RAMP_UP && m_fRampValue < 1.0) {
             m_iRampState = ENGINE_RAMP_UP;
+        }
     }
 
     //let's try holding the last sample value constant, and pull it
