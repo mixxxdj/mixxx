@@ -125,6 +125,7 @@ extern "C" {
 struct hid_device_ {
 		HANDLE device_handle;
 		BOOL blocking;
+		USHORT output_report_length;
 		size_t input_report_length;
 		void *last_error_str;
 		DWORD last_error_num;
@@ -138,6 +139,7 @@ static hid_device *new_hid_device()
 	hid_device *dev = (hid_device*) calloc(1, sizeof(hid_device));
 	dev->device_handle = INVALID_HANDLE_VALUE;
 	dev->blocking = TRUE;
+	dev->output_report_length = 0;
 	dev->input_report_length = 0;
 	dev->last_error_str = NULL;
 	dev->last_error_num = 0;
@@ -205,33 +207,21 @@ static int lookup_functions()
 }
 #endif
 
-static HANDLE open_device(const char *path)
+static HANDLE open_device(const char *path, BOOL enumerate)
 {
 	HANDLE handle;
+	DWORD desired_access = (enumerate)? 0: (GENERIC_WRITE | GENERIC_READ);
+	DWORD share_mode = (enumerate)?
+	                      FILE_SHARE_READ|FILE_SHARE_WRITE:
+	                      FILE_SHARE_READ;
 
-	/* First, try to open with sharing mode turned off. This will make it so
-	   that a HID device can only be opened once. This is to be consistent
-	   with the behavior on the other platforms. */
 	handle = CreateFileA(path,
-		GENERIC_WRITE |GENERIC_READ,
-		0, /*share mode*/
+		desired_access,
+		share_mode,
 		NULL,
 		OPEN_EXISTING,
 		FILE_FLAG_OVERLAPPED,//FILE_ATTRIBUTE_NORMAL,
 		0);
-
-	if (handle == INVALID_HANDLE_VALUE) {
-		/* Couldn't open the device. Some devices must be opened
-		   with sharing enabled (even though they are only opened once),
-		   so try it here. */
-		handle = CreateFileA(path,
-			GENERIC_WRITE |GENERIC_READ,
-			FILE_SHARE_READ|FILE_SHARE_WRITE, /*share mode*/
-			NULL,
-			OPEN_EXISTING,
-			FILE_FLAG_OVERLAPPED,//FILE_ATTRIBUTE_NORMAL,
-			0);
-	}
 
 	return handle;
 }
@@ -337,7 +327,7 @@ struct hid_device_info HID_API_EXPORT * HID_API_CALL hid_enumerate(unsigned shor
 		//wprintf(L"HandleName: %s\n", device_interface_detail_data->DevicePath);
 
 		// Open a handle to the device
-		write_handle = open_device(device_interface_detail_data->DevicePath);
+		write_handle = open_device(device_interface_detail_data->DevicePath, TRUE);
 
 		// Check validity of write_handle.
 		if (write_handle == INVALID_HANDLE_VALUE) {
@@ -533,7 +523,7 @@ HID_API_EXPORT hid_device * HID_API_CALL hid_open_path(const char *path)
 	dev = new_hid_device();
 
 	// Open a handle to the device
-	dev->device_handle = open_device(path);
+	dev->device_handle = open_device(path, FALSE);
 
 	// Check validity of write_handle.
 	if (dev->device_handle == INVALID_HANDLE_VALUE) {
@@ -553,6 +543,7 @@ HID_API_EXPORT hid_device * HID_API_CALL hid_open_path(const char *path)
 		register_error(dev, "HidP_GetCaps");	
 		goto err_pp_data;
 	}
+	dev->output_report_length = caps.OutputReportByteLength;
 	dev->input_report_length = caps.InputReportByteLength;
 	HidD_FreePreparsedData(pp_data);
 
@@ -574,15 +565,35 @@ int HID_API_EXPORT HID_API_CALL hid_write(hid_device *dev, const unsigned char *
 	BOOL res;
 
 	OVERLAPPED ol;
+	unsigned char *buf;
 	memset(&ol, 0, sizeof(ol));
 
-	res = WriteFile(dev->device_handle, data, length, NULL, &ol);
+	/* Make sure the right number of bytes are passed to WriteFile. Windows
+	   expects the number of bytes which are in the _longest_ report (plus
+	   one for the report number) bytes even if the data is a report
+	   which is shorter than that. Windows gives us this value in
+	   caps.OutputReportByteLength. If a user passes in fewer bytes than this,
+	   create a temporary buffer which is the proper size. */
+	if (length >= dev->output_report_length) {
+		/* The user passed the right number of bytes. Use the buffer as-is. */
+		buf = (unsigned char *) data;
+	} else {
+		/* Create a temporary buffer and copy the user's data
+		   into it, padding the rest with zeros. */
+		buf = (unsigned char *) malloc(dev->output_report_length);
+		memcpy(buf, data, length);
+		memset(buf + length, 0, dev->output_report_length - length);
+		length = dev->output_report_length;
+	}
+
+	res = WriteFile(dev->device_handle, buf, length, NULL, &ol);
 	
 	if (!res) {
 		if (GetLastError() != ERROR_IO_PENDING) {
 			// WriteFile() failed. Return error.
 			register_error(dev, "WriteFile");
-			return -1;
+			bytes_written = -1;
+			goto end_of_function;
 		}
 	}
 
@@ -592,8 +603,13 @@ int HID_API_EXPORT HID_API_CALL hid_write(hid_device *dev, const unsigned char *
 	if (!res) {
 		// The Write operation failed.
 		register_error(dev, "WriteFile");
-		return -1;
+		bytes_written = -1;
+		goto end_of_function;
 	}
+
+end_of_function:
+	if (buf != data)
+		free(buf);
 
 	return bytes_written;
 }
@@ -610,6 +626,7 @@ int HID_API_EXPORT HID_API_CALL hid_read_timeout(hid_device *dev, unsigned char 
 	if (!dev->read_pending) {
 		// Start an Overlapped I/O read.
 		dev->read_pending = TRUE;
+		memset(dev->read_buf, 0, dev->input_report_length);
 		ResetEvent(ev);
 		res = ReadFile(dev->device_handle, dev->read_buf, dev->input_report_length, &bytes_read, &dev->ol);
 		
@@ -648,12 +665,15 @@ int HID_API_EXPORT HID_API_CALL hid_read_timeout(hid_device *dev, unsigned char 
 			   number (0x0) on the beginning of the report anyway. To make this
 			   work like the other platforms, and to make it work more like the
 			   HID spec, we'll skip over this byte. */
+			size_t copy_len;
 			bytes_read--;
-			memcpy(data, dev->read_buf+1, length);
+			copy_len = length > bytes_read ? bytes_read : length;
+			memcpy(data, dev->read_buf+1, copy_len);
 		}
 		else {
 			/* Copy the whole buffer, report number and all. */
-			memcpy(data, dev->read_buf, length);
+			size_t copy_len = length > bytes_read ? bytes_read : length;
+			memcpy(data, dev->read_buf, copy_len);
 		}
 	}
 	
