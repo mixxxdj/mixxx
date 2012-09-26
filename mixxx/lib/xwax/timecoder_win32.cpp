@@ -338,7 +338,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
 {
     assert(tc->mon == NULL);
     tc->mon_size = size;
-    tc->mon = malloc(SQ(tc->mon_size));
+    tc->mon = (unsigned char*)malloc(SQ(tc->mon_size));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
