@@ -296,7 +296,6 @@ void DlgAutoDJ::fadeNow(double value) {
 void DlgAutoDJ::toggleAutoDJ(double v) {
     if (v > 0) {
         pushButtonAutoDJ->toggle();
-        toggleAutoDJ(pushButtonAutoDJ->isChecked());
     }
 }
 
