@@ -51,7 +51,7 @@
 #define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
 #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
 
-static struct timecode_def timecode_def[] = {
+static struct timecode_def timecodes[] = {
     {
         "serato_2a",
         "Serato 2nd Ed., side A",
