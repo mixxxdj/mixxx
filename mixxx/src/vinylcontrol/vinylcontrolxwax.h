@@ -74,7 +74,7 @@ class VinylControlXwax : public VinylControl
     bool bTrackSelectMode;
 
     // Contains information that xwax's code needs internally about the timecode and how to process it.
-    struct timecoder_t timecoder;
+    struct timecoder timecoder;
     static QMutex s_xwaxLUTMutex; /** Static mutex that protects our creation/destruction of the xwax LUTs */
     static bool m_bLUTInitialized;
 
