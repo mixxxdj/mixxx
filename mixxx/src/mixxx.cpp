@@ -385,6 +385,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         m_pConfig->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
     }
 
+    if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMMaxLength"))
+            .length() < 1)
+    {
+        m_pConfig->set(ConfigKey("[BPM]", "BPMMaxLength"),ConfigValue(30));
+    }
+
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "AnalyzeEntireSong"))
             .length() < 1)
     {

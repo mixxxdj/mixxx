@@ -19,5 +19,6 @@
 #define BPM_RANGE_START "BPMRangeStart"
 #define BPM_RANGE_END "BPMRangeEnd"
 #define BPM_ABOVE_RANGE_ENABLED "BPMAboveRangeEnabled"
+#define BPM_MAX_LENGTH "BPMMaxLength"
 
 #endif /* BEAT_PREFERENCES_H */

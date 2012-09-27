@@ -28,7 +28,8 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config)
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_iMinBpm(0),
-          m_iMaxBpm(9999) {
+          m_iMaxBpm(9999),
+          m_iMaxLen(1000) {
 }
 
 AnalyserBeats::~AnalyserBeats(){
@@ -46,6 +47,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
 
     m_iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
     m_iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+    m_iMaxLen = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_MAX_LENGTH)).toInt();
     bool allow_above = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED)).toInt());
     if (allow_above) {
@@ -94,7 +96,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
 
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
-
+    
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
     BeatsPointer pBeats = tio->getBeats();
@@ -139,6 +141,13 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
             qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
             m_bShouldAnalyze = false;
         }
+    }
+
+    // If the track is too long, don't analyze
+    if (((float)m_iTotalSamples / m_iSampleRate) / 60 > m_iMaxLen)
+    {
+        qDebug() << "Track is longer than " << m_iMaxLen << " minutes as per preferences, not analyzing";
+        m_bShouldAnalyze = false;
     }
 
     if (!m_bShouldAnalyze) {
