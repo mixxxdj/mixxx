@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-09-24 21:32+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2012-09-26 15:09+0000\n"
+"Last-Translator: maurirope <maurirope@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-25 04:35+0000\n"
-"X-Generator: Launchpad (build 16019)\n"
+"X-Launchpad-Export-Date: 2012-09-27 04:34+0000\n"
+"X-Generator: Launchpad (build 16033)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -373,15 +373,15 @@ msgstr "No se pudieron actualizar los metadatos de archivo."
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "Controlador USB"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr "Excepción non recollida na liña %1 no ficheiro %2: %3"
+msgstr "Excepción no recogida en línea %1 en el archivo %2: %3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr "Excepción non recollida na liña %1 no código pasado: %2"
+msgstr "Excepción no recogida en la línea %1 en el código pasado: %2"
 
 #: ControllerEngine#3
 msgid "Controller script error"
@@ -914,11 +914,11 @@ msgstr "Activar el modo de cuantización"
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr ""
+msgstr "Sincronizar Beat (pulso y fase)"
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
-msgstr ""
+msgstr "Sincronizar Beat (sólo pulso)"
 
 #: DlgControllerLearning#35
 msgid "Beat sync (phase only)"
@@ -1278,7 +1278,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#5
 msgid "TextLabel"
-msgstr ""
+msgstr "Etiqueta"
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
@@ -1294,7 +1294,7 @@ msgstr "Configuración cargada:"
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Soporte:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1328,11 +1328,11 @@ msgstr "Simple"
 
 #: DlgPrefControls#6
 msgid "On"
-msgstr ""
+msgstr "Activado"
 
 #: DlgPrefControls#7
 msgid "Off"
-msgstr ""
+msgstr "Desactivado"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1405,7 +1405,7 @@ msgstr "Arriba aumenta velocidad"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Información"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1511,7 +1511,7 @@ msgstr "Sensibilidad del Curvado de velocidad"
 #: DlgPrefControlsDlg#24
 msgctxt "DlgPrefControlsDlg#24"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Visualización de forma de onda"
 
 #: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
@@ -1578,7 +1578,7 @@ msgstr "Ganancia visual"
 #: DlgPrefControlsDlg#39
 msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1620,7 +1620,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restablecer valores predeterminados"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -2297,7 +2297,7 @@ msgstr ""
 
 #: DlgPrefSoundDlg#4
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: DlgPrefSoundDlg#5
 msgid "Latency Tips"
@@ -2315,12 +2315,12 @@ msgstr ""
 #: DlgPrefSoundDlg#7
 msgctxt "DlgPrefSoundDlg#7"
 msgid "Output"
-msgstr ""
+msgstr "Salida"
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefSoundDlg#9
 msgid "Query Devices"
@@ -2329,12 +2329,12 @@ msgstr "Consultar aparatos"
 #: DlgPrefSoundDlg#10
 msgctxt "DlgPrefSoundDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restablecer valores predeterminados"
 
 #: DlgPrefSoundDlg#11
 msgctxt "DlgPrefSoundDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: DlgPrefSoundDlg#12
 msgid "Latency"
@@ -3048,7 +3048,7 @@ msgstr "Teclado HID genérico"
 
 #: HidController#5
 msgid "Generic HID Multiaxis Controller"
-msgstr ""
+msgstr "Controlador multieje HID genérico"
 
 #: HidController#6
 msgid "Unknown HID Desktop Device"
@@ -3060,7 +3060,7 @@ msgstr "Control de infrarrojos HID"
 
 #: HidController#8
 msgid "Unknown Apple HID Device"
-msgstr ""
+msgstr "Dispositivo HID de Apple desconocido"
 
 #: HidController#9
 msgid "HID Unknown Device"
@@ -3493,7 +3493,7 @@ msgstr "Activar Live &Broadcasting"
 
 #: MixxxApp#70
 msgid "May not be supported on all skins."
-msgstr ""
+msgstr "Puede no estar soportado en todos los skins."
 
 #: MixxxApp#71
 msgid "Show Sample Deck Widgets"
@@ -3505,7 +3505,7 @@ msgstr ""
 
 #: MixxxApp#73
 msgid "Ctrl+S"
-msgstr ""
+msgstr "Ctrl+S"
 
 #: MixxxApp#74
 msgid "Show Vinyl Control Widgets"
@@ -3513,11 +3513,11 @@ msgstr ""
 
 #: MixxxApp#75
 msgid "Show the vinyl control section of the Mixxx interface."
-msgstr ""
+msgstr "Muestra la sección de control de vinilo de la interfaz de Mixxx"
 
 #: MixxxApp#76
 msgid "Ctrl+V"
-msgstr ""
+msgstr "Ctrl+V"
 
 #: MixxxApp#77
 msgid "Show Microphone Widgets"
@@ -3529,7 +3529,7 @@ msgstr ""
 
 #: MixxxApp#79
 msgid "Ctrl+M"
-msgstr ""
+msgstr "Ctrl+M"
 
 #: MixxxApp#80
 msgid "&Options"
@@ -3936,7 +3936,7 @@ msgstr "Arrastre con el ratón para hacer los ajustes temporales de pitch."
 
 #: Tooltips#12
 msgid "Spinning Vinyl"
-msgstr ""
+msgstr "Vinilo girando"
 
 #: Tooltips#13
 msgid "Rotates during playback and shows the position of a track."
@@ -4777,11 +4777,11 @@ msgstr "Eliminar"
 
 #: WTrackTableView#5
 msgid "Hide from Library"
-msgstr ""
+msgstr "Ocultar de la biblioteca"
 
 #: WTrackTableView#6
 msgid "Unhide from Library"
-msgstr ""
+msgstr "Volver a mostrar en la biblioteca"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
