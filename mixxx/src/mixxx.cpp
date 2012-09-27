@@ -334,18 +334,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-    
-#ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, m_pConfig);
-    // Register vinyl input signals with VinylControlManager
-    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
-        m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
-            m_pVCManager);
-    }
-#else
-    m_pVCManager = NULL;
-#endif
 
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
