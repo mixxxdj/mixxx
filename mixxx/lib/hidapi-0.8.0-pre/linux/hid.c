@@ -164,8 +164,6 @@ static int get_device_string(hid_device *dev, const char *key, wchar_t *string, 
 	struct stat s;
 	int ret = -1;
 	
-	setlocale(LC_ALL,"");
-
 	/* Create the udev object */
 	udev = udev_new();
 	if (!udev) {
@@ -188,7 +186,7 @@ static int get_device_string(hid_device *dev, const char *key, wchar_t *string, 
 			str = udev_device_get_sysattr_value(parent, key);
 			if (str) {
 				/* Convert the string from UTF-8 to wchar_t */
-				ret = mbstowcs(string, str, maxlen);
+				ret = (mbstowcs(string, str, maxlen) < 0)? -1: 0;
 				goto end;
 			}
 		}
@@ -205,7 +203,13 @@ end:
 
 int HID_API_EXPORT hid_init(void)
 {
-	/* Nothing to do for this in the Linux/hidraw implementation. */
+	const char *locale;
+
+	/* Set the locale if it's not set. */
+	locale = setlocale(LC_CTYPE, NULL);
+	if (!locale)
+		setlocale(LC_CTYPE, "");
+
 	return 0;
 }
 
@@ -223,8 +227,8 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 	
 	struct hid_device_info *root = NULL; // return object
 	struct hid_device_info *cur_dev = NULL;
-	
-	setlocale(LC_ALL,"");
+
+	hid_init();
 
 	/* Create the udev object */
 	udev = udev_new();
@@ -403,6 +407,8 @@ hid_device * hid_open(unsigned short vendor_id, unsigned short product_id, wchar
 hid_device * HID_API_EXPORT hid_open_path(const char *path)
 {
 	hid_device *dev = NULL;
+
+	hid_init();
 
 	dev = new_hid_device();
 

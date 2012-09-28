@@ -83,6 +83,14 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";
     }
+    
+    timecode_def *tc_def = timecoder_find_definition(timecode);
+    if (tc_def == NULL)
+    {
+        qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
+        timecode = (char*)"serato_2a";
+        tc_def = timecoder_find_definition(timecode);
+    }
 
     double speed = 1.0f;
     if (strVinylSpeed == MIXXX_VINYL_SPEED_45)
@@ -95,7 +103,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     //Initialize the timecoder structure.
     s_xwaxLUTMutex.lock(); //Static mutex! We don't want two threads doing this!
 
-    timecoder_init(&timecoder, timecode, speed, iSampleRate);
+    timecoder_init(&timecoder, tc_def, speed, iSampleRate);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -120,6 +128,7 @@ VinylControlXwax::~VinylControlXwax()
     delete m_pSteadyGross;
 
     //Cleanup xwax nicely
+    timecoder_monitor_clear(&timecoder);
     timecoder_clear(&timecoder);
     m_bLUTInitialized = false;
 
@@ -188,7 +197,7 @@ void VinylControlXwax::run()
     bool reportedPlayButton = 0;
     tSinceSteadyPitch.start();
 
-    float when; //unused, needed for calling xwax
+    double when; //unused, needed for calling xwax
 
     bShouldClose = false;
 
@@ -240,7 +249,7 @@ void VinylControlXwax::run()
             }
             continue;
         }
-        //qDebug() << m_group << id << iPosition << dVinylPitch;
+        //qDebug() << m_group << id << iPosition << when << dVinylPitch;
 
         cur_duration = duration->get();
 
@@ -878,7 +887,7 @@ void VinylControlXwax::establishQuality(bool quality_sample)
 
 float VinylControlXwax::getAngle()
 {
-    float when;
+    double when;
     float pos = timecoder_get_position(&timecoder, &when);
 
     if (pos == -1)
