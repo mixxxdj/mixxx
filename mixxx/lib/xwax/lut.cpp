@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Mark Hills <mark@pogo.org.uk>
+ * Copyright (C) 2012 Mark Hills <mark@pogo.org.uk>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,19 +34,19 @@
 /* Initialise an empty hash lookup table to store the given number
  * of timecode -> position lookups */
 
-int lut_init(struct lut_t *lut, int nslots)
+int lut_init(struct lut *lut, int nslots)
 {
     int n, hashes;
     size_t bytes;
 
     hashes = 1 << HASH_BITS;
-    bytes = sizeof(struct slot_t) * nslots + sizeof(slot_no_t) * hashes;
+    bytes = sizeof(struct slot) * nslots + sizeof(slot_no_t) * hashes;
 
     fprintf(stderr, "Lookup table has %d hashes to %d slots"
             " (%d slots per hash, %zuKb)\n",
             hashes, nslots, nslots / hashes, bytes / 1024);
 
-    lut->slot = (struct slot_t*)malloc(sizeof(struct slot_t) * nslots);
+    lut->slot = (struct slot*)malloc(sizeof(struct slot) * nslots);
     if (lut->slot == NULL) {
         perror("malloc");
         return -1;
@@ -67,17 +67,18 @@ int lut_init(struct lut_t *lut, int nslots)
 }
 
 
-void lut_clear(struct lut_t *lut)
+void lut_clear(struct lut *lut)
 {
     free(lut->table);
+    free(lut->slot);
 }
 
 
-void lut_push(struct lut_t *lut, unsigned int timecode)
+void lut_push(struct lut *lut, unsigned int timecode)
 {
     unsigned int hash;
     slot_no_t slot_no;
-    struct slot_t *slot;
+    struct slot *slot;
 
     slot_no = lut->avail++; /* take the next available slot */
 
@@ -90,11 +91,11 @@ void lut_push(struct lut_t *lut, unsigned int timecode)
 }
 
 
-unsigned int lut_lookup(struct lut_t *lut, unsigned int timecode)
+unsigned int lut_lookup(struct lut *lut, unsigned int timecode)
 {
     unsigned int hash;
     slot_no_t slot_no;
-    struct slot_t *slot;
+    struct slot *slot;
 
     hash = HASH(timecode);
     slot_no = lut->table[hash];

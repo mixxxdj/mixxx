@@ -49,6 +49,9 @@ bool MidiOutputHandler::validate() {
 }
 
 void MidiOutputHandler::update() {
+    if (m_cobj == NULL) {
+        return;
+    }
     controlChanged(m_cobj->get());
 }
 

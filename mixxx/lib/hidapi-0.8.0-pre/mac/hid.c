@@ -263,16 +263,25 @@ static int32_t get_max_report_length(IOHIDDeviceRef device)
 
 static int get_string_property(IOHIDDeviceRef device, CFStringRef prop, wchar_t *buf, size_t len)
 {
-	CFStringRef str = IOHIDDeviceGetProperty(device, prop);
+	CFStringRef str;
+	
+	if (!len)
+		return 0;
 
-	buf[0] = 0x0000;
+	str = IOHIDDeviceGetProperty(device, prop);
+
+	buf[0] = 0;
 
 	if (str) {
+		len --;
+
+		CFIndex str_len = CFStringGetLength(str);
 		CFRange range;
 		range.location = 0;
-		range.length = len;
+		range.length = (str_len > len)? len: str_len;
 		CFIndex used_buf_len;
-		CFStringGetBytes(str,
+		CFIndex chars_copied;
+		chars_copied = CFStringGetBytes(str,
 			range,
 			kCFStringEncodingUTF32LE,
 			(char)'?',
@@ -280,26 +289,35 @@ static int get_string_property(IOHIDDeviceRef device, CFStringRef prop, wchar_t 
 			(UInt8*)buf,
 			len,
 			&used_buf_len);
-		buf[len-1] = 0x00000000;
-		return used_buf_len;
+
+		buf[chars_copied] = 0;
+		return 0;
 	}
 	else
-		return 0;
+		return -1;
 		
 }
 
 static int get_string_property_utf8(IOHIDDeviceRef device, CFStringRef prop, char *buf, size_t len)
 {
-	CFStringRef str = IOHIDDeviceGetProperty(device, prop);
+	CFStringRef str;
+	if (!len)
+		return 0;
 
-	buf[0] = 0x0000;
+	str = IOHIDDeviceGetProperty(device, prop);
+
+	buf[0] = 0;
 
 	if (str) {
+		len--;
+
+		CFIndex str_len = CFStringGetLength(str);
 		CFRange range;
 		range.location = 0;
-		range.length = len;
+		range.length = (str_len > len)? len: str_len;
 		CFIndex used_buf_len;
-		CFStringGetBytes(str,
+		CFIndex chars_copied;
+		chars_copied = CFStringGetBytes(str,
 			range,
 			kCFStringEncodingUTF8,
 			(char)'?',
@@ -307,12 +325,12 @@ static int get_string_property_utf8(IOHIDDeviceRef device, CFStringRef prop, cha
 			(UInt8*)buf,
 			len,
 			&used_buf_len);
-		buf[len-1] = 0x00000000;
+
+		buf[chars_copied] = 0;
 		return used_buf_len;
 	}
 	else
 		return 0;
-		
 }
 
 
@@ -369,26 +387,32 @@ static int make_path(IOHIDDeviceRef device, char *buf, size_t len)
 	return res+1;
 }
 
+/* Initialize the IOHIDManager. Return 0 for success and -1 for failure. */
 static int init_hid_manager(void)
 {
 	IOReturn res;
 	
 	/* Initialize all the HID Manager Objects */
 	hid_mgr = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
-	IOHIDManagerSetDeviceMatching(hid_mgr, NULL);
-	IOHIDManagerScheduleWithRunLoop(hid_mgr, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-	res = IOHIDManagerOpen(hid_mgr, kIOHIDOptionsTypeNone);
-	return (res == kIOReturnSuccess)? 0: -1;
+	if (hid_mgr) {
+		IOHIDManagerSetDeviceMatching(hid_mgr, NULL);
+		IOHIDManagerScheduleWithRunLoop(hid_mgr, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+		return 0;
+	}
+	
+	return -1;
 }
 
+/* Initialize the IOHIDManager if necessary. This is the public function, and
+   it is safe to call this function repeatedly. Return 0 for success and -1
+   for failure. */
 int HID_API_EXPORT hid_init(void)
 {
 	if (!hid_mgr) {
-		if (init_hid_manager() < 0) {
-			hid_exit();
-			return -1;
-		}
+		return init_hid_manager();
 	}
+
+	/* Already initialized. */
 	return 0;
 }
 
@@ -404,6 +428,13 @@ int HID_API_EXPORT hid_exit(void)
 	return 0;
 }
 
+static void process_pending_events() {
+	SInt32 res;
+	do {
+		res = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.001, FALSE);
+	} while(res != kCFRunLoopRunFinished && res != kCFRunLoopRunTimedOut);
+}
+
 struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, unsigned short product_id)
 {
 	struct hid_device_info *root = NULL; // return object
@@ -411,11 +442,13 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 	CFIndex num_devices;
 	int i;
 	
-	setlocale(LC_ALL,"");
-
 	/* Set up the HID Manager if it hasn't been done */
-	hid_init();
+	if (hid_init() < 0)
+		return NULL;
 	
+	/* give the IOHIDManager a chance to update itself */
+	process_pending_events();
+
 	/* Get a list of the Devices */
 	CFSetRef device_set = IOHIDManagerCopyDevices(hid_mgr);
 
@@ -676,13 +709,6 @@ static void *read_thread(void *param)
 	pthread_cond_broadcast(&dev->condition);
 	pthread_mutex_unlock(&dev->mutex);
 
-	/* Close the OS handle to the device, but only if it's not
-	   been unplugged. If it's been unplugged, then calling
-	   IOHIDDeviceClose() will crash. */
-	if (!dev->disconnected) {
-		IOHIDDeviceClose(dev->device_handle, kIOHIDOptionsTypeNone);
-	}
-	
 	/* Wait here until hid_close() is called and makes it past
 	   the call to CFRunLoopWakeUp(). This thread still needs to
 	   be valid when that function is called on the other thread. */
@@ -700,7 +726,11 @@ hid_device * HID_API_EXPORT hid_open_path(const char *path)
 	dev = new_hid_device();
 
 	/* Set up the HID Manager if it hasn't been done */
-	hid_init();
+	if (hid_init() < 0)
+		return NULL;
+
+	/* give the IOHIDManager a chance to update itself */
+	process_pending_events();
 
 	CFSetRef device_set = IOHIDManagerCopyDevices(hid_mgr);
 	
@@ -1095,8 +1125,6 @@ int main(void)
 	CFIndex num_devices = CFSetGetCount(device_set);
 	IOHIDDeviceRef *device_array = calloc(num_devices, sizeof(IOHIDDeviceRef));
 	CFSetGetValues(device_set, (const void **) device_array);
-	
-	setlocale(LC_ALL, "");
 	
 	for (i = 0; i < num_devices; i++) {
 		IOHIDDeviceRef dev = device_array[i];
