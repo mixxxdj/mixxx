@@ -305,7 +305,11 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
+        m_playlistTableModel.clear();
         m_playlistTableModel.select();
+        while (m_playlistTableModel.canFetchMore()) {
+            m_playlistTableModel.fetchMore();
+        }
         m_lastRightClickedIndex = constructChildModel(playlistId);
 
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
