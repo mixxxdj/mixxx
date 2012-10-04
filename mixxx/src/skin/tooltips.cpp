@@ -341,15 +341,23 @@ void Tooltips::addStandardTooltips() {
             << tr("Loop Double")
             << tr("Doubles the current loop's length by moving the end marker.");
 
+    //beatloop and beatlooproll
     add("beatloop")
             << tr("Beatloop")
-            << tr("Setup a loop over X beats.")
-            << quantizeSnap;
+            << QString("%1: %2").arg(leftClick, tr("Setup a loop over the set number of beats."))
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("Temporarily setup a rolling loop over the set number of beats."))
+            << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
     add("reloop_exit")
             << tr("Reloop/Exit")
             << tr("Toggles the current loop on or off.")
             << tr("Works only if Loop-In and Loop-Out marker are set.");
+    
+    add("slip_mode")
+            << tr("Slip Mode")
+            << tr("When active, the playback continues muted in the background during a loop, reverse, scratch etc.")
+            << tr("Once disabled, the audible playback will resume where the track would have been.");
 
     add("vinylcontrol_cueing")
             << tr("Vinyl Cueing Mode")
