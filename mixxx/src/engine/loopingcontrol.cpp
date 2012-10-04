@@ -16,7 +16,7 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
-double LoopingControl::s_dBeatSizes[] = { 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
+double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
 
 LoopingControl::LoopingControl(const char * _group,
                                ConfigObject<ConfigValue> * _config)

@@ -53,6 +53,9 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("id"),
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
+    while (m_playlistTableModel.canFetchMore()) {
+        m_playlistTableModel.fetchMore();
+    }
 
     //construct child model
     TreeItem *rootItem = new TreeItem();
@@ -61,6 +64,13 @@ SetlogFeature::SetlogFeature(QObject* parent,
 }
 
 SetlogFeature::~SetlogFeature() {
+    // If the history playlist we created doesn't have any tracks in it then
+    // delete it so we don't end up with tons of empty playlists. This is mostly
+    // for developers since they regularly open Mixxx without loading a track.
+    if (m_playlistId != -1 &&
+        m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
+        m_playlistDao.deletePlaylist(m_playlistId);
+    }
 }
 
 QVariant SetlogFeature::title() {
@@ -295,7 +305,11 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
+        m_playlistTableModel.clear();
         m_playlistTableModel.select();
+        while (m_playlistTableModel.canFetchMore()) {
+            m_playlistTableModel.fetchMore();
+        }
         m_lastRightClickedIndex = constructChildModel(playlistId);
 
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
