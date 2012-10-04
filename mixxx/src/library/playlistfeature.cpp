@@ -32,6 +32,9 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
     m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("name"),
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
+    while (m_playlistTableModel.canFetchMore()) {
+        m_playlistTableModel.fetchMore();
+    }
 
     //construct child model
     TreeItem *rootItem = new TreeItem();
@@ -182,14 +185,17 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (   type == PlaylistDAO::PLHT_NOT_HIDDEN
-        || type == PlaylistDAO::PLHT_UNKNOWN      // In case of a deleted Playlist
-    ){
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
+        m_playlistTableModel.clear();
         m_playlistTableModel.select();
+        while (m_playlistTableModel.canFetchMore()) {
+            m_playlistTableModel.fetchMore();
+        }
         m_lastRightClickedIndex = constructChildModel(playlistId);
 
-        if(type != PlaylistDAO::PLHT_UNKNOWN) {
+        if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.
             m_pPlaylistTableModel->setPlaylist(playlistId);
             // Update selection
