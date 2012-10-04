@@ -61,6 +61,13 @@ SetlogFeature::SetlogFeature(QObject* parent,
 }
 
 SetlogFeature::~SetlogFeature() {
+    // If the history playlist we created doesn't have any tracks in it then
+    // delete it so we don't end up with tons of empty playlists. This is mostly
+    // for developers since they regularly open Mixxx without loading a track.
+    if (m_playlistId != -1 &&
+        m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
+        m_playlistDao.deletePlaylist(m_playlistId);
+    }
 }
 
 QVariant SetlogFeature::title() {

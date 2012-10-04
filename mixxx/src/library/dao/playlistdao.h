@@ -33,13 +33,13 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
-    // Create a playlist 
+    // Create a playlist
     int createPlaylist(QString name, HiddenType type = PLHT_NOT_HIDDEN);
-    // Delete a playlist 
+    // Delete a playlist
     void deletePlaylist(int playlistId);
-    // Rename a playlist 
+    // Rename a playlist
     void renamePlaylist(int playlistId, const QString& newName);
-    // Lock or unlock a playlist 
+    // Lock or unlock a playlist
     bool setPlaylistLocked(int playlistId, bool locked);
     // Find out the state of a playlist lock
     bool isPlaylistLocked(int playlistId);
@@ -80,6 +80,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int getPreviousPlaylist(int currentPlaylistId, HiddenType hidden);
     // Append all the tracks in the source playlist to the target playlist.
     void copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistId);
+    // Returns the number of tracks in the given playlist.
+    int tracksInPlaylist(int playlistId);
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
