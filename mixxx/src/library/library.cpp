@@ -91,6 +91,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 }
 
 Library::~Library() {
+    // Delete the sidebar model first since it depends on the LibraryFeatures.
+    delete m_pSidebarModel;
+
     QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
@@ -99,7 +102,6 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
-    delete m_pSidebarModel;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
