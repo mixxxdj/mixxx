@@ -69,6 +69,9 @@ CrateFeature::CrateFeature(QObject* parent,
                                   Qt::AscendingOrder);
     m_crateListTableModel.setFilter("show = 1");
     m_crateListTableModel.select();
+    while (m_crateListTableModel.canFetchMore()) {
+        m_crateListTableModel.fetchMore();
+    }
 
     // construct child model
     TreeItem *rootItem = new TreeItem();

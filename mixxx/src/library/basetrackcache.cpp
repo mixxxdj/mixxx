@@ -153,7 +153,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         // m_trackInfo[id] will insert a QVector<QVariant> into the
         // m_trackInfo HashTable with the key "id"
         QVector<QVariant>& record = m_trackInfo[id];
-        // prealocate memory for all colums at once        
+        // prealocate memory for all columns at once
         record.resize(numColumns);
 
         for (int i = 0; i < numColumns; ++i) {
