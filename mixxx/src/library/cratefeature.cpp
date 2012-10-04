@@ -484,7 +484,11 @@ void CrateFeature::slotExportPlaylist(){
 void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
+    m_crateListTableModel.clear();
     m_crateListTableModel.select();
+    while (m_crateListTableModel.canFetchMore()) {
+        m_crateListTableModel.fetchMore();
+    }
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
     m_crateTableModel.setCrate(crateId);
