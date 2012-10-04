@@ -159,6 +159,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
     QPainter p(this);
 
     if (m_pBG) {
+        p.setRenderHint(QPainter::SmoothPixmapTransform);
         p.drawPixmap(0, 0, *m_pBG);
     }
 
