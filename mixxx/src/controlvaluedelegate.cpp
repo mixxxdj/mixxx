@@ -64,7 +64,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("loop_in");
         m_channelControlValues.append("loop_out");
         m_channelControlValues.append("reloop_exit");
-        m_channelControlValues.append("beatloop_4");
+        m_channelControlValues.append("beatloop_4_toggle");
         m_channelControlValues.append("loop_halve");
         m_channelControlValues.append("loop_double");
         m_channelControlValues.append("hotcue_1_activate");

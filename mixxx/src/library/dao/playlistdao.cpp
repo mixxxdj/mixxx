@@ -603,3 +603,20 @@ void PlaylistDAO::removeTracksFromPlaylists(QList<int> ids) {
         LOG_FAILED_QUERY(query);
     }
 }
+
+int PlaylistDAO::tracksInPlaylist(int playlistId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT COUNT(id) AS count FROM PlaylistTracks "
+                  "WHERE playlist_id = :playlist_id");
+    query.bindValue(":playlist_id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "Couldn't get the number of tracks in playlist"
+                                << playlistId;
+        return -1;
+    }
+    int count = -1;
+    while (query.next()) {
+        count = query.value(query.record().indexOf("count")).toInt();
+    }
+    return count;
+}
