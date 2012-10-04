@@ -32,6 +32,9 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
     m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("name"),
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
+    while (m_playlistTableModel.canFetchMore()) {
+        m_playlistTableModel.fetchMore();
+    }
 
     //construct child model
     TreeItem *rootItem = new TreeItem();
