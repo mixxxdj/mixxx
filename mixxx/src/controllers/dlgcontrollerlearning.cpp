@@ -106,7 +106,6 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("cue_gotoandstop", tr("Go to cue point and stop"), cueMenu);
 
     // Hotcues
-
     QString hotcueActivate = tr("Set or jump to hotcue %1");
     QString hotcueClear = tr("Clear hotcue %1");
     QString hotcueGoto = tr("Jump to hotcue %1");
@@ -129,19 +128,36 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("reloop_exit", tr("Reloop / Exit button"), loopMenu);
     addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);
+    addDeckControl("slip_enabled", tr("Toggle slip mode"), loopMenu);
 
     // Beatloops
     QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
     QString beatLoop = tr("Create %1-beat loop");
-    addDeckControl("beatloop_0.0625",  beatLoop.arg("1/16th"), beatLoopMenu);
-    addDeckControl("beatloop_0.125", beatLoop.arg("1/8th"), beatLoopMenu);
-    addDeckControl("beatloop_0.25", beatLoop.arg("1/4th"), beatLoopMenu);
-    addDeckControl("beatloop_0.5", beatLoop.arg("1/2"), beatLoopMenu);
-    addDeckControl("beatloop_1", beatLoop.arg("1"), beatLoopMenu);
-    addDeckControl("beatloop_2", beatLoop.arg("2"), beatLoopMenu);
-    addDeckControl("beatloop_4", beatLoop.arg("4"), beatLoopMenu);
-    addDeckControl("beatloop_8", beatLoop.arg("8"), beatLoopMenu);
-    addDeckControl("beatloop_16", beatLoop.arg("16"), beatLoopMenu);
+    QString beatLoopRoll = tr("Create temporary %1-beat loop roll");
+    addDeckControl("beatloop_0.03125_toggle",  beatLoop.arg(tr("1/32th")), beatLoopMenu);
+    addDeckControl("beatloop_0.0625_toggle",  beatLoop.arg(tr("1/16th")), beatLoopMenu);
+    addDeckControl("beatloop_0.125_toggle", beatLoop.arg(tr("1/8th")), beatLoopMenu);
+    addDeckControl("beatloop_0.25_toggle", beatLoop.arg(tr("1/4th")), beatLoopMenu);
+    addDeckControl("beatloop_0.5_toggle", beatLoop.arg("1/2"), beatLoopMenu);
+    addDeckControl("beatloop_1_toggle", beatLoop.arg("1"), beatLoopMenu);
+    addDeckControl("beatloop_2_toggle", beatLoop.arg("2"), beatLoopMenu);
+    addDeckControl("beatloop_4_toggle", beatLoop.arg("4"), beatLoopMenu);
+    addDeckControl("beatloop_8_toggle", beatLoop.arg("8"), beatLoopMenu);
+    addDeckControl("beatloop_16_toggle", beatLoop.arg("16"), beatLoopMenu);
+    addDeckControl("beatloop_32_toggle", beatLoop.arg("32"), beatLoopMenu);
+    addDeckControl("beatloop_64_toggle", beatLoop.arg("64"), beatLoopMenu);
+    addDeckControl("beatlooproll_0.03125_activate",  beatLoopRoll.arg(tr("1/32th")), beatLoopMenu);
+    addDeckControl("beatlooproll_0.0625_activate",  beatLoopRoll.arg(tr("1/16th")), beatLoopMenu);
+    addDeckControl("beatlooproll_0.125_activate", beatLoopRoll.arg(tr("1/8th")), beatLoopMenu);
+    addDeckControl("beatlooproll_0.25_activate", beatLoopRoll.arg(tr("1/4th")), beatLoopMenu);
+    addDeckControl("beatlooproll_0.5_activate", beatLoopRoll.arg("1/2"), beatLoopMenu);
+    addDeckControl("beatlooproll_1_activate", beatLoopRoll.arg("1"), beatLoopMenu);
+    addDeckControl("beatlooproll_2_activate", beatLoopRoll.arg("2"), beatLoopMenu);
+    addDeckControl("beatlooproll_4_activate", beatLoopRoll.arg("4"), beatLoopMenu);
+    addDeckControl("beatlooproll_8_activate", beatLoopRoll.arg("8"), beatLoopMenu);
+    addDeckControl("beatlooproll_16_activate", beatLoopRoll.arg("16"), beatLoopMenu);
+    addDeckControl("beatlooproll_32_activate", beatLoopRoll.arg("32"), beatLoopMenu);
+    addDeckControl("beatlooproll_64_activate", beatLoopRoll.arg("64"), beatLoopMenu);
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
