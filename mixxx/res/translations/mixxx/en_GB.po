@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-08-08 12:44+0000\n"
-"Last-Translator: anup bhojagi <abtalk@indiatimes.com>\n"
+"PO-Revision-Date: 2012-10-05 19:50+0000\n"
+"Last-Translator: Sid Roberts <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-21 04:39+0000\n"
-"X-Generator: Launchpad (build 15985)\n"
+"X-Launchpad-Export-Date: 2012-10-06 04:36+0000\n"
+"X-Generator: Launchpad (build 16061)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -370,7 +370,7 @@ msgstr "Could not update file metadata."
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "USB Controller"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -548,7 +548,7 @@ msgstr "Crates let you organise your music however you'd like!"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Create new crate"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -1242,11 +1242,11 @@ msgstr "Custom Preset"
 
 #: DlgPrefController#4
 msgid "No Description"
-msgstr ""
+msgstr "No Description"
 
 #: DlgPrefController#5
 msgid "No support available."
-msgstr ""
+msgstr "No support available."
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
@@ -1273,7 +1273,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Description:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1285,7 +1285,7 @@ msgstr "Loaded Preset:"
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Support:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1319,11 +1319,11 @@ msgstr "Simple"
 
 #: DlgPrefControls#6
 msgid "On"
-msgstr ""
+msgstr "On"
 
 #: DlgPrefControls#7
 msgid "Off"
-msgstr ""
+msgstr "Off"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1347,7 +1347,7 @@ msgstr "10%"
 
 #: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
-msgstr ""
+msgstr "Load tracks into a playing deck"
 
 #: DlgPrefControls#14
 msgid "The selected skin is bigger than your screen resolution."
@@ -1396,7 +1396,7 @@ msgstr "Up increases speed"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1449,7 +1449,7 @@ msgstr "Auto Recall Cue"
 
 #: DlgPrefControlsDlg#11
 msgid "Locale"
-msgstr ""
+msgstr "Locale"
 
 #: DlgPrefControlsDlg#12
 msgid "Temporary rate change when left-clicking"
@@ -4652,7 +4652,7 @@ msgstr ""
 
 #: TrackCollection#3
 msgid "Click OK to exit."
-msgstr ""
+msgstr "Click OK to exit."
 
 #: TrackCollection#4
 msgid "Cannot upgrade database schema"
@@ -4660,7 +4660,7 @@ msgstr "Cannot upgrade database schema"
 
 #: TrackCollection#5
 msgid "Unable to upgrade your database schema to version %1"
-msgstr ""
+msgstr "Unable to upgrade your database schema to version %1"
 
 #: TrackCollection#6
 msgid "Your %1 file may be outdated."
@@ -4729,15 +4729,15 @@ msgstr "Remove"
 
 #: WTrackTableView#5
 msgid "Hide from Library"
-msgstr ""
+msgstr "Hide from Library"
 
 #: WTrackTableView#6
 msgid "Unhide from Library"
-msgstr ""
+msgstr "Unhide from Library"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
-msgstr ""
+msgstr "Purge from Library"
 
 #: WTrackTableView#8
 msgid "Properties"
