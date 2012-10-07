@@ -12,6 +12,7 @@
 #include "controlobjectthreadmain.h"
 
 class TrackCollection;
+class TreeItem;
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
@@ -36,7 +37,8 @@ public:
     void slotJoinWithPrevious();
 
   protected:
-    QModelIndex constructChildModel(int selected_id);
+    void buildPlaylistList();
+    void decorateChild(TreeItem *pChild, int playlist_id);
 
   private slots:
     void slotPlayingDeckChanged(int deck);
