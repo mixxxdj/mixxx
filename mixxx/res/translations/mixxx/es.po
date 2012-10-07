@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-09-26 15:09+0000\n"
-"Last-Translator: maurirope <maurirope@gmail.com>\n"
+"PO-Revision-Date: 2012-10-06 20:30+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-27 04:34+0000\n"
-"X-Generator: Launchpad (build 16033)\n"
+"X-Launchpad-Export-Date: 2012-10-07 04:36+0000\n"
+"X-Generator: Launchpad (build 16061)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3521,11 +3521,11 @@ msgstr "Ctrl+V"
 
 #: MixxxApp#77
 msgid "Show Microphone Widgets"
-msgstr ""
+msgstr "Mostrar widgets de micrófono"
 
 #: MixxxApp#78
 msgid "Show the microphone section of the Mixxx interface."
-msgstr ""
+msgstr "Muestra la sección de control de micrófono de la interfaz de Mixxx."
 
 #: MixxxApp#79
 msgid "Ctrl+M"

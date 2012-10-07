@@ -4,15 +4,25 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-09-20 10:12+0200\n"
-"PO-Revision-Date: 2012-09-24 17:19+0000\n"
+"PO-Revision-Date: 2012-10-06 18:26+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-09-25 04:35+0000\n"
-"X-Generator: Launchpad (build 16019)\n"
+"X-Launchpad-Export-Date: 2012-10-07 04:36+0000\n"
+"X-Generator: Launchpad (build 16061)\n"
 "Language: de\n"
+
+#: BaseExternalLibraryFeature#3
+msgctxt "BaseExternalLibraryFeature#3"
+msgid "Import Playlist"
+msgstr "Wiedergabeliste importieren"
+
+#: BaseExternalLibraryFeature#5
+msgctxt "BaseExternalLibraryFeature#5"
+msgid "An unknown error occurred while creating playlist: "
+msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -28,20 +38,10 @@ msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
 msgstr "Zur Auto-DJ Warteschlange hinzufügen (oben)"
 
-#: BaseExternalLibraryFeature#3
-msgctxt "BaseExternalLibraryFeature#3"
-msgid "Import Playlist"
-msgstr "Wiedergabeliste importieren"
-
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
 msgstr "Erstellung der Wiedergabeliste fehlgeschlagen"
-
-#: BaseExternalLibraryFeature#5
-msgctxt "BaseExternalLibraryFeature#5"
-msgid "An unknown error occurred while creating playlist: "
-msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
