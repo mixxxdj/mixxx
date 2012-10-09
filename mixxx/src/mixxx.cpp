@@ -472,7 +472,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // If we were told to start in fullscreen mode on the command-line,
     // then turn on fullscreen mode.
     if (args.getStartInFullscreen()) {
-        slotOptionsFullScreen(true);
+        slotViewFullScreen(true);
     }
     emit(newSkinLoaded());
 
@@ -629,15 +629,15 @@ void toggleVisibility(ConfigKey key, bool enable) {
     pShowControl->set(enable ? 1.0 : 0.0);
 }
 
-void MixxxApp::slotOptionsShowSamplers(bool enable) {
+void MixxxApp::slotViewShowSamplers(bool enable) {
     toggleVisibility(ConfigKey("[Samplers]", "show_samplers"), enable);
 }
 
-void MixxxApp::slotOptionsShowVinylControl(bool enable) {
+void MixxxApp::slotViewShowVinylControl(bool enable) {
     toggleVisibility(ConfigKey("[Vinylcontrol]", "show_vinylcontrol"), enable);
 }
 
-void MixxxApp::slotOptionsShowMicrophone(bool enable) {
+void MixxxApp::slotViewShowMicrophone(bool enable) {
     toggleVisibility(ConfigKey("[Microphone]", "show_microphone"), enable);
 }
 
@@ -648,11 +648,11 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
 }
 
 void MixxxApp::onNewSkinLoaded() {
-    setVisibilityOptionState(m_pOptionsShowVinylControl,
+    setVisibilityOptionState(m_pViewVinylControl,
                              ConfigKey("[Vinylcontrol]", "show_vinylcontrol"));
-    setVisibilityOptionState(m_pOptionsShowSamplers,
+    setVisibilityOptionState(m_pViewShowSamplers,
                              ConfigKey("[Samplers]", "show_samplers"));
-    setVisibilityOptionState(m_pOptionsShowMicrophone,
+    setVisibilityOptionState(m_pViewShowMicrophone,
                              ConfigKey("[Microphone]", "show_microphone"));
 }
 
@@ -847,21 +847,21 @@ void MixxxApp::initActions()
 
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
-    m_pOptionsFullScreen = new QAction(fullScreenTitle, this);
+    m_pViewFullScreen = new QAction(fullScreenTitle, this);
 #ifdef __APPLE__
-    m_pOptionsFullScreen->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
+    m_pViewFullScreen->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
 #else
-    m_pOptionsFullScreen->setShortcut(QKeySequence(tr("F11")));
+    m_pViewFullScreen->setShortcut(QKeySequence(tr("F11")));
 #endif
-    m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
     // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
-    m_pOptionsFullScreen->setCheckable(true);
-    m_pOptionsFullScreen->setChecked(false);
-    m_pOptionsFullScreen->setStatusTip(fullScreenText);
-    m_pOptionsFullScreen->setWhatsThis(buildWhatsThis(fullScreenTitle, fullScreenText));
-    connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsFullScreen(bool)));
+    m_pViewFullScreen->setCheckable(true);
+    m_pViewFullScreen->setChecked(false);
+    m_pViewFullScreen->setStatusTip(fullScreenText);
+    m_pViewFullScreen->setWhatsThis(buildWhatsThis(fullScreenTitle, fullScreenText));
+    connect(m_pViewFullScreen, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewFullScreen(bool)));
 
     QString keyboardShortcutTitle = tr("Enable &Keyboard Shortcuts");
     QString keyboardShortcutText = tr("Toggles keyboard shortcuts on or off");
@@ -982,35 +982,35 @@ void MixxxApp::initActions()
     QString showSamplersTitle = tr("Show Sample Deck Widgets");
     QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
             " " + mayNotBeSupported;
-    m_pOptionsShowSamplers = new QAction(showSamplersTitle, this);
-    m_pOptionsShowSamplers->setCheckable(true);
-    m_pOptionsShowSamplers->setShortcut(tr("Ctrl+S"));
-    m_pOptionsShowSamplers->setStatusTip(showSamplersText);
-    m_pOptionsShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
-    connect(m_pOptionsShowSamplers, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsShowSamplers(bool)));
+    m_pViewShowSamplers = new QAction(showSamplersTitle, this);
+    m_pViewShowSamplers->setCheckable(true);
+    m_pViewShowSamplers->setShortcut(tr("Ctrl+S"));
+    m_pViewShowSamplers->setStatusTip(showSamplersText);
+    m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
+    connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowSamplers(bool)));
 
     QString showVinylControlTitle = tr("Show Vinyl Control Widgets");
     QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
             " " + mayNotBeSupported;
-    m_pOptionsShowVinylControl = new QAction(showVinylControlTitle, this);
-    m_pOptionsShowVinylControl->setCheckable(true);
-    m_pOptionsShowVinylControl->setShortcut(tr("Ctrl+V"));
-    m_pOptionsShowVinylControl->setStatusTip(showVinylControlText);
-    m_pOptionsShowVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
-    connect(m_pOptionsShowVinylControl, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsShowVinylControl(bool)));
+    m_pViewVinylControl = new QAction(showVinylControlTitle, this);
+    m_pViewVinylControl->setCheckable(true);
+    m_pViewVinylControl->setShortcut(tr("Ctrl+V"));
+    m_pViewVinylControl->setStatusTip(showVinylControlText);
+    m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
+    connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowVinylControl(bool)));
 
     QString showMicrophoneTitle = tr("Show Microphone Widgets");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
             " " + mayNotBeSupported;
-    m_pOptionsShowMicrophone = new QAction(showMicrophoneTitle, this);
-    m_pOptionsShowMicrophone->setCheckable(true);
-    m_pOptionsShowMicrophone->setShortcut(tr("Ctrl+M"));
-    m_pOptionsShowMicrophone->setStatusTip(showMicrophoneText);
-    m_pOptionsShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
-    connect(m_pOptionsShowMicrophone, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsShowMicrophone(bool)));
+    m_pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
+    m_pViewShowMicrophone->setCheckable(true);
+    m_pViewShowMicrophone->setShortcut(tr("Ctrl+M"));
+    m_pViewShowMicrophone->setStatusTip(showMicrophoneText);
+    m_pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
+    connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowMicrophone(bool)));
 
 
 
@@ -1048,18 +1048,16 @@ void MixxxApp::initMenuBar()
     m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
-    m_pVinylControlMenu->addAction(m_pOptionsShowVinylControl);
+
     m_pOptionsMenu->addMenu(m_pVinylControlMenu);
+    m_pOptionsMenu->addSeparator();
 #endif
-    m_pOptionsMenu->addAction(m_pOptionsShowSamplers);
-    m_pOptionsMenu->addAction(m_pOptionsShowMicrophone);
 
     m_pOptionsMenu->addAction(m_pOptionsRecord);
 #ifdef __SHOUTCAST__
     m_pOptionsMenu->addAction(m_pOptionsShoutcast);
 #endif
     m_pOptionsMenu->addAction(m_pOptionsKeyboard);
-    m_pOptionsMenu->addAction(m_pOptionsFullScreen);
     m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsPreferences);
 
@@ -1070,6 +1068,11 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
+    m_pViewMenu->addAction(m_pViewShowSamplers);
+    m_pViewMenu->addAction(m_pViewShowMicrophone);
+    m_pViewMenu->addAction(m_pViewVinylControl);
+    m_pViewMenu->addSeparator();
+    m_pViewMenu->addAction(m_pViewFullScreen);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -1081,9 +1084,9 @@ void MixxxApp::initMenuBar()
 
     menuBar()->addMenu(m_pFileMenu);
     menuBar()->addMenu(m_pLibraryMenu);
+    menuBar()->addMenu(m_pViewMenu);
     menuBar()->addMenu(m_pOptionsMenu);
 
-    //    menuBar()->addMenu(viewMenu);
     menuBar()->addSeparator();
     menuBar()->addMenu(m_pHelpMenu);
 
@@ -1152,10 +1155,10 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
     }
 }
 
-void MixxxApp::slotOptionsFullScreen(bool toggle)
+void MixxxApp::slotViewFullScreen(bool toggle)
 {
-    if (m_pOptionsFullScreen)
-        m_pOptionsFullScreen->setChecked(toggle);
+    if (m_pViewFullScreen)
+        m_pViewFullScreen->setChecked(toggle);
 
     if (isFullScreen() == toggle) {
         return;
@@ -1519,8 +1522,8 @@ void MixxxApp::rebootMixxxView() {
     // mode. If you change skins while in fullscreen (on Linux, at least) the
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
-    bool wasFullScreen = m_pOptionsFullScreen->isChecked();
-    slotOptionsFullScreen(false);
+    bool wasFullScreen = m_pViewFullScreen->isChecked();
+    slotViewFullScreen(false);
 
     //delete the view cause swaping central widget do not remove the old one !
     if (m_pView) {
@@ -1557,7 +1560,7 @@ void MixxxApp::rebootMixxxView() {
     }
 
     if( wasFullScreen) {
-        slotOptionsFullScreen(true);
+        slotViewFullScreen(true);
     } else {
         move(initPosition.x() + (initSize.width() - width()) / 2,
              initPosition.y() + (initSize.height() - height()) / 2);

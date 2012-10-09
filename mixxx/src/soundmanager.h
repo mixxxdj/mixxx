@@ -43,42 +43,81 @@ class AudioDestination;
 
 class SoundManager : public QObject {
     Q_OBJECT
-public:
+  public:
     SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
-    ~SoundManager();
-    const EngineMaster* getEngine() const; // this shouldn't exist
+    virtual ~SoundManager();
+
+    // Returns a pointer to the EngineMaster instance used by this SoundManager.
+    //
+    // NOTE(XXX): This is only here so that preferences can find out how many
+    // channels there are.
+    const EngineMaster* getEngine() const;
+
+    // Returns a list of all devices we've enumerated that match the provided
+    // filterApi, and have at least one output or input channel if the
+    // bOutputDevices or bInputDevices are set, respectively.
     QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
+
+    // Closes all the open sound devices. Because multiple soundcards might be
+    // open, this method simply runs through the list of all known soundcards
+    // (from PortAudio) and attempts to close them all. Closing a soundcard that
+    // isn't open is safe.
     void closeDevices();
+
+    // Closes all the devices and empties the list of devices we have.
     void clearDeviceList();
+
+    // Creates a list of sound devices that PortAudio sees.
     void queryDevices();
+
+    // Opens all the devices chosen by the user in the preferences dialog, and
+    // establishes the proper connections between them and the mixing engine.
     int setupDevices();
+
     SoundDevice* getErrorDevice() const;
+
+    // Returns a list of samplerates we will attempt to support for a given API.
     QList<unsigned int> getSampleRates(QString api) const;
+
+    // Convenience overload for SoundManager::getSampleRates(QString)
     QList<unsigned int> getSampleRates() const;
+
+    // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
     int setConfig(SoundManagerConfig config);
     void checkConfig();
+
+    // Requests a buffer in the proper format, if we're prepared to give one.
     QHash<AudioOutput, const CSAMPLE*> requestBuffer(
         QList<AudioOutput> outputs, unsigned long iFramesPerBuffer,
         SoundDevice *device, double streamTime = 0);
+
+    // Used by SoundDevices to "push" any audio from their inputs that they have
+    // into the mixing engine.
     void pushBuffer(QList<AudioInput> inputs, short *inputBuffer,
-        unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+                    unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+
     void registerOutput(AudioOutput output, const AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
-signals:
+
+  signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
     void outputRegistered(AudioOutput output, const AudioSource *src);
     void inputRegistered(AudioInput input, AudioDestination *dest);
-private:
-    void clearOperativeVariables();
+
+  private:
     void setJACKName() const;
 
     EngineMaster *m_pMaster;
     ConfigObject<ConfigValue> *m_pConfig;
+#ifdef __PORTAUDIO__
+    bool m_paInitialized;
+    unsigned int m_jackSampleRate;
+#endif
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
     QString m_hostAPI;
@@ -92,11 +131,7 @@ private:
     int m_inputDevicesOpened;
     QMutex requestBufferMutex;
     SoundManagerConfig m_config;
-    SoundDevice *m_pErrorDevice;
-#ifdef __PORTAUDIO__
-    bool m_paInitialized;
-    unsigned int m_jackSampleRate;
-#endif
+    SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
 
