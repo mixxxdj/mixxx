@@ -20,7 +20,9 @@
 #ifndef TIMECODER_H
 #define TIMECODER_H
 
+#ifndef _MSC_VER
 #include <stdbool.h>
+#endif
 
 #include "lut.h"
 #include "pitch.h"

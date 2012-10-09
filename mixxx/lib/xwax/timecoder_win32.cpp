@@ -51,7 +51,7 @@
 #define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
 #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
 
-static struct timecode_def timecode_def[] = {
+static struct timecode_def timecodes[] = {
     {
         "serato_2a",
         "Serato 2nd Ed., side A",
@@ -338,7 +338,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
 {
     assert(tc->mon == NULL);
     tc->mon_size = size;
-    tc->mon = malloc(SQ(tc->mon_size));
+    tc->mon = (unsigned char*)malloc(SQ(tc->mon_size));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
