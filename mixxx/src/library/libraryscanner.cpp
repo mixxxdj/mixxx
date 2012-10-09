@@ -218,7 +218,7 @@ void LibraryScanner::run()
     qDebug() << "Recursively scanning library.";
     // Start scanning the library.
     // this will prepare some querys in TrackDAO, this needs be done because
-    // TrackCollection will call TrackDAO::addTracksAdd and this 
+    // TrackCollection will call TrackDAO::addTracksAdd and this
     // function needs the querys
     m_trackDao.addTracksPrepare();
     QStringList verifiedDirectories;

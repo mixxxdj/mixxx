@@ -85,7 +85,12 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     }
     
     timecode_def *tc_def = timecoder_find_definition(timecode);
-    Q_ASSERT(tc_def != NULL);
+    if (tc_def == NULL)
+    {
+        qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
+        timecode = (char*)"serato_2a";
+        tc_def = timecoder_find_definition(timecode);
+    }
 
     double speed = 1.0f;
     if (strVinylSpeed == MIXXX_VINYL_SPEED_45)

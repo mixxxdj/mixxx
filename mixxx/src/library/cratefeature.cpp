@@ -69,6 +69,9 @@ CrateFeature::CrateFeature(QObject* parent,
                                   Qt::AscendingOrder);
     m_crateListTableModel.setFilter("show = 1");
     m_crateListTableModel.select();
+    while (m_crateListTableModel.canFetchMore()) {
+        m_crateListTableModel.fetchMore();
+    }
 
     // construct child model
     TreeItem *rootItem = new TreeItem();
@@ -481,7 +484,11 @@ void CrateFeature::slotExportPlaylist(){
 void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
+    m_crateListTableModel.clear();
     m_crateListTableModel.select();
+    while (m_crateListTableModel.canFetchMore()) {
+        m_crateListTableModel.fetchMore();
+    }
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
     m_crateTableModel.setCrate(crateId);
