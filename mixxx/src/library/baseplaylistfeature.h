@@ -1,7 +1,6 @@
 #ifndef BASEPLAYLISTFEATURE_H
 #define BASEPLAYLISTFEATURE_H
 
-#include <QSqlTableModel>
 #include <QAction>
 
 #include "library/libraryfeature.h"
@@ -13,6 +12,7 @@ class WLibrary;
 class MixxxKeyboard;
 class PlaylistTableModel;
 class TrackCollection;
+class TreeItem;
 
 class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
@@ -53,8 +53,10 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotExportPlaylist();
 
   protected:
-    virtual QModelIndex constructChildModel(int selected_id) = 0;
+    virtual QModelIndex constructChildModel(int selected_id);
     virtual void clearChildModel();
+    virtual void buildPlaylistList() = 0;
+    virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
 
     ConfigObject<ConfigValue>* m_pConfig;
@@ -70,7 +72,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
-    QSqlTableModel m_playlistTableModel;
+    QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
 
