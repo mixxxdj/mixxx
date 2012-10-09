@@ -87,8 +87,6 @@ class MixxxApp : public QMainWindow {
     void slotOptionsRecord(bool toggle);
     /** toogle keyboard on-off */
     void slotOptionsKeyboard(bool toggle);
-    /** toogle full screen mode */
-    void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
     /** shows an about dlg*/
@@ -109,10 +107,12 @@ class MixxxApp : public QMainWindow {
     void slotOptionsMenuShow();
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
-
-    void slotOptionsShowSamplers(bool);
-    void slotOptionsShowVinylControl(bool);
-    void slotOptionsShowMicrophone(bool);
+    /** toogle on-screen widget visibility */
+    void slotViewShowSamplers(bool);
+    void slotViewShowVinylControl(bool);
+    void slotViewShowMicrophone(bool);
+    /** toogle full screen mode */
+    void slotViewFullScreen(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
 
@@ -185,14 +185,15 @@ class MixxxApp : public QMainWindow {
 #endif
     QAction *m_pOptionsRecord;
     QAction *m_pOptionsKeyboard;
-    QAction *m_pOptionsFullScreen;
+
     QAction *m_pOptionsPreferences;
 #ifdef __SHOUTCAST__
     QAction *m_pOptionsShoutcast;
 #endif
-    QAction *m_pOptionsShowSamplers;
-    QAction *m_pOptionsShowVinylControl;
-    QAction *m_pOptionsShowMicrophone;
+    QAction *m_pViewShowSamplers;
+    QAction *m_pViewVinylControl;
+    QAction *m_pViewShowMicrophone;
+    QAction *m_pViewFullScreen;
     QAction *m_pHelpAboutApp;
     QAction *m_pHelpSupport;
     QAction *m_pHelpFeedback;
