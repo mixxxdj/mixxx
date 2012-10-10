@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-10-06 18:26+0000\n"
+"PO-Revision-Date: 2012-10-09 08:18+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-09 04:38+0000\n"
+"X-Launchpad-Export-Date: 2012-10-10 04:40+0000\n"
 "X-Generator: Launchpad (build 16112)\n"
 "Language: de\n"
 
@@ -710,7 +710,7 @@ msgstr ""
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
-msgstr "Offset-Korrektur aktivieren (empfohlen)"
+msgstr "Versatz-Korrektur aktivieren (empfohlen)"
 
 #: DlgBeatsDlg#14
 msgid ""
@@ -1006,7 +1006,7 @@ msgstr "Vinyl-Steuerung"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control (ON/OFF)"
-msgstr "Vinyl-Steuerung umschalten (ON/OFF)"
+msgstr "Vinyl-Steuerung ein-/ausschalten (ON/OFF)"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
@@ -1074,7 +1074,7 @@ msgstr "Länge des aktuellen Loops verdoppeln"
 
 #: DlgControllerLearning#72
 msgid "Toggle slip mode"
-msgstr ""
+msgstr "Slip-Modus ein-/ausschalten"
 
 #: DlgControllerLearning#73
 msgid "Beat-Looping"
@@ -1086,28 +1086,28 @@ msgstr "%1-Beat Loop erzeugen"
 
 #: DlgControllerLearning#75
 msgid "Create temporary %1-beat loop roll"
-msgstr ""
+msgstr "Temporären %1-Beat Loop-Roll erzeugen"
 
 #: DlgControllerLearning#76
 msgid "1/32th"
-msgstr ""
+msgstr "1/32tel"
 
 #: DlgControllerLearning#77
 msgid "1/16th"
-msgstr ""
+msgstr "1/16tel"
 
 #: DlgControllerLearning#78
 msgid "1/8th"
-msgstr ""
+msgstr "1/8tel"
 
 #: DlgControllerLearning#79
 msgid "1/4th"
-msgstr ""
+msgstr "1/4tel"
 
 #: DlgControllerLearning#80
 msgctxt "DlgControllerLearning#80"
 msgid "Library"
-msgstr ""
+msgstr "Bibliothek"
 
 #: DlgControllerLearning#81
 msgid "Switch to the next view (library, playlist..)"
@@ -1156,7 +1156,7 @@ msgstr "Flange-Effekt: Phasenverzögerung"
 #: DlgControllerLearning#92
 msgctxt "DlgControllerLearning#92"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: DlgControllerLearning#93
 msgid "Microphone on/off"
@@ -1660,9 +1660,7 @@ msgstr "Statische EQs (für langsamere CPUs)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
-msgstr ""
-"High Shelf EQ - Mit diesem EQ können Frequenzen ab der eingestellten "
-"Kennfrequenz angehoben bzw. abgesenkt werden."
+msgstr "High Shelf EQ"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
@@ -1682,9 +1680,7 @@ msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
-msgstr ""
-"Low Shelf EQ - Mit diesem EQ werden Frequenzen unterhalb der eingestellten "
-"Frequenz angehoben oder abgesenkt."
+msgstr "Low Shelf EQ"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
@@ -2576,7 +2572,7 @@ msgstr "Beat-Erkennung"
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "BPM Detection"
-msgstr "BPM Erkennung"
+msgstr "BPM-Erkennung"
 
 #: DlgPreferences#11
 msgid "Normalization"
@@ -3946,7 +3942,7 @@ msgstr "Rechtsklick"
 
 #: Tooltips#5
 msgid "Waveform Overview"
-msgstr "Wellenform Übersicht"
+msgstr "Wellenform-Übersicht"
 
 #: Tooltips#6
 msgid "Shows information about the track currently loaded in this channel."
@@ -4264,7 +4260,7 @@ msgstr "Tempo"
 
 #: Tooltips#80
 msgid "BPM Tap"
-msgstr "BPM Tap"
+msgstr "BPM-Tip"
 
 #: Tooltips#81
 msgid "When tapped repeatedly, adjusts the BPM to match the tapped BPM."
@@ -4272,7 +4268,7 @@ msgstr "Passt die BPM der eingetippten BPM an wenn wiederholt getippt wird."
 
 #: Tooltips#82
 msgid "Tempo and BPM Tap"
-msgstr "Tempo und BPM Tap"
+msgstr "Tempo und BPM-Tip"
 
 #: Tooltips#83
 msgid "Show/hide the spinning vinyl section."
@@ -4384,33 +4380,41 @@ msgstr "Sendet das Audiosignal des gewählten Kanals zum Kopfhörerausgang."
 
 #: Tooltips#107
 msgid "Setup a loop over the set number of beats."
-msgstr ""
+msgstr "Richtet einen Loop über die festgelegte Anzahl von Beats ein."
 
 #: Tooltips#108
 msgid "Temporarily setup a rolling loop over the set number of beats."
 msgstr ""
+"Richtet vorübergehend einen Loop-Roll über die festgelegte Anzahl von Beats "
+"ein."
 
 #: Tooltips#109
 msgid ""
 "Playback will resume where the track would have been if it had not entered "
 "the loop."
 msgstr ""
+"Die Wiedergabe wird fortgesetzt wo der Titel gewesen wäre, ohne in den Loop "
+"gegangen zu sein."
 
 #: Tooltips#110
 msgid "Slip Mode"
-msgstr ""
+msgstr "Slip-Modus"
 
 #: Tooltips#111
 msgid ""
 "When active, the playback continues muted in the background during a loop, "
 "reverse, scratch etc."
 msgstr ""
+"Wenn aktiviert, wird die Wiedergabe während eines Loops, Rückwärtslaufes, "
+"Scratches usw. stumm im Hintergrund fortgesetzt."
 
 #: Tooltips#112
 msgid ""
 "Once disabled, the audible playback will resume where the track would have "
 "been."
 msgstr ""
+"Sobald deaktiviert, wird die hörbare Wiedergabe fortgesetzt wo der Titel "
+"gewesen wäre."
 
 #: Tooltips#113
 msgid "Clock"
@@ -4478,7 +4482,7 @@ msgstr "Springt zum Ende des Titels."
 #: Tooltips#127
 msgctxt "Tooltips#127"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronisieren"
 
 #: Tooltips#128
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4532,7 +4536,7 @@ msgstr "Wirft den Titel aus dem Deck."
 #: Tooltips#139
 msgctxt "Tooltips#139"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#140
 msgid "If hotcue is set, jumps to the hotcue."
@@ -6798,22 +6802,3 @@ msgstr "(GL)"
 
 #~ msgid "An unknown error occurred while creating playlist: "
 #~ msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
-
-#~ msgctxt "DlgControllerLearning#74"
-#~ msgid "Library"
-#~ msgstr "Bibliothek"
-
-#~ msgctxt "DlgControllerLearning#86"
-#~ msgid "Microphone"
-#~ msgstr "Mikrofon"
-
-#~ msgid "Setup a loop over X beats."
-#~ msgstr "Setzt einen Loop über X Beats."
-
-#~ msgctxt "Tooltips#121"
-#~ msgid "Synchronize"
-#~ msgstr "Synchronisieren"
-
-#~ msgctxt "Tooltips#133"
-#~ msgid "Hotcue"
-#~ msgstr "Hotcue"

@@ -14,7 +14,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-09 04:38+0000\n"
+"X-Launchpad-Export-Date: 2012-10-10 04:39+0000\n"
 "X-Generator: Launchpad (build 16112)\n"
 
 #: AutoDJFeature#1
@@ -6359,11 +6359,3 @@ msgstr ""
 
 #~ msgid "Adjusts the phase delay of the flange effect"
 #~ msgstr "Opcions del retard de l'efecte robòtic"
-
-#~ msgctxt "DlgControllerLearning#74"
-#~ msgid "Library"
-#~ msgstr "Biblioteca"
-
-#~ msgctxt "DlgControllerLearning#86"
-#~ msgid "Microphone"
-#~ msgstr "Micròfon"
