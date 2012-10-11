@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-09-08 23:53+0000\n"
-"Last-Translator: Henrique Bittancourt Gouveia <Unknown>\n"
+"PO-Revision-Date: 2012-10-11 02:44+0000\n"
+"Last-Translator: Roosewelt Lins Silva <rooseweltl@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 04:42+0000\n"
-"X-Generator: Launchpad (build 16112)\n"
+"X-Launchpad-Export-Date: 2012-10-11 04:37+0000\n"
+"X-Generator: Launchpad (build 16118)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -4594,15 +4594,15 @@ msgstr "Título da faixa"
 
 #: Tooltips#179
 msgid "Displays the title of the loaded track."
-msgstr ""
+msgstr "Exibe o título da faixa carregada."
 
 #: Tooltips#180
 msgid "Track Album"
-msgstr ""
+msgstr "Faixa do álbum"
 
 #: Tooltips#181
 msgid "Displays the album name of the loaded track."
-msgstr ""
+msgstr "Exibe o nome do álbum da faixa carregada."
 
 #: Tooltips#182
 msgid "Track Artist/Title"
@@ -4610,11 +4610,11 @@ msgstr ""
 
 #: Tooltips#183
 msgid "Displays the artist and title of the loaded track."
-msgstr ""
+msgstr "Mostra o artista e título da faixa carregada."
 
 #: Tooltips#184
 msgid "Flanger"
-msgstr ""
+msgstr "Flanger"
 
 #: Tooltips#185
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
@@ -4630,19 +4630,19 @@ msgstr ""
 
 #: Tooltips#188
 msgid "Flanger Depth"
-msgstr ""
+msgstr "Profundidade do Flanger"
 
 #: Tooltips#189
 msgid "Adjusts the intensity of the flange effect (when active)."
-msgstr ""
+msgstr "Ajuste a intensidade do efeito flange (quando ativo)"
 
 #: Tooltips#190
 msgid "Flanger LFO Period"
-msgstr ""
+msgstr "Período flanger LFO"
 
 #: Tooltips#191
 msgid "Adjusts the wavelength of the flange effect (when active)."
-msgstr ""
+msgstr "Ajuste o comprimento da onda do efeito flange (quando ativa)."
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -4664,7 +4664,7 @@ msgstr ""
 
 #: TrackCollection#3
 msgid "Click OK to exit."
-msgstr ""
+msgstr "Clique OK para sair"
 
 #: TrackCollection#4
 msgid "Cannot upgrade database schema"
@@ -4673,14 +4673,15 @@ msgstr "Não pode atualizar o esquema do banco de dados"
 #: TrackCollection#5
 msgid "Unable to upgrade your database schema to version %1"
 msgstr ""
+"Não é possível atualizar o esquema de banco de dados para a versão% 1"
 
 #: TrackCollection#6
 msgid "Your %1 file may be outdated."
-msgstr ""
+msgstr "Seu %1 arquivo pode estar desatualizado."
 
 #: TrackCollection#7
 msgid "Your mixxxdb.sqlite file may be corrupt."
-msgstr "Seu mixxxdb.sqlite pode estar corrompido."
+msgstr "Seu arquivo mixxxdb.sqlite pode estar corrompido."
 
 #: TrackCollection#8
 msgid "Try renaming it and restarting Mixxx."
@@ -4741,11 +4742,11 @@ msgstr "Remover"
 
 #: WTrackTableView#5
 msgid "Hide from Library"
-msgstr ""
+msgstr "Ocultar da Biblioteca"
 
 #: WTrackTableView#6
 msgid "Unhide from Library"
-msgstr ""
+msgstr "Desocultar da Biblioteca"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
@@ -4761,15 +4762,15 @@ msgstr "Abrir com navegador de arquivos"
 
 #: WTrackTableView#10
 msgid "Add to Auto-DJ Queue (bottom)"
-msgstr ""
+msgstr "Adicionar à Fila do Auto-DJ Fila (abaixo)"
 
 #: WTrackTableView#11
 msgid "Add to Auto-DJ Queue (top)"
-msgstr ""
+msgstr "Adicionar à Fila do Auto-DJ (acima)"
 
 #: WTrackTableView#12
 msgid "Reload Track Metadata"
-msgstr "Recarregar Metadata da Faixa"
+msgstr "Recarregar Metadados da Faixa"
 
 #: WTrackTableView#13
 msgid "Reset Play Count"
@@ -4801,7 +4802,7 @@ msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
 msgstr ""
-"Tem certeza que deseja recarregar metadata em uma faixa já carregada? Esta "
+"Tem certeza que deseja recarregar metadados de uma faixa já carregada? Esta "
 "ação pode causar mudanças de volume."
 
 #: WTrackTableViewHeader#1
