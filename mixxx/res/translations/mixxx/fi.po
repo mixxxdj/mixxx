@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-09-02 11:35+0000\n"
-"Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
+"PO-Revision-Date: 2012-10-12 15:02+0000\n"
+"Last-Translator: Eetu Aalto <eetu.aalto@iki.fi>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 04:39+0000\n"
-"X-Generator: Launchpad (build 16112)\n"
+"X-Launchpad-Export-Date: 2012-10-13 04:34+0000\n"
+"X-Generator: Launchpad (build 16137)\n"
 "X-Language: fi_FI\n"
 "X-Source-Language: C\n"
 
@@ -36,17 +36,17 @@ msgstr ""
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Tuo soittolista"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Soittolistan luonti epäonnistui"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Soittolistan luonnissa tapahtui tuntematon virhe: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -113,12 +113,12 @@ msgstr "Soittolistan nimi:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Soittolistan luonti epäonnistui"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Soittolistan luonnissa tapahtui tuntematon virhe: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -234,11 +234,11 @@ msgstr "Kappaletta ei voitu ladata."
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "Lisää pikalinkkejä"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "Poista pikalinkeistä"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -338,7 +338,7 @@ msgstr "Sijainti"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx-kirjasto"
 
 #: BrowseTableModel#17
 msgid ""
@@ -812,7 +812,7 @@ msgstr "Näytesoitin %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr ""
+msgstr "Palauta oletukset"
 
 #: DlgControllerLearning#9
 msgid "Mixer"
@@ -1104,7 +1104,7 @@ msgstr ""
 #: DlgControllerLearning#80
 msgctxt "DlgControllerLearning#80"
 msgid "Library"
-msgstr ""
+msgstr "Kirjasto"
 
 #: DlgControllerLearning#81
 msgid "Switch to the next view (library, playlist..)"
@@ -1153,7 +1153,7 @@ msgstr "Flange-efekti: vaiheviive"
 #: DlgControllerLearning#92
 msgctxt "DlgControllerLearning#92"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofoni"
 
 #: DlgControllerLearning#93
 msgid "Microphone on/off"
@@ -1274,7 +1274,7 @@ msgstr "Oma asetus"
 
 #: DlgPrefController#4
 msgid "No Description"
-msgstr ""
+msgstr "Ei kuvausta"
 
 #: DlgPrefController#5
 msgid "No support available."
@@ -1305,7 +1305,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Kuvaus:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1347,15 +1347,15 @@ msgstr "CDJ-tila"
 #: DlgPrefControls#5
 msgctxt "DlgPrefControls#5"
 msgid "Simple"
-msgstr ""
+msgstr "Yksinkertainen"
 
 #: DlgPrefControls#6
 msgid "On"
-msgstr ""
+msgstr "Käytössä"
 
 #: DlgPrefControls#7
 msgid "Off"
-msgstr ""
+msgstr "Ei käytössä"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -1387,7 +1387,7 @@ msgstr ""
 
 #: DlgPrefControls#15
 msgid "On (only in Library)"
-msgstr ""
+msgstr "Käytössä (vain kirjastossa)"
 
 #: DlgPrefControls#16
 msgid "20%"
@@ -1428,7 +1428,7 @@ msgstr "Ylöspäin säätäminen nostaa nopeutta"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Tiedot"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1597,7 +1597,7 @@ msgstr "Näytettävä herkkyys"
 #: DlgPrefControlsDlg#39
 msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synkronoi"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1639,7 +1639,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Palauta oletukset"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1681,7 +1681,7 @@ msgstr "tekstikenttä2"
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Palauta oletukset"
 
 #: DlgPrefMappableController#1
 msgid "Apply device settings?"
@@ -1902,33 +1902,34 @@ msgstr "Yritä käyttää suhteellisia polkuja soittolistojen viennissä"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Other Librarys"
-msgstr ""
+msgstr "Muut kirjastot"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
-msgstr ""
+msgstr "Näytä Rhythmbox-kirjasto"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Show iTunes Library"
-msgstr ""
+msgstr "Näytä iTunus-kirjasto"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Show Traktor Library"
-msgstr ""
+msgstr "Näytä Traktor-kirjasto"
 
 #: DlgPrefPlaylistDlg#14
 msgid "    You will need to restart Mixxx for this to take effect"
 msgstr ""
+"    Sinun täytyy käynnistää Mixxx uudelleen valitaksesi tämän efektin"
 
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Browse..."
-msgstr ""
+msgstr "Selaa..."
 
 #: DlgPrefPlaylistDlg#16
 msgctxt "DlgPrefPlaylistDlg#16"
 msgid "Library"
-msgstr ""
+msgstr "Kirjasto"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
@@ -1957,7 +1958,7 @@ msgstr ""
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "kbps"
-msgstr ""
+msgstr "kb/s"
 
 #: DlgPrefRecord#2
 msgid "Choose recordings directory"
@@ -2087,7 +2088,7 @@ msgstr "dB"
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Palauta oletukset"
 
 #: DlgPrefShoutcast#1
 msgid "Icecast 2"
