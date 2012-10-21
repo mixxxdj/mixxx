@@ -167,6 +167,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
     Q_UNUSED(e); //ditch unused param warning
 
     QPainter p(this);
+    p.setRenderHint(QPainter::SmoothPixmapTransform);
 
     if (m_pBG) {
         p.drawPixmap(0, 0, *m_pBG);
