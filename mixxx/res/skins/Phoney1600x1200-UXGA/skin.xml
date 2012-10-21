@@ -564,6 +564,32 @@
 	</NumberRate>
 
 	<!--
+	**********************************************
+	Text- Clock display (here displayed in two layers for letterpress effect)
+	**********************************************
+	-->
+	<Time>
+		<TooltipId>time</TooltipId>
+		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #FFFFFF; text-align: right; }
+		</Style>
+		<Pos>1380,10</Pos>
+		<Size>60,20</Size>
+		<ShowSeconds>false</ShowSeconds>
+		<ClockFormat>24</ClockFormat>
+	</Time>
+	<Time>
+		<TooltipId>time</TooltipId>
+		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #333333; text-align: right; }
+		</Style>
+		<Pos>1380,11</Pos>
+		<Size>60,20</Size>
+		<ShowSeconds>false</ShowSeconds>
+		<ClockFormat>24</ClockFormat>
+	</Time>
+
+	<!--
 	############################################################################################
 	############################################################################################
 	Section: Slider
