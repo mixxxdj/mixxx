@@ -165,6 +165,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlSlip(double)),
             Qt::DirectConnection);
+    m_pSlipPosition = new ControlObject(ConfigKey(group, "slip_playposition"));
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
@@ -315,6 +316,17 @@ EngineBuffer::~EngineBuffer()
         EngineControl* pControl = m_engineControls.takeLast();
         delete pControl;
     }
+}
+
+double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
+    double fFractionalPlaypos = 0.0;
+    if (file_length_old != 0.) {
+        fFractionalPlaypos = math_min(absolutePlaypos, file_length_old);
+        fFractionalPlaypos /= file_length_old;
+    } else {
+        fFractionalPlaypos = 0.;
+    }
+    return fFractionalPlaypos;
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -550,10 +562,13 @@ void EngineBuffer::slotControlSlip(double v)
         // TODO(rryan): Should this filepos instead be the RAMAN current
         // position? filepos_play could be out of date.
         m_dSlipPosition = filepos_play;
+        m_pSlipPosition->set(fractionalPlayposFromAbsolute(m_dSlipPosition));
         m_dSlipRate = rate_old;
     } else {
         // TODO(owen) assuming that looping will get cancelled properly
         slotControlSeekAbs(m_dSlipPosition);
+        m_dSlipPosition = 0;
+        m_pSlipPosition->set(0);
     }
 }
 
@@ -594,6 +609,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // Update the slipped position
         if (m_bSlipEnabled) {
             m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
+            m_pSlipPosition->set(fractionalPlayposFromAbsolute(m_dSlipPosition));
         }
 
         // Scratching always disables keylock because keylock sounds terrible
@@ -875,13 +891,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
 
-    double fFractionalPlaypos = 0.0;
-    if (file_length_old!=0.) {
-        fFractionalPlaypos = math_min(filepos_play,file_length_old);
-        fFractionalPlaypos /= file_length_old;
-    } else {
-        fFractionalPlaypos = 0.;
-    }
+    double fFractionalPlaypos = fractionalPlayposFromAbsolute(filepos_play);
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,

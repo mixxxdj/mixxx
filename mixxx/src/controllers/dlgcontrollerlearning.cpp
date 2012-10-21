@@ -8,6 +8,8 @@
 
 #include "controllers/dlgcontrollerlearning.h"
 
+#include "engine/cuecontrol.h"
+
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
         : QDialog(parent),
@@ -110,15 +112,16 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     QString hotcueClear = tr("Clear hotcue %1");
     QString hotcueGoto = tr("Jump to hotcue %1");
     QString hotcueGotoAndStop = tr("Jump to hotcue %1 and stop");
-    for (int i = 1; i <= 4; ++i) {
+    for (int i = 1; i <= NUM_HOT_CUES; ++i) {
+        QMenu* hotcueMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)));
         addDeckAndSamplerControl(QString("hotcue_%1_activate").arg(i),
-                                 hotcueActivate.arg(QString::number(i)), cueMenu);
+                                 hotcueActivate.arg(QString::number(i)), hotcueMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_clear").arg(i),
-                                 hotcueClear.arg(QString::number(i)), cueMenu);
+                                 hotcueClear.arg(QString::number(i)), hotcueMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_goto").arg(i),
-                                 hotcueGoto.arg(QString::number(i)), cueMenu);
+                                 hotcueGoto.arg(QString::number(i)), hotcueMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_gotoandstop").arg(i),
-                                 hotcueGotoAndStop.arg(QString::number(i)), cueMenu);
+                                 hotcueGotoAndStop.arg(QString::number(i)), hotcueMenu);
     }
 
     // Loops

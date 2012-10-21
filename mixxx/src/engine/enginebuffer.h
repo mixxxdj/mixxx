@@ -161,6 +161,8 @@ private:
 
     void ejectTrack();
 
+    double fractionalPlayposFromAbsolute(double absolutePlaypos);
+
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
     QMutex m_engineLock;
@@ -221,7 +223,8 @@ private:
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton, *playSyncButton;
     ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
-    ControlPushButton *m_pSlipButton;
+    ControlPushButton* m_pSlipButton;
+    ControlObject* m_pSlipPosition;
 
     ControlObject *rateEngine;
     ControlObject *visualBpm;
