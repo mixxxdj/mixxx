@@ -2993,7 +2993,7 @@
 				        background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		        </Style>
 		        <ClockFormat>12</ClockFormat>
-		        <Pos>395,25</Pos>
+		        <Pos>440,25</Pos>
 		        <Size>205,21</Size>
 	        </Time>
 			<Knob>
