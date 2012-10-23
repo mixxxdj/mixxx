@@ -138,6 +138,7 @@ EngineMaster::~EngineMaster()
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterRate;
+    delete m_pMasterUnderflowCount;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);

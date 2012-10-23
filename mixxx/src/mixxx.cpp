@@ -618,6 +618,8 @@ MixxxApp::~MixxxApp()
 
    delete m_pKeyboard;
    delete m_pKbdConfigEmpty;
+
+   WaveformWidgetFactory::destroy();
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
