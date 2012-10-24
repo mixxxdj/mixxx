@@ -323,13 +323,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
 
-    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
-        // TODO(bkgood) make this look less dumb by putting channelBase after
-        // index in the AudioOutput() params
-        m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
-    }
-
     // Call inits to invoke all other construction parts
 
     // Intialize default BPM system values
