@@ -11,6 +11,7 @@
 #include "skin/skinparser.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
+#include "proto/skin.pb.h"
 
 class Library;
 class MixxxKeyboard;
@@ -32,6 +33,8 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Legacy support for looking up the scheme list.
     static QList<QString> getSchemeList(QString qSkinPath);
+    // Parse a skin manifest from the provided skin document root.
+    static mixxx::skin::SkinManifest getSkinManifest(QDomElement skinDocument);
     static void freeChannelStrings();
   private:
     static QDomElement openSkin(QString skinPath);
