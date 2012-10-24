@@ -307,10 +307,15 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
                              m_pRecordingManager);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
+#ifdef __VINYLCONTROL__
+    m_pVCManager = new VinylControlManager(this, m_pConfig);
+#else
+    m_pVCManager = NULL;
+#endif
+
     // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
-    m_pPlayerManager->addDeck();
-    m_pPlayerManager->addDeck();
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
+                                         m_pLibrary, m_pVCManager);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
@@ -318,28 +323,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
 
-    // register the engine's outputs
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
-        m_pEngine);
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
-        m_pEngine);
     for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
         // TODO(bkgood) make this look less dumb by putting channelBase after
         // index in the AudioOutput() params
         m_pSoundManager->registerOutput(
             AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
     }
-
-#ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, m_pConfig);
-    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
-        m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
-            m_pVCManager);
-    }
-#else
-    m_pVCManager = NULL;
-#endif
 
     // Call inits to invoke all other construction parts
 
@@ -538,13 +527,6 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete soundmanager " << qTime.elapsed();
     delete m_pSoundManager;
 
-#ifdef __VINYLCONTROL__
-    // VinylControlManager depends on a CO the engine owns
-    // (vinylcontrol_enabled in VinylControlControl)
-    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
-    delete m_pVCManager;
-#endif
-
     // View depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view " << qTime.elapsed();
     delete m_pView;
@@ -558,9 +540,16 @@ MixxxApp::~MixxxApp()
     m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
-    // PlayerManager depends on Engine, Library, and Config
+    // PlayerManager depends on Engine, Library, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
+
+#ifdef __VINYLCONTROL__
+    // VinylControlManager depends on a CO the engine owns
+    // (vinylcontrol_enabled in VinylControlControl)
+    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
+    delete m_pVCManager;
+#endif
 
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
