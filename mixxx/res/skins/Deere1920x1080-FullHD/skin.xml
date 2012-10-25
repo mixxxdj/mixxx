@@ -1,7 +1,7 @@
 	<!--
 	Deere , Skin for Mixxx 1.11.x
 	www.mixxx.org
-	Copyright (C) 2010-2012 jus ; jus@justmail.de
+	Copyright (C) 2010-2012 jus ; s.brandt@mixxx.org
 	This file is part of the "Deere" Skin for Mixxx
 	"Deere" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
@@ -44,6 +44,19 @@
 	############################################################################################
 	############################################################################################
 	-->
+
+	<manifest>
+	<title>Deere1920x1080-FullHD</title>
+	<author>jus</author>
+	<version>1.11.0.9</version>
+	<description>A 2-deck split-waveform skin with 4 samplers.</description>
+	<language>en</language>
+	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+	<attributes>
+	  <attribute config_key="[Master],num_decks">2</attribute>
+	  <attribute config_key="[Master],num_samplers">4</attribute>
+	</attributes>
+	</manifest>
 
 	<!--
 	############################################################################################
@@ -186,6 +199,10 @@
 								<Group>[Sampler1]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -670,6 +687,10 @@
 								<Group>[Sampler2]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -1154,6 +1175,10 @@
 								<Group>[Sampler3]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -1638,6 +1663,10 @@
 								<Group>[Sampler4]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -3551,12 +3580,17 @@
 						<!--<Size>415,119</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
+						<SignalHighColor></SignalHighColor>
+						<SignalMidColor></SignalMidColor>
+						<SignalLowColor></SignalLowColor>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<AxesColor></AxesColor>
+						<Align></Align>
 						<DefaultMark>
 							<Align>top</Align>
 							<Color>#00FF00</Color>
@@ -3676,6 +3710,9 @@
 				<Size>657,43</Size>
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
+				<SignalHighColor></SignalHighColor>
+				<SignalMidColor></SignalMidColor>
+				<SignalLowColor></SignalLowColor>
 				<SignalColor>#0099FF</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -4642,12 +4679,17 @@
 						<!--<Size>413,119</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
+						<SignalHighColor></SignalHighColor>
+						<SignalMidColor></SignalMidColor>
+						<SignalLowColor></SignalLowColor>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<AxesColor></AxesColor>
+						<Align></Align>
 						<DefaultMark>
 							<Align>top</Align>
 							<Color>#00FF00</Color>
@@ -4767,6 +4809,9 @@
 				<Size>656,43</Size>
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
+				<SignalHighColor></SignalHighColor>
+				<SignalMidColor></SignalMidColor>
+				<SignalLowColor></SignalLowColor>
 				<SignalColor>#E17800</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
