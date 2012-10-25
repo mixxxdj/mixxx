@@ -3,6 +3,7 @@
    <info>
       <name>American Audio VMS4</name>
       <author>Anders Gunnarsson &amp; Sean M. Pappalardo</author>
+      <wiki>http://mixxx.org/wiki/doku.php/american_audio_vms4</wiki>
       <description>American Audio VMS4 controller mapping v1.9.2. Requires scripting.</description>
    </info>
    <controller id="American Audio VMS4">
