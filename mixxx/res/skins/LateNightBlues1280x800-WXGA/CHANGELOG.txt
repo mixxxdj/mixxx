@@ -1,6 +1,6 @@
 LateNightBlues , Skin for Mixxx 1.11.x
 www.mixxx.org
-Copyright (C) 2010-2012 jus ; jus@justmail.de
+Copyright (C) 2010-2012 jus ; s.brandt@mixxx.org
 This file is part of the "LateNightBlues" Skin for Mixxx
 "LateNightBlues" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -17,6 +17,10 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.10	(25/10/2012)
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+  and set Mixxx controls on skin load , lp:1017399
+
 v1.11.0.09	(17/10/2012)
 * Feature: Added a clock widget that shows the current time. lp:661439
 * Fix: Add 3rd and 4th button state graphics.

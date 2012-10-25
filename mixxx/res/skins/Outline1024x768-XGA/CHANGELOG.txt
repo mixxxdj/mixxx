@@ -16,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.09	(25/10/2012)
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+  and set Mixxx controls on skin load , lp:1017399
+
 v1.11.0.08	(18/10/2012)
 * Feature: Added controls for sample decks, lp:921174
 * Feature: Added a clock widget that shows the current time. lp:661439
