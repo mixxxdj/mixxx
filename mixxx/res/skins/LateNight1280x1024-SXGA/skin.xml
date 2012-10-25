@@ -1,7 +1,7 @@
 	<!--
 	LateNight , Skin for Mixxx 1.11.x
 	www.mixxx.org
-	Copyright (C) 2010-2012 jus ; jus@justmail.de
+	Copyright (C) 2010-2012 jus ; s.brandt@mixxx.org
 	This file is part of the "LateNight" Skin for Mixxx
 	"LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
@@ -44,6 +44,19 @@
 	############################################################################################
 	############################################################################################
 	-->
+
+	<manifest>
+	<title>LateNight1280x1024-SXGA</title>
+	<author>jus</author>
+	<version>1.11.0.10</version>
+	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
+	<language>en</language>
+	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+	<attributes>
+		<attribute config_key="[Master],num_decks">2</attribute>
+		<attribute config_key="[Master],num_samplers">4</attribute>
+	</attributes>
+	</manifest>
 
 	<!--
 	############################################################################################

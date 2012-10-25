@@ -44,6 +44,19 @@
 	############################################################################################
 	-->
 
+	<manifest>
+	<title>Outline1024x600-Netbook</title>
+	<author>jus</author>
+	<version>1.11.0.9</version>
+	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
+	<language>en</language>
+	<license>GNU General Public License, version 2 or later</license>
+	<attributes>
+		<attribute config_key="[Master],num_decks">2</attribute>
+		<attribute config_key="[Master],num_samplers">4</attribute>
+	</attributes>
+	</manifest>
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -807,7 +820,6 @@
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
-
 		</Children>
 	</WidgetGroup>
 
@@ -3210,7 +3222,6 @@
 		<Size>70,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
-		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel1],visual_bpm</ConfigKey>
 		</Connection>
@@ -3225,7 +3236,6 @@
 		<Size>70,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
-		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],visual_bpm</ConfigKey>
 		</Connection>
