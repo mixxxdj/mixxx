@@ -9,8 +9,10 @@
 #define DLGPREFCONTROLLER_H_
 
 #include <QtGui>
+#include <QHash>
 
 #include "controllers/controllerpreset.h"
+#include "controllers/controllerpresetinfo.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 
@@ -36,6 +38,8 @@ class DlgPrefController : public QWidget {
     void slotLoadPreset(const QString &name);
     // Mark that we need to apply the settings.
     void slotDirty ();
+    // Reload the mappings in the dropdown dialog
+    void enumeratePresets();
 
   signals:
     void deviceStateChanged(DlgPrefController*, bool);
@@ -63,8 +67,10 @@ class DlgPrefController : public QWidget {
 
   private:
     QString presetShortName(const ControllerPresetPointer pPreset) const;
+    QString presetDescription(const ControllerPresetPointer pPreset) const;
+    QString presetForumLink(const ControllerPresetPointer pPreset) const;
+    QString presetWikiLink(const ControllerPresetPointer pPreset) const;
     void savePreset(QString path);
-    void enumeratePresets();
 
     void enableDevice();
     void disableDevice();

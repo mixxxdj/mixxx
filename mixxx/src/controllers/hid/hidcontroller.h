@@ -43,6 +43,8 @@ class HidController : public Controller {
     HidController(const hid_device_info deviceInfo);
     virtual ~HidController();
 
+    virtual QString presetExtension();
+
     virtual ControllerPresetPointer getPreset() const {
         HidControllerPreset* pClone = new HidControllerPreset();
         *pClone = m_preset;
@@ -61,6 +63,10 @@ class HidController : public Controller {
     virtual bool isMappable() const {
         return m_preset.isMappable();
     }
+
+    virtual bool matchPreset(const PresetInfo& preset);
+    virtual bool matchProductInfo(QHash <QString,QString >);
+    virtual void guessDeviceCategory();
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
@@ -90,8 +96,11 @@ class HidController : public Controller {
     int hid_interface_number;
     unsigned short hid_vendor_id;
     unsigned short hid_product_id;
+    unsigned short hid_usage_page;
+    unsigned short hid_usage;
     char* hid_path;
-    wchar_t* hid_serial;
+    wchar_t* hid_serial_raw;
+    QString hid_serial;
     QString hid_manufacturer;
     QString hid_product;
 

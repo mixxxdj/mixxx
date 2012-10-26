@@ -79,18 +79,30 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::receiveBuffer(AudioInput input,
         const short *pBuffer, unsigned int nFrames) {
-    Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
+    if (input.getType() != AudioInput::VINYLCONTROL) {
+        qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
+        return;
+    }
     if (m_proxiesLock.tryLockForRead()) {
-        Q_ASSERT(input.getIndex() < m_proxies.size());
-        VinylControlProxy *pProxy(m_proxies.at(input.getIndex()));
-        Q_ASSERT(pProxy);
+        if (input.getIndex() >= m_proxies.size()) {
+            qDebug() << "WARNING: AudioInput index out of bounds. Ignoring incoming buffer.";
+            return;
+        }
+        VinylControlProxy* pProxy = m_proxies.at(input.getIndex());
+        if (pProxy == NULL) {
+            qDebug() << "WARNING: AudioInput index proxy does not exist. Ignoring incoming buffer.";
+            return;
+        }
         pProxy->AnalyseSamples(pBuffer, nFrames);
         m_proxiesLock.unlock();
     }
 }
 
 void VinylControlManager::onInputConnected(AudioInput input) {
-    Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
+    if (input.getType() != AudioInput::VINYLCONTROL) {
+        qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
+        return;
+    }
     unsigned char index = input.getIndex();
     VinylControlProxy *pNewVC = new VinylControlProxy(m_pConfig,
             kVCProxyGroup.arg(index + 1));
@@ -108,13 +120,18 @@ void VinylControlManager::onInputConnected(AudioInput input) {
 }
 
 void VinylControlManager::onInputDisconnected(AudioInput input) {
-    Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
+    if (input.getType() != AudioInput::VINYLCONTROL) {
+        qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
+        return;
+    }
     m_proxiesLock.lockForWrite();
-    Q_ASSERT(input.getIndex() < m_proxies.size());
-    Q_ASSERT(m_proxies.at(input.getIndex()));
-
-    delete m_proxies.at(input.getIndex());
+    if (input.getIndex() >= m_proxies.size()) {
+        qDebug() << "AudioInput index out of bounds. Ignoring.";
+        return;
+    }
+    VinylControlProxy* pVC = m_proxies.at(input.getIndex());
     m_proxies.replace(input.getIndex(), NULL);
+    delete pVC;
     m_proxiesLock.unlock();
 }
 
@@ -158,7 +175,7 @@ VinylControlProxy* VinylControlManager::getVinylControlProxyForChannel(QString c
     {
         return m_proxies.at(1);
     }
-    
+
     return NULL;
 }
 

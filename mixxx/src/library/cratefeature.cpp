@@ -24,7 +24,6 @@ CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
-          m_crateListTableModel(this, pTrackCollection->getDatabase()),
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
     Q_UNUSED(parent);
@@ -63,13 +62,6 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(&m_crateDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotCrateTableChanged(int)));
 
-
-    m_crateListTableModel.setTable("crates");
-    m_crateListTableModel.setSort(m_crateListTableModel.fieldIndex("name"),
-                                  Qt::AscendingOrder);
-    m_crateListTableModel.setFilter("show = 1");
-    m_crateListTableModel.select();
-
     // construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
@@ -93,28 +85,33 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
-bool CrateFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url)
+bool CrateFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls)
     return false;
 }
 
-bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
-
-    //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
-    //     QUrl::toLocalFile() vs. QUrl::toString() usage.
-    QFileInfo file(url.toLocalFile());
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
+        //     QUrl::toLocalFile() vs. QUrl::toString() usage.
+        files.append(url.toLocalFile());
+    }
 
     // Adds track, does not insert duplicates, handles unremoving logic.
-    int trackId = m_pTrackCollection->getTrackDAO().addTrack(file, true);
-
-    qDebug() << "CrateFeature::dropAcceptChild adding track"
-             << trackId << "to crate" << crateId;
-
-    if (trackId >= 0)
-        return m_crateDao.addTrackToCrate(trackId, crateId);
-    return false;
+    QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    qDebug() << "CrateFeature::dropAcceptChild adding tracks"
+            << trackIds.size() << " to crate "<< crateId;
+    // remove tracks that could not be added
+    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+        if (trackIds.at(trackId) < 0) {
+            trackIds.removeAt(trackId--);
+        }
+    }
+    m_crateDao.addTracksToCrate(trackIds, crateId);
+    return true;
 }
 
 bool CrateFeature::dragMoveAccept(QUrl url) {
@@ -140,6 +137,10 @@ void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit,SIGNAL(anchorClicked(const QUrl)),
+        this,SLOT(htmlLinkClicked(const QUrl))
+    );
     libraryWidget->registerView("CRATEHOME", edit);
 }
 
@@ -149,6 +150,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 
 void CrateFeature::activate() {
     emit(switchToView("CRATEHOME"));
+    emit(restoreSearch(QString())); //disable search on crate home
 }
 
 void CrateFeature::activateChild(const QModelIndex& index) {
@@ -320,6 +322,28 @@ void CrateFeature::slotToggleCrateLock()
     }
 }
 
+void CrateFeature::buildCrateList() {
+    m_crateList.clear();
+    QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
+    crateListTableModel.setTable("crates");
+    crateListTableModel.setSort(crateListTableModel.fieldIndex("name"),
+                                Qt::AscendingOrder);
+    crateListTableModel.setFilter("show = 1");
+    crateListTableModel.select();
+    while (crateListTableModel.canFetchMore()) {
+        crateListTableModel.fetchMore();
+    }
+    int nameColumn = crateListTableModel.record().indexOf("name");
+    int idColumn = crateListTableModel.record().indexOf("id");
+
+    for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
+        int id = crateListTableModel.data(
+            crateListTableModel.index(row, idColumn)).toInt();
+        QString name = crateListTableModel.data(
+            crateListTableModel.index(row, nameColumn)).toString();
+        m_crateList.append(qMakePair(id, name));
+    }
+}
 
 /**
   * Purpose: When inserting or removing playlists,
@@ -328,32 +352,33 @@ void CrateFeature::slotToggleCrateLock()
 */
 QModelIndex CrateFeature::constructChildModel(int selected_id)
 {
+    buildCrateList();
     QList<TreeItem*> data_list;
-    int nameColumn = m_crateListTableModel.record().indexOf("name");
-    int idColumn = m_crateListTableModel.record().indexOf("id");
     int selected_row = -1;
     // Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
 
-    for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
-            QModelIndex ind = m_crateListTableModel.index(row, nameColumn);
-            QString crate_name = m_crateListTableModel.data(ind).toString();
-            ind = m_crateListTableModel.index(row, idColumn);
-            int crate_id = m_crateListTableModel.data(ind).toInt();
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
+         it != m_crateList.end(); ++it, ++row) {
+        int crate_id = it->first;
+        QString crate_name = it->second;
 
-            if (selected_id == crate_id) {
-                // save index for selection
-                selected_row = row;  m_childModel.index(selected_row, 0);
-            }
+        if (selected_id == crate_id) {
+            // save index for selection
+            selected_row = row;
+            m_childModel.index(selected_row, 0);
+        }
 
-            // Create the TreeItem whose parent is the invisible root item
-            TreeItem* item = new TreeItem(crate_name, crate_name, this, root);
-            bool locked = m_crateDao.isCrateLocked(crate_id);
-            item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
-            data_list.append(item);
+        // Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(crate_name, crate_name, this, root);
+        bool locked = m_crateDao.isCrateLocked(crate_id);
+        item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
+        data_list.append(item);
     }
+
     // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(data_list, 0, m_crateListTableModel.rowCount());
+    m_childModel.insertRows(data_list, 0, m_crateList.size());
     if (selected_row == -1) {
         return QModelIndex();
     }
@@ -363,9 +388,9 @@ QModelIndex CrateFeature::constructChildModel(int selected_id)
 /**
   * Clears the child model dynamically
   */
-void CrateFeature::clearChildModel()
-{
-    m_childModel.removeRows(0,m_crateListTableModel.rowCount());
+void CrateFeature::clearChildModel() {
+    m_childModel.removeRows(0, m_crateList.size());
+    m_crateList.clear();
 }
 
 void CrateFeature::slotImportPlaylist()
@@ -471,12 +496,19 @@ void CrateFeature::slotExportPlaylist(){
 void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
-    m_crateListTableModel.select();
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
     m_crateTableModel.setCrate(crateId);
     // Update selection
     emit(featureSelect(this, m_lastRightClickedIndex));
+}
+
+void CrateFeature::htmlLinkClicked(const QUrl & link) {
+    if (QString(link.path())=="create") {
+        slotCreateCrate();
+    } else {
+        qDebug() << "Unknown crate link clicked" << link;
+    }
 }
 
 QString CrateFeature::getRootViewHtml() const {
@@ -486,13 +518,18 @@ QString CrateFeature::getRootViewHtml() const {
     QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
 
     QString html;
+    QString createCrateLink = tr("Create new crate");
     html.append(QString("<h2>%1</h2>").arg(cratesTitle));
     html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(cratesSummary));
     html.append(QString("<p>%1</p>").arg(cratesSummary2));
     html.append(QString("<p>%1</p>").arg(cratesSummary3));
-    html.append("</td><td>");
+    html.append("</td><td rowspan=\"2\">");
     html.append("<img src=\"qrc:/images/library/crates_art.png\">");
+    html.append("</td></tr>");
+    html.append(
+        QString("<tr><td><a href=\"create\">%1</a>").arg(createCrateLink)
+    );
     html.append("</td></tr></table>");
     return html;
 }

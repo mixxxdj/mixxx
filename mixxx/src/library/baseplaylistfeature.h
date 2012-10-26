@@ -1,7 +1,6 @@
 #ifndef BASEPLAYLISTFEATURE_H
 #define BASEPLAYLISTFEATURE_H
 
-#include <QSqlTableModel>
 #include <QAction>
 
 #include "library/libraryfeature.h"
@@ -13,6 +12,7 @@ class WLibrary;
 class MixxxKeyboard;
 class PlaylistTableModel;
 class TrackCollection;
+class TreeItem;
 
 class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
@@ -35,10 +35,12 @@ class BasePlaylistFeature : public LibraryFeature {
   public slots:
     virtual void activate();
     virtual void activateChild(const QModelIndex& index);
-    virtual bool dropAccept(QUrl url);
+    virtual bool dropAccept(QList<QUrl> urls);
     virtual bool dragMoveAccept(QUrl url);
     virtual void onLazyChildExpandation(const QModelIndex& index);
+    virtual void htmlLinkClicked(const QUrl & link);
 
+    virtual void slotPlaylistTableChanged(int playlistId) = 0;
     void slotCreatePlaylist();
 
   protected slots:
@@ -49,11 +51,12 @@ class BasePlaylistFeature : public LibraryFeature {
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
-    virtual void slotPlaylistTableChanged(int playlistId) = 0;
 
   protected:
-    virtual QModelIndex constructChildModel(int selected_id) = 0;
+    virtual QModelIndex constructChildModel(int selected_id);
     virtual void clearChildModel();
+    virtual void buildPlaylistList() = 0;
+    virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
 
     ConfigObject<ConfigValue>* m_pConfig;
@@ -69,7 +72,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
-    QSqlTableModel m_playlistTableModel;
+    QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
 

@@ -215,6 +215,12 @@ void WPushButton::mousePressEvent(QMouseEvent * e)
             m_bPressed = true;
             emit(valueChangedRightDown(1.0f));
             update();
+        } else if (m_iNoStates == 1) {
+            // This is a Pushbutton
+            m_fValue = 1.0f;
+            m_bPressed = true;
+            emit(valueChangedRightDown(1.0f));
+            update();
         }
 
         // Do not allow right-clicks to change button state other than when
@@ -278,6 +284,10 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e)
         // m_fValue due the leak of visual feedback we do not allow a toggle
         // function
         if (m_bRightClickForcePush) {
+            m_bPressed = false;
+            emit(valueChangedRightDown(0.0f));
+            update();
+        } else if (m_iNoStates == 1) {
             m_bPressed = false;
             emit(valueChangedRightDown(0.0f));
             update();

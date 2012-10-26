@@ -52,6 +52,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual void select();
     virtual int getTrackId(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
+    virtual void hideTracks(const QModelIndexList& indices);
 
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,

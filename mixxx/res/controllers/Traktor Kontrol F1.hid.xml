@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="1.11+">
+    <info>
+        <name>Traktor Kontrol F1</name>
+        <author>Ilkka Tuohela</author>
+        <description>HID mapping for Native Instruments Traktor Kontrol F1 Controller</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3810&amp;sid=c1bfe107f8ea6c65bf2294ff51a0920d</forums>
+        <devices>
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1120" usage_page="0x1ff" usage="0x1" interface_number="0x1" />
+        </devices>
+    </info>
+    <controller id="Traktor Kontrol F1">
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file filename="Traktor-Kontrol-F1-scripts.js" functionprefix="KontrolF1"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

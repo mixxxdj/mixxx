@@ -136,14 +136,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     SliderRateRampSensitivity->setEnabled(true);
     SpinBoxRateRampSensitivity->setEnabled(true);
 
-    //
-    // Skin configurations
-    //
-    ComboBoxSkinconf->clear();
-
-    QString qSkinPath(pConfig->getValueString(ConfigKey("[Config]","Path")));
-    QDir dir(qSkinPath.append("skins/"));
-    dir.setFilter(QDir::Dirs);
 
     //
     // Override Playing Track on Track Load
@@ -159,7 +151,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     // Iterate through the available locales and add them to the combobox
     // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
-    QString translationsFolder = m_pConfig->getConfigPath() + "translations/";
+    QString translationsFolder = m_pConfig->getResourcePath() + "translations/";
     QString currentLocale = pConfig->getValueString(ConfigKey("[Config]","Locale"));
 
     QDir translationsDir(translationsFolder);
@@ -214,50 +206,59 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //NOTE: for CueRecall, 0 means ON....
     connect(ComboBoxCueRecall, SIGNAL(activated(int)), this, SLOT(slotSetCueRecall(int)));
 
+    //
+    // Skin configurations
+    //
+    QString warningString = "<img src=\":/images/preferences/ic_preferences_warning.png\") width=16 height=16 />"
+        + tr("The selected skin is bigger than your screen resolution.");
+    warningLabel->setText(warningString);
+
+    ComboBoxSkinconf->clear();
+
+    QDir dir(m_pConfig->getResourcePath() + "skins/");
+    dir.setFilter(QDir::Dirs);
+
+    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
+
     QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
     {
         if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
         {
-            ComboBoxSkinconf->addItem(list.at(i).fileName());
-            if (list.at(i).fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
-                ComboBoxSkinconf->setCurrentIndex(j);
-            ++j;
-        }
-    }
-    // #endif
+            checkSkinResolution(list.at(i).fileName())
+                    ? ComboBoxSkinconf->insertItem(i, QIcon(":/trolltech/styles/commonstyle/images/standardbutton-apply-32.png"), list.at(i).fileName())
+                    : ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
 
-    // Detect small display and prompt user to use small skin.
-    if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
-        int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
-                                       QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
-                                       tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
-                                       QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-        if (ret == QMessageBox::Yes) {
-            pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
-            pConfig->Save();
-            ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
-            qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
-            slotSetSkin(1);
+            if (list.at(i).filePath() == configuredSkinPath) {
+                ComboBoxSkinconf->setCurrentIndex(j);
+            }
+            ++j;
         }
     }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
-
-    slotUpdateSchemes();
-
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
+
+    checkSkinResolution(ComboBoxSkinconf->currentText())
+             ? warningLabel->hide() : warningLabel->show();
+    slotUpdateSchemes();
 
     //
     // Tooltip configuration
     //
     // Set default value in config file, if not present
     if (m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(1));
+        m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(0));
+
+    ComboBoxTooltips->addItem(tr("On"));
+    ComboBoxTooltips->addItem(tr("On (only in Library)"));
+    ComboBoxTooltips->addItem(tr("Off"));
 
     // Update combo box
-    ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()+1)%2);
+    ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()));
+
+    connect(ComboBoxTooltips, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetTooltips(int)));
 
     //
     // Ramping Temporary Rate Change configuration
@@ -275,9 +276,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                 m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
                 );
 
-    connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
-
-    slotUpdateSchemes();
     slotUpdate();
 
     initWaveformControl();
@@ -341,10 +339,10 @@ void DlgPrefControls::slotUpdate()
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    float idx = (10. * deck1RateRange) + 1;
-    if (deck1RateRange == 0.06)
+    double idx = (10. * deck1RateRange) + 1;
+    if (deck1RateRange <= 0.07)
         idx = 0.;
-    if (deck1RateRange == 0.08)
+    else if (deck1RateRange <= 0.09)
         idx = 1.;
 
     ComboBoxRateRange->setCurrentIndex((int)idx);
@@ -419,13 +417,8 @@ void DlgPrefControls::slotSetCueRecall(int)
 
 void DlgPrefControls::slotSetTooltips(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex()+1)%2));
-
-    //This is somewhat confusing, but to disable tooltips in QT4, you need to install an eventFilter
-    //on the QApplication object. That object is located in MixxxApp (mixxx.cpp/h), so that's where
-    //the eventFilter is. The value of the ConfigObject is cached at startup because it's too slow
-    //to refresh it during each Tooltip event (I think), which is why we require a restart.
-    notifyRebootNecessary();
+    m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex())));
+    m_mixxx->setToolTips(ComboBoxTooltips->currentIndex());
 }
 
 void DlgPrefControls::notifyRebootNecessary() {
@@ -445,6 +438,8 @@ void DlgPrefControls::slotSetSkin(int)
 {
     m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
     m_mixxx->rebootMixxxView();
+    checkSkinResolution(ComboBoxSkinconf->currentText())
+            ? warningLabel->hide() : warningLabel->show();
     slotUpdateSchemes();
 }
 
@@ -529,10 +524,13 @@ void DlgPrefControls::slotApply()
 {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
+
     // Write rate range to config file
-    float idx = 10. * deck1RateRange;
-    if (idx==0.8)
+    double idx = (10. * deck1RateRange) + 1;
+    if (deck1RateRange <= 0.07)
         idx = 0.;
+    else if (deck1RateRange <= 0.09)
+        idx = 1.;
 
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
@@ -546,7 +544,6 @@ void DlgPrefControls::slotApply()
 
 void DlgPrefControls::slotSetFrameRate(int frameRate) {
     WaveformWidgetFactory::instance()->setFrameRate(frameRate);
-    WaveformWidgetFactory::instance()->start();
 }
 
 void DlgPrefControls::slotSetWaveformType(int index) {
@@ -578,6 +575,10 @@ void DlgPrefControls::slotSetVisualGainMid(double gain) {
 
 void DlgPrefControls::slotSetVisualGainHigh(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
+}
+
+void DlgPrefControls::slotSetNormalizeOverview( bool normalize) {
+    WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
 }
 
 void DlgPrefControls::onShow() {
@@ -626,6 +627,7 @@ void DlgPrefControls::initWaveformControl()
     lowVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Low));
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
+    normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
 
     for( int i = WaveformWidgetRenderer::s_waveformMinZoom;
          i <= WaveformWidgetRenderer::s_waveformMaxZoom;
@@ -650,5 +652,22 @@ void DlgPrefControls::initWaveformControl()
             this,SLOT(slotSetVisualGainMid(double)));
     connect(highVisualGain,SIGNAL(valueChanged(double)),
             this,SLOT(slotSetVisualGainHigh(double)));
+    connect(normalizeOverviewCheckBox,SIGNAL(toggled(bool)),
+            this,SLOT(slotSetNormalizeOverview(bool)));
 
+}
+
+//Returns TRUE if skin fits to screen resolution, FALSE otherwise
+bool DlgPrefControls::checkSkinResolution(QString skin)
+{
+    int screenWidth = QApplication::desktop()->width();
+    int screenHeight = QApplication::desktop()->height();
+
+    QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
+    QString resName = skin.right(skin.count()-skinName.count());
+    QString res = resName.left(resName.lastIndexOf(QRegExp("\\d"))+1);
+    QString skinWidth = res.left(res.indexOf("x"));
+    QString skinHeight = res.right(res.count()-skinWidth.count()-1);
+
+    return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
 }

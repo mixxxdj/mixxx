@@ -57,6 +57,9 @@ DlgPrepare::DlgPrepare(QWidget* parent,
                               Qt::AscendingOrder);
     m_pCratesTableModel->setFilter("show = 1");
     m_pCratesTableModel->select();
+    while (m_pCratesTableModel->canFetchMore()) {
+      m_pCratesTableModel->fetchMore();
+    }
     TransposeProxyModel* transposeProxy = new TransposeProxyModel(this);
     transposeProxy->setSourceModel(m_pCratesTableModel);
     m_pPrepareCratesTableView->setModel(m_pCratesTableModel);
@@ -88,8 +91,9 @@ DlgPrepare::~DlgPrepare() {
 
 void DlgPrepare::onShow()
 {
-    //Refresh crates
-    //m_pCratesTableModel->select();
+    // Refresh table
+    // There might be new tracks dropped to other views
+    m_pPrepareLibraryTableModel->select();
 }
 
 void DlgPrepare::setup(QDomNode node)

@@ -11,7 +11,7 @@
 
 class SchemaManager {
   public:
-    static bool upgradeToSchemaVersion(ConfigObject<ConfigValue>* config,
+    static int upgradeToSchemaVersion(const QString& schemaFilename,
                                        QSqlDatabase& db, int targetVersion);
   private:
     static bool isBackwardsCompatible(SettingsDAO& settings,

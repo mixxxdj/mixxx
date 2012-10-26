@@ -14,6 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QtDebug>
+
 #include "engine/enginepregain.h"
 #include "controllogpotmeter.h"
 #include "controlpotmeter.h"
@@ -45,6 +47,8 @@ EnginePregain::EnginePregain(const char * group)
     m_bSmoothFade = false;
     m_fClock=0;
     m_fSumClock=0;
+    m_fReplayGain = 0;
+    m_fOldReplayGainCorrection = 1;
 }
 
 EnginePregain::~EnginePregain()
@@ -68,6 +72,9 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
     m_fReplayGainCorrection=1;
+    // TODO(XXX) Why do we do this? Removing it results in clipping at unity
+    // gain so I think it was trying to compensate for some issue when we added
+    // replaygain but even at unity gain (no RG) we are clipping. rryan 5/2012
     fGain = fGain/2;
     if(fReplayGain*fEnableReplayGain != 0)
     {
@@ -111,12 +118,13 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
             m_fSumClock=0;
         }
     }
-    fGain = fGain*m_fReplayGainCorrection;
-    m_pTotalGain->set(fGain);
 
-    // Clamp gain to within [0, 2.0] to prevent insane gains. This can happen
-    // (some corrupt files get really high replaygain values).
-    fGain = math_max(0.0, math_min(2.0, fGain));
+    // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
+    // (some corrupt files get really high replay gain values).
+    // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
+    fGain = fGain * math_max(0.0, math_min(10.0, m_fReplayGainCorrection));
+
+    m_pTotalGain->set(fGain);
 
     //qDebug()<<"Clock"<<(float)clock()/CLOCKS_PER_SEC;
     // SampleUtil deals with aliased buffers and gains of 1 or 0.

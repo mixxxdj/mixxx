@@ -9,7 +9,7 @@
 WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
                                  QWidget* pParent) : QLineEdit(pParent) {
 
-    QString skinpath = pConfig->getConfigPath();
+    QString skinpath = pConfig->getResourcePath();
     m_clearButton = new QToolButton(this);
     QPixmap pixmap(skinpath.append("/skins/cross.png"));
     m_clearButton->setIcon(QIcon(pixmap));
@@ -117,7 +117,17 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     }
 }
 
+// slot
 void WSearchLineEdit::restoreSearch(const QString& text) {
+    if(text.isNull()) {
+        // disable
+        setEnabled(false);
+        blockSignals(true);
+        setText("- - -");
+        blockSignals(false);
+        return;
+    }
+    setEnabled(true);
     qDebug() << "WSearchLineEdit::restoreSearch(" << text << ")";
     blockSignals(true);
     setText(text);
@@ -136,6 +146,7 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
 
 void WSearchLineEdit::slotSetupTimer(const QString& text)
 {
+    Q_UNUSED(text);
     m_searchTimer.stop();
     //300 milliseconds timeout
     m_searchTimer.start(300);

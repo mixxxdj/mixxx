@@ -82,6 +82,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setVisualGain( FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
+    void setOverviewNormalized(bool normalize);
+    int isOverviewNormalized() const { return m_overviewNormalized;}
+
     const std::vector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void destroyWidgets();
 
@@ -130,6 +133,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];
+    bool m_overviewNormalized;
 
     bool m_openGLAvailable;
     QString m_openGLVersion;

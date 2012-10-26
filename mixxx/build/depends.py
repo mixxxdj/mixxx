@@ -8,11 +8,17 @@ import SCons.Script as SCons
 class PortAudio(Dependence):
 
     def configure(self, build, conf):
-        if not conf.CheckLib('portaudio'):
+        libs = ['portaudio']
+        if build.msvcdebug:
+            libs = ['portaudiod','portaudio-debug']
+        if not conf.CheckLib(libs):
             raise Exception('Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files.')
 
         #Turn on PortAudio support in Mixxx
-        build.env.Append(CPPDEFINES = '__PORTAUDIO__');
+        build.env.Append(CPPDEFINES = '__PORTAUDIO__')
+
+        if build.platform_is_windows and build.static_dependencies:
+            conf.CheckLib('advapi32')
 
     def sources(self, build):
         return ['sounddeviceportaudio.cpp']
@@ -20,13 +26,31 @@ class PortAudio(Dependence):
 class PortMIDI(Dependence):
 
     def configure(self, build, conf):
-        #Check for PortTime
-        if not conf.CheckLib(['porttime', 'libporttime']) and \
-                not conf.CheckHeader(['porttime.h']):
+        # Check for PortTime
+        libs = ['porttime', 'libporttime']
+        headers = ['porttime.h']
+        if build.msvcdebug:
+            libs = ['porttimed', 'porttime-debug']
+
+        # Depending on the library configuration PortTime might be statically
+        # linked with PortMidi. We treat either presence of the lib or the
+        # header as success.
+        if not conf.CheckLib(libs) and not conf.CheckHeader(headers):
             raise Exception("Did not find PortTime or its development headers.")
-        if not conf.CheckLib(['portmidi', 'libportmidi']) and \
-                not conf.CheckHeader(['portmidi.h']):
-            raise Exception('Did not find PortMidi or its development headers.')
+
+        # Check for PortMidi
+        libs = ['portmidi', 'libportmidi']
+        headers = ['portmidi.h']
+        if build.platform_is_windows:
+            # We have this special branch here because on Windows we might want
+            # to link PortMidi statically which we don't want to do on other
+            # platforms.
+            if build.msvcdebug:
+                libs = ['portmidi_sd', 'portmidi_s-debug', 'portmidid', 'portmidi-debug']
+            else:
+                libs = ['portmidi_s','portmidi', 'libportmidi']
+        if not conf.CheckLib(libs) or not conf.CheckHeader(headers):
+            raise Exception("Did not find PortMidi or its development headers.")
 
     def sources(self, build):
         return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
@@ -40,12 +64,12 @@ class OpenGL(Dependence):
             not conf.CheckLib('opengl32') and
             not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and
             not conf.CheckCHeader('GL/gl.h')):
-            raise Exception('Did not find OpenGL development files, exiting!')
+            raise Exception('Did not find OpenGL development files')
 
         if (not conf.CheckLib('GLU') and
             not conf.CheckLib('glu32') and
             not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h')):
-            raise Exception('Did not find GLU development files, exiting!')
+            raise Exception('Did not find GLU development files')
 
         if build.platform_is_osx:
             build.env.Append(CPPPATH='/Library/Frameworks/OpenGL.framework/Headers/')
@@ -61,15 +85,33 @@ class OggVorbis(Dependence):
 #            if not conf.CheckLib('vorbisfile_static'):
 #                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
 #        else:
-        if not conf.CheckLib(['libvorbisfile', 'vorbisfile']):
+        libs = ['libvorbisfile', 'vorbisfile']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libvorbisfile_static-debug','vorbisfile_static-debug','vorbisfile-debug','libvorbisfile-debug']
+            else:
+                libs = ['libvorbisfile', 'vorbisfile', 'libvorbisfile_static', 'vorbisfile_static']
+        if not conf.CheckLib(libs):
             Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
-                'or the libvorbisfile development headers.')
+                      'or the libvorbisfile development headers.')
 
-        if not conf.CheckLib(['libvorbis', 'vorbis']):
-            raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
+        libs = ['libvorbis', 'vorbis']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libvorbis_static-debug','vorbis_static-debug','libvorbis-debug','vorbis-debug']
+            else:
+                libs = ['libvorbis', 'vorbis', 'libvorbis_static', 'vorbis_static']
+        if not conf.CheckLib(libs):
+            raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbis development headers.')
 
-        if not conf.CheckLib(['libogg', 'ogg']):
-            raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!')
+        libs = ['libogg', 'ogg']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libogg_static-debug','ogg_static-debug','ogg-debug','libogg-debug']
+            else:
+                libs = ['libogg', 'ogg', 'libogg_static', 'ogg_static']
+        if not conf.CheckLib(libs):
+            raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers')
 
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
@@ -78,9 +120,10 @@ class OggVorbis(Dependence):
 class SndFile(Dependence):
 
     def configure(self, build, conf):
-        #if not conf.CheckLibWithHeader(['sndfile', 'libsndfile'], 'sndfile.h', 'C'):
-        if not conf.CheckLib(['sndfile', 'libsndfile']):
-            raise Exception("Did not find libsndfile or it\'s development headers, exiting!")
+        #if not conf.CheckLibWithHeader(['sndfile', 'libsndfile', 'libsndfile-1'], 'sndfile.h', 'C'):
+        # TODO: check for debug version on Windows when one is available
+        if not conf.CheckLib(['sndfile', 'libsndfile', 'libsndfile-1']):
+            raise Exception("Did not find libsndfile or it\'s development headers")
         build.env.Append(CPPDEFINES = '__SNDFILE__')
 
     def sources(self, build):
@@ -89,10 +132,18 @@ class SndFile(Dependence):
 class FLAC(Dependence):
     def configure(self, build, conf):
         if not conf.CheckHeader('FLAC/stream_decoder.h'):
-            raise Exception('Did not find libFLAC development headers, exiting!')
-        elif not conf.CheckLib(['libFLAC', 'FLAC']):
-            raise Exception('Did not find libFLAC development libraries, exiting!')
-        return
+            raise Exception('Did not find libFLAC development headers')
+        libs = ['libFLAC', 'FLAC']
+        if build.platform_is_windows:
+            if build.msvcdebug:
+                libs = ['libFLAC-debug', 'FLAC-debug', 'libFLAC_static-debug', 'FLAC_static-debug']
+            else:
+                libs = ['libFLAC', 'FLAC', 'libFLAC_static', 'FLAC_static']
+        if not conf.CheckLib(libs):
+            raise Exception('Did not find libFLAC development libraries')
+
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'FLAC__NO_DLL')
 
     def sources(self, build):
         return ['soundsourceflac.cpp',]
@@ -103,6 +154,14 @@ class Qt(Dependence):
                       'osx': '/Library/Frameworks',
                       'windows': 'C:\\qt\\4.6.0'}
 
+    @staticmethod
+    def find_framework_path(qtdir):
+        for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
+            core = os.path.join(d,'QtCore.framework')
+            if os.path.isdir(core):
+                return d
+        return None
+
     def satisfy(self):
         pass
 
@@ -111,78 +170,118 @@ class Qt(Dependence):
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
 
+        # TODO(XXX) what is with the slightly differing modules used for each
+        # platform here? Document the differences and make them all
+        # programmatically driven from one list instead of hard-coded multiple
+        # times.
+
+        qt_modules = [
+            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
+            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtWebKit',
+            'QtNetwork'
+            #'QtUiTools', #'QtDesigner',
+        ]
+
         # Enable Qt include paths
         if build.platform_is_linux:
             if not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
 
-            #Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
             #(This hopefully respects our qtdir=blah flag while linking now.)
-            build.env.EnableQt4Modules(['QtCore',
-                                        'QtGui',
-                                        'QtOpenGL',
-                                        'QtXml',
-                                        'QtSvg',
-                                        'QtSql',
-                                        'QtScript',
-                                        'QtXmlPatterns',
-                                        'QtWebKit'
-                                        #'QtUiTools',
-                                        #'QtDesigner',
-                                        ],
-                                       debug=False)
+            build.env.EnableQt4Modules(qt_modules,debug=False)
+
         elif build.platform_is_osx:
-            build.env.Append(LINKFLAGS = '-framework QtCore -framework QtOpenGL -framework QtGui -framework QtSql -framework QtXml -framework QtXmlPatterns  -framework QtNetwork -framework QtSql -framework QtScript -framework QtWebKit')
-            build.env.Append(CPPPATH = ['/Library/Frameworks/QtCore.framework/Headers/',
-                                        '/Library/Frameworks/QtOpenGL.framework/Headers/',
-                                        '/Library/Frameworks/QtGui.framework/Headers/',
-                                        '/Library/Frameworks/QtXml.framework/Headers/',
-                                        '/Library/Frameworks/QtNetwork.framework/Headers/',
-                                        '/Library/Frameworks/QtSql.framework/Headers/',
-                                        '/Library/Frameworks/QtWebKit.framework/Headers/',
-                                        '/Library/Frameworks/QtScript.framework/Headers/'])
+            qtdir = build.env['QTDIR']
+            build.env.Append(
+                LINKFLAGS=' '.join('-framework %s' % m for m in qt_modules)
+            )
+            framework_path = Qt.find_framework_path(qtdir)
+            if not framework_path:
+                raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
+            # Necessary for raw includes of headers like #include <qobject.h>
+            build.env.Append(CPPPATH = [os.path.join(framework_path, '%s.framework' % m, 'Headers')
+                                        for m in qt_modules])
+            # Framework path needs to be altered for CCFLAGS as well since a
+            # header include of QtCore/QObject.h looks for a QtCore.framework on
+            # the search path and a QObject.h in QtCore.framework/Headers.
+            build.env.Append(CCFLAGS = ['-F%s' % os.path.join(framework_path)])
+            build.env.Append(LINKFLAGS = ['-F%s' % os.path.join(framework_path)])
 
         # Setup Qt library includes for non-OSX
         if build.platform_is_linux or build.platform_is_bsd:
-            build.env.Append(LIBS = 'QtXml')
-            build.env.Append(LIBS = 'QtGui')
             build.env.Append(LIBS = 'QtCore')
-            build.env.Append(LIBS = 'QtNetwork')
+            build.env.Append(LIBS = 'QtGui')
             build.env.Append(LIBS = 'QtOpenGL')
+            build.env.Append(LIBS = 'QtXml')
             build.env.Append(LIBS = 'QtWebKit')
+            build.env.Append(LIBS = 'QtNetwork')
+
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
-            build.env.Append(LIBS = 'QtXml4')
-            build.env.Append(LIBS = 'QtXmlPatterns4')
-            build.env.Append(LIBS = 'QtSql4')
-            build.env.Append(LIBS = 'QtGui4')
-            build.env.Append(LIBS = 'QtCore4')
-            build.env.Append(LIBS = 'QtScript4')
-            build.env.Append(LIBS = 'QtWebKit4')
-            build.env.Append(LIBS = 'QtNetwork4')
-            build.env.Append(LIBS = 'QtOpenGL4')
+            # Since we use WebKit, that's only available dynamically
+            qt_libs = ['QtCore4',
+                       'QtGui4',
+                       'QtOpenGL4',
+                       'QtXml4',
+                       'QtWebKit4',
+                       'QtNetwork4',
+                       'QtXmlPatterns4',
+                       'QtSql4',
+                       'QtScript4',]
+
+            # Use the debug versions of the libs if we are building in debug mode.
+            if build.msvcdebug:
+                qt_libs = [lib.replace('4', 'd4') for lib in qt_libs]
+            build.env.Append(LIBS=qt_libs)
+
+            # if build.static_dependencies:
+                # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
+                # # QtCore
+                # build.env.Append(LIBS = 'kernel32')
+                # build.env.Append(LIBS = 'user32') # QtGui, QtOpenGL, libHSS1394
+                # build.env.Append(LIBS = 'shell32')
+                # build.env.Append(LIBS = 'uuid')
+                # build.env.Append(LIBS = 'ole32') # QtGui,
+                # build.env.Append(LIBS = 'advapi32') # QtGui, portaudio, portmidi
+                # build.env.Append(LIBS = 'ws2_32')   # QtGui, QtNetwork, libshout
+                # # QtGui
+                # build.env.Append(LIBS = 'gdi32') #QtOpenGL
+                # build.env.Append(LIBS = 'comdlg32')
+                # build.env.Append(LIBS = 'oleaut32')
+                # build.env.Append(LIBS = 'imm32')
+                # build.env.Append(LIBS = 'winmm')
+                # build.env.Append(LIBS = 'winspool')
+                # # QtOpenGL
+                # build.env.Append(LIBS = 'glu32')
+                # build.env.Append(LIBS = 'opengl32')
 
         # Set Qt include paths for non-OSX
         if not build.platform_is_osx:
             build.env.Append(CPPPATH=['$QTDIR/include/QtCore',
                                       '$QTDIR/include/QtGui',
-                                      '$QTDIR/include/QtXml',
-                                      '$QTDIR/include/QtNetwork',
-                                      '$QTDIR/include/QtScript',
-                                      '$QTDIR/include/QtSql',
                                       '$QTDIR/include/QtOpenGL',
+                                      '$QTDIR/include/QtXml',
                                       '$QTDIR/include/QtWebKit',
+                                      '$QTDIR/include/QtNetwork',
+                                      '$QTDIR/include/QtSql',
+                                      '$QTDIR/include/QtScript',
                                       '$QTDIR/include/Qt'])
 
         # Set the rpath for linux/bsd/osx.
-        # This is not support on OS X before the 10.5 SDK.
+        # This is not supported on OS X before the 10.5 SDK.
         using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
         compiling_on_104 = False
         if build.platform_is_osx:
             compiling_on_104 = (os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
-            build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
+            qtdir = build.env['QTDIR']
+            # TODO(XXX) should we use find_framework_path here or keep lib
+            # hardcoded?
+            framework_path = os.path.join(qtdir, 'lib')
+            if os.path.isdir(framework_path):
+                build.env.Append(LINKFLAGS = "-Wl,-rpath," + framework_path)
+                build.env.Append(LINKFLAGS = "-L," + framework_path)
 
         #QtSQLite DLL
         if build.platform_is_windows:
@@ -214,7 +313,7 @@ class FidLib(Dependence):
 class ReplayGain(Dependence):
 
     def sources(self, build):
-        return ["#lib/replaygain/replaygain_analysis.c"]
+        return ["#lib/replaygain/replaygain.cpp"]
 
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/replaygain")
@@ -268,7 +367,10 @@ class SoundTouch(Dependence):
 
 class TagLib(Dependence):
     def configure(self, build, conf):
-        if not conf.CheckLib('tag'):
+        libs = ['tag']
+        if build.msvcdebug:
+            libs = ['tag-debug']
+        if not conf.CheckLib(libs):
             raise Exception("Could not find libtag or its development headers.")
 
         # Karmic seems to have an issue with mp4tag.h where they don't include
@@ -277,9 +379,15 @@ class TagLib(Dependence):
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
 
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'TAGLIB_STATIC')
+
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
-        if not conf.CheckLib(['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']):
+        libs = ['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']
+        if build.msvcdebug:
+            libs = ['libprotobuf-lite-debug','protobuf-lite-debug','libprotobuf-debug','protobuf-debug']
+        if not conf.CheckLib(libs):
             raise Exception("Could not find libprotobuf or its development headers.")
 
 class MixxxCore(Feature):
@@ -374,6 +482,7 @@ class MixxxCore(Feature):
                    "controllers/controllerlearningeventfilter.cpp",
                    "controllers/controllermanager.cpp",
                    "controllers/controllerpresetfilehandler.cpp",
+                   "controllers/controllerpresetinfo.cpp",
                    "controllers/midi/midicontroller.cpp",
                    "controllers/midi/midicontrollerpresetfilehandler.cpp",
                    "controllers/midi/midienumerator.cpp",
@@ -433,6 +542,7 @@ class MixxxCore(Feature):
                    "library/searchqueryparser.cpp",
                    "library/preparelibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
+                   "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 
                    "library/playlisttablemodel.cpp",
@@ -521,20 +631,30 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformrenderbeat.cpp",
                    "waveform/renderers/waveformrendererendoftrack.cpp",
                    "waveform/renderers/waveformrendererpreroll.cpp",
+
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
-                   "waveform/renderers/glslwaveformrenderersignal.cpp",
-                   "waveform/renderers/waveformsignalcolors.cpp",
                    "waveform/renderers/glwaveformrenderersimplesignal.cpp",
+                   "waveform/renderers/glslwaveformrenderersignal.cpp",
+
+                   "waveform/renderers/waveformsignalcolors.cpp",
+
+                   "waveform/renderers/waveformrenderersignalbase.cpp",
                    "waveform/renderers/waveformmark.cpp",
+                   "waveform/renderers/waveformmarkset.cpp",
                    "waveform/renderers/waveformmarkrange.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
-                   "waveform/widgets/glwaveformwidget.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
                    "waveform/widgets/softwarewaveformwidget.cpp",
-                   "waveform/widgets/glslwaveformwidget.cpp",
+                   "waveform/widgets/qtwaveformwidget.cpp",
+                   "waveform/widgets/qtsimplewaveformwidget.cpp",
+                   "waveform/widgets/glwaveformwidget.cpp",
                    "waveform/widgets/glsimplewaveformwidget.cpp",
+
+                   "waveform/widgets/glslwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
@@ -572,6 +692,7 @@ class MixxxCore(Feature):
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
+                   "util/sleepableqthread.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)
@@ -696,16 +817,19 @@ class MixxxCore(Feature):
 
         elif build.platform_is_osx:
             #Stuff you may have compiled by hand
-            build.env.Append(LIBPATH = ['/usr/local/lib'])
-            build.env.Append(CPPPATH = ['/usr/local/include'])
+            if os.path.isdir('/usr/local/include'):
+                build.env.Append(LIBPATH = ['/usr/local/lib'])
+                build.env.Append(CPPPATH = ['/usr/local/include'])
 
             #Non-standard libpaths for fink and certain (most?) darwin ports
-            build.env.Append(LIBPATH = ['/sw/lib'])
-            build.env.Append(CPPPATH = ['/sw/include'])
+            if os.path.isdir('/sw/include'):
+                build.env.Append(LIBPATH = ['/sw/lib'])
+                build.env.Append(CPPPATH = ['/sw/include'])
 
             #Non-standard libpaths for darwin ports
-            build.env.Append(LIBPATH = ['/opt/local/lib'])
-            build.env.Append(CPPPATH = ['/opt/local/include'])
+            if os.path.isdir('/opt/local/include'):
+                build.env.Append(LIBPATH = ['/opt/local/lib'])
+                build.env.Append(CPPPATH = ['/opt/local/include'])
 
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
@@ -770,9 +894,11 @@ class MixxxCore(Feature):
         after the Configure checks run."""
         if build.platform_is_windows:
             if build.toolchain_is_msvs:
-                build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                              '/nodefaultlib:LIBCMTd.lib',
-                                              '/entry:mainCRTStartup'])
+                if not build.static_dependencies or build.msvcdebug:
+                    build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                                  '/nodefaultlib:LIBCMTd.lib'])
+
+                build.env.Append(LINKFLAGS = '/entry:mainCRTStartup')
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
                 build.env.Append(LINKFLAGS = '/manifest') #Force MSVS to generate a manifest (MSVC2010)

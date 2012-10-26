@@ -36,7 +36,7 @@ class PortMidiController : public MidiController {
   private slots:
     virtual int open();
     virtual int close();
-    virtual void poll();
+    virtual bool poll();
 
   private:
     void send(unsigned int word);
@@ -60,7 +60,6 @@ class PortMidiController : public MidiController {
     unsigned char m_cReceiveMsg[1024];
     int m_cReceiveMsg_index;
     bool m_bInSysex;
-    bool m_bEndSysex;
 };
 
 #endif

@@ -52,19 +52,19 @@ void ControlPushButton::setValueFromMidi(MidiOpCode o, double v) {
 
     //qDebug() << o << v;
 
-    // This block makes push-buttons act as toggle buttons.
+    // This block makes push-buttons act as power window buttons.
     if (m_buttonMode == POWERWINDOW && m_iNoStates == 2) {
-         if (o == MIDI_NOTE_ON) {
-             if (v > 0.) {
-                 m_dValue = !m_dValue;
-                 m_pushTimer.setSingleShot(true);
-                 m_pushTimer.start(kPowerWindowTimeMillis);
-             }
-         } else if (o == MIDI_NOTE_OFF) {
-             if (!m_pushTimer.isActive()) {
-                 m_dValue = 0.0;
-             }
-         }
+        if (o == MIDI_NOTE_ON) {
+            if (v > 0.) {
+                m_dValue = !m_dValue;
+                m_pushTimer.setSingleShot(true);
+                m_pushTimer.start(kPowerWindowTimeMillis);
+            }
+        } else if (o == MIDI_NOTE_OFF) {
+            if (!m_pushTimer.isActive()) {
+                m_dValue = 0.0;
+            }
+        }
     } else if (m_buttonMode == TOGGLE) {
         // This block makes push-buttons act as toggle buttons.
         if (m_iNoStates > 2) { //multistate button
@@ -82,7 +82,7 @@ void ControlPushButton::setValueFromMidi(MidiOpCode o, double v) {
         }
     } else { //Not a toggle button (trigger only when button pushed)
         if (o == MIDI_NOTE_ON) {
-            m_dValue = v;
+            m_dValue = !m_dValue;
         } else if (o == MIDI_NOTE_OFF) {
             m_dValue = 0.0;
         }

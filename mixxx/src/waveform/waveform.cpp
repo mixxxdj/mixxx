@@ -8,6 +8,7 @@ using namespace mixxx::track;
 
 Waveform::Waveform(const QByteArray data)
         : m_id(-1),
+          m_bDirty(true),
           m_numChannels(2),
           m_dataSize(0),
           m_audioSamplesPerVisualSample(0),
@@ -34,10 +35,21 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::FilteredSignal* filtered = waveform.mutable_signal_filtered();
     // TODO(rryan) get the actual cutoff values from analyserwaveform.cpp so
     // that if they change we don't have to remember to update these.
-    filtered->set_low_cutoff_frequency(200);
-    filtered->set_mid_low_cutoff_frequency(200);
-    filtered->set_mid_high_cutoff_frequency(2000);
-    filtered->set_high_cutoff_frequency(2000);
+
+    // Frequency cutoffs for butterworth filters:
+    // filtered->set_low_cutoff_frequency(200);
+    // filtered->set_mid_low_cutoff_frequency(200);
+    // filtered->set_mid_high_cutoff_frequency(2000);
+    // filtered->set_high_cutoff_frequency(2000);
+
+    // Frequency cutoff for bessel_lowpass4
+    filtered->set_low_cutoff_frequency(600);
+    // Frequency cutoff for bessel_bandpass
+    filtered->set_mid_low_cutoff_frequency(600);
+    filtered->set_mid_high_cutoff_frequency(4000);
+    // Frequency cutoff for bessel_highpass4
+    filtered->set_high_cutoff_frequency(4000);
+
     io::Waveform::Signal* low = filtered->mutable_low();
     io::Waveform::Signal* mid = filtered->mutable_mid();
     io::Waveform::Signal* high = filtered->mutable_high();
@@ -133,6 +145,7 @@ void Waveform::readByteArray(const QByteArray data) {
         m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
     }
     m_completion = m_dataSize;
+    m_bDirty = false;
 }
 
 void Waveform::reset() {
@@ -143,34 +156,39 @@ void Waveform::reset() {
     m_visualSampleRate = 0;
     m_audioVisualRatio = 0;
     m_data.clear();
+    m_bDirty = true;
 }
 
-void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
+void Waveform::computeBestVisualSampleRate(int audioSampleRate, double desiredVisualSampleRate) {
     m_audioSamplesPerVisualSample = std::floor((double)audioSampleRate / desiredVisualSampleRate);
-    const double actualVisualSamplingRate = (double)audioSampleRate / (double)(m_audioSamplesPerVisualSample);
-
+    const double actualVisualSamplingRate = (double)audioSampleRate /
+            (double)(m_audioSamplesPerVisualSample);
     m_visualSampleRate = actualVisualSamplingRate;
     m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
 }
 
 void Waveform::allocateForAudioSamples(int audioSamples) {
-    double actualSize = audioSamples / m_audioSamplesPerVisualSample;
+    double actualSize = m_audioSamplesPerVisualSample > 0 ?
+            audioSamples / m_audioSamplesPerVisualSample : 0;
     int numberOfVisualSamples = static_cast<int>(actualSize) + 1;
     numberOfVisualSamples += numberOfVisualSamples%2;
     assign(numberOfVisualSamples, 0);
     setCompletion(0);
+    m_bDirty = true;
 }
 
 void Waveform::resize(int size) {
     m_dataSize = size;
     int textureSize = computeTextureSize(size);
     m_data.resize(textureSize);
+    m_bDirty = true;
 }
 
 void Waveform::assign(int size, int value) {
     m_dataSize = size;
     int textureSize = computeTextureSize(size);
     m_data.assign(textureSize, value);
+    m_bDirty = true;
 }
 
 int Waveform::computeTextureSize(int size) {

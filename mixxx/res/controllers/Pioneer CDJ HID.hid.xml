@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="1.11+">
+    <info>
+        <name>Pioneer CDJ HID</name>
+        <author>Ilkka Tuohela</author>
+        <description>HID mapping for Pioneer CDJ players</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3877</forums>
+ a       <devices>
+            <!-- CDJ-850 -->
+            <product protocol="hid" vendor_id="0x8e4" product_id="0x157" usage_page="0xffa0" usage="0x1" interface_number="0x1" />
+            <!-- CDJ-900 -->
+            <product protocol="hid" vendor_id="0x8e4" product_id="0x14b" usage_page="0xffa0" usage="0x1" interface_number="0x1" />
+            <!-- CDJ-2000-->
+            <product protocol="hid" vendor_id="0x8e4" product_id="0x14a" usage_page="0xffa0" usage="0x1" interface_number="0x1" />
+        </devices>
+    </info>
+    <controller id="Pioneer CDJ HID">
+
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file filename="Pioneer-CDJ-HID.js" functionprefix="PioneerCDJHID"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

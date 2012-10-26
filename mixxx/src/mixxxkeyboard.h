@@ -45,7 +45,7 @@ public:
 
 private:
     /** Returns a valid QString with modifier keys from a QKeyEvent */
-    QString getKeySeq(QKeyEvent *e);
+    QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
     QList<QPair<int, ConfigKey*> > m_qActiveKeyList;
     /** Pointer to keyboard config object */

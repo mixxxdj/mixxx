@@ -200,6 +200,31 @@ bool AnalysisDao::deleteAnalysis(int analysisId) {
     return true;
 }
 
+void AnalysisDao::deleteAnalysises(QList<int> ids) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+    QSqlQuery query(m_db);
+    query.prepare("SELECT track_analysis.id FROM track_analysis WHERE "
+                  "track_id in (" + idList.join(",")+ ")");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+    while(query.next()){
+        int id = query.value(query.record().indexOf("id")).toInt();
+        QString dataPath = getAnalysisStoragePath().absoluteFilePath(
+                            QString::number(id));
+        qDebug() << dataPath;
+        deleteFile(dataPath);
+    }
+    query.prepare(QString("DELETE FROM track_analysis "
+                          "WHERE track_id in (%1)").arg(idList.join(",")));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+}
+
 bool AnalysisDao::deleteAnalysesForTrack(int trackId) {
     if (trackId == -1) {
         return false;
@@ -280,4 +305,55 @@ bool AnalysisDao::saveDataToFile(QString fileName, QByteArray data) const {
     }
     file.close();
     return true;
+}
+
+void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
+    if (!pTrack) {
+        return;
+    }
+    const int trackId = pTrack->getId();
+    Waveform* pWaveform = pTrack->getWaveform();
+    Waveform* pWaveSummary = pTrack->getWaveformSummary();
+
+    // Don't try to save invalid or non-dirty waveforms.
+    if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
+        !pWaveSummary || pWaveSummary->getDataSize() == 0 || !pWaveSummary->isDirty()) {
+        return;
+    }
+
+    AnalysisDao::AnalysisInfo analysis;
+    analysis.trackId = trackId;
+    if (pWaveform->getId() != -1) {
+        analysis.analysisId = pWaveform->getId();
+    }
+    analysis.type = AnalysisDao::TYPE_WAVEFORM;
+    analysis.description = pWaveform->getDescription();
+    analysis.version = pWaveform->getVersion();
+    analysis.data = pWaveform->toByteArray();
+    bool success = saveAnalysis(&analysis);
+    if (success) {
+        pWaveform->setDirty(false);
+    }
+
+    qDebug() << (success ? "Saved" : "Failed to save")
+                 << "waveform analysis for trackId" << trackId
+                 << "analysisId" << analysis.analysisId;
+
+    if (pWaveSummary->getId() != -1) {
+        analysis.analysisId = pWaveSummary->getId();
+    }
+    // Clear analysisId since we are re-using the AnalysisInfo
+    analysis.analysisId = -1;
+    analysis.type = AnalysisDao::TYPE_WAVESUMMARY;
+    analysis.description = pWaveSummary->getDescription();
+    analysis.version = pWaveSummary->getVersion();
+    analysis.data = pWaveSummary->toByteArray();
+
+    success = saveAnalysis(&analysis);
+    if (success) {
+        pWaveSummary->setDirty(false);
+    }
+    qDebug() << (success ? "Saved" : "Failed to save")
+             << "waveform summary analysis for trackId" << trackId
+             << "analysisId" << analysis.analysisId;
 }

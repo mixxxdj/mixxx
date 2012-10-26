@@ -17,13 +17,17 @@ class BaseTrackPlayer;
 class Library;
 class EngineMaster;
 class AnalyserQueue;
+class SoundManager;
+class VinylControlManager;
 
 class PlayerManager : public QObject {
     Q_OBJECT
   public:
     PlayerManager(ConfigObject<ConfigValue> *pConfig,
+                  SoundManager* pSoundManager,
                   EngineMaster* pEngine,
-                  Library* pLibrary);
+                  Library* pLibrary,
+                  VinylControlManager* pVCManager);
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
@@ -70,11 +74,16 @@ class PlayerManager : public QObject {
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
     void slotLoadToSampler(QString location, int samplerNumber);
 
+    void slotNumDecksControlChanged(double v);
+    void slotNumSamplersControlChanged(double v);
+
   private:
     TrackPointer lookupTrack(QString location);
     ConfigObject<ConfigValue>* m_pConfig;
+    SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;
     Library* m_pLibrary;
+    VinylControlManager* m_pVCManager;
     AnalyserQueue* m_pAnalyserQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;

@@ -46,11 +46,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "TRAKTOR_SCANNER");
-    m_database.setHostName("localhost");
-    m_database.setDatabaseName(MIXXX_DB_PATH);
-    m_database.setUserName("mixxx");
-    m_database.setPassword("mixxx");
+    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -115,9 +111,9 @@ void TraktorFeature::activate() {
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
-    } else {
-        emit(showTrackModel(m_pTraktorTableModel));
     }
+
+    emit(showTrackModel(m_pTraktorTableModel));
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
@@ -134,14 +130,14 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-bool TraktorFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool TraktorFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool TraktorFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool TraktorFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 

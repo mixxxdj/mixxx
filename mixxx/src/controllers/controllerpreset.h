@@ -12,6 +12,7 @@
 #define CONTROLLERPRESET_H
 
 #include <QtCore>
+#include <QHash>
 #include <QSharedPointer>
 
 class ControllerPresetVisitor;
@@ -71,6 +72,22 @@ class ControllerPreset {
         return m_description;
     }
 
+    inline void setForumLink(const QString forumlink) {
+        m_forumlink = forumlink;
+    }
+
+    inline QString forumlink() const {
+        return m_forumlink;
+    }
+
+    inline void setWikiLink(const QString wikilink) {
+        m_wikilink = wikilink;
+    }
+
+    inline QString wikilink() const {
+        return m_wikilink;
+    }
+
     inline void setSchemaVersion(const QString schemaVersion) {
         m_schemaVersion = schemaVersion;
     }
@@ -87,6 +104,10 @@ class ControllerPreset {
         return m_mixxxVersion;
     }
 
+    inline void addProductMatch(QHash<QString,QString> match) {
+        m_productMatches.append(match);
+    }
+
     virtual void accept(ControllerPresetVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
@@ -94,6 +115,8 @@ class ControllerPreset {
     // TODO(XXX) make private
     QList<QString> scriptFileNames;
     QList<QString> scriptFunctionPrefixes;
+    // Optional list of controller device match details
+    QList< QHash<QString,QString> > m_productMatches;
 
   private:
     QString m_deviceId;
@@ -101,6 +124,8 @@ class ControllerPreset {
     QString m_name;
     QString m_author;
     QString m_description;
+    QString m_forumlink;
+    QString m_wikilink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
 };

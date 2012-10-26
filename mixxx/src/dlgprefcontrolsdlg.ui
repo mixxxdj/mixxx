@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>519</width>
-    <height>694</height>
+    <height>728</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,7 +48,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="TextLabel6_2_2_4">
        <property name="enabled">
         <bool>true</bool>
@@ -67,7 +67,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
+     <item row="2" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxSchemeconf">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -80,7 +80,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="TextLabel6_2_2_3">
        <property name="enabled">
         <bool>true</bool>
@@ -99,7 +99,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1" colspan="2">
+     <item row="3" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxPosition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -112,7 +112,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="TextLabel6_2_2_3_2">
        <property name="enabled">
         <bool>true</bool>
@@ -131,7 +131,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1" colspan="2">
+     <item row="4" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxTooltips">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -142,19 +142,9 @@
        <property name="font">
         <font/>
        </property>
-       <item>
-        <property name="text">
-         <string>On</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Off</string>
-        </property>
-       </item>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="TextLabel6">
        <property name="enabled">
         <bool>true</bool>
@@ -173,7 +163,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="2">
+     <item row="5" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -186,7 +176,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="TextLabel6_2">
        <property name="enabled">
         <bool>true</bool>
@@ -205,7 +195,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="2">
+     <item row="6" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateDir">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -218,7 +208,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
         <string>Track load behaviour</string>
@@ -228,10 +218,10 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1" colspan="2">
+     <item row="9" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Cue behaviour</string>
@@ -241,10 +231,10 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="2">
+     <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault"/>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="textLabelCueRecall">
        <property name="text">
         <string>Auto Recall Cue</string>
@@ -254,10 +244,10 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
+     <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueRecall"/>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="textLabelLocale">
        <property name="text">
         <string>Locale</string>
@@ -267,8 +257,18 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale" />
+     <item row="13" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxLocale"/>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLabel" name="warningLabel">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -573,6 +573,25 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <widget class="QLabel" name="waveformTypeLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Display type</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>waveformTypeComboBox</cstring>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="2" colspan="4">
        <widget class="QComboBox" name="waveformTypeComboBox"/>
       </item>
@@ -629,7 +648,7 @@
          <number>1</number>
         </property>
         <property name="minimum">
-         <double>1.000000000000000</double>
+         <double>0.500000000000000</double>
         </property>
         <property name="maximum">
          <double>5.000000000000000</double>
@@ -648,7 +667,7 @@
          <number>1</number>
         </property>
         <property name="minimum">
-         <double>1.000000000000000</double>
+         <double>0.500000000000000</double>
         </property>
         <property name="maximum">
          <double>5.000000000000000</double>
@@ -667,7 +686,7 @@
          <number>1</number>
         </property>
         <property name="minimum">
-         <double>1.000000000000000</double>
+         <double>0.500000000000000</double>
         </property>
         <property name="maximum">
          <double>5.000000000000000</double>
@@ -686,7 +705,7 @@
          <number>1</number>
         </property>
         <property name="minimum">
-         <double>1.000000000000000</double>
+         <double>0.500000000000000</double>
         </property>
         <property name="maximum">
          <double>5.000000000000000</double>
@@ -722,26 +741,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="waveformTypeLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Display type</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>waveformTypeComboBox</cstring>
-        </property>
-       </widget>
+      <item row="4" column="2" colspan="2">
+       <widget class="QComboBox" name="defaultZoomComboBox"/>
       </item>
-      <item row="3" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="defaultZoomLabel">
         <property name="text">
          <string>Default zoom</string>
@@ -754,10 +757,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2" colspan="2">
-       <widget class="QComboBox" name="defaultZoomComboBox"/>
-      </item>
-      <item row="3" column="4" colspan="2">
+      <item row="4" column="4" colspan="2">
        <widget class="QCheckBox" name="synchronizeZoomCheckBox">
         <property name="toolTip">
          <string>Synchronize zoom level across all waveform displays.</string>
@@ -767,7 +767,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="openGlStatusLabel">
         <property name="toolTip">
          <string/>
@@ -780,7 +780,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="2" colspan="4">
+      <item row="5" column="2" colspan="4">
        <widget class="QLabel" name="openGlStatusIcon">
         <property name="toolTip">
          <string>Displays which OpenGL version is supported by the current platform.</string>
@@ -800,10 +800,17 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="5" column="1">
        <widget class="QLabel" name="dummySpacerLabel">
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2" colspan="4">
+       <widget class="QCheckBox" name="normalizeOverviewCheckBox">
+        <property name="text">
+         <string>Normalize Overview</string>
         </property>
        </widget>
       </item>
@@ -823,6 +830,7 @@
   <tabstop>ComboBoxCueRecall</tabstop>
   <tabstop>ComboBoxCueDefault</tabstop>
   <tabstop>ComboBoxAllowTrackLoadToPlayingDeck</tabstop>
+  <tabstop>ComboBoxLocale</tabstop>
   <tabstop>waveformTypeComboBox</tabstop>
   <tabstop>frameRateSlider</tabstop>
   <tabstop>frameRateSpinBox</tabstop>
@@ -830,6 +838,7 @@
   <tabstop>lowVisualGain</tabstop>
   <tabstop>midVisualGain</tabstop>
   <tabstop>highVisualGain</tabstop>
+  <tabstop>normalizeOverviewCheckBox</tabstop>
   <tabstop>defaultZoomComboBox</tabstop>
   <tabstop>synchronizeZoomCheckBox</tabstop>
   <tabstop>spinBoxPermRateLeft</tabstop>

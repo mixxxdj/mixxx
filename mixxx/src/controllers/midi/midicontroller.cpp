@@ -29,7 +29,7 @@ QString MidiController::defaultPreset() {
 }
 
 QString MidiController::presetExtension() {
-    return MIDI_MAPPING_EXTENSION;
+    return MIDI_PRESET_EXTENSION;
 }
 
 void MidiController::visit(const MidiControllerPreset* preset) {
@@ -56,14 +56,19 @@ void MidiController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
+bool MidiController::matchPreset(const PresetInfo& preset) {
+    // Product info mapping not implemented for MIDI devices yet
+    return false;
+}
+
 bool MidiController::savePreset(const QString fileName) const {
     MidiControllerPresetFileHandler handler;
     return handler.save(m_preset, getName(), fileName);
 }
 
-void MidiController::applyPreset(QString configPath) {
+void MidiController::applyPreset(QString resourcePath) {
     // Handles the engine
-    Controller::applyPreset(configPath);
+    Controller::applyPreset(resourcePath);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -290,8 +295,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         args << QScriptValue(value);
         args << QScriptValue(status);
         args << QScriptValue(mc.group());
-
-        pEngine->execute(mc.item(), args);
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
+        pEngine->execute(function, args);
         return;
     }
 
@@ -309,28 +314,57 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     // compute 14-bit number for pitch bend messages
     if (opCode == MIDI_PITCH_BEND) {
-        unsigned int ivalue;
+        int ivalue;
         ivalue = (value << 7) | control;
 
         currMixxxControlValue = p->get();
 
         // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
-        newValue = (ivalue-8192)/8191;
-        // computeValue not done on pitch messages because it all assumes 7-bit numbers
+        if (options.invert) {
+            newValue = 0x2000-ivalue;
+            if (newValue < 0) newValue--;
+        }
+        else {
+            newValue = ivalue-0x2000;
+            if (newValue > 0) newValue++;
+        }
+        // TODO: use getMin() and getMax() to make this divisor work with all COs
+        newValue /= 0x2000; // FIXME: hard-coded for -1.0..1.0
+
+        // computeValue not (yet) done on pitch messages because it all assumes 7-bit numbers
     } else {
         newValue = computeValue(options, currMixxxControlValue, value);
+    }
+
+    // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
+    // mapping is <button> we override the Midi 'status' appropriately.
+    if (options.button || options.sw) {
+        opCode = MIDI_NOTE_ON;
     }
 
     if (options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(p);
-        if (m_st.ignore(p, newValue, true)) {
-            return;
-        }
     }
 
     ControlObject::sync();
-    p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+    if (opCode == MIDI_PITCH_BEND) {
+        // Absolute value is calculated above on Pitch messages (-1..1)
+        if (options.soft_takeover) {
+            if (m_st.ignore(p, newValue, false)) {
+                return;
+            }
+        }
+        p->queueFromThread(newValue);
+    }
+    else {
+        if (options.soft_takeover) {
+            if (m_st.ignore(p, newValue, true)) {
+                return;
+            }
+        }
+        p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+    }
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
@@ -425,7 +459,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 
 void MidiController::receive(QByteArray data) {
     int length = data.size();
-    QString message = getName() + ": [";
+    QString message = QString("%1: %2 bytes: [").arg(getName()).arg(length);
     for (int i = 0; i < length; ++i) {
         message += QString("%1%2").arg(
             QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),
@@ -484,7 +518,8 @@ void MidiController::receive(QByteArray data) {
         if (pEngine == NULL) {
             return;
         }
-        if (!pEngine->execute(mc.item(), data)) {
+        QScriptValue function = pEngine->resolveFunction(mc.item(), true);
+        if (!pEngine->execute(function, data)) {
             qDebug() << "MidiController: Invalid script function" << mc.item();
         }
         return;
@@ -497,3 +532,4 @@ void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, uns
             (((unsigned int)byte1) << 8) | status;
     send(word);
 }
+

@@ -13,15 +13,26 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "engine/enginemaster.h"
+#include "soundmanager.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
+                             SoundManager* pSoundManager,
                              EngineMaster* pEngine,
-                             Library* pLibrary)
+                             Library* pLibrary,
+                             VinylControlManager* pVCManager)
         : m_pConfig(pConfig),
+          m_pSoundManager(pSoundManager),
           m_pEngine(pEngine),
           m_pLibrary(pLibrary),
+          m_pVCManager(pVCManager),
           m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"))),
           m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))) {
+
+    connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumDecksControlChanged(double)));
+    connect(m_pCONumSamplers, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumSamplersControlChanged(double)));
 
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig);
 
@@ -37,6 +48,13 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
     // Redundant
     m_pCONumDecks->set(0);
     m_pCONumSamplers->set(0);
+
+    // register the engine's outputs
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
+        m_pEngine);
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
+        m_pEngine);
+
 }
 
 PlayerManager::~PlayerManager() {
@@ -59,6 +77,36 @@ unsigned int PlayerManager::numSamplers() const {
     return m_samplers.size();
 }
 
+void PlayerManager::slotNumDecksControlChanged(double v) {
+    // First off, undo any changes to the control.
+    m_pCONumDecks->set(m_decks.size());
+
+    int num = v;
+    if (num < m_decks.size()) {
+        qDebug() << "Ignoring request to reduce the number of decks to" << num;
+        return;
+    }
+
+    while (m_decks.size() < num) {
+        addDeck();
+    }
+}
+
+void PlayerManager::slotNumSamplersControlChanged(double v) {
+    // First off, undo any changes to the control.
+    m_pCONumSamplers->set(m_samplers.size());
+
+    int num = v;
+    if (num < m_samplers.size()) {
+        qDebug() << "Ignoring request to reduce the number of samplers to" << num;
+        return;
+    }
+
+    while (m_samplers.size() < num) {
+        addSampler();
+    }
+}
+
 Deck* PlayerManager::addDeck() {
     Deck* pDeck;
     QString group = groupForDeck(numDecks());
@@ -79,6 +127,17 @@ Deck* PlayerManager::addDeck() {
     m_players[group] = pDeck;
     m_decks.append(pDeck);
     m_pCONumDecks->add(1);
+
+    // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
+    m_pSoundManager->registerOutput(
+        AudioOutput(AudioOutput::DECK, 0, number-1), m_pEngine);
+
+    // If vinyl control manager exists, then register a VC input with
+    // SoundManager.
+    if (m_pVCManager) {
+        m_pSoundManager->registerInput(
+            AudioInput(AudioInput::VINYLCONTROL, 0, number-1), m_pVCManager);
+    }
 
     return pDeck;
 }

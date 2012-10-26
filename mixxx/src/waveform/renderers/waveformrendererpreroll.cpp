@@ -17,9 +17,6 @@ WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* wavefor
 WaveformRendererPreroll::~WaveformRendererPreroll() {
 }
 
-void WaveformRendererPreroll::init() {
-}
-
 void WaveformRendererPreroll::setup(const QDomNode& node) {
     m_color.setNamedColor(
         WWidget::selectNodeQString(node, "SignalColor"));
@@ -27,13 +24,14 @@ void WaveformRendererPreroll::setup(const QDomNode& node) {
 }
 
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(event);
     const TrackPointer track = m_waveformRenderer->getTrackInfo();
     if (!track) {
         return;
     }
     const Waveform* waveform = track->getWaveform();
-    int samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-    int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
+    double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
+    double numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
 
     int currentPosition = 0;
 
@@ -49,9 +47,9 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         painter->setWorldMatrixEnabled(false);
         painter->setPen(QPen(QBrush(m_color), 1));
         double start_index = 0;
-        int end_index = (numberOfSamples - currentPosition) / 2.0;
+        int end_index = static_cast<int>((numberOfSamples - currentPosition) / 2.0);
         QPolygonF polygon;
-        const int polyWidth = 40.0 / samplesPerPixel;
+        const int polyWidth = static_cast<int>(40.0 / samplesPerPixel);
         const float halfHeight = m_waveformRenderer->getHeight()/2.0;
         const float halfPolyHeight = m_waveformRenderer->getHeight()/5.0;
         polygon << QPointF(0, halfHeight)
