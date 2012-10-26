@@ -2,8 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>M-Audio X-Session Pro</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file M-Audio_Xsession_pro.midi.xml for Mixxx 1.6.2</description>
+    <author>Karli</author>
+    <description>MIDI Mapping for M-Audio X-Session Pro</description>
   </info>
   <controller id="M-Audio Xsession pro" port="Port">
     <controls>

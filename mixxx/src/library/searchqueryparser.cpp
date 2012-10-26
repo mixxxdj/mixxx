@@ -9,14 +9,18 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
                   << "title"
                   << "genre"
                   << "composer"
-                  << "comment";
+                  << "comment"
+                  << "key";
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
                      << "duration"
                      << "played"
-                     << "rating";
-    m_specialFilters << "key";
+                     << "rating"
+                     << "bitrate";
+    // TODO(XXX): For now key search is text-only. In the future we want to
+    // support multiple notations of key searching.
+    //m_specialFilters << "key";
 
     m_fieldToSqlColumn.insert("artist", "artist");
     m_fieldToSqlColumn.insert("album", "album");
@@ -27,6 +31,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumn.insert("year", "year");
     m_fieldToSqlColumn.insert("track", "tracknumber");
     m_fieldToSqlColumn.insert("bpm", "bpm");
+    m_fieldToSqlColumn.insert("bitrate", "bitrate");
     m_fieldToSqlColumn.insert("duration", "duration");
     m_fieldToSqlColumn.insert("key", "key");
     m_fieldToSqlColumn.insert("played", "timesplayed");
@@ -273,6 +278,6 @@ QString SearchQueryParser::parseQuery(const QString& query,
     if (queryFragments.size() > 0) {
         result = "WHERE " + queryFragments.join(" AND ");
     }
-    qDebug() << "Query: \"" << query << "\" parsed to:" << result;
+    //qDebug() << "Query: \"" << query << "\" parsed to:" << result;
     return result;
 }

@@ -82,12 +82,18 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_fRampValue(0.0),
     m_iRampState(ENGINE_RAMP_NONE),
     m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
-    m_iDitherBufferReadIndex(0) {
+    m_iDitherBufferReadIndex(0),
+    m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
+    m_iCrossFadeSamples(0),
+    m_iLastBufferSize(0) {
 
     // Generate dither values
     for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
         m_pDitherBuffer[i] = static_cast<float>(rand() % 32768) / 32768.0 - 0.5;
     }
+
+    //zero out crossfade buffer
+    SampleUtil::applyGain(m_pCrossFadeBuffer, 0.0, MAX_BUFFER_LEN);
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -143,6 +149,16 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(endButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlEnd(double)),
             Qt::DirectConnection);
+
+    m_pSlipButton = new ControlPushButton(ConfigKey(group, "slip_enabled"));
+    m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pSlipButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlSlip(double)),
+            Qt::DirectConnection);
+    connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlSlip(double)),
+            Qt::DirectConnection);
+    m_pSlipPosition = new ControlObject(ConfigKey(group, "slip_playposition"));
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
@@ -271,11 +287,23 @@ EngineBuffer::~EngineBuffer()
     delete m_pEject;
 
     delete [] m_pDitherBuffer;
+    delete [] m_pCrossFadeBuffer;
 
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
         delete pControl;
     }
+}
+
+double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
+    double fFractionalPlaypos = 0.0;
+    if (file_length_old != 0.) {
+        fFractionalPlaypos = math_min(absolutePlaypos, file_length_old);
+        fFractionalPlaypos /= file_length_old;
+    } else {
+        fFractionalPlaypos = 0.;
+    }
+    return fFractionalPlaypos;
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -321,6 +349,15 @@ void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
 void EngineBuffer::setNewPlaypos(double newpos)
 {
     //qDebug() << "engine new pos " << newpos;
+
+    // Before seeking, read extra buffer for crossfading
+    CSAMPLE *fadeout;
+    fadeout = m_pScale->scale(0,
+                             m_iLastBufferSize,
+                             0,
+                             0);
+    m_iCrossFadeSamples = m_iLastBufferSize;
+    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
 
     filepos_play = newpos;
 
@@ -478,6 +515,30 @@ void EngineBuffer::slotControlStop(double v)
     }
 }
 
+void EngineBuffer::slotControlSlip(double v)
+{
+    bool enabled = v > 0.0;
+    if (enabled == m_bSlipEnabled) {
+        return;
+    }
+
+    m_bSlipEnabled = enabled;
+
+    if (enabled) {
+        // TODO(rryan): Should this filepos instead be the RAMAN current
+        // position? filepos_play could be out of date.
+        m_dSlipPosition = filepos_play;
+        m_pSlipPosition->set(fractionalPlayposFromAbsolute(m_dSlipPosition));
+        m_dSlipRate = rate_old;
+    } else {
+        // TODO(owen) assuming that looping will get cancelled properly
+        slotControlSeekAbs(m_dSlipPosition);
+        m_dSlipPosition = 0;
+        m_pSlipPosition->set(0);
+    }
+}
+
+
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
     Q_ASSERT(even(iBufferSize));
@@ -510,6 +571,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                                              &is_scratching);
 
         //qDebug() << "rate" << rate << " paused" << paused;
+
+        // Update the slipped position
+        if (m_bSlipEnabled) {
+            m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
+            m_pSlipPosition->set(fractionalPlayposFromAbsolute(m_dSlipPosition));
+        }
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
@@ -557,7 +624,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //(at_start && backwards) ||
             (at_end && !backwards);
 
-
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
             CSAMPLE *output;
@@ -598,6 +664,29 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                     m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                         static_cast<int>(filepos_play), samplesRead);
         } // else (bCurBufferPaused)
+
+        //Crossfade if we just did a seek
+        if (m_iCrossFadeSamples > 0) {
+            int i = 0;
+            double cross_len = 0;
+            if (m_iCrossFadeSamples >= iBufferSize) {
+                i = m_iCrossFadeSamples - iBufferSize;
+                cross_len = static_cast<double>(iBufferSize) / 2.0;
+            } else {
+                cross_len = static_cast<double>(m_iCrossFadeSamples) / 2.0;
+            }
+
+            double cross_mix = 0.0;
+            double cross_inc = 1.0 / cross_len;
+
+            // Do crossfade from old fadeout buffer to this new data
+            for (int j = 0; j < iBufferSize && i < m_iCrossFadeSamples; i += 2, j += 2) {
+                pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
+                pOutput[j+1] = pOutput[j+1] * cross_mix + m_pCrossFadeBuffer[i+1] * (1.0 - cross_mix);
+                cross_mix += cross_inc;
+            }
+            m_iCrossFadeSamples = 0;
+        }
 
         m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
@@ -690,16 +779,29 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // really care about. It will try very hard to keep these in memory
     hintReader(rate, iBufferSize);
 
+    const double kSmallRate = 0.005;
     if (m_bLastBufferPaused && !bCurBufferPaused) {
-        if (fabs(rate) > 0.005) //at very slow forward rates, don't ramp up
+        if (fabs(rate) > kSmallRate) { //at very slow forward rates, don't ramp up
             m_iRampState = ENGINE_RAMP_UP;
+        }
     } else if (!m_bLastBufferPaused && bCurBufferPaused) {
         m_iRampState = ENGINE_RAMP_DOWN;
     } else { //we are not changing state
-        //make sure we aren't accidentally ramping down
-        //this is how we make sure that ramp value will become 1.0 eventually
-        if (fabs(rate) > 0.005 && m_iRampState != ENGINE_RAMP_UP && m_fRampValue < 1.0)
+        // Make sure we aren't accidentally ramping down. This is how we make
+        // sure that ramp value will become 1.0 eventually.
+        //
+        // 9/2012 rryan -- As I understand it this code intends to prevent us
+        // from getting stuck ramped down. If there is a meaningfully large rate
+        // and we aren't ramped up completely then it makes us ramp up. This
+        // causes crazy feedback if you scratch at the non-silent end of a
+        // track. See Bug #1006111. I added a !bCurBufferPaused term here because
+        // if rate > 0 and bCurBufferPaused then basically you are at the end of
+        // the track and trying to jog forward so this uniquely blocks that
+        // situation.
+        if (fabs(rate) > kSmallRate && !bCurBufferPaused &&
+            m_iRampState != ENGINE_RAMP_UP && m_fRampValue < 1.0) {
             m_iRampState = ENGINE_RAMP_UP;
+        }
     }
 
     //let's try holding the last sample value constant, and pull it
@@ -747,6 +849,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 #endif
 
     m_bLastBufferPaused = bCurBufferPaused;
+    m_iLastBufferSize = iBufferSize;
 }
 
 void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
@@ -754,13 +857,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
 
-    double fFractionalPlaypos = 0.0;
-    if (file_length_old!=0.) {
-        fFractionalPlaypos = math_min(filepos_play,file_length_old);
-        fFractionalPlaypos /= file_length_old;
-    } else {
-        fFractionalPlaypos = 0.;
-    }
+    double fFractionalPlaypos = fractionalPlayposFromAbsolute(filepos_play);
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
@@ -792,6 +889,15 @@ void EngineBuffer::hintReader(const double dRate,
 
     m_hintList.clear();
     m_pReadAheadManager->hintReader(dRate, m_hintList, iSourceSamples);
+
+    //if slipping, hint about virtual position so we're ready for it
+    if (m_bSlipEnabled) {
+        Hint hint;
+        hint.length = 2048; //default length please
+        hint.sample = m_dSlipRate >= 0 ? m_dSlipPosition : m_dSlipPosition - 2048;
+        hint.priority = 1;
+        m_hintList.append(hint);
+    }
 
     QListIterator<EngineControl*> it(m_engineControls);
     while (it.hasNext()) {

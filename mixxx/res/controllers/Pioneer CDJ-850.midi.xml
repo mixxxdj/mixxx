@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxMIDIPreset schemaversion="1" mixxxVersion="1.10.0+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.10.0+">
   <info>
     <name>Pioneer CDJ-850</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
@@ -16,10 +16,7 @@
         <key>LoadSelectedTrack</key>
         <status>0X90</status>
         <midino>0X33</midino>
-        <options>
-          <Invert/>
-          <SelectKnob/>
-        </options>
+        <options> <invert/> <selectknob/> </options>
       </control>
       <control>
         <!--seek_backward-->
@@ -76,9 +73,7 @@
         <key>PioneerCDJ850.hotcue_last_delete</key>
         <status>0X90</status>
         <midino>0X0D</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_1-->
@@ -86,9 +81,7 @@
         <key>PioneerCDJ850.hotcue_1_activate</key>
         <status>0X90</status>
         <midino>0X28</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_a-->
@@ -96,9 +89,7 @@
         <key>PioneerCDJ850.hotcue_1_activate</key>
         <status>0X90</status>
         <midino>0X18</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_2-->
@@ -106,9 +97,7 @@
         <key>PioneerCDJ850.hotcue_2_activate</key>
         <status>0X90</status>
         <midino>0X29</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_b-->
@@ -116,9 +105,7 @@
         <key>PioneerCDJ850.hotcue_2_activate</key>
         <status>0X90</status>
         <midino>0X19</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_4-->
@@ -126,9 +113,7 @@
         <key>PioneerCDJ850.hotcue_3_activate</key>
         <status>0X90</status>
         <midino>0X2A</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_c-->
@@ -136,9 +121,7 @@
         <key>PioneerCDJ850.hotcue_3_activate</key>
         <status>0X90</status>
         <midino>0X1A</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_8-->
@@ -146,9 +129,7 @@
         <key>PioneerCDJ850.hotcue_4_activate</key>
         <status>0X90</status>
         <midino>0X2B</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_call-->
@@ -156,9 +137,7 @@
         <key>PioneerCDJ850.hotcue_4_activate</key>
         <status>0X90</status>
         <midino>0X1C</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--jog_dial-->
@@ -166,9 +145,7 @@
         <key>PioneerCDJ850.jog_wheel</key>
         <status>0XB0</status>
         <midino>0X30</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--master_tempo-->
@@ -218,9 +195,7 @@
         <key>loop_scale</key>
         <status>0XB0</status>
         <midino>0X1C</midino>
-        <options>
-          <Invert/>
-        </options>
+        <options> <invert/> </options>
       </control>
       <control>
         <!--play_pause-->
@@ -242,9 +217,7 @@
         <key>rate</key>
         <status>0XB0</status>
         <midino>0X1D</midino>
-        <options>
-          <Invert/>
-        </options>
+        <options> <invert/> </options>
       </control>
       <control>
         <!--reloop_exit-->
@@ -259,9 +232,7 @@
         <key>PioneerCDJ850.reverse_toggle</key>
         <status>0X90</status>
         <midino>0X21</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--jog_scratch-->
@@ -269,9 +240,7 @@
         <key>PioneerCDJ850.jog_scratch</key>
         <status>0XB0</status>
         <midino>0X10</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--jog_touch-->
@@ -300,9 +269,7 @@
         <key>PioneerCDJ850.select_track_knob</key>
         <status>0XB0</status>
         <midino>0X4F</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--select_knob_push-->
@@ -310,10 +277,7 @@
         <key>LoadSelectedTrack</key>
         <status>0X91</status>
         <midino>0X33</midino>
-        <options>
-          <Invert/>
-          <SelectKnob/>
-        </options>
+        <options> <invert/> <selectknob/> </options>
       </control>
       <control>
         <!--seek_backward-->
@@ -370,9 +334,7 @@
         <key>PioneerCDJ850.hotcue_last_delete</key>
         <status>0X91</status>
         <midino>0X0D</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_1-->
@@ -380,9 +342,7 @@
         <key>PioneerCDJ850.hotcue_1_activate</key>
         <status>0X91</status>
         <midino>0X28</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_a-->
@@ -390,9 +350,7 @@
         <key>PioneerCDJ850.hotcue_1_activate</key>
         <status>0X91</status>
         <midino>0X18</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_2-->
@@ -400,9 +358,7 @@
         <key>PioneerCDJ850.hotcue_2_activate</key>
         <status>0X91</status>
         <midino>0X29</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_b-->
@@ -410,9 +366,7 @@
         <key>PioneerCDJ850.hotcue_2_activate</key>
         <status>0X91</status>
         <midino>0X19</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_4-->
@@ -420,9 +374,7 @@
         <key>PioneerCDJ850.hotcue_3_activate</key>
         <status>0X91</status>
         <midino>0X2A</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_c-->
@@ -430,9 +382,7 @@
         <key>PioneerCDJ850.hotcue_3_activate</key>
         <status>0X91</status>
         <midino>0X1A</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--autobeat_loop_8-->
@@ -440,9 +390,7 @@
         <key>PioneerCDJ850.hotcue_4_activate</key>
         <status>0X91</status>
         <midino>0X2B</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--hot_cue_call-->
@@ -450,9 +398,7 @@
         <key>PioneerCDJ850.hotcue_4_activate</key>
         <status>0X91</status>
         <midino>0X1C</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--jog_dial-->
@@ -460,9 +406,7 @@
         <key>PioneerCDJ850.jog_wheel</key>
         <status>0XB1</status>
         <midino>0X30</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--master_tempo-->
@@ -512,9 +456,7 @@
         <key>loop_scale</key>
         <status>0XB1</status>
         <midino>0X1C</midino>
-        <options>
-          <Invert/>
-        </options>
+        <options> <invert/> </options>
       </control>
       <control>
         <!--play_pause-->
@@ -536,9 +478,7 @@
         <key>rate</key>
         <status>0XB1</status>
         <midino>0X1D</midino>
-        <options>
-          <Invert/>
-        </options>
+        <options> <invert/> </options>
       </control>
       <control>
         <!--reloop_exit-->
@@ -553,9 +493,7 @@
         <key>PioneerCDJ850.reverse_toggle</key>
         <status>0X91</status>
         <midino>0X21</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--jog_scratch-->
@@ -563,9 +501,7 @@
         <key>PioneerCDJ850.jog_scratch</key>
         <status>0XB1</status>
         <midino>0X10</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
       <control>
         <!--jog_touch-->
@@ -594,9 +530,7 @@
         <key>PioneerCDJ850.select_track_knob</key>
         <status>0XB1</status>
         <midino>0X4F</midino>
-        <options>
-          <Script-Binding/>
-        </options>
+        <options> <script-binding/> </options>
       </control>
     </controls>
   </controller>

@@ -33,20 +33,21 @@ WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
     delete m_loopControl;
 }
 
-void WaveformRendererEndOfTrack::init() {
+bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
     m_endOfTrackControl = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "end_of_track")));
+                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "end_of_track")));
     m_endOfTrackControl->setExtern(0.);
     m_endOfTrackEnabled = false;
 
     m_trackSampleRate = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "track_samplerate")));
+                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "track_samplerate")));
     m_playControl = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "play")));
+                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "play")));
     m_loopControl = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), "loop_enabled")));
+                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "loop_enabled")));
+    return true;
 }
 
 void WaveformRendererEndOfTrack::setup(const QDomNode& node) {
@@ -84,13 +85,17 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     m_endOfTrackEnabled = m_endOfTrackControl->get() > 0.5;
 
+    //special case of track not long enougth
+    const double trackLength = 0.5 * trackSamples / sampleRate;
+
     if (sampleRate < 0.1 //not ready
             || trackSamples < 0.1 //not ready
             || m_playControl->get() < 0.5 //not playing
             || m_loopControl->get() > 0.5 //in loop
+            || trackLength <= m_remainingTimeTriggerSeconds //track too short
             ) {
-        if(m_endOfTrackEnabled && m_endOfTrackControl->getControlObject()) {
-            m_endOfTrackControl->getControlObject()->set(0.);
+        if (m_endOfTrackEnabled) {
+            m_endOfTrackControl->slotSet(0.0);
             m_endOfTrackEnabled = false;
         }
         return;
@@ -101,16 +106,16 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
     const double remainingTime = remainingFrames / sampleRate;
 
     if (remainingTime > m_remainingTimeTriggerSeconds) {
-        if( m_endOfTrackEnabled && m_endOfTrackControl->getControlObject()) {
-            m_endOfTrackControl->getControlObject()->set(0.);
+        if (m_endOfTrackEnabled) {
+            m_endOfTrackControl->slotSet(0.);
             m_endOfTrackEnabled = false;
         }
         return;
     }
 
-    //end of trak is on
-    if( !m_endOfTrackEnabled) {
-        m_endOfTrackControl->getControlObject()->set(1.);
+    // end of track is on
+    if (!m_endOfTrackEnabled) {
+        m_endOfTrackControl->slotSet(1.);
         m_endOfTrackEnabled = true;
 
         //qDebug() << "EndOfTrack ON";

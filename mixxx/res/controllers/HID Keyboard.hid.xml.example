@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="1.11+">
+    <info>
+        <name>Apple Bluetooth Keyboard</name>
+        <author>Ilkka Tuohela</author>
+        <description>HID example for Apple Bluetooth Keyboard</description>
+        <devices>
+            <product protocol="hid" vendor_id="0x5ac" product_id="0x23a" usage_page="0x1" usage="0x6" interface_number="0x1" />
+        </devices>
+    </info>
+    <controller id="Apple Bluetooth Keyboard">
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file filename="common-hid-devices.js" functionprefix=""/>
+            <file filename="Apple Bluetooth Keyboard.js" functionprefix="AppleBluetoothKeyboard"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

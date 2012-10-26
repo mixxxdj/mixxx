@@ -425,6 +425,11 @@ void DlgPreferences::setupControllerWidgets()
 {
     //For each controller, create a dialog and put a little link to it in the treepane on the left
     QList<Controller*> controllerList = m_pControllerManager->getControllerList(false, true);
+    qSort(
+        controllerList.begin(),
+        controllerList.end(),
+        controllerCompare
+    );
     QListIterator<Controller*> ctrlr(controllerList);
     while (ctrlr.hasNext())
     {
@@ -441,6 +446,7 @@ void DlgPreferences::setupControllerWidgets()
                     this, SLOT(show()));
             m_controllerWindows.append(controllerDlg);
             addPageWidget(controllerDlg);
+            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
             connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
             connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
             connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
@@ -450,6 +456,7 @@ void DlgPreferences::setupControllerWidgets()
                                       config);
             m_controllerWindows.append(controllerDlg);
             addPageWidget(controllerDlg);
+            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
             connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
             connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
             connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)),

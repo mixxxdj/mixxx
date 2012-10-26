@@ -6,6 +6,7 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/treeitem.h"
 #include "mixxxkeyboard.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -21,7 +22,6 @@ BasePlaylistFeature::BasePlaylistFeature(
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
-          m_playlistTableModel(this, pTrackCollection->getDatabase()),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -82,6 +82,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
 
 void BasePlaylistFeature::activate() {
     emit(switchToView(m_rootViewName));
+    emit(restoreSearch(QString())); // Null String disables search box
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
@@ -220,8 +221,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 }
 
-bool BasePlaylistFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool BasePlaylistFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
@@ -380,13 +381,64 @@ void BasePlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit,SIGNAL(anchorClicked(const QUrl)),
+        this,SLOT(htmlLinkClicked(const QUrl))
+    );
     libraryWidget->registerView(m_rootViewName, edit);
+}
+
+void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
+    if (QString(link.path())=="create") {
+        slotCreatePlaylist();
+    } else {
+        qDebug() << "Unknonw playlist link clicked" << link.path();
+    }
+}
+
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion
+*/
+QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
+{
+    buildPlaylistList();
+    QList<TreeItem*> data_list;
+    int selected_row = -1;
+    // Access the invisible root item
+    TreeItem* root = m_childModel.getItem(QModelIndex());
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlist_id = it->first;
+        QString playlist_name = it->second;
+
+        if (selected_id == playlist_id) {
+            // save index for selection
+            selected_row = row;
+            m_childModel.index(selected_row, 0);
+        }
+
+        // Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
+        decorateChild(item, playlist_id);
+        data_list.append(item);
+    }
+
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertRows(data_list, 0, m_playlistList.size());
+    if (selected_row == -1) {
+        return QModelIndex();
+    }
+    return m_childModel.index(selected_row, 0);
 }
 
 /**
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
-    m_childModel.removeRows(0,m_playlistTableModel.rowCount());
+    m_childModel.removeRows(0, m_playlistList.size());
 }
 

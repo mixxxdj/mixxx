@@ -62,7 +62,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
+    m_pPrepareFeature = new PrepareFeature(this, pConfig, m_pTrackCollection);
+    addFeature(m_pPrepareFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
@@ -90,6 +91,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 }
 
 Library::~Library() {
+    // Delete the sidebar model first since it depends on the LibraryFeatures.
+    delete m_pSidebarModel;
+
     QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
@@ -98,7 +102,6 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
-    delete m_pSidebarModel;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
@@ -196,6 +199,7 @@ void Library::slotRestoreSearch(const QString& text) {
 void Library::slotRefreshLibraryModels()
 {
    m_pMixxxLibraryFeature->refreshLibraryModels();
+   m_pPrepareFeature->refreshLibraryModels();
 }
 
 void Library::slotCreatePlaylist()

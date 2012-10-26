@@ -31,11 +31,9 @@
 
 #include "starrating.h"
 
-class StarEditor : public QWidget
-{
-	Q_OBJECT
-
-public:
+class StarEditor : public QWidget {
+    Q_OBJECT
+  public:
     StarEditor(QWidget *parent, const QStyleOptionViewItem& option);
 
     QSize sizeHint() const;
@@ -44,18 +42,21 @@ public:
     }
     StarRating starRating() { return m_starRating; }
 
-signals:
+  signals:
     void editingFinished();
 
-protected:
+  protected:
     void paintEvent(QPaintEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    //if the mouse leaves the editing index set starCount to 0
+    void leaveEvent(QEvent *);
 
-private:
+  private:
     int starAtPosition(int x);
 
     StarRating m_starRating;
+    bool m_isSelected;
 };
 
 #endif

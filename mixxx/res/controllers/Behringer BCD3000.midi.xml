@@ -1,6 +1,9 @@
 <MixxxMIDIPreset mixxxVersion="1.8.0+" schemaVersion="1">
     <info>
         <name>Behringer BCD3000</name>
+        <author>Aposto</author>
+        <description>MIDI Mapping for Behringer BCD3000</description>
+        <forums>http://mixxx.org/forums/viewtopic.php?f=3&amp;t=845</forums>
     </info>
     <controller id="BCD3000 MIDI 1">
         <scriptfiles>
@@ -480,9 +483,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -493,9 +493,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>filterHighKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -506,9 +503,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>loop_enabled</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -519,9 +513,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>filterMidKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -532,9 +523,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -545,9 +533,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>cue_default</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -558,9 +543,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -571,9 +553,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>filterMidKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -584,9 +563,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>filterHighKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -597,9 +573,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>cue_default</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -610,9 +583,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -623,9 +593,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>filterLowKill</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -636,9 +603,6 @@
             <output>
                 <group>[Channel2]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -649,9 +613,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>play</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -662,9 +623,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>loop_enabled</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>
@@ -675,9 +633,6 @@
             <output>
                 <group>[Channel1]</group>
                 <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0xb0</status>

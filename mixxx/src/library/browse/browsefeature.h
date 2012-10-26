@@ -30,8 +30,8 @@ class BrowseFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -66,7 +66,6 @@ class BrowseFeature : public LibraryFeature {
     ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
-    QString m_currentSearch;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     TreeItem* m_pLastRightClickedItem;

@@ -11,6 +11,7 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "controlobjectthreadwidget.h"
 
 #include "mixxxkeyboard.h"
@@ -49,6 +50,8 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
+
+using mixxx::skin::SkinManifest;
 
 QList<const char*> LegacySkinParser::s_channelStrs;
 QMutex LegacySkinParser::s_safeStringMutex;
@@ -140,7 +143,6 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
             sch = sch.nextSibling();
         }
     }
-
     return schlist;
 }
 
@@ -172,8 +174,41 @@ bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
     return false;
 }
 
+SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
+    QDomNode manifest_node = skinDocument.namedItem("manifest");
+    SkinManifest manifest;
+    if (manifest_node.isNull() || !manifest_node.isElement()) {
+        return manifest;
+    }
+    manifest.set_title(XmlParse::selectNodeQString(manifest_node, "title").toStdString());
+    manifest.set_author(XmlParse::selectNodeQString(manifest_node, "author").toStdString());
+    manifest.set_version(XmlParse::selectNodeQString(manifest_node, "version").toStdString());
+    manifest.set_language(XmlParse::selectNodeQString(manifest_node, "language").toStdString());
+    manifest.set_description(XmlParse::selectNodeQString(manifest_node, "description").toStdString());
+    manifest.set_license(XmlParse::selectNodeQString(manifest_node, "license").toStdString());
+
+    QDomNode attributes_node = manifest_node.namedItem("attributes");
+    if (!attributes_node.isNull() && attributes_node.isElement()) {
+        QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
+        for (int i = 0; i < attribute_nodes.length(); ++i) {
+            QDomNode attribute_node = attribute_nodes.item(i);
+            if (attribute_node.isElement()) {
+                QDomElement attribute_element = attribute_node.toElement();
+                QString configKey = attribute_element.attribute("config_key");
+                QString value = attribute_element.text();
+                SkinManifest::Attribute* attr = manifest.add_attribute();
+                attr->set_config_key(configKey.toStdString());
+                attr->set_value(value.toStdString());
+            }
+        }
+    }
+    return manifest;
+}
+
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
-    Q_ASSERT(!m_pParent);
+    if (m_pParent) {
+        qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
+    }
     /*
      * Long explaination because this took too long to figure:
      * Parent all the mixxx widgets (subclasses of wwidget) to
@@ -190,6 +225,25 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     if (skinDocument.isNull()) {
         qDebug() << "LegacySkinParser::parseSkin - failed for skin:" << skinPath;
         return NULL;
+    }
+
+    SkinManifest manifest = getSkinManifest(skinDocument);
+
+    // Apply SkinManifest attributes.
+    for (int i = 0; i < manifest.attribute_size(); ++i) {
+        const SkinManifest::Attribute& attribute = manifest.attribute(i);
+        if (!attribute.has_config_key()) {
+            continue;
+        }
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(
+            QString::fromStdString(attribute.config_key()));
+        ControlObject* pControl = ControlObject::getControl(configKey);
+        bool ok = false;
+        double value = QString::fromStdString(attribute.value()).toDouble(&ok);
+        if (pControl && ok) {
+            ControlObjectThreadMain mainControl(pControl);
+            mainControl.slotSet(value);
+        }
     }
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
@@ -431,7 +485,8 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    WaveformWidgetFactory::instance()->setWaveformWidget(viewer, node);
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    factory->setWaveformWidget(viewer, node);
 
     //qDebug() << "::parseVisual: parent" << m_pParent << m_pParent->size();
     //qDebug() << "::parseVisual: viewer" << viewer << viewer->size();
@@ -439,11 +494,9 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
-    // Hook up the wheel Control Object to the Visual Controller
-
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-                ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
+                ControlObject::getControl(ConfigKey(channelStr, "wheel")), viewer);
 
     p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
@@ -854,7 +907,8 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     QByteArray qba(channelStr.toAscii());
     char *safe = new char[qba.size() + 1]; // +1 for \0
     int i = 0;
-    while (safe[i] = qba[i]) ++i;
+    // Copy string
+    while ((safe[i] = qba[i])) ++i;
     s_channelStrs.append(safe);
     return safe;
 }
@@ -969,9 +1023,15 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
         // Check that the control exists
         ControlObject * control = ControlObject::getControl(configKey);
 
+        bool created = false;
         if (control == NULL) {
             qWarning() << "Requested control does not exist:" << key << ". Creating it.";
-            control = new ControlObject(configKey);
+            // Since the usual behavior here is to create a skin-defined push
+            // button, actually make it a push button and set it to toggle.
+            ControlPushButton* controlButton = new ControlPushButton(configKey);
+            controlButton->setButtonMode(ControlPushButton::TOGGLE);
+            control = controlButton;
+            created = true;
         }
 
         QString property = XmlParse::selectNodeQString(con, "BindProperty");
@@ -979,7 +1039,13 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             qDebug() << "Making property binder for" << property;
             // Bind this control to a property. Not leaked because it is
             // parented to the widget and so it dies with it.
-            new PropertyBinder(pWidget, property, control);
+            PropertyBinder* pBinder = new PropertyBinder(
+                pWidget, property, control);
+            // If we created this control, bind it to the PropertyBinder so that
+            // it is deleted when the binder is deleted.
+            if (created) {
+                control->setParent(pBinder);
+            }
         } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
                    XmlParse::selectNodeQString(con, "OnOff")=="true") {
             // Connect control proxy to widget. Parented to pWidget so it is not
@@ -1029,13 +1095,103 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             }
 
             // Add keyboard shortcut info to tooltip string
-            QString tooltip = pWidget->toolTip();
-            QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
-            if (!shortcut.isEmpty() && !tooltip.contains(shortcut, Qt::CaseInsensitive)) {
-                tooltip.append(QString("\nShortcut: %1").arg(shortcut));
-                pWidget->setToolTip(tooltip);
+            if (connectValueFromWidget) {
+                // do not add Shortcut string for feedback connections
+                QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
+                addShortcutToToolTip(pWidget, shortcut, QString(""));
+
+                const WSliderComposed* pSlider;
+
+                if (qobject_cast<const  WPushButton*>(pWidget)) {
+                    // check for "_activate", "_toggle"
+                    ConfigKey subkey;
+                    QString shortcut;
+
+                    subkey = configKey;
+                    subkey.item += "_activate";
+                    shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                    addShortcutToToolTip(pWidget, shortcut, tr("activate"));
+
+                    subkey = configKey;
+                    subkey.item += "_toggle";
+                    shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                    addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
+                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget))) {
+                    // check for "_up", "_down", "_up_small", "_down_small"
+                    ConfigKey subkey;
+                    QString shortcut;
+
+                    if (pSlider->isHorizontal()) {
+                        subkey = configKey;
+                        subkey.item += "_up";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("right"));
+
+                        subkey = configKey;
+                        subkey.item += "_down";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("left"));
+
+                        subkey = configKey;
+                        subkey.item += "_up_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("right small"));
+
+                        subkey = configKey;
+                        subkey.item += "_down_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("left small"));
+                    } else {
+                        subkey = configKey;
+                        subkey.item += "_up";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("up"));
+
+                        subkey = configKey;
+                        subkey.item += "_down";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("down"));
+
+                        subkey = configKey;
+                        subkey.item += "_up_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("up small"));
+
+                        subkey = configKey;
+                        subkey.item += "_down_small";
+                        shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        addShortcutToToolTip(pWidget, shortcut, tr("down small"));
+                    }
+                }
             }
         }
         con = con.nextSibling();
     }
 }
+
+void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd) {
+    if (shortcut.isEmpty()) {
+        return;
+    }
+
+    QString tooltip = pWidget->toolTip();
+
+    // translate shortcut to native text
+#if QT_VERSION >= 0x040700
+    QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText).toString(QKeySequence::NativeText);
+#else
+    QKeySequence keySec = QKeySequence::fromString(shortcut, QKeySequence::PortableText);
+    QString nativeShortcut = keySec.toString(QKeySequence::NativeText);
+#endif
+
+    tooltip += "\n";
+    tooltip += tr("Shortcut");
+    if (!cmd.isEmpty()) {
+        tooltip += " ";
+        tooltip += cmd;
+    }
+    tooltip += ": ";
+    tooltip += nativeShortcut;
+    pWidget->setToolTip(tooltip);
+}
+

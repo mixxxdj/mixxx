@@ -37,7 +37,10 @@ class TrackModel {
         TRACKMODELCAPS_RELOCATE       = 0x0400,
         TRACKMODELCAPS_BPMLOCK        = 0x0800,
         TRACKMODELCAPS_CLEAR_BEATS    = 0x1000,
-        TRACKMODELCAPS_RESETPLAYED    = 0x2000
+        TRACKMODELCAPS_RESETPLAYED    = 0x2000,
+        TRACKMODELCAPS_HIDE           = 0x3000,
+        TRACKMODELCAPS_UNHIDE         = 0x4000,
+        TRACKMODELCAPS_PURGE          = 0x8000,
     };
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
@@ -71,6 +74,15 @@ class TrackModel {
     virtual void removeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
+    virtual void hideTracks(const QModelIndexList& indices) {
+        Q_UNUSED(indices);
+    }
+    virtual void unhideTracks(const QModelIndexList& indices) {
+        Q_UNUSED(indices);
+    }
+    virtual void purgeTracks(const QModelIndexList& indices) {
+        Q_UNUSED(indices);
+    }
     virtual bool addTrack(const QModelIndex& index, QString location) {
         Q_UNUSED(index);
         Q_UNUSED(location);
@@ -86,8 +98,9 @@ class TrackModel {
         Q_UNUSED(sourceIndex);
         Q_UNUSED(destIndex);
     }
-    virtual QItemDelegate* delegateForColumn(const int i) {
+    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) {
         Q_UNUSED(i);
+        Q_UNUSED(pParent);
         return NULL;
     }
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
@@ -116,6 +129,11 @@ class TrackModel {
     virtual void setDefaultSort(int sortColumn, Qt::SortOrder sortOrder) {
         m_iDefaultSortColumn = sortColumn;
         m_eDefaultSortOrder = sortOrder;
+    }
+
+    virtual int fieldIndex(const QString& fieldName) const {
+        Q_UNUSED(fieldName);
+        return 0;
     }
 
   private:

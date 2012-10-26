@@ -123,12 +123,15 @@ Function InstallVCRedist
   ; Put the VC redist installer files there
   File ${WINLIB_PATH}\VC_redist\vc_red.cab
   File ${WINLIB_PATH}\VC_redist\vc_red.msi
+  File ${WINLIB_PATH}\VC_redist\msp_kb2565063.msp
 
   ClearErrors
   ; Call it & wait for it to install
   ExecWait 'msiexec /i $TEMP\vc_red.msi'
+  ExecWait 'msiexec /update $TEMP\msp_kb2565063.msp'
   Delete "$TEMP\vc_red.cab"
   Delete "$TEMP\vc_red.msi"
+  Delete "$TEMP\msp_kb2565063.msp"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -225,7 +228,7 @@ Section "Mixxx (required)" SecMixxx
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\vamp\*.dll"
 
   SetOutPath $INSTDIR\keyboard
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
+  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\*.kbd.cfg"
 
   ; HID/MIDI mapping tools (mappings are below) & common script file
   SetOutPath $INSTDIR\controllers
@@ -403,7 +406,6 @@ Section "Start Menu Shortcuts" SecStartMenu
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
-  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\UninstallMixxx.exe" "" "$INSTDIR\UninstallMixxx.exe" 0
 
 SectionEnd
 
@@ -510,8 +512,9 @@ Section "Uninstall"
   RMDir "$INSTDIR\translations"
 
   ; Remove keyboard mappings
-  Delete $INSTDIR\keyboard\Standard.kbd.cfg
-  Delete $INSTDIR\keyboard\Old-pre1.10.0.kbd.cfg
+  ; TODO(XXX): Only delete files that were not changed since install
+  ; Custom Keyboard mappings should be placed in Custom.kbd.cfg in user folder
+  Delete $INSTDIR\keyboard\*.kbd.cfg
   RMDir "$INSTDIR\keyboard" ; No /r flag means remove the directory only if it's empty
 
   ; Remove midi mappings/scripts that we may have installed

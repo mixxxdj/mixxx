@@ -40,8 +40,14 @@ void VampAnalyser::initializePluginPaths() {
     QString applicationPath = QCoreApplication::applicationDirPath();
 #ifdef __WINDOWS__
     QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
-        pathElements << winVampPath.absolutePath().replace("/","\\");
+    if (winVampPath.cd("plugins")) {
+        if (winVampPath.cd("vamp")) {
+            pathElements << winVampPath.absolutePath().replace("/","\\");
+        } else {
+            qDebug() << winVampPath.absolutePath() << "does not exist!";
+        }
+    } else {
+        qDebug() << winVampPath.absolutePath() << "does not exist!";
     }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8+">
-<info><!-- Optional - information about the preset file -->
-        <name>M-Audio Xponent</name>
-        <author>Luca Franceschini, Juan Pedro Bolívar Puente</author>
-        <description>This is a midi present of Xponent.</description>
-        <deviceid>Xponent Port 1</deviceid>
-        <deviceid>Xponent Port 2</deviceid>
+<info>
+  <name>M-Audio Xponent</name>
+  <author>Luca Franceschini, Juan Pedro Bolívar Puente</author>
+  <description>This is a midi present of Xponent.</description>
+  <!-- These comments are not suppported by mixxx hile 2012-08-06 -->
+  <!-- <deviceid>Xponent Port 1</deviceid><deviceid>Xponent Port 2</deviceid> -->
 </info>
 <controller id="Xponent Port 1">
 <scriptfiles>
@@ -17,14 +17,14 @@
       <key>crossfader</key>
       <status>0xB2</status>
       <midino>7</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Master]</group>
       <key>headMix</key>
       <status>0xB2</status>
       <midino>13</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -58,7 +58,7 @@
       <key>play</key>
       <status>0x80</status>
       <midino>36</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -128,7 +128,7 @@
       <key>volume</key>
       <status>0xB0</status>
       <midino>7</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -180,28 +180,28 @@
       <key>pregain</key>
       <status>0xB0</status>
       <midino>11</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterLow</key>
       <status>0xB0</status>
       <midino>8</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterMid</key>
       <status>0xB0</status>
       <midino>9</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>filterHigh</key>
       <status>0xB0</status>
       <midino>10</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -217,7 +217,7 @@
       <key>filterLowKill</key>
       <status>0x80</status>
       <midino>8</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -233,7 +233,7 @@
       <key>filterMidKill</key>
       <status>0x80</status>
       <midino>9</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -249,49 +249,49 @@
       <key>filterHighKill</key>
       <status>0x80</status>
       <midino>10</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_up</key>
       <status>0x90</status>
       <midino>16</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_up</key>
       <status>0x80</status>
       <midino>16</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_down</key>
       <status>0x90</status>
       <midino>17</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>rate_temp_down</key>
       <status>0x80</status>
       <midino>17</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>beatsync</key>
       <status>0x90</status>
       <midino>2</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
       <key>beatsync</key>
       <status>0x80</status>
       <midino>2</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel1]</group>
@@ -532,7 +532,7 @@
       <key>play</key>
       <status>0x81</status>
       <midino>36</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -602,7 +602,7 @@
       <key>volume</key>
       <status>0xB1</status>
       <midino>7</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -654,28 +654,28 @@
       <key>pregain</key>
       <status>0xB1</status>
       <midino>11</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterLow</key>
       <status>0xB1</status>
       <midino>8</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterMid</key>
       <status>0xB1</status>
       <midino>9</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>filterHigh</key>
       <status>0xB1</status>
       <midino>10</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -691,7 +691,7 @@
       <key>filterLowKill</key>
       <status>0x81</status>
       <midino>8</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -707,7 +707,7 @@
       <key>filterMidKill</key>
       <status>0x81</status>
       <midino>9</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -723,49 +723,49 @@
       <key>filterHighKill</key>
       <status>0x81</status>
       <midino>10</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_up</key>
       <status>0x91</status>
       <midino>16</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_up</key>
       <status>0x81</status>
       <midino>16</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_down</key>
       <status>0x91</status>
       <midino>17</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>rate_temp_down</key>
       <status>0x81</status>
       <midino>17</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>beatsync</key>
       <status>0x91</status>
       <midino>2</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
       <key>beatsync</key>
       <status>0x81</status>
       <midino>2</midino>
-      <controltype>button</controltype>
+      <description>button</description>
     </control>
     <control>
       <group>[Channel2]</group>
@@ -880,21 +880,21 @@
       <key>lfoDepth</key>
       <status>0xB1</status>
       <midino>12</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Flanger]</group>
       <key>lfoDelay</key>
       <status>0xB1</status>
       <midino>13</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Flanger]</group>
       <key>lfoPeriod</key>
       <status>0xB1</status>
       <midino>14</midino>
-      <controltype>fader</controltype>
+      <description>fader</description>
     </control>
     <control>
       <group>[Channel2]</group>

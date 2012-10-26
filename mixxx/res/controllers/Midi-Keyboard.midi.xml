@@ -2,8 +2,8 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
   <info>
     <name>MIDI Keyboard</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file Midi-Keyboard.midi.xml for Mixxx 1.6.2</description>
+    <author></author>
+    <description>Generic MIDI Keyboard Mapping</description>
   </info>
   <controller id="Midi-Keyboard" port="Port">
     <controls>

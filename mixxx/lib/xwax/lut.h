@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Mark Hills <mark@pogo.org.uk>
+ * Copyright (C) 2012 Mark Hills <mark@pogo.org.uk>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,21 +22,21 @@
 
 typedef unsigned int slot_no_t;
 
-struct slot_t {
+struct slot {
     unsigned int timecode;
     slot_no_t next; /* next slot with the same hash */
 };
 
-struct lut_t {
-    struct slot_t *slot;
+struct lut {
+    struct slot *slot;
     slot_no_t *table, /* hash -> slot lookup */
         avail; /* next available slot */
 };
 
-int lut_init(struct lut_t *lut, int nslots);
-void lut_clear(struct lut_t *lut);
+int lut_init(struct lut *lut, int nslots);
+void lut_clear(struct lut *lut);
 
-void lut_push(struct lut_t *lut, unsigned int timecode);
-unsigned int lut_lookup(struct lut_t *lut, unsigned int timecode);
+void lut_push(struct lut *lut, unsigned int timecode);
+unsigned int lut_lookup(struct lut *lut, unsigned int timecode);
 
 #endif

@@ -198,7 +198,10 @@ MadSeekFrameType* SoundSourceMp3::getSeekFrame(long frameIndex) const {
 
 long SoundSourceMp3::seek(long filepos) {
     // Ensure that we are seeking to an even filepos
-    Q_ASSERT(filepos%2==0);
+    if (filepos % 2 != 0) {
+        qDebug() << "SoundSourceMp3 got non-even seek target.";
+        filepos--;
+    }
 
     if (!isValid()) {
         return 0;
@@ -439,7 +442,10 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
-    Q_ASSERT(samples_wanted%2==0);
+    if (samples_wanted % 2 != 0) {
+        qDebug() << "SoundSourceMp3 got non-even samples_wanted";
+        samples_wanted--;
+    }
 //     qDebug() << "frame list " << m_qSeekList.count();
 
     SAMPLE * destination = (SAMPLE *)_destination;
@@ -463,7 +469,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
             else
                 *(destination++) = madScale(Synth->pcm.samples[0][i]);
 
-            // This is safe because we have Q_ASSERTed that samples_wanted is even.
+            // This is safe because we have checked that samples_wanted is even.
             Total_samples_decoded += 2;
 
         }

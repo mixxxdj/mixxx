@@ -50,6 +50,10 @@ class Waveform {
     void reset();
 
     bool isValid() const { return getDataSize() > 0 && getVisualSampleRate() > 0; }
+    bool isDirty() const { return m_bDirty; }
+    void setDirty(bool bDirty) {
+        m_bDirty = bDirty;
+    }
 
     double getVisualSampleRate() const { return m_visualSampleRate; }
     double getAudioVisualRatio() const { return m_audioVisualRatio; }
@@ -103,6 +107,7 @@ class Waveform {
 
     // If stored in the database, the ID of the waveform.
     int m_id;
+    bool m_bDirty;
     QString m_version;
     QString m_description;
 
@@ -114,7 +119,7 @@ class Waveform {
     double m_audioVisualRatio;
 
     //No need to store the following members they can be recomputed
-    //on waveform laoding
+    //on waveform loading
 
     int m_textureStride;
     QAtomicInt m_completion;

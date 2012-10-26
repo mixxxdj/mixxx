@@ -54,6 +54,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Latency control
     m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"));
+    m_pMasterUnderflowCount = new ControlObject(ConfigKey(group, "underflow_count"));
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
@@ -105,11 +106,15 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                 this, SIGNAL(bytesRecorded(int)));
     }
 
-    //X-Fader Setup
+    // X-Fader Setup
+    xFaderMode = new ControlPotmeter(
+        ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
     xFaderCurve = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
     xFaderCalibration = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+    xFaderReverse = new ControlPotmeter(
+        ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
 }
 
 EngineMaster::~EngineMaster()
@@ -125,12 +130,15 @@ EngineMaster::~EngineMaster()
     delete head_clipping;
     delete sidechain;
 
+    delete xFaderReverse;
     delete xFaderCalibration;
     delete xFaderCurve;
+    delete xFaderMode;
 
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterRate;
+    delete m_pMasterUnderflowCount;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
@@ -377,7 +385,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     float c1_gain, c2_gain;
     EngineXfader::getXfadeGains(c1_gain, c2_gain,
                                 crossfader->get(), xFaderCurve->get(),
-                                xFaderCalibration->get());
+                                xFaderCalibration->get(),
+                                xFaderMode->get()==MIXXX_XFADER_CONSTPWR,
+                                xFaderReverse->get()==1.0);
 
     // Now set the gains for overall volume and the left, center, right gains.
     m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);
