@@ -1,6 +1,6 @@
 Phoney , Skin for Mixxx 1.11.x
 www.mixxx.org
-Copyright (C) 2010-2012 jus ; jus@justmail.de
+Copyright (C) 2010-2012 jus ; s.brandt@mixxx.org
 This file is part of the "Phoney" Skin for Mixxx
 "Phoney" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -17,6 +17,13 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.06	(25/10/2012)
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+  and set Mixxx controls on skin load , lp:1017399
+
+v1.11.0.05	(18/10/2012)
+* Feature: Added a clock widget that shows the current time. lp:661439
+
 v1.11.0.04	(24/05/2012)
 * Feature: Support <DefaultMark> cue style that define any non explicitly defined ones, lp:994647
   This allows to view all 36 Hotcues in the waveform (Overview) without the need to declare each of them individually.
