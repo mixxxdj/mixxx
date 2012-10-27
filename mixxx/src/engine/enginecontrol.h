@@ -10,7 +10,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 
-class EngineBuffer;
+class EngineMaster;
 struct Hint;
 
 const double kNoTrigger = -1;
@@ -69,7 +69,7 @@ class EngineControl : public QObject {
     // target.
     virtual void hintReader(QList<Hint>& hintList);
 
-    void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer);
+    void setEngineMaster(EngineMaster* pEngineMaster);
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
@@ -88,14 +88,14 @@ class EngineControl : public QObject {
   protected:
     const char* getGroup();
     ConfigObject<ConfigValue>* getConfig();
-    EngineBuffer* getOtherEngineBuffer();
+    EngineMaster* getEngineMaster();
 
   private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_dCurrentSample;
     double m_dTotalSamples;
-    EngineBuffer* m_pOtherEngineBuffer;
+    EngineMaster* m_pEngineMaster;
 };
 
 #endif /* ENGINECONTROL_H */
