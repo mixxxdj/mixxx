@@ -68,10 +68,10 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     QMenu* bpmMenu = addSubmenu(tr("BPM and Sync"));
     addDeckAndSamplerControl("bpm_tap", tr("BPM tap button"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust beatgrid"), bpmMenu);
-    addDeckControl("quantize", tr("Toggle quantize mode"), bpmMenu);
-    addDeckControl("beatsync", tr("Beat sync (tempo and phase)"), bpmMenu);
-    addDeckControl("beatsync_tempo", tr("Beat sync (tempo only)"), bpmMenu);
-    addDeckControl("beatsync_phase", tr("Beat sync (phase only)"), bpmMenu);
+    addDeckAndSamplerControl("quantize", tr("Toggle quantize mode"), bpmMenu);
+    addDeckAndSamplerControl("beatsync", tr("Beat sync (tempo and phase)"), bpmMenu);
+    addDeckAndSamplerControl("beatsync_tempo", tr("Beat sync (tempo only)"), bpmMenu);
+    addDeckAndSamplerControl("beatsync_phase", tr("Beat sync (phase only)"), bpmMenu);
 
     // Rate
     QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
