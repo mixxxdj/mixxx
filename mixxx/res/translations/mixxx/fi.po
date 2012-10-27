@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-10-12 15:02+0000\n"
-"Last-Translator: Eetu Aalto <eetu.aalto@iki.fi>\n"
+"PO-Revision-Date: 2012-10-26 20:53+0000\n"
+"Last-Translator: Heikki Ketoharju <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-13 04:34+0000\n"
-"X-Generator: Launchpad (build 16137)\n"
+"X-Launchpad-Export-Date: 2012-10-27 04:36+0000\n"
+"X-Generator: Launchpad (build 16194)\n"
 "X-Language: fi_FI\n"
 "X-Source-Language: C\n"
 
@@ -26,12 +26,12 @@ msgstr "Auto-DJ"
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Lisää Auto DJ -jonon loppuun"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Lisää Auto DJ -jonon alkuun"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
@@ -55,12 +55,12 @@ msgstr "Uusi soittolista"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Lisää Auto DJ -jonon loppuun"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Lisää Auto DJ -jonon alkuun"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
@@ -370,7 +370,7 @@ msgstr "Tiedoston metadataa ei voitu päivittää."
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "USB-kontrolleri"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -3820,15 +3820,15 @@ msgstr "Lataa samplepankki"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr "Virhe luettaessa näytepankkia"
+msgstr "Virhe luettaessa samplepankkia"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr "Näytepankkitiedostoa '%1' ei voitu avata."
+msgstr "Samplepankkitiedostoa '%1' ei voitu avata."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr "Näytepankkitiedostoa '%1' ei voitu lukea."
+msgstr "Samplepankkitiedostoa '%1' ei voitu lukea."
 
 #: SetlogFeature#1
 msgid "Join with previous"
