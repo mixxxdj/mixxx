@@ -138,6 +138,7 @@ EngineMaster::~EngineMaster()
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterRate;
+    delete m_pMasterUnderflowCount;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
@@ -457,28 +458,19 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {
         pBuffer->bindWorkers(m_pWorkerScheduler);
+        pBuffer->setEngineMaster(this);
     }
+}
 
-    // TODO(XXX) WARNING HUGE HACK ALERT In the case of 2-decks, this code hooks
-    // the two EngineBuffers together so they can beat-sync off of each other.
-    // rryan 6/2010
-    bool isDeck1 = pChannel->getGroup() == "[Channel1]";
-    bool isDeck2 = pChannel->getGroup() == "[Channel2]";
-    if (isDeck1 || isDeck2) {
-        QString otherGroup = isDeck1 ? "[Channel2]" : "[Channel1]";
-        for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
-             i != m_channels.constEnd(); ++i) {
-            const ChannelInfo* pChannelInfo = *i;
-            if (pChannelInfo->m_pChannel->getGroup() == otherGroup) {
-                EngineBuffer *pBuffer1 = pChannel->getEngineBuffer();
-                EngineBuffer *pBuffer2 = pChannelInfo->m_pChannel->getEngineBuffer();
-                if (pBuffer1 != NULL && pBuffer2 != NULL) {
-                    pBuffer1->setOtherEngineBuffer(pBuffer2);
-                    pBuffer2->setOtherEngineBuffer(pBuffer1);
-                }
-            }
+EngineChannel* EngineMaster::getChannel(QString group) {
+    for (QList<ChannelInfo*>::const_iterator i = m_channels.begin();
+         i != m_channels.end(); ++i) {
+        ChannelInfo* pChannelInfo = *i;
+        if (pChannelInfo->m_pChannel->getGroup() == group) {
+            return pChannelInfo->m_pChannel;
         }
     }
+    return NULL;
 }
 
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {

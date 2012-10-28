@@ -25,7 +25,7 @@ public:
 
 protected:
     Singleton() {}
-    virtual ~Singleton() { destroy();}
+    virtual ~Singleton() {}
 
 private:
     //hide copy constructor and assign operator

@@ -30,6 +30,9 @@ TerminalMix4.init = function (id,debug) {
             midi.sendShortMsg(0x90+i,j,0x00);
         }
     }
+
+    // Enable four decks in v1.11.x
+    engine.setValue("[Master]", "num_decks", 4);
     
     // Set soft-takeover for all Sampler volumes
     for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
