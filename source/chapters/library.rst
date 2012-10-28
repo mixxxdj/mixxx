@@ -67,7 +67,7 @@ Crates
 ======
 
 Crates are unordered collections of tracks, and are similar to playlists. Unlike
-playlist they cannot contain duplicate entries and do not support drack-and-drop
+playlist they cannot contain duplicate entries and do not support drag-and-drop
 within them. Crates can be created by right-clicking on “Crates” in the sidebar
 and selecting “New Crate”.
 
