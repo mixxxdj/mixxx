@@ -44,7 +44,7 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
     void showControlMenu();
 
   private:
-    QMenu* addSubmenu(QString title);
+    QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
     void loadControl(const MixxxControl& control);
 
     void addControl(QString group, QString control, QString helpText, QMenu* pMenu, bool addReset=false);

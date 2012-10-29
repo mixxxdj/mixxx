@@ -68,10 +68,10 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     QMenu* bpmMenu = addSubmenu(tr("BPM and Sync"));
     addDeckAndSamplerControl("bpm_tap", tr("BPM tap button"), bpmMenu);
     addDeckControl("beats_translate_curpos", tr("Adjust beatgrid"), bpmMenu);
-    addDeckControl("quantize", tr("Toggle quantize mode"), bpmMenu);
-    addDeckControl("beatsync", tr("Beat sync (tempo and phase)"), bpmMenu);
-    addDeckControl("beatsync_tempo", tr("Beat sync (tempo only)"), bpmMenu);
-    addDeckControl("beatsync_phase", tr("Beat sync (phase only)"), bpmMenu);
+    addDeckAndSamplerControl("quantize", tr("Toggle quantize mode"), bpmMenu);
+    addDeckAndSamplerControl("beatsync", tr("Beat sync (tempo and phase)"), bpmMenu);
+    addDeckAndSamplerControl("beatsync_tempo", tr("Beat sync (tempo only)"), bpmMenu);
+    addDeckAndSamplerControl("beatsync_phase", tr("Beat sync (phase only)"), bpmMenu);
 
     // Rate
     QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
@@ -102,26 +102,27 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
 
     // Cues
-    QMenu* cueMenu = addSubmenu(tr("Cues / Hotcues"));
+    QMenu* cueMenu = addSubmenu(tr("Cues"));
     addDeckControl("cue_default", tr("Cue button"), cueMenu);
     addDeckControl("cue_set", tr("Set cue point"), cueMenu);
     addDeckControl("cue_gotoandstop", tr("Go to cue point and stop"), cueMenu);
 
     // Hotcues
+    QMenu* hotcueMenu = addSubmenu(tr("Hotcues"));
     QString hotcueActivate = tr("Set or jump to hotcue %1");
     QString hotcueClear = tr("Clear hotcue %1");
     QString hotcueGoto = tr("Jump to hotcue %1");
     QString hotcueGotoAndStop = tr("Jump to hotcue %1 and stop");
     for (int i = 1; i <= NUM_HOT_CUES; ++i) {
-        QMenu* hotcueMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)));
+        QMenu* hotcueSubMenu = addSubmenu(tr("Hotcue %1").arg(QString::number(i)), hotcueMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_activate").arg(i),
-                                 hotcueActivate.arg(QString::number(i)), hotcueMenu);
+                                 hotcueActivate.arg(QString::number(i)), hotcueSubMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_clear").arg(i),
-                                 hotcueClear.arg(QString::number(i)), hotcueMenu);
+                                 hotcueClear.arg(QString::number(i)), hotcueSubMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_goto").arg(i),
-                                 hotcueGoto.arg(QString::number(i)), hotcueMenu);
+                                 hotcueGoto.arg(QString::number(i)), hotcueSubMenu);
         addDeckAndSamplerControl(QString("hotcue_%1_gotoandstop").arg(i),
-                                 hotcueGotoAndStop.arg(QString::number(i)), hotcueMenu);
+                                 hotcueGotoAndStop.arg(QString::number(i)), hotcueSubMenu);
     }
 
     // Loops
@@ -345,9 +346,12 @@ void DlgControllerLearning::controlMapped(QString message) {
     labelNextHelp->show();
 }
 
-QMenu* DlgControllerLearning::addSubmenu(QString title) {
-    QMenu* subMenu = new QMenu(title, &m_controlPickerMenu);
-    m_controlPickerMenu.addMenu(subMenu);
+QMenu* DlgControllerLearning::addSubmenu(QString title, QMenu* pParent) {
+    if (pParent == NULL) {
+        pParent = &m_controlPickerMenu;
+    }
+    QMenu* subMenu = new QMenu(title, pParent);
+    pParent->addMenu(subMenu);
     return subMenu;
 }
 
