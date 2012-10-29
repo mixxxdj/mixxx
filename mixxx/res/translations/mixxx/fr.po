@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-09-22 15:51+0000\n"
-"Last-Translator: Fafa <Unknown>\n"
+"PO-Revision-Date: 2012-10-28 14:12+0000\n"
+"Last-Translator: RantanplanSuisse <etioud@gmail.com>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 04:40+0000\n"
-"X-Generator: Launchpad (build 16112)\n"
+"X-Launchpad-Export-Date: 2012-10-29 04:37+0000\n"
+"X-Generator: Launchpad (build 16194)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -1098,24 +1098,24 @@ msgstr ""
 
 #: DlgControllerLearning#76
 msgid "1/32th"
-msgstr ""
+msgstr "1/32"
 
 #: DlgControllerLearning#77
 msgid "1/16th"
-msgstr ""
+msgstr "1/16"
 
 #: DlgControllerLearning#78
 msgid "1/8th"
-msgstr ""
+msgstr "1/8"
 
 #: DlgControllerLearning#79
 msgid "1/4th"
-msgstr ""
+msgstr "1/4"
 
 #: DlgControllerLearning#80
 msgctxt "DlgControllerLearning#80"
 msgid "Library"
-msgstr ""
+msgstr "Bibliothèque"
 
 #: DlgControllerLearning#81
 msgid "Switch to the next view (library, playlist..)"
@@ -1166,7 +1166,7 @@ msgstr "Effet flanger : déphasage"
 #: DlgControllerLearning#92
 msgctxt "DlgControllerLearning#92"
 msgid "Microphone"
-msgstr ""
+msgstr "Microphone"
 
 #: DlgControllerLearning#93
 msgid "Microphone on/off"
@@ -1401,7 +1401,7 @@ msgstr ""
 
 #: DlgPrefControls#15
 msgid "On (only in Library)"
-msgstr ""
+msgstr "Activé (seulement dans la bibliothèque)"
 
 #: DlgPrefControls#16
 msgid "20%"
