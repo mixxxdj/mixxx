@@ -252,7 +252,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
     // HACK(XXX) This relies on the fact that the PlayerManager listens to
     // changes to this control via a CO instead of a COTM. Otherwise the message
-    // would not get deliverd until the Qt event loop delivered the
+    // would not get delivered until the Qt event loop delivered the
     // message. rryan 10/2012
     ControlObject::sync();
 
