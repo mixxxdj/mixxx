@@ -267,7 +267,7 @@ EngineBuffer* BpmControl::pickSyncTarget() {
 
     for (int i = 0; i < m_pNumDecks->get(); ++i) {
         // TODO(XXX) format from PlayerManager
-        QString deckGroup = QString("[Channel%1]").arg(i);
+        QString deckGroup = QString("[Channel%1]").arg(i+1);
         if (deckGroup == group) {
             continue;
         }
