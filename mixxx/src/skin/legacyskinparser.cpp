@@ -11,6 +11,7 @@
 #include <QMutexLocker>
 
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "controlobjectthreadwidget.h"
 
 #include "mixxxkeyboard.h"
@@ -49,6 +50,8 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
+
+using mixxx::skin::SkinManifest;
 
 QList<const char*> LegacySkinParser::s_channelStrs;
 QMutex LegacySkinParser::s_safeStringMutex;
@@ -140,7 +143,6 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
             sch = sch.nextSibling();
         }
     }
-
     return schlist;
 }
 
@@ -172,6 +174,37 @@ bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
     return false;
 }
 
+SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
+    QDomNode manifest_node = skinDocument.namedItem("manifest");
+    SkinManifest manifest;
+    if (manifest_node.isNull() || !manifest_node.isElement()) {
+        return manifest;
+    }
+    manifest.set_title(XmlParse::selectNodeQString(manifest_node, "title").toStdString());
+    manifest.set_author(XmlParse::selectNodeQString(manifest_node, "author").toStdString());
+    manifest.set_version(XmlParse::selectNodeQString(manifest_node, "version").toStdString());
+    manifest.set_language(XmlParse::selectNodeQString(manifest_node, "language").toStdString());
+    manifest.set_description(XmlParse::selectNodeQString(manifest_node, "description").toStdString());
+    manifest.set_license(XmlParse::selectNodeQString(manifest_node, "license").toStdString());
+
+    QDomNode attributes_node = manifest_node.namedItem("attributes");
+    if (!attributes_node.isNull() && attributes_node.isElement()) {
+        QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
+        for (int i = 0; i < attribute_nodes.length(); ++i) {
+            QDomNode attribute_node = attribute_nodes.item(i);
+            if (attribute_node.isElement()) {
+                QDomElement attribute_element = attribute_node.toElement();
+                QString configKey = attribute_element.attribute("config_key");
+                QString value = attribute_element.text();
+                SkinManifest::Attribute* attr = manifest.add_attribute();
+                attr->set_config_key(configKey.toStdString());
+                attr->set_value(value.toStdString());
+            }
+        }
+    }
+    return manifest;
+}
+
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
@@ -193,6 +226,35 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         qDebug() << "LegacySkinParser::parseSkin - failed for skin:" << skinPath;
         return NULL;
     }
+
+    SkinManifest manifest = getSkinManifest(skinDocument);
+
+    // Apply SkinManifest attributes.
+    for (int i = 0; i < manifest.attribute_size(); ++i) {
+        const SkinManifest::Attribute& attribute = manifest.attribute(i);
+        if (!attribute.has_config_key()) {
+            continue;
+        }
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(
+            QString::fromStdString(attribute.config_key()));
+        ControlObject* pControl = ControlObject::getControl(configKey);
+        bool ok = false;
+        double value = QString::fromStdString(attribute.value()).toDouble(&ok);
+        if (pControl && ok) {
+            ControlObjectThreadMain mainControl(pControl);
+            mainControl.slotSet(value);
+        }
+    }
+    // Force a sync to deliver the control change messages so they take effect
+    // before we start processing the skin. This is mostly just so that
+    // additional decks/samplers are created before we start creating widgets
+    // for them.
+
+    // HACK(XXX) This relies on the fact that the PlayerManager listens to
+    // changes to this control via a CO instead of a COTM. Otherwise the message
+    // would not get delivered until the Qt event loop delivered the
+    // message. rryan 10/2012
+    ControlObject::sync();
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
 
