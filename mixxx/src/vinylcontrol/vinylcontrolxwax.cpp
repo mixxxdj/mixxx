@@ -66,19 +66,26 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
 
     //this is all needed because libxwax indexes by C-strings
     //so we go and pass libxwax a pointer into our local stack...
-    if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
+    if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
         timecode = (char*)"serato_2a";
-    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB)
+    }
+    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
         timecode = (char*)"serato_2b";
+    }
     else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
         m_bNeedleSkipPrevention = false;
         m_bCDControl = true;
     }
-    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA)
+    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
         timecode = (char*)"traktor_a";
-    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB)
+    }
+    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
         timecode = (char*)"traktor_b";
+    }
+    else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
+    	timecode = (char*)"mixvibes_v2";
+   	}
     else {
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";
