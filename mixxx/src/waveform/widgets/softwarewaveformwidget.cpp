@@ -39,8 +39,3 @@ void SoftwareWaveformWidget::paintEvent( QPaintEvent* event) {
     QPainter painter(this);
     draw(&painter,event);
 }
-
-void SoftwareWaveformWidget::updateVisualSamplingPerPixel() {
-    m_visualSamplePerPixel = m_zoomFactor;
-    m_visualSamplePerPixel = math_max( 1.0, m_visualSamplePerPixel);
-}
