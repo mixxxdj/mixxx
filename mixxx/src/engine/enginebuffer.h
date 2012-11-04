@@ -51,6 +51,7 @@ class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
+class EngineMaster;
 
 struct Hint;
 
@@ -106,7 +107,7 @@ public:
     /** Returns current bpm value (not thread-safe) */
     double getBpm();
     /** Sets pointer to other engine buffer/channel */
-    void setOtherEngineBuffer(EngineBuffer *);
+    void setEngineMaster(EngineMaster*);
 
     /** Reset buffer playpos and set file playpos. This must only be called
       * while holding the pause mutex */
@@ -185,9 +186,6 @@ private:
     /** The read ahead manager for EngineBufferScale's that need to read
         ahead */
     ReadAheadManager* m_pReadAheadManager;
-
-    /** Pointer to other EngineBuffer */
-    EngineBuffer* m_pOtherEngineBuffer;
 
     // The reader used to read audio files
     CachingReader* m_pReader;

@@ -128,49 +128,64 @@ void BrowseThread::populateModel() {
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem(tio.getFilename());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_FILENAME, item);
 
         item = new QStandardItem(tio.getArtist());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_ARTIST, item);
 
         item = new QStandardItem(tio.getTitle());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_TITLE, item);
 
         item = new QStandardItem(tio.getAlbum());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_ALBUM, item);
 
         item = new QStandardItem(tio.getTrackNumber());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
         item = new QStandardItem(tio.getYear());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(tio.getGenre());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_GENRE, item);
 
         item = new QStandardItem(tio.getComposer());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_COMPOSER, item);
 
         item = new QStandardItem(tio.getComment());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_COMMENT, item);
 
         QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
         item = new QStandardItem(duration);
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_DURATION, item);
 
         item = new QStandardItem(tio.getBpmStr());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_BPM, item);
 
         item = new QStandardItem(tio.getKey());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_KEY, item);
 
         item = new QStandardItem(tio.getType());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_TYPE, item);
 
         item = new QStandardItem(tio.getBitrateStr());
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_BITRATE, item);
 
         item = new QStandardItem(filepath);
+        item->setToolTip(item->text());
         row_data.insert(COLUMN_LOCATION, item);
 
         rows.append(row_data);

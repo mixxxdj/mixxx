@@ -11,7 +11,7 @@
 class ControlObjectThread;
 
 #define MIXXX_VINYL_FINALSCRATCH "Final Scratch (crappy)"
-#define MIXXX_VINYL_MIXVIBESDVSCD "MixVibes DVS CD"
+#define MIXXX_VINYL_MIXVIBESDVS "MixVibes DVS"
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEA "Serato CV02 Vinyl, Side A"
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEB "Serato CV02 Vinyl, Side B"
 #define MIXXX_VINYL_SERATOCD "Serato CD"

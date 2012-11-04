@@ -62,7 +62,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
     m_pReadAheadManager(NULL),
-    m_pOtherEngineBuffer(NULL),
     m_pReader(NULL),
     filepos_play(0.),
     rate_old(0.),
@@ -360,13 +359,9 @@ double EngineBuffer::getBpm()
     return m_pBpmControl->getBpm();
 }
 
-void EngineBuffer::setOtherEngineBuffer(EngineBuffer * pOtherEngineBuffer)
+void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
 {
-    if (!m_pOtherEngineBuffer) {
-        m_pOtherEngineBuffer = pOtherEngineBuffer;
-        m_pBpmControl->setOtherEngineBuffer(pOtherEngineBuffer);
-    } else
-        qCritical("EngineBuffer: Other engine buffer already set!");
+    m_pBpmControl->setEngineMaster(pEngineMaster);
 }
 
 void EngineBuffer::setNewPlaypos(double newpos)

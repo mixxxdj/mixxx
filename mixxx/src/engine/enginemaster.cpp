@@ -474,40 +474,19 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {
         pBuffer->bindWorkers(m_pWorkerScheduler);
+        pBuffer->setEngineMaster(this);
     }
+}
 
-    // TODO(XXX) WARNING HUGE HACK ALERT In the case of 2-decks, this code hooks
-    // the two EngineBuffers together so they can beat-sync off of each other.
-    // rryan 6/2010
-    // OWEN EDIT: For four decks, assume 3 syncs off 1 and 4 syncs off 2
-    QString otherGroup = "";
-    QString thisGroup = pChannel->getGroup();
-    if (thisGroup == "[Channel1]" || thisGroup == "[Channel3]") {
-        otherGroup = "[Channel2]";
-    } else if (thisGroup == "[Channel2]" || thisGroup == "[Channel4]") {
-        otherGroup = "[Channel1]";
-    }
-    
-    if (otherGroup != "")
-    {
-        for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
-             i != m_channels.constEnd(); ++i) {
-            const ChannelInfo* pChannelInfo = *i;
-            if (pChannelInfo->m_pChannel->getGroup() == otherGroup) {
-                EngineBuffer *pBuffer1 = pChannel->getEngineBuffer();
-                EngineBuffer *pBuffer2 = pChannelInfo->m_pChannel->getEngineBuffer();
-                if (pBuffer1 != NULL && pBuffer2 != NULL) {
-                    pBuffer1->setOtherEngineBuffer(pBuffer2);
-                    if (thisGroup == "[Channel2]") {
-                        // for some reason [Channel1] never calls this function,
-                        // set it specially
-                        pBuffer2->setOtherEngineBuffer(pBuffer1);
-                    }
-                }
-                
-            }
+EngineChannel* EngineMaster::getChannel(QString group) {
+    for (QList<ChannelInfo*>::const_iterator i = m_channels.begin();
+         i != m_channels.end(); ++i) {
+        ChannelInfo* pChannelInfo = *i;
+        if (pChannelInfo->m_pChannel->getGroup() == group) {
+            return pChannelInfo->m_pChannel;
         }
     }
+    return NULL;
 }
 
 int EngineMaster::numChannels() const {
