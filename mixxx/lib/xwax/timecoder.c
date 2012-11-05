@@ -119,7 +119,7 @@ static struct timecode_def timecodes[] = {
         .seed = 0x22c90,
         .taps = 0x00008,
         .length = 950000,
-        .safe = 710000,
+        .safe = 655000,
         .lookup = false
     },
     {

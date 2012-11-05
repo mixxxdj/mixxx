@@ -4,8 +4,11 @@
         <name>Hercules DJ Control MP3 e2</name>
         <author>Neale Pickett</author>
         <description>Hercules DJ Control MP3 e2</description>
+        <devices>
+            <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03" />
+        </devices>
     </info>
-    <controller id="DJ">
+    <controller id="Hercules DJ Control MP3 e2">
         <scriptfiles>
             <file functionprefix="" filename="common-bulk-midi.js"/>
             <file functionprefix="" filename="Hercules DJ Control MP3 e2-scripts.js"/>

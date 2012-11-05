@@ -26,8 +26,11 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
           m_pEngine(pEngine),
           m_pLibrary(pLibrary),
           m_pVCManager(pVCManager),
+          // NOTE(XXX) LegacySkinParser relies on these controls being COs and
+          // not COTMs listening to a CO.
           m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"))),
           m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))) {
+
 
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)));
