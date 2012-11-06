@@ -2551,6 +2551,125 @@
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
 					</Visual>
+                    <Visual>
+						<TooltipId>waveform_display</TooltipId>
+						<Style></Style>
+						<Channel>3</Channel>
+						<Pos>0,0</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>i,73</Size>-->
+						<BgColor>#1C1C1C</BgColor>
+						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
+						<HfcColor>#1b1b1b</HfcColor>
+						<SignalColor>#EECE33</SignalColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
+						<BeatColor>#ffffff</BeatColor>
+						<BeatHighlightColor>#00FF00</BeatHighlightColor>
+						<MarkerColor>#00FF00</MarkerColor>
+						<CueColor>#000000</CueColor>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<DefaultMark>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+							<Text> %1 </Text>
+						</DefaultMark>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#FFFFFF</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Text>IN</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Text>OUT</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						-->
+						<Mark>
+							<Control>cue_point</Control>
+							<Text>CUE</Text>
+							<Align>top</Align>
+							<Color>#FF001C</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+					</Visual>
+					<Visual>
+						<TooltipId>waveform_display</TooltipId>
+						<Style></Style>
+						<Channel>4</Channel>
+						<Pos>0,0</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>i,73</Size>-->
+						<BgColor>#1C1C1C</BgColor>
+						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
+						<HfcColor>#1b1b1b</HfcColor>
+						<SignalColor>#EECE33</SignalColor>
+								<SignalLowColor>#EECE33</SignalLowColor>
+								<SignalMidColor>#C2A82A</SignalMidColor>
+								<SignalHighColor>#FFEFA3</SignalHighColor>
+						<BeatColor>#ffffff</BeatColor>
+						<BeatHighlightColor>#00FF00</BeatHighlightColor>
+						<MarkerColor>#00FF00</MarkerColor>
+						<CueColor>#000000</CueColor>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<DefaultMark>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+							<Text> %1 </Text>
+						</DefaultMark>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#FFFFFF</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Text>IN</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Text>OUT</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						-->
+						<Mark>
+							<Control>cue_point</Control>
+							<Text>CUE</Text>
+							<Align>top</Align>
+							<Color>#FF001C</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+					</Visual>
+
 				</Children>
 			</WidgetGroup>
 				<!-- Spinning Vinyl 2 sub-widget -->
@@ -3721,7 +3840,7 @@
 							<ConfigKey>[Master],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
-					<StatusLight>
+<!--					<StatusLight>
 						<PathStatusLight>eq_bypass_left.png</PathStatusLight>
 						<PathBack>eq_bypass_none.png</PathBack>
 						<Pos>15,41</Pos>
@@ -3737,7 +3856,7 @@
 						<Connection>
 							<ConfigKey>[Master],bypass_eq</ConfigKey>
 						</Connection>
-					</StatusLight>
+					</StatusLight>-->
 				</Children>
 			</WidgetGroup>
 
