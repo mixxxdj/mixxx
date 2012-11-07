@@ -17,7 +17,8 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
           m_bRemain(false) {
     m_qsText = "";
 
-    m_pShowDurationRemaining = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
+    m_pShowDurationRemaining = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
     connect(m_pShowDurationRemaining, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowDurationRemaining->get());

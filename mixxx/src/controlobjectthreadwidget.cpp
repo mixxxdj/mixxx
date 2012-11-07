@@ -1,15 +1,3 @@
-//
-// C++ Implementation: controlobjecthreadwidget.cpp
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2004
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include <QtDebug>
 #include <qapplication.h>
 #include "controlobjectthreadwidget.h"
@@ -18,9 +6,13 @@
 
 ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObject, QObject* pParent)
         : ControlObjectThreadMain(pControlObject, pParent) {
-    // Initialize value
-    m_dValue = m_pControlObject->getValueToWidget(m_pControlObject->get());
-    emitValueChanged();
+    // ControlObjectThread's constructor sets m_dValue to
+    // m_pControlObject->get(). Since we represent the widget's value, we need
+    // to reset m_dValue to be the result of getValueToWidget.
+    if (m_pControlObject != NULL) {
+        m_dValue = m_pControlObject->getValueToWidget(m_pControlObject->get());
+        emitValueChanged();
+    }
 }
 
 ControlObjectThreadWidget::~ControlObjectThreadWidget() {
@@ -28,9 +20,7 @@ ControlObjectThreadWidget::~ControlObjectThreadWidget() {
 
 void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFromWidget,
                                           bool connectValueToWidget,
-                                          EmitOption emitOption, Qt::MouseButton state)
-{
-
+                                          EmitOption emitOption, Qt::MouseButton state) {
     if (connectValueFromWidget) {
         connect(widget, SIGNAL(valueReset()),
                 this, SLOT(slotReset()));
@@ -67,30 +57,39 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
     emitValueChanged();
 }
 
-void ControlObjectThreadWidget::setWidgetOnOff(QWidget * widget)
+void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget)
 {
-    QApplication::connect(this,   SIGNAL(valueChanged(double)),    widget, SLOT(setOnOff(double)));
+    QApplication::connect(this, SIGNAL(valueChanged(double)),
+                          widget, SLOT(setOnOff(double)));
     emit(valueChanged(m_dValue));
 }
 
 void ControlObjectThreadWidget::slotReset() {
-    double defaultValue = m_pControlObject->defaultValue();
-    // defaultValue is a control value. slotSet needs to be set with a widget
-    // value since widget value-changed signals connect to it. setExtern needs
-    // to be called with a control value since it is triggered by control
-    // updates.
-    slotSet(m_pControlObject->getValueToWidget(defaultValue));
-    setExtern(defaultValue);
+    if (m_pControlObject != NULL) {
+        double defaultValue = m_pControlObject->defaultValue();
+        // defaultValue is a control value. slotSet needs to be set with a widget
+        // value since widget value-changed signals connect to it. setExtern needs
+        // to be called with a control value since it is triggered by control
+        // updates.
+        slotSet(m_pControlObject->getValueToWidget(defaultValue));
+        setExtern(defaultValue);
+    }
 }
 
 void ControlObjectThreadWidget::updateControlObject()
 {
-    m_pControlObject->queueFromThread(m_pControlObject->getValueFromWidget(get()), this);
+    if (m_pControlObject != NULL) {
+        m_pControlObject->queueFromThread(
+            m_pControlObject->getValueFromWidget(get()), this);
+    }
 }
 
-bool ControlObjectThreadWidget::setExtern(double v)
-{
+bool ControlObjectThreadWidget::setExtern(double v) {
     //qDebug() << "set extern widget";
-    QApplication::postEvent(this, new ControlEvent(m_pControlObject->getValueToWidget(v)));
+    if (m_pControlObject != NULL) {
+        // COTM just emits v here. Instead we need to transform the value with
+        // getValueToWidget.
+        QApplication::postEvent(this, new ControlEvent(m_pControlObject->getValueToWidget(v)));
+    }
     return true;
 }
