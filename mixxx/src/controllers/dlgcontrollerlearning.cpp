@@ -63,6 +63,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerControl("eject", tr("Eject track"), transportMenu);
     addSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
+    addDeckAndSamplerControl("slip_enabled", tr("Toggle slip mode"), transportMenu);
 
     // BPM & Sync
     QMenu* bpmMenu = addSubmenu(tr("BPM and Sync"));
@@ -132,7 +133,6 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("reloop_exit", tr("Reloop / Exit button"), loopMenu);
     addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);
-    addDeckControl("slip_enabled", tr("Toggle slip mode"), loopMenu);
 
     // Beatloops
     QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
