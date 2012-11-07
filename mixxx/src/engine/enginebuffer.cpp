@@ -346,11 +346,10 @@ void EngineBuffer::setNewPlaypos(double newpos)
     //qDebug() << "engine new pos " << newpos;
 
     // Before seeking, read extra buffer for crossfading
-    CSAMPLE *fadeout;
-    fadeout = m_pScale->scale(0,
-                             m_iLastBufferSize,
-                             0,
-                             0);
+    CSAMPLE* fadeout = m_pScale->scale(0,
+                                       m_iLastBufferSize,
+                                       0,
+                                       0);
     m_iCrossFadeSamples = m_iLastBufferSize;
     SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
 
@@ -621,8 +620,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
-            CSAMPLE *output;
-
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
             double filepos_play_rounded = round(filepos_play);
@@ -638,7 +635,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
 
             // Perform scaling of Reader buffer into buffer.
-            output = m_pScale->scale(0,
+            CSAMPLE* output = m_pScale->scale(0,
                                      iBufferSize,
                                      0,
                                      0);
@@ -675,7 +672,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             double cross_inc = 1.0 / cross_len;
 
             // Do crossfade from old fadeout buffer to this new data
-            for (int j = 0; j < iBufferSize && i < m_iCrossFadeSamples; i += 2, j += 2) {
+            for (int j = 0; j + 1 < iBufferSize && i + 1 < m_iCrossFadeSamples; i += 2, j += 2) {
                 pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
                 pOutput[j+1] = pOutput[j+1] * cross_mix + m_pCrossFadeBuffer[i+1] * (1.0 - cross_mix);
                 cross_mix += cross_inc;
