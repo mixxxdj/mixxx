@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-05-11 14:40+0000\n"
-"Last-Translator: luyikei <luyikei@live.jp>\n"
+"PO-Revision-Date: 2012-11-06 13:44+0000\n"
+"Last-Translator: Jerry Alan Carroll <jerry.alan.carroll@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 04:41+0000\n"
-"X-Generator: Launchpad (build 16112)\n"
+"X-Launchpad-Export-Date: 2012-11-07 04:37+0000\n"
+"X-Generator: Launchpad (build 16232)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: AutoDJFeature#1
@@ -337,7 +337,7 @@ msgstr "場所"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx ライブラリ"
 
 #: BrowseTableModel#17
 msgid ""
@@ -365,7 +365,7 @@ msgstr "メタデータのアップデートができません"
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "USB コントローラー"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -377,11 +377,11 @@ msgstr "キャッチできない例外 渡されたコード: %2 の行: %1"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr "コントローラスクリプトエラー"
+msgstr "コントローラースクリプトエラー"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr "あなただけに使用されるコントロールが正常に動作していません。"
+msgstr "使用されたコントローラが正常に動作していない"
 
 #: ControllerEngine#5
 msgid ""
@@ -401,13 +401,13 @@ msgstr "ダイアログ"
 #: ControllerMappingDlg#2
 msgctxt "ControllerMappingDlg#2"
 msgid "Input"
-msgstr "インプット"
+msgstr "入力"
 
 #: ControllerMappingDlg#3
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
-msgstr "下記のボックスが構築中であるとMixxxはこのバージョンでは空のままになります。"
+msgstr "下のボックスには現在建設中であり、それはMIXXXのこのバージョンでは空のままになります"
 
 #: ControllerMappingDlg#4
 msgid "Controls"
