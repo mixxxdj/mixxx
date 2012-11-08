@@ -8,47 +8,47 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-03-08 12:22+0000\n"
-"Last-Translator: Eric Hsin <Unknown>\n"
+"PO-Revision-Date: 2012-11-08 03:22+0000\n"
+"Last-Translator: Balok <hcp38@hotmail.com>\n"
 "Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 04:42+0000\n"
-"X-Generator: Launchpad (build 16112)\n"
+"X-Launchpad-Export-Date: 2012-11-08 04:45+0000\n"
+"X-Generator: Launchpad (build 16232)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "自動連播"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "加到連播單的後面"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "加到連播單的前面"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "匯入播放清單"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "建立播放清單失敗"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "建立播放清單時發生不明錯誤 "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "新增播放清單"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
@@ -63,65 +63,65 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "移除"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "重新命名"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "鎖定"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "匯入播放清單"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "匯出播放清單"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr ""
+msgstr "重新命名播放清單"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr ""
+msgstr "播放清單名稱"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "播放清單命名失敗"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "清單名稱已存在"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "清單名稱不能空白"
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr ""
+msgstr "播放清單名稱："
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "建立播放清單失敗"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "建立播放清單時發生不明錯誤 "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "輸入清單名稱(*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -132,17 +132,17 @@ msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "已播次數"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "演出者"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "標題"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
@@ -152,12 +152,12 @@ msgstr "專輯"
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "曲風"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr ""
+msgstr "作曲者"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
