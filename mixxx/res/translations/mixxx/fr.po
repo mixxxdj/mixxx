@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-10-28 14:12+0000\n"
-"Last-Translator: RantanplanSuisse <etioud@gmail.com>\n"
+"PO-Revision-Date: 2012-11-08 07:40+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-29 04:37+0000\n"
-"X-Generator: Launchpad (build 16194)\n"
+"X-Launchpad-Export-Date: 2012-11-09 04:36+0000\n"
+"X-Generator: Launchpad (build 16250)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -1550,7 +1550,7 @@ msgstr "Sensibilité du variateur de hauteur"
 #: DlgPrefControlsDlg#24
 msgctxt "DlgPrefControlsDlg#24"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Affichage de la forme d'onde"
 
 #: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
@@ -3545,7 +3545,7 @@ msgstr ""
 
 #: MixxxApp#73
 msgid "Ctrl+S"
-msgstr ""
+msgstr "Ctrl+S"
 
 #: MixxxApp#74
 msgid "Show Vinyl Control Widgets"
@@ -3557,7 +3557,7 @@ msgstr ""
 
 #: MixxxApp#76
 msgid "Ctrl+V"
-msgstr ""
+msgstr "Ctrl+V"
 
 #: MixxxApp#77
 msgid "Show Microphone Widgets"
@@ -3569,7 +3569,7 @@ msgstr ""
 
 #: MixxxApp#79
 msgid "Ctrl+M"
-msgstr ""
+msgstr "Ctrl+M"
 
 #: MixxxApp#80
 msgid "&Options"
@@ -4477,7 +4477,7 @@ msgstr "Va à la fin du morceau."
 #: Tooltips#127
 msgctxt "Tooltips#127"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: Tooltips#128
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4530,7 +4530,7 @@ msgstr "Ejecte le morceau du lecteur."
 #: Tooltips#139
 msgctxt "Tooltips#139"
 msgid "Hotcue"
-msgstr ""
+msgstr "Point de repère"
 
 #: Tooltips#140
 msgid "If hotcue is set, jumps to the hotcue."
