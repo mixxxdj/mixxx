@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-10-06 20:30+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2012-11-08 07:33+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 04:42+0000\n"
-"X-Generator: Launchpad (build 16112)\n"
+"X-Launchpad-Export-Date: 2012-11-09 04:37+0000\n"
+"X-Generator: Launchpad (build 16250)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1105,7 +1105,7 @@ msgstr ""
 #: DlgControllerLearning#80
 msgctxt "DlgControllerLearning#80"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgControllerLearning#81
 msgid "Switch to the next view (library, playlist..)"
@@ -4389,7 +4389,7 @@ msgstr ""
 
 #: Tooltips#113
 msgid "Clock"
-msgstr ""
+msgstr "Reloj"
 
 #: Tooltips#114
 msgid "Displays the current time."
@@ -4450,7 +4450,7 @@ msgstr "Salta al final de la pista."
 #: Tooltips#127
 msgctxt "Tooltips#127"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: Tooltips#128
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4503,7 +4503,7 @@ msgstr "Expulsa la pista del reproductor."
 #: Tooltips#139
 msgctxt "Tooltips#139"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#140
 msgid "If hotcue is set, jumps to the hotcue."
