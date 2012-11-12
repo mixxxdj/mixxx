@@ -7,7 +7,7 @@ EffectManifestParameter::EffectManifestParameter(QObject* pParent)
 }
 
 EffectManifestParameter::~EffectManifestParameter() {
-    qDebug() << debugString() << "destroyed";
+    qDebug() << *this << "destroyed";
 }
 
 const QString EffectManifestParameter::id() const {
@@ -100,4 +100,8 @@ QVariant EffectManifestParameter::getMaximum() const {
 
 void EffectManifestParameter::setMaximum(QVariant maximum) {
     m_maximum = maximum;
+}
+
+QDebug operator<<(QDebug dbg, const EffectManifestParameter &parameter) {
+    return dbg.maybeSpace() << QString("EffectManifestParameter(%1)").arg(parameter.id());
 }

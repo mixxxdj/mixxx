@@ -5,6 +5,7 @@
 #include <QVariant>
 #include <QString>
 #include <QSharedPointer>
+#include <QtDebug>
 
 class EffectManifestParameter;
 typedef QSharedPointer<const EffectManifestParameter> EffectManifestParameterPointer;
@@ -103,5 +104,7 @@ class EffectManifestParameter : public QObject {
     QVariant m_minimum;
     QVariant m_maximum;
 };
+
+QDebug operator<<(QDebug dbg, const EffectManifestParameter &parameter);
 
 #endif /* EFFECTMANIFESTPARAMETER_H */
