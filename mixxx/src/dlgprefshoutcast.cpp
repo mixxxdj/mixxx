@@ -200,7 +200,16 @@ void DlgPrefShoutcast::slotApply()
     if (enableUtf8Metadata->isChecked()) {
         charset = "UTF-8";
     }
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"), ConfigValue(charset));
+    QString current_charset = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
+
+    // Only allow setting the config value if the current value is either empty
+    // or "UTF-8". This way users can customize the charset to something else by
+    // setting the value in their mixxx.cfg. Not sure if this will be useful but
+    // it's good to leave the option open.
+    if (current_charset.length() == 0 || current_charset == "UTF-8") {
+        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"), ConfigValue(charset));
+    }
 
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text()));
