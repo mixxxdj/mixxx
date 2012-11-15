@@ -18,6 +18,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 #include <stdio.h> // currently used for writing to stdout
+#include <signal.h>
 
 #ifdef __WINDOWS__
     #include <windows.h>
@@ -63,6 +64,13 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false) {
+
+#ifndef __WINDOWS__
+    // Ignore SIGPIPE signals that we get when the remote streaming server
+    // disconnects.
+    signal(SIGPIPE, SIG_IGN);
+#endif
+
     m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
         ConfigKey("[Shoutcast]","update_from_prefs"));
