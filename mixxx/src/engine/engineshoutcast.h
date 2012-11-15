@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QMutex>
 #include <QMessageBox>
+#include <QTextCodec>
 
 #include <shout/shout.h>
 
@@ -80,6 +81,8 @@ class EngineShoutcast : public EngineAbstractRecord {
     void errorDialog(QString text, QString detailedError);
     void infoDialog(QString text, QString detailedError);
 
+    QByteArray encodeString(const QString& string);
+    QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
     shout_t *m_pShout;
     shout_metadata_t *m_pShoutMetaData;
@@ -96,8 +99,8 @@ class EngineShoutcast : public EngineAbstractRecord {
     QMutex m_shoutMutex;
     // static metadata according to prefereneces
     bool m_custom_metadata;
-    QByteArray m_baCustom_artist;
-    QByteArray m_baCustom_title;
+    QByteArray m_baCustomSong;
+
     // when static metadata is used, we only need calling shout_set_metedata
     // once
     bool m_firstCall;

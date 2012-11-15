@@ -144,6 +144,12 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
         tmp_index = 0;
     comboBoxEncodingChannels->setCurrentIndex(tmp_index);
 
+    // "Enable UTF-8 metadata" checkbox
+    // TODO(rryan): allow arbitrary codecs in the future?
+    QString charset = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
+    enableUtf8Metadata->setChecked(charset == "UTF-8");
+
     // "Enable custom metadata" checkbox
     enableCustomMetadata->setChecked((bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt());
@@ -190,8 +196,13 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre"),  ConfigValue(stream_genre->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_public"), ConfigValue(stream_public->isChecked()));
 
+    QString charset = "";
+    if (enableUtf8Metadata->isChecked()) {
+        charset = "UTF-8";
+    }
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"), ConfigValue(charset));
 
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
 
