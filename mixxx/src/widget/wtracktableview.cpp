@@ -18,13 +18,14 @@
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
-                                 TrackCollection* pTrackCollection)
+                                 TrackCollection* pTrackCollection, bool sorting)
         : WLibraryTableView(parent, pConfig,
                             ConfigKey(LIBRARY_CONFIGVALUE,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_searchThread(this) {
+          m_searchThread(this),
+          m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
     m_pTrackInfo = new DlgTrackInfo(NULL);
@@ -98,6 +99,7 @@ WTrackTableView::~WTrackTableView()
     delete m_pBpmUnlockAction;
 }
 
+// slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
@@ -162,7 +164,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setMovable(true);
     header->setClickable(true);
     header->setHighlightSections(true);
-    header->setSortIndicatorShown(true);
+    header->setSortIndicatorShown(m_sorting);
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -192,29 +194,31 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         }
     }
 
-    // NOTE: Should be a UniqueConnection but that requires Qt 4.6
-    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-            this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
+    if (m_sorting) {
+        // NOTE: Should be a UniqueConnection but that requires Qt 4.6
+        connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+                this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
 
-    // Stupid hack that assumes column 0 is never visible, but this is a weak
-    // proxy for "there was a saved column sort order"
-    if (horizontalHeader()->sortIndicatorSection() > 0) {
-        // Sort by the saved sort section and order. This line sorts the
-        // TrackModel and in turn generates a select()
-        horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
-                                             horizontalHeader()->sortIndicatorOrder());
-    } else {
-        // No saved order is present. Use the TrackModel's default sort order.
-        int sortColumn = track_model->defaultSortColumn();
-        Qt::SortOrder sortOrder = track_model->defaultSortOrder();
+        // Stupid hack that assumes column 0 is never visible, but this is a weak
+        // proxy for "there was a saved column sort order"
+        if (horizontalHeader()->sortIndicatorSection() > 0) {
+            // Sort by the saved sort section and order. This line sorts the
+            // TrackModel and in turn generates a select()
+            horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
+                                                 horizontalHeader()->sortIndicatorOrder());
+        } else {
+            // No saved order is present. Use the TrackModel's default sort order.
+            int sortColumn = track_model->defaultSortColumn();
+            Qt::SortOrder sortOrder = track_model->defaultSortOrder();
 
-        // If the TrackModel has an invalid or internal column as its default
-        // sort, find the first non-internal column and sort by that.
-        while (sortColumn < 0 || track_model->isColumnInternal(sortColumn)) {
-            sortColumn++;
+            // If the TrackModel has an invalid or internal column as its default
+            // sort, find the first non-internal column and sort by that.
+            while (sortColumn < 0 || track_model->isColumnInternal(sortColumn)) {
+                sortColumn++;
+            }
+            // This line sorts the TrackModel and in turn generates a select()
+            horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
         }
-        // This line sorts the TrackModel and in turn generates a select()
-        horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
     }
 
     // Set up drag and drop behaviour according to whether or not the track
@@ -241,15 +245,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
-}
-
-void WTrackTableView::disableSorting() {
-    // We have to manually do this because setSortingEnabled(false) does not
-    // properly disconnect the signals for some reason.
-    disconnect(horizontalHeader(),
-               SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-               this, SLOT(doSortByColumn(int)));
-    horizontalHeader()->setSortIndicatorShown(false);
 }
 
 void WTrackTableView::createActions() {
@@ -303,6 +298,7 @@ void WTrackTableView::createActions() {
             this, SLOT(slotClearBeats()));
 }
 
+// slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
         return;
@@ -1117,7 +1113,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     TrackModel* trackModel = getTrackModel();
     QAbstractItemModel* itemModel = model();
 
-    if (trackModel == NULL || itemModel == NULL)
+    if (trackModel == NULL || itemModel == NULL || m_sorting == false)
         return;
 
     // Save the selection
