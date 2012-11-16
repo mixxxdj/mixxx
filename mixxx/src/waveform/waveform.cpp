@@ -17,9 +17,7 @@ Waveform::Waveform(const QByteArray data)
           m_textureStride(1024),
           m_completion(-1),
           m_mutex(new QMutex()) {
-    if (!data.isNull()) {
-        readByteArray(data);
-    }
+    readByteArray(data);
 }
 
 Waveform::~Waveform() {
@@ -84,6 +82,10 @@ QByteArray Waveform::toByteArray() const {
 }
 
 void Waveform::readByteArray(const QByteArray data) {
+    if (data.isNull()) {
+        return;
+    }
+
     io::Waveform waveform;
 
     if (!waveform.ParseFromArray(data.constData(), data.size())) {

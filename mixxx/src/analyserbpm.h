@@ -1,11 +1,12 @@
 #ifndef ANALYSER_BPM_H
 #define ANALYSER_BPM_H
 
-#include "BPMDetect.h"
-
 #include "analyser.h"
 #include "configobject.h"
 
+namespace soundtouch {
+class BPMDetect;
+}
 
 class AnalyserBPM : public Analyser {
   public:

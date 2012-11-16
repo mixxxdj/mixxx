@@ -15,7 +15,9 @@ DlgPrepare::DlgPrepare(QWidget* parent,
         : QWidget(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_bAnalysisActive(false) {
+          m_bAnalysisActive(false),
+          m_tracksInQueue(0),
+          m_currentTrack(0) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
@@ -154,6 +156,8 @@ void DlgPrepare::analyze() {
                 trackIds.append(trackId);
             }
         }
+        m_tracksInQueue = trackIds.count();
+        m_currentTrack = 1;
         emit(analyzeTracks(trackIds));
     }
 }
@@ -170,13 +174,23 @@ void DlgPrepare::analysisActive(bool bActive) {
     }
 }
 
-void DlgPrepare::trackAnalysisFinished(TrackPointer tio) {
-    qDebug() << "Analysis finished on track:" << tio->getInfo();
+// slot
+void DlgPrepare::trackAnalysisFinished(TrackPointer pTrack, int size) {
+    Q_UNUSED(pTrack);
+    qDebug() << "Analysis finished" << size << "tracks left";
+    if (size > 0) {
+        m_currentTrack = m_tracksInQueue - size + 1;
+    }
 }
 
+// slot
 void DlgPrepare::trackAnalysisProgress(TrackPointer tio, int progress) {
+    Q_UNUSED(tio);
     if (m_bAnalysisActive) {
-        QString text = tr("Analyzing %1%").arg(progress);
+        QString text = tr("Analyzing %1/%2 %3%").arg(
+                QString::number(m_currentTrack),
+                QString::number(m_tracksInQueue),
+                QString::number(progress));
         labelProgress->setText(text);
     }
 }
