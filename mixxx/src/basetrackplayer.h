@@ -31,6 +31,7 @@ class BaseTrackPlayer : public BasePlayer {
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
+    void slotSetReplayGain(double replayGain);
 
   signals:
     void loadTrack(TrackPointer pTrack);
@@ -53,6 +54,7 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
+    ControlObjectThreadMain* m_pPlay;
 };
 
 
