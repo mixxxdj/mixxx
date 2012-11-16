@@ -36,7 +36,7 @@ class PlayerInfo : public QObject
     int getCurrentPlayingDeck();
     TrackPointer getCurrentPlayingTrack();
     bool isTrackLoaded(TrackPointer pTrack) const;
-    bool isTrackPlaying(TrackInfoObject* pTrack) const;
+    bool isTrackPlaying(TrackPointer pTrack) const;
 
   signals:
     void currentPlayingDeckChanged(int deck);
