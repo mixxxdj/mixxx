@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-03-03 23:01+0000\n"
-"Last-Translator: Varga Edvárd <varga.edvard@gmail.com>\n"
+"PO-Revision-Date: 2012-11-16 12:36+0000\n"
+"Last-Translator: Tom <tamas.miklai@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-10-10 04:40+0000\n"
-"X-Generator: Launchpad (build 16112)\n"
+"X-Launchpad-Export-Date: 2012-11-17 04:34+0000\n"
+"X-Generator: Launchpad (build 16278)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -34,17 +34,17 @@ msgstr ""
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Lejátszólista importálása"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Lejátszólista készítése sikertelen"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Egy ismeretlen hiba történt a lejátszólista készítésekor: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -63,12 +63,12 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "Eltávolít"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "Átnevezés"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
@@ -78,15 +78,15 @@ msgstr ""
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Lejátszólista importálása"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "Lejátszólista exportálása"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Lejátszólista átnevezése"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
@@ -111,12 +111,12 @@ msgstr "A lejátszólista neve:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Lejátszólista készítése sikertelen"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Egy ismeretlen hiba történt a lejátszólista készítésekor: "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -157,7 +157,7 @@ msgstr "Műfaj"
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr ""
+msgstr "Szerző"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
