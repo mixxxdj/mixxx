@@ -44,6 +44,19 @@
 	############################################################################################
 	-->
 
+	<manifest>
+	<title>Outline800x480-WVGA</title>
+	<author>jus</author>
+	<version>1.11.0.6</version>
+	<description>A 2-deck parallel waveform skin</description>
+	<language>en</language>
+	<license>GNU General Public License, version 2 or later</license>
+	<attributes>
+		<attribute config_key="[Master],num_decks">2</attribute>
+		<attribute config_key="[Master],num_samplers">0</attribute>
+	</attributes>
+	</manifest>
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -87,6 +100,37 @@
 			</Filters>
 		</Scheme>
 		<Scheme>
+			<Name>Noon (Ever Darker Mixxx)</Name>
+			<Filters>
+			<Invert/>
+				<HSVTweak>
+					<HMin>30</HMin>
+					<HMax>30</HMax>
+					<HConst>-27</HConst>
+					<SConst>-59</SConst>
+					<VConst>-21</VConst>
+				</HSVTweak>
+				<HSVTweak>
+					<HConst>-170</HConst>
+				</HSVTweak>
+			</Filters>
+		</Scheme>
+		<Scheme>
+			<Name>3am (Still Awake Mixxx)</Name>
+			<Filters>
+				<Invert/>
+				<Add>
+					<Amount>50</Amount>
+				</Add>
+				<ScaleWhite>
+					<Amount>1.5</Amount>
+				</ScaleWhite>
+				<Add>
+					<Amount>-50</Amount>
+				</Add>
+			</Filters>
+		</Scheme>
+		<Scheme>
 			<Name>5pm (Classic Mixxx)</Name>
 			<Filters/>
 		</Scheme>
@@ -107,21 +151,6 @@
 				</HSVTweak>
 			</Filters>
 		</Scheme>
-		<Scheme>
-			<Name>3am (Still Awake Mixxx)</Name>
-			<Filters>
-				<Invert/>
-				<Add>
-					<Amount>50</Amount>
-				</Add>
-				<ScaleWhite>
-					<Amount>1.5</Amount>
-				</ScaleWhite>
-				<Add>
-					<Amount>-50</Amount>
-				</Add>
-			</Filters>
-		</Scheme>
 	</Schemes>
 
 	<!--
@@ -135,254 +164,12 @@
 	</Background>
 
 	<!--
-	**********************************************
-	General- Search and Library display
-	**********************************************
-	-->
-	<TableView>
-		<Style>
-		<!-- No use of colour CSS colour propertys here, this breaks the colour schemes as of QT 4.7.1-->
-
-		QTableView, QTextBrowser, QTreeView { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		QTableView::indicator { width: 12px; height: 12px;}
-		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
-		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
-
-		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-
-		<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
-		You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
-		In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
-		The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
-		-->
-		<!--transition time in Auto DJ tab-->
-		QSpinBox:editable { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
-
-		<!--library search bar-->
-		WSearchLineEdit { padding: 1px; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		WSearchLineEdit:focus {padding: 1px; border: 2px solid #FF6600; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,20); }
-
-		<!--splitter between treeview and library-->
-		QSplitter::handle { image: url(skin:/style_handle_unchecked.png); background: none; }
-		QSplitter::handle:pressed { image: url(skin:/style_handle_checked.png); background: none; }
-		QSplitter::handle:horizontal { width: 6px; }
-		QSplitter::handle:vertical { height: 6px; }
-
-		QLabel, QPushButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
-		QRadioButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; }
-
-		<!--triangle for closed/opened branches in treeview-->
-		QTreeView {show-decoration-selected: 0;} <!-- Suppresses that selected sidebar item's branch indicator shows wrong color when out of focus ; lp:880588-->
-		QTreeView::branch:has-children:!has-siblings:closed,
-		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_closed.png);}
-		QTreeView::branch:open:has-children:!has-siblings,
-		QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_open.png);}
-		</Style>
-		<Pos>80,178</Pos>
-		<Size>630,272</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<FgColor>#191919</FgColor>
-		<BgColorRowEven>#FFFFFF</BgColorRowEven>
-		<BgColorRowUneven>#FFFFFF</BgColorRowUneven>
-	</TableView>
-
-	<!--
 	############################################################################################
 	############################################################################################
 	Section: Visual
 	############################################################################################
 	############################################################################################
 	-->
-
-	<!--
-	**********************************************
-	Visual- Waveform
-	**********************************************
-	-->
-	<Visual>
-		<TooltipId>waveform_display</TooltipId>
-		<Style></Style>
-		<Channel>1</Channel>
-		<Pos>80,18</Pos>
-		<Size>629,46</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<SignalColor>#00ff00</SignalColor>
-		<BeatColor>#0032FF</BeatColor>
-		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#0033FF</MarkerColor>
-		<CueColor>#00FF00</CueColor>
-		<EndOfTrackColor>#EA0000</EndOfTrackColor>
-		<DefaultMark>
-			<Align>top</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-			<Text> %1 </Text>
-		</DefaultMark>
-		<MarkRange>
-			<StartControl>loop_start_position</StartControl>
-			<EndControl>loop_end_position</EndControl>
-			<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#0032FF</Color>
-			<DisabledColor>#FFFFFF</DisabledColor>
-		</MarkRange>
-		<Mark>
-			<Control>loop_start_position</Control>
-			<Text>IN</Text>
-			<Align>bottom</Align>
-			<Color>#0032FF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>loop_end_position</Control>
-			<Text>OUT</Text>
-			<Align>bottom</Align>
-			<Color>#0032FF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<!--
-		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-		-->
-		<Mark>
-			<Control>cue_point</Control>
-			<Text>CUE</Text>
-			<Align>top</Align>
-			<Color>#FF001C</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-	</Visual>
-	<Visual>
-		<TooltipId>waveform_display</TooltipId>
-		<Style></Style>
-		<Channel>2</Channel>
-		<Pos>80,63</Pos>
-		<Size>629,46</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<SignalColor>#00ff00</SignalColor>
-		<BeatColor>#F00000</BeatColor>
-		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#FF0000</MarkerColor>
-		<CueColor>#000000</CueColor>
-		<EndOfTrackColor>#EA0000</EndOfTrackColor>
-		<DefaultMark>
-			<Align>top</Align>
-			<Color>#00AAFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-			<Text> %1 </Text>
-		</DefaultMark>
-		<MarkRange>
-			<StartControl>loop_start_position</StartControl>
-			<EndControl>loop_end_position</EndControl>
-			<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#F00000</Color>
-			<DisabledColor>#FFFFFF</DisabledColor>
-		</MarkRange>
-		<Mark>
-			<Control>loop_start_position</Control>
-			<Text>IN</Text>
-			<Align>bottom</Align>
-			<Color>#F00000</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>loop_end_position</Control>
-			<Text>OUT</Text>
-			<Align>bottom</Align>
-			<Color>#F00000</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<!--
-		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-		-->
-		<Mark>
-			<Control>cue_point</Control>
-			<Text>CUE</Text>
-			<Align>top</Align>
-			<Color>#FF001C</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-	</Visual>
-
-	<!--
-	**********************************************
-	Visaul- Waveform overview
-	**********************************************
-	-->
-	<Overview>
-		<TooltipId>waveform_overview</TooltipId>
-		<Style></Style>
-		<Channel>1</Channel>
-		<Pos>114,125</Pos>
-		<Size>185,16</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<SignalColor>#00ff00</SignalColor>
-		<MarkerColor>#0032FF</MarkerColor>
-		<EndOfTrackColor>#EA0000</EndOfTrackColor>
-		<DefaultMark>
-			<Align>bottom</Align>
-			<Color>#00FF00</Color>
-			<TextColor>#FFFFFF</TextColor>
-			<Text> %1 </Text>
-		</DefaultMark>
-		<MarkRange>
-			<StartControl>loop_start_position</StartControl>
-			<EndControl>loop_end_position</EndControl>
-			<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#00FF00</Color>
-			<DisabledColor>#FFFFFF</DisabledColor>
-		</MarkRange>
-		<Mark>
-			<Control>cue_point</Control>
-			<Align>top</Align>
-			<Color>#FF001C</Color>
-			<TextColor>#FFFFFF</TextColor>
-			<Text>C</Text>
-		</Mark>
-		<Connection>
-			<ConfigKey>[Channel1],playposition</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-		</Connection>
-	</Overview>
-	<Overview>
-		<TooltipId>waveform_overview</TooltipId>
-		<Style></Style>
-		<Channel>2</Channel>
-		<Pos>491,125</Pos>
-		<Size>185,16</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<SignalColor>#00ff00</SignalColor>
-		<MarkerColor>#ff0000</MarkerColor>
-		<EndOfTrackColor>#EA0000</EndOfTrackColor>
-		<DefaultMark>
-			<Align>bottom</Align>
-			<Color>#00FF00</Color>
-			<TextColor>#FFFFFF</TextColor>
-			<Text> %1 </Text>
-		</DefaultMark>
-		<MarkRange>
-			<StartControl>loop_start_position</StartControl>
-			<EndControl>loop_end_position</EndControl>
-			<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#00FF00</Color>
-			<DisabledColor>#FFFFFF</DisabledColor>
-		</MarkRange>
-		<Mark>
-			<Control>cue_point</Control>
-			<Align>top</Align>
-			<Color>#FF001C</Color>
-			<TextColor>#FFFFFF</TextColor>
-			<Text>C</Text>
-		</Mark>
-		<Connection>
-			<ConfigKey>[Channel2],playposition</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-		</Connection>
-	</Overview>
 
 	<!--
 	**********************************************
@@ -394,7 +181,7 @@
 		<Style></Style>
 		<PathVu>btn_volume_display1_over.png</PathVu>
 		<PathBack>btn_volume_display1.png</PathBack>
-		<Pos>63,296</Pos>
+		<Pos>63,306</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -409,7 +196,7 @@
 		<Style></Style>
 		<PathVu>btn_volume_display2_over.png</PathVu>
 		<PathBack>btn_volume_display2.png</PathBack>
-		<Pos>774,296</Pos>
+		<Pos>784,306</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -425,7 +212,7 @@
 		<Style></Style>
 		<PathVu>btn_volume_display_master1_over.png</PathVu>
 		<PathBack>btn_volume_display_master1.png</PathBack>
-		<Pos>576,159</Pos>
+		<Pos>649,158</Pos>
 		<Horizontal>true</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -440,7 +227,7 @@
 		<Style></Style>
 		<PathVu>btn_volume_display_master2_over.png</PathVu>
 		<PathBack>btn_volume_display_master2.png</PathBack>
-		<Pos>576,148</Pos>
+		<Pos>649,148</Pos>
 		<Horizontal>true</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -461,7 +248,7 @@
 		<Style></Style>
 		<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 		<PathBack>btn_clipping1.png</PathBack>
-		<Pos>63,285</Pos>
+		<Pos>63,296</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 		</Connection>
@@ -471,7 +258,7 @@
 		<Style></Style>
 		<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 		<PathBack>btn_clipping2.png</PathBack>
-		<Pos>774,285</Pos>
+		<Pos>784,296</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
 		</Connection>
@@ -481,11 +268,2894 @@
 		<Style></Style>
 		<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 		<PathBack>btn_clipping_master.png</PathBack>
-		<Pos>700,148</Pos>
+		<Pos>707,148</Pos>
 		<Connection>
 			<ConfigKey>[Master],PeakIndicator</ConfigKey>
 		</Connection>
 	</StatusLight>
+
+	<!--
+	**********************************************
+	Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
+	**********************************************
+	-->
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>80,79</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>80,142</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>368,79</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>78,79</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>430,79</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>430,142</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>430,79</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<TooltipId>vinylcontrol_status</TooltipId>
+		<Style></Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>720,79</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+
+	<!--
+	**********************************************
+	Visaul- Waveform overview
+	**********************************************
+	-->
+	<Overview>
+		<TooltipId>waveform_overview</TooltipId>
+		<Style></Style>
+		<Channel>1</Channel>
+		<Pos>78,112</Pos>
+		<Size>180,30</Size>
+		<BgColor>#FFFFFF</BgColor>
+		<SignalHighColor>#FFE300</SignalHighColor>
+		<SignalMidColor>#0099FF</SignalMidColor>
+		<SignalLowColor>#FF0035</SignalLowColor>
+		<SignalColor>#FF8000</SignalColor>
+		<MarkerColor>#00FF00</MarkerColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
+		<DefaultMark>
+			<Align>bottom</Align>
+			<Color>#00FF00</Color>
+			<TextColor>#CCCCCC</TextColor>
+			<Text> %1 </Text>
+		</DefaultMark>
+		<MarkRange>
+			<StartControl>loop_start_position</StartControl>
+			<EndControl>loop_end_position</EndControl>
+			<EnabledControl>loop_enabled</EnabledControl>
+			<Color>#00FF00</Color>
+			<DisabledColor>#008000</DisabledColor>
+		</MarkRange>
+		<Mark>
+			<Control>cue_point</Control>
+			<Text>C</Text>
+			<Align>top</Align>
+			<Color>#00FF00</Color>
+			<TextColor>#CCCCCC</TextColor>
+		</Mark>
+		<Connection>
+			<ConfigKey>[Channel1],playposition</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</Overview>
+	<Overview>
+		<TooltipId>waveform_overview</TooltipId>
+		<Style></Style>
+		<Channel>2</Channel>
+		<Pos>432,112</Pos>
+		<Size>180,30</Size>
+		<BgColor>#FFFFFF</BgColor>
+		<SignalHighColor>#FFE300</SignalHighColor>
+		<SignalMidColor>#0099FF</SignalMidColor>
+		<SignalLowColor>#FF0035</SignalLowColor>
+		<SignalColor>#FF8000</SignalColor>
+		<MarkerColor>#00FF00</MarkerColor>
+		<EndOfTrackColor>#EA0000</EndOfTrackColor>
+		<DefaultMark>
+			<Align>bottom</Align>
+			<Color>#00FF00</Color>
+			<TextColor>#CCCCCC</TextColor>
+			<Text> %1 </Text>
+		</DefaultMark>
+		<MarkRange>
+			<StartControl>loop_start_position</StartControl>
+			<EndControl>loop_end_position</EndControl>
+			<EnabledControl>loop_enabled</EnabledControl>
+			<Color>#00FF00</Color>
+			<DisabledColor>#008000</DisabledColor>
+		</MarkRange>
+		<Mark>
+			<Control>cue_point</Control>
+			<Text>C</Text>
+			<Align>top</Align>
+			<Color>#00FF00</Color>
+			<TextColor>#CCCCCC</TextColor>
+		</Mark>
+		<Connection>
+			<ConfigKey>[Channel2],playposition</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</Overview>
+
+	<!--
+	############################################################################################
+	############################################################################################
+	WidgetGroup : Waveform, Vinylcontrol & Spinning Vinyl
+	############################################################################################
+	############################################################################################
+	-->
+	<WidgetGroup>
+		<Pos>80,0</Pos>
+		<Size>641,78</Size>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Layout>horizontal</Layout>
+		<Children>
+			<!-- Vinylcontrol 1 sub-widget -->
+			<WidgetGroup>
+				<!--<Pos>0,0</Pos>-->
+				<Size>35,i</Size>
+				<Style>QGroupBox { border: 0px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
+				<Children>
+					<!--
+					**********************************************
+					Vinyl- Status
+					// Vinyl status indicators are inside the decks WidgetGroups
+					**********************************************
+					-->
+
+					<!--
+					**********************************************
+					Vinyl- Control Mode
+					**********************************************
+					-->
+					<PushButton>
+						<TooltipId>vinylcontrol_mode</TooltipId>
+						<Style></Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_mode_abs1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_abs1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_mode_rel1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_rel1.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_mode_const1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_const1.png</Unpressed>
+						</State>
+						<Pos>2,4</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Vinyl- Cueing Mode
+					**********************************************
+					-->
+					<PushButton>
+						<TooltipId>vinylcontrol_cueing</TooltipId>
+						<Style></Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_cueing_off1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_off1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_cueing_one1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_one1.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_cueing_hot1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_hot1.png</Unpressed>
+						</State>
+						<Pos>2,42</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],vinylcontrol_cueing</ConfigKey>
+						</Connection>
+					</PushButton>
+				</Children>
+				<Connection>
+					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+			<!-- Spinning Vinyl 1 sub-widget -->
+			<WidgetGroup>
+				<!--<Pos>0,0</Pos>-->
+				<Size>78,i</Size>
+				<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+				<Children>
+					<!--
+					**********************************************
+					Visual- Spinning Vinyl
+					**********************************************
+					-->
+					<Spinny>
+						<TooltipId>spinny</TooltipId>
+						<Style></Style>
+						<Channel>1</Channel>
+						<Pos>0,1</Pos>
+						<Size>i,i</Size>
+						<PathBackground>vinyl_spinny1_background.png</PathBackground>
+						<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+						<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+					</Spinny>
+				</Children>
+				<Connection>
+					<ConfigKey>[Spinny1],show_spinny</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+			<!-- Expanding waveform sub-widget -->
+			<WidgetGroup>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Layout>vertical</Layout>
+				<Children>
+					<!--If you want the waveforms center to adjust when resizing in a collapsing widget
+					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
+					and don't specify the Waveform's <Size>. So you would have:
+					Parent WidgetGroup
+						Waveform Widget (no Widgetgroup)
+						Child WidgetGroup for Spinny
+							Spinny Widget
+					-->
+					<!--
+					**********************************************
+					Visual- Waveform
+					**********************************************
+					-->
+					<Visual>
+						<TooltipId>waveform_display</TooltipId>
+						<Style></Style>
+						<Channel>1</Channel>
+						<Pos>0,0</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>i,60</Size>-->
+						<BgColor>#FFFFFF</BgColor>
+						<SignalHighColor>#FFE300</SignalHighColor>
+						<SignalMidColor>#0099FF</SignalMidColor>
+						<SignalLowColor>#FF0035</SignalLowColor>
+						<SignalColor>#19ABFB</SignalColor>
+						<BeatColor>#191919</BeatColor>
+						<BeatHighlightColor>#000000</BeatHighlightColor>
+						<MarkerColor>#00FF00</MarkerColor>
+						<CueColor>#00FF00</CueColor>
+						<Align></Align>
+						<AxesColor>#00FF00</AxesColor>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<DefaultMark>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+							<Text> %1 </Text>
+						</DefaultMark>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#008000</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Text>IN</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Text>OUT</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						-->
+						<Mark>
+							<Control>cue_point</Control>
+							<Text>CUE</Text>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+						</Mark>
+					</Visual>
+					<Visual>
+						<TooltipId>waveform_display</TooltipId>
+						<Style></Style>
+						<Channel>2</Channel>
+						<Pos>0,0</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>i,60</Size>-->
+						<BgColor>#FFFFFF</BgColor>
+						<SignalHighColor>#FFE300</SignalHighColor>
+						<SignalMidColor>#0099FF</SignalMidColor>
+						<SignalLowColor>#FF0035</SignalLowColor>
+						<SignalColor>#FF0000</SignalColor>
+						<BeatColor>#191919</BeatColor>
+						<BeatHighlightColor>#000000</BeatHighlightColor>
+						<MarkerColor>#00FF00</MarkerColor>
+						<CueColor>#00FF00</CueColor>
+						<Align></Align>
+						<AxesColor>#00FF00</AxesColor>
+						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<DefaultMark>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+							<Text> %1 </Text>
+						</DefaultMark>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#008000</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Text>IN</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Text>OUT</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						-->
+						<Mark>
+							<Control>cue_point</Control>
+							<Text>CUE</Text>
+							<Align>top</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#191919</TextColor>
+						</Mark>
+					</Visual>
+				</Children>
+			</WidgetGroup>
+			<!-- Spinning Vinyl 2 sub-widget -->
+			<WidgetGroup>
+				<!--<Pos>0,0</Pos>-->
+				<Size>78,i</Size>
+				<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0; } </Style>
+				<Children>
+					<!--
+					**********************************************
+					Visual- Spinning Vinyl
+					**********************************************
+					-->
+					<Spinny>
+						<TooltipId>spinny</TooltipId>
+						<Style></Style>
+						<Channel>2</Channel>
+						<Pos>0,1</Pos>
+						<Size>i,i</Size>
+						<PathBackground>vinyl_spinny2_background.png</PathBackground>
+						<PathForeground>vinyl_spinny2_foreground.png</PathForeground>
+						<PathGhost>vinyl_spinny2_foreground_ghost.png</PathGhost>
+					</Spinny>
+				</Children>
+				<Connection>
+					<ConfigKey>[Spinny2],show_spinny</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+			<!-- Vinylcontrol 2 sub-widget -->
+			<WidgetGroup>
+				<!--<Pos>0,0</Pos>-->
+				<Size>35,i</Size>
+				<Style>QGroupBox { border: 0px solid green;} QWidget { margin: 0; padding: 0; }</Style>
+				<Children>
+					<!--
+					**********************************************
+					Vinyl- Status
+					// Vinyl status indicators are inside the decks WidgetGroups
+					**********************************************
+					-->
+
+					<!--
+					**********************************************
+					Vinyl- Control Mode
+					**********************************************
+					-->
+					<PushButton>
+						<TooltipId>vinylcontrol_mode</TooltipId>
+						<Style></Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_mode_abs2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_abs2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_mode_rel2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_rel2.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_mode_const2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_const2.png</Unpressed>
+						</State>
+						<Pos>4,4</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Vinyl- Cueing Mode
+					**********************************************
+					-->
+					<PushButton>
+						<TooltipId>vinylcontrol_cueing</TooltipId>
+						<Style></Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_cueing_off2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_off2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_cueing_one2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_one2.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_cueing_hot2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_hot2.png</Unpressed>
+						</State>
+						<Pos>4,42</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],vinylcontrol_cueing</ConfigKey>
+						</Connection>
+					</PushButton>
+				</Children>
+				<Connection>
+					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+		</Children>
+	</WidgetGroup>
+
+	<!--
+	############################################################################################
+	############################################################################################
+	WidgetGroup : Show/hide Samplers and shrink Library
+	############################################################################################
+	############################################################################################
+	-->
+	<WidgetGroup>
+		<Pos>79,177</Pos>
+		<!--
+		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
+		<Size>w,h</Size>
+		-->
+		<Size>641,274</Size>
+		<Layout>vertical</Layout>
+		<!--deactivate the standard
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		cause push buttons in library will show up with wrong margin/padding -->
+		<Style>QGroupBox { border: 0px solid red; }</Style>
+		<Children>
+
+			<!--TODO: Add sampler support
+				1. Fit <Pos> for sampler elements
+				2. Set num_samplers=4 in <manifest>
+				3. Unhide Sampler tab
+			For now just make the Sampler Widgetgroup invisible and set num_samplers=0 in <manifest> -jus
+			-->
+
+			<!-- Sampler Bank sub-widget -->
+			<WidgetGroup>
+				<Size>i,i</Size>
+				<!--<Size>i,100</Size>-->
+				<Layout>horizontal</Layout>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 0px 0px;} </Style>
+				<Children>
+					<!-- all sub-widgets for the 4 samplers -->
+					<WidgetGroup>
+						<Pos>0,0</Pos>
+						<Size>203,100</Size>
+						<!--
+						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
+						( like on all the other stuff declared by CSS).
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						-->
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<Children>
+							<!--
+							**********************************************
+							HACK ALERT - The following button is a dummy
+							and serves no other function than to provive 
+							the background image for the sampler which can 
+							than be styled using the Mixxx color scheme support,
+							which wont work if we`d load the image via QStyle
+							(see above note).
+							https://bugs.launchpad.net/mixxx/+bug/921174
+							https://bugs.launchpad.net/mixxx/+bug/1021031
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId></TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>style/style_bg_sampler.png</Pressed>
+									<Unpressed>style/style_bg_sampler.png</Unpressed>
+								</State>
+								<Pos>0,0</Pos>
+								<Connection>
+									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
+									<!-- You can make up your own ConfigKey -->
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Text- Track Title
+							**********************************************
+							-->
+							<Text>
+								<TooltipId>text</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								-->
+								<Group>[Sampler1]</Group>
+								<Pos>1,0</Pos>
+								<Size>110,20</Size>
+							</Text>
+							<!-- Alternative "TITLE ONLY" display
+							<TrackProperty>
+								<TooltipId>track_title</TooltipId>
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								<Property>title</Property>
+								<Group>[Sampler1]</Group>
+								<Pos>1,0</Pos>
+								<Size>113,20</Size>
+							</TrackProperty>
+							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<TooltipId>visual_bpm</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: left;padding-left: 1px; }
+								</Style>
+								-->
+								<Group>[Sampler1]</Group>
+								<Pos>115,0</Pos>
+								<Size>46,20</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler1],visual_bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							<PushButton>
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
+							-->
+
+							<!--
+							**********************************************
+							Visual- Waveform overview
+							**********************************************
+							-->
+							<Overview>
+								<TooltipId>waveform_overview</TooltipId>
+								<Style></Style>
+								<Group>[Sampler1]</Group>
+								<Pos>1,21</Pos>
+								<Size>113,30</Size>
+								<BgColor>#FFFFFF</BgColor>
+								<SignalHighColor>#FFE300</SignalHighColor>
+								<SignalMidColor>#0099FF</SignalMidColor>
+								<SignalLowColor>#FF0035</SignalLowColor>
+								<SignalColor>#FF8000</SignalColor>
+								<MarkerColor>#00FF00</MarkerColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
+								<DefaultMark>
+									<Align>bottom</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+									<Text> %1 </Text>
+								</DefaultMark>
+								<MarkRange>
+									<StartControl>loop_start_position</StartControl>
+									<EndControl>loop_end_position</EndControl>
+									<EnabledControl>loop_enabled</EnabledControl>
+									<Color>#00FF00</Color>
+									<DisabledColor>#008000</DisabledColor>
+								</MarkRange>
+								<Mark>
+									<Control>cue_point</Control>
+									<Text>C</Text>
+									<Align>top</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+								</Mark>
+								<Connection>
+									<ConfigKey>[Sampler1],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+
+							<!--
+							**********************************************
+							RotaryFader- Gain
+							**********************************************
+							-->
+							<Knob>
+								<TooltipId>pregain</TooltipId>
+								<Style></Style>
+								<NumberStates>64</NumberStates>
+								<Path>knobs/knob_rotary4_s%1.png</Path>
+								<Pos>162,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],pregain</ConfigKey>
+								</Connection>
+							</Knob>
+
+							<!--
+							**********************************************
+							Visual- Volume peak indicator
+							**********************************************
+							-->
+							<StatusLight>
+								<TooltipId>PeakIndicator</TooltipId>
+								<Style></Style>
+								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
+								<PathBack>btn_clipping_sampler.png</PathBack>
+								<Pos>161,0</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],PeakIndicator</ConfigKey>
+								</Connection>
+							</StatusLight>
+
+							<!--
+							**********************************************
+							Visual - Volume level display
+							**********************************************
+							-->
+							<VuMeter>
+								<TooltipId>channel_VuMeter</TooltipId>
+								<Style></Style>
+								<PathVu>btn_volume_display_sampler_over.png</PathVu>
+								<PathBack>btn_volume_display_sampler.png</PathBack>
+								<Pos>161,9</Pos>
+								<Horizontal>false</Horizontal>
+								<PeakHoldSize>5</PeakHoldSize>
+								<PeakHoldTime>500</PeakHoldTime>
+								<PeakFallTime>50</PeakFallTime>
+								<PeakFallStep>2</PeakFallStep>
+								<Connection>
+									<ConfigKey>[Sampler1],VuMeter</ConfigKey>
+								</Connection>
+							</VuMeter>
+
+							<!--
+							**********************************************
+							Slider- Pitch control
+							**********************************************
+							-->
+							<SliderComposed>
+								<TooltipId>rate</TooltipId>
+								<Style></Style>
+								<Handle>knob_pitch_sampler.png</Handle>
+								<Slider>slider_pitch_sampler.png</Slider>
+								<Pos>172,2</Pos>
+								<Horizontal>false</Horizontal>
+								<Connection>
+									<ConfigKey>[Sampler1],rate</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</SliderComposed>
+
+							<!--
+							****************************************
+							 Button- Play
+							****************************************
+							-->
+							<PushButton>
+								<TooltipId>play_start</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_play_sampler.png</Pressed>
+									<Unpressed>btn_play_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Unpressed>btn_play_sampler_over.png</Unpressed>
+								</State>
+								<Pos>5,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Hotcue
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_1_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_1.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
+								</State>
+								<Pos>34,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_1_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_1_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_1_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_2_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_2.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
+								</State>
+								<Pos>58,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_2_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_2_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_2_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_3_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_3.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
+								</State>
+								<Pos>82,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_3_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_3_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_3_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_4_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_4.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
+								</State>
+								<Pos>106,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_4_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_4_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],hotcue_4_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Prelisten / Monitoring
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>pfl</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Unpressed>btn_pfl_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
+								</State>
+								<Pos>134,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],pfl</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Eject
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>eject</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_eject_sampler_over.png</Pressed>
+									<Unpressed>btn_eject_sampler.png</Unpressed>
+								</State>
+								<Pos>143,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],eject</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Repeat (End of track mode)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>repeat</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_repeat_sampler.png</Pressed>
+									<Unpressed>btn_repeat_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_repeat_sampler_over.png</Pressed>
+									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
+								</State>
+								<Pos>119,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],repeat</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Mix Orientation (Routing)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>orientation</TooltipId>
+								<Style></Style>
+								<NumberStates>3</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_orientation_sampler_left.png</Pressed>
+									<Unpressed>btn_orientation_sampler_left.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+								</State>
+								<State>
+									<Number>2</Number>
+									<Pressed>btn_orientation_sampler_right.png</Pressed>
+									<Unpressed>btn_orientation_sampler_right.png</Unpressed>
+								</State>
+								<Pos>121,39</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],orientation</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Key lock
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>keylock</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_keylock_sampler.png</Pressed>
+									<Unpressed>btn_keylock_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_keylock_sampler_over.png</Pressed>
+									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
+								</State>
+								<Pos>144,37</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],keylock</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<Pos>100,0</Pos>
+						<Size>203,100</Size>
+						<!--
+						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
+						( like on all the other stuff declared by CSS).
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						-->
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<Children>
+							<!--
+							**********************************************
+							HACK ALERT - The following button is a dummy
+							and serves no other function than to provive 
+							the background image for the sampler which can 
+							than be styled using the Mixxx color scheme support,
+							which wont work if we`d load the image via QStyle
+							(see above note).
+							https://bugs.launchpad.net/mixxx/+bug/921174
+							https://bugs.launchpad.net/mixxx/+bug/1021031
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId></TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>style/style_bg_sampler.png</Pressed>
+									<Unpressed>style/style_bg_sampler.png</Unpressed>
+								</State>
+								<Pos>0,0</Pos>
+								<Connection>
+									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
+									<!-- You can make up your own ConfigKey -->
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Text- Track Title
+							**********************************************
+							-->
+							<Text>
+								<TooltipId>text</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								-->
+								<Group>[Sampler2]</Group>
+								<Pos>1,0</Pos>
+								<Size>110,20</Size>
+							</Text>
+							<!-- Alternative "TITLE ONLY" display
+							<TrackProperty>
+								<TooltipId>track_title</TooltipId>
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								<Property>title</Property>
+								<Group>[Sampler2]</Group>
+								<Pos>1,0</Pos>
+								<Size>113,20</Size>
+							</TrackProperty>
+							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<TooltipId>visual_bpm</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: left;padding-left: 1px; }
+								</Style>
+								-->
+								<Group>[Sampler2]</Group>
+								<Pos>115,0</Pos>
+								<Size>46,20</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler2],visual_bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							<PushButton>
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
+							-->
+
+							<!--
+							**********************************************
+							Visual- Waveform overview
+							**********************************************
+							-->
+							<Overview>
+								<TooltipId>waveform_overview</TooltipId>
+								<Style></Style>
+								<Group>[Sampler2]</Group>
+								<Pos>1,21</Pos>
+								<Size>113,30</Size>
+								<BgColor>#FFFFFF</BgColor>
+								<SignalHighColor>#FFE300</SignalHighColor>
+								<SignalMidColor>#0099FF</SignalMidColor>
+								<SignalLowColor>#FF0035</SignalLowColor>
+								<SignalColor>#FF8000</SignalColor>
+								<MarkerColor>#00FF00</MarkerColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
+								<DefaultMark>
+									<Align>bottom</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+									<Text> %1 </Text>
+								</DefaultMark>
+								<MarkRange>
+									<StartControl>loop_start_position</StartControl>
+									<EndControl>loop_end_position</EndControl>
+									<EnabledControl>loop_enabled</EnabledControl>
+									<Color>#00FF00</Color>
+									<DisabledColor>#008000</DisabledColor>
+								</MarkRange>
+								<Mark>
+									<Control>cue_point</Control>
+									<Text>C</Text>
+									<Align>top</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+								</Mark>
+								<Connection>
+									<ConfigKey>[Sampler2],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+
+							<!--
+							**********************************************
+							RotaryFader- Gain
+							**********************************************
+							-->
+							<Knob>
+								<TooltipId>pregain</TooltipId>
+								<Style></Style>
+								<NumberStates>64</NumberStates>
+								<Path>knobs/knob_rotary4_s%1.png</Path>
+								<Pos>162,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],pregain</ConfigKey>
+								</Connection>
+							</Knob>
+
+							<!--
+							**********************************************
+							Visual- Volume peak indicator
+							**********************************************
+							-->
+							<StatusLight>
+								<TooltipId>PeakIndicator</TooltipId>
+								<Style></Style>
+								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
+								<PathBack>btn_clipping_sampler.png</PathBack>
+								<Pos>161,0</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],PeakIndicator</ConfigKey>
+								</Connection>
+							</StatusLight>
+
+							<!--
+							**********************************************
+							Visual - Volume level display
+							**********************************************
+							-->
+							<VuMeter>
+								<TooltipId>channel_VuMeter</TooltipId>
+								<Style></Style>
+								<PathVu>btn_volume_display_sampler_over.png</PathVu>
+								<PathBack>btn_volume_display_sampler.png</PathBack>
+								<Pos>161,9</Pos>
+								<Horizontal>false</Horizontal>
+								<PeakHoldSize>5</PeakHoldSize>
+								<PeakHoldTime>500</PeakHoldTime>
+								<PeakFallTime>50</PeakFallTime>
+								<PeakFallStep>2</PeakFallStep>
+								<Connection>
+									<ConfigKey>[Sampler2],VuMeter</ConfigKey>
+								</Connection>
+							</VuMeter>
+
+							<!--
+							**********************************************
+							Slider- Pitch control
+							**********************************************
+							-->
+							<SliderComposed>
+								<TooltipId>rate</TooltipId>
+								<Style></Style>
+								<Handle>knob_pitch_sampler.png</Handle>
+								<Slider>slider_pitch_sampler.png</Slider>
+								<Pos>172,2</Pos>
+								<Horizontal>false</Horizontal>
+								<Connection>
+									<ConfigKey>[Sampler2],rate</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</SliderComposed>
+
+							<!--
+							****************************************
+							 Button- Play
+							****************************************
+							-->
+							<PushButton>
+								<TooltipId>play_start</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_play_sampler.png</Pressed>
+									<Unpressed>btn_play_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Unpressed>btn_play_sampler_over.png</Unpressed>
+								</State>
+								<Pos>5,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Hotcue
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_1_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_1.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
+								</State>
+								<Pos>34,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_1_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_1_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_1_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_2_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_2.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
+								</State>
+								<Pos>58,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_2_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_2_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_2_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_3_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_3.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
+								</State>
+								<Pos>82,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_3_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_3_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_3_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_4_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_4.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
+								</State>
+								<Pos>106,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_4_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_4_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],hotcue_4_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Prelisten / Monitoring
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>pfl</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Unpressed>btn_pfl_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
+								</State>
+								<Pos>134,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],pfl</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Eject
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>eject</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_eject_sampler_over.png</Pressed>
+									<Unpressed>btn_eject_sampler.png</Unpressed>
+								</State>
+								<Pos>143,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],eject</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Repeat (End of track mode)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>repeat</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_repeat_sampler.png</Pressed>
+									<Unpressed>btn_repeat_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_repeat_sampler_over.png</Pressed>
+									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
+								</State>
+								<Pos>119,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],repeat</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Mix Orientation (Routing)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>orientation</TooltipId>
+								<Style></Style>
+								<NumberStates>3</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_orientation_sampler_left.png</Pressed>
+									<Unpressed>btn_orientation_sampler_left.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+								</State>
+								<State>
+									<Number>2</Number>
+									<Pressed>btn_orientation_sampler_right.png</Pressed>
+									<Unpressed>btn_orientation_sampler_right.png</Unpressed>
+								</State>
+								<Pos>121,39</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],orientation</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Key lock
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>keylock</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_keylock_sampler.png</Pressed>
+									<Unpressed>btn_keylock_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_keylock_sampler_over.png</Pressed>
+									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
+								</State>
+								<Pos>144,37</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],keylock</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<Pos>100,0</Pos>
+						<Size>203,100</Size>
+						<!--
+						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
+						( like on all the other stuff declared by CSS).
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						-->
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<Children>
+							<!--
+							**********************************************
+							HACK ALERT - The following button is a dummy
+							and serves no other function than to provive 
+							the background image for the sampler which can 
+							than be styled using the Mixxx color scheme support,
+							which wont work if we`d load the image via QStyle
+							(see above note).
+							https://bugs.launchpad.net/mixxx/+bug/921174
+							https://bugs.launchpad.net/mixxx/+bug/1021031
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId></TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>style/style_bg_sampler.png</Pressed>
+									<Unpressed>style/style_bg_sampler.png</Unpressed>
+								</State>
+								<Pos>0,0</Pos>
+								<Connection>
+									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
+									<!-- You can make up your own ConfigKey -->
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Text- Track Title
+							**********************************************
+							-->
+							<Text>
+								<TooltipId>text</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								-->
+								<Group>[Sampler3]</Group>
+								<Pos>1,0</Pos>
+								<Size>110,20</Size>
+							</Text>
+							<!-- Alternative "TITLE ONLY" display
+							<TrackProperty>
+								<TooltipId>track_title</TooltipId>
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								<Property>title</Property>
+								<Group>[Sampler3]</Group>
+								<Pos>1,0</Pos>
+								<Size>113,20</Size>
+							</TrackProperty>
+							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<TooltipId>visual_bpm</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: left;padding-left: 1px; }
+								</Style>
+								-->
+								<Group>[Sampler3]</Group>
+								<Pos>115,0</Pos>
+								<Size>46,20</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler3],visual_bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							<PushButton>
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
+							-->
+
+							<!--
+							**********************************************
+							Visual- Waveform overview
+							**********************************************
+							-->
+							<Overview>
+								<TooltipId>waveform_overview</TooltipId>
+								<Style></Style>
+								<Group>[Sampler3]</Group>
+								<Pos>1,21</Pos>
+								<Size>113,30</Size>
+								<BgColor>#FFFFFF</BgColor>
+								<SignalHighColor>#FFE300</SignalHighColor>
+								<SignalMidColor>#0099FF</SignalMidColor>
+								<SignalLowColor>#FF0035</SignalLowColor>
+								<SignalColor>#FF8000</SignalColor>
+								<MarkerColor>#00FF00</MarkerColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
+								<DefaultMark>
+									<Align>bottom</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+									<Text> %1 </Text>
+								</DefaultMark>
+								<MarkRange>
+									<StartControl>loop_start_position</StartControl>
+									<EndControl>loop_end_position</EndControl>
+									<EnabledControl>loop_enabled</EnabledControl>
+									<Color>#00FF00</Color>
+									<DisabledColor>#008000</DisabledColor>
+								</MarkRange>
+								<Mark>
+									<Control>cue_point</Control>
+									<Text>C</Text>
+									<Align>top</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+								</Mark>
+								<Connection>
+									<ConfigKey>[Sampler3],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+
+							<!--
+							**********************************************
+							RotaryFader- Gain
+							**********************************************
+							-->
+							<Knob>
+								<TooltipId>pregain</TooltipId>
+								<Style></Style>
+								<NumberStates>64</NumberStates>
+								<Path>knobs/knob_rotary4_s%1.png</Path>
+								<Pos>162,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],pregain</ConfigKey>
+								</Connection>
+							</Knob>
+
+							<!--
+							**********************************************
+							Visual- Volume peak indicator
+							**********************************************
+							-->
+							<StatusLight>
+								<TooltipId>PeakIndicator</TooltipId>
+								<Style></Style>
+								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
+								<PathBack>btn_clipping_sampler.png</PathBack>
+								<Pos>161,0</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],PeakIndicator</ConfigKey>
+								</Connection>
+							</StatusLight>
+
+							<!--
+							**********************************************
+							Visual - Volume level display
+							**********************************************
+							-->
+							<VuMeter>
+								<TooltipId>channel_VuMeter</TooltipId>
+								<Style></Style>
+								<PathVu>btn_volume_display_sampler_over.png</PathVu>
+								<PathBack>btn_volume_display_sampler.png</PathBack>
+								<Pos>161,9</Pos>
+								<Horizontal>false</Horizontal>
+								<PeakHoldSize>5</PeakHoldSize>
+								<PeakHoldTime>500</PeakHoldTime>
+								<PeakFallTime>50</PeakFallTime>
+								<PeakFallStep>2</PeakFallStep>
+								<Connection>
+									<ConfigKey>[Sampler3],VuMeter</ConfigKey>
+								</Connection>
+							</VuMeter>
+
+							<!--
+							**********************************************
+							Slider- Pitch control
+							**********************************************
+							-->
+							<SliderComposed>
+								<TooltipId>rate</TooltipId>
+								<Style></Style>
+								<Handle>knob_pitch_sampler.png</Handle>
+								<Slider>slider_pitch_sampler.png</Slider>
+								<Pos>172,2</Pos>
+								<Horizontal>false</Horizontal>
+								<Connection>
+									<ConfigKey>[Sampler3],rate</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</SliderComposed>
+
+							<!--
+							****************************************
+							 Button- Play
+							****************************************
+							-->
+							<PushButton>
+								<TooltipId>play_start</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_play_sampler.png</Pressed>
+									<Unpressed>btn_play_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Unpressed>btn_play_sampler_over.png</Unpressed>
+								</State>
+								<Pos>5,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Hotcue
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_1_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_1.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
+								</State>
+								<Pos>34,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_1_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_1_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_1_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_2_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_2.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
+								</State>
+								<Pos>58,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_2_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_2_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_2_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_3_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_3.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
+								</State>
+								<Pos>82,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_3_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_3_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_3_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_4_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_4.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
+								</State>
+								<Pos>106,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_4_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_4_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],hotcue_4_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Prelisten / Monitoring
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>pfl</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Unpressed>btn_pfl_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
+								</State>
+								<Pos>134,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],pfl</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Eject
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>eject</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_eject_sampler_over.png</Pressed>
+									<Unpressed>btn_eject_sampler.png</Unpressed>
+								</State>
+								<Pos>143,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],eject</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Repeat (End of track mode)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>repeat</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_repeat_sampler.png</Pressed>
+									<Unpressed>btn_repeat_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_repeat_sampler_over.png</Pressed>
+									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
+								</State>
+								<Pos>119,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],repeat</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Mix Orientation (Routing)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>orientation</TooltipId>
+								<Style></Style>
+								<NumberStates>3</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_orientation_sampler_left.png</Pressed>
+									<Unpressed>btn_orientation_sampler_left.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+								</State>
+								<State>
+									<Number>2</Number>
+									<Pressed>btn_orientation_sampler_right.png</Pressed>
+									<Unpressed>btn_orientation_sampler_right.png</Unpressed>
+								</State>
+								<Pos>121,39</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],orientation</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Key lock
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>keylock</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_keylock_sampler.png</Pressed>
+									<Unpressed>btn_keylock_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_keylock_sampler_over.png</Pressed>
+									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
+								</State>
+								<Pos>144,37</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],keylock</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<Pos>100,0</Pos>
+						<Size>194,100</Size>
+						<!--
+						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
+						( like on all the other stuff declared by CSS).
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						-->
+						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<Children>
+							<!--
+							**********************************************
+							HACK ALERT - The following button is a dummy
+							and serves no other function than to provive 
+							the background image for the sampler which can 
+							than be styled using the Mixxx color scheme support,
+							which wont work if we`d load the image via QStyle
+							(see above note).
+							https://bugs.launchpad.net/mixxx/+bug/921174
+							https://bugs.launchpad.net/mixxx/+bug/1021031
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId></TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>style/style_bg_sampler.png</Pressed>
+									<Unpressed>style/style_bg_sampler.png</Unpressed>
+								</State>
+								<Pos>0,0</Pos>
+								<Connection>
+									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
+									<!-- You can make up your own ConfigKey -->
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Text- Track Title
+							**********************************************
+							-->
+							<Text>
+								<TooltipId>text</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color -
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								-->
+								<Group>[Sampler4]</Group>
+								<Pos>1,0</Pos>
+								<Size>110,20</Size>
+							</Text>
+							<!-- Alternative "TITLE ONLY" display
+							<TrackProperty>
+								<TooltipId>track_title</TooltipId>
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: right; padding-left: 1px; }
+								</Style>
+								<Property>title</Property>
+								<Group>[Sampler4]</Group>
+								<Pos>1,0</Pos>
+								<Size>113,20</Size>
+							</TrackProperty>
+							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<TooltipId>visual_bpm</TooltipId>
+								<!--
+								We can`t use ANY CSS declaration for the texts <Style> like we did in other skins, even if we do net declare any text color - 
+								the color scheme support does not work on these. Instead let the text derive from the <FgColor> in <TableView>
+								-->
+								<!--
+								<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; text-align: left;padding-left: 1px; }
+								</Style>
+								</Style>
+								-->
+								<Group>[Sampler4]</Group>
+								<Pos>115,0</Pos>
+								<Size>46,20</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler4],visual_bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							<PushButton>
+								
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
+							-->
+
+							<!--
+							**********************************************
+							Visual- Waveform overview
+							**********************************************
+							-->
+							<Overview>
+								<TooltipId>waveform_overview</TooltipId>
+								<Style></Style>
+								<Group>[Sampler4]</Group>
+								<Pos>1,21</Pos>
+								<Size>113,30</Size>
+								<BgColor>#FFFFFF</BgColor>
+								<SignalHighColor>#FFE300</SignalHighColor>
+								<SignalMidColor>#0099FF</SignalMidColor>
+								<SignalLowColor>#FF0035</SignalLowColor>
+								<SignalColor>#FF8000</SignalColor>
+								<MarkerColor>#00FF00</MarkerColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
+								<DefaultMark>
+									<Align>bottom</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+									<Text> %1 </Text>
+								</DefaultMark>
+								<MarkRange>
+									<StartControl>loop_start_position</StartControl>
+									<EndControl>loop_end_position</EndControl>
+									<EnabledControl>loop_enabled</EnabledControl>
+									<Color>#00FF00</Color>
+									<DisabledColor>#008000</DisabledColor>
+								</MarkRange>
+								<Mark>
+									<Control>cue_point</Control>
+									<Text>C</Text>
+									<Align>top</Align>
+									<Color>#BA00FF</Color>
+									<TextColor>#CCCCCC</TextColor>
+								</Mark>
+								<Connection>
+									<ConfigKey>[Sampler4],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+
+							<!--
+							**********************************************
+							RotaryFader- Gain
+							**********************************************
+							-->
+							<Knob>
+								<TooltipId>pregain</TooltipId>
+								<Style></Style>
+								<NumberStates>64</NumberStates>
+								<Path>knobs/knob_rotary4_s%1.png</Path>
+								<Pos>162,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],pregain</ConfigKey>
+								</Connection>
+							</Knob>
+
+							<!--
+							**********************************************
+							Visual- Volume peak indicator
+							**********************************************
+							-->
+							<StatusLight>
+								<TooltipId>PeakIndicator</TooltipId>
+								<Style></Style>
+								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
+								<PathBack>btn_clipping_sampler.png</PathBack>
+								<Pos>161,0</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],PeakIndicator</ConfigKey>
+								</Connection>
+							</StatusLight>
+
+							<!--
+							**********************************************
+							Visual - Volume level display
+							**********************************************
+							-->
+							<VuMeter>
+								<TooltipId>channel_VuMeter</TooltipId>
+								<Style></Style>
+								<PathVu>btn_volume_display_sampler_over.png</PathVu>
+								<PathBack>btn_volume_display_sampler.png</PathBack>
+								<Pos>161,9</Pos>
+								<Horizontal>false</Horizontal>
+								<PeakHoldSize>5</PeakHoldSize>
+								<PeakHoldTime>500</PeakHoldTime>
+								<PeakFallTime>50</PeakFallTime>
+								<PeakFallStep>2</PeakFallStep>
+								<Connection>
+									<ConfigKey>[Sampler4],VuMeter</ConfigKey>
+								</Connection>
+							</VuMeter>
+
+							<!--
+							**********************************************
+							Slider- Pitch control
+							**********************************************
+							-->
+							<SliderComposed>
+								<TooltipId>rate</TooltipId>
+								<Style></Style>
+								<Handle>knob_pitch_sampler.png</Handle>
+								<Slider>slider_pitch_sampler.png</Slider>
+								<Pos>172,2</Pos>
+								<Horizontal>false</Horizontal>
+								<Connection>
+									<ConfigKey>[Sampler4],rate</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</SliderComposed>
+
+							<!--
+							****************************************
+							 Button- Play
+							****************************************
+							-->
+							<PushButton>
+								<TooltipId>play_start</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_play_sampler.png</Pressed>
+									<Unpressed>btn_play_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Unpressed>btn_play_sampler_over.png</Unpressed>
+								</State>
+								<Pos>5,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Hotcue
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_1_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_1.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
+								</State>
+								<Pos>34,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_1_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_1_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_1_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_2_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_2.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
+								</State>
+								<Pos>58,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_2_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_2_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_2_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_3_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_3.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
+								</State>
+								<Pos>82,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_3_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_3_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_3_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue_sampler_4_over.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue_sampler_4.png</Pressed>
+									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
+								</State>
+								<Pos>106,72</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_4_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_4_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],hotcue_4_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Prelisten / Monitoring
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>pfl</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Unpressed>btn_pfl_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
+								</State>
+								<Pos>134,67</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],pfl</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Eject
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>eject</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_eject_sampler_over.png</Pressed>
+									<Unpressed>btn_eject_sampler.png</Unpressed>
+								</State>
+								<Pos>143,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],eject</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Repeat (End of track mode)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>repeat</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_repeat_sampler.png</Pressed>
+									<Unpressed>btn_repeat_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_repeat_sampler_over.png</Pressed>
+									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
+								</State>
+								<Pos>119,21</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],repeat</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Mix Orientation (Routing)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>orientation</TooltipId>
+								<Style></Style>
+								<NumberStates>3</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_orientation_sampler_left.png</Pressed>
+									<Unpressed>btn_orientation_sampler_left.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+								</State>
+								<State>
+									<Number>2</Number>
+									<Pressed>btn_orientation_sampler_right.png</Pressed>
+									<Unpressed>btn_orientation_sampler_right.png</Unpressed>
+								</State>
+								<Pos>121,39</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],orientation</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Key lock
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>keylock</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_keylock_sampler.png</Pressed>
+									<Unpressed>btn_keylock_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_keylock_sampler_over.png</Pressed>
+									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
+								</State>
+								<Pos>144,37</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],keylock</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					-->
+				</Children>
+				<Connection>
+					<ConfigKey>[Samplers],show_samplers</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+
+			<!-- Library sub-widget -->
+			<WidgetGroup>
+				<Pos>0,0</Pos>
+				<Size>641,i</Size>
+				<Layout>horizontal</Layout>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 2px 0px 0px 1px;}</Style>
+				<Children>
+					<!--
+					**********************************************
+					General- Search and Library display
+					**********************************************
+					-->
+					<TableView>
+						<Style>
+						<!-- No use of colour CSS colour propertys here, this breaks the colour schemes as of QT 4.7.1-->
+				
+						QTableView, QTextBrowser, QTreeView { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+						QTableView::indicator { width: 12px; height: 12px;}
+						QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
+						QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
+
+						QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+
+						<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
+						You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
+						In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
+						The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
+						-->
+						<!--transition time in Auto DJ tab-->
+						QSpinBox:editable { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+						QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+
+						<!--library search bar-->
+						WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
+						WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,20);}
+
+						<!--splitter between treeview and library-->
+						QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
+						QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
+						QSplitter::handle:horizontal { width: 6px; }
+						QSplitter::handle:vertical { height: 6px;}
+
+						QPushButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+						<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
+						QLabel,QRadioButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; }
+
+						<!--triangle for closed/opened branches in treeview-->
+						QTreeView {show-decoration-selected: 0;} <!-- Suppresses that selected sidebar item's branch indicator shows wrong color when out of focus ; lp:880588-->
+						QTreeView::branch:has-children:!has-siblings:closed,
+						QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
+						QTreeView::branch:open:has-children:!has-siblings,
+						QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
+						</Style>
+						<BgColor>#FFFFFF</BgColor>
+						<FgColor>#191919</FgColor>
+						<BgColorRowEven>#FFFFFF</BgColorRowEven>
+						<BgColorRowUneven>#F8F8F8</BgColorRowUneven>
+					</TableView>
+				</Children>
+			</WidgetGroup>
+		</Children>
+	</WidgetGroup>
+
+	<!-- TODO: Add sampler support
+	**********************************************
+	Tab- Show/hide Sampler widget group
+	**********************************************
+	<PushButton>
+		<TooltipId>show_samplers</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>tab_sampler.png</Pressed>
+			<Unpressed>tab_sampler.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>tab_sampler_over.png</Pressed>
+			<Unpressed>tab_sampler_over.png</Unpressed>
+		</State>
+		<Pos>375,80</Pos>
+		<Connection>
+			<ConfigKey>[Samplers],show_samplers</ConfigKey>
+		</Connection>
+	</PushButton>
+	-->
+
+	<!--
+	**********************************************
+	Tab- Show/hide Vinyl Control widget group
+	**********************************************
+	-->
+	<!-- The Mac App Store Version of Mixxx does not support vinyl control.
+	Comment out this tabs that no broken widget are displayed to the user
+	-->
+	<PushButton>
+		<TooltipId>show_vinylcontrol</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>tab_vinylcontrol.png</Pressed>
+			<Unpressed>tab_vinylcontrol.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>tab_vinylcontrol_over.png</Pressed>
+			<Unpressed>tab_vinylcontrol_over.png</Unpressed>
+		</State>
+		<Pos>375,95</Pos>
+		<Connection>
+			<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+		</Connection>
+	</PushButton>
 
 	<!--
 	############################################################################################
@@ -497,27 +3167,55 @@
 
 	<!--
 	**********************************************
-	Text- Track information
+	Text- Track Title
 	**********************************************
 	-->
-	<Text>
-		<TooltipId>text</TooltipId>
-		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+	<TrackProperty>
+		<TooltipId>track_title</TooltipId>
+		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		</Style>
+		<Property>title</Property>
 		<Channel>1</Channel>
-		<Pos>80,1</Pos>
-		<Size>308,13</Size>
-	</Text>
-	<Text>
-		<TooltipId>text</TooltipId>
-		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+		<Pos>78,80</Pos>
+		<Size>220,18</Size>
+	</TrackProperty>
+	<TrackProperty>
+		<TooltipId>track_title</TooltipId>
+		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		</Style>
+		<Property>title</Property>
 		<Channel>2</Channel>
-		<Pos>402,1</Pos>
-		<Size>308,13</Size>
-	</Text>
+		<Pos>432,80</Pos>
+		<Size>220,18</Size>
+	</TrackProperty>
+
+	<!--
+	**********************************************
+	Text- Track Artist
+	**********************************************
+	-->
+	<TrackProperty>
+		<TooltipId>track_artist</TooltipId>
+		<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
+		</Style>
+		<Property>artist</Property>
+		<Channel>1</Channel>
+		<Pos>78,96</Pos>
+		<Size>190,16</Size>
+	</TrackProperty>
+	<TrackProperty>
+		<TooltipId>track_artist</TooltipId>
+		<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
+		</Style>
+		<Property>artist</Property>
+		<Channel>2</Channel>
+		<Pos>432,96</Pos>
+		<Size>190,16</Size>
+	</TrackProperty>
 
 	<!--
 	**********************************************
@@ -526,30 +3224,28 @@
 	-->
 	<NumberBpm>
 		<TooltipId>visual_bpm</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: left; padding-left: 1px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>80,111</Pos>
-		<Size>50,13</Size>
+		<Pos>310,80</Pos>
+		<Size>60,18</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>left</Alignment>
-		<NumberOfDigits>6</NumberOfDigits>
+		<Alignment>right</Alignment>
 		<Connection>
 			<ConfigKey>[Channel1],visual_bpm</ConfigKey>
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
 		<TooltipId>visual_bpm</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: left; padding-left: 1px; }
 		</Style>
-		<Channel>2</Channel>
-		<Pos>458,111</Pos>
-		<Size>50,13</Size>
+		<Channel>1</Channel>
+		<Pos>662,80</Pos>
+		<Size>60,18</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>left</Alignment>
-		<NumberOfDigits>6</NumberOfDigits>
+		<Alignment>right</Alignment>
 		<Connection>
 			<ConfigKey>[Channel2],visual_bpm</ConfigKey>
 		</Connection>
@@ -562,12 +3258,12 @@
 	-->
 	<NumberPos>
 		<TooltipId>track_time</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
+		<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>262,111</Pos>
-		<Size>70,13</Size>
+		<Pos>278,96</Pos>
+		<Size>90,16</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -577,12 +3273,12 @@
 	</NumberPos>
 	<NumberPos>
 		<TooltipId>track_time</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
+		<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>640,111</Pos>
-		<Size>70,13</Size>
+		<Pos>630,96</Pos>
+		<Size>90,16</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -593,59 +3289,45 @@
 
 	<!--
 	**********************************************
-	Text- Duration
-	**********************************************
-	-->
-	<TrackProperty>
-		<TooltipId>track_duration</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
-		</Style>
-		<Channel>1</Channel>
-		<Pos>186,111</Pos>
-		<Size>70,13</Size>
-		<Property>durationFormatted</Property>
-		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>right</Alignment>
-	</TrackProperty>
-	<TrackProperty>
-		<TooltipId>track_duration</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
-		</Style>
-		<Channel>2</Channel>
-		<Pos>564,111</Pos>
-		<Size>70,13</Size>
-		<Property>durationFormatted</Property>
-		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>right</Alignment>
-	</TrackProperty>
-
-	<!--
-	**********************************************
 	Text- Pitch rate display
 	**********************************************
 	-->
 	<NumberRate>
 		<TooltipId>rate_display</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		<Style>QLabel { font: bold 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>131,111</Pos>
+		<Pos>34,168</Pos>
 		<Size>50,13</Size>
 		<NumberOfDigits>4</NumberOfDigits>
 	</NumberRate>
 	<NumberRate>
 		<TooltipId>rate_display</TooltipId>
-		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		<Style>QLabel { font: bold 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>509,111</Pos>
+		<Pos>756,168</Pos>
 		<Size>50,13</Size>
 		<NumberOfDigits>4</NumberOfDigits>
 	</NumberRate>
+
+	<!--
+	**********************************************
+	Text- Clock display
+	**********************************************
+	-->
+	<Time>
+		<TooltipId>time</TooltipId>
+		<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; }
+		</Style>
+		<Pos>596,152</Pos>
+		<Size>50,16</Size>
+		<ShowSeconds>false</ShowSeconds>
+		<ClockFormat>24</ClockFormat>
+	</Time>
 
 	<!--
 	############################################################################################
@@ -665,7 +3347,7 @@
 		<Style></Style>
 		<Handle>knob_volume1.png</Handle>
 		<Slider>slider_volume1.png</Slider>
-		<Pos>3,285</Pos>
+		<Pos>3,295</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel1],volume</ConfigKey>
@@ -677,7 +3359,7 @@
 		<Style></Style>
 		<Handle>knob_volume2.png</Handle>
 		<Slider>slider_volume2.png</Slider>
-		<Pos>714,285</Pos>
+		<Pos>724,295</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel2],volume</ConfigKey>
@@ -695,7 +3377,7 @@
 		<Style></Style>
 		<Handle>knob_crossfader.png</Handle>
 		<Slider>slider_crossfader.png</Slider>
-		<Pos>331,149</Pos>
+		<Pos>336,149</Pos>
 		<Horizontal>true</Horizontal>
 		<Connection>
 			<ConfigKey>[Master],crossfader</ConfigKey>
@@ -713,7 +3395,7 @@
 		<Style></Style>
 		<Handle>knob_pitch1.png</Handle>
 		<Slider>slider_pitch1.png</Slider>
-		<Pos>3,84</Pos>
+		<Pos>3,130</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel1],rate</ConfigKey>
@@ -725,7 +3407,7 @@
 		<Style></Style>
 		<Handle>knob_pitch2.png</Handle>
 		<Slider>slider_pitch2.png</Slider>
-		<Pos>714,84</Pos>
+		<Pos>724,130</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel2],rate</ConfigKey>
@@ -789,7 +3471,7 @@
 			<Pressed>btn_play2_over.png</Pressed>
 			<Unpressed>btn_play2_over.png</Unpressed>
 		</State>
-		<Pos>714,7</Pos>
+		<Pos>724,7</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],play</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -838,7 +3520,7 @@
 			<Pressed>btn_cue2_over.png</Pressed>
 			<Unpressed>btn_cue2.png</Unpressed>
 		</State>
-		<Pos>752,7</Pos>
+		<Pos>762,7</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],cue_default</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1008,7 +3690,7 @@
 			<Pressed>btn_hotcue2_1.png</Pressed>
 			<Unpressed>btn_hotcue2_1_over.png</Unpressed>
 		</State>
-		<Pos>714,31</Pos>
+		<Pos>724,31</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1042,7 +3724,7 @@
 			<Pressed>btn_hotcue2_2.png</Pressed>
 			<Unpressed>btn_hotcue2_2_over.png</Unpressed>
 		</State>
-		<Pos>733,31</Pos>
+		<Pos>743,31</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1076,7 +3758,7 @@
 			<Pressed>btn_hotcue2_3.png</Pressed>
 			<Unpressed>btn_hotcue2_3_over.png</Unpressed>
 		</State>
-		<Pos>752,31</Pos>
+		<Pos>762,31</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1110,7 +3792,7 @@
 			<Pressed>btn_hotcue2_4.png</Pressed>
 			<Unpressed>btn_hotcue2_4_over.png</Unpressed>
 		</State>
-		<Pos>771,31</Pos>
+		<Pos>781,31</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1143,7 +3825,7 @@
 			<Pressed>btn_loop_in1_over.png</Pressed>
 			<Unpressed>btn_loop_in1.png</Unpressed>
 		</State>
-		<Pos>41,74</Pos>
+		<Pos>3,78</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_in</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1159,7 +3841,7 @@
 			<Pressed>btn_loop_in2_over.png</Pressed>
 			<Unpressed>btn_loop_in2.png</Unpressed>
 		</State>
-		<Pos>752,74</Pos>
+		<Pos>724,78</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_in</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1175,7 +3857,7 @@
 			<Pressed>btn_loop_out1_over.png</Pressed>
 			<Unpressed>btn_loop_out1.png</Unpressed>
 		</State>
-		<Pos>41,98</Pos>
+		<Pos>22,78</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_out</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1191,7 +3873,7 @@
 			<Pressed>btn_loop_out2_over.png</Pressed>
 			<Unpressed>btn_loop_out2.png</Unpressed>
 		</State>
-		<Pos>752,98</Pos>
+		<Pos>743,78</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_out</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1213,7 +3895,7 @@
 			<Pressed>btn_reloop1_over.png</Pressed>
 			<Unpressed>btn_reloop1_over.png</Unpressed>
 		</State>
-		<Pos>41,122</Pos>
+		<Pos>41,78</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1240,7 +3922,7 @@
 			<Pressed>btn_reloop2_over.png</Pressed>
 			<Unpressed>btn_reloop2_over.png</Unpressed>
 		</State>
-		<Pos>752,122</Pos>
+		<Pos>762,78</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1250,6 +3932,338 @@
 		<Connection>
 			<ConfigKey>[Channel2],loop_enabled</ConfigKey>
 			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button - Beatloop
+	**********************************************
+	-->
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_1.png</Pressed>
+			<Unpressed>btn_beatloop1_1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_1_over.png</Pressed>
+			<Unpressed>btn_beatloop1_1_over.png</Unpressed>
+		</State>
+		<Pos>3,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_1_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatlooproll_1_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_1.png</Pressed>
+			<Unpressed>btn_beatloop2_1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_1_over.png</Pressed>
+			<Unpressed>btn_beatloop2_1_over.png</Unpressed>
+		</State>
+		<Pos>724,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_1_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatlooproll_1_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_2.png</Pressed>
+			<Unpressed>btn_beatloop1_2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_2_over.png</Pressed>
+			<Unpressed>btn_beatloop1_2_over.png</Unpressed>
+		</State>
+		<Pos>22,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_2_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatlooproll_2_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_2.png</Pressed>
+			<Unpressed>btn_beatloop2_2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_2_over.png</Pressed>
+			<Unpressed>btn_beatloop2_2_over.png</Unpressed>
+		</State>
+		<Pos>743,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_2_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatlooproll_2_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_4.png</Pressed>
+			<Unpressed>btn_beatloop1_4.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_4_over.png</Pressed>
+			<Unpressed>btn_beatloop1_4_over.png</Unpressed>
+		</State>
+		<Pos>41,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_4_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatlooproll_4_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_4.png</Pressed>
+			<Unpressed>btn_beatloop2_4.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_4_over.png</Pressed>
+			<Unpressed>btn_beatloop2_4_over.png</Unpressed>
+		</State>
+		<Pos>762,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_4_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatlooproll_4_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_8.png</Pressed>
+			<Unpressed>btn_beatloop1_8.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_8_over.png</Pressed>
+			<Unpressed>btn_beatloop1_8_over.png</Unpressed>
+		</State>
+		<Pos>60,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_8_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatlooproll_8_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_8_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beatloop</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_8_over.png</Pressed>
+			<Unpressed>btn_beatloop2_8.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_8.png</Pressed>
+			<Unpressed>btn_beatloop2_8_over.png</Unpressed>
+		</State>
+		<Pos>781,102</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_8_toggle</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatlooproll_8_activate</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_8_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button - Beatloop halve/double
+	**********************************************
+	-->
+	<PushButton>
+		<TooltipId>loop_halve</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_halve_over.png</Pressed>
+			<Unpressed>btn_beatloop1_halve.png</Unpressed>
+		</State>
+		<Pos>41,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],loop_halve</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>loop_halve</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_halve_over.png</Pressed>
+			<Unpressed>btn_beatloop2_halve.png</Unpressed>
+		</State>
+		<Pos>762,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],loop_halve</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>loop_double</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_double_over.png</Pressed>
+			<Unpressed>btn_beatloop1_double.png</Unpressed>
+		</State>
+		<Pos>60,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],loop_double</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>loop_double</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_double_over.png</Pressed>
+			<Unpressed>btn_beatloop2_double.png</Unpressed>
+		</State>
+		<Pos>781,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],loop_double</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 
@@ -1283,7 +4297,7 @@
 			<Pressed>btn_reverse2_over.png</Pressed>
 			<Unpressed>btn_reverse2.png</Unpressed>
 		</State>
-		<Pos>752,50</Pos>
+		<Pos>762,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reverse</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1347,7 +4361,7 @@
 			<Pressed>btn_forward2_over.png</Pressed>
 			<Unpressed>btn_forward2.png</Unpressed>
 		</State>
-		<Pos>733,50</Pos>
+		<Pos>743,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],fwd</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1368,7 +4382,7 @@
 			<Pressed>btn_rewind2_over.png</Pressed>
 			<Unpressed>btn_rewind2.png</Unpressed>
 		</State>
-		<Pos>714,50</Pos>
+		<Pos>724,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],back</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1378,6 +4392,224 @@
 			<ConfigKey>[Channel2],start</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button - Show spinning Vinyl widget
+	**********************************************
+	-->
+	<PushButton>
+		<TooltipId>show_spinny</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_spinny1.png</Pressed>
+			<Unpressed>btn_spinny1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_spinny1_over.png</Pressed>
+			<Unpressed>btn_spinny1_over.png</Unpressed>
+		</State>
+		<Pos>260,119</Pos>
+		<Connection>
+			<ConfigKey>[Spinny1],show_spinny</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>show_spinny</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_spinny2.png</Pressed>
+			<Unpressed>btn_spinny2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_spinny2_over.png</Pressed>
+			<Unpressed>btn_spinny2_over.png</Unpressed>
+		</State>
+		<Pos>612,119</Pos>
+		<Connection>
+			<ConfigKey>[Spinny2],show_spinny</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button- Repeat (End of track mode)
+	**********************************************
+	-->
+	<PushButton>
+		<TooltipId>repeat</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_repeat1.png</Pressed>
+			<Unpressed>btn_repeat1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_repeat1_over.png</Pressed>
+			<Unpressed>btn_repeat1_over.png</Unpressed>
+		</State>
+		<Pos>326,119</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],repeat</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>repeat</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_repeat2.png</Pressed>
+			<Unpressed>btn_repeat2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_repeat2_over.png</Pressed>
+			<Unpressed>btn_repeat2_over.png</Unpressed>
+		</State>
+		<Pos>678,119</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],repeat</ConfigKey>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button- Eject
+	**********************************************
+	-->
+	<PushButton>
+		<TooltipId>eject</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_eject1_over.png</Pressed>
+			<Unpressed>btn_eject1.png</Unpressed>
+		</State>
+		<Pos>348,119</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],eject</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>eject</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_eject2_over.png</Pressed>
+			<Unpressed>btn_eject2.png</Unpressed>
+		</State>
+		<Pos>700,119</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],eject</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button - Beatgrid
+	**********************************************
+	-->
+	<PushButton>
+		<TooltipId>beats_translate_curpos</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatgrid1_over.png</Pressed>
+			<Unpressed>btn_beatgrid1.png</Unpressed>
+		</State>
+		<Pos>282,120</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beats_translate_curpos</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>beats_translate_curpos</TooltipId>
+		<Style></Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatgrid2_over.png</Pressed>
+			<Unpressed>btn_beatgrid2.png</Unpressed>
+		</State>
+		<Pos>634,120</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beats_translate_curpos</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button - Quantize
+	**********************************************
+	-->
+	<PushButton>
+		<TooltipId>quantize</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_quantize1.png</Pressed>
+			<Unpressed>btn_quantize1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_quantize1_over.png</Pressed>
+			<Unpressed>btn_quantize1_over.png</Unpressed>
+		</State>
+		<Pos>304,120</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],quantize</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<TooltipId>quantize</TooltipId>
+		<Style></Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_quantize2.png</Pressed>
+			<Unpressed>btn_quantize2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_quantize2_over.png</Pressed>
+			<Unpressed>btn_quantize2_over.png</Unpressed>
+		</State>
+		<Pos>656,120</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],quantize</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 
@@ -1395,7 +4627,7 @@
 			<Pressed>btn_sync1_over.png</Pressed>
 			<Unpressed>btn_sync1.png</Unpressed>
 		</State>
-		<Pos>41,231</Pos>
+		<Pos>41,241</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],beatsync</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1416,7 +4648,7 @@
 			<Pressed>btn_sync2_over.png</Pressed>
 			<Unpressed>btn_sync2.png</Unpressed>
 		</State>
-		<Pos>752,231</Pos>
+		<Pos>762,241</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1443,7 +4675,7 @@
 			<Pressed>btn_tap1_over.png</Pressed>
 			<Unpressed>btn_tap1.png</Unpressed>
 		</State>
-		<Pos>80,125</Pos>
+		<Pos>41,145</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1458,7 +4690,7 @@
 			<Pressed>btn_tap2_over.png</Pressed>
 			<Unpressed>btn_tap2.png</Unpressed>
 		</State>
-		<Pos>458,125</Pos>
+		<Pos>763,145</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1485,7 +4717,7 @@
 			<Pressed>btn_keylock1_over.png</Pressed>
 			<Unpressed>btn_keylock1_over.png</Unpressed>
 		</State>
-		<Pos>3,255</Pos>
+		<Pos>3,265</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],keylock</ConfigKey>
 		</Connection>
@@ -1504,7 +4736,7 @@
 			<Pressed>btn_keylock2_over.png</Pressed>
 			<Unpressed>btn_keylock2_over.png</Unpressed>
 		</State>
-		<Pos>714,255</Pos>
+		<Pos>724,265</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],keylock</ConfigKey>
 		</Connection>
@@ -1524,7 +4756,7 @@
 			<Pressed>btn_pitch_up1_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>31,175</Pos>
+		<Pos>31,185</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1545,7 +4777,7 @@
 			<Pressed>btn_pitch_up2_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>742,175</Pos>
+		<Pos>752,185</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1566,7 +4798,7 @@
 			<Pressed>btn_pitch_down1_over.png</Pressed>
 			<Unpressed>btn_pitch_down1.png</Unpressed>
 		</State>
-		<Pos>31,194</Pos>
+		<Pos>31,204</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1587,7 +4819,7 @@
 			<Pressed>btn_pitch_down2_over.png</Pressed>
 			<Unpressed>btn_pitch_down2.png</Unpressed>
 		</State>
-		<Pos>742,194</Pos>
+		<Pos>752,204</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1614,7 +4846,7 @@
 			<Pressed>btn_nudge_up1_over.png</Pressed>
 			<Unpressed>btn_nudge_up1.png</Unpressed>
 		</State>
-		<Pos>55,175</Pos>
+		<Pos>55,185</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1635,7 +4867,7 @@
 			<Pressed>btn_nudge_up2_over.png</Pressed>
 			<Unpressed>btn_nudge_up2.png</Unpressed>
 		</State>
-		<Pos>766,175</Pos>
+		<Pos>776,185</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1656,7 +4888,7 @@
 			<Pressed>btn_nudge_down1_over.png</Pressed>
 			<Unpressed>btn_nudge_down1.png</Unpressed>
 		</State>
-		<Pos>55,194</Pos>
+		<Pos>55,204</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1677,7 +4909,7 @@
 			<Pressed>btn_nudge_down2_over.png</Pressed>
 			<Unpressed>btn_nudge_down2.png</Unpressed>
 		</State>
-		<Pos>766,194</Pos>
+		<Pos>776,204</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1709,7 +4941,7 @@
 			<Pressed>btn_pfl1_over.png</Pressed>
 			<Unpressed>btn_pfl1_over.png</Unpressed>
 		</State>
-		<Pos>3,231</Pos>
+		<Pos>3,241</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pfl</ConfigKey>
 		</Connection>
@@ -1728,53 +4960,9 @@
 			<Pressed>btn_pfl2_over.png</Pressed>
 			<Unpressed>btn_pfl2_over.png</Unpressed>
 		</State>
-		<Pos>714,231</Pos>
+		<Pos>724,241</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pfl</ConfigKey>
-		</Connection>
-	</PushButton>
-
-	<!--
-	**********************************************
-	Button- Repeat (End of track mode)
-	**********************************************
-	-->
-	<PushButton>
-		<TooltipId>repeat</TooltipId>
-		<Style></Style>
-		<NumberStates>2</NumberStates>
-		<State>
-			<Number>0</Number>
-			<Pressed>btn_repeat1.png</Pressed>
-			<Unpressed>btn_repeat1.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>btn_repeat1_over.png</Pressed>
-			<Unpressed>btn_repeat1_over.png</Unpressed>
-		</State>
-		<Pos>301,125</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],repeat</ConfigKey>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<TooltipId>repeat</TooltipId>
-		<Style></Style>
-		<NumberStates>2</NumberStates>
-		<State>
-			<Number>0</Number>
-			<Pressed>btn_repeat2.png</Pressed>
-			<Unpressed>btn_repeat2.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>btn_repeat2_over.png</Pressed>
-			<Unpressed>btn_repeat2_over.png</Unpressed>
-		</State>
-		<Pos>678,125</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 
@@ -1797,7 +4985,7 @@
 			<Pressed>btn_fx1_over.png</Pressed>
 			<Unpressed>btn_fx1_over.png</Unpressed>
 		</State>
-		<Pos>41,255</Pos>
+		<Pos>41,265</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],flanger</ConfigKey>
 		</Connection>
@@ -1816,7 +5004,7 @@
 			<Pressed>btn_fx2_over.png</Pressed>
 			<Unpressed>btn_fx2_over.png</Unpressed>
 		</State>
-		<Pos>752,255</Pos>
+		<Pos>762,265</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],flanger</ConfigKey>
 		</Connection>
@@ -1841,7 +5029,7 @@
 			<Pressed>btn_kill1_over.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
-		<Pos>52,341</Pos>
+		<Pos>52,351</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHighKill</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1862,7 +5050,7 @@
 			<Pressed>btn_kill1_over.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
-		<Pos>52,376</Pos>
+		<Pos>52,386</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMidKill</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1883,7 +5071,7 @@
 			<Pressed>btn_kill1_over.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
-		<Pos>52,410</Pos>
+		<Pos>52,420</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLowKill</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1904,7 +5092,7 @@
 			<Pressed>btn_kill2_over.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
-		<Pos>763,341</Pos>
+		<Pos>773,351</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHighKill</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1925,7 +5113,7 @@
 			<Pressed>btn_kill2_over.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
-		<Pos>763,376</Pos>
+		<Pos>773,386</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMidKill</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1946,7 +5134,7 @@
 			<Pressed>btn_kill2_over.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
-		<Pos>763,410</Pos>
+		<Pos>773,420</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLowKill</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1971,8 +5159,8 @@
 		<TooltipId>master_volume</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>544,144</Pos>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>554,144</Pos>
 		<Connection>
 			<ConfigKey>[Master],volume</ConfigKey>
 		</Connection>
@@ -1981,8 +5169,8 @@
 		<TooltipId>balance</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>512,144</Pos>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>522,144</Pos>
 		<Connection>
 			<ConfigKey>[Master],balance</ConfigKey>
 		</Connection>
@@ -1997,7 +5185,7 @@
 		<TooltipId>lfoDelay</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
 		<Pos>113,144</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDelay</ConfigKey>
@@ -2007,7 +5195,7 @@
 		<TooltipId>lfoDepth</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
 		<Pos>81,144</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDepth</ConfigKey>
@@ -2017,7 +5205,7 @@
 		<TooltipId>lfoPeriod</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
 		<Pos>144,144</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
@@ -2033,7 +5221,7 @@
 		<TooltipId>headphone_volume</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
 		<Pos>200,144</Pos>
 		<Connection>
 			<ConfigKey>[Master],headVolume</ConfigKey>
@@ -2043,7 +5231,7 @@
 		<TooltipId>headMix</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
 		<Pos>232,144</Pos>
 		<Connection>
 			<ConfigKey>[Master],headMix</ConfigKey>
@@ -2059,8 +5247,8 @@
 		<TooltipId>pregain</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>30,285</Pos>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>30,295</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pregain</ConfigKey>
 		</Connection>
@@ -2069,8 +5257,8 @@
 		<TooltipId>filterHigh</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>30,318</Pos>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>30,328</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHigh</ConfigKey>
 		</Connection>
@@ -2079,8 +5267,8 @@
 		<TooltipId>filterMid</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>30,353</Pos>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>30,363</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMid</ConfigKey>
 		</Connection>
@@ -2089,8 +5277,8 @@
 		<TooltipId>filterLow</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>30,387</Pos>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>30,397</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLow</ConfigKey>
 		</Connection>
@@ -2099,8 +5287,8 @@
 		<TooltipId>pregain</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>741,285</Pos>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>751,295</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pregain</ConfigKey>
 		</Connection>
@@ -2109,8 +5297,8 @@
 		<TooltipId>filterHigh</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>741,318</Pos>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>751,328</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHigh</ConfigKey>
 		</Connection>
@@ -2119,8 +5307,8 @@
 		<TooltipId>filterMid</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>741,353</Pos>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>751,363</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMid</ConfigKey>
 		</Connection>
@@ -2129,8 +5317,8 @@
 		<TooltipId>filterLow</TooltipId>
 		<Style></Style>
 		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>741,387</Pos>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>751,397</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLow</ConfigKey>
 		</Connection>
