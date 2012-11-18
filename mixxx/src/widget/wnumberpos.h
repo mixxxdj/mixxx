@@ -29,19 +29,17 @@ class WNumberPos : public WNumber {
     void slotSetRemain(double dRemain);
     void slotSetTrackSampleRate(double dSampleRate);
     void slotSetTrackSamples(double dSamples);
-    void slotSetTrackDuration(double dDuration);
 
   private:
     /** Old value set */
     double m_dOldValue;
-    double m_dDuration;
     double m_dTrackSamples;
     double m_dTrackSampleRate;
     /** True if remaining content is being shown */
     bool m_bRemain;
     ControlObjectThreadMain* m_pShowDurationRemaining;
     // Pointer to control object for rate and track info
-    ControlObjectThreadWidget *m_pRateControl, *m_pRateDirControl, *m_pDuration, *m_pTrackSamples, *m_pTrackSampleRate;
+    ControlObjectThreadWidget *m_pRateControl, *m_pRateDirControl, *m_pTrackSamples, *m_pTrackSampleRate;
 };
 
 #endif

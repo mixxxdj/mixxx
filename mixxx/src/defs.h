@@ -49,6 +49,17 @@ const int STEPSIZE = 1024; //WINDOWSIZE/2; //WINDOWSIZE/STEPSIZE must result in 
 /** Maximum buffer length to each EngineObject::process call */
 const int MAX_BUFFER_LEN = 160000;
 
+#ifndef PATH_MAX
+#ifndef MAX_PATH
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+const int MAX_PATH = 260;
+#endif
+// Use POSIX name for MAX_PATH
+enum {
+	PATH_MAX = MAX_PATH
+};
+#endif
+
 // Various fixed constants
 // static CSAMPLE pi     = acos(-1.0); // Conflicts with macx headers
 // static CSAMPLE two_pi = (2.f*acos(-1.f));
@@ -74,6 +85,15 @@ inline double zap_denormal(double x)
 
 #ifndef math_min
 #define math_min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
+// MSVC 2005/2008 needs these
+#ifndef fmax
+#define fmax math_max
+#endif
+
+#ifndef fmin
+#define fmin math_min
 #endif
 
 #endif

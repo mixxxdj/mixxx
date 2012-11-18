@@ -30,7 +30,7 @@ class SidebarModel : public QAbstractItemModel {
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole ) const;
-    bool dropAccept(const QModelIndex& index, QUrl url);
+    bool dropAccept(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
     virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
@@ -38,7 +38,6 @@ class SidebarModel : public QAbstractItemModel {
     void clicked(const QModelIndex& index);
     void doubleClicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
-    void refreshData();
     void slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& index = QModelIndex());
 
     // Slots for every single QAbstractItemModel signal

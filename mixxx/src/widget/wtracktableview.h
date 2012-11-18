@@ -19,12 +19,11 @@ const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigVal
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 
-class WTrackTableView : public WLibraryTableView
-{
+class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
- 	public:
+  public:
     WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-                    TrackCollection* pTrackCollection);
+                    TrackCollection* pTrackCollection, bool sorting = true);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
     void onSearchStarting();
@@ -34,7 +33,6 @@ class WTrackTableView : public WLibraryTableView
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
-    void disableSorting();
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -42,16 +40,24 @@ class WTrackTableView : public WLibraryTableView
 
   private slots:
     void slotRemove();
+    void slotHide();
+    void slotUnhide();
+    void slotPurge();
+    void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
     void slotSendToAutoDJ();
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
+    void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
     void doSortByColumn(int headerSection);
+    void slotLockBpm();
+    void slotUnlockBpm();
+    void slotClearBeats();
 
   private:
     void sendToAutoDJ(bool bTop);
@@ -60,9 +66,10 @@ class WTrackTableView : public WLibraryTableView
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
+    void lockBpm(bool lock);
 
     // Mouse move event, implemented to hide the text and show an icon instead
-    // when dragging
+    // when dragging.
     void mouseMoveEvent(QMouseEvent *pEvent);
 
     // Returns the current TrackModel, or returns NULL if none is set.
@@ -95,9 +102,25 @@ class WTrackTableView : public WLibraryTableView
 
     // Remove from table
     QAction *m_pRemoveAct;
+    QAction *m_pHideAct;
+    QAction *m_pUnhideAct;
+    QAction *m_pPurgeAct;
+
+    // Reset the played count of selected track or tracks
+    QAction* m_pResetPlayedAct;
 
     // Show track-editor action
     QAction *m_pPropertiesAct;
+    QAction *m_pFileBrowserAct;
+
+    // BPM Lock feature
+    QAction *m_pBpmLockAction;
+    QAction *m_pBpmUnlockAction;
+
+    // Clear track beats
+    QAction* m_pClearBeatsAction;
+
+    bool m_sorting;
 };
 
 #endif

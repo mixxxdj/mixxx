@@ -28,13 +28,13 @@
  */
 DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
                            PlayerManager* pPlayerManager, ConfigObject<ConfigValue> *pConfig)
-    : QWidget(pParent)
-    , m_pSoundManager(pSoundManager)
-    , m_pPlayerManager(pPlayerManager)
-    , m_pConfig(pConfig)
-    , m_settingsModified(false)
-    , m_loading(false)
-    , m_forceApply(false)
+        : QWidget(pParent)
+        , m_pSoundManager(pSoundManager)
+        , m_pPlayerManager(pPlayerManager)
+        , m_pConfig(pConfig)
+        , m_settingsModified(false)
+        , m_loading(false)
+        , m_forceApply(false)
 {
     setupUi(this);
 
@@ -90,10 +90,15 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
             this, SLOT(addPath(AudioInput)));
     connect(m_pSoundManager, SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
             this, SLOT(loadSettings()));
+
+    m_pMasterUnderflowCount =
+                    new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "underflow_count")));
+    connect(m_pMasterUnderflowCount, SIGNAL(valueChanged(double)),
+            this, SLOT(bufferUnderflow(double)));
 }
 
 DlgPrefSound::~DlgPrefSound() {
-
+    delete m_pMasterUnderflowCount;
 }
 
 /**
@@ -136,7 +141,7 @@ void DlgPrefSound::slotApply() {
             error = QString(tr("Two outputs cannot share channels on %1")).arg(deviceName);
             break;
         default:
-            error = QString(tr("Error opening %1\n%2")).arg(deviceName).arg(detailedError);
+            error = QString(tr("Error opening %1\n%2")).arg(deviceName, detailedError);
             break;
         }
         QMessageBox::warning(NULL, tr("Configuration error"), error);
@@ -439,3 +444,10 @@ void DlgPrefSound::resetClicked() {
     loadSettings(newConfig);
     settingChanged(); // force the apply button to enable
 }
+
+void DlgPrefSound::bufferUnderflow(double count) {
+    bufferUnderflowCount->setText(QString::number(count));
+    update();
+}
+
+

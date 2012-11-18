@@ -137,8 +137,8 @@ bool AudioPath::channelsClash(const AudioPath &other) const {
  */
 QString AudioPath::getString() const {
     if (isIndexed(getType())) {
-        return QString("%1 %2")
-            .arg(getTrStringFromType(getType())).arg(m_index + 1);
+        return QString("%1 %2").arg(getTrStringFromType(getType()),
+                                    QString::number(m_index + 1));
     }
     return getTrStringFromType(getType());
 }

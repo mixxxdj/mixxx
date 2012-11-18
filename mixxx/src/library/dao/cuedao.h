@@ -26,6 +26,7 @@ class CueDAO : public DAO {
     Cue* getCue(int cueId);
     QList<Cue*> getCuesForTrack(int trackId) const;
     bool deleteCuesForTrack(int trackId);
+    bool deleteCuesForTracks(QList<int> ids);
     bool saveCue(Cue* cue);
     bool deleteCue(Cue* cue);
     // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()

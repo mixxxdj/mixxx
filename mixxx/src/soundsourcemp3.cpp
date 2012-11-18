@@ -121,12 +121,16 @@ int SoundSourceMp3::open()
 
         // Grab data from Header
 
-        // This warns us only when the reported sample rate changes. (and when it is first set)
-        if(m_iSampleRate != Header.samplerate) {
-            //qDebug() << "SSMP3() :: Setting m_iSampleRate to " << Header.samplerate << " from " << m_iSampleRate;
+        // This warns us only when the reported sample rate changes. (and when
+        // it is first set)
+        if (m_iSampleRate == 0 && Header.samplerate > 0) {
+            setSampleRate(Header.samplerate);
+        } else if (m_iSampleRate != Header.samplerate) {
+            qDebug() << "SSMP3: file has differing samplerate in some headers:"
+                     << m_qFilename
+                     << m_iSampleRate << "vs" << Header.samplerate;
         }
 
-        setSampleRate(Header.samplerate);
         m_iChannels = MAD_NCHANNELS(&Header);
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
@@ -194,7 +198,10 @@ MadSeekFrameType* SoundSourceMp3::getSeekFrame(long frameIndex) const {
 
 long SoundSourceMp3::seek(long filepos) {
     // Ensure that we are seeking to an even filepos
-    Q_ASSERT(filepos%2==0);
+    if (filepos % 2 != 0) {
+        qDebug() << "SoundSourceMp3 got non-even seek target.";
+        filepos--;
+    }
 
     if (!isValid()) {
         return 0;
@@ -435,7 +442,10 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
-    Q_ASSERT(samples_wanted%2==0);
+    if (samples_wanted % 2 != 0) {
+        qDebug() << "SoundSourceMp3 got non-even samples_wanted";
+        samples_wanted--;
+    }
 //     qDebug() << "frame list " << m_qSeekList.count();
 
     SAMPLE * destination = (SAMPLE *)_destination;
@@ -459,7 +469,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
             else
                 *(destination++) = madScale(Synth->pcm.samples[0][i]);
 
-            // This is safe because we have Q_ASSERTed that samples_wanted is even.
+            // This is safe because we have checked that samples_wanted is even.
             Total_samples_decoded += 2;
 
         }
@@ -553,20 +563,20 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 int SoundSourceMp3::parseHeader()
 {
     setType("mp3");
-
-    #ifdef __WINDOWS__
-		/* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
-		 * If you try this conversion, f.isValid() will return false in many cases
-		 * and processTaglibFile() will fail
-		 *
-		 * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
-		 * The returned byte array is undefined if the string contains characters not supported
-		 * by the local 8-bit encoding.
-		 */
-		TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-	#else
-		TagLib::MPEG::File f(getFilename().toUtf8().constData());
-	#endif
+#ifdef __WINDOWS__
+    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+     * If you try this conversion, f.isValid() will return false in many cases
+     * and processTaglibFile() will fail
+     *
+     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+     * The returned byte array is undefined if the string contains characters not supported
+     * by the local 8-bit encoding.
+     */
+    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+#else
+    QByteArray qBAFilename = m_qFilename.toUtf8();
+#endif
+    TagLib::MPEG::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata
     bool result = processTaglibFile(f);

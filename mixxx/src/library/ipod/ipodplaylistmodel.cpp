@@ -20,6 +20,7 @@ IPodPlaylistModel::IPodPlaylistModel(QObject* pParent, TrackCollection* pTrackCo
            QAbstractTableModel(pParent),
            m_iSortColumn(0),
            m_eSortOrder(Qt::AscendingOrder),
+           m_currentSearch(""),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_pPlaylist(NULL)
@@ -186,26 +187,24 @@ int IPodPlaylistModel::fieldIndex(const QString& fieldName) const {
 
 QVariant IPodPlaylistModel::data(const QModelIndex& index, int role) const {
     //qDebug() << this << "data()";
+    QVariant value = QVariant();
+
     if (    role != Qt::DisplayRole
          && role != Qt::EditRole
          && role != Qt::CheckStateRole
          && role != Qt::ToolTipRole
     ) {
-        return QVariant();
+        return value;
     }
 
 
     Itdb_Track* pTrack = getPTrackFromModelIndex(index);
     if (!pTrack) {
-        return QVariant();
+        return value;
     }
 
     size_t structOffset = m_headerList.at(index.column()).second;
-    QVariant value = QVariant();
 
-    if (!pTrack) {
-        return QVariant();
-    }
 
     if (structOffset == 0xffff) { // "#"
         value = m_sortedPlaylist.at(index.row()).pos;
@@ -756,13 +755,13 @@ TrackPointer IPodPlaylistModel::getTrack(const QModelIndex& index) const {
     pTrackP->setAlbum(QString::fromUtf8(pTrack->album));
     pTrackP->setYear(QString::number(pTrack->year));
     pTrackP->setGenre(QString::fromUtf8(pTrack->genre));
-    float bpm = (float)pTrack->BPM;
+    double bpm = (double)pTrack->BPM;
     pTrackP->setBpm(bpm);
     pTrackP->setComment(QString::fromUtf8(pTrack->comment));
 
     // If the track has a BPM, then give it a static beatgrid.
     if (bpm) {
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrackP, bpm, 0);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrackP.data(), bpm, 0.0f);
         pTrackP->setBeats(pBeats);
     }
 
@@ -790,7 +789,7 @@ int IPodPlaylistModel::getTrackId(const QModelIndex& index) const {
     // in our case the position in the playlist is as significant hint  
     int row = index.row();
     if (row < m_sortedPlaylist.size()) {
-        return m_sortedPlaylist.at(index.row()).pos;
+        return m_sortedPlaylist.at(row).pos;
     }
     else {
         return 0;

@@ -29,14 +29,15 @@
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
         : SoundDevice(config, sm),
-          m_bSetThreadPriority(false)
-{
+          m_bSetThreadPriority(false),
+          m_pMasterUnderflowCount(ControlObject::getControl(ConfigKey("[Master]", "underflow_count"))),
+          m_undeflowUpdateCount(0) {
     //qDebug() << "SoundDevicePortAudio::SoundDevicePortAudio()";
     m_deviceInfo = deviceInfo;
     m_devId = devIndex;
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
-    m_strInternalName = QString("%1, %2").arg(QString::number(m_devId)).arg(deviceInfo->name);
+    m_strInternalName = QString("%1, %2").arg(QString::number(m_devId), deviceInfo->name);
     m_strDisplayName = QString(deviceInfo->name);
 
     m_pStream = 0;
@@ -46,9 +47,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 }
 
-SoundDevicePortAudio::~SoundDevicePortAudio()
-{
-
+SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
 int SoundDevicePortAudio::open()
@@ -233,6 +232,14 @@ int SoundDevicePortAudio::open()
 
     delete pControlObjectLatency;
     delete pControlObjectSampleRate;
+
+    if (m_pMasterUnderflowCount) {
+        ControlObjectThreadMain* pMasterUnderflowCount =
+                new ControlObjectThreadMain(m_pMasterUnderflowCount);
+        pMasterUnderflowCount->slotSet(0);
+        delete pMasterUnderflowCount;
+    }
+
     return OK;
 }
 
@@ -293,18 +300,17 @@ QString SoundDevicePortAudio::getError() const {
                  out of samples (ie. when it needs more sound to play)
         -------- ------------------------------------------------------
  */
-int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in)
-{
+int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
+        float *output, short *in, const PaStreamCallbackTimeInfo *timeInfo,
+        PaStreamCallbackFlags statusFlags) {
+
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
-    int iFrameSize;
-    int iVCGain;
+
     static ControlObject* pControlObjectVinylControlGain =
         ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
-
-    //Initialize some variables.
-    iFrameSize = m_outputParams.channelCount;
-    iVCGain = 1;
+    int iFrameSize = m_outputParams.channelCount;
+    int iVCGain = 1;
 
     // Turn on TimeCritical priority for the callback thread. If we are running
     // in Linux userland, for example, this will have no effect.
@@ -312,6 +318,18 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
     }
+
+    if (!m_undeflowUpdateCount) {
+        if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
+            if (m_pMasterUnderflowCount) {
+                m_pMasterUnderflowCount->add(1);
+            }
+            m_undeflowUpdateCount = 40;
+        }
+    } else {
+        m_undeflowUpdateCount--;
+    }
+
 
     //Send audio from the soundcard's input off to the SoundManager...
     if (in && framesPerBuffer > 0)
@@ -335,14 +353,16 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         // soundmanager so we have all our deinterlacing in one place and
         // soundmanager gets simplified to boot
 
-        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer, m_inputParams.channelCount);
+        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
+                                    m_inputParams.channelCount);
     }
 
     if (output && framesPerBuffer > 0)
     {
         assert(iFrameSize > 0);
         QHash<AudioOutput, const CSAMPLE*> outputAudio
-            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer, this, Pa_GetStreamTime(m_pStream));
+            = m_pSoundManager->requestBuffer(m_audioOutputs,
+                    framesPerBuffer, this);
 
         // Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
@@ -355,9 +375,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
                      e = m_audioOutputs.end(); i != e; ++i) {
             const AudioOutput &out = *i;
             const CSAMPLE* input = outputAudio[out];
-            ChannelGroup outChans = out.getChannelGroup();
-            int iChannelCount = outChans.getChannelCount();
-            int iChannelBase = outChans.getChannelBase();
+            const ChannelGroup outChans = out.getChannelGroup();
+            const int iChannelCount = outChans.getChannelCount();
+            const int iChannelBase = outChans.getChannelBase();
 
             for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
                 // this will make sure a sample from each channel is copied
@@ -399,24 +419,8 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,
                   PaStreamCallbackFlags statusFlags,
-                  void *soundDevice)
-{
-    /*
-       //Variables that are used in the human-readable form of function call from hell (below).
-       static PlayerPortAudio* _player;
-       static int devIndex;
-       _player = ((PAPlayerCallbackStuff*)_callbackStuff)->player;
-       devIndex = ((PAPlayerCallbackStuff*)_callbackStuff)->devIndex;
-     */
-    // these two are unused for now, suppressing compiler warnings -bkgood
-    Q_UNUSED(timeInfo);
-    Q_UNUSED(statusFlags);
-
-    //Human-readable form of the function call from hell:
-    //return _player->callbackProcess(framesPerBuffer, (float *)outputBuffer, devIndex);
-
+                  void *soundDevice) {
     return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(framesPerBuffer,
-            (float*) outputBuffer, (short*) inputBuffer);
-//    return ((SoundDevicePortAudio*)_callbackStuff)->callbackProcess(framesPerBuffer, (float*) outputBuffer, (short*) inputBuffer);
+            (float*) outputBuffer, (short*) inputBuffer, timeInfo, statusFlags);
 }
 

@@ -24,8 +24,8 @@
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefPlaylistDlg()
-{
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config)
+        :  QWidget(parent) {
     config = _config;
     setupUi(this);
     slotUpdate();
@@ -39,10 +39,10 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
 
     //Disable M4A Button after download completes successfully.
     connect(m_pPluginDownloader, SIGNAL(downloadFinished()),
-            this, SLOT(slotM4ADownloadFinished())); 
-    
+            this, SLOT(slotM4ADownloadFinished()));
+
     connect(m_pPluginDownloader, SIGNAL(downloadProgress(qint64, qint64)),
-            this, SLOT(slotM4ADownloadProgress(qint64, qint64))); 
+            this, SLOT(slotM4ADownloadProgress(qint64, qint64)));
     */
 
     // Connection
@@ -148,14 +148,17 @@ void DlgPrefPlaylist::slotUpdate()
     checkBox_library_scan->setChecked((bool)config->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)config->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt());
     checkBox_use_relative_path->setChecked((bool)config->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
+    checkBox_show_rhythmbox->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
+    checkBox_show_itunes->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     #ifdef __IPOD__
     checkBox_show_ipod->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowIpod"),"1").toInt());
     #endif // __IPOD__
+    checkBox_show_traktor->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
 {
-    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose music library directory"), 
+    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose music library directory"),
                                                    config->getValueString(ConfigKey("[Playlist]","Directory")));
     if (fd != "")
     {
@@ -166,22 +169,31 @@ void DlgPrefPlaylist::slotBrowseDir()
 void DlgPrefPlaylist::slotApply()
 {
 
-    config->set(ConfigKey("[Promo]","StatTracking"), 
-                   ConfigValue((int)checkBoxPromoStats->isChecked()));
+    config->set(ConfigKey("[Promo]","StatTracking"),
+                ConfigValue((int)checkBoxPromoStats->isChecked()));
 
-    config->set(ConfigKey("[Library]","RescanOnStartup"), 
-                   ConfigValue((int)checkBox_library_scan->isChecked()));
-    
-    config->set(ConfigKey("[Library]","WriteAudioTags"), 
-                   ConfigValue((int)checkbox_ID3_sync->isChecked()));
+    config->set(ConfigKey("[Library]","RescanOnStartup"),
+                ConfigValue((int)checkBox_library_scan->isChecked()));
+
+    config->set(ConfigKey("[Library]","WriteAudioTags"),
+                ConfigValue((int)checkbox_ID3_sync->isChecked()));
 
     config->set(ConfigKey("[Library]","UseRelativePathOnExport"),
-                   ConfigValue((int)checkBox_use_relative_path->isChecked()));
+                ConfigValue((int)checkBox_use_relative_path->isChecked()));
+
+    config->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
+                ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
+
+    config->set(ConfigKey("[Library]","ShowITunesLibrary"),
+                ConfigValue((int)checkBox_show_itunes->isChecked()));
 
 #ifdef __IPOD__
     config->set(ConfigKey("[Library]","ShowIpod"),
-                   ConfigValue((int)checkBox_show_ipod->isChecked()));
-#endif
+                ConfigValue((int)checkBox_show_ipod->isChecked()));
+#endif // __IPOD__
+
+    config->set(ConfigKey("[Library]","ShowTraktorLibrary"),
+                ConfigValue((int)checkBox_show_traktor->isChecked()));
 
     config->Save();
 

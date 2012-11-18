@@ -8,15 +8,16 @@
 #include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
+#include "library/hiddentablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
 
-#define CHILD_MISSING "Missing Songs"
-
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
-        : LibraryFeature(parent) {
+        : LibraryFeature(parent),
+          kMissingTitle(tr("Missing Tracks")),
+          kHiddenTitle(tr("Hidden Tracks")){
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -28,11 +29,13 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_COMPOSER
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "library." + LIBRARYTABLE_BPM
+            << "library." + LIBRARYTABLE_BPM_LOCK
             << "library." + LIBRARYTABLE_BITRATE
             << "track_locations.location"
             << "track_locations.fs_deleted"
@@ -45,8 +48,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM library "
         "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName)
-            .arg(columns.join(","));
+            .arg(tableName, columns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -74,6 +76,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
     connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksRemoved(QSet<int>)),
             pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
+    connect(&pTrackCollection->getTrackDAO(), SIGNAL(dbTrackAdded(TrackPointer)),
+            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
@@ -81,17 +85,23 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
 
-    TreeItem *rootItem = new TreeItem();
-    TreeItem *childItem = new TreeItem(CHILD_MISSING, CHILD_MISSING,
-                                       this, rootItem);
-    rootItem->appendChild(childItem);
-    m_childModel.setRootItem(rootItem);
+    TreeItem* pRootItem = new TreeItem();
+    TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
+                                       this, pRootItem);
+    TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
+                                       this, pRootItem);
+    pRootItem->appendChild(pmissingChildItem);
+    pRootItem->appendChild(phiddenChildItem);
+
+    m_childModel.setRootItem(pRootItem);
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
     delete m_pMissingTableModel;
+    delete m_pHiddenTableModel;
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -108,14 +118,14 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 
 void MixxxLibraryFeature::refreshLibraryModels()
 {
-    if (m_pBaseTrackCache) {
-        m_pBaseTrackCache->buildIndex();
-    }
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
     }
     if (m_pMissingTableModel) {
         m_pMissingTableModel->select();
+    }
+    if (m_pHiddenTableModel) {
+        m_pHiddenTableModel->select();
     }
 }
 
@@ -130,32 +140,48 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     /*if (itemName == m_childModel.stringList().at(0))
         emit(showTrackModel(m_pMissingTableModel));
      */
-    if (itemName == CHILD_MISSING)
+    if (itemName == kMissingTitle) {
         emit(showTrackModel(m_pMissingTableModel));
+    }
+    if (itemName == kHiddenTitle) {
+        emit(showTrackModel(m_pHiddenTableModel));
+    }
 }
 
 void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
+    Q_UNUSED(globalPos);
 }
 
 void MixxxLibraryFeature::onRightClickChild(const QPoint& globalPos,
                                             QModelIndex index) {
+    Q_UNUSED(globalPos);
+    Q_UNUSED(index);
 }
 
-bool MixxxLibraryFeature::dropAccept(QUrl url) {
+bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
+    Q_UNUSED(urls);
+    Q_UNUSED(index);
     return false;
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url);
     return false;
 }
 
 bool MixxxLibraryFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
+    Q_UNUSED(url);
+    Q_UNUSED(index);
     return false;
-}void MixxxLibraryFeature::onLazyChildExpandation(const QModelIndex &index){
-//Nothing to do because the childmodel is not of lazy nature.
+}
+
+void MixxxLibraryFeature::onLazyChildExpandation(const QModelIndex &index){
+    Q_UNUSED(index);
+    // Nothing to do because the childmodel is not of lazy nature.
 }

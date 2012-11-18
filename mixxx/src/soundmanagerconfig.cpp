@@ -17,6 +17,7 @@
 #include "soundmanagerutil.h"
 #include "sounddevice.h"
 #include "soundmanager.h"
+#include "mixxx.h"
 
 // this (7) represents latency values from 1 ms to about 80 ms -- bkgood
 const unsigned int SoundManagerConfig::kMaxLatency = 7;
@@ -30,10 +31,7 @@ SoundManagerConfig::SoundManagerConfig()
     : m_api("None")
     , m_sampleRate(kDefaultSampleRate)
     , m_latency(kDefaultLatency) {
-    m_configFile = QFileInfo(QString("%1/%2/%3")
-            .arg(QDir::homePath())
-            .arg(SETTINGS_PATH)
-            .arg(SOUNDMANAGERCONFIG_FILENAME));
+    m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() + SOUNDMANAGERCONFIG_FILENAME);
 }
 
 SoundManagerConfig::~SoundManagerConfig() {
@@ -337,7 +335,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
             m_sampleRate = sampleRates.first();
         } else {
             qWarning() << "got empty sample rate list from SoundManager, this is a bug";
-            Q_ASSERT(false);
+            m_sampleRate = kDefaultSampleRate;
         }
         m_latency = kDefaultLatency;
     }

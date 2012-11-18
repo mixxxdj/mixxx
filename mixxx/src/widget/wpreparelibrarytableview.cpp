@@ -4,14 +4,11 @@
 
 WPrepareLibraryTableView::WPrepareLibraryTableView(QWidget* parent,
                                                    ConfigObject<ConfigValue>* pConfig,
-                                                   TrackCollection* pTrackCollection,
-                                                   ConfigKey headerStateKey,
-                                                   ConfigKey vScrollBarPosKey)
+                                                   TrackCollection* pTrackCollection)
         : WTrackTableView(parent, pConfig, pTrackCollection)
 {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
-
 }
 
 WPrepareLibraryTableView::~WPrepareLibraryTableView()
@@ -20,8 +17,11 @@ WPrepareLibraryTableView::~WPrepareLibraryTableView()
 
 void WPrepareLibraryTableView::onSearchStarting() {
 }
+
 void WPrepareLibraryTableView::onSearchCleared() {
 }
+
 void WPrepareLibraryTableView::onSearch(const QString& text) {
+    Q_UNUSED(text);
 }
 

@@ -11,14 +11,14 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
-#include "library/libraryfeature.h"
+#include "library/baseexternallibraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "library/rhythmbox/rhythmboxtrackmodel.h"
 #include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/trackcollection.h"
 
-class RhythmboxFeature : public LibraryFeature {
- Q_OBJECT
+class RhythmboxFeature : public BaseExternalLibraryFeature {
+    Q_OBJECT
  public:
     RhythmboxFeature(QObject* parent, TrackCollection*);
     virtual ~RhythmboxFeature();
@@ -27,8 +27,8 @@ class RhythmboxFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -41,12 +41,13 @@ class RhythmboxFeature : public LibraryFeature {
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+
     void onLazyChildExpandation(const QModelIndex& index);
     void onTrackCollectionLoaded();
 
   private:
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+
     RhythmboxTrackModel* m_pRhythmboxTrackModel;
     RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
     TrackCollection* m_pTrackCollection;

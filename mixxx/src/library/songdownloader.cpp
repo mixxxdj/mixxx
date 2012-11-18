@@ -58,7 +58,7 @@ bool SongDownloader::downloadFromQueue()
     m_pRequest = new QNetworkRequest(downloadUrl);
 
     //Set up user agent for great justice
-    QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName()).arg(VERSION);
+    QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName(), VERSION);
     QByteArray mixxxUABA = mixxxUA.toAscii();
     m_pRequest->setRawHeader("User-Agent", mixxxUABA);
     m_pReply = m_pNetwork->get(*m_pRequest);

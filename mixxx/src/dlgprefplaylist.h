@@ -40,7 +40,7 @@ public slots:
     void slotApply();
     /** Starts up the PluginDownloader if the plugin isn't present */
     //void slotM4ACheck();
-    /** Set the label and enabled state on the M4A button 
+    /** Set the label and enabled state on the M4A button
         depending on whether the M4A plugin is installed. */
     //void setupM4AButton(bool forceInstalled=false);
     /** Display UI indication of plugin download progress.*/

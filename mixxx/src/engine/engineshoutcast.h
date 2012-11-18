@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QMutex>
 #include <QMessageBox>
+#include <QTextCodec>
 
 #include <shout/shout.h>
 
@@ -32,6 +33,10 @@
 #include "errordialoghandler.h"
 #include "recording/encoder.h"
 
+#define SHOUTCAST_DISCONNECTED 0
+#define SHOUTCAST_CONNECTING 1
+#define SHOUTCAST_CONNECTED 2
+
 class EncoderVorbis;
 
 class EngineShoutcast : public EngineAbstractRecord {
@@ -40,8 +45,12 @@ class EngineShoutcast : public EngineAbstractRecord {
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
     virtual ~EngineShoutcast();
 
+    // This is called by the Engine implementation for each sample. Encode and
+    // send the stream, as well as check for metadata changes.
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    /**writes to shoutcast stream **/
+
+    // Called by the encoder in method 'encodebuffer()' to flush the stream to
+    // the server.
     void write(unsigned char *header, unsigned char *body,
                int headerLen, int bodyLen);
     /** connects to server **/
@@ -60,9 +69,20 @@ class EngineShoutcast : public EngineAbstractRecord {
     //                   int headerLen, int bodyLen, int count);
   private:
     int getActiveTracks();
+    // Check if the metadata has changed since the previous check.  We also
+    // check when was the last check performed to avoid using too much CPU and
+    // as well to avoid changing the metadata during scratches.
     bool metaDataHasChanged();
+    // Update shoutcast metadata. This does not work for OGG/Vorbis and Icecast,
+    // since the actual OGG/Vorbis stream contains the metadata.
     void updateMetaData();
+    // Common error dialog creation code for run-time exceptions. Notify user
+    // when connected or disconnected and so on
+    void errorDialog(QString text, QString detailedError);
+    void infoDialog(QString text, QString detailedError);
 
+    QByteArray encodeString(const QString& string);
+    QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
     shout_t *m_pShout;
     shout_metadata_t *m_pShoutMetaData;
@@ -74,17 +94,22 @@ class EngineShoutcast : public EngineAbstractRecord {
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
     ControlObjectThread* m_pMasterSamplerate;
+    ControlObjectThread* m_pShoutcastStatus;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
-    /** static metadata according to prefereneces **/
+    // static metadata according to prefereneces
     bool m_custom_metadata;
-    QByteArray m_baCustom_artist;
-    QByteArray m_baCustom_title;
-    QByteArray m_baFormat;
-    /* Standard error dialog */
-    void errorDialog(QString text, QString detailedError);
-    /** we static metadata is used, we only need calling shout_set_metedata once */
+    QByteArray m_baCustomSong;
+
+    // when static metadata is used, we only need calling shout_set_metedata
+    // once
     bool m_firstCall;
+
+    bool m_format_is_mp3;
+    bool m_format_is_ov;
+    bool m_protocol_is_icecast1;
+    bool m_protocol_is_icecast2;
+    bool m_protocol_is_shoutcast;
 };
 
 #endif

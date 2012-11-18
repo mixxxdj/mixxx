@@ -116,16 +116,17 @@ template <class ValueType> class ConfigObject {
     ConfigOption<ValueType> *get(ConfigKey key);
     ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
-    QString getValueString(ConfigKey k, QString default_string);
+    QString getValueString(ConfigKey k, const QString& default_string);
 
     void clear();
     void reopen(QString file);
     void Save();
-    QString getConfigPath();
+    QString getResourcePath();
+    QString getSettingsPath();
 
   protected:
-    QList< ConfigOption<ValueType>* > list;
-    QString filename;
+    QList< ConfigOption<ValueType>* > m_list;
+    QString m_filename;
 
     /** Loads and parses the configuration file. Returns false if the file could
       * not be opened; otherwise true. */

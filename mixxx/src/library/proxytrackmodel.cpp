@@ -11,7 +11,8 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
         // ProxyTrackModel proxies settings requests to the composed TrackModel,
         // don't initialize its TrackModel with valid parameters.
         : TrackModel(QSqlDatabase(), ""),
-          m_bHandleSearches(bHandleSearches) {
+          m_bHandleSearches(bHandleSearches),
+          m_currentSearch("") {
     m_pTrackModel = dynamic_cast<TrackModel*>(pTrackModel);
     Q_ASSERT(m_pTrackModel && pTrackModel);
     setSourceModel(pTrackModel);
@@ -89,8 +90,8 @@ void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
     m_pTrackModel->moveTrack(sourceIndexSource, destIndexSource);
 }
 
-QItemDelegate* ProxyTrackModel::delegateForColumn(const int i) {
-    return m_pTrackModel->delegateForColumn(i);
+QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* pParent) {
+    return m_pTrackModel->delegateForColumn(i, pParent);
 }
 
 TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {

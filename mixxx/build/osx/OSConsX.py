@@ -18,7 +18,7 @@ TODO:
 
 
 
-import sys, os, shutil
+import sys, os, shutil, stat
 import SCons
 from SCons.Builder import Builder
 from SCons.Script import *
@@ -106,6 +106,9 @@ def build_dmg(target, source, env):
             print "ERRRR", e
             raise Exception("Error copying %s: " % (a,), e)
 
+    # Symlink Applications to /Applications
+    os.system('ln -s /Applications %s' % os.path.join(dmg, 'Applications'))
+
     if env['ICON']:
         env['ICON'] = File(str(env['ICON'])) #make sure the given file is an icon; scons does this wrapping for us on sources and targets but not on environment vars (obviously, that would be stupid).
         #XXX this doesn't seem to work, at least not on MacOS 10.5
@@ -183,6 +186,9 @@ def build_app(target, source, env):
 
     strip = bool(env.get('STRIP',False))
 
+    otool_local_paths = env.get('OTOOL_LOCAL_PATHS', [])
+    otool_system_paths = env.get('OTOOL_SYSTEM_PATHS', [])
+
     "todo: expose the ability to override the list of System dirs"
     #ugh, I really don't like this... I wish I could package it up nicer. I could use a Builder but then I would have to pass in to the builder installed_bin which seems backwards since
 
@@ -233,7 +239,9 @@ def build_app(target, source, env):
     #XXX rename locals => embeds
     #precache the list of names of libs we are using so we can figure out if a lib is local or not (and therefore a ref to it needs to be updated) #XXX it seems kind of wrong to only look at the basename (even if, by the nature of libraries, that must be enough) but there is no easy way to compute the abspath
     locals = {} # [ref] => (absolute_path, embedded_path) (ref is the original reference from looking at otool -L; we use this to decide if two libs are the same)
-    for ref, path in otool.embed_dependencies(str(binary)): #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
+
+    #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
+    for ref, path in otool.embed_dependencies(str(binary), LOCAL=otool_local_paths, SYSTEM=otool_system_paths):
         locals[ref] = (path, embed_lib(path))
 
     plugins_l = [] #XXX bad name #list of tuples (source, embed) of plugins to stick under the plugins/ dir
@@ -249,7 +257,7 @@ def build_app(target, source, env):
     print "Scanning plugins for new dependencies:"
     for p, ep in plugins_l:
         print "Scanning plugin", p
-        for ref, path in otool.embed_dependencies(p):
+        for ref, path in otool.embed_dependencies(p, LOCAL=otool_local_paths, SYSTEM=otool_system_paths):
             if ref not in locals:
                 locals[ref] = path, embed_lib(path)
             else:
@@ -272,6 +280,10 @@ def build_app(target, source, env):
     print "Installing embedded libs:"
     for ref, (abs, embedded) in locals.iteritems():
         Execute(Copy(embedded, abs))
+        if not os.access(embedded, os.W_OK):
+            print "Adding write permissions to %s" % embedded_p
+            mode = os.stat(embedded).st_mode
+            os.chmod(embedded, mode | stat.S_IWUSR)
         patch_lib(embedded)
 
 
@@ -344,6 +356,7 @@ def emit_app(target, source, env):
     human_readable_copyright = env['COPYRIGHT']
     application_category_type = env['CATEGORY']
 
+
     #BUG: if the icon file is changed but nothing else then the plist doesn't get rebuilt (but since it's a str() and not a Node() there's no clean way to hook this in)
 
     #Precache some the important paths
@@ -367,16 +380,19 @@ def emit_app(target, source, env):
     env.Writer(File(os.path.join(str(contents),"PkgInfo")), [], DATA = "%s%s" % (bundle_type, bundle_signature))
 
     #.title() in the next line is used to make sure the titlebar on OS X has the capitalized name of the app
-    env.Plist(os.path.join(str(contents), "Info"),
-                PLIST={'CFBundleExecutable': binary.name.title(),
-                       'CFBundleIconFile': icon,
-                       'CFBundlePackageType': bundle_type,
-                       'CFBundleSignature': bundle_signature,
-                       'CFBundleIdentifier': bundle_identifier,
-                       'CFBundleDisplayName': bundle_display_name,
-                       'CFBundleShortVersionString' : bundle_short_version_string,
-                       'NSHumanReadableCopyright' : human_readable_copyright,
-                       'LSApplicationCategoryType' : application_category_type})
+    plist_data = {'CFBundleExecutable': binary.name.title(),
+                  'CFBundleIconFile': icon,
+                  'CFBundlePackageType': bundle_type,
+                  'CFBundleSignature': bundle_signature,
+                  'CFBundleIdentifier': bundle_identifier,
+                  'CFBundleDisplayName': bundle_display_name,
+                  'CFBundleShortVersionString' : bundle_short_version_string,
+                  'NSHumanReadableCopyright' : human_readable_copyright,
+                  'LSApplicationCategoryType' : application_category_type}
+    if env['FOR_APP_STORE']:
+        plist_data['ForAppStore'] = 'yes'
+    env.Plist(os.path.join(str(contents), "Info"), PLIST=plist_data)
+
     #NB: only need CFBundleExecutale if the binary name differs from the bundle name
     #todo:
     """Application Keys
@@ -410,11 +426,36 @@ def emit_app(target, source, env):
 
     return bundle, source+plugins #+[installed_bin]
 
-
-
-
 App = Builder(action = build_app, emitter = emit_app)
 
+
+def do_codesign(target, source, env):
+    # target[0] is a File object, coerce to string to get its path (usually
+    # something like osxXX_build/Mixxx)
+    bundle = str(target[0])
+
+    # HACK(XXX) SCons can't have a Dir which is a target so we append .app here
+    # since our actual target (the thing we want to codesign) is the bundle
+    # folder.
+    if not bundle.endswith('.app'):
+        bundle += '.app'
+
+    keychain = env.get('CODESIGN_KEYCHAIN', None)
+    keychain_password = env.get('CODESIGN_KEYCHAIN_PASSWORD', None)
+    identity = env.get('CODESIGN_IDENTITY', None)
+    if identity is not None:
+        if keychain and keychain_password is not None:
+            print "Unlocking keychain:"
+            if system("security unlock-keychain -p '%s' %s" % (keychain_password, keychain)) != 0:
+                raise Exception('Could not unlock keychain.')
+        print "Codesigning App:"
+        command = "codesign -f -s '%s'%s %s" % (identity,
+                                                ' --keychain %s' % keychain if keychain else '',
+                                                bundle)
+        if system(command) != 0:
+            raise Exception('codesign failed')
+
+CodeSign = Builder(action = do_codesign)
 
 
 def build_plist(target, source, env):
@@ -453,7 +494,8 @@ def generate(env):
     env['BUILDERS']['Dmg'] = Dmg
     env['BUILDERS']['Plist'] = Plist
     env['BUILDERS']['Writer'] = Writer #this should be in a different module, really
-    env['BUILDERS']
+    env['BUILDERS']['CodeSign'] = CodeSign
+
 
 def exists(env):
     return os.platform == 'darwin'

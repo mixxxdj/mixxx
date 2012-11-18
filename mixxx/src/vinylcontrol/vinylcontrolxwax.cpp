@@ -56,7 +56,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
-    dOldSteadyPitch = 1.0f;
+    m_pSteadySubtle = new SteadyPitch(0.08);
+    m_pSteadyGross = new SteadyPitch(0.5);
 
     iQualPos = 0;
     iQualFilled = 0;
@@ -65,22 +66,37 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
 
     //this is all needed because libxwax indexes by C-strings
     //so we go and pass libxwax a pointer into our local stack...
-    if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
+    if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
         timecode = (char*)"serato_2a";
-    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB)
+    }
+    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
         timecode = (char*)"serato_2b";
+    }
     else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
         m_bNeedleSkipPrevention = false;
         m_bCDControl = true;
     }
-    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA)
+    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
         timecode = (char*)"traktor_a";
-    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB)
+    }
+    else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
         timecode = (char*)"traktor_b";
+    }
+    else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
+    	timecode = (char*)"mixvibes_v2";
+   	}
     else {
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";
+    }
+    
+    timecode_def *tc_def = timecoder_find_definition(timecode);
+    if (tc_def == NULL)
+    {
+        qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
+        timecode = (char*)"serato_2a";
+        tc_def = timecoder_find_definition(timecode);
     }
 
     double speed = 1.0f;
@@ -94,7 +110,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     //Initialize the timecoder structure.
     s_xwaxLUTMutex.lock(); //Static mutex! We don't want two threads doing this!
 
-    timecoder_init(&timecoder, timecode, speed, iSampleRate);
+    timecoder_init(&timecoder, tc_def, speed, iSampleRate);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -114,8 +130,12 @@ VinylControlXwax::~VinylControlXwax()
     // Remove existing samples
     if (m_samples)
         free(m_samples);
+        
+    delete m_pSteadySubtle;
+    delete m_pSteadyGross;
 
     //Cleanup xwax nicely
+    timecoder_monitor_clear(&timecoder);
     timecoder_clear(&timecoder);
     m_bLUTInitialized = false;
 
@@ -184,7 +204,7 @@ void VinylControlXwax::run()
     bool reportedPlayButton = 0;
     tSinceSteadyPitch.start();
 
-    float when; //unused, needed for calling xwax
+    double when; //unused, needed for calling xwax
 
     bShouldClose = false;
 
@@ -236,7 +256,7 @@ void VinylControlXwax::run()
             }
             continue;
         }
-        //qDebug() << m_group << id << iPosition << dVinylPitch;
+        //qDebug() << m_group << id << iPosition << when << dVinylPitch;
 
         cur_duration = duration->get();
 
@@ -314,7 +334,7 @@ void VinylControlXwax::run()
         //when the filepos is past safe (more accurate),
         //but it can also happen in relative mode if the vinylpos is nearing the end
         //If so, change to constant mode so DJ can move the needle safely
-
+        
         if (!atRecordEnd && reportedPlayButton)
         {
             if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
@@ -364,32 +384,38 @@ void VinylControlXwax::run()
         //check here for position > safe, and if no record end mode,
         //then trigger track selection mode.  just pass position to it
         //and ignore pitch
-
+        
         if (!atRecordEnd)
         {
             if (iPosition != -1 && iPosition > m_uiSafeZone)
             {
-                //until I can figure out how to detect "track 2" on serato CD,
-                //don't try track selection
-                if (!m_bCDControl)
+                //only enable if pitch is steady, though.  Heavy scratching can
+                //produce crazy results and trigger this mode
+                if (bTrackSelectMode || checkSteadyPitch(dVinylPitch, filePosition) > 0.1)
                 {
-                    if (!bTrackSelectMode)
+                    //until I can figure out how to detect "track 2" on serato CD,
+                    //don't try track selection
+                    if (!m_bCDControl)
                     {
-                        qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
-                        bTrackSelectMode = true;
-                        togglePlayButton(FALSE);
-                           resetSteadyPitch(0.0f, 0.0f);
-                        controlScratch->slotSet(0.0f);
+                        if (!bTrackSelectMode)
+                        {
+                            qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
+                            bTrackSelectMode = true;
+                            togglePlayButton(FALSE);
+                               resetSteadyPitch(0.0f, 0.0f);
+                            controlScratch->slotSet(0.0f);
+                        }
+                        doTrackSelection(true, dVinylPitch, iPosition);
                     }
-                    doTrackSelection(true, dVinylPitch, iPosition);
+
+                    //hm I wonder if track will keep playing while this happens?
+                    //not sure what we want to do here...  probably enforce
+                    //stopped deck.
+
+                    //but if constant mode...  nah, force stop.
+                    continue;
                 }
-
-                //hm I wonder if track will keep playing while this happens?
-                //not sure what we want to do here...  probably enforce
-                //stopped deck.
-
-                //but if constant mode...  nah, force stop.
-                continue;
+                //if it's not steady yet we process as normal
             }
             else
             {
@@ -502,7 +528,7 @@ void VinylControlXwax::run()
                     qDebug() << filePosition << dOldFilePos << dVinylPosition << dOldPos;
                     qDebug() << (dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch));
                     //try setting the rate to the steadypitch value
-                    enableConstantMode(dOldSteadyPitch);
+                    enableConstantMode(m_pSteadySubtle->steadyValue());
                     vinylStatus->slotSet(VINYL_STATUS_ERROR);
                 }
                 else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
@@ -535,7 +561,6 @@ void VinylControlXwax::run()
                     dDriftControl = 0.0;
                 }
 
-                //if we hit the end of the ring, loop around
                 dOldPos = dVinylPosition;
             }
             else
@@ -766,50 +791,21 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     }
 }
 
+
 void VinylControlXwax::resetSteadyPitch(double pitch, double time)
 {
-    dSteadyPitch = pitch;
-    dSteadyPitchTime = time;
+    m_pSteadySubtle->reset(pitch, time);
+    m_pSteadyGross->reset(pitch, time);
 }
 
 double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 {
-    //return length of time pitch has been steady, 0 if not steady
-    const double PITCH_THRESHOLD = 0.07f;
-
-    if (time < dSteadyPitchTime) //bad values, often happens during resync
-    {
-        if (loopEnabled->get())
-        {
-            //if looping, fake it since we don't know where the loop
-            //actually is
-            if (fabs(pitch - dSteadyPitch) < PITCH_THRESHOLD)
-            {
-                dSteadyPitchTime = time - 2.0;
-                return 2.0;
-            }
-        }
-        else
-        {
-            resetSteadyPitch(pitch, time);
-            return 0.0;
-        }
+    if (m_pSteadyGross->check(pitch, time, loopEnabled->get()) < 0.5) {
+        scratching->slotSet(1.0);
+    } else {
+        scratching->slotSet(0.0);
     }
-
-    if (fabs(pitch - dSteadyPitch) < PITCH_THRESHOLD)
-    {
-        if (time - dSteadyPitchTime > 2.0)
-        {
-            dSteadyPitch = pitch;
-            dOldSteadyPitch = dSteadyPitch; //this was a known-good value
-            dSteadyPitchTime += 1.0;
-        }
-        return time - dSteadyPitchTime;
-    }
-
-    //else
-    resetSteadyPitch(pitch, time);
-    return 0.0;
+    return m_pSteadySubtle->check(pitch, time, loopEnabled->get());
 }
 
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
@@ -898,7 +894,7 @@ void VinylControlXwax::establishQuality(bool quality_sample)
 
 float VinylControlXwax::getAngle()
 {
-    float when;
+    double when;
     float pos = timecoder_get_position(&timecoder, &when);
 
     if (pos == -1)

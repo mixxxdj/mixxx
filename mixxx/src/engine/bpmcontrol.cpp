@@ -1,11 +1,15 @@
 // bpmcontrol.cpp
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QStringList>
+
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
+#include "engine/enginechannel.h"
+#include "engine/enginemaster.h"
 
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
@@ -15,6 +19,8 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
+    m_pNumDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
+
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
@@ -61,9 +67,21 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotControlBeatSync(double)),
             Qt::DirectConnection);
 
-    m_pTranslateBeats = new ControlPushButton(ConfigKey(_group, "beats_translate_curpos"));
+    m_pButtonSyncPhase = new ControlPushButton(ConfigKey(_group, "beatsync_phase"));
+    connect(m_pButtonSyncPhase, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlBeatSyncPhase(double)),
+            Qt::DirectConnection);
+
+    m_pButtonSyncTempo = new ControlPushButton(ConfigKey(_group, "beatsync_tempo"));
+    connect(m_pButtonSyncTempo, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlBeatSyncTempo(double)),
+            Qt::DirectConnection);
+
+    m_pTranslateBeats = new ControlPushButton(
+        ConfigKey(_group, "beats_translate_curpos"));
     connect(m_pTranslateBeats, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatsTranslate(double)));
+            this, SLOT(slotBeatsTranslate(double)),
+            Qt::DirectConnection);
 
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
@@ -74,6 +92,8 @@ BpmControl::~BpmControl() {
     delete m_pEngineBpm;
     delete m_pFileBpm;
     delete m_pButtonSync;
+    delete m_pButtonSyncTempo;
+    delete m_pButtonSyncPhase;
     delete m_pButtonTap;
     delete m_pTranslateBeats;
 }
@@ -123,14 +143,36 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     slotFileBpmChanged(averageBpm);
 }
 
+void BpmControl::slotControlBeatSyncPhase(double v) {
+    if (!v)
+        return;
+    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    syncPhase(pOtherEngineBuffer);
+}
+
+void BpmControl::slotControlBeatSyncTempo(double v) {
+    if (!v)
+        return;
+    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    syncTempo(pOtherEngineBuffer);
+}
+
 void BpmControl::slotControlBeatSync(double v) {
     if (!v)
         return;
 
-    EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
+    // If the player is playing, and adjusting its tempo succeeded, adjust its
+    // phase so that it plays in sync.
+    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    if (syncTempo(pOtherEngineBuffer) && m_pPlayButton->get() > 0) {
+        syncPhase(pOtherEngineBuffer);
+    }
+}
 
-    if(!pOtherEngineBuffer)
-        return;
+bool BpmControl::syncTempo(EngineBuffer* pOtherEngineBuffer) {
+    if (!pOtherEngineBuffer) {
+        return false;
+    }
 
     double fThisBpm  = m_pEngineBpm->get();
     //double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
@@ -179,10 +221,11 @@ void BpmControl::slotControlBeatSync(double v) {
         // effective BPM equivalent to the other decks.
         double fDesiredRate = fOtherBpm / fThisFileBpm;
 
-        // Test if this buffers bpm is the double of the other one, and adjust
+        // Test if this buffer's bpm is the double of the other one, and adjust
         // the rate scale. I believe this is intended to account for our BPM
-        // algorithm sometimes finding double or half BPMs. This avoid drastic
+        // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
+
         float fFileBpmDelta = fabs(fThisFileBpm-fOtherFileBpm);
         if (fabs(fThisFileBpm*2.0 - fOtherFileBpm) < fFileBpmDelta) {
             fDesiredRate /= 2.0;
@@ -207,24 +250,60 @@ void BpmControl::slotControlBeatSync(double v) {
 
             // And finally, set the slider
             m_pRateSlider->set(fDesiredRate);
+            return true;
+        }
+    }
+    return false;
+}
 
-            // If the player is playing, adjust its phase so that it plays in
-            // sync.
-            if (m_pPlayButton->get() > 0) {
-                adjustPhase();
+EngineBuffer* BpmControl::pickSyncTarget() {
+    EngineMaster* pMaster = getEngineMaster();
+    if (!pMaster) {
+        return NULL;
+    }
+    QString group = getGroup();
+    QStringList deckGroups;
+    EngineBuffer* pFirstNonplayingDeck = NULL;
+
+    for (int i = 0; i < m_pNumDecks->get(); ++i) {
+        // TODO(XXX) format from PlayerManager
+        QString deckGroup = QString("[Channel%1]").arg(i+1);
+        if (deckGroup == group) {
+            continue;
+        }
+        EngineChannel* pChannel = pMaster->getChannel(deckGroup);
+        // Only consider channels that have a track loaded and are in the master
+        // mix.
+        if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
+            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+            if (pBuffer && pBuffer->getBpm() > 0) {
+                // If the deck is playing then go with it immediately.
+                if (fabs(pBuffer->getRate()) > 0) {
+                    return pBuffer;
+                }
+                // Otherwise hold out for a deck that might be playing but
+                // remember the first deck that matched our criteria.
+                if (pFirstNonplayingDeck == NULL) {
+                    pFirstNonplayingDeck = pBuffer;
+                }
             }
         }
     }
+    // No playing decks have a BPM. Go with the first deck that was stopped but
+    // had a BPM.
+    return pFirstNonplayingDeck;
 }
 
-void BpmControl::adjustPhase() {
-    EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
+bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
+    if (!pOtherEngineBuffer) {
+        return false;
+    }
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
     BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 
     // If either track does not have beats, then we can't adjust the phase.
     if (!m_pBeats || !otherBeats) {
-        return;
+        return false;
     }
 
     // Get the file BPM of each song.
@@ -242,6 +321,10 @@ void BpmControl::adjustPhase() {
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
 
+    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
+        return false;
+    }
+
     // Protect against the case where we are sitting exactly on the beat.
     if (dThisPrevBeat == dThisNextBeat) {
         dThisNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
@@ -249,6 +332,10 @@ void BpmControl::adjustPhase() {
 
     double dOtherPrevBeat = otherBeats->findPrevBeat(dOtherPosition);
     double dOtherNextBeat = otherBeats->findNextBeat(dOtherPosition);
+
+    if (dOtherPrevBeat == -1 || dOtherNextBeat == -1) {
+        return false;
+    }
 
     // Protect against the case where we are sitting exactly on the beat.
     if (dOtherPrevBeat == dOtherNextBeat) {
@@ -290,6 +377,7 @@ void BpmControl::adjustPhase() {
     }
 
     emit(seekAbs(dNewPlaypos));
+    return true;
 }
 
 void BpmControl::slotRateChanged(double) {

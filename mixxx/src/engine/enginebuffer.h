@@ -25,8 +25,11 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "rotary.h"
+
 //for the writer
-//#include <QtCore>
+#ifdef __SCALER_DEBUG__
+#include <QtCore>
+#endif
 
 class EngineControl;
 class BpmControl;
@@ -44,6 +47,7 @@ class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
+class EngineMaster;
 
 struct Hint;
 
@@ -99,7 +103,7 @@ public:
     /** Returns current bpm value (not thread-safe) */
     double getBpm();
     /** Sets pointer to other engine buffer/channel */
-    void setOtherEngineBuffer(EngineBuffer *);
+    void setEngineMaster(EngineMaster*);
 
     /** Reset buffer playpos and set file playpos. This must only be called
       * while holding the pause mutex */
@@ -123,6 +127,7 @@ public:
     void slotControlEnd(double);
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
+    void slotControlSlip(double);
 
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
@@ -152,6 +157,8 @@ private:
 
     void ejectTrack();
 
+    double fractionalPlayposFromAbsolute(double absolutePlaypos);
+
     // Lock for modifying local engine variables that are not thread safe, such
     // as m_engineControls and m_hintList
     QMutex m_engineLock;
@@ -175,9 +182,6 @@ private:
         ahead */
     ReadAheadManager* m_pReadAheadManager;
 
-    /** Pointer to other EngineBuffer */
-    EngineBuffer* m_pOtherEngineBuffer;
-
     // The reader used to read audio files
     CachingReader* m_pReader;
 
@@ -199,12 +203,21 @@ private:
     int m_iSamplesCalculated;
     int m_iUiSlowTick;
 
+    // The location where the track would have been had slip not been engaged
+    double m_dSlipPosition;
+    // Saved value of rate for slip mode
+    double m_dSlipRate;
+    // Slip Status
+    bool m_bSlipEnabled;
+
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
     ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
+    ControlPushButton* m_pSlipButton;
+    ControlObject* m_pSlipPosition;
 
     ControlObject *rateEngine;
     ControlObject *visualBpm;
@@ -247,10 +260,15 @@ private:
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
-    /*QFile df;
-    QTextStream writer;*/
+#ifdef __SCALER_DEBUG__
+    QFile df;
+    QTextStream writer;
+#endif
     CSAMPLE* m_pDitherBuffer;
     unsigned int m_iDitherBufferReadIndex;
+    CSAMPLE* m_pCrossFadeBuffer;
+    int m_iCrossFadeSamples;
+    int m_iLastBufferSize;
 };
 
 #endif

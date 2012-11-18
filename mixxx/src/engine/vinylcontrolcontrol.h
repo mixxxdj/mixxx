@@ -15,6 +15,8 @@ class VinylControlControl : public EngineControl {
 
     void trackLoaded(TrackPointer pTrack);
     void trackUnloaded(TrackPointer pTrack);
+    bool isEnabled();
+    bool isScratching();
 
   private slots:
     void slotControlVinylSeek(double value);
@@ -23,6 +25,7 @@ class VinylControlControl : public EngineControl {
     ControlObject* m_pControlVinylSeek;
     ControlObject* m_pControlVinylSpeedType;
     ControlObject* m_pControlVinylStatus;
+    ControlPushButton* m_pControlVinylScratching;
     ControlPushButton* m_pControlVinylMode;
     ControlPushButton* m_pControlVinylEnabled;
     ControlPushButton* m_pControlVinylWantEnabled;

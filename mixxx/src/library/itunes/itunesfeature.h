@@ -10,7 +10,7 @@
 #include <QtConcurrentRun>
 #include <QFutureWatcher>
 
-#include "library/libraryfeature.h"
+#include "library/baseexternallibraryfeature.h"
 #include "library/trackcollection.h"
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
@@ -20,8 +20,8 @@ class ITunesTrackModel;
 class ITunesPlaylistModel;
 
 
-class ITunesFeature : public LibraryFeature {
- Q_OBJECT
+class ITunesFeature : public BaseExternalLibraryFeature {
+    Q_OBJECT
  public:
     ITunesFeature(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~ITunesFeature();
@@ -30,8 +30,8 @@ class ITunesFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -41,15 +41,16 @@ class ITunesFeature : public LibraryFeature {
     void activate();
     void activate(bool forceReload);
     void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    virtual void onRightClick(const QPoint& globalPos);
     void onLazyChildExpandation(const QModelIndex& index);
     void onTrackCollectionLoaded();
 
   private:
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     static QString getiTunesMusicPath();
     //returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
+    void guessMusicLibraryMountpoint(QXmlStreamReader &xml);
     void parseTracks(QXmlStreamReader &xml);
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
@@ -71,6 +72,9 @@ class ITunesFeature : public LibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
+
+    QString m_dbItunesRoot;
+    QString m_mixxxItunesRoot;
 
     static const QString ITDB_PATH_KEY;
 };

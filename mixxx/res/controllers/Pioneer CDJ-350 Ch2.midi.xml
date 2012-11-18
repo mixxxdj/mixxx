@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset mixxxVersion="1.7.2+" schemaVersion="1" >
+    <info>
+        <name>Pioneer CDJ-350 CH2</name>
+        <author>Kazuaki</author>
+        <description>This is an incomplete mapping for a single Pioneer CDJ 350.</description>
+    </info>
+    <controller id="Pioneer CDJ 350 MIDI">
+        <scriptfiles>
+            <file filename="Pioneer-CDJ-350-scripts.js" functionprefix="PioneerCDJ350"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <status>0xb0</status>
+                <midino>0x1d</midino><!-- tempo slider -->
+                <options>
+                    <Invert/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerCDJ350.jog_wheel</key>
+                <status>0xb0</status>
+                <midino>0x30</midino><!-- jog wheel -->
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerCDJ350.jog_wheel</key>
+                <status>0xb0</status>
+                <midino>0x10</midino><!-- scratch -->
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <!-- play, cue, seek -->
+            <control>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <status>0x90</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>fwd</key>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>back</key>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <!-- track search (start/end), loop in/out/exit -->
+            <control>
+                <group>[Channel2]</group>
+                <key>end</key>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>start</key>
+                <status>0x90</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <status>0x90</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>reloop_exit</key>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerCDJ350.tempo_btn</key>
+                <status>0x90</status>
+                <midino>0x10</midino><!-- Tempo Range -->
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>beatsync</key>
+                <status>0x90</status>
+                <midino>0x26</midino><!-- BPM Lock -->
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <!-- hot loop end adjustment -->
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerCDJ350.loop_end_minus</key><!-- earlier -->
+                <status>0x90</status>
+                <midino>0x17</midino><!-- loop divide minus -->
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerCDJ350.loop_end_plus</key><!-- later -->
+                <status>0x90</status>
+                <midino>0x16</midino><!-- loop divide plus -->
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <!-- leftovers:
+                    Select Push (Turn) Bn 4f,
+                    Time Mode (Auto Cue) 9n 0e,
+                    Display (Utility) 9n 0f,
+                    Master Tempo 9n 11,
+                    Vinyl Mode 9n 12,
+                    Jog Dial (Press) 9n 20,
+                    Playlist 9n 2e,
+                    Eject 9n 2f,
+                    Back 9n 32,
+                    Select Push (Press) 9n 9n
+            -->
+        </controls>
+    </controller>
+</MixxxMIDIPreset>

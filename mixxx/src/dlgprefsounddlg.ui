@@ -64,6 +64,24 @@
        </item>
       </layout>
      </item>
+     <item>
+      <layout class="QHBoxLayout" name="underflowHLayout">
+       <item>
+        <widget class="QLabel" name="underflowLabel">
+         <property name="text">
+          <string>Buffer Underflow Count</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="bufferUnderflowCount">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </item>
    <item>
@@ -76,7 +94,7 @@
        <widget class="QLabel" name="latencyTipsLabel">
         <property name="text">
          <string>&lt;ul&gt;
-&lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</string>
         </property>

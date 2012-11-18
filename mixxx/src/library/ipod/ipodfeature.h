@@ -19,6 +19,7 @@ extern "C"
 }
 
 class IPodPlaylistModel;
+class GPodItdb;
 
 class IPodFeature : public LibraryFeature {
  Q_OBJECT
@@ -30,8 +31,8 @@ class IPodFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -79,9 +80,11 @@ class IPodFeature : public LibraryFeature {
     QString m_dbItunesRoot;
     QString m_mixxxItunesRoot;
 
+    GPodItdb* m_gPodItdb;
+
     Itdb_iTunesDB* m_itdb;
 
     static const QString IPOD_MOUNT_KEY;
 };
 
-#endif /* ITUNESFEATURE_H */
+#endif /* IPODFEATURE_H */

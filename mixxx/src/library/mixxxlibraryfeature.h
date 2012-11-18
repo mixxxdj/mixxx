@@ -12,6 +12,7 @@
 class BaseTrackCache;
 class LibraryTableModel;
 class MissingTableModel;
+class HiddenTableModel;
 class TrackCollection;
 
 class MixxxLibraryFeature : public LibraryFeature {
@@ -23,8 +24,8 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
     TreeItemModel* getChildModel();
@@ -38,9 +39,12 @@ class MixxxLibraryFeature : public LibraryFeature {
     void refreshLibraryModels();
 
   private:
+    const QString kMissingTitle;
+    const QString kHiddenTitle;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     MissingTableModel* m_pMissingTableModel;
+    HiddenTableModel* m_pHiddenTableModel;
     TreeItemModel m_childModel;
 };
 

@@ -69,12 +69,6 @@ TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setYear(year);
         pTrack->setGenre(genre);
         pTrack->setBpm(bpm);
-
-        // If the track has a BPM, then give it a static beatgrid.
-        if (bpm > 0) {
-            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
-            pTrack->setBeats(pBeats);
-        }
     }
     return pTrack;
 }
@@ -103,8 +97,9 @@ Qt::ItemFlags RhythmboxPlaylistModel::flags(const QModelIndex &index) const {
 void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare(
-        "SELECT id from rhythmbox_playlists where name='"+playlist_path+"'");
+    finder_query.prepare("SELECT id from rhythmbox_playlists where name=:name");
+    finder_query.bindValue(":name", playlist_path);
+
     if (!finder_query.exec()) {
         qDebug() << "SQL Error in RhythmboxPlaylistModel.cpp: line"
                  << __LINE__ << " " << finder_query.lastError();
@@ -130,10 +125,10 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(driver->formatValue(playlistNameField))
-            .arg(columns.join(","))
-            .arg("rhythmbox_playlist_tracks")
-            .arg(playlistId);
+            .arg(driver->formatValue(playlistNameField),
+                 columns.join(","),
+                 "rhythmbox_playlist_tracks",
+                 QString::number(playlistId));
     query.prepare(queryString);
 
     if (!query.exec()) {

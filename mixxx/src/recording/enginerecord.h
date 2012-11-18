@@ -69,7 +69,7 @@ class EngineRecord : public EngineAbstractRecord {
     QByteArray m_OGGquality;
     QByteArray m_MP3quality;
     QByteArray m_Encoding;
-    QByteArray m_filename;
+    QString m_filename;
     QByteArray m_baTitle;
     QByteArray m_baAuthor;
     QByteArray m_baAlbum;
@@ -90,8 +90,8 @@ class EngineRecord : public EngineAbstractRecord {
     double m_dLatency;
 
     QByteArray m_cuefilename;
-    unsigned long m_cuesamplepos;
-    unsigned long m_cuetrack;
+    quint64 m_cuesamplepos;
+    quint64 m_cuetrack;
     bool m_bCueIsEnabled;
 };
 
