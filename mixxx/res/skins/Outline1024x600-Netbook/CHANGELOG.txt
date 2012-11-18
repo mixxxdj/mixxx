@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.10	(18/11/2012)
+* Feature: Added SYNC buttons to the sampler decks , lp:1072229
+
 v1.11.0.09	(25/10/2012)
 * Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
   and set Mixxx controls on skin load , lp:1017399
