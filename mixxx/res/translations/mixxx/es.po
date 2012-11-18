@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-11-12 22:55+0000\n"
-"Last-Translator: pepep <jverdugo62@wanadoo.es>\n"
+"PO-Revision-Date: 2012-11-17 23:50+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-14 04:38+0000\n"
-"X-Generator: Launchpad (build 16251)\n"
+"X-Launchpad-Export-Date: 2012-11-18 04:34+0000\n"
+"X-Generator: Launchpad (build 16278)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3907,24 +3907,24 @@ msgstr "Filtrado"
 
 #: SoftwareWaveformWidget#2
 msgid "Software"
-msgstr "Programa"
+msgstr "Software"
 
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
 msgstr ""
-"Arrastra pistas aquí, desde la librería o del administrador de archivos."
+"Arrastre pistas desde la biblioteca o un gestor de archivos externo, aquí."
 
 #: Tooltips#2
 msgid "Reset to default value."
-msgstr "Restablecer a valores predeterminados"
+msgstr "Restablecer al valor predeterminado."
 
 #: Tooltips#3
 msgid "Left-click"
-msgstr "Clic izquierdo"
+msgstr "Pulsación izquierda"
 
 #: Tooltips#4
 msgid "Right-click"
-msgstr "Clic derecho"
+msgstr "Pulsación derecha"
 
 #: Tooltips#5
 msgid "Waveform Overview"
