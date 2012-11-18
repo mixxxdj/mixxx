@@ -49,7 +49,6 @@ protected:
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
-    void timerEvent(QTimerEvent *);
     void resizeEvent(QResizeEvent *);
 
 public slots:
@@ -73,6 +72,7 @@ private slots:
     void onMarkRangeChange(double v);
 
     void slotWaveformSummaryUpdated();
+    void slotAnalyserProgress(int progress);
 
   private:
     /** append the waveform overview pixmap according to available data in waveform */
@@ -127,6 +127,8 @@ private slots:
     /** coefficient value-position linear transposition */
     float m_a;
     float m_b;
+
+    int m_analyserProgress; // in 0.1%
 };
 
 #endif

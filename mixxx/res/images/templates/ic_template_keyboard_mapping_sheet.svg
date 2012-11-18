@@ -28,14 +28,14 @@
    inkscape:pageopacity="1"
    inkscape:pageshadow="2"
    inkscape:window-width="1920"
-   inkscape:window-height="1178"
+   inkscape:window-height="1152"
    id="namedview8739"
    showgrid="false"
    inkscape:zoom="1"
-   inkscape:cx="374.24576"
-   inkscape:cy="483.16984"
-   inkscape:window-x="1280"
-   inkscape:window-y="0"
+   inkscape:cx="298.04381"
+   inkscape:cy="470.35251"
+   inkscape:window-x="0"
+   inkscape:window-y="22"
    inkscape:window-maximized="1"
    inkscape:current-layer="layer4"
    showguides="true"
@@ -589,7 +589,7 @@
      id="path24676"
      style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#606163;stroke-width:1.0001992;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
      inkscape:connector-curvature="0" /></g><polygon
-   points="0,560.464 0,560.464 807.465,560.464 807.465,828.441 0,828.441 "
+   points="0,560.464 807.465,560.464 807.465,828.441 0,828.441 0,560.464 "
    transform="translate(0.49997635,-280.5)"
    id="polygon8071"
    style="fill:none;display:inline" /><text
@@ -617,153 +617,8 @@
 
 
 
+
 <g
-   style="display:inline"
-   id="use38513-0"
-   transform="matrix(0.98440666,0,0,0.98437637,-395.86085,-124.47901)"
-   inkscape:tile-x0="-349.1963"
-   inkscape:tile-y0="694.0189"
-   inkscape:tile-cx="-333.3238"
-   inkscape:tile-cy="709.8919"
-   inkscape:tile-w="31.744999"
-   inkscape:tile-h="31.745999"><path
-     inkscape:connector-curvature="0"
-     style="fill:#606163;fill-opacity:1;fill-rule:evenodd;filter:url(#filter5705)"
-     id="path4543"
-     d="m 27.899,586.346 h 27.959 c 1.041,0 1.893,0.852 1.893,1.893 v 27.959 c 0,1.042 -0.852,1.894 -1.893,1.894 H 27.899 c -1.041,0 -1.893,-0.852 -1.893,-1.894 v -27.959 c 0,-1.041 0.852,-1.893 1.893,-1.893 l 0,0 z" /><linearGradient
-     gradientTransform="matrix(0.2947,0,0,0.2947,30.7554,347.0751)"
-     gradientUnits="userSpaceOnUse"
-     id="linearGradient4545"
-     y2="911.19781"
-     x2="81.238297"
-     y1="911.19781"
-     x1="-5.7480001"><stop
-       offset="0.2"
-       style="stop-color:#d1d3d4;stop-opacity:1"
-       id="stop4547" /><stop
-       offset="0.80000001"
-       style="stop-color:#e7e8e9;stop-opacity:1"
-       id="stop4549" /></linearGradient><linearGradient
-     gradientTransform="matrix(0.2947,0,0,0.2947,51.7695,320.3168)"
-     gradientUnits="userSpaceOnUse"
-     id="linearGradient4551"
-     y2="911.08643"
-     x2="9.9525995"
-     y1="911.08643"
-     x1="-77.083504"><stop
-       offset="0.2"
-       style="stop-color:#d1d3d4;stop-opacity:1"
-       id="stop4553" /><stop
-       offset="0.80000001"
-       style="stop-color:#e7e8e9;stop-opacity:1"
-       id="stop4555" /></linearGradient><linearGradient
-     gradientTransform="matrix(0.2947,0,0,0.2947,31.1953,325.3285)"
-     gradientUnits="userSpaceOnUse"
-     id="linearGradient4557"
-     y2="888.25562"
-     x2="4.1355"
-     y1="908.75342"
-     x1="-16.362301"><stop
-       offset="0.02"
-       style="stop-color:#f1f1f2;stop-opacity:1"
-       id="stop4559" /><stop
-       offset="0.308"
-       style="stop-color:#f1f1f2;stop-opacity:1"
-       id="stop4561" /><stop
-       offset="0.69199997"
-       style="stop-color:#d1d3d4;stop-opacity:1"
-       id="stop4563" /><stop
-       offset="0.98000002"
-       style="stop-color:#d1d3d4;stop-opacity:1"
-       id="stop4565" /></linearGradient><linearGradient
-     gradientTransform="matrix(0.2947,0,0,0.2947,46.8662,325.1571)"
-     gradientUnits="userSpaceOnUse"
-     id="linearGradient4567"
-     y2="888.78809"
-     x2="15.1563"
-     y1="909.26898"
-     x1="35.637199"><stop
-       offset="0.01"
-       style="stop-color:#bcbec0;stop-opacity:1"
-       id="stop4569" /><stop
-       offset="0.30399999"
-       style="stop-color:#bcbec0;stop-opacity:1"
-       id="stop4571" /><stop
-       offset="0.69599998"
-       style="stop-color:#e7e8e9;stop-opacity:1"
-       id="stop4573" /><stop
-       offset="0.99000001"
-       style="stop-color:#e7e8e9;stop-opacity:1"
-       id="stop4575" /></linearGradient><linearGradient
-     gradientTransform="matrix(0.2947,0,0,0.2947,46.3013,346.1517)"
-     gradientUnits="userSpaceOnUse"
-     id="linearGradient4577"
-     y2="919.86768"
-     x2="16.7265"
-     y1="898.59619"
-     x1="37.998001"><stop
-       offset="0.09"
-       style="stop-color:#bcbec0;stop-opacity:1"
-       id="stop4579" /><stop
-       offset="0.336"
-       style="stop-color:#bcbec0;stop-opacity:1"
-       id="stop4581" /><stop
-       offset="0.66399997"
-       style="stop-color:#e7e8e9;stop-opacity:1"
-       id="stop4583" /><stop
-       offset="0.91000003"
-       style="stop-color:#e7e8e9;stop-opacity:1"
-       id="stop4585" /></linearGradient><linearGradient
-     gradientTransform="matrix(0.2947,0,0,0.2947,31.4941,346.2787)"
-     gradientUnits="userSpaceOnUse"
-     id="linearGradient4587"
-     y2="919.49622"
-     x2="3.4991"
-     y1="898.28473"
-     x1="-17.7124"><stop
-       offset="0.09"
-       style="stop-color:#f1f1f2;stop-opacity:1"
-       id="stop4589" /><stop
-       offset="0.336"
-       style="stop-color:#f1f1f2;stop-opacity:1"
-       id="stop4591" /><stop
-       offset="0.66399997"
-       style="stop-color:#d1d3d4;stop-opacity:1"
-       id="stop4593" /><stop
-       offset="0.91000003"
-       style="stop-color:#d1d3d4;stop-opacity:1"
-       id="stop4595" /></linearGradient><linearGradient
-     gradientTransform="matrix(0.2947,0,0,0.2947,29.1309,324.7738)"
-     gradientUnits="userSpaceOnUse"
-     id="linearGradient4597"
-     y2="968.94067"
-     x2="85.659599"
-     y1="912.43213"
-     x1="1.8823"><stop
-       offset="0.14"
-       style="stop-color:#bcbec0;stop-opacity:1"
-       id="stop4599" /><stop
-       offset="0.47119999"
-       style="stop-color:#e7e8e9;stop-opacity:1"
-       id="stop4601" /><stop
-       offset="0.62239999"
-       style="stop-color:#f1f1f2;stop-opacity:1"
-       id="stop4603" /><stop
-       offset="0.86000001"
-       style="stop-color:#ffffff;stop-opacity:1"
-       id="stop4605" /></linearGradient><path
-     d="m 28.779736,587.34603 h 26.197528 c 0.975414,0 1.773737,0.79832 1.773737,1.77374 v 26.19753 c 0,0.97635 -0.798324,1.77467 -1.773737,1.77467 H 28.779736 c -0.975415,0 -1.773737,-0.79832 -1.773737,-1.77467 v -26.19753 c 0,-0.97542 0.798322,-1.77374 1.773737,-1.77374 l 0,0 z"
-     id="path4607"
-     style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#606163;stroke-width:1.01585591;stroke-opacity:1"
-     inkscape:connector-curvature="0" /><path
-     inkscape:connector-curvature="0"
-     style="opacity:0.7;color:#000000;fill:#9ade00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-     id="path4826"
-     d="m 28.779736,587.34603 h 26.197528 c 0.975414,0 1.773737,0.79832 1.773737,1.77374 v 26.19753 c 0,0.97635 -0.798324,1.77467 -1.773737,1.77467 H 28.779736 c -0.975415,0 -1.773737,-0.79832 -1.773737,-1.77467 v -26.19753 c 0,-0.97542 0.798322,-1.77374 1.773737,-1.77374 l 0,0 z" /><path
-     inkscape:connector-curvature="0"
-     style="fill:none;stroke:#606163;stroke-width:1.01585591;stroke-opacity:1"
-     id="path4813"
-     d="m 28.779736,587.34603 h 26.197528 c 0.975414,0 1.773737,0.79832 1.773737,1.77374 v 26.19753 c 0,0.97635 -0.798324,1.77467 -1.773737,1.77467 H 28.779736 c -0.975415,0 -1.773737,-0.79832 -1.773737,-1.77467 v -26.19753 c 0,-0.97542 0.798322,-1.77374 1.773737,-1.77374 l 0,0 z" /></g><g
    inkscape:tile-y0="744.58046"
    inkscape:tile-x0="-349.1963"
    transform="matrix(0.98440666,0,0,0.98437637,-395.86085,-91.479004)"
@@ -1227,7 +1082,7 @@
      height="828.44098"
      width="807.46503"
      id="use5996"
-     transform="translate(845.57697,180.20443)"
+     transform="translate(-21.440402,360.21132)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1235,7 +1090,7 @@
      height="828.44098"
      width="807.46503"
      id="use5998"
-     transform="translate(878.57698,180.20443)"
+     transform="translate(11.559612,360.21132)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1243,7 +1098,7 @@
      height="828.44098"
      width="807.46503"
      id="use6000"
-     transform="translate(680.57697,180.20443)"
+     transform="translate(-186.4404,360.21132)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1385,7 +1240,7 @@
      height="828.44098"
      width="807.46503"
      id="use6002"
-     transform="translate(1101.0789,180.4984)"
+     transform="translate(234.06153,360.50529)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1393,7 +1248,7 @@
      height="828.44098"
      width="807.46503"
      id="use6004"
-     transform="translate(903.07892,180.4984)"
+     transform="translate(36.061552,360.50529)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1483,7 +1338,7 @@
      height="828.44098"
      width="807.46503"
      id="use6006"
-     transform="translate(1018.9691,153.09349)"
+     transform="translate(151.95173,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1491,7 +1346,7 @@
      height="828.44098"
      width="807.46503"
      id="use6008"
-     transform="translate(1051.9691,153.09349)"
+     transform="translate(184.95173,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1499,7 +1354,7 @@
      height="828.44098"
      width="807.46503"
      id="use6010"
-     transform="translate(1084.9691,153.09349)"
+     transform="translate(217.95173,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1507,7 +1362,7 @@
      height="828.44098"
      width="807.46503"
      id="use6012"
-     transform="translate(1117.9691,153.09349)"
+     transform="translate(250.95173,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1515,7 +1370,7 @@
      height="828.44098"
      width="807.46503"
      id="use6014"
-     transform="translate(1150.9691,153.09349)"
+     transform="translate(283.95173,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1523,7 +1378,7 @@
      height="828.44098"
      width="807.46503"
      id="use6016"
-     transform="translate(886.96908,153.09349)"
+     transform="translate(19.951712,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1531,7 +1386,7 @@
      height="828.44098"
      width="807.46503"
      id="use6018"
-     transform="translate(919.96912,153.09349)"
+     transform="translate(52.951752,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1539,7 +1394,7 @@
      height="828.44098"
      width="807.46503"
      id="use6020"
-     transform="translate(952.96912,153.09349)"
+     transform="translate(85.951752,333.10038)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1581,7 +1436,7 @@
      height="828.44098"
      width="807.46503"
      id="use6022"
-     transform="translate(1147.3042,181.08763)"
+     transform="translate(280.28683,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1589,7 +1444,7 @@
      height="828.44098"
      width="807.46503"
      id="use6024"
-     transform="translate(1180.3042,181.08763)"
+     transform="translate(313.28683,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1597,7 +1452,7 @@
      height="828.44098"
      width="807.46503"
      id="use6026"
-     transform="translate(1213.3042,181.08763)"
+     transform="translate(346.28684,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1605,7 +1460,7 @@
      height="828.44098"
      width="807.46503"
      id="use6028"
-     transform="translate(1246.3042,181.08763)"
+     transform="translate(379.28684,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1613,7 +1468,7 @@
      height="828.44098"
      width="807.46503"
      id="use6030"
-     transform="translate(982.30422,181.08763)"
+     transform="translate(115.28685,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1621,7 +1476,7 @@
      height="828.44098"
      width="807.46503"
      id="use6032"
-     transform="translate(1015.3042,181.08763)"
+     transform="translate(148.28683,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1629,7 +1484,7 @@
      height="828.44098"
      width="807.46503"
      id="use6034"
-     transform="translate(1048.3042,181.08763)"
+     transform="translate(181.28683,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -1637,7 +1492,7 @@
      height="828.44098"
      width="807.46503"
      id="use6036"
-     transform="translate(1081.3042,181.08763)"
+     transform="translate(214.28683,361.09452)"
      xlink:href="#use38513-0"
      inkscape:tiled-clone-of="#use38513-0"
      y="0"
@@ -2005,40 +1860,6 @@
      inkscape:tiled-clone-of="#g5865"
      y="0"
      x="0" /></g><g
-   id="g6238"
-   transform="translate(-840.35773,-457.1887)"><use
-     height="828.44098"
-     width="807.46503"
-     id="use6230"
-     transform="translate(1608.3751,343.8305)"
-     xlink:href="#g5865"
-     inkscape:tiled-clone-of="#g5865"
-     y="0"
-     x="0" /><use
-     height="828.44098"
-     width="807.46503"
-     id="use6232"
-     transform="translate(1641.3751,343.8305)"
-     xlink:href="#g5865"
-     inkscape:tiled-clone-of="#g5865"
-     y="0"
-     x="0" /><use
-     height="828.44098"
-     width="807.46503"
-     id="use6234"
-     transform="translate(1674.3751,343.8305)"
-     xlink:href="#g5865"
-     inkscape:tiled-clone-of="#g5865"
-     y="0"
-     x="0" /><use
-     height="828.44098"
-     width="807.46503"
-     id="use6236"
-     transform="translate(1707.3751,343.8305)"
-     xlink:href="#g5865"
-     inkscape:tiled-clone-of="#g5865"
-     y="0"
-     x="0" /></g><g
    id="g6341"
    transform="translate(-113.89464,-71.104286)"><use
      height="828.44098"
@@ -2242,6 +2063,7 @@
      y="352.07767"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10053" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10287"
@@ -2274,6 +2096,7 @@
      y="352.07767"
      x="140.67009"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2306,6 +2129,7 @@
      y="352.07767"
      style="font-size:9px;font-weight:bold;-inkscape-font-specification:Arial Bold"
      id="tspan10309" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10311"
@@ -2338,6 +2162,7 @@
      y="352.07767"
      x="206.7448"
      sodipodi:role="line" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10323"
@@ -2370,6 +2195,7 @@
      y="352.07767"
      x="260.06992"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2402,6 +2228,7 @@
      y="352.07767"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10345" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10347"
@@ -2434,6 +2261,7 @@
      y="352.07767"
      x="326.14462"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2466,6 +2294,7 @@
      y="352.07767"
      style="font-size:9px;font-weight:bold;word-spacing:-0.25px;-inkscape-font-specification:Arial Bold"
      id="tspan10369" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10371"
@@ -2498,6 +2327,7 @@
      y="399.23749"
      x="75.173019"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2530,6 +2360,7 @@
      y="405.46014"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10393" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10404"
@@ -2562,6 +2393,7 @@
      y="405.40741"
      x="141.0083"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2594,6 +2426,7 @@
      y="405.40521"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10426" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10434"
@@ -2626,6 +2459,7 @@
      y="405.56793"
      x="207.05005"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2658,6 +2492,7 @@
      y="399.23749"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10469" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10471"
@@ -2690,6 +2525,7 @@
      y="405.46014"
      x="273.00836"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2722,6 +2558,7 @@
      y="405.40741"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10493" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10495"
@@ -2754,6 +2591,7 @@
      y="405.40521"
      x="339.03473"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2786,6 +2624,7 @@
      y="405.56793"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10519" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2813,6 +2652,7 @@
      y="428.58563"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10531" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10540"
@@ -2845,6 +2685,7 @@
      y="438.46014"
      x="124.89369"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2877,6 +2718,7 @@
      y="438.46014"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10566" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10568"
@@ -2909,6 +2751,7 @@
      y="437.57245"
      x="223.91132"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -2941,6 +2784,7 @@
      y="437.57245"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10594" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10596"
@@ -2968,6 +2812,7 @@
      y="428.58563"
      x="289.90472"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3000,6 +2845,7 @@
      y="438.46014"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10616" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10618"
@@ -3032,6 +2878,7 @@
      y="438.46014"
      x="355.89374"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3064,6 +2911,7 @@
      y="466.39951"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10654" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10656"
@@ -3096,6 +2944,7 @@
      y="466.39951"
      x="166.38013"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3128,6 +2977,7 @@
      y="466.46994"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10682" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10684"
@@ -3160,6 +3010,7 @@
      y="466.45444"
      x="233.26234"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3192,6 +3043,7 @@
      y="466.45444"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10706" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10708"
@@ -3214,6 +3066,7 @@
      y="457.45444"
      x="134.41614"
      sodipodi:role="line" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10725"
@@ -3246,6 +3099,7 @@
      y="466.39951"
      x="298.93054"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3278,6 +3132,7 @@
      y="466.39951"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10747" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3300,6 +3155,7 @@
      y="457.45444"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10767" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10769"
@@ -3332,6 +3188,7 @@
      y="466.46994"
      x="398.15686"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3364,6 +3221,7 @@
      y="531.38361"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10795" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10806"
@@ -3396,6 +3254,7 @@
      y="531.38361"
      x="621.3772"
      sodipodi:role="line" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10831"
@@ -3423,6 +3282,7 @@
      y="490.439"
      x="86.019531"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3455,6 +3315,7 @@
      y="499.41269"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10853" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10862"
@@ -3487,6 +3348,7 @@
      y="499.41269"
      x="152.01294"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3519,6 +3381,7 @@
      y="499.41269"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10884" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10886"
@@ -3551,6 +3414,7 @@
      y="499.41269"
      x="218.01294"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3578,6 +3442,7 @@
      y="494.95224"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10906" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10908"
@@ -3605,6 +3470,7 @@
      y="494.95224"
      x="283.95361"
      sodipodi:role="line" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10918"
@@ -3637,6 +3503,7 @@
      y="499.41269"
      x="317.01294"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3669,6 +3536,7 @@
      y="499.41269"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10940" /></text>
+
 <text
    sodipodi:linespacing="100%"
    id="text10942"
@@ -3701,6 +3569,7 @@
      y="499.41269"
      x="383.01294"
      sodipodi:role="line" /></text>
+
 <text
    xml:space="preserve"
    style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -3733,6 +3602,7 @@
      y="499.41269"
      style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
      id="tspan10964" /></text>
+
 <g
    transform="translate(-2.5207959,-75.038929)"
    id="g11200"
@@ -4086,6 +3956,7 @@
      y="392.9126"
      x="-370.88541"
      sodipodi:role="line">If you need more clones, duplicate from the clones</tspan></text>
+
 <flowRoot
    style="font-size:12px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
    id="flowRoot32483"
@@ -4104,6 +3975,7 @@
    id="text32493"
    xml:space="preserve"
    style="font-size:12px;font-style:normal;font-weight:normal;line-height:225%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans" />
+
 <flowRoot
    style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Futura;-inkscape-font-specification:Futura Medium"
    id="flowRoot32495"
@@ -4139,6 +4011,7 @@
      x="15.64332"
      y="285.16754"
      style="font-size:12px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#0e232e;font-family:Sans;-inkscape-font-specification:Sans Bold">Mixxx 1.11 keyboard mapping </tspan></text>
+
 <path
    sodipodi:nodetypes="cccccccc"
    inkscape:connector-curvature="0"
@@ -4153,124 +4026,438 @@
      id="title23522">User Customizations</title><g
      id="g21057"
      transform="translate(-66.700618,6.8360698)"><text
-       sodipodi:linespacing="125%"
-       id="text21041"
-       y="498.66071"
-       x="219.43832"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-       xml:space="preserve"><tspan
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
-         id="tspan21045"
-         y="498.66071"
-         x="219.43832"
-         sodipodi:role="line">You can make your own custom keyboard mapping.</tspan></text>
+   sodipodi:linespacing="125%"
+   id="text21041"
+   y="498.66071"
+   x="219.43832"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   xml:space="preserve"><tspan
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
+     id="tspan21045"
+     y="498.66071"
+     x="219.43832"
+     sodipodi:role="line">You can make your own custom keyboard mapping.</tspan></text>
+
 <text
-       onclick="http://www.mixxx.org/wiki/doku.php/mixxxcontrols"
-       sodipodi:linespacing="125%"
-       id="text21051"
-       y="539.47223"
-       x="218.57895"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#005c94;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-       xml:space="preserve"><desc
-         id="desc21055">Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         y="539.47223"
-         x="218.57895"
-         id="tspan21053"
-         sodipodi:role="line"></tspan><tspan
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         y="551.97223"
-         x="218.57895"
-         sodipodi:role="line"
-         id="tspan13308">http://www.mixxx.org/wiki/doku.php/mixxxcontrols</tspan></text>
+   onclick="http://www.mixxx.org/wiki/doku.php/mixxxcontrols"
+   sodipodi:linespacing="125%"
+   id="text21051"
+   y="539.47223"
+   x="218.57895"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#005c94;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   xml:space="preserve"><desc
+     id="desc21055">Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
+     y="539.47223"
+     x="218.57895"
+     id="tspan21053"
+     sodipodi:role="line" /><tspan
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
+     y="551.97223"
+     x="218.57895"
+     sodipodi:role="line"
+     id="tspan13308">http://www.mixxx.org/wiki/doku.php/mixxxcontrols</tspan></text>
+
 <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-       x="218.75961"
-       y="540.22809"
-       id="text23512"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         x="218.75961"
-         y="540.22809"
-         id="tspan23514"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"></tspan><tspan
-         sodipodi:role="line"
-         x="218.75961"
-         y="552.72809"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
-         id="tspan13310"></tspan><tspan
-         sodipodi:role="line"
-         x="218.75961"
-         y="565.22809"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
-         id="tspan13312"></tspan><tspan
-         sodipodi:role="line"
-         x="218.75961"
-         y="577.72809"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
-         id="tspan13314">Share your custom keyboard mapping with others in the Mixxx user customizations forum:</tspan></text>
+   xml:space="preserve"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   x="218.75961"
+   y="540.22809"
+   id="text23512"
+   sodipodi:linespacing="125%"><tspan
+     sodipodi:role="line"
+     x="218.75961"
+     y="540.22809"
+     id="tspan23514"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans" /><tspan
+     sodipodi:role="line"
+     x="218.75961"
+     y="552.72809"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
+     id="tspan13310" /><tspan
+     sodipodi:role="line"
+     x="218.75961"
+     y="565.22809"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
+     id="tspan13312" /><tspan
+     sodipodi:role="line"
+     x="218.75961"
+     y="577.72809"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans"
+     id="tspan13314">Share your custom keyboard mapping with others in the Mixxx user customizations forum:</tspan></text>
+
 <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#005c94;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-       x="218.57895"
-       y="553.90582"
-       id="text23516"
-       sodipodi:linespacing="125%"
-       onclick="http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names"><desc
-         id="desc23518">Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan
-         sodipodi:role="line"
-         id="tspan23520"
-         x="218.57895"
-         y="553.90582"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"></tspan><tspan
-         sodipodi:role="line"
-         x="218.57895"
-         y="566.40582"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         id="tspan13316"></tspan><tspan
-         sodipodi:role="line"
-         x="218.57895"
-         y="578.90582"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         id="tspan13318"></tspan><tspan
-         sodipodi:role="line"
-         x="218.57895"
-         y="591.40582"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         id="tspan13320">http://mixxx.org/forums/viewforum.php?f=6</tspan></text>
+   xml:space="preserve"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#005c94;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   x="218.57895"
+   y="553.90582"
+   id="text23516"
+   sodipodi:linespacing="125%"
+   onclick="http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names"><desc
+     id="desc23518">Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan
+     sodipodi:role="line"
+     id="tspan23520"
+     x="218.57895"
+     y="553.90582"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold" /><tspan
+     sodipodi:role="line"
+     x="218.57895"
+     y="566.40582"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
+     id="tspan13316" /><tspan
+     sodipodi:role="line"
+     x="218.57895"
+     y="578.90582"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
+     id="tspan13318" /><tspan
+     sodipodi:role="line"
+     x="218.57895"
+     y="591.40582"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"
+     id="tspan13320">http://mixxx.org/forums/viewforum.php?f=6</tspan></text>
+
 <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#005c94;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-       x="218.57895"
-       y="499.83844"
-       id="text13323"
-       sodipodi:linespacing="125%"
-       onclick="http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping"><desc
-         id="desc13325">Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan
-         sodipodi:role="line"
-         id="tspan13327"
-         x="218.57895"
-         y="499.83844"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold"></tspan><tspan
-         id="tspan13329"
-         sodipodi:role="line"
-         x="218.57895"
-         y="512.33844"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold">http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping</tspan></text>
+   xml:space="preserve"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#005c94;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   x="218.57895"
+   y="499.83844"
+   id="text13323"
+   sodipodi:linespacing="125%"
+   onclick="http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping"><desc
+     id="desc13325">Each control inside Mixxx is identified by a unique string. These strings are used in the keyboard mappings, the MIDI mappings, and inside Mixxx to gain access to the controls. The following is a list of controls that can be used in any of the above contexts.</desc><tspan
+     sodipodi:role="line"
+     id="tspan13327"
+     x="218.57895"
+     y="499.83844"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold" /><tspan
+     id="tspan13329"
+     sodipodi:role="line"
+     x="218.57895"
+     y="512.33844"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold">http://mixxx.org/manual/latest/chapters/advanced_topics.html#making-a-custom-keyboard-mapping</tspan></text>
+
 <text
-       xml:space="preserve"
-       style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-       x="218.43735"
-       y="538.29449"
-       id="text13331"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         x="218.43735"
-         y="538.29449"
-         id="tspan13333"
-         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans">For a list of controls that can be used in the keyboard mapping see the Mixxx wiki:</tspan></text>
-</g></g></g><g
+   xml:space="preserve"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   x="218.43735"
+   y="538.29449"
+   id="text13331"
+   sodipodi:linespacing="125%"><tspan
+     sodipodi:role="line"
+     x="218.43735"
+     y="538.29449"
+     id="tspan13333"
+     style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans">For a list of controls that can be used in the keyboard mapping see the Mixxx wiki:</tspan></text>
+
+</g></g><use
+   x="0"
+   y="0"
+   inkscape:tiled-clone-of="#use38513-0"
+   xlink:href="#use38513-0"
+   id="use5329"
+   transform="translate(-867.01737,180.00689)"
+   width="807.46503"
+   height="828.44098" /><g
+   id="g5337"
+   transform="translate(0,33.64869)"><g
+     inkscape:tile-h="31.250011"
+     inkscape:tile-w="31.249989"
+     inkscape:tile-cy="468.33113"
+     inkscape:tile-cx="-354.63534"
+     inkscape:tile-y0="452.70613"
+     inkscape:tile-x0="-370.26034"
+     transform="matrix(0.98440666,0,0,0.98437637,471.15652,-304.4859)"
+     id="use38513-0"
+     style="display:inline"><path
+       d="m 27.899,586.346 h 27.959 c 1.041,0 1.893,0.852 1.893,1.893 v 27.959 c 0,1.042 -0.852,1.894 -1.893,1.894 H 27.899 c -1.041,0 -1.893,-0.852 -1.893,-1.894 v -27.959 c 0,-1.041 0.852,-1.893 1.893,-1.893 l 0,0 z"
+       id="path4543"
+       style="fill:#606163;fill-opacity:1;fill-rule:evenodd;filter:url(#filter5705)"
+       inkscape:connector-curvature="0" /><linearGradient
+       x1="-5.7480001"
+       y1="911.19781"
+       x2="81.238297"
+       y2="911.19781"
+       id="linearGradient4545"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2947,0,0,0.2947,30.7554,347.0751)"><stop
+         id="stop4547"
+         style="stop-color:#d1d3d4;stop-opacity:1"
+         offset="0.2" /><stop
+         id="stop4549"
+         style="stop-color:#e7e8e9;stop-opacity:1"
+         offset="0.80000001" /></linearGradient><linearGradient
+       x1="-77.083504"
+       y1="911.08643"
+       x2="9.9525995"
+       y2="911.08643"
+       id="linearGradient4551"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2947,0,0,0.2947,51.7695,320.3168)"><stop
+         id="stop4553"
+         style="stop-color:#d1d3d4;stop-opacity:1"
+         offset="0.2" /><stop
+         id="stop4555"
+         style="stop-color:#e7e8e9;stop-opacity:1"
+         offset="0.80000001" /></linearGradient><linearGradient
+       x1="-16.362301"
+       y1="908.75342"
+       x2="4.1355"
+       y2="888.25562"
+       id="linearGradient4557"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2947,0,0,0.2947,31.1953,325.3285)"><stop
+         id="stop4559"
+         style="stop-color:#f1f1f2;stop-opacity:1"
+         offset="0.02" /><stop
+         id="stop4561"
+         style="stop-color:#f1f1f2;stop-opacity:1"
+         offset="0.308" /><stop
+         id="stop4563"
+         style="stop-color:#d1d3d4;stop-opacity:1"
+         offset="0.69199997" /><stop
+         id="stop4565"
+         style="stop-color:#d1d3d4;stop-opacity:1"
+         offset="0.98000002" /></linearGradient><linearGradient
+       x1="35.637199"
+       y1="909.26898"
+       x2="15.1563"
+       y2="888.78809"
+       id="linearGradient4567"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2947,0,0,0.2947,46.8662,325.1571)"><stop
+         id="stop4569"
+         style="stop-color:#bcbec0;stop-opacity:1"
+         offset="0.01" /><stop
+         id="stop4571"
+         style="stop-color:#bcbec0;stop-opacity:1"
+         offset="0.30399999" /><stop
+         id="stop4573"
+         style="stop-color:#e7e8e9;stop-opacity:1"
+         offset="0.69599998" /><stop
+         id="stop4575"
+         style="stop-color:#e7e8e9;stop-opacity:1"
+         offset="0.99000001" /></linearGradient><linearGradient
+       x1="37.998001"
+       y1="898.59619"
+       x2="16.7265"
+       y2="919.86768"
+       id="linearGradient4577"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2947,0,0,0.2947,46.3013,346.1517)"><stop
+         id="stop4579"
+         style="stop-color:#bcbec0;stop-opacity:1"
+         offset="0.09" /><stop
+         id="stop4581"
+         style="stop-color:#bcbec0;stop-opacity:1"
+         offset="0.336" /><stop
+         id="stop4583"
+         style="stop-color:#e7e8e9;stop-opacity:1"
+         offset="0.66399997" /><stop
+         id="stop4585"
+         style="stop-color:#e7e8e9;stop-opacity:1"
+         offset="0.91000003" /></linearGradient><linearGradient
+       x1="-17.7124"
+       y1="898.28473"
+       x2="3.4991"
+       y2="919.49622"
+       id="linearGradient4587"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2947,0,0,0.2947,31.4941,346.2787)"><stop
+         id="stop4589"
+         style="stop-color:#f1f1f2;stop-opacity:1"
+         offset="0.09" /><stop
+         id="stop4591"
+         style="stop-color:#f1f1f2;stop-opacity:1"
+         offset="0.336" /><stop
+         id="stop4593"
+         style="stop-color:#d1d3d4;stop-opacity:1"
+         offset="0.66399997" /><stop
+         id="stop4595"
+         style="stop-color:#d1d3d4;stop-opacity:1"
+         offset="0.91000003" /></linearGradient><linearGradient
+       x1="1.8823"
+       y1="912.43213"
+       x2="85.659599"
+       y2="968.94067"
+       id="linearGradient4597"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2947,0,0,0.2947,29.1309,324.7738)"><stop
+         id="stop4599"
+         style="stop-color:#bcbec0;stop-opacity:1"
+         offset="0.14" /><stop
+         id="stop4601"
+         style="stop-color:#e7e8e9;stop-opacity:1"
+         offset="0.47119999" /><stop
+         id="stop4603"
+         style="stop-color:#f1f1f2;stop-opacity:1"
+         offset="0.62239999" /><stop
+         id="stop4605"
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0.86000001" /></linearGradient><path
+       inkscape:connector-curvature="0"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#606163;stroke-width:1.01585591;stroke-opacity:1"
+       id="path4607"
+       d="m 28.779736,587.34603 h 26.197528 c 0.975414,0 1.773737,0.79832 1.773737,1.77374 v 26.19753 c 0,0.97635 -0.798324,1.77467 -1.773737,1.77467 H 28.779736 c -0.975415,0 -1.773737,-0.79832 -1.773737,-1.77467 v -26.19753 c 0,-0.97542 0.798322,-1.77374 1.773737,-1.77374 l 0,0 z" /><path
+       d="m 28.779736,587.34603 h 26.197528 c 0.975414,0 1.773737,0.79832 1.773737,1.77374 v 26.19753 c 0,0.97635 -0.798324,1.77467 -1.773737,1.77467 H 28.779736 c -0.975415,0 -1.773737,-0.79832 -1.773737,-1.77467 v -26.19753 c 0,-0.97542 0.798322,-1.77374 1.773737,-1.77374 l 0,0 z"
+       id="path4826"
+       style="opacity:0.7;color:#000000;fill:#9ade00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       inkscape:connector-curvature="0" /><path
+       d="m 28.779736,587.34603 h 26.197528 c 0.975414,0 1.773737,0.79832 1.773737,1.77374 v 26.19753 c 0,0.97635 -0.798324,1.77467 -1.773737,1.77467 H 28.779736 c -0.975415,0 -1.773737,-0.79832 -1.773737,-1.77467 v -26.19753 c 0,-0.97542 0.798322,-1.77374 1.773737,-1.77374 l 0,0 z"
+       id="path4813"
+       style="fill:none;stroke:#606163;stroke-width:1.01585591;stroke-opacity:1"
+       inkscape:connector-curvature="0" /></g><use
+     height="828.44098"
+     width="807.46503"
+     id="use5331"
+     transform="translate(-33,0)"
+     xlink:href="#use38513-0"
+     inkscape:tiled-clone-of="#use38513-0"
+     y="0"
+     x="0" /><use
+     height="828.44098"
+     width="807.46503"
+     id="use5333"
+     transform="translate(-65.664111,0)"
+     xlink:href="#use38513-0"
+     inkscape:tiled-clone-of="#use38513-0"
+     y="0"
+     x="0" /><use
+     height="828.44098"
+     width="807.46503"
+     id="use5335"
+     transform="translate(-99,-5.9512917e-6)"
+     xlink:href="#use38513-0"
+     inkscape:tiled-clone-of="#use38513-0"
+     y="0"
+     x="0" /></g><text
+   sodipodi:linespacing="100%"
+   id="text5400"
+   y="320.38986"
+   x="512.56561"
+   style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+   xml:space="preserve"><tspan
+     style="font-size:8px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="320.38986"
+     x="512.44061"
+     sodipodi:role="line"
+     id="tspan5402">autoDJ</tspan><tspan
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="329.17712"
+     x="512.44061"
+     sodipodi:role="line"
+     id="tspan5404">toggle</tspan><tspan
+     id="tspan5406"
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="338.17712"
+     x="512.56561"
+     sodipodi:role="line" /><tspan
+     id="tspan5408"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="347.17712"
+     x="512.56561"
+     sodipodi:role="line" /><tspan
+     id="tspan5410"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="356.17712"
+     x="512.56561"
+     sodipodi:role="line" /></text>
+<text
+   xml:space="preserve"
+   style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+   x="413.44571"
+   y="320.38986"
+   id="text5412"
+   sodipodi:linespacing="100%"><tspan
+     id="tspan5414"
+     sodipodi:role="line"
+     x="413.32071"
+     y="320.38986"
+     style="font-size:8px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold">autoDJ</tspan><tspan
+     id="tspan5416"
+     sodipodi:role="line"
+     x="413.32071"
+     y="329.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold">shuffle</tspan><tspan
+     sodipodi:role="line"
+     x="413.44571"
+     y="338.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     id="tspan5418" /><tspan
+     sodipodi:role="line"
+     x="413.44571"
+     y="347.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     id="tspan5420" /><tspan
+     sodipodi:role="line"
+     x="413.44571"
+     y="356.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     id="tspan5422" /></text>
+<text
+   sodipodi:linespacing="100%"
+   id="text5424"
+   y="320.38986"
+   x="446.90149"
+   style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+   xml:space="preserve"><tspan
+     style="font-size:8px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="320.38986"
+     x="446.77649"
+     sodipodi:role="line"
+     id="tspan5426">autoDJ</tspan><tspan
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="329.17712"
+     x="446.77649"
+     sodipodi:role="line"
+     id="tspan5428">skip</tspan><tspan
+     id="tspan5430"
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="338.17712"
+     x="446.90149"
+     sodipodi:role="line" /><tspan
+     id="tspan5432"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="347.17712"
+     x="446.90149"
+     sodipodi:role="line" /><tspan
+     id="tspan5434"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     y="356.17712"
+     x="446.90149"
+     sodipodi:role="line" /></text>
+<text
+   xml:space="preserve"
+   style="font-size:22px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:100%;letter-spacing:-0.5px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+   x="479.56558"
+   y="320.38986"
+   id="text5436"
+   sodipodi:linespacing="100%"><tspan
+     id="tspan5438"
+     sodipodi:role="line"
+     x="479.44058"
+     y="320.38986"
+     style="font-size:8px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold">autoDJ</tspan><tspan
+     id="tspan5440"
+     sodipodi:role="line"
+     x="479.44058"
+     y="329.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold">fade</tspan><tspan
+     sodipodi:role="line"
+     x="479.56558"
+     y="338.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;line-height:100%;letter-spacing:-0.25px;word-spacing:0px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     id="tspan5442" /><tspan
+     sodipodi:role="line"
+     x="479.56558"
+     y="347.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     id="tspan5444" /><tspan
+     sodipodi:role="line"
+     x="479.56558"
+     y="356.17712"
+     style="font-size:9px;font-weight:bold;text-align:center;letter-spacing:-0.25px;text-anchor:middle;-inkscape-font-specification:Arial Bold"
+     id="tspan5446" /></text>
+</g><g
    inkscape:groupmode="layer"
    id="layer6"
    inkscape:label="keyboard de-de"
@@ -4300,6 +4487,7 @@
      id="tspan15120"
      x="441.75781"
      y="284.81519"> * for de-de keyboard layout - für Deutsche Tastatur </tspan></text>
+
 
 
 
@@ -5158,6 +5346,7 @@
 
 
 
+
 </g>
 
 
@@ -5181,4 +5370,5 @@
      x="601.44299"
      id="tspan22784"
      sodipodi:role="line"> * for en-us keyboard layout</tspan></text>
+
 </g></svg>

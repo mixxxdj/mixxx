@@ -1,13 +1,12 @@
-
 #include <QtDebug>
 
 #include "BPMDetect.h"
+
 #include "trackinfoobject.h"
 #include "track/beatgrid.h"
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
 #include "analyserbpm.h"
-
 
 AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
     m_pConfig = _config;

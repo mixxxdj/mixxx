@@ -20,23 +20,42 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "engine/enginexfader.h"
+#include "playermanager.h"
 
 PlayerInfo::PlayerInfo()
         : m_currentlyPlayingDeck(0) {
-    int i;
-    m_iNumDecks = ControlObject::getControl(ConfigKey("[Master]","num_decks"))->get();
+    m_iNumDecks = ControlObject::getControl(
+        ConfigKey("[Master]","num_decks"))->get();
+    for (int i = 0; i < m_iNumDecks; ++i) {
+        QString chan = PlayerManager::groupForDeck(i);
 
-    for (i = 1; i <= m_iNumDecks; i++) {
-        QString chan = QString("[Channel%1]").arg(i);
-
-        m_listCOPlay[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "play")));
-        m_listCOVolume[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "volume")));
-        m_listCOOrientation[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "orientation")));
-        m_listCOpregain[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "pregain")));
+        m_listCOPlay[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "play")));
+        m_listCOVolume[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "volume")));
+        m_listCOOrientation[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "orientation")));
+        m_listCOpregain[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "pregain")));
     }
 
-    m_COxfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
+    m_iNumSamplers = ControlObject::getControl(
+        ConfigKey("[Master]", "num_samplers"))->get();
+    for (int i = 0; i < m_iNumSamplers; ++i) {
+        QString chan = PlayerManager::groupForSampler(i);
 
+        m_listCOPlay[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "play")));
+        m_listCOVolume[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "volume")));
+        m_listCOOrientation[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "orientation")));
+        m_listCOpregain[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "pregain")));
+    }
+
+    m_COxfader = new ControlObjectThread(
+        ControlObject::getControl(ConfigKey("[Master]","crossfader")));
     startTimer(2000);
 }
 
@@ -89,7 +108,23 @@ bool PlayerInfo::isTrackLoaded(TrackPointer pTrack) const {
     return false;
 }
 
+bool PlayerInfo::isTrackPlaying(TrackPointer pTrack) const {
+    QMutexLocker locker(&m_mutex);
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value() == pTrack) {
+            ControlObjectThread* coPlay = m_listCOPlay[it.key()];
+            if (coPlay && coPlay->get() != 0.0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
+    Q_UNUSED(pTimerEvent);
     updateCurrentPlayingDeck();
 }
 
@@ -154,4 +189,3 @@ TrackPointer PlayerInfo::getCurrentPlayingTrack() {
     }
     return TrackPointer();
 }
-
