@@ -1,6 +1,6 @@
 ShadeDark , Skin for Mixxx 1.11.x
 www.mixxx.org
-Copyright (C) 2010-2012 jus ; jus@justmail.de
+Copyright (C) 2010-2012 jus <s.brandt@mixxx.org>
 This file is part of the "ShadeDark" Skin for Mixxx
 "ShadeDark" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -17,6 +17,22 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.09	(18/11/2012)
+* Feature: Added SYNC buttons to the sampler decks , lp:1072229
+
+v1.11.0.08	(25/10/2012)
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+  and set Mixxx controls on skin load , lp:1017399
+* Feature: Added <SignalHighColor>,<SignalMidColor>,<SignalLowColor> to color waveforms based on features of the audio.
+* Feature: Added <Align> to the main waveforms that allows to display only those portions of the waveform which would 
+  have been above or below the center
+* Feature: Added <AxesColor> to define the color for horizontal/vertical line in in the waveform
+  Note: Only empty <Signal$Color>,<Align>,<AxesColor> keys were added for now
+* Feature: Added a clock widget that shows the current time. lp:661439
+* Fix: Add 3rd and 4th button state graphics.
+  Buttons should now give a better visual feedback about the actual button state. lp:907364
+* Fix: Update Play button in Sample Decks to properly jump to start on right-click, lp:908480
+
 v1.11.0.07	(09/09/2012)
 * Feature: Support beatlooproll_X_activate , lp:703585
   Right-click of the loop buttons now activates a rolling loop.
