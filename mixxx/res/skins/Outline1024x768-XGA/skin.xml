@@ -47,7 +47,7 @@
 	<manifest>
 	<title>Outline1024x768-XGA</title>
 	<author>jus</author>
-	<version>1.11.0.9</version>
+	<version>1.11.0.10</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
@@ -849,7 +849,7 @@
 				<Layout>horizontal</Layout>
 				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 0px 0px;} </Style>
 				<Children>
-					<!-- all sub-widgets for the 4 samplers -->
+					<!-- all sub-widgets for the sampler decks -->
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>203,100</Size>
@@ -1025,7 +1025,7 @@
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary4_s%1.png</Path>
-								<Pos>162,67</Pos>
+								<Pos>162,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],pregain</ConfigKey>
 								</Connection>
@@ -1106,7 +1106,7 @@
 									<Pressed>btn_play_sampler_over.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>5,67</Pos>
+								<Pos>5,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1117,6 +1117,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_over.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>58,55</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 
@@ -1141,7 +1168,7 @@
 									<Pressed>btn_hotcue_sampler_1.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
 								</State>
-								<Pos>34,72</Pos>
+								<Pos>34,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],hotcue_1_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1175,7 +1202,7 @@
 									<Pressed>btn_hotcue_sampler_2.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
 								</State>
-								<Pos>58,72</Pos>
+								<Pos>58,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],hotcue_2_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1209,7 +1236,7 @@
 									<Pressed>btn_hotcue_sampler_3.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
 								</State>
-								<Pos>82,72</Pos>
+								<Pos>82,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],hotcue_3_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1243,7 +1270,7 @@
 									<Pressed>btn_hotcue_sampler_4.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
 								</State>
-								<Pos>106,72</Pos>
+								<Pos>106,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],hotcue_4_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1281,7 +1308,7 @@
 									<Pressed>btn_pfl_sampler_over.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
-								<Pos>134,67</Pos>
+								<Pos>134,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],pfl</ConfigKey>
 								</Connection>
@@ -1568,7 +1595,7 @@
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary4_s%1.png</Path>
-								<Pos>162,67</Pos>
+								<Pos>162,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],pregain</ConfigKey>
 								</Connection>
@@ -1649,7 +1676,7 @@
 									<Pressed>btn_play_sampler_over.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>5,67</Pos>
+								<Pos>5,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1660,6 +1687,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_over.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>58,55</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 
@@ -1684,7 +1738,7 @@
 									<Pressed>btn_hotcue_sampler_1.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
 								</State>
-								<Pos>34,72</Pos>
+								<Pos>34,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],hotcue_1_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1718,7 +1772,7 @@
 									<Pressed>btn_hotcue_sampler_2.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
 								</State>
-								<Pos>58,72</Pos>
+								<Pos>58,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],hotcue_2_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1752,7 +1806,7 @@
 									<Pressed>btn_hotcue_sampler_3.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
 								</State>
-								<Pos>82,72</Pos>
+								<Pos>82,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],hotcue_3_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1786,7 +1840,7 @@
 									<Pressed>btn_hotcue_sampler_4.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
 								</State>
-								<Pos>106,72</Pos>
+								<Pos>106,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],hotcue_4_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1824,7 +1878,7 @@
 									<Pressed>btn_pfl_sampler_over.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
-								<Pos>134,67</Pos>
+								<Pos>134,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],pfl</ConfigKey>
 								</Connection>
@@ -2111,7 +2165,7 @@
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary4_s%1.png</Path>
-								<Pos>162,67</Pos>
+								<Pos>162,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],pregain</ConfigKey>
 								</Connection>
@@ -2192,7 +2246,7 @@
 									<Pressed>btn_play_sampler_over.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>5,67</Pos>
+								<Pos>5,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -2203,6 +2257,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_over.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>58,55</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 
@@ -2227,7 +2308,7 @@
 									<Pressed>btn_hotcue_sampler_1.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
 								</State>
-								<Pos>34,72</Pos>
+								<Pos>34,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],hotcue_1_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2261,7 +2342,7 @@
 									<Pressed>btn_hotcue_sampler_2.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
 								</State>
-								<Pos>58,72</Pos>
+								<Pos>58,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],hotcue_2_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2295,7 +2376,7 @@
 									<Pressed>btn_hotcue_sampler_3.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
 								</State>
-								<Pos>82,72</Pos>
+								<Pos>82,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],hotcue_3_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2329,7 +2410,7 @@
 									<Pressed>btn_hotcue_sampler_4.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
 								</State>
-								<Pos>106,72</Pos>
+								<Pos>106,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],hotcue_4_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2367,7 +2448,7 @@
 									<Pressed>btn_pfl_sampler_over.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
-								<Pos>134,67</Pos>
+								<Pos>134,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],pfl</ConfigKey>
 								</Connection>
@@ -2656,7 +2737,7 @@
 								<Style></Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary4_s%1.png</Path>
-								<Pos>162,67</Pos>
+								<Pos>162,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],pregain</ConfigKey>
 								</Connection>
@@ -2737,7 +2818,7 @@
 									<Pressed>btn_play_sampler_over.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>5,67</Pos>
+								<Pos>5,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -2748,6 +2829,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_over.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>58,55</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 
@@ -2772,7 +2880,7 @@
 									<Pressed>btn_hotcue_sampler_1.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_1_over.png</Unpressed>
 								</State>
-								<Pos>34,72</Pos>
+								<Pos>34,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],hotcue_1_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2806,7 +2914,7 @@
 									<Pressed>btn_hotcue_sampler_2.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_2_over.png</Unpressed>
 								</State>
-								<Pos>58,72</Pos>
+								<Pos>58,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],hotcue_2_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2840,7 +2948,7 @@
 									<Pressed>btn_hotcue_sampler_3.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_3_over.png</Unpressed>
 								</State>
-								<Pos>82,72</Pos>
+								<Pos>82,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],hotcue_3_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2874,7 +2982,7 @@
 									<Pressed>btn_hotcue_sampler_4.png</Pressed>
 									<Unpressed>btn_hotcue_sampler_4_over.png</Unpressed>
 								</State>
-								<Pos>106,72</Pos>
+								<Pos>106,75</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],hotcue_4_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2912,7 +3020,7 @@
 									<Pressed>btn_pfl_sampler_over.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
-								<Pos>134,67</Pos>
+								<Pos>134,70</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],pfl</ConfigKey>
 								</Connection>
