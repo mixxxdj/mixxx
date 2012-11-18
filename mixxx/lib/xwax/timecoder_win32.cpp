@@ -121,7 +121,7 @@ static struct timecode_def timecodes[] = {
         0x22c90,
         0x00008,
         950000,
-        710000,
+        655000,
         false
     },
     {

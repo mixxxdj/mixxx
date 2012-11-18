@@ -63,6 +63,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
     addDeckAndSamplerControl("eject", tr("Eject track"), transportMenu);
     addSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
+    addDeckAndSamplerControl("slip_enabled", tr("Toggle slip mode"), transportMenu);
 
     // BPM & Sync
     QMenu* bpmMenu = addSubmenu(tr("BPM and Sync"));
@@ -100,6 +101,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("vinylcontrol_enabled", tr("Toggle vinyl-control (ON/OFF)"), vinylControlMenu);
     addDeckControl("vinylcontrol_cueing", tr("Toggle vinyl-control cueing mode (OFF/ONE/HOT)"), vinylControlMenu);
     addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
+    addControl("[VinylControl]", "Toggle", tr("Single deck mode - Toggle vinyl control to next deck"), vinylControlMenu);
 
     // Cues
     QMenu* cueMenu = addSubmenu(tr("Cues"));
@@ -132,7 +134,6 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("reloop_exit", tr("Reloop / Exit button"), loopMenu);
     addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);
-    addDeckControl("slip_enabled", tr("Toggle slip mode"), loopMenu);
 
     // Beatloops
     QMenu* beatLoopMenu = addSubmenu(tr("Beat-Looping"));
@@ -190,6 +191,13 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Microphone]", "volume", tr("Microphone volume"), microphoneMenu, true);
     addControl("[Microphone]", "orientation", tr("Microphone channel orientation (e.g. left, right, center)"), microphoneMenu);
 
+    // AutoDJ Controls
+    QMenu* autodjMenu = addSubmenu(tr("Auto DJ"));
+    addControl("[AutoDJ]", "shuffle_playlist", tr("Shuffle the content of the Auto DJ playlist"), autodjMenu);
+    addControl("[AutoDJ]", "skip_next", tr("Skip the next track in the Auto DJ playlist"), autodjMenu);
+    addControl("[AutoDJ]", "fade_now", tr("Trigger the transition to the next track"), autodjMenu);
+    addControl("[AutoDJ]", "toggle_autodj", tr("Toggle Auto DJ (ON/OFF)"), autodjMenu);
+
     // Skin Controls
     QMenu* guiMenu = addSubmenu(tr("User Interface"));
     addControl("[Samplers]", "show_samplers", tr("Show/hide the sampler section"), guiMenu);
@@ -202,6 +210,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     for (int i = 1; i <= iNumDecks; ++i) {
         addControl(QString("[Spinny%1]").arg(i), "show_spinny",
                    QString("%1: %2").arg(m_deckStr.arg(i), spinnyText), guiMenu);
+
     }
 
     emit(listenForClicks());
