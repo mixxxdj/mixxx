@@ -168,14 +168,14 @@ void BansheeFeature::onRightClickChild(const QPoint& globalPos, QModelIndex inde
     menu.exec(globalPos);
 }
 
-bool BansheeFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
+bool BansheeFeature::dropAccept(QList<QUrl> urls) {
+    Q_UNUSED(urls);
     return false;
 }
 
-bool BansheeFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool BansheeFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     Q_UNUSED(index);
-    Q_UNUSED(url);
+    Q_UNUSED(urls);
     return false;
 }
 
@@ -289,5 +289,4 @@ void BansheeFeature::slotImportAsMixxxPlaylist() {
             delete pPlaylistModelToAdd;
         }
     }
-    emit(featureUpdated());
 }

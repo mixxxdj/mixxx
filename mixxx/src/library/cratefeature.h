@@ -1,8 +1,9 @@
 #ifndef CRATEFEATURE_H
 #define CRATEFEATURE_H
 
-#include <QSqlTableModel>
 #include <QModelIndex>
+#include <QList>
+#include <QPair>
 #include <QAction>
 
 #include "library/libraryfeature.h"
@@ -22,8 +23,8 @@ class CrateFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
@@ -32,8 +33,6 @@ class CrateFeature : public LibraryFeature {
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
-  signals:
-    void showPage(const QUrl& page);
 
   public slots:
     void activate();
@@ -48,19 +47,24 @@ class CrateFeature : public LibraryFeature {
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
+    void slotCrateTableChanged(int playlistId);
+    void htmlLinkClicked(const QUrl & link);
 
   private:
-    void constructChildModel();
+    QString getRootViewHtml() const;
+    QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
-  
+    void buildCrateList();
+
     TrackCollection* m_pTrackCollection;
+    CrateDAO& m_crateDao;
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
-    QSqlTableModel m_crateListTableModel;
+    QList<QPair<int, QString> > m_crateList;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;

@@ -1,15 +1,15 @@
 /*
- * Copyright (C) 2010 Mark Hills <mark@pogo.org.uk>
+ * Copyright (C) 2012 Mark Hills <mark@pogo.org.uk>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * version 2, as published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License version 2 for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * version 2 along with this program; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -23,6 +23,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "debug.h"
 #include "timecoder.h"
 
 #define ZERO_THRESHOLD 128
@@ -31,16 +32,16 @@
 
 #define REF_PEAKS_AVG 48 /* in wave cycles */
 
-/* The number of correct bits which come in before the timecode 
- * is declared valid. Set this too low, and risk the record skipping around 
- * (often to blank areas of track) during scratching */
+/* The number of correct bits which come in before the timecode is
+ * declared valid. Set this too low, and risk the record skipping
+ * around (often to blank areas of track) during scratching */
 
 #define VALID_BITS 24
 
 #define MONITOR_DECAY_EVERY 512 /* in samples */
 
 #define SQ(x) ((x)*(x))
-
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof(*x))
 
 /* Timecode definitions */
 
@@ -48,8 +49,7 @@
 #define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
 #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
 
-
-static struct timecode_def_t timecode_def[] = {
+static struct timecode_def timecodes[] = {
     {
         .name = "serato_2a",
         .desc = "Serato 2nd Ed., side A",
@@ -71,7 +71,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x8f3c6,
         .taps = 0x4f0d8, /* reverse of side A */
         .length = 922000,
-        .safe = 905000,
+        .safe = 908000,
         .lookup = false
     },
     {
@@ -95,8 +95,8 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x134503,
         .taps = 0x041040,
         .length = 1500000,
-        .safe = 1214000,
-        .lookup = false        
+        .safe = 605000,
+        .lookup = false
     },
     {
         .name = "traktor_b",
@@ -107,7 +107,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x32066c,
         .taps = 0x041040, /* same as side A */
         .length = 2110000,
-        .safe = 1814000,
+        .safe = 907000,
         .lookup = false
     },
     {
@@ -119,7 +119,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x22c90,
         .taps = 0x00008,
         .length = 950000,
-        .safe = 923000,
+        .safe = 655000,
         .lookup = false
     },
     {
@@ -131,17 +131,14 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x22c90,
         .taps = 0x00008,
         .length = 312000,
-        .safe = 310000,
+        .safe = 238000,
         .lookup = false
     },
-    {
-        .name = NULL
-    }
 };
 
-
-/* Linear Feeback Shift Register in the forward direction. New values
- * are generated at the least-significant bit. */
+/*
+ * Calculate LFSR bit
+ */
 
 static inline bits_t lfsr(bits_t code, bits_t taps)
 {
@@ -158,8 +155,12 @@ static inline bits_t lfsr(bits_t code, bits_t taps)
     return xrs & 0x1;
 }
 
+/*
+ * Linear Feedback Shift Register in the forward direction. New values
+ * are generated at the least-significant bit.
+ */
 
-static inline bits_t fwd(bits_t current, struct timecode_def_t *def)
+static inline bits_t fwd(bits_t current, struct timecode_def *def)
 {
     bits_t l;
 
@@ -169,8 +170,11 @@ static inline bits_t fwd(bits_t current, struct timecode_def_t *def)
     return (current >> 1) | (l << (def->bits - 1));
 }
 
+/*
+ * Linear Feedback Shift Register in the reverse direction
+ */
 
-static inline bits_t rev(bits_t current, struct timecode_def_t *def)
+static inline bits_t rev(bits_t current, struct timecode_def *def)
 {
     bits_t l, mask;
 
@@ -181,24 +185,13 @@ static inline bits_t rev(bits_t current, struct timecode_def_t *def)
     return ((current << 1) & mask) | l;
 }
 
+/*
+ * Where necessary, build the lookup table required for this timecode
+ *
+ * Return: -1 if not enough memory could be allocated, otherwise 0
+ */
 
-static struct timecode_def_t* find_definition(const char *name)
-{
-    struct timecode_def_t *def;
-
-    def = &timecode_def[0];
-    while (def->name) {
-        if (!strcmp(def->name, name))
-            return def;
-        def++;
-    }
-    return NULL;
-}
-
-
-/* Where necessary, build the lookup table required for this timecode */
-
-static int build_lookup(struct timecode_def_t *def)
+static int build_lookup(struct timecode_def *def)
 {
     unsigned int n;
     bits_t current, last;
@@ -213,58 +206,93 @@ static int build_lookup(struct timecode_def_t *def)
 	return -1;
 
     current = def->seed;
-    
+
     for (n = 0; n < def->length; n++) {
         /* timecode must not wrap */
-        assert(lut_lookup(&def->lut, current) == (unsigned)-1);
+        dassert(lut_lookup(&def->lut, current) == (unsigned)-1);
         lut_push(&def->lut, current);
         last = current;
         current = fwd(current, def);
-        assert(rev(current, def) == last);
+        dassert(rev(current, def) == last);
     }
 
     def->lookup = true;
-    
-    return 0;    
+
+    return 0;
 }
 
+/*
+ * Find a timecode definition by name
+ *
+ * Return: pointer to timecode definition, or NULL if not found
+ */
 
-/* Free the timecoder lookup tables when they are no longer needed */
+struct timecode_def* timecoder_find_definition(const char *name)
+{
+    struct timecode_def *def, *end;
+
+    def = &timecodes[0];
+    end = def + ARRAY_SIZE(timecodes);
+
+    for (;;) {
+        if (!strcmp(def->name, name))
+            break;
+
+        def++;
+
+        if (def == end)
+            return NULL;
+    }
+
+    if (build_lookup(def) == -1)
+        return NULL;
+
+    return def;
+}
+
+/*
+ * Free the timecoder lookup tables when they are no longer needed
+ */
 
 void timecoder_free_lookup(void) {
-    struct timecode_def_t *def;
+    struct timecode_def *def, *end;
 
-    def = &timecode_def[0];
-    while (def->name) {
+    def = &timecodes[0];
+    end = def + ARRAY_SIZE(timecodes);
+
+    while (def < end) {
         if (def->lookup)
             lut_clear(&def->lut);
         def++;
     }
 }
 
+/*
+ * Initialise filter values for one channel
+ */
 
-static void init_channel(struct timecoder_channel_t *ch)
+static void init_channel(struct timecoder_channel *ch)
 {
-    ch->positive = 0;
+    ch->positive = false;
     ch->zero = 0;
 }
 
+/*
+ * Initialise a timecode decoder at the given reference speed
+ *
+ * Return: -1 if the timecoder could not be initialised, otherwise 0
+ */
 
-/* Initialise a timecode decoder at the given reference speed */
-
-int timecoder_init(struct timecoder_t *tc, const char *def_name, double speed,
-		   unsigned int sample_rate)
+void timecoder_init(struct timecoder *tc, struct timecode_def *def,
+                    double speed, unsigned int sample_rate)
 {
+    assert(def != NULL);
+
     /* A definition contains a lookup table which can be shared
      * across multiple timecoders */
 
-    tc->def = find_definition(def_name);
-    if (tc->def == NULL) {
-        fprintf(stderr, "Timecode definition '%s' is not known.\n", def_name);
-        return -1;
-    }
-    if (build_lookup(tc->def) == -1)
-        return -1;
+    assert(def->lookup);
+    tc->def = def;
     tc->speed = speed;
 
     tc->dt = 1.0 / sample_rate;
@@ -282,25 +310,29 @@ int timecoder_init(struct timecoder_t *tc, const char *def_name, double speed,
     tc->timecode_ticker = 0;
 
     tc->mon = NULL;
-
-    return 0;
 }
 
+/*
+ * Clear resources associated with a timecode decoder
+ */
 
-/* Clear a timecode decoder */
-
-void timecoder_clear(struct timecoder_t *tc)
+void timecoder_clear(struct timecoder *tc)
 {
-    timecoder_monitor_clear(tc);
+    assert(tc->mon == NULL);
 }
 
+/*
+ * Initialise a raster display of the incoming audio
+ *
+ * The monitor (otherwise known as 'scope' in the interface) is an x-y
+ * display of the post-calibrated incoming audio.
+ *
+ * Return: -1 if not enough memory could be allocated, otherwise 0
+ */
 
-/* The monitor (otherwise known as 'scope' in the interface) is the
- * display of the incoming audio. Initialise one for the given
- * timecoder */
-
-int timecoder_monitor_init(struct timecoder_t *tc, int size)
+int timecoder_monitor_init(struct timecoder *tc, int size)
 {
+    assert(tc->mon == NULL);
     tc->mon_size = size;
     tc->mon = malloc(SQ(tc->mon_size));
     if (tc->mon == NULL) {
@@ -312,73 +344,78 @@ int timecoder_monitor_init(struct timecoder_t *tc, int size)
     return 0;
 }
 
+/*
+ * Clear the monitor on the given timecoder
+ */
 
-/* Clear the monitor on the given timecoder */
-
-void timecoder_monitor_clear(struct timecoder_t *tc)
+void timecoder_monitor_clear(struct timecoder *tc)
 {
-    if (tc->mon) {
-        free(tc->mon);
-        tc->mon = NULL;
-    }
+    assert(tc->mon != NULL);
+    free(tc->mon);
+    tc->mon = NULL;
 }
 
+/*
+ * Update channel information with axis-crossings
+ */
 
-static void detect_zero_crossing(struct timecoder_channel_t *ch,
-                                 signed int v, float alpha)
+static void detect_zero_crossing(struct timecoder_channel *ch,
+                                 signed int v, double alpha)
 {
     ch->crossing_ticker++;
 
-    ch->swapped = 0;
+    ch->swapped = false;
     if (v > ch->zero + ZERO_THRESHOLD && !ch->positive) {
-        ch->swapped = 1;
-        ch->positive = 1;
+        ch->swapped = true;
+        ch->positive = true;
         ch->crossing_ticker = 0;
     } else if (v < ch->zero - ZERO_THRESHOLD && ch->positive) {
-        ch->swapped = 1;
-        ch->positive = 0;
+        ch->swapped = true;
+        ch->positive = false;
         ch->crossing_ticker = 0;
     }
-    
+
     ch->zero += alpha * (v - ch->zero);
 }
 
+/*
+ * Plot the given sample value in the x-y monitor
+ */
 
-/* Plot the given sample value in the monitor (scope) */
-
-static void update_monitor(struct timecoder_t *tc, signed int x, signed int y)
+static void update_monitor(struct timecoder *tc, signed int x, signed int y)
 {
     int px, py, p;
-    float v, w;
+    double v, w;
 
     if (!tc->mon)
         return;
 
     /* Decay the pixels already in the montior */
-        
+
     if (++tc->mon_counter % MONITOR_DECAY_EVERY == 0) {
         for (p = 0; p < SQ(tc->mon_size); p++) {
             if (tc->mon[p])
                 tc->mon[p] = tc->mon[p] * 7 / 8;
         }
     }
-        
-    v = (float)x / tc->ref_level / 2;
-    w = (float)y / tc->ref_level / 2;
-        
+
+    v = (double)x / tc->ref_level / 2;
+    w = (double)y / tc->ref_level / 2;
+
     px = tc->mon_size / 2 + (v * tc->mon_size / 2);
     py = tc->mon_size / 2 + (w * tc->mon_size / 2);
 
     /* Set the pixel value to white */
-            
+
     if (px > 0 && px < tc->mon_size && py > 0 && py < tc->mon_size)
         tc->mon[py * tc->mon_size + px] = 0xff;
 }
 
+/*
+ * Extract the bitstream from the sample value
+ */
 
-/* Process a single bitstream reading */
-
-static void process_bitstream(struct timecoder_t *tc, signed int m)
+static void process_bitstream(struct timecoder *tc, signed int m)
 {
     bits_t b;
 
@@ -411,28 +448,25 @@ static void process_bitstream(struct timecoder_t *tc, signed int m)
     }
 
     /* Take note of the last time we read a valid timecode */
-    
+
     tc->timecode_ticker = 0;
 
     /* Adjust the reference level based on this new peak */
 
     tc->ref_level = (tc->ref_level * (REF_PEAKS_AVG - 1) + m) / REF_PEAKS_AVG;
 
-#ifdef DEBUG_BITSTREAM
-    fprintf(stderr, "%+6d zero, %+6d (ref %+6d)\t= %d%c (%5d)\n",
-	    tc->primary.zero,
-	    m,
-	    tc->ref_level,
-	    b,
-	    tc->valid_counter == 0 ? 'x' : ' ',
-	    tc->valid_counter);
-#endif
+    debug("%+6d zero, %+6d (ref %+6d)\t= %d%c (%5d)\n",
+          tc->primary.zero,
+          m, tc->ref_level,
+	  b, tc->valid_counter == 0 ? 'x' : ' ',
+	  tc->valid_counter);
 }
 
+/*
+ * Process a single sample from the incoming audio
+ */
 
-/* Process a single sample from the incoming audio */
-
-static void process_sample(struct timecoder_t *tc,
+static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     signed int m; /* pcm sample, sum of two shorts */
@@ -445,14 +479,22 @@ static void process_sample(struct timecoder_t *tc,
     /* If an axis has been crossed, use the direction of the crossing
      * to work out the direction of the vinyl */
 
-    if (tc->primary.swapped) {
-	tc->forwards = (tc->primary.positive != tc->secondary.positive);
-	if (tc->def->flags & SWITCH_PHASE)
-	    tc->forwards = !tc->forwards;
-    } if (tc->secondary.swapped) {
-	tc->forwards = (tc->primary.positive == tc->secondary.positive);
-	if (tc->def->flags & SWITCH_PHASE)
-	    tc->forwards = !tc->forwards;
+    if (tc->primary.swapped || tc->secondary.swapped) {
+        bool forwards;
+
+        if (tc->primary.swapped) {
+            forwards = (tc->primary.positive != tc->secondary.positive);
+        } else {
+            forwards = (tc->primary.positive == tc->secondary.positive);
+        }
+
+        if (tc->def->flags & SWITCH_PHASE)
+	    forwards = !forwards;
+
+        if (forwards != tc->forwards) { /* direction has changed */
+            tc->forwards = forwards;
+            tc->valid_counter = 0;
+        }
     }
 
     /* If any axis has been crossed, register movement using the pitch
@@ -461,7 +503,7 @@ static void process_sample(struct timecoder_t *tc,
     if (!tc->primary.swapped && !tc->secondary.swapped)
 	pitch_dt_observation(&tc->pitch, 0.0);
     else {
-	float dx;
+	double dx;
 
 	dx = 1.0 / tc->def->resolution / 4;
 	if (!tc->forwards)
@@ -481,10 +523,43 @@ static void process_sample(struct timecoder_t *tc,
     tc->timecode_ticker++;
 }
 
+/*
+ * Cycle to the next timecode definition which has a valid lookup
+ *
+ * Return: pointer to timecode definition
+ */
 
-/* Submit and decode a block of PCM audio data to the timecoder */
+static struct timecode_def* next_definition(struct timecode_def *def)
+{
+    assert(def != NULL);
 
-void timecoder_submit(struct timecoder_t *tc, const signed short *pcm, size_t npcm)
+    do {
+        def++;
+
+        if (def > timecodes + ARRAY_SIZE(timecodes))
+            def = timecodes;
+
+    } while (!def->lookup);
+
+    return def;
+}
+
+/*
+ * Change the timecode definition to the next available
+ */
+
+void timecoder_cycle_definition(struct timecoder *tc)
+{
+    tc->def = next_definition(tc->def);
+    tc->valid_counter = 0;
+    tc->timecode_ticker = 0;
+}
+
+/*
+ * Submit and decode a block of PCM audio data to the timecode decoder
+ */
+
+void timecoder_submit(struct timecoder *tc, const signed short *pcm, size_t npcm)
 {
     while (npcm--) {
 	signed int primary, secondary;
@@ -504,13 +579,19 @@ void timecoder_submit(struct timecoder_t *tc, const signed short *pcm, size_t np
     }
 }
 
+/*
+ * Get the last-known position of the timecode
+ *
+ * If now data is available or if too few bits have been error
+ * checked, then this counts as invalid. The last known position is
+ * given along with the time elapsed since the position stamp was
+ * read.
+ *
+ * Return: the known position of the timecode, or -1 if not known
+ * Post: if when != NULL, *when is the elapsed time in seconds
+ */
 
-/* Return the known position in the timecode, or -1 if not known. If
- * two few bits have been error-checked, then this also counts as
- * invalid. If 'when' is given, return the time, in seconds since this
- * value was read. */
-
-signed int timecoder_get_position(struct timecoder_t *tc, float *when)
+signed int timecoder_get_position(struct timecoder *tc, double *when)
 {
     signed int r;
 
@@ -518,13 +599,13 @@ signed int timecoder_get_position(struct timecoder_t *tc, float *when)
         r = lut_lookup(&tc->def->lut, tc->bitstream);
 
         if (r >= 0) {
-        	//normalize position to milliseconds, not timecode steps -- Owen
-        	r = (float)r * (1000.0 / (tc->def->resolution * tc->speed));
+            //normalize position to milliseconds, not timecode steps -- Owen
+            r = (float)r * (1000.0 / (tc->def->resolution * tc->speed));
             if (when)
                 *when = tc->timecode_ticker * tc->dt;
             return r;
         }
     }
-    
+
     return -1;
 }

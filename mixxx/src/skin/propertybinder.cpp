@@ -2,6 +2,8 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 
+#include <QDebug>
+
 PropertyBinder::PropertyBinder(QWidget* pWidget, QString propertyName, ControlObject* pControl)
         : QObject(pWidget),
           m_propertyName(propertyName),

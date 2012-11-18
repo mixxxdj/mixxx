@@ -20,6 +20,7 @@
 
 #include <QFile>
 #include <QString>
+
 #include <FLAC/stream_decoder.h>
 
 #include "defs.h"

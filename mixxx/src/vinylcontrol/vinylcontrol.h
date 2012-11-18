@@ -11,7 +11,7 @@
 class ControlObjectThread;
 
 #define MIXXX_VINYL_FINALSCRATCH "Final Scratch (crappy)"
-#define MIXXX_VINYL_MIXVIBESDVSCD "MixVibes DVS CD"
+#define MIXXX_VINYL_MIXVIBESDVS "MixVibes DVS"
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEA "Serato CV02 Vinyl, Side A"
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEB "Serato CV02 Vinyl, Side B"
 #define MIXXX_VINYL_SERATOCD "Serato CD"
@@ -73,6 +73,7 @@ class VinylControl : public QThread
     ControlObjectThread *enabled; //The ControlObject used to get if the vinyl control is enabled or disabled.
     ControlObjectThread *wantenabled; //The ControlObject used to get if the vinyl control should try to enable itself
     ControlObjectThread *cueing; //Should cueing mode be active?
+    ControlObjectThread *scratching; //Is pitch changing very quickly?
     ControlObjectThread *rateRange; //The ControlObject used to the get the pitch range from the prefs.
     ControlObjectThread *vinylStatus;
     ControlObjectThread *rateDir; //direction of rate

@@ -58,6 +58,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
+    EngineChannel* getChannel(QString group);
     static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
                                             double leftGain,
                                             double centerGain,
@@ -140,6 +141,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlObject* m_pHeadVolume;
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
+    ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
     EngineClipping *clipping, *head_clipping;
 
@@ -149,8 +151,8 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineVuMeter *vumeter;
     EngineSideChain *sidechain;
 
-    ControlPotmeter *crossfader, *head_mix,
-        *m_pBalance, *xFaderCurve, *xFaderCalibration;
+    ControlPotmeter *crossfader, *head_mix, *m_pBalance,
+        *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;

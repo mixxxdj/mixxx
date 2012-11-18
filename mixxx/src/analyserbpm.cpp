@@ -1,19 +1,19 @@
-
 #include <QtDebug>
 
 #include "BPMDetect.h"
+
 #include "trackinfoobject.h"
 #include "track/beatgrid.h"
 #include "track/beatfactory.h"
+#include "track/beatutils.h"
 #include "analyserbpm.h"
-
 
 AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
     m_pConfig = _config;
     m_pDetector = NULL;
 }
 
-void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     Q_UNUSED(totalSamples);
     m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
@@ -30,7 +30,9 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
         //                                    defaultrange ? MIN_BPM : m_iMinBpm,
         //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
+        return true;
     }
+    return false;
 }
 
 void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
@@ -43,17 +45,14 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
     m_pDetector->inputSamples(pIn, iLen/2);
 }
 
-float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
-    //qDebug() << "BPM range is" << min << "to" << max;
-    if ( BPM == 0 ) return BPM;
-
-    if (aboveRange == 0) {
-        if( BPM*2 < max ) BPM *= 2;
-        while ( BPM > max ) BPM /= 2;
+void AnalyserBPM::cleanup(TrackPointer tio)
+{
+    Q_UNUSED(tio);
+    if(m_pDetector != NULL)
+    {
+        delete m_pDetector;
+        m_pDetector = NULL;
     }
-    while ( BPM < min ) BPM *= 2;
-
-    return BPM;
 }
 
 void AnalyserBPM::finalise(TrackPointer tio) {
@@ -63,17 +62,17 @@ void AnalyserBPM::finalise(TrackPointer tio) {
     }
 
     float bpm = m_pDetector->getBpm();
-    if(bpm != 0) {
+    if (bpm != 0) {
         // Shift it by 2's until it is in the desired range
-        float newbpm = correctBPM(bpm, m_iMinBpm, m_iMaxBpm, m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt());
-
-        tio->setBpm(newbpm);
-        tio->setBpmConfirm();
+        float newbpm = BeatUtils::constrainBpm(
+            bpm, m_iMinBpm, m_iMaxBpm,
+            static_cast<bool>(m_pConfig->getValueString(
+                ConfigKey("[BPM]", "BPMAboveRangeEnabled")).toInt()));
 
         // Currently, the BPM is only analyzed if the track has no BPM. This
         // means we don't have to worry that the track already has an existing
         // BeatGrid.
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, newbpm, 0.0f);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio.data(), newbpm, 0.0f);
         tio->setBeats(pBeats);
 
         //if(pBpmReceiver) {

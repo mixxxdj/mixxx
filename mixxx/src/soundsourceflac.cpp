@@ -139,7 +139,8 @@ unsigned int SoundSourceFLAC::read(unsigned long size, const SAMPLE *destination
 }
 
 inline unsigned long SoundSourceFLAC::length() {
-    return m_samples * m_iChannels;
+    // We only support 2 channels.
+    return m_samples * 2; /*m_iChannels*/
 }
 
 int SoundSourceFLAC::parseHeader() {
@@ -246,8 +247,8 @@ FLAC__bool SoundSourceFLAC::flacEOF() {
     return m_file.atEnd();
 }
 
-FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(const FLAC__Frame *frame,
-        const FLAC__int32 *const buffer[]) {
+FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
+    const FLAC__Frame *frame, const FLAC__int32 *const buffer[]) {
     unsigned int i(0);
     m_flacBufferLength = 0;
     if (frame->header.channels > 1) {

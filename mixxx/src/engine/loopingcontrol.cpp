@@ -16,7 +16,7 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
-double LoopingControl::s_dBeatSizes[] = { 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
+double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, };
 
 LoopingControl::LoopingControl(const char * _group,
                                ConfigObject<ConfigValue> * _config)
@@ -68,6 +68,7 @@ LoopingControl::LoopingControl(const char * _group,
     m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group,"track_samples"));
+    m_pSlipEnabled = ControlObject::getControl(ConfigKey(_group,"slip_enabled"));
 
     // Connect beatloop, which can flexibly handle different values.
     // Using this CO directly is meant to be used internally and by scripts,
@@ -84,8 +85,14 @@ LoopingControl::LoopingControl(const char * _group,
         connect(pBeatLoop, SIGNAL(activateBeatLoop(BeatLoopingControl*)),
                 this, SLOT(slotBeatLoopActivate(BeatLoopingControl*)),
                 Qt::DirectConnection);
+        connect(pBeatLoop, SIGNAL(activateBeatLoopRoll(BeatLoopingControl*)),
+                this, SLOT(slotBeatLoopActivateRoll(BeatLoopingControl*)),
+                Qt::DirectConnection);
         connect(pBeatLoop, SIGNAL(deactivateBeatLoop(BeatLoopingControl*)),
                 this, SLOT(slotBeatLoopDeactivate(BeatLoopingControl*)),
+                Qt::DirectConnection);
+        connect(pBeatLoop, SIGNAL(deactivateBeatLoopRoll(BeatLoopingControl*)),
+                this, SLOT(slotBeatLoopDeactivateRoll(BeatLoopingControl*)),
                 Qt::DirectConnection);
         m_beatLoops.append(pBeatLoop);
     }
@@ -455,8 +462,6 @@ void LoopingControl::slotLoopEndPos(double pos) {
 
 void LoopingControl::notifySeek(double dNewPlaypos) {
     if (m_bLoopingEnabled) {
-        Q_ASSERT(m_iLoopStartSample != -1);
-        Q_ASSERT(m_iLoopEndSample != -1);
         if (dNewPlaypos < m_iLoopStartSample || dNewPlaypos > m_iLoopEndSample) {
             setLoopingEnabled(false);
         }
@@ -520,8 +525,23 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
                  beatLoopAlreadyActive && m_bLoopingEnabled);
 }
 
+void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl) {
+     if (!m_pTrack) {
+         return;
+     }
+
+    //Disregard existing loops
+    m_pSlipEnabled->set(1);
+    slotBeatLoop(pBeatLoopControl->getSize(), false);
+}
+
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
     slotReloopExit(1);
+}
+
+void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
+    slotReloopExit(1);
+    m_pSlipEnabled->set(0);
 }
 
 void LoopingControl::clearActiveBeatLoop() {
@@ -640,7 +660,7 @@ BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
     m_pLegacy = new ControlPushButton(
         keyForControl(pGroup, "beatloop_%1", size));
     m_pLegacy->setStates(2);
-    m_pLegacy->setToggleButton(true);
+    m_pLegacy->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pLegacy, SIGNAL(valueChanged(double)),
             this, SLOT(slotLegacy(double)),
             Qt::DirectConnection);
@@ -657,6 +677,13 @@ BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
             this, SLOT(slotToggle(double)),
             Qt::DirectConnection);
 
+    // A push-button which activates rolling beatloops
+    m_pActivateRoll = new ControlPushButton(
+        keyForControl(pGroup, "beatlooproll_%1_activate", size));
+    connect(m_pActivateRoll, SIGNAL(valueChanged(double)),
+            this, SLOT(slotActivateRoll(double)),
+            Qt::DirectConnection);
+
     // An indicator control which is 1 if the beatloop is enabled and 0 if not.
     m_pEnabled = new ControlObject(
         keyForControl(pGroup, "beatloop_%1_enabled", size));
@@ -667,6 +694,7 @@ BeatLoopingControl::~BeatLoopingControl() {
     delete m_pToggle;
     delete m_pEnabled;
     delete m_pLegacy;
+    delete m_pActivateRoll;
 }
 
 void BeatLoopingControl::deactivate() {
@@ -696,6 +724,15 @@ void BeatLoopingControl::slotActivate(double v) {
         return;
     }
     emit(activateBeatLoop(this));
+}
+
+void BeatLoopingControl::slotActivateRoll(double v) {
+    //qDebug() << "slotActivateRoll" << m_dBeatLoopSize << "v" << v;
+    if (v > 0) {
+        emit(activateBeatLoopRoll(this));
+    } else {
+        emit(deactivateBeatLoopRoll(this));
+    }
 }
 
 void BeatLoopingControl::slotToggle(double v) {

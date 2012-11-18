@@ -1,56 +1,85 @@
-
 #ifndef WWAVEFORMVIEWER_H
 #define WWAVEFORMVIEWER_H
 
-#include <qgl.h>
-#include <QList>
-#include <QEvent>
 #include <QDateTime>
-#include <QMutex>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <QTimerEvent>
+#include <QEvent>
+#include <QList>
+#include <QMutex>
 
-#include "wwidget.h"
 #include "defs.h"
+#include "trackinfoobject.h"
+#include "widget/wwidget.h"
 
-class EngineBuffer;
-class WaveformRenderer;
+class ControlObjectThreadMain;
+class WaveformWidgetAbstract;
+class ControlPotmeter;
 
-class WWaveformViewer : public QWidget
-{
+class WWaveformViewer : public QWidget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer, QWidget *parent=0, Qt::WFlags f = 0);
+    WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0, Qt::WFlags f = 0);
     virtual ~WWaveformViewer();
+
+    const char* getGroup() const { return m_pGroup;}
+    void setup(QDomNode node = QDomNode());
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-    void setup(QDomNode node);
-    bool eventFilter(QObject *o, QEvent *e);
 
-  public slots:
-    void refresh();
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
 
-  signals:
+signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
+    void valueReset();
 
-  protected:
-    void paintEvent(QPaintEvent* event);
+public slots:
+    void onTrackLoaded( TrackPointer track);
+    void onTrackUnloaded( TrackPointer track);
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+
+private slots:
+    void onZoomChange(double zoom);
+    void slotWidgetDead() {
+        m_waveformWidget = NULL;
+    }
 
 private:
-    /** Used in mouse event handler */
+    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
+    WaveformWidgetAbstract* getWaveformWidget() {
+        return m_waveformWidget;
+    }
+    //direct access to let factory sync/set default zoom
+    void setZoom(int zoom);
+
+private:
+    const char* m_pGroup;
+    ConfigObject<ConfigValue>* m_pConfig;
+    int m_zoomZoneWidth;
+    ControlObjectThreadMain* m_pZoom;
+    ControlObjectThreadMain* m_pScratchEnable;
+    ControlObjectThreadMain* m_pScratch;
+    ControlObjectThreadMain* m_pTrackSamples;
+    ControlObjectThreadMain* m_pTrackSampleRate;
+    ControlObjectThreadMain* m_pRate;
+    ControlObjectThreadMain* m_pRateRange;
+    ControlObjectThreadMain* m_pRateDir;
+    bool m_bScratching;
+    bool m_bBending;
     int m_iMouseStart;
+    QPoint m_mouseAnchor;
 
-    /** Waveform Renderer does all the work for us */
-    WaveformRenderer *m_pWaveformRenderer;
+    WaveformWidgetAbstract* m_waveformWidget;
 
-    bool m_painting;
-    QMutex m_paintMutex;
-
-    const char *m_pGroup;
+    friend class WaveformWidgetFactory;
 };
 
 #endif

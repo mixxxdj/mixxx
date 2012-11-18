@@ -20,29 +20,47 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "engine/enginexfader.h"
+#include "playermanager.h"
 
 PlayerInfo::PlayerInfo()
-{
-    int i;
-    m_iNumDecks = ControlObject::getControl(ConfigKey("[Master]","num_decks"))->get();
+        : m_currentlyPlayingDeck(0) {
+    m_iNumDecks = ControlObject::getControl(
+        ConfigKey("[Master]","num_decks"))->get();
+    for (int i = 0; i < m_iNumDecks; ++i) {
+        QString chan = PlayerManager::groupForDeck(i);
 
-    for (i = 1; i <= m_iNumDecks; i++) {
-        QString chan = QString("[Channel%1]").arg(i);
-
-        m_listCOPlay[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "play")));
-        m_listCOVolume[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "volume")));
-        m_listCOOrientation[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "orientation")));
-        m_listCOpregain[chan] = new ControlObjectThread(ControlObject::getControl(ConfigKey(chan, "pregain")));
+        m_listCOPlay[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "play")));
+        m_listCOVolume[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "volume")));
+        m_listCOOrientation[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "orientation")));
+        m_listCOpregain[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "pregain")));
     }
 
-    m_COxfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
+    m_iNumSamplers = ControlObject::getControl(
+        ConfigKey("[Master]", "num_samplers"))->get();
+    for (int i = 0; i < m_iNumSamplers; ++i) {
+        QString chan = PlayerManager::groupForSampler(i);
+
+        m_listCOPlay[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "play")));
+        m_listCOVolume[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "volume")));
+        m_listCOOrientation[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "orientation")));
+        m_listCOpregain[chan] = new ControlObjectThread(
+            ControlObject::getControl(ConfigKey(chan, "pregain")));
+    }
+
+    m_COxfader = new ControlObjectThread(
+        ControlObject::getControl(ConfigKey("[Master]","crossfader")));
+    startTimer(2000);
 }
 
-PlayerInfo::~PlayerInfo()
-{
+PlayerInfo::~PlayerInfo() {
     int i;
-
-
     m_loadedTrackMap.clear();
 
     for (i = 1; i <= m_iNumDecks; i++) {
@@ -57,14 +75,12 @@ PlayerInfo::~PlayerInfo()
     delete m_COxfader;
 }
 
-PlayerInfo &PlayerInfo::Instance()
-{
+PlayerInfo &PlayerInfo::Instance() {
     static PlayerInfo playerInfo;
     return playerInfo;
 }
 
-TrackPointer PlayerInfo::getTrackInfo(QString group)
-{
+TrackPointer PlayerInfo::getTrackInfo(QString group) {
     QMutexLocker locker(&m_mutex);
 
     if (m_loadedTrackMap.contains(group)) {
@@ -80,13 +96,43 @@ void PlayerInfo::setTrackInfo(QString group, TrackPointer track)
     m_loadedTrackMap[group] = track;
 }
 
-int PlayerInfo::getCurrentPlayingDeck()
-{
+bool PlayerInfo::isTrackLoaded(TrackPointer pTrack) const {
+    QMutexLocker locker(&m_mutex);
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value() == pTrack) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool PlayerInfo::isTrackPlaying(TrackPointer pTrack) const {
+    QMutexLocker locker(&m_mutex);
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value() == pTrack) {
+            ControlObjectThread* coPlay = m_listCOPlay[it.key()];
+            if (coPlay && coPlay->get() != 0.0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
+    Q_UNUSED(pTimerEvent);
+    updateCurrentPlayingDeck();
+}
+
+void PlayerInfo::updateCurrentPlayingDeck() {
     QMutexLocker locker(&m_mutex);
     int MaxVolume = 0;
     int MaxDeck = 0;
     int i;
-    
 
     for (i = 1; i <= m_iNumDecks; i++) {
         QString chan = QString("[Channel%1]").arg(i);
@@ -95,18 +141,18 @@ int PlayerInfo::getCurrentPlayingDeck()
         float dvol;
         int orient;
 
-        if ( m_listCOPlay[chan]->get() == 0.0 )
+        if (m_listCOPlay[chan]->get() == 0.0 )
             continue;
 
-        if ( m_listCOpregain[chan]->get() <= 0.5 )
+        if (m_listCOpregain[chan]->get() <= 0.5 )
             continue;
 
         if ((fvol = m_listCOVolume[chan]->get()) == 0.0 )
             continue;
 
-        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0);
+        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0, false, false);
 
-        // Orientation goes: left is 0, center is 1, right is 2. 
+        // Orientation goes: left is 0, center is 1, right is 2.
         // Leave math out of it...
         orient = m_listCOOrientation[chan]->get();
         if ( orient == 0 )
@@ -117,23 +163,29 @@ int PlayerInfo::getCurrentPlayingDeck()
             xfvol = 1;
 
         dvol = fvol * xfvol;
-        if ( dvol > MaxVolume ) {
+        if (dvol > MaxVolume ) {
             MaxDeck = i;
             MaxVolume = dvol;
         }
     }
 
-    return MaxDeck;
+    if (MaxDeck != m_currentlyPlayingDeck) {
+        m_currentlyPlayingDeck = MaxDeck;
+        m_mutex.unlock();
+        emit(currentPlayingDeckChanged(MaxDeck));
+    }
 }
 
-TrackPointer PlayerInfo::getCurrentPlayingTrack()
-{
+int PlayerInfo::getCurrentPlayingDeck() {
+    QMutexLocker locker(&m_mutex);
+    return m_currentlyPlayingDeck;
+}
+
+TrackPointer PlayerInfo::getCurrentPlayingTrack() {
     int deck = getCurrentPlayingDeck();
-    if ( deck ) {
+    if (deck) {
         QString chan = QString("[Channel%1]").arg(deck);
         return getTrackInfo(chan);
     }
-
     return TrackPointer();
 }
-

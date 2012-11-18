@@ -18,10 +18,8 @@
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
         :  QWidget(parent)
-        , Ui::DlgPrefReplayGainDlg()
         , m_COTInitialBoost(ControlObject::getControl(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")))
-        , m_COTEnabled(ControlObject::getControl(ConfigKey(CONFIG_KEY, "ReplayGainEnabled")))
-{
+        , m_COTEnabled(ControlObject::getControl(ConfigKey(CONFIG_KEY, "ReplayGainEnabled"))) {
     config = _config;
 
     setupUi(this);
@@ -107,9 +105,7 @@ void DlgPrefReplayGain::slotUpdate() {
     {
         EnableAnalyser->setChecked(false);
         EnableAnalyser->setEnabled(false);
-        SliderBoost->setValue(0);
         SliderBoost->setEnabled(false);
-        lcddB -> display(0);
     }
 }
 

@@ -29,8 +29,8 @@ class LibraryFeature : public QObject {
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
 
-    virtual bool dropAccept(QUrl url) = 0;
-    virtual bool dropAcceptChild(const QModelIndex& index, QUrl url) = 0;
+    virtual bool dropAccept(QList<QUrl> urls) = 0;
+    virtual bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) = 0;
     virtual bool dragMoveAccept(QUrl url) = 0;
     virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) = 0;
 
@@ -56,7 +56,6 @@ class LibraryFeature : public QObject {
      */
     virtual void onLazyChildExpandation(const QModelIndex& index) = 0;
   signals:
-    void featureUpdated();
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
@@ -66,7 +65,8 @@ class LibraryFeature : public QObject {
     void featureIsLoading(LibraryFeature*);
     /** emit this signal if the foreign music collection has been imported/parsed. **/
     void featureLoadingFinished(LibraryFeature*s);
-
+    /** emit this signal to select pFeature **/
+    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
 
 };
 

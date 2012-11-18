@@ -11,6 +11,8 @@
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
+#include <QDebug>
+
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
 #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
@@ -30,6 +32,8 @@ enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATE
 RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
+    m_bVinylControlEnabled(false),
+    m_bVinylControlScratching(false),
     m_ePbCurrent(0),
     m_ePbPressed(0),
     m_bTempStarted(false),
@@ -37,8 +41,7 @@ RateControl::RateControl(const char* _group,
     m_dRateTemp(0.0),
     m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
-    m_dOldRate(0.0f),
-    m_pConfig(_config) {
+    m_dOldRate(0.0f) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -142,11 +145,11 @@ RateControl::RateControl(const char* _group,
     // Update Internal Settings
     // Set Pitchbend Mode
     m_eRateRampMode = (RateControl::RATERAMP_MODE)
-        m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt();
+            getConfig()->getValueString(ConfigKey("[Controls]","RateRamp")).toInt();
 
     // Set the Sensitivity
     m_iRateRampSensitivity =
-        m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+            getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
 #ifdef __VINYLCONTROL__
     ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
@@ -158,6 +161,17 @@ RateControl::RateControl(const char* _group,
             Qt::DirectConnection);
     connect(pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlVinyl(double)),
+            Qt::DirectConnection);
+
+    ControlObject* pVCScratching = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_scratching"));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(pVCScratching);
+    connect(pVCScratching, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlVinylScratching(double)),
+            Qt::DirectConnection);
+    connect(pVCScratching, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlVinylScratching(double)),
             Qt::DirectConnection);
 #endif
 }
@@ -391,6 +405,11 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         *isScratching = true;
     }
 
+    // If vinyl control is enabled and scratching then also set isScratching
+    if (m_bVinylControlEnabled && m_bVinylControlScratching) {
+        *isScratching = true;
+    }
+
     if (searching) {
         // If searching is in progress, it overrides the playback rate.
         rate = m_pRateSearch->get();
@@ -584,9 +603,12 @@ void RateControl::resetRateTemp(void)
     setRateTemp(0.0);
 }
 
-void RateControl::slotControlVinyl(double toggle)
-{
+void RateControl::slotControlVinyl(double toggle) {
     m_bVinylControlEnabled = (bool)toggle;
+}
+
+void RateControl::slotControlVinylScratching(double toggle) {
+    m_bVinylControlScratching = (bool)toggle;
 }
 
 void RateControl::notifySeek(double playPos) {

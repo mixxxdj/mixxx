@@ -18,6 +18,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
+    m_pControlTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -99,7 +100,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the mic spits out samples just as fast as they
         // come in, right?
-        qWarning() << "Microphone buffer overflow";
+        qWarning() << "ERROR: Buffer overflow in EngineMicrophone. Dropping samples on the floor.";
     }
 }
 
@@ -115,7 +116,8 @@ void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, co
             // Buffer underflow. There aren't getting samples fast enough. This
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
-            qWarning() << "Microphone buffer underflow";
+            qWarning() << "ERROR: Buffer underflow in EngineMicrophone. Playing silence.";
+            SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
         }
     } else {
         SampleUtil::applyGain(pOut, 0.0, iBufferSize);

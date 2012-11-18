@@ -150,6 +150,7 @@ int SoundSourceCoreAudio::open() {
 
       AudioConverterPrimeInfo primeInfo;
       UInt32 piSize=sizeof(AudioConverterPrimeInfo);
+      memset(&primeInfo, 0, piSize);
       err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize, &primeInfo);
       if(err != kAudioConverterErr_PropertyNotSupported) // Only if decompressing
       {

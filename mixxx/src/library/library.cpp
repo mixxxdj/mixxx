@@ -22,6 +22,7 @@
 #include "library/promotracksfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
+#include "library/setlogfeature.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -61,22 +62,30 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     m_pPrepareFeature = new PrepareFeature(this, pConfig, m_pTrackCollection);
     addFeature(m_pPrepareFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
-    if (RhythmboxFeature::isSupported() && pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt())
+    if (RhythmboxFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
+	}
     if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
         BansheeFeature::prepareDbPath(pConfig);
-        if (BansheeFeature::isSupported())
+        if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+		}
     }
-    if (ITunesFeature::isSupported() && pConfig->getValueString(ConfigKey("[Library]","ShowItunesLibrary"),"1").toInt())
+    if (ITunesFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
-    if (TraktorFeature::isSupported() && pConfig->getValueString(ConfigKey("[Library]","ShowTracktorLibrary"),"1").toInt())
+    }
+    if (TraktorFeature::isSupported() &&
+        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
+    }
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
@@ -89,6 +98,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 }
 
 Library::~Library() {
+    // Delete the sidebar model first since it depends on the LibraryFeatures.
+    delete m_pSidebarModel;
+
     QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
@@ -97,11 +109,11 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
-    delete m_pSidebarModel;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
     // we never see the TrackCollection's destructor being called... - Albert
+    // Has to be deleted at last because the features holds references of it.
     delete m_pTrackCollection;
 }
 
@@ -148,7 +160,6 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
         ->select(m_pSidebarModel->getDefaultSelection(),
                  QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
-
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -196,6 +207,7 @@ void Library::slotRestoreSearch(const QString& text) {
 void Library::slotRefreshLibraryModels()
 {
    m_pMixxxLibraryFeature->refreshLibraryModels();
+   m_pPrepareFeature->refreshLibraryModels();
 }
 
 void Library::slotCreatePlaylist()

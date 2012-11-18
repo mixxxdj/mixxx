@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import SCons
+import shutil
+
+Import('build')
+
+mixxxminimal_sources = [
+	"dsp/ChangeDetectionFunction.cpp",
+	"dsp/DownBeat.cpp",
+	"dsp/PeakPicking.cpp",
+	"dsp/Chromagram.cpp",
+	"dsp/FFT.cpp",
+	"dsp/PhaseVocoder.cpp",
+	"dsp/ConstantQ.cpp",
+	"dsp/Filter.cpp",
+	"dsp/Pitch.cpp",
+	"dsp/Correlation.cpp",
+	"dsp/FiltFilt.cpp",
+	"dsp/TCSgram.cpp",
+	"dsp/CQprecalc.cpp",
+	"dsp/Framer.cpp",
+	"dsp/TempoTrack.cpp",
+	"dsp/Decimator.cpp",
+	"dsp/GetKeyMode.cpp",
+	"dsp/TempoTrackV2.cpp",
+	"dsp/DetectionFunction.cpp",
+	"dsp/KLDivergence.cpp",
+	"dsp/TonalEstimator.cpp",
+	"dsp/DFProcess.cpp",
+	"dsp/MathUtilities.cpp",
+	"plugins/BarBeatTrack.cpp",
+	"plugins/KeyDetect.cpp",
+	"plugins/BeatTrack.cpp",
+	"plugins/TonalChangeDetect.cpp",
+	"libmain.cpp",
+]
+
+#Tell SCons to build the plugin
+#=========================
+if int(build.flags['vamp']):
+    env = build.env.Clone()
+    conf = Configure(env)
+
+    # If there is no system vamp-hostdk installed, then we'll directly link
+    # the vamp-hostsdk.
+    if not conf.CheckLib('vamp-sdk'):
+        INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
+        # For header includes
+        build.env.Append(CPPPATH=[INTERNAL_VAMP_PATH])
+        sdk_src_path = '%s/src/vamp-sdk' % INTERNAL_VAMP_PATH
+        mixxxminimal_sources.extend(path % sdk_src_path for path in
+                                    ['%s/PluginAdapter.cpp',
+                                     '%s/RealTime.cpp'])
+
+    env = conf.Finish()
+    if build.platform_is_linux:
+        env["LINKFLAGS"].append("-Wl,--version-script=vamp-plugins/vamp-plugin.map")
+    if build.platform_is_windows:
+        env["LINKFLAGS"].remove("/entry:mainCRTStartup")
+        env["LINKFLAGS"].append("/EXPORT:vampGetPluginDescriptor")
+        #this will reduce DLL dependencies; no need to depend on MSVCRT.dll, etc
+        #env["LINKFLAGS"].remove("/nodefaultlib:LIBCMT.lib")
+        #env["LINKFLAGS"].remove("/nodefaultlib:LIBCMTd.lib")
+        #env["LINKFLAGS"].append("/NODEFAULTLIB:MSVCRT.lib")
+        #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCMT.lib")
+        #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCPMT.lib")
+        mixxxminimal_bin = env.SharedLibrary('libmixxxminimal', mixxxminimal_sources)
+    else:
+    	mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources)
+    #Pass this library object file back to the SConscript above us.
+    Return("mixxxminimal_bin")
+else:
+    Return("")

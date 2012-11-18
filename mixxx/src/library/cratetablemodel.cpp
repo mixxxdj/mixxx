@@ -9,7 +9,6 @@
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
-
 #include "mixxxutils.cpp"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
@@ -89,6 +88,31 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 }
 
+int CrateTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    // If a track is dropped but it isn't in the library, then add it because
+    // the user probably dropped a file from outside Mixxx into this playlist.
+    QList<QFileInfo> fileInfoList;
+    foreach(QString fileLocation, locations) {
+        fileInfoList.append(QFileInfo(fileLocation));
+    }
+
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+    QList<int> trackIDs = trackDao.addTracks(fileInfoList, true);
+
+    int tracksAdded = m_pTrackCollection->getCrateDAO().addTracksToCrate(
+        trackIDs, m_iCrateId);
+    if (tracksAdded > 0) {
+        select();
+    }
+
+    if (locations.size() - tracksAdded > 0) {
+        qDebug() << "CrateTableModel::addTracks could not add"
+                 << locations.size() - tracksAdded
+                 << "to crate" << m_iCrateId;
+    }
+    return tracksAdded;
+}
+
 TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
     int trackId = getTrackId(index);
     return m_pTrackCollection->getTrackDAO().getTrack(trackId);
@@ -103,9 +127,7 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
         foreach (QModelIndex index, indices) {
             trackIds.append(getTrackId(index));
         }
-        foreach (int trackId, trackIds) {
-            crateDao.removeTrackFromCrate(trackId, m_iCrateId);
-        }
+        crateDao.removeTracksFromCrate(trackIds, m_iCrateId);
         select();
     }
 }
@@ -145,6 +167,7 @@ bool CrateTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(CRATETRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
@@ -156,10 +179,6 @@ bool CrateTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-QItemDelegate* CrateTableModel::delegateForColumn(int i) {
-    return NULL;
-}
-
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
     CapabilitiesFlags caps =  TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_RECEIVEDROPS
@@ -169,7 +188,10 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_REMOVE;
+            | TRACKMODELCAPS_REMOVE
+            | TRACKMODELCAPS_BPMLOCK
+            | TRACKMODELCAPS_CLEAR_BEATS
+            | TRACKMODELCAPS_RESETPLAYED;
 
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     bool locked = crateDao.isCrateLocked(m_iCrateId);

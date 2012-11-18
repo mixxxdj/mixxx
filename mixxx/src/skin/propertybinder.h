@@ -9,7 +9,7 @@
 class ControlObject;
 class ControlObjectThreadMain;
 
-class PropertyBinder : QObject {
+class PropertyBinder : public QObject {
     Q_OBJECT
   public:
     PropertyBinder(QWidget* pWidget, QString propertyName, ControlObject* pControl);

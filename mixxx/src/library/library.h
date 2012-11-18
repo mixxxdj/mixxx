@@ -67,8 +67,8 @@ public slots:
 signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group);
     void restoreSearch(const QString&);
 
 private:

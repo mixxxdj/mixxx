@@ -34,7 +34,7 @@ Upgrade::~Upgrade()
 
 // We return the ConfigObject here because we have to make changes to the
 // configuration and the location of the file may change between releases.
-ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
+ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) {
 
 /*  Pre-1.7.0:
 *
@@ -53,13 +53,13 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
     if (pre170Config->exists()) {
 
         // Move the files to their new location
-        QString newLocation = QDir::homePath().append("/").append(SETTINGS_PATH);
+        QString newLocation = settingsPath;
         
         if (!QDir(newLocation).exists()) {
             qDebug() << "Creating new settings directory" << newLocation;
             QDir().mkpath(newLocation);
         }
-        
+
         newLocation.append("%1");
         QString errorText = "Error moving your %1 file %2 to the new location %3: \n";
 
@@ -82,7 +82,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
             }
         }
         delete oldFile;
-        
+
 #ifdef __WINDOWS__
         oldFilePath = oldLocation.arg("mixxxbpmschemes.xml");
 #else
@@ -134,13 +134,13 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
                 else qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "Error #" << oldFile->error();
             }
         delete oldFile;
-        
+
     }
     // Tidy up
     delete pre170Config;
     // End pre-1.7.0 code
-    
-    
+
+
 /***************************************************************************
 *                           Post-1.7.0 upgrade code
 *
@@ -150,7 +150,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 ****************************************************************************/
 
     // Read the config file from home directory
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(settingsPath + SETTINGS_FILE);
 
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
@@ -178,7 +178,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         }
 #endif
     }
-    
+
     // If it's already current, stop here
     if (configVersion == VERSION) {
         qDebug() << "Configuration file is at the current version" << VERSION;
@@ -207,24 +207,28 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
     //you've run the latest version of Mixxx. This lets us show
     //the promo tracks stats agreement stuff for all users that are
     //upgrading Mixxx.
-    
+
     if (configVersion.startsWith("1.7")) {
-        qDebug() << "Upgrading from v1.7.x to" << VERSION <<"...";
+        qDebug() << "Upgrading from v1.7.x...";
         // Upgrade tasks go here
         // Nothing to change, really
+        configVersion = "1.8.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.8.0"));
     }
 
-    if (configVersion.startsWith("1.8.0~beta1") || 
+    if (configVersion.startsWith("1.8.0~beta1") ||
         configVersion.startsWith("1.8.0~beta2")) {
-        qDebug() << "Upgrading from v1.8.0~beta to" << VERSION <<"...";
+        qDebug() << "Upgrading from v1.8.0~beta...";
         // Upgrade tasks go here
+        configVersion = "1.8.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.8.0"));
     }
     if (configVersion.startsWith("1.8") || configVersion.startsWith("1.9.0beta1")) {
-        qDebug() << "Upgrading from" << configVersion << "to" << VERSION <<"...";
+        qDebug() << "Upgrading from" << configVersion << "...";
         // Upgrade tasks go here
 #ifdef __APPLE__
         QString OSXLocation180 = QDir::homePath().append("/").append(".mixxx");
-        QString OSXLocation190 = QDir::homePath().append("/").append(SETTINGS_PATH);
+        QString OSXLocation190 = settingsPath;
         QDir newOSXDir(OSXLocation190);
         newOSXDir.mkpath(OSXLocation190);
 
@@ -242,7 +246,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
             QDir oldSubDir(curPair.first);
             QDir newSubDir(curPair.second);
             newSubDir.mkpath(curPair.second); //Create the new destination directory
-            
+
             QStringList contents = oldSubDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
             QStringListIterator it(contents);
             QString cur;
@@ -260,26 +264,69 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
             }
 
             //Rename the old directory.
-            newOSXDir.rename(OSXLocation180, OSXLocation180+ "-1.8");
+            newOSXDir.rename(OSXLocation180, OSXLocation180 + "-1.8");
         }
-        //Reload the configuration file from the new location. 
+        //Reload the configuration file from the new location.
         //(We want to make sure we save to the new location...)
-        config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+        config = new ConfigObject<ConfigValue>(settingsPath + SETTINGS_FILE);
 #endif
+        configVersion = "1.9.0";
+        config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));
     }
-    // For the next release
+    if (configVersion.startsWith("1.9") || configVersion.startsWith("1.10")) {
+        qDebug() << "Upgrading from v1.9.x/1.10.x...";
+
+        bool successful = true;
+
+        qDebug() << "Copying midi/ to controllers/";
+        QString midiPath = QDir::homePath().append("/").append(SETTINGS_PATH).append("midi");
+        QString controllerPath = QDir::homePath().append("/").append(SETTINGS_PATH).append("controllers");
+        QDir oldDir(midiPath);
+        QDir newDir(controllerPath);
+        newDir.mkpath(controllerPath);  // create the new directory
+
+        QStringList contents = oldDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+        QStringListIterator it(contents);
+        QString cur;
+        //Iterate over all the files in the source directory and copy them to the dest dir.
+        while (it.hasNext()) {
+            cur = it.next();
+            QString src = midiPath + "/" + cur;
+            QString dest = controllerPath + "/" + cur;
+            qDebug() << "Copying" << src << "to" << dest;
+            if (!QFile::copy(src, dest)) {
+                qDebug() << "Failed to copy file during upgrade.";
+                successful = false;
+            }
+        }
+
+        if (successful) {
+            qDebug() << "Upgrade Successful";
+            configVersion = "1.11.0";
+            m_bUpgraded = true;
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(configVersion));
+        }
+        else {
+            qDebug() << "Upgrade Failed";
+        }
+    }
+    // Next applicable release goes here
     /*
-    if (configVersion.startsWith("1.8.0")) {
-        qDebug() << "Upgrading from v1.8.0 to" << VERSION <<"...";
-        // Upgrade tasks go here, if any
-        configVersion = VERSION;
-        config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+    if (configVersion.startsWith("1.11")) {
+        qDebug() << "Upgrading from v1.11.x...";
+
+        // Upgrade tasks go here
+
+        if (successful) {
+            configVersion = VERSION;
+            m_bUpgraded = true;
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+        }
+        else {
+            qDebug() << "Upgrade failed!\n";
+        }
     }
     */
-
-    configVersion = VERSION;
-    m_bUpgraded = true;
-    config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
 
     if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
     else {
@@ -289,6 +336,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
                    << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
                    << "\n-> Leaving the configuration file version as-is.";
         */
+        qWarning() << "Configuration file is at version" << configVersion
+                   << "instead of the current" << VERSION;
     }
 
     return config;

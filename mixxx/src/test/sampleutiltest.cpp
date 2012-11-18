@@ -12,7 +12,7 @@ class SampleUtilTest : public testing::Test {
     virtual void SetUp() {
         SampleUtil::setOptimizations(false);
 #ifdef __SSE__
-        sseAvailable = 1;
+        sseAvailable = SampleUtil::m_sOptimizationsOn ? 1 : 0;
 #else
         sseAvailable = 0;
 #endif
@@ -346,8 +346,9 @@ TEST_F(SampleUtilTest, convert) {
             }
             SampleUtil::convert(buffer, s16, size);
             for (int j = 0; j < size; ++j) {
-                EXPECT_FLOAT_EQ(buffer[j], j);
+                EXPECT_FLOAT_EQ(j, buffer[j]);
             }
+            delete [] s16;
         }
         SampleUtil::setOptimizations(true);
     }

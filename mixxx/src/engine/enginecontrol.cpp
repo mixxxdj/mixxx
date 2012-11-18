@@ -2,7 +2,7 @@
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #include "engine/enginecontrol.h"
-#include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 
 EngineControl::EngineControl(const char * _group,
                              ConfigObject<ConfigValue> * _config) :
@@ -10,7 +10,7 @@ EngineControl::EngineControl(const char * _group,
     m_pConfig(_config),
     m_dCurrentSample(0),
     m_dTotalSamples(0),
-    m_pOtherEngineBuffer(NULL) {
+    m_pEngineMaster(NULL) {
 }
 
 EngineControl::~EngineControl() {
@@ -48,8 +48,8 @@ void EngineControl::trackUnloaded(TrackPointer) {
 void EngineControl::hintReader(QList<Hint>&) {
 }
 
-void EngineControl::setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer) {
-    m_pOtherEngineBuffer = pOtherEngineBuffer;
+void EngineControl::setEngineMaster(EngineMaster* pEngineMaster) {
+    m_pEngineMaster = pEngineMaster;
 }
 
 void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
@@ -73,8 +73,8 @@ ConfigObject<ConfigValue>* EngineControl::getConfig() {
     return m_pConfig;
 }
 
-EngineBuffer* EngineControl::getOtherEngineBuffer() {
-    return m_pOtherEngineBuffer;
+EngineMaster* EngineControl::getEngineMaster() {
+    return m_pEngineMaster;
 }
 
 void EngineControl::notifySeek(double dNewPlaypos) {

@@ -128,7 +128,10 @@ long SoundSourceOggVorbis::seek(long filepos)
 {
     // In our speak, filepos is a sample in the file abstraction (i.e. it's
     // stereo no matter what). filepos/2 is the frame we want to seek to.
-    Q_ASSERT(filepos%2==0);
+    if (filepos % 2 != 0) {
+        qDebug() << "SoundSourceOggVorbis got non-even seek target.";
+        filepos--;
+    }
 
     if (ov_seekable(&vf)){
         if(ov_pcm_seek(&vf, filepos/2) != 0) {
@@ -154,10 +157,11 @@ long SoundSourceOggVorbis::seek(long filepos)
    samples actually read.
  */
 
-unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination)
-{
-
-    Q_ASSERT(size%2==0);
+unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination) {
+    if (size % 2 != 0) {
+        qDebug() << "SoundSourceOggVorbis got non-even size in read.";
+        size--;
+    }
 
     char *pRead  = (char*) destination;
     SAMPLE *dest   = (SAMPLE*) destination;

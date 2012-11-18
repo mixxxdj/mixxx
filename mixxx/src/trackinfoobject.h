@@ -18,6 +18,7 @@
 #ifndef TRACKINFOOBJECT_H
 #define TRACKINFOOBJECT_H
 
+#include <QAtomicInt>
 #include <QList>
 #include <QDateTime>
 #include <QObject>
@@ -38,6 +39,7 @@ class QDomNode;
 class ControlObject;
 class TrackPlaylist;
 class Cue;
+class Waveform;
 
 class TrackInfoObject;
 
@@ -53,8 +55,8 @@ public:
     /** Initialize a new track with the filename. */
     TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(QFileInfo& fileInfo, bool parseHeader=true);
-    /** Creates a new track given information from the xml file. */
+    TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
+    // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
@@ -114,10 +116,10 @@ public:
     void setBpm(float);
     /** Returns BPM as a string */
     QString getBpmStr() const;
-    /** Retruns if BPM was confirmed (edited or verified manually) */
-    bool getBpmConfirm() const;
-    /** Set BPM confidence */
-    void setBpmConfirm(bool confirm=true);
+    // A track with a locked BPM will not be re-analyzed by the beats or bpm
+    // analyzer.
+    void setBpmLock(bool hasLock);
+    bool hasBpmLock() const;
     bool getHeaderParsed() const;
     void setHeaderParsed(bool parsed = true);
     /** Returns the user comment */
@@ -134,10 +136,6 @@ public:
     QString getBitrateStr() const;
     /** Sets the bitrate */
     void setBitrate(int);
-    /** Sets first beat pos */
-    void setBeatFirst(float);
-    /** Get first beat pos */
-    float getBeatFirst() const;
     /** Set sample rate */
     void setSampleRate(int iSampleRate);
     /** Get sample rate */
@@ -189,8 +187,10 @@ public:
     void incTimesPlayed();
     /** Returns true if track has been played this instance*/
     bool getPlayed() const;
-    /** Set Played status*/
-    void setPlayed(bool);
+    /** Set played status and increment or decrement playcount. */
+    void setPlayedAndUpdatePlaycount(bool);
+    /** Set played status without affecting the playcount */
+    void setPlayed(bool bPlayed);
 
     int getId() const;
 
@@ -208,23 +208,17 @@ public:
     QString getURL();
     /** Set URL for track */
     void setURL(QString url);
-    /** Set pointer to visual waveform data */
-    void setVisualWaveform(QVector<float> *pWave);
-    /** Get pointer to visual waveform data */
-    QVector<float> * getVisualWaveform();
 
-    /** Set and get this track's desired visual resample rate */
-    void setVisualResampleRate(double dVisualResampleRate);
-    double getVisualResampleRate();
+    Waveform* getWaveform();
+    const Waveform* getWaveform() const;
+    void setWaveform(Waveform* pWaveform);
 
-    /** Set pointer to waveform summary -- updates UI by default */
-    void setWaveSummary(const QByteArray* pWave, bool updateUI = true);
+    Waveform* getWaveformSummary();
+    const Waveform* getWaveformSummary() const;
+    void setWaveformSummary(Waveform* pWaveformSummary);
 
-    /** Returns a pointer to waveform summary */
-    const QByteArray* getWaveSummary();
-
-    /** Set pointer to ControlObject holding BPM value in engine */
-    void setBpmControlObject(ControlObject *p);
+    void setAnalyserProgress(int progress);
+    int getAnalyserProgress() const;
 
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
@@ -261,8 +255,10 @@ public:
   public slots:
     void slotCueUpdated();
 
-  signals:
-    void wavesummaryUpdated(TrackInfoObject*);
+signals:
+    void waveformUpdated();
+    void waveformSummaryUpdated();
+    void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
@@ -272,16 +268,16 @@ public:
     void clean(TrackInfoObject* pTrack);
     void save(TrackInfoObject* pTrack);
 
-  private slots:
+private slots:
     void slotBeatsUpdated();
 
-  private:
+private:
 
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);
 
     // Initialize all the location variables.
-    void populateLocation(QFileInfo& fileInfo);
+    void populateLocation(const QFileInfo& fileInfo);
 
     // Method for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
@@ -310,8 +306,6 @@ public:
     QString m_sDirectory;
     // Length of track in bytes
     int m_iLength;
-    // Flag which indicates whether the file exists or not.
-    bool m_bExists;
 
     /** Metadata */
     /** Album */
@@ -342,7 +336,7 @@ public:
     /** Number of channels */
     int m_iChannels;
     /**Track rating */
-    int m_Rating;;
+    int m_Rating;
     /** Bitrate, number of kilobits per second of audio in the track*/
     int m_iBitrate;
     /** Number of times the track has been played */
@@ -351,18 +345,8 @@ public:
     float m_fReplayGain;
     /** Has this track been played this sessions? */
     bool m_bPlayed;
-    /** Beat per minutes (BPM) */
-    float m_fBpm;
-    /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */
-    float m_fMinBpm;
-    /** Maximum BPM range. If this is 0.0, then the config max BPM will be used */
-    float m_fMaxBpm;
-    /** True if BPM is confirmed */
-    bool m_bBpmConfirm;
     /** True if header was parsed */
     bool m_bHeaderParsed;
-    /** Position of first beat in song */
-    float m_fBeatFirst;
     /** Id. Unique ID of track */
     int m_iId;
     /** Cue point in samples or something */
@@ -374,13 +358,12 @@ public:
 
     QString m_key;
 
+    /** BPM lock **/
+    bool m_bBpmLock;
+
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
 
-    /** Pointer to visual waveform info */
-    QVector<float> *m_pVisualWave;
-    /** Wave summary info */
-    QByteArray m_waveSummary;
 
     /** Mutex protecting access to object */
     mutable QMutex m_qMutex;
@@ -388,11 +371,16 @@ public:
     /** True if object contains valid information */
     bool m_bIsValid;
 
-    double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;
+
+    //Visual waveform data
+    Waveform* m_waveform;
+    Waveform* m_waveformSummary;
+
+    QAtomicInt m_analyserProgress; // in 0.1%
 
     friend class TrackDAO;
 };

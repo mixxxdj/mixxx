@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form3</string>
+   <string notr="true">Form3</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -181,7 +181,16 @@ playback and outbound link statistics</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Other Librarys</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
        <widget class="QCheckBox" name="checkBox_show_rhythmbox">
         <property name="text">
          <string>Show Rhythmbox Library</string>
@@ -191,7 +200,17 @@ playback and outbound link statistics</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_show_banshee">
+        <property name="text">
+         <string>Show Banshee Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
        <widget class="QCheckBox" name="checkBox_show_itunes">
         <property name="text">
          <string>Show iTunes Library</string>
@@ -201,13 +220,30 @@ playback and outbound link statistics</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
-       <widget class="QCheckBox" name="checkBox_show_tracktor">
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="checkBox_show_traktor">
         <property name="text">
-         <string>Show Tracktor Library</string>
+         <string>Show Traktor Library</string>
         </property>
         <property name="checked">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="checkBox_show_clementine">
+        <property name="text">
+         <string>Show Clementine Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>    You will need to restart Mixxx for this to take effect</string>
         </property>
        </widget>
       </item>

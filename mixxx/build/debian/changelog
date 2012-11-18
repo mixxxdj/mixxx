@@ -1,3 +1,9 @@
+mixxx (1.11.0~beta1-0ubuntu1) lucid; urgency=low
+
+  * New upstream beta release
+
+ -- RJ Ryan <rryan@mixxx.org>  Thu, 21 Jun 2012 15:41:22 -0400
+
 mixxx (1.10.0-0ubuntu1) lucid; urgency=low
 
   * New upstream release.

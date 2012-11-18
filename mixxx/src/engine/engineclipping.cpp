@@ -23,6 +23,7 @@ EngineClipping::EngineClipping(const char * group)
     //Used controlpotmeter as the example used it :/ perhaps someone with more knowledge could use something more suitable...
     m_ctrlClipping = new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
     m_ctrlClipping->set(0);
+    m_duration = 0;
 }
 
 EngineClipping::~EngineClipping()
@@ -40,10 +41,23 @@ void EngineClipping::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const in
     clipped = SampleUtil::copyClampBuffer(kfMaxAmp, -kfMaxAmp,
                                           pOutput, pIn, iBufferSize);
 
-    if (clipped)
-        m_ctrlClipping->set(1.);
-    else
-        m_ctrlClipping->set(0);
+    if (clipped) {
+        if (m_ctrlClipping->get() != 1.) {
+            m_ctrlClipping->set(1.);
+        }
+        m_duration = 20;
+    }
+
+    if (m_duration == 0) {
+        if (m_ctrlClipping->get() == 1.) {
+            m_ctrlClipping->set(0.);
+        }
+    }
+    else {
+        m_duration--;
+    }
+
+
 }
 
 //returns true if the last buffer processed clipped

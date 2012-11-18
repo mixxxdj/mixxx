@@ -4,7 +4,6 @@
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
-
 #include "mixxxutils.cpp"
 
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
@@ -72,17 +71,7 @@ TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const {
     return m_trackDao.getTrack(trackId);
 }
 
-void MissingTableModel::removeTrack(const QModelIndex& index) {
-    int trackId = getTrackId(index);
-
-    m_trackDao.removeTrack(trackId);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
-}
-
-void MissingTableModel::removeTracks(const QModelIndexList& indices) {
+void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
     foreach (QModelIndex index, indices) {
@@ -90,18 +79,13 @@ void MissingTableModel::removeTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDao.removeTracks(trackIds);
+    m_trackDao.purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
 }
 
-void MissingTableModel::moveTrack(const QModelIndex& sourceIndex,
-                                  const QModelIndex& destIndex) {
-    Q_UNUSED(sourceIndex);
-    Q_UNUSED(destIndex);
-}
 
 void MissingTableModel::search(const QString& searchText) {
     // qDebug() << "MissingTableModel::search()" << searchText
@@ -116,6 +100,7 @@ void MissingTableModel::slotSearch(const QString& searchText) {
 bool MissingTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
+        column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
@@ -134,12 +119,7 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
-    return NULL;
-}
-
 TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_REMOVE;
+            | TRACKMODELCAPS_PURGE;
 }

@@ -21,9 +21,9 @@
 #include <QObject>
 #include <QEvent>
 #include <QMutex>
-#include "midi/midimessage.h"
 #include "configobject.h"
 #include "controlobjectthread.h"
+#include "controllers/midi/midimessage.h"
 
 class QWidget;
 class ConfigKey;
@@ -38,7 +38,7 @@ struct QueueObjectThread
 struct QueueObjectMidi
 {
     ControlObject *pControlObject;
-    MidiCategory category;
+    MidiOpCode opcode;
     double value;
 };
 
@@ -92,13 +92,19 @@ public:
     /** Queue a control change from a widget. Thread safe. Blocking. */
     void queueFromThread(double dValue, ControlObjectThread *pControlObjectThread=0);
     /** Queue a control change from MIDI. Thread safe. Blocking. */
-    void queueFromMidi(MidiCategory c, double v);
+    void queueFromMidi(MidiOpCode o, double v);
     /** Return a ControlObject value, corresponding to the widget input value. Thread safe. */
     virtual double getValueFromWidget(double dValue);
     /** Return a widget value corresponding to the ControlObject input value. Thread safe. */
     virtual double getValueToWidget(double dValue);
     /** get value (range 0..127) **/
     virtual double GetMidiValue();
+    virtual void setDefaultValue(double dValue) {
+        m_dDefaultValue = dValue;
+    }
+    virtual double defaultValue() const {
+        return m_dDefaultValue;
+    }
 
 public slots:
     /** Sets the value of the object and updates associated proxy objects. Not thread safe. */
@@ -112,13 +118,14 @@ protected:
     /** Sets the value of the object. Not thread safe. */
     virtual void setValueFromEngine(double dValue);
     /** Called when a widget has changed value. Not thread safe. */
-    virtual void setValueFromMidi(MidiCategory, double v);
+    virtual void setValueFromMidi(MidiOpCode o, double v);
     /** Called when another thread has changed value. Not thread safe. */
     virtual void setValueFromThread(double dValue);
 
 protected:
     /** The actual value of the controller */
     double m_dValue;
+    double m_dDefaultValue;
     /** Key of the object */
     ConfigKey m_Key;
 
