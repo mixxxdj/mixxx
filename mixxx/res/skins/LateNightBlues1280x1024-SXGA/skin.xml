@@ -1,7 +1,7 @@
 	<!--
 	LateNightBlues , Skin for Mixxx 1.11.x
 	www.mixxx.org
-	Copyright (C) 2010-2012 jus ; s.brandt@mixxx.org
+	Copyright (C) 2010-2012 jus <s.brandt@mixxx.org>
 	This file is part of the "LateNightBlues" Skin for Mixxx
 	"LateNightBlues" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
@@ -48,7 +48,7 @@
 	<manifest>
 	<title>LateNightBlues1280x1024-SXGA</title>
 	<author>jus</author>
-	<version>1.11.0.10</version>
+	<version>1.11.0.11</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -107,7 +107,7 @@
 				<Layout>horizontal</Layout>
 				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 8px 0px;} </Style>
 				<Children>
-					<!-- all sub-widgets for the 4 samplers -->
+					<!-- all sub-widgets for the sampler decks -->
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -197,8 +197,8 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler1]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -304,7 +304,7 @@
 									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,30</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -315,6 +315,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 
@@ -680,8 +707,8 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler2]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -787,7 +814,7 @@
 									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,30</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -798,6 +825,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 
@@ -1163,8 +1217,8 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler3]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -1270,7 +1324,7 @@
 									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,30</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1281,6 +1335,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 
@@ -1646,8 +1727,8 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler4]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
 								<SignalColor>#FDC772</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -1753,7 +1834,7 @@
 									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,30</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1764,6 +1845,33 @@
 									<EmitOnDownPress>true</EmitOnDownPress>
 									<ButtonState>RightButton</ButtonState>
 									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
 

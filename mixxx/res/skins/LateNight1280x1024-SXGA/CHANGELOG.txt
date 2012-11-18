@@ -1,6 +1,6 @@
 LateNight , Skin for Mixxx 1.11.x
 www.mixxx.org
-Copyright (C) 2010-2012 jus ; s.brandt@mixxx.org
+Copyright (C) 2010-2012 jus <s.brandt@mixxx.org>
 This file is part of the "LateNight" Skin for Mixxx
 "LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -17,6 +17,9 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.11	(18/11/2012)
+* Feature: Added SYNC buttons to the sampler decks , lp:1072229
+
 v1.11.0.10	(25/10/2012)
 * Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
   and set Mixxx controls on skin load , lp:1017399
