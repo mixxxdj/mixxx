@@ -369,10 +369,12 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     if (tagger.save()) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
+        item->setToolTip(item->text());
         return true;
     } else {
         // reset to old value in error
         item->setText(index.data().toString());
+        item->setToolTip(item->text());
         QMessageBox::critical(
             0, tr("Mixxx Library"),
             tr("Could not update file metadata.")

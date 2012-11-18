@@ -529,7 +529,7 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
      if (!m_pTrack) {
          return;
      }
- 
+
     //Disregard existing loops
     m_pSlipEnabled->set(1);
     slotBeatLoop(pBeatLoopControl->getSize(), false);
@@ -676,7 +676,7 @@ BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
     connect(m_pToggle, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggle(double)),
             Qt::DirectConnection);
-            
+
     // A push-button which activates rolling beatloops
     m_pActivateRoll = new ControlPushButton(
         keyForControl(pGroup, "beatlooproll_%1_activate", size));
@@ -694,6 +694,7 @@ BeatLoopingControl::~BeatLoopingControl() {
     delete m_pToggle;
     delete m_pEnabled;
     delete m_pLegacy;
+    delete m_pActivateRoll;
 }
 
 void BeatLoopingControl::deactivate() {
@@ -730,7 +731,7 @@ void BeatLoopingControl::slotActivateRoll(double v) {
     if (v > 0) {
         emit(activateBeatLoopRoll(this));
     } else {
-        emit(deactivateBeatLoopRoll(this));    
+        emit(deactivateBeatLoopRoll(this));
     }
 }
 
