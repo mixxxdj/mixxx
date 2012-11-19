@@ -87,6 +87,9 @@ class BaseTrackCache : public QObject {
                             QVariant val1, QVariant val2) const;
     bool trackMatches(const TrackPointer& pTrack,
                       const QRegExp& matcher) const;
+    bool trackMatchesNumeric(const TrackPointer& pTrack,
+                             const QStringList& numberMatchers) const;
+    bool evaluateNumeric(const int value, const QString& expression) const;
 
     const QString m_tableName;
     const QString m_idColumn;
@@ -110,6 +113,10 @@ class BaseTrackCache : public QObject {
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
     SearchQueryParser* m_pQueryParser;
+    
+    QStringList m_numericFilters;
+    QRegExp m_operatorMatcher;
+    QRegExp m_numericFilterMatcher;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };
