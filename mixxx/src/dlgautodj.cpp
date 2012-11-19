@@ -23,7 +23,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_pTrackTableView(
-              new WTrackTableView(this, pConfig, m_pTrackCollection)),
+              new WTrackTableView(this, pConfig, m_pTrackCollection, false)), // no sorting
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
@@ -57,9 +57,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
-
-    // Disallow sorting.
-    m_pTrackTableView->disableSorting();
 
     pushButtonFadeNow->setEnabled(false);
     pushButtonSkipNext->setEnabled(false);

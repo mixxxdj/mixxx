@@ -278,12 +278,16 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("Fast forward through the track."))
             << QString("%1: %2").arg(rightClick, tr("Jumps to the end of the track."));
 
+    // Ghetto-Sync (TM)
     add("beatsync_beatsync_tempo")
             << tr("Synchronize")
             << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "))
             << tr("if BPM is detected on both.")
             << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track,"))
-            << tr("if BPM is detected on both.");
+            << tr("if BPM is detected on both.")
+            << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
+            << tr("If no deck is playing, syncs to the first deck that has a BPM.")
+            << tr("Decks can't sync to samplers and samplers can only sync to decks.");
 
     add("rate")
             << tr("Pitch Control")

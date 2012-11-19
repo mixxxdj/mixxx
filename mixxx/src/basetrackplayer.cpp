@@ -25,9 +25,9 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  AnalyserQueue* pAnalyserQueue,
                                  QString group)
         : BasePlayer(pParent, group),
-          m_pAnalyserQueue(pAnalyserQueue),
           m_pConfig(pConfig),
-          m_pLoadedTrack() {
+          m_pLoadedTrack(),
+          m_pAnalyserQueue(pAnalyserQueue) {
 
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
@@ -84,15 +84,18 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pWaveformZoom->setStep(1.0);
     m_pWaveformZoom->setSmallStep(1.0);
 
-    m_pEndOfTrack = new ControlObject(ConfigKey(group,"end_of_track"));
+    m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
 
     //BPM of the current song
     m_pBPM = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(getGroup(), "file_bpm")));
+        ControlObject::getControl(ConfigKey(group, "file_bpm")));
 
     m_pReplayGain = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(getGroup(), "replaygain")));
+        ControlObject::getControl(ConfigKey(group, "replaygain")));
+
+    m_pPlay = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "play")));
 }
 
 BaseTrackPlayer::~BaseTrackPlayer()
@@ -113,8 +116,9 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pDuration;
 }
 
-void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
-{
+void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos) {
+    Q_UNUSED(bStartFromEndPos);
+
     //Disconnect the old track's signals.
     if (m_pLoadedTrack) {
         // Save the loops that are currently set in a loop cue. If no loop cue is
@@ -145,7 +149,9 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
         // randomly disconnect things.
         // m_pLoadedTrack->disconnect();
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
-        disconnect(m_pLoadedTrack.data(), 0, m_pReplayGain, 0);
+        disconnect(m_pLoadedTrack.data(), 0, this, 0);
+
+        m_pReplayGain->slotSet(0);
 
         // Causes the track's data to be saved back to the library database.
         emit(unloadingTrack(m_pLoadedTrack));
@@ -159,7 +165,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
 
     // Listen for updates to the file's Replay Gain
     connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(double)),
-            m_pReplayGain, SLOT(slotSet(double)));
+            this, SLOT(slotSetReplayGain(double)));
 
     //Request a new track from the reader
     emit(loadTrack(track));
@@ -182,7 +188,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
         // randomly disconnect things.
         // m_pLoadedTrack->disconnect();
         disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
-        disconnect(m_pLoadedTrack.data(), 0, m_pReplayGain, 0);
+        disconnect(m_pLoadedTrack.data(), 0, this, 0);
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to unload the track and blank themselves.
@@ -245,4 +251,13 @@ AnalyserQueue* BaseTrackPlayer::getAnalyserQueue() const {
 
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {
     return m_pLoadedTrack;
+}
+
+void BaseTrackPlayer::slotSetReplayGain(double replayGain) {
+
+    // Do not change replay gain when track is playing because
+    // this may lead to an unexpected volume change
+    if (m_pPlay->get() == 0.0) {
+        m_pReplayGain->slotSet(replayGain);
+    }
 }

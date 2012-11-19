@@ -19,7 +19,6 @@ class AnalyserQueue : public QThread {
     AnalyserQueue();
     virtual ~AnalyserQueue();
     void stop();
-    int numQueuedTracks();
 
     static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config);
@@ -29,9 +28,10 @@ class AnalyserQueue : public QThread {
     void queueAnalyseTrack(TrackPointer tio);
 
   signals:
-    void trackProgress(TrackPointer pTrack,int progress);
-    void trackFinished(TrackPointer pTrack);
+    void trackProgress(TrackPointer pTrack, int progress);
+    void trackFinished(TrackPointer pTrack, int queue_size);
     void queueEmpty();
+    void updateProgress();
 
   protected:
     void run();
@@ -44,6 +44,8 @@ class AnalyserQueue : public QThread {
     bool isLoadedTrackWaiting();
     TrackPointer dequeueNextBlocking();
     bool doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
+    void emitTrackProgress(TrackPointer pTrack, int progress);
+    void emitTrackFinished(TrackPointer pTrack, int queue_size);
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
@@ -52,6 +54,7 @@ class AnalyserQueue : public QThread {
     QQueue<TrackPointer> m_tioq;
     QMutex m_qm;
     QWaitCondition m_qwait;
+    int m_iTrackProgress;
 };
 
 #endif

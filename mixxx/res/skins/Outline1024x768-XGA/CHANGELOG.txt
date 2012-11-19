@@ -16,6 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.10	(18/11/2012)
+* Feature: Added SYNC buttons to the sampler decks , lp:1072229
+
+v1.11.0.09	(25/10/2012)
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+  and set Mixxx controls on skin load , lp:1017399
+
+v1.11.0.08	(18/10/2012)
+* Feature: Added controls for sample decks, lp:921174
+* Feature: Added a clock widget that shows the current time. lp:661439
+* Feature: Support <SignalHighColor>,<SignalMidColor>,<SignalLowColor> to color waveforms based on features of the audio
+* Feature: Added a news variant to the skins color scheme
+* Fix: Update Play button in Sample Decks to properly jump to start on right-click, lp:908480
+* Fix: Show correct tooltip for artist/track name display in sample decks
+
 v1.11.0.07	(09/09/2012)
 * Feature: Support beatlooproll_X_activate , lp:703585
   Right-click of the loop buttons now activates a rolling loop.
@@ -53,6 +68,9 @@ v1.11.0.01	(01/05/2012)
 v1.10.0.11	(25/04/2012)
 * Update: Tooltips for waveform (Pitch bend on right click)
 * Change: Use global QToolTip style declaration instead of one per node
+
+v1.10.1.01	(15/02/2012)
+* Feature: Add controls for sample decks, lp:921174
 
 v1.10.0.10	(22/12/2011)
 * Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800

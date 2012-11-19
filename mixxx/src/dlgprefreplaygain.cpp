@@ -105,9 +105,7 @@ void DlgPrefReplayGain::slotUpdate() {
     {
         EnableAnalyser->setChecked(false);
         EnableAnalyser->setEnabled(false);
-        SliderBoost->setValue(0);
         SliderBoost->setEnabled(false);
-        lcddB -> display(0);
     }
 }
 
