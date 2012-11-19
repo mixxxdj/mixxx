@@ -70,7 +70,7 @@
       </font>
      </property>
      <property name="text">
-      <string>On older computers, it may take a few seconds before volume normalization is applied to a new track. You may wish to wait before adjusting the pregain and volume.</string>
+      <string>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>

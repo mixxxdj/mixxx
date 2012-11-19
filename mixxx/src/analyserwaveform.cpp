@@ -18,15 +18,12 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) {
     qDebug() << "AnalyserWaveform::AnalyserWaveform()";
     m_skipProcessing = false;
 
-    m_waveform = 0;
-    m_waveformSummary = 0;
+    m_waveform = NULL;
+    m_waveformSummary = NULL;
 
     m_filter[0] = 0;
     m_filter[1] = 0;
     m_filter[2] = 0;
-
-    m_currentStride = 0;
-    m_currentSummaryStride = 0;
 
     static int i = 0;
     m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));

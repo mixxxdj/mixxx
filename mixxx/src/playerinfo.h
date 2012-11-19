@@ -36,6 +36,7 @@ class PlayerInfo : public QObject
     int getCurrentPlayingDeck();
     TrackPointer getCurrentPlayingTrack();
     bool isTrackLoaded(TrackPointer pTrack) const;
+    bool isTrackPlaying(TrackPointer pTrack) const;
 
   signals:
     void currentPlayingDeckChanged(int deck);
@@ -50,6 +51,7 @@ class PlayerInfo : public QObject
     PlayerInfo &operator= (PlayerInfo const&);
     mutable QMutex m_mutex;
     int m_iNumDecks;
+    int m_iNumSamplers;
     ControlObjectThread* m_COxfader;
     QMap<QString, TrackPointer> m_loadedTrackMap;
     QMap<QString, ControlObjectThread*> m_listCOPlay;
