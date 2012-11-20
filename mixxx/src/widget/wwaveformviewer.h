@@ -67,7 +67,6 @@ private:
     ControlObjectThreadMain* m_pZoom;
     ControlObjectThreadMain* m_pScratchEnable;
     ControlObjectThreadMain* m_pScratch;
-    ControlObjectThreadMain* m_pTrackSamples;
     ControlObjectThreadMain* m_pTrackSampleRate;
     ControlObjectThreadMain* m_pRate;
     ControlObjectThreadMain* m_pRateRange;
