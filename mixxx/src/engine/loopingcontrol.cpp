@@ -209,6 +209,8 @@ double LoopingControl::process(const double dRate,
                                const double currentSample,
                                const double totalSamples,
                                const int iBufferSize) {
+    Q_UNUSED(totalSamples);
+    Q_UNUSED(iBufferSize);
     m_iCurrentSample = currentSample;
     if (!even(m_iCurrentSample))
         m_iCurrentSample--;
@@ -233,6 +235,9 @@ double LoopingControl::nextTrigger(const double dRate,
                                    const double currentSample,
                                    const double totalSamples,
                                    const int iBufferSize) {
+    Q_UNUSED(currentSample);
+    Q_UNUSED(totalSamples);
+    Q_UNUSED(iBufferSize);
     bool bReverse = dRate < 0;
 
     if(m_bLoopingEnabled) {
@@ -248,6 +253,9 @@ double LoopingControl::getTrigger(const double dRate,
                                   const double currentSample,
                                   const double totalSamples,
                                   const int iBufferSize) {
+    Q_UNUSED(currentSample);
+    Q_UNUSED(totalSamples);
+    Q_UNUSED(iBufferSize);
     bool bReverse = dRate < 0;
 
     if(m_bLoopingEnabled) {
@@ -496,6 +504,7 @@ void LoopingControl::trackLoaded(TrackPointer pTrack) {
 }
 
 void LoopingControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
@@ -536,10 +545,12 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
 }
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
+    Q_UNUSED(pBeatLoopControl);
     slotReloopExit(1);
 }
 
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
+    Q_UNUSED(pBeatLoopControl);
     slotReloopExit(1);
     m_pSlipEnabled->set(0);
 }
@@ -754,4 +765,3 @@ ConfigKey BeatLoopingControl::keyForControl(const char* pGroup,
     key.item = ctrlName.arg(num);
     return key;
 }
-
