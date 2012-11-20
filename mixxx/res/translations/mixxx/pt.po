@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-10-04 11:29+0200\n"
-"PO-Revision-Date: 2012-11-08 07:30+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2012-11-20 02:51+0000\n"
+"Last-Translator: Joel Renato da Silva Cardoso <Unknown>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-09 04:37+0000\n"
-"X-Generator: Launchpad (build 16250)\n"
+"X-Launchpad-Export-Date: 2012-11-20 04:32+0000\n"
+"X-Generator: Launchpad (build 16286)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -44,8 +44,7 @@ msgstr "A criação da Lista de reprodução falhou"
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
-"Um erro desconhecido ocorreu enquanto se criava a Lista de reprodução "
+msgstr "Ocorreu um erro desconhecido ao criar a Lista de reprodução : "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -1078,7 +1077,7 @@ msgstr "Duplicar o comprimento do Loop corrente"
 
 #: DlgControllerLearning#72
 msgid "Toggle slip mode"
-msgstr ""
+msgstr "Alterar modo de deslizamento"
 
 #: DlgControllerLearning#73
 msgid "Beat-Looping"
@@ -1090,23 +1089,23 @@ msgstr "Criar um loop com %1 tempos"
 
 #: DlgControllerLearning#75
 msgid "Create temporary %1-beat loop roll"
-msgstr ""
+msgstr "Criar temporariamente %1 -beat loop roll"
 
 #: DlgControllerLearning#76
 msgid "1/32th"
-msgstr ""
+msgstr "1/32"
 
 #: DlgControllerLearning#77
 msgid "1/16th"
-msgstr ""
+msgstr "1/16"
 
 #: DlgControllerLearning#78
 msgid "1/8th"
-msgstr ""
+msgstr "1/8"
 
 #: DlgControllerLearning#79
 msgid "1/4th"
-msgstr ""
+msgstr "1/4"
 
 #: DlgControllerLearning#80
 msgctxt "DlgControllerLearning#80"
@@ -4344,33 +4343,39 @@ msgstr "Envia o som do canal seleccionado para a saída de auscultador."
 
 #: Tooltips#107
 msgid "Setup a loop over the set number of beats."
-msgstr ""
+msgstr "Configurar um loop sobre o conjunto de batidas."
 
 #: Tooltips#108
 msgid "Temporarily setup a rolling loop over the set number of beats."
 msgstr ""
+"Configurar temporariamente um rolling loop sobre o conjunto de batidas."
 
 #: Tooltips#109
 msgid ""
 "Playback will resume where the track would have been if it had not entered "
 "the loop."
 msgstr ""
+"O Playback vai retornar ao ponto onde a faixa teria ficado se não tivesse "
+"entrado no loop."
 
 #: Tooltips#110
 msgid "Slip Mode"
-msgstr ""
+msgstr "Modo de deslizamento"
 
 #: Tooltips#111
 msgid ""
 "When active, the playback continues muted in the background during a loop, "
 "reverse, scratch etc."
 msgstr ""
+"Quando activo, o playback continua abafado em segundo plano durante o loop, "
+"reverse, scratch etc."
 
 #: Tooltips#112
 msgid ""
 "Once disabled, the audible playback will resume where the track would have "
 "been."
 msgstr ""
+"Uma vez desactivado, o playback audível será retomado onde a faixa estaria."
 
 #: Tooltips#113
 msgid "Clock"
