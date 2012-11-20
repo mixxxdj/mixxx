@@ -78,7 +78,11 @@ class ReadAheadManager {
         }
 
         bool direction() const {
-            return virtualPlaypositionStart < virtualPlaypositionEndNonInclusive;
+            // NOTE(rryan): We try to avoid 0-length ReadLogEntry's when
+            // possible but they have happened in the past. We treat 0-length
+            // ReadLogEntry's as forward reads because this prevents them from
+            // being interpreted as a seek in the common case.
+            return virtualPlaypositionStart <= virtualPlaypositionEndNonInclusive;
         }
 
         double length() const {
@@ -97,7 +101,9 @@ class ReadAheadManager {
         }
 
         bool merge(const ReadLogEntry& other) {
-            if (direction() == other.direction() &&
+            // Allow 0-length ReadLogEntry's to merge regardless of their
+            // direction if they have the right start point.
+            if ((other.length() == 0 || direction() == other.direction()) &&
                 virtualPlaypositionEndNonInclusive == other.virtualPlaypositionStart) {
                 virtualPlaypositionEndNonInclusive =
                         other.virtualPlaypositionEndNonInclusive;
