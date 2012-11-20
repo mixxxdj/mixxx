@@ -87,9 +87,9 @@ class CueControl : public EngineControl {
     virtual ~CueControl();
 
     virtual void hintReader(QList<Hint>& hintList);
+    double loadTrack(TrackPointer pTrack);
 
   public slots:
-    void loadTrack(TrackPointer pTrack);
     void unloadTrack(TrackPointer pTrack);
 
   private slots:
