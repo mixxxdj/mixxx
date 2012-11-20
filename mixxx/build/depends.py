@@ -281,7 +281,7 @@ class Qt(Dependence):
             framework_path = os.path.join(qtdir, 'lib')
             if os.path.isdir(framework_path):
                 build.env.Append(LINKFLAGS = "-Wl,-rpath," + framework_path)
-                build.env.Append(LINKFLAGS = "-L," + framework_path)
+                build.env.Append(LINKFLAGS = "-L" + framework_path)
 
         #QtSQLite DLL
         if build.platform_is_windows:
