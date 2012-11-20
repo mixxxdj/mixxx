@@ -108,6 +108,7 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
                                          CSAMPLE* pBase, unsigned long iBaseLength)
 {
+    Q_UNUSED(playpos);
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
     int samples_read = 0;
@@ -172,6 +173,8 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
                                             CSAMPLE* pBase, unsigned long iBaseLength,
                                             int* samples_read)
 {
+    Q_UNUSED(pBase);
+    Q_UNUSED(iBaseLength);
 
     long unscaled_samples_needed;
     float rate_add_new = m_dBaseRate;
