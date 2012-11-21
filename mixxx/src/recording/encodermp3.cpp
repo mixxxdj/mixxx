@@ -106,15 +106,19 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     if(!m_library || !m_library->isLoaded()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
+        //: Title of alert message box launched when recording/streaming without supported codec
         props->setTitle(tr("Encoder"));
         QString key = "";
 #ifdef __LINUX__
+        //: Text in alert message box launched when recording/streaming without supported codec. Make sure the HTML tags were taken over precisely.
         key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx Wiki</a> for more information. </html>");
         props->setText(key);
 #elif __WINDOWS__
+        //: Text in alert message box launched when recording/streaming without supported codec. Make sure the HTML tags were taken over precisely.
         key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx Wiki</a> for more information. </html>");
         props->setText(key);
 #elif __APPLE__
+        //: Text in alert message box launched when recording/streaming without supported codec. Make sure the HTML tags were taken over precisely.
         key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx Wiki</a> for more information. </html>");
         props->setText(key);
 #endif
@@ -194,7 +198,9 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
 
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
+        //: Title of alert message box launched when recording/streaming without supported codec
         props->setTitle(tr("Encoder"));
+        //: Text in alert message box launched when recording/streaming without supported codec. Make sure the HTML tags were taken over precisely.
         QString key = tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
         props->setText(key);
         props->setKey(key);
