@@ -22,6 +22,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true);//show all tracks
+    //: An action in the HISTORY sidebar item context menu
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -104,7 +105,11 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
 
-    m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
+    m_pLockPlaylistAction->setText(locked ?
+                                   //: An action in the HISTORY sidebar item context menu
+                                   tr("Unlock") :
+                                   //: An action in the HISTORY sidebar item context menu
+                                   tr("Lock"));
 
 
     //Create the right-click menu
@@ -297,10 +302,15 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
 
 
 QString SetlogFeature::getRootViewHtml() const {
+    //: Title in the HISTORY root item's library table
     QString playlistsTitle = tr("History");
+    //: Text in the HISTORY root item's library table
     QString playlistsSummary = tr("The history section automatically keeps a list of tracks you play in your DJ sets.");
+    //: Text in the HISTORY root item's library table
     QString playlistsSummary2 = tr("This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.");
+    //: Text in the HISTORY root item's library table
     QString playlistsSummary3 = tr("Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.");
+    //: Text in the HISTORY root item's library table
     QString playlistsSummary4 = tr("You can join the current history session with a previous one by right-clicking and selecting \"Join with previous\".");
 
     QString html;
