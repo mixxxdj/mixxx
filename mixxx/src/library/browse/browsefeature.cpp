@@ -32,9 +32,11 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection) {
 
+    //: An action in the BROWSE sidebar item context menu
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
 
+    //: An action in the BROWSE sidebar item context menu
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
     connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
 
@@ -44,6 +46,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
 
+    //: Item in the BROWSE sidebar item
     m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this, rootItem);
     rootItem->appendChild(m_pQuickLinkItem);
 
@@ -67,10 +70,12 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // Apple hides the base Linux file structure But all devices are mounted at
     // /Volumes
     TreeItem* devices_link = new TreeItem(
+        //: Item in the BROWSE sidebar item
         tr("Devices"), "/Volumes/", this, rootItem);
     rootItem->appendChild(devices_link);
 #else  // LINUX
     TreeItem* devices_link = new TreeItem(
+        //: Item in the BROWSE sidebar item
         tr("Removable Devices"), "/media/", this, rootItem);
     rootItem->appendChild(devices_link);
 
@@ -111,6 +116,7 @@ BrowseFeature::~BrowseFeature() {
 }
 
 QVariant BrowseFeature::title() {
+    //: Root item in the BROWSE sidebar item
     return QVariant(tr("Browse"));
 }
 
@@ -309,7 +315,9 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
 }
 
 QString BrowseFeature::getRootViewHtml() const {
+    //: Title in the BROWSE root item's library table
     QString browseTitle = tr("Browse");
+    //: Text in the BROWSE root item's library table
     QString browseSummary = tr("Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.");
 
     QString html;
