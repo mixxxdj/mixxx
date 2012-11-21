@@ -37,6 +37,7 @@ PlaylistFeature::~PlaylistFeature() {
 }
 
 QVariant PlaylistFeature::title() {
+    //: Root item in the PLAYLIST sidebar item
     return tr("Playlists");
 }
 
@@ -64,7 +65,11 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
 
-    m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
+    m_pLockPlaylistAction->setText(locked ?
+                                   //: An action in the PLAYLIST sidebar item context menu
+                                   tr("Unlock") :
+                                   //: An action in the PLAYLIST sidebar item context menu
+                                   tr("Lock"));
 
 
     //Create the right-click menu
@@ -182,11 +187,17 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 QString PlaylistFeature::getRootViewHtml() const {
+    //: Title in the PLAYLISTS root item library table
     QString playlistsTitle = tr("Playlists");
+    //: Text in the PLAYLISTS root item library table
     QString playlistsSummary = tr("Playlists are ordered lists of songs that allow you to plan your DJ sets.");
+    //: Text in the PLAYLISTS root item library table
     QString playlistsSummary2 = tr("Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.");
+    //: Text in the PLAYLISTS root item library table
     QString playlistsSummary3 = tr("When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.");
+    //: Text in the PLAYLISTS root item library table
     QString playlistsSummary4 = tr("It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.");
+    //: An action in the PLAYLISTS root item library table
     QString createPlaylistLink = tr("Create new playlist");
 
     QString html;
