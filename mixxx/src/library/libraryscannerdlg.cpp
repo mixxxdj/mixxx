@@ -30,10 +30,13 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
+    //: Title of scanning dialog launched from the Choose Library dialog on Mixxx' first run
     setWindowTitle(tr("Library Scanner"));
+    //: Text in the scanning dialog launched from the Choose Library dialog on Mixxx' first run
     QLabel* pLabel = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."),this);
     pLayout->addWidget(pLabel);
 
+    //: Text on a button in the scanning dialog launched from the Choose Library dialog on Mixxx' first run
     QPushButton* pCancel = new QPushButton(tr("Cancel"), this);
     connect(pCancel, SIGNAL(clicked()),
             this, SLOT(slotCancel()));
