@@ -6,14 +6,17 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
                                                        TrackCollection* pCollection)
         : LibraryFeature(pParent),
           m_pTrackCollection(pCollection) {
+    //: An action in the TRAKTOR & RHYTHMBOX sidebar item context menu
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
 
+    //: An action in the TRAKTOR & RHYTHMBOX sidebar item context menu
     m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJTop()));
 
+    //: An action in the TRAKTOR & RHYTHMBOX sidebar item context menu
     m_pImportAsMixxxPlaylistAction = new QAction(tr("Import Playlist"), this);
     connect(m_pImportAsMixxxPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportAsMixxxPlaylist()));
@@ -130,7 +133,9 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         // Do not change strings here without also changing strings in
         // src/library/baseplaylistfeature.cpp
         QMessageBox::warning(NULL,
+                             //: An alert message box in the input dialog launched from the actions in the BROWSE sidebar item
                              tr("Playlist Creation Failed"),
+                             //: Part of an alert message box in the input dialog launched from the actions in the BROWSE sidebar item
                              tr("An unknown error occurred while creating playlist: ")
                              + playlist);
     }
