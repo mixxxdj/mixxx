@@ -35,6 +35,7 @@ RecordingFeature::~RecordingFeature() {
 }
 
 QVariant RecordingFeature::title() {
+    //: Root item in the RECORDINGS sidebar item
     return QVariant(tr("Recordings"));
 }
 
