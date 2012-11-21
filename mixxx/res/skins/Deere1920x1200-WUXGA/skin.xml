@@ -1,7 +1,7 @@
 	<!--
 	Deere , Skin for Mixxx 1.11.x
 	www.mixxx.org
-	Copyright (C) 2010-2012 jus ; jus@justmail.de
+	Copyright (C) 2010-2012 jus <s.brandt@mixxx.org>
 	This file is part of the "Deere" Skin for Mixxx
 	"Deere" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
@@ -44,6 +44,19 @@
 	############################################################################################
 	############################################################################################
 	-->
+
+	<manifest>
+	<title>Deere1920x1200-WUXGA</title>
+	<author>jus</author>
+	<version>1.11.0.10</version>
+	<description>A 2-deck split-waveform skin with 4 samplers.</description>
+	<language>en</language>
+	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+	<attributes>
+	  <attribute config_key="[Master],num_decks">2</attribute>
+	  <attribute config_key="[Master],num_samplers">6</attribute>
+	</attributes>
+	</manifest>
 
 	<!--
 	############################################################################################
@@ -94,7 +107,7 @@
 				<Layout>horizontal</Layout>
 				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 8px 0px;} </Style>
 				<Children>
-					<!-- all sub-widgets for the 4 samplers -->
+					<!-- all sub-widgets for the sampler decks -->
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -184,8 +197,12 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler1]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -280,17 +297,18 @@
 								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_play_sampler.png</Pressed>
+									<Pressed>btn_play_sampler_down.png</Pressed>
 									<Unpressed>btn_play_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,31</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -299,6 +317,34 @@
 								<Connection>
 									<ConfigKey>[Sampler1],start</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler1],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
@@ -316,12 +362,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_1_over.png</Pressed>
+									<Pressed>btn_hotcue1_1_down.png</Pressed>
 									<Unpressed>btn_hotcue1_1.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_1.png</Pressed>
+									<Pressed>btn_hotcue1_1_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 								</State>
 								<Pos>80,71</Pos>
@@ -350,12 +396,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_2_over.png</Pressed>
+									<Pressed>btn_hotcue1_2_down.png</Pressed>
 									<Unpressed>btn_hotcue1_2.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_2.png</Pressed>
+									<Pressed>btn_hotcue1_2_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 								</State>
 								<Pos>106,71</Pos>
@@ -384,12 +430,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_3_over.png</Pressed>
+									<Pressed>btn_hotcue1_3_down.png</Pressed>
 									<Unpressed>btn_hotcue1_3.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_3.png</Pressed>
+									<Pressed>btn_hotcue1_3_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 								</State>
 								<Pos>132,71</Pos>
@@ -418,12 +464,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_4_over.png</Pressed>
+									<Pressed>btn_hotcue1_4_down.png</Pressed>
 									<Unpressed>btn_hotcue1_4.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_4.png</Pressed>
+									<Pressed>btn_hotcue1_4_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 								</State>
 								<Pos>158,71</Pos>
@@ -456,12 +502,12 @@
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Pressed>btn_pfl_sampler_down.png</Pressed>
 									<Unpressed>btn_pfl_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Pressed>btn_pfl_sampler_overdown.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
 								<Pos>193,71</Pos>
@@ -576,7 +622,6 @@
 							</PushButton>
 						</Children>
 					</WidgetGroup>
-
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -666,8 +711,12 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler2]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -762,17 +811,18 @@
 								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_play_sampler.png</Pressed>
+									<Pressed>btn_play_sampler_down.png</Pressed>
 									<Unpressed>btn_play_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,31</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -781,6 +831,34 @@
 								<Connection>
 									<ConfigKey>[Sampler2],start</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler2],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
@@ -798,12 +876,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_1_over.png</Pressed>
+									<Pressed>btn_hotcue1_1_down.png</Pressed>
 									<Unpressed>btn_hotcue1_1.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_1.png</Pressed>
+									<Pressed>btn_hotcue1_1_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 								</State>
 								<Pos>80,71</Pos>
@@ -832,12 +910,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_2_over.png</Pressed>
+									<Pressed>btn_hotcue1_2_down.png</Pressed>
 									<Unpressed>btn_hotcue1_2.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_2.png</Pressed>
+									<Pressed>btn_hotcue1_2_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 								</State>
 								<Pos>106,71</Pos>
@@ -866,12 +944,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_3_over.png</Pressed>
+									<Pressed>btn_hotcue1_3_down.png</Pressed>
 									<Unpressed>btn_hotcue1_3.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_3.png</Pressed>
+									<Pressed>btn_hotcue1_3_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 								</State>
 								<Pos>132,71</Pos>
@@ -900,12 +978,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_4_over.png</Pressed>
+									<Pressed>btn_hotcue1_4_down.png</Pressed>
 									<Unpressed>btn_hotcue1_4.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_4.png</Pressed>
+									<Pressed>btn_hotcue1_4_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 								</State>
 								<Pos>158,71</Pos>
@@ -938,12 +1016,12 @@
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Pressed>btn_pfl_sampler_down.png</Pressed>
 									<Unpressed>btn_pfl_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Pressed>btn_pfl_sampler_overdown.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
 								<Pos>193,71</Pos>
@@ -1058,7 +1136,6 @@
 							</PushButton>
 						</Children>
 					</WidgetGroup>
-
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -1148,8 +1225,12 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler3]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -1244,17 +1325,18 @@
 								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_play_sampler.png</Pressed>
+									<Pressed>btn_play_sampler_down.png</Pressed>
 									<Unpressed>btn_play_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,31</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1263,6 +1345,34 @@
 								<Connection>
 									<ConfigKey>[Sampler3],start</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler3],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
@@ -1280,12 +1390,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_1_over.png</Pressed>
+									<Pressed>btn_hotcue1_1_down.png</Pressed>
 									<Unpressed>btn_hotcue1_1.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_1.png</Pressed>
+									<Pressed>btn_hotcue1_1_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 								</State>
 								<Pos>80,71</Pos>
@@ -1314,12 +1424,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_2_over.png</Pressed>
+									<Pressed>btn_hotcue1_2_down.png</Pressed>
 									<Unpressed>btn_hotcue1_2.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_2.png</Pressed>
+									<Pressed>btn_hotcue1_2_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 								</State>
 								<Pos>106,71</Pos>
@@ -1348,12 +1458,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_3_over.png</Pressed>
+									<Pressed>btn_hotcue1_3_down.png</Pressed>
 									<Unpressed>btn_hotcue1_3.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_3.png</Pressed>
+									<Pressed>btn_hotcue1_3_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 								</State>
 								<Pos>132,71</Pos>
@@ -1382,12 +1492,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_4_over.png</Pressed>
+									<Pressed>btn_hotcue1_4_down.png</Pressed>
 									<Unpressed>btn_hotcue1_4.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_4.png</Pressed>
+									<Pressed>btn_hotcue1_4_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 								</State>
 								<Pos>158,71</Pos>
@@ -1420,12 +1530,12 @@
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Pressed>btn_pfl_sampler_down.png</Pressed>
 									<Unpressed>btn_pfl_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Pressed>btn_pfl_sampler_overdown.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
 								<Pos>193,71</Pos>
@@ -1540,7 +1650,6 @@
 							</PushButton>
 						</Children>
 					</WidgetGroup>
-
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -1630,8 +1739,12 @@
 								<TooltipId>waveform_overview</TooltipId>
 								<Style></Style>
 								<Group>[Sampler4]</Group>
-								<Pos>5,25</Pos>
-								<Size>210,35</Size>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<DefaultMark>
@@ -1726,17 +1839,18 @@
 								<TooltipId>play_start</TooltipId>
 								<Style></Style>
 								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_play_sampler.png</Pressed>
+									<Pressed>btn_play_sampler_down.png</Pressed>
 									<Unpressed>btn_play_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_play_sampler_over.png</Pressed>
+									<Pressed>btn_play_sampler_overdown.png</Pressed>
 									<Unpressed>btn_play_sampler_over.png</Unpressed>
 								</State>
-								<Pos>10,71</Pos>
+								<Pos>10,31</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],play</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1745,6 +1859,34 @@
 								<Connection>
 									<ConfigKey>[Sampler4],start</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler4],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
 								</Connection>
 							</PushButton>
@@ -1762,12 +1904,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_1_over.png</Pressed>
+									<Pressed>btn_hotcue1_1_down.png</Pressed>
 									<Unpressed>btn_hotcue1_1.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_1.png</Pressed>
+									<Pressed>btn_hotcue1_1_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 								</State>
 								<Pos>80,71</Pos>
@@ -1796,12 +1938,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_2_over.png</Pressed>
+									<Pressed>btn_hotcue1_2_down.png</Pressed>
 									<Unpressed>btn_hotcue1_2.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_2.png</Pressed>
+									<Pressed>btn_hotcue1_2_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 								</State>
 								<Pos>106,71</Pos>
@@ -1830,12 +1972,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_3_over.png</Pressed>
+									<Pressed>btn_hotcue1_3_down.png</Pressed>
 									<Unpressed>btn_hotcue1_3.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_3.png</Pressed>
+									<Pressed>btn_hotcue1_3_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 								</State>
 								<Pos>132,71</Pos>
@@ -1864,12 +2006,12 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue1_4_over.png</Pressed>
+									<Pressed>btn_hotcue1_4_down.png</Pressed>
 									<Unpressed>btn_hotcue1_4.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue1_4.png</Pressed>
+									<Pressed>btn_hotcue1_4_overdown.png</Pressed>
 									<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 								</State>
 								<Pos>158,71</Pos>
@@ -1902,12 +2044,12 @@
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_pfl_sampler.png</Pressed>
+									<Pressed>btn_pfl_sampler_down.png</Pressed>
 									<Unpressed>btn_pfl_sampler.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_pfl_sampler_over.png</Pressed>
+									<Pressed>btn_pfl_sampler_overdown.png</Pressed>
 									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
 								</State>
 								<Pos>193,71</Pos>
@@ -2018,6 +2160,1034 @@
 								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],keylock</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<Pos>0,0</Pos>
+						<Size>312,110</Size>
+						<Style>QGroupBox { border: 0px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						<Children>
+							<!--
+							**********************************************
+							Text- Track Title
+							**********************************************
+							-->
+							<Text>
+								<TooltipId>text</TooltipId>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								</Style>
+								<Group>[Sampler5]</Group>
+								<Pos>5,3</Pos>
+								<Size>205,21</Size>
+							</Text>
+							<!-- Alternative "TITLE ONLY" display
+							<TrackProperty>
+								<TooltipId>track_title</TooltipId>
+								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								</Style>
+								<Property>title</Property>
+								<Group>[Sampler5]</Group>
+								<Pos>4,4</Pos>
+								<Size>258,20</Size>
+							</TrackProperty>
+							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<TooltipId>visual_bpm</TooltipId>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								</Style>
+								<Group>[Sampler5]</Group>
+								<Pos>211,3</Pos>
+								<Size>55,21</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler5],visual_bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							-->
+							<!-- Little trickery here:
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							-->
+							<PushButton>
+							<!-- Original:
+								<TooltipId>bpm_tap</TooltipId>
+							-->
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+								<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],bpm_tap</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Visual- Waveform overview
+							**********************************************
+							-->
+							<Overview>
+								<TooltipId>waveform_overview</TooltipId>
+								<Style></Style>
+								<Group>[Sampler5]</Group>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
+								<SignalColor>#3087BF</SignalColor>
+								<MarkerColor>#00FF00</MarkerColor>
+								<DefaultMark>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+									<Text> %1 </Text>
+								</DefaultMark>
+								<Connection>
+									<ConfigKey>[Sampler5],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+
+							<!--
+							**********************************************
+							RotaryFader- Gain
+							**********************************************
+							-->
+							<Knob>
+								<TooltipId>pregain</TooltipId>
+								<Style></Style>
+								<NumberStates>64</NumberStates>
+								<Path>knobs/knob_rotary_s%1.png</Path>
+								<Pos>222,64</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],pregain</ConfigKey>
+								</Connection>
+							</Knob>
+
+							<!--
+							**********************************************
+							Visual- Volume peak indicator
+							**********************************************
+							-->
+							<StatusLight>
+								<TooltipId>PeakIndicator</TooltipId>
+								<Style></Style>
+								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
+								<PathBack>btn_clipping_sampler.png</PathBack>
+								<Pos>267,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],PeakIndicator</ConfigKey>
+								</Connection>
+							</StatusLight>
+
+							<!--
+							**********************************************
+							Visual - Volume level display
+							**********************************************
+							-->
+							<VuMeter>
+								<TooltipId>channel_VuMeter</TooltipId>
+								<Style></Style>
+								<PathVu>btn_volume_display_sampler_over.png</PathVu>
+								<PathBack>btn_volume_display_sampler.png</PathBack>
+								<Pos>267,24</Pos>
+								<Horizontal>false</Horizontal>
+								<PeakHoldSize>5</PeakHoldSize>
+								<PeakHoldTime>500</PeakHoldTime>
+								<PeakFallTime>50</PeakFallTime>
+								<PeakFallStep>2</PeakFallStep>
+								<Connection>
+									<ConfigKey>[Sampler5],VuMeter</ConfigKey>
+								</Connection>
+							</VuMeter>
+
+							<!--
+							**********************************************
+							Slider- Pitch control
+							**********************************************
+							-->
+							<SliderComposed>
+								<TooltipId>rate</TooltipId>
+								<Style></Style>
+								<Handle>knob_pitch_sampler.png</Handle>
+								<Slider>slider_pitch_sampler.png</Slider>
+								<Pos>279,7</Pos>
+								<Horizontal>false</Horizontal>
+								<Connection>
+									<ConfigKey>[Sampler5],rate</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</SliderComposed>
+
+							<!--
+							****************************************
+							 Button- Play
+							****************************************
+							-->
+							<PushButton>
+								<TooltipId>play_start</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_play_sampler_down.png</Pressed>
+									<Unpressed>btn_play_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_play_sampler_overdown.png</Pressed>
+									<Unpressed>btn_play_sampler_over.png</Unpressed>
+								</State>
+								<Pos>10,31</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Hotcue
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_1_down.png</Pressed>
+									<Unpressed>btn_hotcue1_1.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_1_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_1_over.png</Unpressed>
+								</State>
+								<Pos>80,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_1_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_1_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_1_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_2_down.png</Pressed>
+									<Unpressed>btn_hotcue1_2.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_2_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_2_over.png</Unpressed>
+								</State>
+								<Pos>106,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_2_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_2_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_2_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_3_down.png</Pressed>
+									<Unpressed>btn_hotcue1_3.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_3_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_3_over.png</Unpressed>
+								</State>
+								<Pos>132,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_3_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_3_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_3_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_4_down.png</Pressed>
+									<Unpressed>btn_hotcue1_4.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_4_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_4_over.png</Unpressed>
+								</State>
+								<Pos>158,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_4_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_4_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler5],hotcue_4_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Prelisten / Monitoring
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>pfl</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_pfl_sampler_down.png</Pressed>
+									<Unpressed>btn_pfl_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_pfl_sampler_overdown.png</Pressed>
+									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
+								</State>
+								<Pos>193,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],pfl</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Eject
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>eject</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_eject_sampler_over.png</Pressed>
+									<Unpressed>btn_eject_sampler.png</Unpressed>
+								</State>
+								<Pos>242,24</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],eject</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Repeat (End of track mode)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>repeat</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_repeat_sampler.png</Pressed>
+									<Unpressed>btn_repeat_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_repeat_sampler_over.png</Pressed>
+									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
+								</State>
+								<Pos>216,24</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],repeat</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Mix Orientation (Routing)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>orientation</TooltipId>
+								<Style></Style>
+								<NumberStates>3</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_orientation_sampler_left_over.png</Pressed>
+									<Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+								</State>
+								<State>
+									<Number>2</Number>
+									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
+									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+								</State>
+								<Pos>217,42</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],orientation</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Key lock
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>keylock</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_keylock_sampler.png</Pressed>
+									<Unpressed>btn_keylock_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_keylock_sampler_over.png</Pressed>
+									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
+								</State>
+								<Pos>241,42</Pos>
+								<Connection>
+									<ConfigKey>[Sampler5],keylock</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<Pos>0,0</Pos>
+						<Size>312,110</Size>
+						<Style>QGroupBox { border: 0px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						<Children>
+							<!--
+							**********************************************
+							Text- Track Title
+							**********************************************
+							-->
+							<Text>
+								<TooltipId>text</TooltipId>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								</Style>
+								<Group>[Sampler6]</Group>
+								<Pos>5,3</Pos>
+								<Size>205,21</Size>
+							</Text>
+							<!-- Alternative "TITLE ONLY" display
+							<TrackProperty>
+								<TooltipId>track_title</TooltipId>
+								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								</Style>
+								<Property>title</Property>
+								<Group>[Sampler6]</Group>
+								<Pos>4,4</Pos>
+								<Size>258,20</Size>
+							</TrackProperty>
+							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<TooltipId>visual_bpm</TooltipId>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								</Style>
+								<Group>[Sampler6]</Group>
+								<Pos>211,3</Pos>
+								<Size>55,21</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler6],visual_bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							-->
+							<!-- Little trickery here:
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							-->
+							<PushButton>
+							<!-- Original:
+								<TooltipId>bpm_tap</TooltipId>
+							-->
+								<TooltipId>bpm_tap_visual_bpm</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+								<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],bpm_tap</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Visual- Waveform overview
+							**********************************************
+							-->
+							<Overview>
+								<TooltipId>waveform_overview</TooltipId>
+								<Style></Style>
+								<Group>[Sampler6]</Group>
+								<Pos>40,25</Pos>
+								<Size>175,35</Size>
+								<BgColor></BgColor>
+								<SignalHighColor></SignalHighColor>
+								<SignalMidColor></SignalMidColor>
+								<SignalLowColor></SignalLowColor>
+								<SignalColor>#3087BF</SignalColor>
+								<MarkerColor>#00FF00</MarkerColor>
+								<DefaultMark>
+									<Align>bottom</Align>
+									<Color>#00FF00</Color>
+									<TextColor>#FFFFFF</TextColor>
+									<Text> %1 </Text>
+								</DefaultMark>
+								<Connection>
+									<ConfigKey>[Sampler6],playposition</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</Overview>
+
+							<!--
+							**********************************************
+							RotaryFader- Gain
+							**********************************************
+							-->
+							<Knob>
+								<TooltipId>pregain</TooltipId>
+								<Style></Style>
+								<NumberStates>64</NumberStates>
+								<Path>knobs/knob_rotary_s%1.png</Path>
+								<Pos>222,64</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],pregain</ConfigKey>
+								</Connection>
+							</Knob>
+
+							<!--
+							**********************************************
+							Visual- Volume peak indicator
+							**********************************************
+							-->
+							<StatusLight>
+								<TooltipId>PeakIndicator</TooltipId>
+								<Style></Style>
+								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
+								<PathBack>btn_clipping_sampler.png</PathBack>
+								<Pos>267,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],PeakIndicator</ConfigKey>
+								</Connection>
+							</StatusLight>
+
+							<!--
+							**********************************************
+							Visual - Volume level display
+							**********************************************
+							-->
+							<VuMeter>
+								<TooltipId>channel_VuMeter</TooltipId>
+								<Style></Style>
+								<PathVu>btn_volume_display_sampler_over.png</PathVu>
+								<PathBack>btn_volume_display_sampler.png</PathBack>
+								<Pos>267,24</Pos>
+								<Horizontal>false</Horizontal>
+								<PeakHoldSize>5</PeakHoldSize>
+								<PeakHoldTime>500</PeakHoldTime>
+								<PeakFallTime>50</PeakFallTime>
+								<PeakFallStep>2</PeakFallStep>
+								<Connection>
+									<ConfigKey>[Sampler6],VuMeter</ConfigKey>
+								</Connection>
+							</VuMeter>
+
+							<!--
+							**********************************************
+							Slider- Pitch control
+							**********************************************
+							-->
+							<SliderComposed>
+								<TooltipId>rate</TooltipId>
+								<Style></Style>
+								<Handle>knob_pitch_sampler.png</Handle>
+								<Slider>slider_pitch_sampler.png</Slider>
+								<Pos>279,7</Pos>
+								<Horizontal>false</Horizontal>
+								<Connection>
+									<ConfigKey>[Sampler6],rate</ConfigKey>
+									<EmitOnDownPress>false</EmitOnDownPress>
+								</Connection>
+							</SliderComposed>
+
+							<!--
+							****************************************
+							 Button- Play
+							****************************************
+							-->
+							<PushButton>
+								<TooltipId>play_start</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_play_sampler_down.png</Pressed>
+									<Unpressed>btn_play_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_play_sampler_overdown.png</Pressed>
+									<Unpressed>btn_play_sampler_over.png</Unpressed>
+								</State>
+								<Pos>10,31</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],play</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],start</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Beat sync
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>beatsync_beatsync_tempo</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_sync_sampler_overdown.png</Pressed>
+									<Unpressed>btn_sync_sampler.png</Unpressed>
+								</State>
+								<Pos>10,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],beatsync</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],beatsync_tempo</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Hotcue
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_1_down.png</Pressed>
+									<Unpressed>btn_hotcue1_1.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_1_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_1_over.png</Unpressed>
+								</State>
+								<Pos>80,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_1_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_1_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_1_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_2_down.png</Pressed>
+									<Unpressed>btn_hotcue1_2.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_2_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_2_over.png</Unpressed>
+								</State>
+								<Pos>106,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_2_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_2_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_2_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_3_down.png</Pressed>
+									<Unpressed>btn_hotcue1_3.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_3_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_3_over.png</Unpressed>
+								</State>
+								<Pos>132,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_3_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_3_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_3_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>hotcue</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<LeftClickIsPushButton>true</LeftClickIsPushButton>
+								<RightClickIsPushButton>true</RightClickIsPushButton>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_hotcue1_4_down.png</Pressed>
+									<Unpressed>btn_hotcue1_4.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_hotcue1_4_overdown.png</Pressed>
+									<Unpressed>btn_hotcue1_4_over.png</Unpressed>
+								</State>
+								<Pos>158,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_4_activate</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_4_clear</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>RightButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+								<Connection>
+									<ConfigKey>[Sampler6],hotcue_4_enabled</ConfigKey>
+									<ConnectValueFromWidget>false</ConnectValueFromWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Prelisten / Monitoring
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>pfl</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_pfl_sampler_down.png</Pressed>
+									<Unpressed>btn_pfl_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_pfl_sampler_overdown.png</Pressed>
+									<Unpressed>btn_pfl_sampler_over.png</Unpressed>
+								</State>
+								<Pos>193,71</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],pfl</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Eject
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>eject</TooltipId>
+								<Style></Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_eject_sampler_over.png</Pressed>
+									<Unpressed>btn_eject_sampler.png</Unpressed>
+								</State>
+								<Pos>242,24</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],eject</ConfigKey>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<ButtonState>LeftButton</ButtonState>
+									<ConnectValueToWidget>false</ConnectValueToWidget>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Repeat (End of track mode)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>repeat</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_repeat_sampler.png</Pressed>
+									<Unpressed>btn_repeat_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_repeat_sampler_over.png</Pressed>
+									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
+								</State>
+								<Pos>216,24</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],repeat</ConfigKey>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Mix Orientation (Routing)
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>orientation</TooltipId>
+								<Style></Style>
+								<NumberStates>3</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_orientation_sampler_left_over.png</Pressed>
+									<Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+								</State>
+								<State>
+									<Number>2</Number>
+									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
+									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+								</State>
+								<Pos>217,42</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],orientation</ConfigKey>
+									<EmitOnDownPress>true</EmitOnDownPress>
+									<ButtonState>LeftButton</ButtonState>
+								</Connection>
+							</PushButton>
+
+							<!--
+							**********************************************
+							Button- Key lock
+							**********************************************
+							-->
+							<PushButton>
+								<TooltipId>keylock</TooltipId>
+								<Style></Style>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_keylock_sampler.png</Pressed>
+									<Unpressed>btn_keylock_sampler.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>btn_keylock_sampler_over.png</Pressed>
+									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
+								</State>
+								<Pos>241,42</Pos>
+								<Connection>
+									<ConfigKey>[Sampler6],keylock</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>
@@ -2376,12 +3546,12 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_microphone_talkover_over.png</Pressed>
+					<Pressed>btn_microphone_talkover_down.png</Pressed>
 					<Unpressed>btn_microphone_talkover.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_microphone_talkover_over.png</Pressed>
+					<Pressed>btn_microphone_talkover_overdown.png</Pressed>
 					<Unpressed>btn_microphone_talkover_over.png</Unpressed>
 				</State>
 				<Pos>25,15</Pos>
@@ -2614,7 +3784,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_sync1_over.png</Pressed>
+							<Pressed>btn_sync1_overdown.png</Pressed>
 							<Unpressed>btn_sync1.png</Unpressed>
 						</State>
 						<Pos>7,24</Pos>
@@ -2635,7 +3805,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_sync2_over.png</Pressed>
+							<Pressed>btn_sync2_overdown.png</Pressed>
 							<Unpressed>btn_sync2.png</Unpressed>
 						</State>
 						<Pos>392,24</Pos>
@@ -2662,7 +3832,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_pitch_up1_over.png</Pressed>
+							<Pressed>btn_pitch_up1_overdown.png</Pressed>
 							<Unpressed>btn_pitch_up1.png</Unpressed>
 						</State>
 						<Pos>33,239</Pos>
@@ -2683,7 +3853,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_pitch_down1_over.png</Pressed>
+							<Pressed>btn_pitch_down1_overdown.png</Pressed>
 							<Unpressed>btn_pitch_down1.png</Unpressed>
 						</State>
 						<Pos>7,239</Pos>
@@ -2705,7 +3875,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_pitch_up2_over.png</Pressed>
+							<Pressed>btn_pitch_up2_overdown.png</Pressed>
 							<Unpressed>btn_pitch_up2.png</Unpressed>
 						</State>
 						<Pos>418,239</Pos>
@@ -2726,7 +3896,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_pitch_down2_over.png</Pressed>
+							<Pressed>btn_pitch_down2_overdown.png</Pressed>
 							<Unpressed>btn_pitch_down2.png</Unpressed>
 						</State>
 						<Pos>392,239</Pos>
@@ -2753,7 +3923,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_nudge_up1_over.png</Pressed>
+							<Pressed>btn_nudge_up1_overdown.png</Pressed>
 							<Unpressed>btn_nudge_up1.png</Unpressed>
 						</State>
 						<Pos>33,265</Pos>
@@ -2774,7 +3944,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_nudge_down1_over.png</Pressed>
+							<Pressed>btn_nudge_down1_overdown.png</Pressed>
 							<Unpressed>btn_nudge_down1.png</Unpressed>
 						</State>
 						<Pos>7,265</Pos>
@@ -2796,7 +3966,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_nudge_up2_over.png</Pressed>
+							<Pressed>btn_nudge_up2_overdown.png</Pressed>
 							<Unpressed>btn_nudge_up2.png</Unpressed>
 						</State>
 						<Pos>418,265</Pos>
@@ -2817,7 +3987,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_nudge_down2_over.png</Pressed>
+							<Pressed>btn_nudge_down2_overdown.png</Pressed>
 							<Unpressed>btn_nudge_down2.png</Unpressed>
 						</State>
 						<Pos>392,265</Pos>
@@ -2845,12 +4015,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_play1.png</Pressed>
+							<Pressed>btn_play1_down.png</Pressed>
 							<Unpressed>btn_play1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_play1_over.png</Pressed>
+							<Pressed>btn_play1_overdown.png</Pressed>
 							<Unpressed>btn_play1_over.png</Unpressed>
 						</State>
 						<Pos>75,311</Pos>
@@ -2873,12 +4043,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_play2.png</Pressed>
+							<Pressed>btn_play2_down.png</Pressed>
 							<Unpressed>btn_play2.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_play2_over.png</Pressed>
+							<Pressed>btn_play2_overdown.png</Pressed>
 							<Unpressed>btn_play2_over.png</Unpressed>
 						</State>
 						<Pos>392,311</Pos>
@@ -2906,7 +4076,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_cue1_over.png</Pressed>
+							<Pressed>btn_cue1_overdown.png</Pressed>
 							<Unpressed>btn_cue1.png</Unpressed>
 						</State>
 						<Pos>7,311</Pos>
@@ -2927,7 +4097,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_cue2_over.png</Pressed>
+							<Pressed>btn_cue2_overdown.png</Pressed>
 							<Unpressed>btn_cue2.png</Unpressed>
 						</State>
 						<Pos>324,311</Pos>
@@ -2954,12 +4124,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_pfl1.png</Pressed>
+							<Pressed>btn_pfl1_down.png</Pressed>
 							<Unpressed>btn_pfl1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_pfl1_over.png</Pressed>
+							<Pressed>btn_pfl1_overdown.png</Pressed>
 							<Unpressed>btn_pfl1_over.png</Unpressed>
 						</State>
 						<Pos>75,265</Pos>
@@ -2973,12 +4143,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_pfl2.png</Pressed>
+							<Pressed>btn_pfl2_down.png</Pressed>
 							<Unpressed>btn_pfl2.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_pfl2_over.png</Pressed>
+							<Pressed>btn_pfl2_overdown.png</Pressed>
 							<Unpressed>btn_pfl2_over.png</Unpressed>
 						</State>
 						<Pos>324,265</Pos>
@@ -2998,12 +4168,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_fx1.png</Pressed>
+							<Pressed>btn_fx1_down.png</Pressed>
 							<Unpressed>btn_fx1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_fx1_over.png</Pressed>
+							<Pressed>btn_fx1_overdown.png</Pressed>
 							<Unpressed>btn_fx1_over.png</Unpressed>
 						</State>
 						<Pos>75,67</Pos>
@@ -3017,12 +4187,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_fx2.png</Pressed>
+							<Pressed>btn_fx2_down.png</Pressed>
 							<Unpressed>btn_fx1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_fx2_over.png</Pressed>
+							<Pressed>btn_fx2_overdown.png</Pressed>
 							<Unpressed>btn_fx2_over.png</Unpressed>
 						</State>
 						<Pos>324,67</Pos>
@@ -3042,12 +4212,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_down.png</Pressed>
 							<Unpressed>btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_overdown.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>73,159</Pos>
@@ -3063,12 +4233,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_down.png</Pressed>
 							<Unpressed>btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_overdown.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>73,198</Pos>
@@ -3084,12 +4254,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_down.png</Pressed>
 							<Unpressed>btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_overdown.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>73,236</Pos>
@@ -3106,12 +4276,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_down.png</Pressed>
 							<Unpressed>btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_overdown.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>358,159</Pos>
@@ -3127,12 +4297,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_down.png</Pressed>
 							<Unpressed>btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_overdown.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>358,198</Pos>
@@ -3148,12 +4318,12 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_down.png</Pressed>
 							<Unpressed>btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_over.png</Pressed>
+							<Pressed>btn_kill_overdown.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>358,236</Pos>
@@ -3543,12 +4713,17 @@
 						<!--<Size>415,119</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
+						<SignalHighColor></SignalHighColor>
+						<SignalMidColor></SignalMidColor>
+						<SignalLowColor></SignalLowColor>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<AxesColor></AxesColor>
+						<Align></Align>
 						<DefaultMark>
 							<Align>top</Align>
 							<Color>#00FF00</Color>
@@ -3668,6 +4843,9 @@
 				<Size>657,43</Size>
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
+				<SignalHighColor></SignalHighColor>
+				<SignalMidColor></SignalMidColor>
+				<SignalLowColor></SignalLowColor>
 				<SignalColor>#0099FF</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -3964,7 +5142,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_forward1_over.png</Pressed>
+							<Pressed>btn_forward1_overdown.png</Pressed>
 							<Unpressed>btn_forward1.png</Unpressed>
 						</State>
 						<Pos>26,0</Pos>
@@ -3985,7 +5163,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_rewind1_over.png</Pressed>
+							<Pressed>btn_rewind1_overdown.png</Pressed>
 							<Unpressed>btn_rewind1.png</Unpressed>
 						</State>
 						<Pos>0,0</Pos>
@@ -4012,7 +5190,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_reverse1_over.png</Pressed>
+							<Pressed>btn_reverse1_overdown.png</Pressed>
 							<Unpressed>btn_reverse1.png</Unpressed>
 						</State>
 						<Pos>0,26</Pos>
@@ -4036,12 +5214,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_0125.png</Pressed>
+							<Pressed>btn_beatloop1_0125_down.png</Pressed>
 							<Unpressed>btn_beatloop1_0125.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_0125_over.png</Pressed>
+							<Pressed>btn_beatloop1_0125_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_0125_over.png</Unpressed>
 						</State>
 						<Pos>92,0</Pos>
@@ -4068,12 +5246,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_0250.png</Pressed>
+							<Pressed>btn_beatloop1_0250_down.png</Pressed>
 							<Unpressed>btn_beatloop1_0250.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_0250_over.png</Pressed>
+							<Pressed>btn_beatloop1_0250_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_0250_over.png</Unpressed>
 						</State>
 						<Pos>118,0</Pos>
@@ -4100,12 +5278,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_0500.png</Pressed>
+							<Pressed>btn_beatloop1_0500_down.png</Pressed>
 							<Unpressed>btn_beatloop1_0500.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_0500_over.png</Pressed>
+							<Pressed>btn_beatloop1_0500_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_0500_over.png</Unpressed>
 						</State>
 						<Pos>144,0</Pos>
@@ -4132,12 +5310,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_1.png</Pressed>
+							<Pressed>btn_beatloop1_1_down.png</Pressed>
 							<Unpressed>btn_beatloop1_1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_1_over.png</Pressed>
+							<Pressed>btn_beatloop1_1_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_1_over.png</Unpressed>
 						</State>
 						<Pos>170,0</Pos>
@@ -4164,12 +5342,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_2.png</Pressed>
+							<Pressed>btn_beatloop1_2_down.png</Pressed>
 							<Unpressed>btn_beatloop1_2.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_2_over.png</Pressed>
+							<Pressed>btn_beatloop1_2_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_2_over.png</Unpressed>
 						</State>
 						<Pos>92,26</Pos>
@@ -4196,12 +5374,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_4.png</Pressed>
+							<Pressed>btn_beatloop1_4_down.png</Pressed>
 							<Unpressed>btn_beatloop1_4.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_4_over.png</Pressed>
+							<Pressed>btn_beatloop1_4_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_4_over.png</Unpressed>
 						</State>
 						<Pos>118,26</Pos>
@@ -4228,12 +5406,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_8.png</Pressed>
+							<Pressed>btn_beatloop1_8_down.png</Pressed>
 							<Unpressed>btn_beatloop1_8.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_8_over.png</Pressed>
+							<Pressed>btn_beatloop1_8_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_8_over.png</Unpressed>
 						</State>
 						<Pos>144,26</Pos>
@@ -4260,12 +5438,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_16.png</Pressed>
+							<Pressed>btn_beatloop1_16_down.png</Pressed>
 							<Unpressed>btn_beatloop1_16.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop1_16_over.png</Pressed>
+							<Pressed>btn_beatloop1_16_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_16_over.png</Unpressed>
 						</State>
 						<Pos>170,26</Pos>
@@ -4296,7 +5474,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_halve_over.png</Pressed>
+							<Pressed>btn_beatloop1_halve_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_halve.png</Unpressed>
 						</State>
 						<Pos>69,0</Pos>
@@ -4312,7 +5490,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop1_double_over.png</Pressed>
+							<Pressed>btn_beatloop1_double_overdown.png</Pressed>
 							<Unpressed>btn_beatloop1_double.png</Unpressed>
 						</State>
 						<Pos>197,0</Pos>
@@ -4334,7 +5512,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_loop_in1_over.png</Pressed>
+							<Pressed>btn_loop_in1_overdown.png</Pressed>
 							<Unpressed>btn_loop_in1.png</Unpressed>
 						</State>
 						<Pos>236,0</Pos>
@@ -4350,7 +5528,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_loop_out1_over.png</Pressed>
+							<Pressed>btn_loop_out1_overdown.png</Pressed>
 							<Unpressed>btn_loop_out1.png</Unpressed>
 						</State>
 						<Pos>262,0</Pos>
@@ -4367,12 +5545,12 @@
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_reloop1.png</Pressed>
+							<Pressed>btn_reloop1_down.png</Pressed>
 							<Unpressed>btn_reloop1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_reloop1_over.png</Pressed>
+							<Pressed>btn_reloop1_overdown.png</Pressed>
 							<Unpressed>btn_reloop1_over.png</Unpressed>
 						</State>
 						<Pos>236,26</Pos>
@@ -4401,12 +5579,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue1_1_over.png</Pressed>
+							<Pressed>btn_hotcue1_1_down.png</Pressed>
 							<Unpressed>btn_hotcue1_1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue1_1.png</Pressed>
+							<Pressed>btn_hotcue1_1_overdown.png</Pressed>
 							<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 						</State>
 						<Pos>304,0</Pos>
@@ -4435,12 +5613,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue1_2_over.png</Pressed>
+							<Pressed>btn_hotcue1_2_down.png</Pressed>
 							<Unpressed>btn_hotcue1_2.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue1_2.png</Pressed>
+							<Pressed>btn_hotcue1_2_overdown.png</Pressed>
 							<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 						</State>
 						<Pos>330,0</Pos>
@@ -4469,12 +5647,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue1_3_over.png</Pressed>
+							<Pressed>btn_hotcue1_3_down.png</Pressed>
 							<Unpressed>btn_hotcue1_3.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue1_3.png</Pressed>
+							<Pressed>btn_hotcue1_3_overdown.png</Pressed>
 							<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 						</State>
 						<Pos>304,26</Pos>
@@ -4503,12 +5681,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue1_4_over.png</Pressed>
+							<Pressed>btn_hotcue1_4_down.png</Pressed>
 							<Unpressed>btn_hotcue1_4.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue1_4.png</Pressed>
+							<Pressed>btn_hotcue1_4_overdown.png</Pressed>
 							<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 						</State>
 						<Pos>330,26</Pos>
@@ -4634,12 +5812,17 @@
 						<!--<Size>413,119</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
+						<SignalHighColor></SignalHighColor>
+						<SignalMidColor></SignalMidColor>
+						<SignalLowColor></SignalLowColor>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
+						<AxesColor></AxesColor>
+						<Align></Align>
 						<DefaultMark>
 							<Align>top</Align>
 							<Color>#00FF00</Color>
@@ -4759,6 +5942,9 @@
 				<Size>656,43</Size>
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
+				<SignalHighColor></SignalHighColor>
+				<SignalMidColor></SignalMidColor>
+				<SignalLowColor></SignalLowColor>
 				<SignalColor>#E17800</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -5055,7 +6241,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_forward1_over.png</Pressed>
+							<Pressed>btn_forward1_overdown.png</Pressed>
 							<Unpressed>btn_forward1.png</Unpressed>
 						</State>
 						<Pos>26,0</Pos>
@@ -5076,7 +6262,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_rewind2_over.png</Pressed>
+							<Pressed>btn_rewind2_overdown.png</Pressed>
 							<Unpressed>btn_rewind2.png</Unpressed>
 						</State>
 						<Pos>0,0</Pos>
@@ -5103,7 +6289,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_reverse2_over.png</Pressed>
+							<Pressed>btn_reverse2_overdown.png</Pressed>
 							<Unpressed>btn_reverse2.png</Unpressed>
 						</State>
 						<Pos>0,26</Pos>
@@ -5127,12 +6313,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_0125.png</Pressed>
+							<Pressed>btn_beatloop2_0125_down.png</Pressed>
 							<Unpressed>btn_beatloop2_0125.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_0125_over.png</Pressed>
+							<Pressed>btn_beatloop2_0125_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_0125_over.png</Unpressed>
 						</State>
 						<Pos>92,0</Pos>
@@ -5159,12 +6345,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_0250.png</Pressed>
+							<Pressed>btn_beatloop2_0250_down.png</Pressed>
 							<Unpressed>btn_beatloop2_0250.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_0250_over.png</Pressed>
+							<Pressed>btn_beatloop2_0250_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_0250_over.png</Unpressed>
 						</State>
 						<Pos>118,0</Pos>
@@ -5191,12 +6377,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_0500.png</Pressed>
+							<Pressed>btn_beatloop2_0500_down.png</Pressed>
 							<Unpressed>btn_beatloop2_0500.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_0500_over.png</Pressed>
+							<Pressed>btn_beatloop2_0500_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_0500_over.png</Unpressed>
 						</State>
 						<Pos>144,0</Pos>
@@ -5223,12 +6409,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_1.png</Pressed>
+							<Pressed>btn_beatloop2_1_down.png</Pressed>
 							<Unpressed>btn_beatloop2_1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_1_over.png</Pressed>
+							<Pressed>btn_beatloop2_1_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_1_over.png</Unpressed>
 						</State>
 						<Pos>170,0</Pos>
@@ -5255,12 +6441,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_2.png</Pressed>
+							<Pressed>btn_beatloop2_2_down.png</Pressed>
 							<Unpressed>btn_beatloop2_2.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_2_over.png</Pressed>
+							<Pressed>btn_beatloop2_2_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_2_over.png</Unpressed>
 						</State>
 						<Pos>92,26</Pos>
@@ -5287,12 +6473,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_4.png</Pressed>
+							<Pressed>btn_beatloop2_4_down.png</Pressed>
 							<Unpressed>btn_beatloop2_4.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_4_over.png</Pressed>
+							<Pressed>btn_beatloop2_4_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_4_over.png</Unpressed>
 						</State>
 						<Pos>118,26</Pos>
@@ -5319,12 +6505,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_8.png</Pressed>
+							<Pressed>btn_beatloop2_8_down.png</Pressed>
 							<Unpressed>btn_beatloop2_8.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_8_over.png</Pressed>
+							<Pressed>btn_beatloop2_8_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_8_over.png</Unpressed>
 						</State>
 						<Pos>144,26</Pos>
@@ -5351,12 +6537,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_16.png</Pressed>
+							<Pressed>btn_beatloop2_16_down.png</Pressed>
 							<Unpressed>btn_beatloop2_16.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_beatloop2_16_over.png</Pressed>
+							<Pressed>btn_beatloop2_16_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_16_over.png</Unpressed>
 						</State>
 						<Pos>170,26</Pos>
@@ -5387,7 +6573,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_halve_over.png</Pressed>
+							<Pressed>btn_beatloop2_halve_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_halve.png</Unpressed>
 						</State>
 						<Pos>69,0</Pos>
@@ -5403,7 +6589,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_beatloop2_double_over.png</Pressed>
+							<Pressed>btn_beatloop2_double_overdown.png</Pressed>
 							<Unpressed>btn_beatloop2_double.png</Unpressed>
 						</State>
 						<Pos>197,0</Pos>
@@ -5425,7 +6611,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_loop_in2_over.png</Pressed>
+							<Pressed>btn_loop_in2_overdown.png</Pressed>
 							<Unpressed>btn_loop_in2.png</Unpressed>
 						</State>
 						<Pos>236,0</Pos>
@@ -5441,7 +6627,7 @@
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_loop_out2_over.png</Pressed>
+							<Pressed>btn_loop_out2_overdown.png</Pressed>
 							<Unpressed>btn_loop_out2.png</Unpressed>
 						</State>
 						<Pos>262,0</Pos>
@@ -5458,12 +6644,12 @@
 						<LeftClickIsPushButton>true</LeftClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_reloop2.png</Pressed>
+							<Pressed>btn_reloop2_down.png</Pressed>
 							<Unpressed>btn_reloop2.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_reloop2_over.png</Pressed>
+							<Pressed>btn_reloop2_overdown.png</Pressed>
 							<Unpressed>btn_reloop2_over.png</Unpressed>
 						</State>
 						<Pos>236,26</Pos>
@@ -5492,12 +6678,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue2_1_over.png</Pressed>
+							<Pressed>btn_hotcue2_1_down.png</Pressed>
 							<Unpressed>btn_hotcue2_1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue2_1.png</Pressed>
+							<Pressed>btn_hotcue2_1_overdown.png</Pressed>
 							<Unpressed>btn_hotcue2_1_over.png</Unpressed>
 						</State>
 						<Pos>304,0</Pos>
@@ -5526,12 +6712,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue2_2_over.png</Pressed>
+							<Pressed>btn_hotcue2_2_down.png</Pressed>
 							<Unpressed>btn_hotcue2_2.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue2_2.png</Pressed>
+							<Pressed>btn_hotcue2_2_overdown.png</Pressed>
 							<Unpressed>btn_hotcue2_2_over.png</Unpressed>
 						</State>
 						<Pos>330,0</Pos>
@@ -5560,12 +6746,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue2_3_over.png</Pressed>
+							<Pressed>btn_hotcue2_3_down.png</Pressed>
 							<Unpressed>btn_hotcue2_3.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue2_3.png</Pressed>
+							<Pressed>btn_hotcue2_3_overdown.png</Pressed>
 							<Unpressed>btn_hotcue2_3_over.png</Unpressed>
 						</State>
 						<Pos>304,26</Pos>
@@ -5594,12 +6780,12 @@
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_hotcue2_4_over.png</Pressed>
+							<Pressed>btn_hotcue2_4_down.png</Pressed>
 							<Unpressed>btn_hotcue2_4.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_hotcue2_4.png</Pressed>
+							<Pressed>btn_hotcue2_4_overdown.png</Pressed>
 							<Unpressed>btn_hotcue2_4_over.png</Unpressed>
 						</State>
 						<Pos>330,26</Pos>

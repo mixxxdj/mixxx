@@ -315,13 +315,15 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
     double dThisPosition = getCurrentSample();
     double dOtherLength = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-    double dOtherPosition = dOtherLength * ControlObject::getControl(
+    double dOtherEnginePlayPos = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+    double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
 
-    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
+    if (dThisPrevBeat == -1 || dThisNextBeat == -1 ||
+            dOtherEnginePlayPos == -1 || dOtherLength == 0) {
         return false;
     }
 

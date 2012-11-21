@@ -35,8 +35,6 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
                 ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
     m_pScratch = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(group, "scratch_position")));
-    m_pTrackSamples = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "track_samples")));
     m_pTrackSampleRate = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(group, "track_samplerate")));
     m_pRate = new ControlObjectThreadMain(
@@ -58,7 +56,6 @@ WWaveformViewer::~WWaveformViewer() {
     delete m_pZoom;
     delete m_pScratchEnable;
     delete m_pScratch;
-    delete m_pTrackSamples;
     delete m_pTrackSampleRate;
     delete m_pRate;
     delete m_pRateRange;

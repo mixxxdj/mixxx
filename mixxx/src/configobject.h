@@ -114,6 +114,8 @@ template <class ValueType> class ConfigObject {
     ~ConfigObject();
     ConfigOption<ValueType> *set(ConfigKey, ValueType);
     ConfigOption<ValueType> *get(ConfigKey key);
+    bool exists(ConfigKey key);
+    void remove(ConfigKey key);
     ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
     QString getValueString(ConfigKey k, const QString& default_string);

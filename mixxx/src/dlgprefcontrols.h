@@ -44,20 +44,20 @@ public:
 public slots:
     void slotUpdate();
     void slotSetRateRange(int pos);
-    void slotSetRateDir(int pos);
+    void slotSetRateDir(bool);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
-    void slotSetTooltips(int pos);
+    void slotSetTooltips();
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
-    void slotSetPositionDisplay(int);
-    void slotSetPositionDisplay(double);
-    void slotSetAllowTrackLoadToPlayingDeck(int);
+    void slotSetTrackTimeDisplay(QAbstractButton*);
+    void slotSetTrackTimeDisplay(double);
+    void slotSetAllowTrackLoadToPlayingDeck(bool);
     void slotSetCueDefault(int);
-    void slotSetCueRecall(int);
+    void slotSetCueRecall(bool);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
@@ -88,7 +88,7 @@ private:
     /** Pointer to ConfigObject */
     ConfigObject<ConfigValue> *m_pConfig;
     int m_timer;
-    ControlObject* m_pControlPositionDisplay;
+    ControlObject* m_pControlTrackTimeDisplay;
     QList<ControlObjectThreadMain*> m_cueControls;
     QList<ControlObjectThreadMain*> m_rateControls;
     QList<ControlObjectThreadMain*> m_rateDirControls;

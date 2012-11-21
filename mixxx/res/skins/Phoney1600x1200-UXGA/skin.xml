@@ -1,7 +1,7 @@
 	<!--
 	Phoney , Skin for Mixxx 1.11.x
 	www.mixxx.org
-	Copyright (C) 2010-2012 jus ; jus@justmail.de
+	Copyright (C) 2010-2012 jus ; s.brandt@mixxx.org
 	This file is part of the "Phoney" Skin for Mixxx
 	"Phoney" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
@@ -25,6 +25,42 @@
 	<!--
 	############################################################################################
 	############################################################################################
+	Mixxx skin documentation:
+	http://mixxx.org/wiki/doku.php/creating_skins
+
+	List of controls:
+	http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names
+
+	Qt Style Sheets documentation:
+	http://doc.qt.nokia.com/latest/stylesheet.html
+
+	Debugging:
+	To outline WidgetGroups change all occurrences (exept this one ;-) of
+	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
+
+	Parent WidgedGroups are outlined one pixel solid red;
+		Child WidgedGroups are outlined one pixel solid yellow;
+			Grandchild WidgedGroups are outlined one pixel solid green;
+	############################################################################################
+	############################################################################################
+	-->
+
+	<manifest>
+	<title>Phoney1600x1200-UXGA</title>
+	<author>jus</author>
+	<version>1.11.0.06</version>
+	<description>A 2-deck parallel waveform skin.</description>
+	<language>en</language>
+	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+	<attributes>
+		<attribute config_key="[Master],num_decks">2</attribute>
+		<attribute config_key="[Master],num_samplers">0</attribute>
+	</attributes>
+	</manifest>
+
+	<!--
+	############################################################################################
+	############################################################################################
 	Global stylesheet declarations
 	############################################################################################
 	############################################################################################
@@ -36,21 +72,9 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	Section: General
-	############################################################################################
-	############################################################################################
-	-->
-
-	<!--
-	**********************************************
-	General- Skin Colour Scheme (Option not used by this skin)
-	**********************************************
-	-->
-
-	<!--
-	**********************************************
 	General- Main background picture
-	**********************************************
+	############################################################################################
+	############################################################################################
 	-->
 	<Background>
 		<Path>background1600x1200.png</Path>
@@ -562,6 +586,32 @@
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
 	</NumberRate>
+
+	<!--
+	**********************************************
+	Text- Clock display (here displayed in two layers for letterpress effect)
+	**********************************************
+	-->
+	<Time>
+		<TooltipId>time</TooltipId>
+		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #FFFFFF; text-align: right; }
+		</Style>
+		<Pos>1380,10</Pos>
+		<Size>60,20</Size>
+		<ShowSeconds>false</ShowSeconds>
+		<ClockFormat>24</ClockFormat>
+	</Time>
+	<Time>
+		<TooltipId>time</TooltipId>
+		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #333333; text-align: right; }
+		</Style>
+		<Pos>1380,11</Pos>
+		<Size>60,20</Size>
+		<ShowSeconds>false</ShowSeconds>
+		<ClockFormat>24</ClockFormat>
+	</Time>
 
 	<!--
 	############################################################################################

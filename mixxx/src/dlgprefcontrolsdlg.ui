@@ -6,272 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>519</width>
-    <height>728</height>
+    <width>481</width>
+    <height>671</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form1</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <item row="0" column="0">
-    <layout class="QGridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Skin</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxSkinconf</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxSkinconf">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2_4">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Scheme</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxSchemeconf</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxSchemeconf">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2_3">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Position display</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxPosition</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxPosition">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2_3_2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Tool tips</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxTooltips</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxTooltips">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="TextLabel6">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Pitch/Rate slider range</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxRateRange</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxRateRange">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="TextLabel6_2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="text">
-        <string>Pitch/Rate slider direction</string>
-       </property>
-       <property name="wordWrap">
-        <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxRateDir</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxRateDir">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
-       <property name="text">
-        <string>Track load behaviour</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Cue behaviour</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxCueDefault</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxCueDefault"/>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="textLabelCueRecall">
-       <property name="text">
-        <string>Auto Recall Cue</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxCueRecall</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxCueRecall"/>
-     </item>
-     <item row="13" column="0">
-      <widget class="QLabel" name="textLabelLocale">
-       <property name="text">
-        <string>Locale</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxLocale</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale"/>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLabel" name="warningLabel">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -279,7 +21,7 @@
        <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Temporary Pitch/Rate Buttons</string>
+          <string>Temporary Pitch/Tempo Buttons</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
@@ -382,7 +124,7 @@
        <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Permanent Pitch/Rate Buttons</string>
+          <string>Permanent Pitch/Tempo Buttons</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
@@ -498,7 +240,7 @@
       <string>Makes temporary pitch/rate buttons change the pitch gradually, instead of all at once.</string>
      </property>
      <property name="title">
-      <string>Ramping Pitchbend</string>
+      <string>Ramping pitch bend</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -565,7 +307,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="groupBoxWaveform">
      <property name="title">
       <string>Waveform Display</string>
      </property>
@@ -817,20 +559,300 @@
      </layout>
     </widget>
    </item>
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="mainOptionsLayout" rowstretch="0,0,0,0,0,0,0,0,0,0,0">
+     <item row="0" column="0">
+      <widget class="QLabel" name="TextLabelSkin">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Skin</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxSkinconf</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSkinconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLabel" name="warningLabel">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="TextLabelScheme">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Scheme</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxSchemeconf</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSchemeconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="TextLabelSliderRange">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Pitch/Tempo slider range</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxRateRange</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxRateRange">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="TextLabelCueBehavior">
+       <property name="text">
+        <string>Cue button behavior</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QRadioButton" name="radioButtonRemaining">
+       <property name="text">
+        <string>Remaining</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroupTrackTime</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QRadioButton" name="radioButtonElapsed">
+       <property name="text">
+        <string>Elapsed</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroupTrackTime</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="TextLabelTrackTime">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Track time display</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QRadioButton" name="radioButtonCueCdj">
+       <property name="toolTip">
+        <string>When playing, CUE stops deck and returns to cue point. When stopped, CUE sets the cue point or starts momentary playback.</string>
+       </property>
+       <property name="text">
+        <string>CDJ</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroupCueBehavior</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="9" column="2">
+      <widget class="QRadioButton" name="radioButtonCueSimple">
+       <property name="toolTip">
+        <string>The CUE button sets and recalls the cue point but does not affect playback.</string>
+       </property>
+       <property name="text">
+        <string>Simple</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroupCueBehavior</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="10" column="1" colspan="2">
+      <widget class="QCheckBox" name="checkBoxJumpToCueOnLoad">
+       <property name="text">
+        <string>Jump to main cue point on track load</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1" colspan="2">
+      <widget class="QCheckBox" name="checkBoxInvertPitchSlider">
+       <property name="toolTip">
+        <string>Make the pitch sliders work like those on DJ turntables and CDJs</string>
+       </property>
+       <property name="text">
+        <string>Invert (down increases speed)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="TextlabelSliderDirection">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Pitch/Tempo slider direction</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="TextLabelTooltips">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Tool tips</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QCheckBox" name="checkBoxTooltipsEnabled">
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroupTooltips</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QCheckBox" name="checkBoxTooltipsOnlyLibrary">
+       <property name="toolTip">
+        <string>Useful to see a whole text field in the Library without having to expand the column</string>
+       </property>
+       <property name="text">
+        <string>Only in Library</string>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string>buttonGroupTooltips</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="textLabelLocale">
+       <property name="text">
+        <string>Locale</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxLocale</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxLocale"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="TextlabelDeckProtection">
+       <property name="text">
+        <string>Deck protection</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
+      <widget class="QCheckBox" name="checkBoxDontLoadToPlayingDecks">
+       <property name="text">
+        <string>Don't load tracks into playing decks</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>ComboBoxSkinconf</tabstop>
   <tabstop>ComboBoxSchemeconf</tabstop>
-  <tabstop>ComboBoxPosition</tabstop>
-  <tabstop>ComboBoxTooltips</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
-  <tabstop>ComboBoxRateDir</tabstop>
-  <tabstop>ComboBoxCueRecall</tabstop>
-  <tabstop>ComboBoxCueDefault</tabstop>
-  <tabstop>ComboBoxAllowTrackLoadToPlayingDeck</tabstop>
-  <tabstop>ComboBoxLocale</tabstop>
   <tabstop>waveformTypeComboBox</tabstop>
   <tabstop>frameRateSlider</tabstop>
   <tabstop>frameRateSpinBox</tabstop>
@@ -916,4 +938,13 @@
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroupTrackTime"/>
+  <buttongroup name="buttonGroupTooltips">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroupCueBehavior"/>
+ </buttongroups>
 </ui>
