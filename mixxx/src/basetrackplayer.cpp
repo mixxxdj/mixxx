@@ -175,7 +175,7 @@ void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
-    // Alert user.
+    //: An alert message box when a track failed to load
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
 }
 
