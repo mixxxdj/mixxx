@@ -53,8 +53,8 @@ public slots:
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
-    void slotSetPositionDisplay(int);
-    void slotSetPositionDisplay(double);
+    void slotSetTrackTimeDisplay(QAbstractButton*);
+    void slotSetTrackTimeDisplay(double);
     void slotSetAllowTrackLoadToPlayingDeck(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
@@ -88,7 +88,7 @@ private:
     /** Pointer to ConfigObject */
     ConfigObject<ConfigValue> *m_pConfig;
     int m_timer;
-    ControlObject* m_pControlPositionDisplay;
+    ControlObject* m_pControlTrackTimeDisplay;
     QList<ControlObjectThreadMain*> m_cueControls;
     QList<ControlObjectThreadMain*> m_rateControls;
     QList<ControlObjectThreadMain*> m_rateDirControls;

@@ -75,25 +75,41 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ControlObject::getControl(ConfigKey(group, "cue_mode"))));
     }
 
-    // Position display configuration
-    m_pControlPositionDisplay = new ControlObject(ConfigKey("[Controls]", "ShowDurationRemaining"));
-    connect(m_pControlPositionDisplay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetPositionDisplay(double)));
-    ComboBoxPosition->addItem(tr("Position"));
-    ComboBoxPosition->addItem(tr("Remaining"));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
+
+    // Track time display configuration
+    m_pControlTrackTimeDisplay = new ControlObject(ConfigKey("[Controls]", "ShowTrackTimeRemaining"));
+    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetTrackTimeDisplay(double)));
+
+    // Upgrade from 1.10.x and below.
+    if (m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
+        if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1) {
+            m_pConfig->set(ConfigKey("[Controls]","TrackTimeDisplay"),ConfigValue("Remaining"));
+        }
+        else {
+            m_pConfig->set(ConfigKey("[Controls]","TrackTimeDisplay"),ConfigValue("Elapsed"));
+        }
+        // Remove the now-obsolete configuration entry
+        m_pConfig->remove(ConfigKey("[Controls]","PositionDisplay"));
+    } // End upgrade
+    
+    // If not present in the config, set the default value
+    if (!m_pConfig->exists(ConfigKey("[Controls]","TrackTimeDisplay")))
+        m_pConfig->set(ConfigKey("[Controls]","TrackTimeDisplay"),ConfigValue("Remaining"));
+    
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","TrackTimeDisplay")) == "Remaining")
     {
-        ComboBoxPosition->setCurrentIndex(1);
-        m_pControlPositionDisplay->set(1.0f);
+        radioButtonRemaining->setChecked(true);
+        m_pControlTrackTimeDisplay->set(1.0f);
     }
     else
     {
-        ComboBoxPosition->setCurrentIndex(0);
-        m_pControlPositionDisplay->set(0.0f);
+        radioButtonElapsed->setChecked(true);
+        m_pControlTrackTimeDisplay->set(0.0f);
     }
-    connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
+    connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
+
 
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
@@ -443,22 +459,28 @@ void DlgPrefControls::slotSetSkin(int)
     slotUpdateSchemes();
 }
 
-void DlgPrefControls::slotSetPositionDisplay(int)
+void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b)
 {
-    int positionDisplay = ComboBoxPosition->currentIndex();
-    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(positionDisplay));
-    m_pControlPositionDisplay->set(positionDisplay);
+    int timeDisplay = 0;
+    if (b == radioButtonRemaining) {
+        timeDisplay = 1;
+        m_pConfig->set(ConfigKey("[Controls]","TrackTimeDisplay"), ConfigValue("Remaining"));
+    }
+    else {
+        m_pConfig->set(ConfigKey("[Controls]","TrackTimeDisplay"), ConfigValue("Elapsed"));
+    }
+    m_pControlTrackTimeDisplay->set(timeDisplay);
 }
 
-void DlgPrefControls::slotSetPositionDisplay(double v) {
+void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
     if (v > 0) {
-        // remaining
-        ComboBoxPosition->setCurrentIndex(1);
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(1));
+        // Remaining
+        radioButtonRemaining->setChecked(true);
+        m_pConfig->set(ConfigKey("[Controls]","TrackTimeDisplay"), ConfigValue("Remaining"));
     } else {
-        // position
-        ComboBoxPosition->setCurrentIndex(0);
-        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(0));
+        // Elapsed
+        radioButtonElapsed->setChecked(true);
+        m_pConfig->set(ConfigKey("[Controls]","TrackTimeDisplay"), ConfigValue("Elapsed"));
     }
 }
 
