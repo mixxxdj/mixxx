@@ -17,7 +17,9 @@
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
+          //: Item in the LIBRARY sidebar item
           kMissingTitle(tr("Missing Tracks")),
+          //: Item in the LIBRARY sidebar item
           kHiddenTitle(tr("Hidden Tracks")),
           m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
@@ -107,6 +109,7 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 QVariant MixxxLibraryFeature::title() {
+    //: Root item in the LIBRARY sidebar item
     return tr("Library");
 }
 
