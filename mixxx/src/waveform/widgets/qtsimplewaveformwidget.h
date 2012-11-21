@@ -14,6 +14,7 @@ class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform;}
 
+    //: A value in the waveform display preferences menu
     static inline QString getWaveformWidgetName() { return tr("Simple") + " - Qt";}
     static inline bool useOpenGl() { return true;}
     static inline bool useOpenGLShaders() { return false;}

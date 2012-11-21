@@ -13,6 +13,7 @@ class QtWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtWaveform;}
 
+    //: A value in the waveform display preferences menu
     static inline QString getWaveformWidgetName() { return tr("Filtered") + " - Qt";}
     static inline bool useOpenGl() { return true;}
     static inline bool useOpenGLShaders() { return false;}
