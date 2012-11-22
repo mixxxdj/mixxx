@@ -174,48 +174,6 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
 }
 
 template <class ValueType>
-bool ConfigObject<ValueType>::exists(ConfigKey k)
-{
-    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
-    ConfigOption<ValueType>* it;
-    while (iterator.hasNext())
-    {
-        it = iterator.next();
-        if (it->key->group == k.group && it->key->item == k.item)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-template <class ValueType>
-void ConfigObject<ValueType>::remove(ConfigKey k)
-{
-    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
-    ConfigOption<ValueType>* it;
-    while (iterator.hasNext())
-    {
-        it = iterator.next();
-        if (it->key->group == k.group && it->key->item == k.item)
-        {
-            // FIXME: Do we need some kind of concurrency protection here?
-            
-            // Remove the ConfigOption from the list
-            if (m_list.removeAll(it) < 1) {
-                qWarning() << "Unable to remove" << k.group << k.item << "from configuration";
-            }
-            else {
-                // Delete the ConfigOption
-                delete it;
-                //qDebug() << k.group << k.item << "removed from configuration";
-            }
-            return;
-        }
-    }
-}
-
-template <class ValueType>
 ConfigKey *ConfigObject<ValueType>::get(ValueType v)
 {
     QListIterator<ConfigOption<ValueType>* > iterator(m_list);
@@ -280,7 +238,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
             line = text.readLine().trimmed();
 
             if (line.length() != 0)
-            {
+			{
                 if (line.startsWith("[") && line.endsWith("]"))
                 {
                     group++;
@@ -298,7 +256,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     ValueType m(val);
                     set(k, m);
                 }
-            }
+			}
         }
         configfile.close();
     }
