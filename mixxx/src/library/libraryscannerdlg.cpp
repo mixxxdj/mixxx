@@ -65,7 +65,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
     }
 
     if (isVisible()) {
-        QString status = "Scanning: " + path;
+        QString status = tr("Scanning: ") + path;
         emit(progress(status));
     }
 }
