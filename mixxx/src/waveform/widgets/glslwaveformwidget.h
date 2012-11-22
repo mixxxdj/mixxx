@@ -15,7 +15,12 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLWaveform;}
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered") + " - " + tr("experimental");}
+    static inline QString getWaveformWidgetName()
+    {
+        //: A value in the waveform display preferences menu
+        return tr("Filtered") + " - "
+        //: A value in the waveform display preferences menu
+        + tr("experimental");}
     static inline bool useOpenGl() { return true;}
     static inline bool useOpenGLShaders() { return true;}
 

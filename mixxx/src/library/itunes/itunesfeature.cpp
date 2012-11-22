@@ -52,6 +52,8 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
     m_isActivated = false;
+    
+    //: Root item in the ITUNES sidebar item
     m_title = tr("iTunes");
 
     m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "ITUNES_SCANNER");
@@ -113,6 +115,7 @@ void ITunesFeature::activate(bool forceReload) {
         // exist, ask for a new one and use/save it if it exists
         if (!QFile::exists(m_dbfile)) {
             m_dbfile = QFileDialog::getOpenFileName(
+                //: Title of file browse dialog launched from the actions in the ITUNES sidebar item
                 NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
             if (m_dbfile.isEmpty() || !QFile::exists(m_dbfile)) {
                 emit(showTrackModel(m_pITunesTrackModel));
@@ -134,6 +137,7 @@ void ITunesFeature::activate(bool forceReload) {
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
+        //: Item in the ITUNES sidebar item. Displayed while loading iTunes library.
         m_title = tr("(loading) iTunes");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
@@ -157,7 +161,9 @@ TreeItemModel* ITunesFeature::getChildModel() {
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
     QMenu menu;
+    //: An action in the ITUNES sidebar item context menu
     QAction useDefault(tr("Use Default Library"), &menu);
+    //: An action in the ITUNES sidebar item context menu
     QAction chooseNew(tr("Choose Library..."), &menu);
     menu.addAction(&useDefault);
     menu.addAction(&chooseNew);
@@ -705,7 +711,9 @@ void ITunesFeature::onTrackCollectionLoaded(){
     } else {
         QMessageBox::warning(
             NULL,
+            //: An alert message box launched from the actions in the ITUNES sidebar item
             tr("Error Loading iTunes Library"),
+            //: Part of an alert message box launched from the actions in the ITUNES sidebar item
             tr("There was an error loading your iTunes library. Some of "
                "your iTunes tracks or playlists may not have loaded."));
     }

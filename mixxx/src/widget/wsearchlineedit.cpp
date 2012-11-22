@@ -162,6 +162,7 @@ void WSearchLineEdit::showPlaceholder() {
     //Must block signals here so that we don't emit a search() signal via
     //textChanged().
     blockSignals(true);
+    //: Default text in the SEARCH sidebar item input dialog
     setText(tr("Search..."));
     blockSignals(false);
     QPalette pal = palette();

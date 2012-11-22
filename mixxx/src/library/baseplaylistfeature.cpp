@@ -23,34 +23,42 @@ BasePlaylistFeature::BasePlaylistFeature(
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
           m_rootViewName(rootViewName) {
+    //: An action in the PLAYLIST sidebar item context menu
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 
+    //: An action in the PLAYLIST sidebar item context menu
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
 
+    //: An action in the PLAYLIST sidebar item context menu
     m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJTop()));
 
+    //: An action in the PLAYLIST sidebar item context menu
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotDeletePlaylist()));
 
+    //: An action in the PLAYLIST sidebar item context menu
     m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
     connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotRenamePlaylist()));
 
+    //: An action in the PLAYLIST sidebar item context menu
     m_pLockPlaylistAction = new QAction(tr("Lock"),this);
     connect(m_pLockPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotTogglePlaylistLock()));
 
+    //: An action in the PLAYLIST sidebar item context menu
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
 
+    //: An action in the PLAYLIST sidebar item context menu
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
@@ -114,7 +122,9 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     do {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
+                                        //: Title of input dialog launched from the actions in the PLAYLIST sidebar item
                                         tr("Rename Playlist"),
+                                        //: Text in the input dialog launched from the actions in the PLAYLIST sidebar item
                                         tr("New playlist name:"),
                                         QLineEdit::Normal,
                                         oldName,
@@ -128,12 +138,16 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
+                                //: An alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                 tr("Renaming Playlist Failed"),
+                                //: Part of an alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                 tr("A playlist by that name already exists."));
         }
         else if (newName.isEmpty()) {
             QMessageBox::warning(NULL,
+                                //: An alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                 tr("Renaming Playlist Failed"),
+                                //: Part of an alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                 tr("A playlist cannot have a blank name."));
         }
         else {
@@ -165,9 +179,12 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     do {
         bool ok = false;
         name = QInputDialog::getText(NULL,
+                                     //: Title of input dialog launched from the actions in the PLAYLIST sidebar item
                                      tr("New Playlist"),
+                                     //: Text in the input dialog launched from the actions in the PLAYLIST sidebar item
                                      tr("Playlist name:"),
                                      QLineEdit::Normal,
+                                     //: Default text input in the input dialog launched from the actions in the PLAYLIST sidebar item
                                      tr("New Playlist"),
                                      &ok).trimmed();
 
@@ -178,11 +195,15 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
+                                 //: An alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                  tr("Playlist Creation Failed"),
+                                 //: Part of an alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                  tr("A playlist by that name already exists."));
         } else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
+                                 //: An alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                  tr("Playlist Creation Failed"),
+                                 //: Part of an alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                                  tr("A playlist cannot have a blank name."));
         } else {
             validNameGiven = true;
@@ -197,7 +218,9 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     }
     else {
         QMessageBox::warning(NULL,
+                             //: An alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                              tr("Playlist Creation Failed"),
+                             //: Part of an alert message box in the input dialog launched from the actions in the PLAYLIST sidebar item
                              tr("An unknown error occurred while creating playlist: ")
                               + name);
     }
@@ -240,7 +263,9 @@ void BasePlaylistFeature::slotImportPlaylist() {
 
     QString playlist_file = QFileDialog::getOpenFileName(
         NULL,
+        //: Title of file browse dialog launched from the actions in the PLAYLIST sidebar item
         tr("Import Playlist"),
+        //: File types in file browse dialog launched from the actions in the PLAYLIST sidebar item
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
         tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
@@ -286,8 +311,10 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString music_directory = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
     QString file_location = QFileDialog::getSaveFileName(
         NULL,
+        //: Title of file browse dialog launched from the actions in the PLAYLIST sidebar item
         tr("Export Playlist"),
         music_directory.append("/").append(playlist_filename),
+         //: File types in file browse dialog launched from the actions in the PLAYLIST sidebar item
         tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
            "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
@@ -392,7 +419,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
     if (QString(link.path())=="create") {
         slotCreatePlaylist();
     } else {
-        qDebug() << "Unknonw playlist link clicked" << link.path();
+        qDebug() << "Unknown playlist link clicked" << link.path();
     }
 }
 

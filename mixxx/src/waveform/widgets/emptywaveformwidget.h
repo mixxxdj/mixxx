@@ -15,6 +15,7 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::EmptyWaveform; }
 
+    //: A value in the waveform display preferences menu
     static inline QString getWaveformWidgetName() { return tr("Empty"); }
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGLShaders() { return false; }

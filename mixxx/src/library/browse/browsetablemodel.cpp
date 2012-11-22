@@ -25,20 +25,35 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager) {
     QStringList header_data;
+    //: Identifies the audio in the file system. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
+    //: Artist performing on the recording. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
+    //: Name of the audio. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_TITLE, tr("Title"));
+    //: Refers to the release that the tracks belongs. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_ALBUM, tr("Album"));
+    //: Track number of the recording on the album. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_TRACK_NUMBER, tr("Track #"));
+    //: Year of the recording. Text in the header of the BROWSE file table
     header_data.insert(COLUMN_YEAR, tr("Year"));
+    //: First genre the recording belongs to. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_GENRE, tr("Genre"));
+    //: Composer of a piece of audio. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_COMPOSER, tr("Composer"));
+    //: Multi value field for full text informations. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_COMMENT, tr("Comment"));
+    //: Length of the audio. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_DURATION, tr("Duration"));
+    //: Beats per minute in the mainpart of the audio. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_BPM, tr("BPM"));
+    //: Contains the musical key. Text in the header of the column BROWSE file table
     header_data.insert(COLUMN_KEY, tr("Key"));
+    //: Indicates the type of audio, eg. mp3. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_TYPE, tr("Type"));
+    //: Amount of data transferred per second. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
+    //: Storage location of the audio in the file system. Text in the column header of the BROWSE file table 
     header_data.insert(COLUMN_LOCATION, tr("Location"));
 
     addSearchColumn(COLUMN_FILENAME);
@@ -88,7 +103,9 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     QString track_location = getTrackLocation(index);
     if (m_pRecordingManager->getRecordingLocation() == track_location) {
         QMessageBox::critical(
+            //: An alert message box launched from the actions in the BROWSE sidebar item
             0, tr("Mixxx Library"),
+            //: Part of an alert message box launched from the actions in the BROWSE sidebar item
             tr("Could not load the following file because"
                " it is in use by Mixxx or another application.")
             + "\n" +track_location);
@@ -173,9 +190,12 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Ask user if s/he is sure
     if (QMessageBox::question(
+        //: Title of confirmation dialog launched from the actions in the BROWSE sidebar item
         NULL, tr("Mixxx Library"),
+        //: Text in the confirmation dialog launched from the actions in the BROWSE sidebar item
         tr("Warning: This will permanently delete the following files:")
         + "\n" + trackLocations.join("\n") + "\n" +
+        //: Text in the confirmation dialog launched from the actions in the BROWSE sidebar item
         tr("Are you sure you want to delete these files from your computer?"),
         QMessageBox::Yes, QMessageBox::Abort) == QMessageBox::Abort) {
         return;
@@ -189,7 +209,9 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         // If track is in use or deletion fails, show an error message.
         if (isTrackInUse(track_location) || !QFile::remove(track_location)) {
             QMessageBox::critical(
+                //: An alert message box launched from the actions in the BROWSE sidebar item
                 0, tr("Mixxx Library"),
+                //: Part of an alert message box launched from the actions in the BROWSE sidebar item
                 tr("Could not delete the following file because"
                    " it is in use by Mixxx or another application:") + "\n" +track_location);
             continue;
@@ -376,7 +398,9 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
         item->setText(index.data().toString());
         item->setToolTip(item->text());
         QMessageBox::critical(
+            //: An alert message box launched from the actions in the BROWSE sidebar item
             0, tr("Mixxx Library"),
+            //: Part of an alert message box launched from the actions in the BROWSE sidebar item
             tr("Could not update file metadata.")
             + "\n" +track_location);
         return false;

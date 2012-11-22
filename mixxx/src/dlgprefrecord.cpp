@@ -167,9 +167,8 @@ void DlgPrefRecord::updateTextQuality()
     int quality = getSliderQualityVal();
     //QString encodingType = comboBoxEncoding->currentText();
 
+     //: Audio bitrate in kilobytes per second. Text on quality slider for lossy codecs in Recording preferences
     TextQuality->setText(QString( QString::number(quality) + tr("kbps")));
-
-
 }
 
 void DlgPrefRecord::slotEncoding()
@@ -271,6 +270,7 @@ void DlgPrefRecord::slotUpdate()
 
 void DlgPrefRecord::slotBrowseRecordingsDir()
 {
+    //: Title of file browse dialog launched from the Browse action in the Recording preferences
     QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings directory"),
                                                    config->getValueString(ConfigKey("[Recording]","Directory")));
     if (fd != "")

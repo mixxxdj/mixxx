@@ -40,8 +40,11 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
         ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
 
     //Server type combobox
+    //: Technical term. Value in the live broadcasting preferences menu
     comboBoxServerType->addItem(tr("Icecast 2"), SHOUTCAST_SERVER_ICECAST2);
+    //: Technical term. Value in the live broadcasting preferences menu
     comboBoxServerType->addItem(tr("Shoutcast"), SHOUTCAST_SERVER_SHOUTCAST);
+    //: Technical term. Value in the live broadcasting preferences menu
     comboBoxServerType->addItem(tr("Icecast 1"), SHOUTCAST_SERVER_ICECAST1);
 
     tmp_index = comboBoxServerType->findData(m_pConfig->getValueString(
@@ -126,7 +129,9 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     comboBoxEncodingBitrate->setCurrentIndex(tmp_index < 0 ? 0 : tmp_index);
 
     // Encoding format combobox
+    //: Technical term. Value in the live broadcasting preferences menu
     comboBoxEncodingFormat->addItem(tr("MP3"), SHOUTCAST_FORMAT_MP3);
+    //: Technical term. Value in the live broadcasting preferences menu
     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), SHOUTCAST_FORMAT_OV);
     tmp_index = comboBoxEncodingFormat->findData(m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "format")));
@@ -137,6 +142,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     comboBoxEncodingFormat->setCurrentIndex(tmp_index);
 
     // Encoding channels combobox
+    //: Value in the live broadcasting preferences menu
     comboBoxEncodingChannels->addItem(tr("Stereo"), SHOUTCAST_CHANNELS_STEREO);
     tmp_index = comboBoxEncodingChannels->findData(m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "channels")));

@@ -31,6 +31,7 @@ PrepareFeature::~PrepareFeature() {
 }
 
 QVariant PrepareFeature::title() {
+    //: Root item in the ANALYZE sidebar item
     return tr("Analyze");
 }
 
