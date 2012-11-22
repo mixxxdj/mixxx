@@ -1,29 +1,27 @@
-#include <QtCore>
-#include <QtGui>
-#include <QtSql>
+#include "library/baseexternalplaylistmodel.h"
 
-#include "library/trackcollection.h"
-#include "library/itunes/itunesplaylistmodel.h"
 #include "library/queryutil.h"
-#include "track/beatfactory.h"
-#include "track/beats.h"
 
-ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
-                                         TrackCollection* pTrackCollection)
+BaseExternalPlaylistModel::BaseExternalPlaylistModel(
+    QObject* parent, TrackCollection* pTrackCollection,
+    QString settingsNamespace, QString playlistsTable,
+    QString playlistTracksTable, QString trackSource)
         : BaseSqlTableModel(parent, pTrackCollection,
                             pTrackCollection->getDatabase(),
-                            "mixxx.db.model.itunes_playlist"),
+                            settingsNamespace),
+          m_playlistsTable(playlistsTable),
+          m_playlistTracksTable(playlistTracksTable),
+          m_trackSource(trackSource),
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase()) {
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 }
 
-ITunesPlaylistModel::~ITunesPlaylistModel() {
+BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
-TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
-{
+TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(
         index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(
@@ -75,31 +73,30 @@ TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
     return pTrack;
 }
 
-void ITunesPlaylistModel::search(const QString& searchText) {
-    // qDebug() << "ITunesPlaylistModel::search()" << searchText
+void BaseExternalPlaylistModel::search(const QString& searchText) {
+    // qDebug() << "BaseExternalPlaylistModel::search()" << searchText
     //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
-void ITunesPlaylistModel::slotSearch(const QString& searchText) {
+void BaseExternalPlaylistModel::slotSearch(const QString& searchText) {
     BaseSqlTableModel::search(searchText);
 }
 
-bool ITunesPlaylistModel::isColumnInternal(int column) {
+bool BaseExternalPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex("track_id")) {
         return true;
     }
     return false;
 }
 
-Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
-
+void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     QSqlQuery finder_query(m_database);
-    finder_query.prepare("SELECT id from itunes_playlists where name=:name");
+    finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
     finder_query.bindValue(":name", playlist_path);
 
     if (!finder_query.exec()) {
@@ -107,6 +104,7 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
         return;
     }
 
+    // TODO(XXX): Why not last-insert id?
     int playlistId = -1;
     while (finder_query.next()) {
         playlistId = finder_query.value(
@@ -118,20 +116,21 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
         return;
     }
 
-    QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
-    FieldEscaper f(m_database);
+    QString playlistViewTable = QString("%1_%2").arg(m_playlistTracksTable,
+                                                     QString::number(playlistId));
 
     QStringList columns;
     columns << "track_id";
     columns << "position";
 
     QSqlQuery query(m_database);
+    FieldEscaper f(m_database);
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(f.escapeString(playlistID),
+            .arg(f.escapeString(playlistViewTable),
                  columns.join(","),
-                 "itunes_playlist_tracks",
+                 m_playlistTracksTable,
                  QString::number(playlistId));
     query.prepare(queryString);
 
@@ -140,19 +139,19 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
         return;
     }
 
-    setTable(playlistID, columns[0], columns,
-             m_pTrackCollection->getTrackSource("itunes"));
+    setTable(playlistViewTable, columns[0], columns,
+             m_pTrackCollection->getTrackSource(m_trackSource));
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     initHeaderData();
     setSearch("");
 }
 
-bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
+bool BaseExternalPlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
 }
 
-TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
+TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
     return TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_ADDTOPLAYLIST
@@ -161,4 +160,3 @@ TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }
-

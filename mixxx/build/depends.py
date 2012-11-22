@@ -565,16 +565,11 @@ class MixxxCore(Feature):
 
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",
+                   "library/baseexternaltrackmodel.cpp",
+                   "library/baseexternalplaylistmodel.cpp",
                    "library/rhythmbox/rhythmboxfeature.cpp",
-                   "library/rhythmbox/rhythmboxtrackmodel.cpp",
-                   "library/rhythmbox/rhythmboxplaylistmodel.cpp",
                    "library/itunes/itunesfeature.cpp",
-                   "library/itunes/itunestrackmodel.cpp",
-                   "library/itunes/itunesplaylistmodel.cpp",
                    "library/traktor/traktorfeature.cpp",
-                   "library/traktor/traktortablemodel.cpp",
-                   "library/traktor/traktorplaylistmodel.cpp",
-
 
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",

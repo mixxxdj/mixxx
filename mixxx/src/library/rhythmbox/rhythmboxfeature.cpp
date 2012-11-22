@@ -2,9 +2,10 @@
 #include <QtDebug>
 #include <QStringList>
 
-#include "library/rhythmbox/rhythmboxtrackmodel.h"
-#include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+
+#include "library/baseexternaltrackmodel.h"
+#include "library/baseexternalplaylistmodel.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 
@@ -32,8 +33,18 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
         new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
                            columns, false)));
 
-    m_pRhythmboxTrackModel = new RhythmboxTrackModel(this, m_pTrackCollection);
-    m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
+    m_pRhythmboxTrackModel = new BaseExternalTrackModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.rhythmbox",
+        "rhythmbox_library",
+        "rhythmbox");
+    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.rhythmbox_playlist",
+        "rhythmbox_playlists",
+        "rhythmbox_playlist_tracks",
+        "rhythmbox");
+
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
@@ -58,7 +69,12 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
-    RhythmboxPlaylistModel* pModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
+    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.rhythmbox_playlist",
+        "rhythmbox_playlists",
+        "rhythmbox_playlist_tracks",
+        "rhythmbox");
     pModel->setPlaylist(playlist);
     return pModel;
 }
