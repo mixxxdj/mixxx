@@ -1588,7 +1588,7 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
             // ON (only in Library)
             WWidget* pWidget = dynamic_cast<WWidget*>(obj);
             WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
-            WSpinny* pSpinny = dynamic_cast<WSpinny>(obj);
+            WSpinny* pSpinny = dynamic_cast<WSpinny*>(obj);
             QLabel* pLabel = dynamic_cast<QLabel*>(obj);
             return (pWidget || pWfViewer || pSpinny || pLabel);
         } else if (m_tooltips == 0) {
