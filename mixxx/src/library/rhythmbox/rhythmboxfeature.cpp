@@ -231,24 +231,23 @@ TreeItem* RhythmboxFeature::importPlaylists()
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                TreeItem * item = new TreeItem(playlist_name,playlist_name, this, rootItem);
+                TreeItem * item = new TreeItem(playlist_name, playlist_name, this, rootItem);
                 rootItem->appendChild(item);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
 
-                bool success = query_insert_to_playlists.exec();
-                if(!success){
-                    qDebug() << "SQL Error in RhythmboxFeature.cpp: line" << __LINE__ << " "
-                                    << query_insert_to_playlists.lastError();
-                    return NULL;
+                if (!query_insert_to_playlists.exec()) {
+                    LOG_FAILED_QUERY(query_insert_to_playlists)
+                            << "Couldn't insert playlist:" << playlist_name;
+                    continue;
                 }
-                //get playlist_id
+
+                // get playlist_id
                 int playlist_id = query_insert_to_playlists.lastInsertId().toInt();
 
                 //Process playlist entries
                 importPlaylist(xml, query_insert_to_playlist_tracks, playlist_id);
-
             }
         }
     }

@@ -4,6 +4,7 @@
 
 #include "library/trackcollection.h"
 #include "library/traktor/traktorplaylistmodel.h"
+#include "library/queryutil.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 
@@ -96,26 +97,28 @@ Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const {
 }
 
 void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
-    int playlistId = -1;
     QSqlQuery finder_query(m_database);
     finder_query.prepare("SELECT id from traktor_playlists where name=:name");
     finder_query.bindValue(":name", playlist_path);
 
     if (!finder_query.exec()) {
-        qDebug() << "SQL Error in TraktorPlaylistModel.cpp: line" << __LINE__
-                 << finder_query.lastError();
+        LOG_FAILED_QUERY(finder_query) << "Error getting id for playlist:" << playlist_path;
         return;
     }
+
+    int playlistId = -1;
     while (finder_query.next()) {
         playlistId = finder_query.value(
             finder_query.record().indexOf("id")).toInt();
     }
 
+    if (playlistId == -1) {
+        qDebug() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
+        return;
+    }
+
     QString playlistID = "TraktorPlaylist_" + QString("%1").arg(playlistId);
-    // Escape the playlist name
-    QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
-    QSqlField playlistNameField("name", QVariant::String);
-    playlistNameField.setValue(playlistID);
+    FieldEscaper f(m_database);
 
     QStringList columns;
     columns << "track_id";
@@ -125,17 +128,14 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(driver->formatValue(playlistNameField),
+            .arg(f.escapeString(playlistID),
                  columns.join(","),
                  "traktor_playlist_tracks",
                  QString::number(playlistId));
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << "Error creating temporary view for traktor playlists."
-                 << "TraktorPlaylistModel --> line: " << __LINE__
-                 << query.lastError();
-        qDebug() << "Executed Query: " << query.executedQuery();
+        LOG_FAILED_QUERY(query) << "Error creating temporary view for playlist.";
         return;
     }
 

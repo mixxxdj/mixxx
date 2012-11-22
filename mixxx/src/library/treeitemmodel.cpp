@@ -47,11 +47,15 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole && role != Qt::UserRole)
         return QVariant();
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
+    // We use Qt::UserRole to ask for the datapath.
+    if (role == Qt::UserRole) {
+        return item->dataPath();
+    }
     return item->data();
 }
 
