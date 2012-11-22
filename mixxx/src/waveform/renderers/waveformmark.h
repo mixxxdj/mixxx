@@ -4,17 +4,16 @@
 #include <QString>
 #include <QPixmap>
 
-class ControlObject;
+class ControlObjectThreadMain;
 class QDomNode;
 
-class WaveformMark
-{
-public:
+class WaveformMark {
+  public:
     WaveformMark();
     void setup( const QString& group, const QDomNode& node);
 
-private:
-    ControlObject* m_pointControl;
+  private:
+    ControlObjectThreadMain* m_pointControl;
 
     QColor m_color;
     QColor m_textColor;
