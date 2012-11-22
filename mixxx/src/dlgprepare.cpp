@@ -99,7 +99,7 @@ void DlgPrepare::onShow()
 
 void DlgPrepare::setup(QDomNode node)
 {
-
+    Q_UNUSED(node);
 }
 
 void DlgPrepare::onSearchStarting()
@@ -129,6 +129,7 @@ void DlgPrepare::moveSelection(int delta) {
 
 void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
+    Q_UNUSED(deselected);
     if (selected == QItemSelection()) //Empty selection
         pushButtonAnalyze->setEnabled(false);
     else

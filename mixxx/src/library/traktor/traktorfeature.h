@@ -12,13 +12,28 @@
 #include <QFutureWatcher>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/traktor/traktortablemodel.h"
-#include "library/traktor/traktorplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
+#include "library/baseexternalplaylistmodel.h"
 #include "library/treeitemmodel.h"
 
 class LibraryTableModel;
 class MissingTableModel;
 class TrackCollection;
+class BaseExternalPlaylistModel;
+
+class TraktorTrackModel : public BaseExternalTrackModel {
+  public:
+    TraktorTrackModel(QObject* parent,
+                      TrackCollection* pTrackCollection);
+    virtual bool isColumnHiddenByDefault(int column);
+};
+
+class TraktorPlaylistModel : public BaseExternalPlaylistModel {
+  public:
+    TraktorPlaylistModel(QObject* parent,
+                         TrackCollection* pTrackCollection);
+    virtual bool isColumnHiddenByDefault(int column);
+};
 
 class TraktorFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -61,7 +76,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     TrackCollection* m_pTrackCollection;
     //A separate db connection for the worker parsing thread
     QSqlDatabase m_database;
-    TraktorTableModel* m_pTraktorTableModel;
+    TraktorTrackModel* m_pTraktorTableModel;
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
 
     bool m_isActivated;
@@ -70,7 +85,5 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QFuture<TreeItem*> m_future;
     QString m_title;
 };
-
-
 
 #endif /* TRAKTOR_FEATURE_H */

@@ -10,8 +10,8 @@
 
 #include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
-#include "library/itunes/itunesplaylistmodel.h"
-#include "library/itunes/itunestrackmodel.h"
+#include "library/baseexternaltrackmodel.h"
+#include "library/baseexternalplaylistmodel.h"
 #include "library/queryutil.h"
 #include "util/lcs.h"
 
@@ -49,8 +49,17 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         QString("itunes"), QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
                                columns, false)));
-    m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
-    m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
+    m_pITunesTrackModel = new BaseExternalTrackModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.itunes",
+        "itunes_library",
+        "itunes");
+    m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.itunes_playlist",
+        "itunes_playlists",
+        "itunes_playlist_tracks",
+        "itunes");
     m_isActivated = false;
     m_title = tr("iTunes");
 
@@ -72,7 +81,12 @@ ITunesFeature::~ITunesFeature() {
 }
 
 BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
-    ITunesPlaylistModel* pModel = new ITunesPlaylistModel(this, m_pTrackCollection);
+    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.itunes_playlist",
+        "itunes_playlists",
+        "itunes_playlist_tracks",
+        "itunes");
     pModel->setPlaylist(playlist);
     return pModel;
 }

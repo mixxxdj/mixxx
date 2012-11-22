@@ -78,5 +78,5 @@ EngineMaster* EngineControl::getEngineMaster() {
 }
 
 void EngineControl::notifySeek(double dNewPlaypos) {
-
+    Q_UNUSED(dNewPlaypos);
 }
