@@ -41,6 +41,7 @@ QIcon PrepareFeature::getIcon() {
 void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                 WLibrary* libraryWidget,
                                 MixxxKeyboard* keyboard) {
+    Q_UNUSED(sidebarWidget);
     m_pPrepareView = new DlgPrepare(libraryWidget,
                                               m_pConfig,
                                               m_pTrackCollection);

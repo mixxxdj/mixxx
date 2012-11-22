@@ -6,6 +6,7 @@
 // static
 Waveform* WaveformFactory::loadWaveformFromAnalysis(
     TrackPointer pTrack, const AnalysisDao::AnalysisInfo& analysis) {
+    Q_UNUSED(pTrack);
     if (analysis.version == WAVEFORM_2_VERSION ||
         analysis.version == WAVEFORMSUMMARY_2_VERSION ||
         analysis.version == WAVEFORM_3_VERSION ||

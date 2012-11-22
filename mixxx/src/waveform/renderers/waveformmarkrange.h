@@ -3,25 +3,32 @@
 
 #include <QPixmap>
 
-class ControlObject;
+class ControlObjectThreadMain;
 class QDomNode;
 
-class WaveformMarkRange
-{
-public:
+class WaveformMarkRange {
+  public:
     WaveformMarkRange();
 
-    bool isValid() const { return m_markStartPointControl && m_markEndPointControl;}
-    bool isActive() const;
+    // If a mark range is active it has valid start/end points so it should be
+    // drawn on waveforms.
+    bool active();
+    // If a mark range is enabled that means it should be painted with its
+    // active color instead of its disabled color.
+    bool enabled();
+    // Returns start value or -1 if the start control doesn't exist.
+    double start();
+    // Returns end value or -1 if the end control doesn't exist.
+    double end();
 
     void setup(const QString &group, const QDomNode& node);
 
-private:
+  private:
     void generatePixmap(int weidth, int height);
 
-    ControlObject* m_markStartPointControl;
-    ControlObject* m_markEndPointControl;
-    ControlObject* m_markEnabledControl;
+    ControlObjectThreadMain* m_markStartPointControl;
+    ControlObjectThreadMain* m_markEndPointControl;
+    ControlObjectThreadMain* m_markEnabledControl;
 
     QColor m_activeColor;
     QColor m_disabledColor;
