@@ -27,25 +27,31 @@ CrateFeature::CrateFeature(QObject* parent,
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
     Q_UNUSED(parent);
+    //: An action in the CRATES sidebar item context menu
     m_pCreateCrateAction = new QAction(tr("New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
+    //: An action in the CRATES sidebar item context menu
     m_pDeleteCrateAction = new QAction(tr("Remove"),this);
     connect(m_pDeleteCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDeleteCrate()));
 
+    //: An action in the CRATES sidebar item context menu
     m_pRenameCrateAction = new QAction(tr("Rename"),this);
     connect(m_pRenameCrateAction, SIGNAL(triggered()),
             this, SLOT(slotRenameCrate()));
 
+    //: [verb] An action in the CRATES sidebar item context menu
     m_pLockCrateAction = new QAction(tr("Lock"),this);
     connect(m_pLockCrateAction, SIGNAL(triggered()),
             this, SLOT(slotToggleCrateLock()));
 
+    //: An action in the CRATES sidebar item context menu
     m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    //: An action in the CRATES sidebar item context menu
     m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
@@ -78,6 +84,7 @@ CrateFeature::~CrateFeature() {
 }
 
 QVariant CrateFeature::title() {
+    //: [plural] Root item in the CRATES sidebar item
     return tr("Crates");
 }
 
@@ -203,8 +210,11 @@ void CrateFeature::slotCreateCrate() {
     do {
         bool ok = false;
         name = QInputDialog::getText(NULL,
+                                     //: Title of input dialog launched from the actions in the CRATES sidebar item
                                      tr("New Crate"),
+                                     //: Text in the input dialog launched from the actions in the CRATES sidebar item
                                      tr("Crate name:"),
+                                     //: Text in the input dialog launched from the actions in the CRATES sidebar item
                                      QLineEdit::Normal, tr("New Crate"),
                                      &ok).trimmed();
 
@@ -215,12 +225,16 @@ void CrateFeature::slotCreateCrate() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
+                                 //: An alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                  tr("Creating Crate Failed"),
+                                 //: Part of an alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                  tr("A crate by that name already exists."));
         }
         else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
+                                 //: An alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                  tr("Creating Crate Failed"),
+                                 //: Part of an alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                  tr("A crate cannot have a blank name."));
         }
         else {
@@ -236,7 +250,9 @@ void CrateFeature::slotCreateCrate() {
     } else {
         qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
+                             //: Part of an alert message box in the input dialog launched from the actions in the CRATES sidebar item
                              tr("Creating Crate Failed"),
+                             //: Part of an alert message box in the input dialog launched from the actions in the CRATES sidebar item
                              tr("An unknown error occurred while creating crate: ")
                              + name);
 
@@ -278,7 +294,9 @@ void CrateFeature::slotRenameCrate() {
     do {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
+                                        //: Title of input dialog launched from the actions in the CRATES sidebar item
                                         tr("Rename Crate"),
+                                        //: Text in input dialog launched from the actions in the CRATES sidebar item
                                         tr("New crate name:"),
                                         QLineEdit::Normal,
                                         oldName,
@@ -292,12 +310,16 @@ void CrateFeature::slotRenameCrate() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
+                                //: An alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                 tr("Renaming Crate Failed"),
+                                 //: Part of an alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                 tr("A crate by that name already exists."));
         }
         else if (newName.isEmpty()) {
             QMessageBox::warning(NULL,
+                                //: An alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                 tr("Renaming Crate Failed"),
+                                //: Part of an alert message box in the input dialog launched from the actions in the CRATES sidebar item
                                 tr("A crate cannot have a blank name."));
         }
         else {
@@ -400,8 +422,10 @@ void CrateFeature::slotImportPlaylist()
 
     QString playlist_file = QFileDialog::getOpenFileName(
         NULL,
+        //: Title of file browse dialog launched from the actions in the CRATES sidebar item
         tr("Import Playlist"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        //: File types in file browse dialog launched from the actions in the CRATES sidebar item
         tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
@@ -443,8 +467,10 @@ void CrateFeature::slotExportPlaylist(){
     qDebug() << "Export crate" << m_lastRightClickedIndex.data();
     QString file_location = QFileDialog::getSaveFileName(
         NULL,
+        //: Title of file browse dialog launched from the actions in the CRATES sidebar item
         tr("Export Crate"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        //: File types in file browse dialog launched from the actions in the CRATES sidebar item
         tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {
@@ -512,12 +538,17 @@ void CrateFeature::htmlLinkClicked(const QUrl & link) {
 }
 
 QString CrateFeature::getRootViewHtml() const {
+    //: [plural] Title in the CRATES root item library table
     QString cratesTitle = tr("Crates");
+    //: Text in the CRATES root item library table
     QString cratesSummary = tr("Crates are a great way to help organize the music you want to DJ with.");
+    //: Text in the CRATES root item library table
     QString cratesSummary2 = tr("Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.");
+    //: Text in the CRATES root item library table
     QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
 
     QString html;
+    //: An action in the CRATES root item library table
     QString createCrateLink = tr("Create new crate");
     html.append(QString("<h2>%1</h2>").arg(cratesTitle));
     html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
