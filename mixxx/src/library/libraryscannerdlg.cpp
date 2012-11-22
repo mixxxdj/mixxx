@@ -36,7 +36,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
     QLabel* pLabel = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."),this);
     pLayout->addWidget(pLabel);
 
-    //: Text on a button in the scanning dialog launched from the Choose Library dialog on Mixxx' first run
+    //: Text in the scanning dialog launched from the Choose Library dialog on Mixxx' first run
     QPushButton* pCancel = new QPushButton(tr("Cancel"), this);
     connect(pCancel, SIGNAL(clicked()),
             this, SLOT(slotCancel()));
@@ -65,6 +65,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
     }
 
     if (isVisible()) {
+        //: Text in the scanning dialog launched from the Choose Library dialog on Mixxx' first run
         QString status = tr("Scanning: ") + path;
         emit(progress(status));
     }
