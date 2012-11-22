@@ -37,7 +37,7 @@ PlaylistFeature::~PlaylistFeature() {
 }
 
 QVariant PlaylistFeature::title() {
-    //: Root item in the PLAYLIST sidebar item
+    //: [plural] Root item in the PLAYLIST sidebar item
     return tr("Playlists");
 }
 
@@ -68,7 +68,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     m_pLockPlaylistAction->setText(locked ?
                                    //: An action in the PLAYLIST sidebar item context menu
                                    tr("Unlock") :
-                                   //: An action in the PLAYLIST sidebar item context menu
+                                   //: [verb] An action in the PLAYLIST sidebar item context menu
                                    tr("Lock"));
 
 
@@ -187,7 +187,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 QString PlaylistFeature::getRootViewHtml() const {
-    //: Title in the PLAYLISTS root item library table
+    //: [plural] Title in the PLAYLISTS root item library table
     QString playlistsTitle = tr("Playlists");
     //: Text in the PLAYLISTS root item library table
     QString playlistsSummary = tr("Playlists are ordered lists of songs that allow you to plan your DJ sets.");

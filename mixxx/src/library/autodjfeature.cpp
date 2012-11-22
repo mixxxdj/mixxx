@@ -30,7 +30,7 @@ AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
-    //: Root item in the LIBRARY sidebar item
+    //: [proper noun] Root item in the AUTO DJ sidebar item
     return tr("Auto DJ");
 }
 

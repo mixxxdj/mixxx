@@ -108,7 +108,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     m_pLockPlaylistAction->setText(locked ?
                                    //: An action in the HISTORY sidebar item context menu
                                    tr("Unlock") :
-                                   //: An action in the HISTORY sidebar item context menu
+                                   //: [verb] An action in the HISTORY sidebar item context menu
                                    tr("Lock"));
 
 

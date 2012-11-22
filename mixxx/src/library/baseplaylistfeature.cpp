@@ -48,7 +48,7 @@ BasePlaylistFeature::BasePlaylistFeature(
     connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotRenamePlaylist()));
 
-    //: An action in the PLAYLIST sidebar item context menu
+    //: [verb] An action in the PLAYLIST sidebar item context menu
     m_pLockPlaylistAction = new QAction(tr("Lock"),this);
     connect(m_pLockPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotTogglePlaylistLock()));
@@ -314,7 +314,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
         //: Title of file browse dialog launched from the actions in the PLAYLIST sidebar item
         tr("Export Playlist"),
         music_directory.append("/").append(playlist_filename),
-         //: File types in file browse dialog launched from the actions in the PLAYLIST sidebar item
+        //: File types in file browse dialog launched from the actions in the PLAYLIST sidebar item
         tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
            "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.

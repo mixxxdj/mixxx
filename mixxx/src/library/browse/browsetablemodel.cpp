@@ -45,7 +45,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_COMMENT, tr("Comment"));
     //: Length of the audio. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_DURATION, tr("Duration"));
-    //: Beats per minute in the mainpart of the audio. Text in the column header of the BROWSE file table
+    //: [acronym] Beats per minute in the mainpart of the audio. Text in the column header of the BROWSE file table
     header_data.insert(COLUMN_BPM, tr("BPM"));
     //: Contains the musical key. Text in the header of the column BROWSE file table
     header_data.insert(COLUMN_KEY, tr("Key"));
