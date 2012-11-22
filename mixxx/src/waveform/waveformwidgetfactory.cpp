@@ -459,10 +459,10 @@ void WaveformWidgetFactory::evaluateWidgets() {
         }
 
         if (useOpenGLShaders) {
-            //: Technical term. A value in the waveform display preferences menu
+            //: [acronym] A value in the waveform display preferences menu
             widgetName += " " + tr("(GLSL)");
         } else if (useOpenGl) {
-            //: Technical term. A value in the waveform display preferences menu
+            //: [acronym] A value in the waveform display preferences menu
             widgetName += " " + tr("(GL)");
         }
 

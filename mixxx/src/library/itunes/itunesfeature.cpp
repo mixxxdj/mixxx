@@ -62,7 +62,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         "itunes");
     m_isActivated = false;
     
-    //: Root item in the ITUNES sidebar item
+    //: [proper noun] Root item in the ITUNES sidebar item
     m_title = tr("iTunes");
 
     m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "ITUNES_SCANNER");
@@ -732,6 +732,7 @@ void ITunesFeature::onTrackCollectionLoaded(){
                "your iTunes tracks or playlists may not have loaded."));
     }
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+    //: [proper noun] Item in the ITUNES sidebar item.
     m_title = tr("iTunes");
     emit(featureLoadingFinished(this));
     activate();

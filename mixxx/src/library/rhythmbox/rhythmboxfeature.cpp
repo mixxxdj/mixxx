@@ -46,7 +46,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
         "rhythmbox");
 
     m_isActivated =  false;
-    //: Root item in the RHYTHMBOX sidebar item
+    //: [proper noun] Root item in the RHYTHMBOX sidebar item
     m_title = tr("Rhythmbox");
 
     m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "RHYTHMBOX_SCANNER");
@@ -463,7 +463,7 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from
     // the feature title.
-    //: Root item in the RHYTHMBOX sidebar item
+    //: [proper noun] Item in the RHYTHMBOX sidebar item
     m_title = tr("Rhythmbox");
     emit(featureLoadingFinished(this));
     activate();

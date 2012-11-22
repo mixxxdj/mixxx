@@ -44,7 +44,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
-    //: Root item in the TRAKTOR sidebar item
+    //: [proper noun] Root item in the TRAKTOR sidebar item
     m_title = tr("Traktor");
 
     m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "TRAKTOR_SCANNER");
@@ -656,6 +656,7 @@ void TraktorFeature::onTrackCollectionLoaded() {
     }
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+    //: [proper noun] Item in the TRAKTOR sidebar item.
     m_title = tr("Traktor");
     emit(featureLoadingFinished(this));
     activate();
