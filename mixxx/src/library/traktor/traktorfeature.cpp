@@ -44,6 +44,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
+    //: Root item in the TRAKTOR sidebar item
     m_title = tr("Traktor");
 
     m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "TRAKTOR_SCANNER");
@@ -108,6 +109,7 @@ void TraktorFeature::activate() {
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, getTraktorMusicDatabase());
         m_future_watcher.setFuture(m_future);
+        //: Item in the TRAKTOR sidebar item. Displayed while loading Traktor library
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
@@ -646,7 +648,9 @@ void TraktorFeature::onTrackCollectionLoaded() {
     } else {
         QMessageBox::warning(
             NULL,
+            //: An alert message box launched from the actions in the TRAKTOR sidebar item
             tr("Error Loading Traktor Library"),
+            //: Part of an alert message box launched from the actions in the TRAKTOR sidebar item
             tr("There was an error loading your Traktor library. Some of "
                "your Traktor tracks or playlists may not have loaded."));
     }
