@@ -100,10 +100,12 @@ public:
     void addControl(EngineControl* pControl);
     void addCueControl(CueControl* pControl);
 
-    /** Return the current rate (not thread-safe) */
+    // Return the current rate (not thread-safe)
     double getRate();
-    /** Returns current bpm value (not thread-safe) */
+    // Returns current bpm value (not thread-safe)
     double getBpm();
+    // Returns the BPM of the loaded track (not thread-safe)
+    double getFileBpm();
     /** Sets pointer to other engine buffer/channel */
     void setEngineMaster(EngineMaster*);
 
