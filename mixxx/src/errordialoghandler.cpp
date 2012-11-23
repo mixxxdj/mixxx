@@ -89,7 +89,7 @@ bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message) {
         case DLG_FATAL:     props->setTitle(tr("Fatal error")); break;
         //: Title of alert message box when handling errors
         case DLG_CRITICAL:  props->setTitle(tr("Critical error")); break;
-        //: Title of alert message box when handling errors
+        //: [noun] Title of alert message box when handling errors
         case DLG_WARNING:   props->setTitle(tr("Warning")); break;
         //: Title of alert message box when handling errors
         case DLG_INFO:      props->setTitle(tr("Information")); break;

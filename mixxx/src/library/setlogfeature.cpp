@@ -23,7 +23,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
                                                    "mixxx.db.model.setlog",
                                                    true);//show all tracks
     //: An action in the HISTORY sidebar item context menu
-    m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
+    m_pJoinWithPreviousAction = new QAction(tr("Join with previous" ,
+                                               "Merges the last session with the current"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
 

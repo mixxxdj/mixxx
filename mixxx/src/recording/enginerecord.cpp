@@ -320,7 +320,7 @@ bool EngineRecord::openFile() {
     if (!fileOpen()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
-        //: Title of alert message box launched when recording/streaming without supported codec
+        //: [noun] Title of alert message box launched when recording/streaming without supported codec
         props->setTitle(tr("Recording"));
         //: Text in alert message box launched when recording/streaming without supported codec. Make sure the HTML tags were taken over precisely.
         props->setText(tr("<html>Could not create audio file for recording!<p><br>Maybe you do not have enough free disk space or file permissions.</html>"));

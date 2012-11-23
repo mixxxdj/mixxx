@@ -129,9 +129,9 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     comboBoxEncodingBitrate->setCurrentIndex(tmp_index < 0 ? 0 : tmp_index);
 
     // Encoding format combobox
-    //: Technical term. Value in the live broadcasting preferences menu
+    //: [acronym] Value in the live broadcasting preferences menu
     comboBoxEncodingFormat->addItem(tr("MP3"), SHOUTCAST_FORMAT_MP3);
-    //: Technical term. Value in the live broadcasting preferences menu
+    //: Value in the live broadcasting preferences menu
     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), SHOUTCAST_FORMAT_OV);
     tmp_index = comboBoxEncodingFormat->findData(m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "format")));
