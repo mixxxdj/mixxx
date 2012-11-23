@@ -50,10 +50,13 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pMenu = new QMenu(this);
 
     m_pSamplerMenu = new QMenu(this);
+    //: An action in the track table context menu
     m_pSamplerMenu->setTitle(tr("Load to Sampler"));
     m_pPlaylistMenu = new QMenu(this);
+    //: An action in the track table context menu
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     m_pCrateMenu = new QMenu(this);
+    //: An action in the track table context menu
     m_pCrateMenu->setTitle(tr("Add to Crate"));
 
     // Disable editing
@@ -251,48 +254,61 @@ void WTrackTableView::createActions() {
     Q_ASSERT(m_pMenu);
     Q_ASSERT(m_pSamplerMenu);
 
+    //: An action in the track table context menu
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
+    //: An action in the track table context menu
     m_pHideAct = new QAction(tr("Hide from Library"), this);
     connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
 
+    //: An action in the track table context menu
     m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
     connect(m_pUnhideAct, SIGNAL(triggered()), this, SLOT(slotUnhide()));
 
+    //: An action in the track table context menu
     m_pPurgeAct = new QAction(tr("Purge from Library"), this);
     connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
 
+    //: An action in the track table context menu
     m_pPropertiesAct = new QAction(tr("Properties"), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()),
             this, SLOT(slotShowTrackInfo()));
 
+    //: An action in the track table context menu
     m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
     connect(m_pFileBrowserAct, SIGNAL(triggered()),
             this, SLOT(slotOpenInFileBrowser()));
 
+    //: An action in the track table context menu
     m_pAutoDJAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
 
+    //: An action in the track table context menu
     m_pAutoDJTopAct = new QAction(tr("Add to Auto-DJ Queue (top)"), this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
 
+    //: An action in the track table context menu
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
 
+    //: An action in the track table context menu. Sets the number of plays for the track back to 0
     m_pResetPlayedAct = new QAction(tr("Reset Play Count"), this);
     connect(m_pResetPlayedAct, SIGNAL(triggered()),
             this, SLOT(slotResetPlayed()));
 
-    m_pBpmLockAction = new QAction(tr("Lock BPM"), this);
+    //: An action in the track table context menu
+    m_pBpmLockAction = new QAction(tr("Lock BPM" , "Lock [verb]; BPM [acronym]"), this);
+    //: An action in the track table context menu
     m_pBpmUnlockAction = new QAction(tr("Unlock BPM"), this);
     connect(m_pBpmLockAction, SIGNAL(triggered()),
             this, SLOT(slotLockBpm()));
     connect(m_pBpmUnlockAction, SIGNAL(triggered()),
             this, SLOT(slotUnlockBpm()));
 
+    //: An action in the track table context menu. Deletes said info for the track from the database
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
             this, SLOT(slotClearBeats()));
@@ -466,6 +482,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
                 	ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
+                //: An action in the track table context menu. %1 = a sequential number
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
                 m_pMenu->addAction(pAction);
@@ -484,6 +501,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 bool samplerPlaying = ControlObject::getControl(
                     ConfigKey(samplerGroup, "play"))->get() == 1.0f;
                 bool samplerEnabled = !samplerPlaying && oneSongSelected;
+                //: A submenu of an action in the track table context menu. %1 = a sequential number
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
                 m_pSamplerMenu->addAction(pAction);

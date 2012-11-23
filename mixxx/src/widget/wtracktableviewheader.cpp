@@ -11,6 +11,7 @@
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
                                              QWidget* parent)
         : QHeaderView(orientation, parent),
+          //: Title of context menu in the track table header
           m_menu(tr("Show or hide columns."), this),
           m_signalMapper(this) {
     connect(&m_signalMapper, SIGNAL(mapped(int)),
