@@ -123,20 +123,25 @@ void MidiController::createOutputHandlers() {
                 qWarning() << errorLog;
                 ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
                 props->setType(DLG_WARNING);
-                props->setTitle(tr("MixxxControl not found"));
+                //: Title of an alert message box triggered by a faulty controller mapping
+                props->setTitle(tr("MixxxControl not found" , "MixxxControl [proper noun]"));
+                //: Text in a alert message box triggered by a faulty controller mapping. %1 = MixxxControl's group name , %2 = MixxxControl's name
                 props->setText(QString(tr("The MixxxControl '%1, %2' specified in the "
                                 "loaded mapping is invalid."))
                                 .arg(group, key));
+                //: Text in a alert message box triggered by a faulty controller mapping. %1 = the MIDI status byte send, %2 = the MIDI data byte send
                 props->setInfoText(QString(tr("The MIDI output message 0x%1 0x%2 will not be bound."
                                 "\n(Click Show Details for hints.)"))
                                    .arg(QString::number(status, 16).toUpper(),
                                         QString::number(control, 16).toUpper().rightJustified(2,'0')));
+                //: Text in a alert message box triggered by a faulty controller mapping
                 QString detailsText = QString(tr("* Check to see that the "
                     "MixxxControl name is spelled correctly in the mapping "
                     "file (.xml)\n"));
+                //: Text in a alert message box triggered by a faulty controller mapping
                 detailsText += QString(tr("* Make sure the MixxxControl you're trying to use actually exists."
                     " Visit this wiki page for a complete list:"));
-                detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names");
+                detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/mixxxcontrols");
                 props->setDetails(detailsText);
                 ErrorDialogHandler::instance()->requestErrorDialog(props);
             }
