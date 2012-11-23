@@ -62,8 +62,10 @@ TrackCollection::~TrackCollection() {
 
 bool TrackCollection::checkForTables() {
     if (!m_db.open()) {
+        //: An alert message box triggered when loading required QT plugins at startup fails
         QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
+                              //: Part of alert message box triggered when loading required QT plugins at startup fails
+                              tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
                                 "the Qt SQL driver documentation for information on how "
                                 "to build it.\n\n"
@@ -74,8 +76,12 @@ bool TrackCollection::checkForTables() {
     int requiredSchemaVersion = 17;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
+    //: Part of alert message box triggered when upgrading a previous database schema at startup fails
     QString okToExit = tr("Click OK to exit.");
+    //: An alert message box triggered when upgrading a previous database schema at startup fails
     QString upgradeFailed = tr("Cannot upgrade database schema");
+    
+    //: Part of alert message box triggered when upgrading a previous database schema at startup fails. %1 = a sequential number
     QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
             .arg(QString::number(requiredSchemaVersion));
     int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, m_db, requiredSchemaVersion);
@@ -83,19 +89,23 @@ bool TrackCollection::checkForTables() {
         if (result == -1) {
             QMessageBox::warning(0, upgradeFailed,
                                 upgradeToVersionFailed + "\n" +
+                                //: Part of alert message box triggered when upgrading a previous database schema at startup fails. %1 = a filename
                                 tr("Your %1 file may be outdated.").arg(schemaFilename) +
                                 "\n\n" + okToExit,
                                 QMessageBox::Ok);
         } else if (result == -2) {
             QMessageBox::warning(0, upgradeFailed,
                                 upgradeToVersionFailed + "\n" +
+                                //: Part of alert message box triggered when upgrading a previous database schema at startup fails
                                 tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                                //: Part of alert message box triggered when upgrading a previous database schema at startup fails
                                 tr("Try renaming it and restarting Mixxx.") +
                                 "\n\n" + okToExit,
                                 QMessageBox::Ok);
         } else { // -3
             QMessageBox::warning(0, upgradeFailed,
                                 upgradeToVersionFailed + "\n" +
+                                //: Part of alert message box triggered when upgrading a previous database schema at startup fails. %1 = a filename
                                 tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
                                 "\n\n" + okToExit,
                                 QMessageBox::Ok);
