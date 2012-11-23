@@ -102,6 +102,10 @@ double BpmControl::getBpm() {
     return m_pEngineBpm->get();
 }
 
+double BpmControl::getFileBpm() {
+    return m_pFileBpm->get();
+}
+
 void BpmControl::slotFileBpmChanged(double bpm) {
     //qDebug() << this << "slotFileBpmChanged" << bpm;
     // Adjust the file-bpm with the current setting of the rate to get the
@@ -175,15 +179,13 @@ bool BpmControl::syncTempo(EngineBuffer* pOtherEngineBuffer) {
     }
 
     double fThisBpm  = m_pEngineBpm->get();
-    //double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
     double fThisFileBpm = m_pFileBpm->get();
 
     double fOtherBpm = pOtherEngineBuffer->getBpm();
-    double fOtherRate = pOtherEngineBuffer->getRate();
-    double fOtherFileBpm = fOtherBpm / (1.0 + fOtherRate);
+    double fOtherFileBpm = pOtherEngineBuffer->getFileBpm();
 
-    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm << "rate" << fThisRate;
-    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm << "rate" << fOtherRate;
+    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm;
+    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm;
 
     ////////////////////////////////////////////////////////////////////////////
     // Rough proof of how syncing works -- rryan 3/2011
@@ -315,13 +317,15 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
     double dThisPosition = getCurrentSample();
     double dOtherLength = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-    double dOtherPosition = dOtherLength * ControlObject::getControl(
+    double dOtherEnginePlayPos = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+    double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
 
-    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
+    if (dThisPrevBeat == -1 || dThisNextBeat == -1 ||
+            dOtherEnginePlayPos == -1 || dOtherLength == 0) {
         return false;
     }
 

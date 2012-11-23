@@ -204,7 +204,7 @@ void BaseSqlTableModel::select() {
         tableColumnIndices.push_back(record.indexOf(column));
     }
 
-	// sqlite does not set size and m_rowInfo was just cleared    
+	// sqlite does not set size and m_rowInfo was just cleared
     //int rows = query.size();
     //if (sDebug) {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
@@ -218,7 +218,7 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located        
+        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located
         // Get all the table columns and store them in the hash for this
         // row-info section.
 

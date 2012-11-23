@@ -54,6 +54,9 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         ControlObject::getControl(ConfigKey(m_pGroup, "track_samples")));
     setAcceptDrops(true);
 
+    m_playControl = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "play")));
+
     m_waveform = NULL;
     m_waveformPixmap = QPixmap();
     m_actualCompletion = 0;
@@ -71,6 +74,7 @@ WOverview::~WOverview() {
     delete m_totalGainControl;
     delete m_endOfTrackControl;
     delete m_trackSamplesControl;
+    delete m_playControl;
 }
 
 void WOverview::setup(QDomNode node) {
@@ -113,21 +117,13 @@ void WOverview::setup(QDomNode node) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup( m_pGroup, child);
+            markRange.setup(m_pGroup, child);
 
             connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
                      this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markEnabledControl, SIGNAL(valueChangedFromEngine(double)),
-                     this, SLOT(onMarkChanged(double)));
-
             connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
                      this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markStartPointControl, SIGNAL(valueChangedFromEngine(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-
             connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markEndPointControl, SIGNAL(valueChangedFromEngine(double)),
                      this, SLOT(onMarkRangeChange(double)));
         }
         child = child.nextSibling();
@@ -446,12 +442,15 @@ void WOverview::paintEvent(QPaintEvent *)
         for( unsigned int i = 0; i < m_markRanges.size(); i++) {
             WaveformMarkRange& currentMarkRange = m_markRanges[i];
 
-            const double startValue = currentMarkRange.m_markStartPointControl->get();
-            const double endValue = currentMarkRange.m_markEndPointControl->get();
-
-            if (startValue < 0 || endValue < 0) {
+            // If the mark range is not active we should not draw it.
+            if (!currentMarkRange.active()) {
                 continue;
             }
+
+            // Active mark ranges by definition have starts/ends that are not
+            // disabled.
+            const double startValue = currentMarkRange.start();
+            const double endValue = currentMarkRange.end();
 
             const float startPosition = offset + startValue * gain;
             const float endPosition = offset + endValue * gain;
@@ -460,25 +459,23 @@ void WOverview::paintEvent(QPaintEvent *)
                 continue;
             }
 
-            const bool enabled = (currentMarkRange.m_markEnabledControl->get() > 0.0);
-
-            if( enabled) {
+            if (currentMarkRange.enabled()) {
                 painter.setOpacity(0.4);
                 painter.setPen(currentMarkRange.m_activeColor);
                 painter.setBrush(currentMarkRange.m_activeColor);
-            }
-            else {
+            } else {
                 painter.setOpacity(0.2);
                 painter.setPen(currentMarkRange.m_disabledColor);
                 painter.setBrush(currentMarkRange.m_disabledColor);
             }
 
             //let top and bottom of the rect out of the widget
-            painter.drawRect( QRectF( QPointF(startPosition,-2.0), QPointF(endPosition,height()+1.0)));
+            painter.drawRect(QRectF(QPointF(startPosition, -2.0),
+                                    QPointF(endPosition,height() + 1.0)));
         }
 
         //Draw markers (Cue & hotcues)
-        QPen shadowPen( QBrush( m_qColorBackground), 2.5);
+        QPen shadowPen(QBrush(m_qColorBackground), 2.5);
 
         QFont markerFont = painter.font();
         markerFont.setPixelSize(10);
@@ -491,7 +488,7 @@ void WOverview::paintEvent(QPaintEvent *)
 
         for( int i = 0; i < m_marks.size(); i++) {
             WaveformMark& currentMark = m_marks[i];
-            if( currentMark.m_pointControl->get() > 0.0) {
+            if (currentMark.m_pointControl && currentMark.m_pointControl->get() >= 0.0) {
                 //const float markPosition = 1.0 +
                 //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                 const float markPosition = offset + currentMark.m_pointControl->get() * gain;
@@ -500,10 +497,10 @@ void WOverview::paintEvent(QPaintEvent *)
                 painter.setPen( shadowPen);
                 painter.drawLine( line);
 
-                painter.setPen( currentMark.m_color);
-                painter.drawLine( line);
+                painter.setPen(currentMark.m_color);
+                painter.drawLine(line);
 
-                if( !currentMark.m_text.isEmpty()) {
+                if (!currentMark.m_text.isEmpty()) {
                     QPointF textPoint;
                     textPoint.setX(markPosition+0.5f);
 
@@ -559,12 +556,9 @@ QColor WOverview::getMarkerColor() {
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // Accept the enter event if the thing is a filepath and nothing's playing
     // in this deck or the settings allow to interrupt the playing deck.
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        ControlObject *pPlayCO = ControlObject::getControl(
-                    ConfigKey(m_pGroup, "play"));
-        if (pPlayCO && (!pPlayCO->get() ||
-                        m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
+    if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
+        if (m_playControl->get() == 0.0 ||
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) {
             event->acceptProposedAction();
         } else {
             event->ignore();

@@ -92,6 +92,7 @@ private slots:
     double m_endOfTrack;
     QString m_sPrefix;
     ControlObjectThreadMain* m_trackSamplesControl;
+    ControlObjectThreadMain* m_playControl;
 
     Waveform* m_waveform;
     QPixmap m_waveformPixmap;

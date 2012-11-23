@@ -9,7 +9,6 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 
 #include "configobject.h"
-#include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -48,14 +47,15 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
     for (unsigned int i = 0; i < m_markRanges.size(); i++) {
         WaveformMarkRange& markRange = m_markRanges[i];
 
-        if (!markRange.isValid())
+        // If the mark range is not active we should not draw it.
+        if (!markRange.active()) {
             continue;
+        }
 
-        int startSample = markRange.m_markStartPointControl->get();
-        int endSample = markRange.m_markEndPointControl->get();
-        if (startSample == endSample)
-            continue;
-
+        // Active mark ranges by definition have starts/ends that are not
+        // disabled so no need to check.
+        int startSample = markRange.start();
+        int endSample = markRange.end();
 
         m_waveformRenderer->regulateVisualSample(startSample);
         double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
@@ -64,16 +64,12 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
 
         //range not in the current display
-        if (startPosition > m_waveformRenderer->getWidth() ||
-                endPosition < 0)
+        if (startPosition > m_waveformRenderer->getWidth() || endPosition < 0)
             continue;
 
-        QPixmap* selectedPixmap = 0;
+        QPixmap* selectedPixmap = NULL;
 
-        if (markRange.m_markEnabledControl && markRange.m_markEnabledControl->get() < 0.5)
-            selectedPixmap = &markRange.m_disabledPixmap;
-        else
-            selectedPixmap = &markRange.m_activePixmap;
+        selectedPixmap = markRange.enabled() ? &markRange.m_activePixmap : &markRange.m_disabledPixmap;
 
         //draw the correcponding portion of the selected pixmap
         //this shouldn't involve *any* scaling it should be fast even in software mode

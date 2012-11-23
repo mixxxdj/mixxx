@@ -42,6 +42,10 @@ QString BeatFactory::getPreferredVersion(
     const bool bEnableOffsetCorrection,
     const int iMinBpm, const int iMaxBpm,
     const QHash<QString, QString> extraVersionInfo) {
+    Q_UNUSED(bEnableOffsetCorrection);
+    Q_UNUSED(iMinBpm);
+    Q_UNUSED(iMaxBpm);
+    Q_UNUSED(extraVersionInfo);
     if (bEnableFixedTempoCorrection) {
         return BEAT_GRID_2_VERSION;
     }

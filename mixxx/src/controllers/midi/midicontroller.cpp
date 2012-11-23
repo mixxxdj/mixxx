@@ -136,7 +136,7 @@ void MidiController::createOutputHandlers() {
                     "file (.xml)\n"));
                 detailsText += QString(tr("* Make sure the MixxxControl you're trying to use actually exists."
                     " Visit this wiki page for a complete list:"));
-                detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names");
+                detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/mixxxcontrols");
                 props->setDetails(detailsText);
                 ErrorDialogHandler::instance()->requestErrorDialog(props);
             }

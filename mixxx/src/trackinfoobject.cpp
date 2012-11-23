@@ -605,7 +605,7 @@ void TrackInfoObject::setPlayedAndUpdatePlaycount(bool bPlayed)
         setDirty(true);
     }
     else if (m_bPlayed && !bPlayed) {
-        --m_iTimesPlayed;
+        m_iTimesPlayed = math_max(0, m_iTimesPlayed - 1);
         setDirty(true);
     }
     m_bPlayed = bPlayed;

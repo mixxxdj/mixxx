@@ -19,6 +19,7 @@ class BpmControl : public EngineControl {
     BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
     double getBpm();
+    double getFileBpm();
 
   public slots:
 

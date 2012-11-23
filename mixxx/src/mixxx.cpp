@@ -53,6 +53,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
+#include "widget/wspinny.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -1224,7 +1225,7 @@ void MixxxApp::slotViewFullScreen(bool toggle)
         // Not for Mac OS because the native menu bar will unhide when moving
         // the mouse to the top of screen
 
-        //menuBar()->setNativeMenuBar(false); 
+        //menuBar()->setNativeMenuBar(false);
         // ^ This leaves a broken native Menu Bar with Ubuntu Unity Bug #1076789#
         // it is only allowed to change this prior initMenuBar()
 
@@ -1646,8 +1647,9 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
             // ON (only in Library)
             WWidget* pWidget = dynamic_cast<WWidget*>(obj);
             WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
+            WSpinny* pSpinny = dynamic_cast<WSpinny*>(obj);
             QLabel* pLabel = dynamic_cast<QLabel*>(obj);
-            return (pWidget || pWfViewer || pLabel);
+            return (pWidget || pWfViewer || pSpinny || pLabel);
         } else if (m_tooltips == 0) {
             // ON
             return false;
