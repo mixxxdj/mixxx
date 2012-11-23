@@ -81,16 +81,25 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     shout_init();
 
     if (!(m_pShout = shout_new())) {
-        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_t"));
+        //: An alert message box triggered when live broadcasting fails to start
+        errorDialog(tr("Mixxx encountered a problem"),
+                    //: Text in alert message box triggered when live broadcasting fails to start
+                    tr("Could not allocate shout_t",
+                       "shout_t = data type that refers to a single server connection."));
         return;
     }
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
-        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
+        errorDialog(tr("Mixxx encountered a problem"),
+                    //: Text in alert message box triggered when live broadcasting fails to start
+                    tr("Could not allocate shout_metadata_t",
+                       "shout_metadata_t = data type that refers to a set of metadata attributes."));
         return;
     }
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
+        //: An alert message box triggered when live broadcasting fails to start
+        errorDialog(tr("Error setting non-blocking mode:",
+                       "non-blocking = asynchronous"), shout_get_error(m_pShout));
         return;
     }
 }
@@ -223,54 +232,64 @@ void EngineShoutcast::updateFromPreferences()
     int protocol;
 
     if (shout_set_host(m_pShout, baHost.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting hostname!"), shout_get_error(m_pShout));
         return;
     }
 
     // WTF? Why SHOUT_PROTOCOL_HTTP and not.. the chosen protocol?
     if (shout_set_protocol(m_pShout, SHOUT_PROTOCOL_HTTP) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_port(m_pShout, baPort.toUInt()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting port!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_password(m_pShout, baPassword.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting password!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_mount(m_pShout, baMountPoint.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
 
 
     if (shout_set_user(m_pShout, baLogin.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_name(m_pShout, baStreamName.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting stream name!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_description(m_pShout, baStreamDesc.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting stream description!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_genre(m_pShout, baStreamGenre.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting stream genre!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_url(m_pShout, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
+        //: An alert message box triggered by a failed connection to a streaming server
+        errorDialog(tr("Error setting stream url!" , "URL [acronym]"), shout_get_error(m_pShout));
         return;
     }
 
@@ -299,15 +318,18 @@ void EngineShoutcast::updateFromPreferences()
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
     if (m_format_is_ov && iMasterSamplerate == 96000) {
+        //: An alert message box triggered when enabling live broadcasting with unsupported Master Sample Rate set
         errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
                     "supported. Please try a different sample-rate or switch "
                     "to a different encoding."),
+                    //: Text in alert message box triggered when streaming with unsupported sample rate.
                     tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
                     "information."));
         return;
     }
 
     if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.constData()) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting bitrate"), shout_get_error(m_pShout));
         return;
     }
@@ -324,17 +346,20 @@ void EngineShoutcast::updateFromPreferences()
     } else if (m_protocol_is_icecast1) {
         protocol = SHOUT_PROTOCOL_XAUDIOCAST;
     } else {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error: unknown server protocol!"), shout_get_error(m_pShout));
         return;
     }
 
     if (m_protocol_is_shoutcast && !m_format_is_mp3) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"),
                     shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_protocol(m_pShout, protocol) != SHOUTERR_SUCCESS) {
+        //: An alert message box triggered by a failed connection to a streaming server
         errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
         return;
     }
@@ -457,7 +482,10 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
                 if ( m_iShoutFailures > 3 ){
                     if(!serverConnect())
-                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                        //: An alert message box triggered by a lost connection to a streaming server
+                        errorDialog(tr("Lost connection to streaming server"),
+                                    //: Text in a alert message box triggered by a lost connection to a streaming server
+                                    tr("Please check your connection to the Internet and verify that your username and password are correct."));
                  }
                  else{
                     m_iShoutFailures++;
@@ -474,7 +502,10 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             if ( m_iShoutFailures > 3 ){
                     if(!serverConnect())
-                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                        //: An alert message box triggered by a lost connection to a streaming server
+                        errorDialog(tr("Lost connection to streaming server"),
+                                    //: Text in a alert message box triggered by a lost connection to a streaming server
+                                    tr("Please check your connection to the Internet and verify that your username and password are correct."));
              }
              else{
                 m_iShoutFailures++;
@@ -503,9 +534,12 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
             updateFromPreferences();
 
             if(serverConnect()) {
+                //: An information message box triggered when live broadcasting starts
                 infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
             } else {
+                //: An alert message box triggered when live broadcasting fails to start
                 errorDialog(tr("Mixxx could not connect to streaming server"),
+                            //: Text in a alert message box triggered when live broadcasting fails to start
                             tr("Please check your connection to the Internet and verify that your username and password are correct."));
             }
         }
@@ -531,6 +565,7 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
      } else if (isConnected()) {
         // if shoutcast is disabled but we are connected, disconnect
         serverDisconnect();
+         //: An information message box triggered when live broadcasting stops
         infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
     }
 }
@@ -608,6 +643,7 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     qWarning() << "Shoutcast error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
+    //: Title of an alert message box triggered by errors during live broadcasting
     props->setTitle(tr("Live broadcasting"));
     props->setText(text);
     props->setDetails(detailedError);
@@ -620,6 +656,7 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
 void EngineShoutcast::infoDialog(QString text, QString detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
+    //: Title of an information message box triggered by errors during live broadcasting
     props->setTitle(tr("Live broadcasting"));
     props->setText(text);
     props->setDetails(detailedInfo);
