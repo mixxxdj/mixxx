@@ -89,10 +89,10 @@ class EngineControl : public QObject {
     const char* getGroup();
     ConfigObject<ConfigValue>* getConfig();
     EngineMaster* getEngineMaster();
+    ConfigObject<ConfigValue>* m_pConfig;
 
   private:
     const char* m_pGroup;
-    ConfigObject<ConfigValue>* m_pConfig;
     double m_dCurrentSample;
     double m_dTotalSamples;
     EngineMaster* m_pEngineMaster;
