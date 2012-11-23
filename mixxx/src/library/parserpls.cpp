@@ -152,7 +152,9 @@ bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items, bool useR
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        //: An alert message box triggered by the actions in one of the sidebar items
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             //: Part of an alert message box triggered by the actions in one of the sidebar items
                              tr("Could not create file")+" "+file_str);
         return false;
     }

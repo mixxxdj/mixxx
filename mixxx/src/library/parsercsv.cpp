@@ -127,7 +127,9 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        //: An alert message box triggered by the actions in one of the sidebar items
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             //: Part of an alert message box triggered by the actions in one of the sidebar items
                              tr("Could not create file")+" "+file_str);
         return false;
     }
@@ -197,7 +199,9 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        //: An alert message box triggered by the actions in one of the sidebar items
         QMessageBox::warning(NULL,tr("Readable text Export Failed"),
+                            //: Part of an alert message box triggered by the actions in one of the sidebar items
                              tr("Could not create file")+" "+file_str);
         return false;
     }

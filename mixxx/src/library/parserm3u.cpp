@@ -164,8 +164,12 @@ bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, boo
         for (int i = 0; i < items.size(); ++i) {
             if (!codec->canEncode(items.at(i))) {
                 // filepath contains incompatible character
+                
+                //: An alert message box triggered by the actions in one of the sidebar items
                 QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                                     //: Part of an alert message box triggered by the actions in one of the sidebar items
                                      tr("File path contains characters, not allowed in m3u playlists.\n") +
+                                     //: Part of an alert message box triggered by the actions in one of the sidebar items
                                      tr("Export a m3u8 playlist instead!\n") +
                                      items.at(i));
                 return false;
@@ -175,7 +179,9 @@ bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, boo
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        //: An alert message box triggered by the actions in one of the sidebar items
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             //: Part of an alert message box triggered by the actions in one of the sidebar items
                              tr("Could not create file") + " " + file_str);
         return false;
     }
