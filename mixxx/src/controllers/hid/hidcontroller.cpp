@@ -185,11 +185,17 @@ void HidController::guessDeviceCategory() {
     if (hid_interface_number==-1) {
         if (hid_usage_page==0x1) {
             switch (hid_usage) {
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 case 0x2: info = tr("Generic HID Mouse"); break;
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 case 0x4: info = tr("Generic HID Joystick"); break;
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 case 0x5: info = tr("Generic HID Gamepad"); break;
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 case 0x6: info = tr("Generic HID Keyboard"); break;
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 case 0x8: info = tr("Generic HID Multiaxis Controller"); break;
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 default: info = tr("Unknown HID Desktop Device") +
                         QString().sprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
                     break;
@@ -197,19 +203,23 @@ void HidController::guessDeviceCategory() {
         } else if (hid_vendor_id==0x5ac) {
             // Apple laptop special HID devices
             if (hid_product_id==0x8242) {
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 info = tr("HID Infrared Control");
             } else {
+                //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
                 info = tr("Unknown Apple HID Device") + QString().sprintf(
                     " 0x%0x/0x%0x",hid_usage_page,hid_usage);
             }
         } else {
             // Fill in the usage page and usage fields for debugging info
+            //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
             info = tr("HID Unknown Device") + QString().sprintf(
                 " 0x%0x/0x%0x", hid_usage_page, hid_usage);
         }
     } else {
         // Guess linux device types somehow as well. Or maybe just fill in the
         // interface number?
+        //: [acronym] = HID; Name of device class in the CONTROLLERS preferences menu
         info = tr("HID Interface Number") + QString().sprintf(
             " 0x%0x", hid_interface_number);
     }
