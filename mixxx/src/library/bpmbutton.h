@@ -14,6 +14,7 @@ class BPMButton : public QAbstractButton
     ~BPMButton();
     void setCheckedImage(QPixmap &image);
     void setUncheckedImage(QPixmap &image);
+    QSize sizeHint() const;
   protected:
     void paintEvent(QPaintEvent *e);
   private:

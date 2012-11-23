@@ -16,10 +16,10 @@ BPMDelegate::BPMDelegate(QObject *parent, int column)
         m_pBPM->setDecimals(2);
         m_pButton = new BPMButton(m_pWidget);
         m_pButton->setMinimumWidth(1);
+        m_pButton->setMaximumWidth(20);
 
         m_pLayout = new QHBoxLayout;
         m_pLayout->addWidget(m_pButton);
-        m_pLayout->addSpacing(2);
         m_pLayout->addWidget(m_pBPM);
         m_pLayout->setContentsMargins(0,0,0,0);
         m_pLayout->setSpacing(0);
@@ -43,17 +43,19 @@ QWidget * BPMDelegate::createEditor(QWidget *parent,
     Q_UNUSED(option);
     Q_UNUSED(index);
     QWidget *pw = new QWidget(parent);
-    QPushButton * btn = new QPushButton(pw);
-    btn->setIcon(QIcon("res/images/library/uncheck.png"));
+    BPMButton * btn = new BPMButton(pw);
     btn->setObjectName("oooo");
-    btn->setMaximumWidth(30);
+    connect(btn, SIGNAL(released()),
+            this, SLOT(commitAndCloseEditor()));
+    btn->setMaximumWidth(20);
     QDoubleSpinBox *pSpin = new QDoubleSpinBox(pw);
     pSpin->setValue(index.data().toDouble());pSpin->setDecimals(10);
     pSpin->setMinimum(0);pSpin->setMaximum(1000);
     pSpin->setSingleStep(0.1);
     QHBoxLayout *pLayout = new QHBoxLayout;
-    pLayout->addWidget(btn);pLayout->addSpacing(2);
-    pLayout->addWidget(pSpin);pLayout->setContentsMargins(0,0,0,0);
+    pLayout->addWidget(btn);
+    pLayout->addWidget(pSpin);
+    pLayout->setContentsMargins(0,0,0,0);
     pLayout->setSpacing(0);
     pw->setLayout(pLayout);
     return pw;
@@ -79,6 +81,7 @@ void BPMDelegate::paint(QPainter *painter,
     Q_UNUSED(index);
     m_pWidget->setGeometry(option.rect);
     m_pBPM->setValue(index.data().toDouble());
+    m_pButton->setChecked(index.sibling(index.row(),index.column()-1).data().toBool());
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(m_pWidget);
@@ -115,4 +118,12 @@ void BPMDelegate::cellEntered(const QModelIndex &index) {
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }
     }
+}
+
+void BPMDelegate::commitAndCloseEditor() {
+    if (BPMButton *editor = qobject_cast<BPMButton *>(sender())) {
+        qDebug() << editor->isChecked();
+    }
+    // emit commitData(sender());
+    // emit closeEditor(sender());
 }

@@ -36,6 +36,7 @@ class BPMDelegate : public QStyledItemDelegate {
 
   public slots:
     void cellEntered(const QModelIndex &index);
+    void commitAndCloseEditor();
 
   private:
     QTableView *m_pTableView;

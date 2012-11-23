@@ -1,6 +1,7 @@
 #include "bpmbutton.h"
 
 #include <QPainter>
+#include <QRect>
 
 BPMButton::BPMButton(QWidget *parent) : QAbstractButton(parent),
                                         m_Checked("res/images/library/checked.png"),
@@ -14,19 +15,26 @@ BPMButton::~BPMButton(){
 
 void BPMButton::setCheckedImage(QPixmap &image){
     m_Checked = image;
+    update();
 }
 
 void BPMButton::setUncheckedImage(QPixmap &image){
     m_Unchecked = image;
+    update();
+}
+
+QSize BPMButton::sizeHint() const {
+    if (isChecked())
+        return m_Checked.size();
+    else
+        return m_Unchecked.size();
 }
 
 void BPMButton::paintEvent(QPaintEvent *e){
     Q_UNUSED(e);
     QPainter painter(this);
-    painter.setBrush(Qt::blue);
-    painter.setPen(Qt::NoPen);
     if (isChecked())
-        painter.drawPixmap(this->x(),this->y(),m_Checked);
+        painter.drawPixmap(0,0,m_Checked);
     else
-        painter.drawPixmap(this->x(),this->y(),m_Unchecked);
+        painter.drawPixmap(0,0,m_Unchecked);
 }
