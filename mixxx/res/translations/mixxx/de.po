@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-18 19:42+0200\n"
-"PO-Revision-Date: 2012-11-20 15:58+0000\n"
+"PO-Revision-Date: 2012-11-22 09:33+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-22 04:40+0000\n"
+"X-Launchpad-Export-Date: 2012-11-23 04:44+0000\n"
 "X-Generator: Launchpad (build 16293)\n"
 "Language: de\n"
 
@@ -27,7 +27,7 @@ msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -1075,19 +1075,19 @@ msgstr "Slip-Modus ein-/ausschalten"
 
 #: DlgControllerLearning#72
 msgid "Single deck mode - Toggle vinyl control to next deck"
-msgstr ""
+msgstr "Einzeldeck-Modus - Vinyl-Steuerung zum nächsten Deck umschalten"
 
 #: DlgControllerLearning#73
 msgid "Cues"
-msgstr ""
+msgstr "Cues"
 
 #: DlgControllerLearning#74
 msgid "Hotcues"
-msgstr ""
+msgstr "Hotcue"
 
 #: DlgControllerLearning#75
 msgid "Hotcue %1"
-msgstr ""
+msgstr "Hotcue %1"
 
 #: DlgControllerLearning#76
 msgid "Beat-Looping"
@@ -1120,7 +1120,7 @@ msgstr "1/4tel"
 #: DlgControllerLearning#83
 msgctxt "DlgControllerLearning#83"
 msgid "Library"
-msgstr ""
+msgstr "Bibliothek"
 
 #: DlgControllerLearning#84
 msgid "Switch to the next view (library, playlist..)"
@@ -1169,7 +1169,7 @@ msgstr "Flange-Effekt: Phasenverzögerung"
 #: DlgControllerLearning#95
 msgctxt "DlgControllerLearning#95"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: DlgControllerLearning#96
 msgid "Microphone on/off"
@@ -1186,23 +1186,23 @@ msgstr "Mikrofonkanal-Orientierung (z.B. Links, Rechts, Mitte)"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: DlgControllerLearning#100
 msgid "Shuffle the content of the Auto DJ playlist"
-msgstr ""
+msgstr "Den Inhalt der Auto-DJ Wiedergabeliste mischen"
 
 #: DlgControllerLearning#101
 msgid "Skip the next track in the Auto DJ playlist"
-msgstr ""
+msgstr "Den nächsten Titel in der Auto-DJ Wiedergabeliste überspringen"
 
 #: DlgControllerLearning#102
 msgid "Trigger the transition to the next track"
-msgstr ""
+msgstr "Löst die Überblendung zum nächten Titel aus"
 
 #: DlgControllerLearning#103
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Auto-DJ ein-/ausschalten"
 
 #: DlgControllerLearning#104
 msgid "User Interface"
@@ -1262,7 +1262,7 @@ msgstr "BPM in den ID3-Tag schreiben"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr "Falls BPM erkannt wird, aber nicht im angegebenen Bereich"
+msgstr "Falls BPM erkannt werden, aber nicht im angegebenen Bereich"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
@@ -2102,6 +2102,9 @@ msgid ""
 "calculated replaygain to be applied. To avoid abrupt volume changes Mixxx "
 "does not change the replaygain of playing tracks."
 msgstr ""
+"Nachdem die Titel-Analyse beendet ist kann es einige Sekunden dauern bis die "
+"ReplayGain angewendet wird. Um plötzliche Lautstärkeänderungen zu vermeiden "
+"ändert Mixxx nicht die ReplayGain von Titeln welche gerade abgespielt werden."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Apply volume normalization to loaded tracks."
@@ -2259,17 +2262,17 @@ msgstr "Öffentlicher Stream"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Use UTF-8 encoding for metadata."
-msgstr ""
+msgstr "UTF-8 Kodierung für Metadaten verwenden."
 
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Encoding"
-msgstr ""
+msgstr "Kodierung"
 
 #: DlgPrefShoutcastDlg#22
 msgctxt "DlgPrefShoutcastDlg#22"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Format"
@@ -2290,12 +2293,12 @@ msgstr "Benutzerdefinierte Metadaten aktivieren"
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: DlgPrefShoutcastDlg#29
 msgid ""
@@ -2685,7 +2688,7 @@ msgstr "Analyse stoppen"
 
 #: DlgPrepare#12
 msgid "Analyzing %1/%2 %3%"
-msgstr ""
+msgstr "Analysiere %1/%2 %3%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -4418,14 +4421,20 @@ msgid ""
 "Syncs to the first deck (in numerical order) that is playing a track and has "
 "a BPM."
 msgstr ""
+"Syncronisiert mit dem ersten Deck (in numerischer Ordnung) welches einen "
+"Titel abspielt und einen BPM-Wert hat."
 
 #: Tooltips#108
 msgid "If no deck is playing, syncs to the first deck that has a BPM."
 msgstr ""
+"Wenn kein Deck spielt, wird mit dem ersten Deck sycronisiert welches einen "
+"BPM-Wert hat. syncronisiert."
 
 #: Tooltips#109
 msgid "Decks can't sync to samplers and samplers can only sync to decks."
 msgstr ""
+"Decks können nicht mit Samplern und Sampler nur mit Decks synchronisiert "
+"werden."
 
 #: Tooltips#110
 msgid "Setup a loop over the set number of beats."
@@ -4531,7 +4540,7 @@ msgstr "Springt zum Ende des Titels."
 #: Tooltips#130
 msgctxt "Tooltips#130"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronisieren"
 
 #: Tooltips#131
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4585,7 +4594,7 @@ msgstr "Wirft den Titel aus dem Deck."
 #: Tooltips#142
 msgctxt "Tooltips#142"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#143
 msgid "If hotcue is set, jumps to the hotcue."
