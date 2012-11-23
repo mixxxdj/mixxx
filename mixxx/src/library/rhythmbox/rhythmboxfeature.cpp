@@ -2,9 +2,10 @@
 #include <QtDebug>
 #include <QStringList>
 
-#include "library/rhythmbox/rhythmboxtrackmodel.h"
-#include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+
+#include "library/baseexternaltrackmodel.h"
+#include "library/baseexternalplaylistmodel.h"
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 
@@ -32,8 +33,18 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
         new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
                            columns, false)));
 
-    m_pRhythmboxTrackModel = new RhythmboxTrackModel(this, m_pTrackCollection);
-    m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
+    m_pRhythmboxTrackModel = new BaseExternalTrackModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.rhythmbox",
+        "rhythmbox_library",
+        "rhythmbox");
+    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.rhythmbox_playlist",
+        "rhythmbox_playlists",
+        "rhythmbox_playlist_tracks",
+        "rhythmbox");
+
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
@@ -58,7 +69,12 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
-    RhythmboxPlaylistModel* pModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
+    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
+        this, m_pTrackCollection,
+        "mixxx.db.model.rhythmbox_playlist",
+        "rhythmbox_playlists",
+        "rhythmbox_playlist_tracks",
+        "rhythmbox");
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -231,24 +247,23 @@ TreeItem* RhythmboxFeature::importPlaylists()
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                TreeItem * item = new TreeItem(playlist_name,playlist_name, this, rootItem);
+                TreeItem * item = new TreeItem(playlist_name, playlist_name, this, rootItem);
                 rootItem->appendChild(item);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
 
-                bool success = query_insert_to_playlists.exec();
-                if(!success){
-                    qDebug() << "SQL Error in RhythmboxFeature.cpp: line" << __LINE__ << " "
-                                    << query_insert_to_playlists.lastError();
-                    return NULL;
+                if (!query_insert_to_playlists.exec()) {
+                    LOG_FAILED_QUERY(query_insert_to_playlists)
+                            << "Couldn't insert playlist:" << playlist_name;
+                    continue;
                 }
-                //get playlist_id
+
+                // get playlist_id
                 int playlist_id = query_insert_to_playlists.lastInsertId().toInt();
 
                 //Process playlist entries
                 importPlaylist(xml, query_insert_to_playlist_tracks, playlist_id);
-
             }
         }
     }

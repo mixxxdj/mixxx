@@ -4,7 +4,7 @@
 
 #include "waveform/renderers/waveformrendermark.h"
 
-#include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -37,7 +37,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
     for( int i = 0; i < m_marks.size(); i++) {
         WaveformMark& mark = m_marks[i];
 
-        if( !mark.m_pointControl)
+        if (!mark.m_pointControl)
             continue;
 
         //Generate pixmap on first paint can't be done in setup since we need
@@ -46,7 +46,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
             generateMarkPixmap(mark);
 
         int samplePosition = mark.m_pointControl->get();
-        if( samplePosition > 0.0) {
+        if (samplePosition >= 0.0) {
             m_waveformRenderer->regulateVisualSample(samplePosition);
             double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 

@@ -15,10 +15,8 @@
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
 
-//class ITunesPlaylistModel;
-class ITunesTrackModel;
-class ITunesPlaylistModel;
-
+class BaseExternalTrackModel;
+class BaseExternalPlaylistModel;
 
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -58,8 +56,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void clearTable(QString table_name);
     bool readNextStartElement(QXmlStreamReader& xml);
 
-    ITunesTrackModel* m_pITunesTrackModel;
-    ITunesPlaylistModel* m_pITunesPlaylistModel;
+    BaseExternalTrackModel* m_pITunesTrackModel;
+    BaseExternalPlaylistModel* m_pITunesPlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
     TrackCollection* m_pTrackCollection;
