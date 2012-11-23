@@ -1120,11 +1120,13 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
                     subkey = configKey;
                     subkey.item += "_activate";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                    //: Shortcut title suffix in the tooltips of the graphical user interface
                     addShortcutToToolTip(pWidget, shortcut, tr("activate"));
 
                     subkey = configKey;
                     subkey.item += "_toggle";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                    //: [verb] Shortcut title suffix in the tooltips of the graphical user interface
                     addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
                 } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget))) {
                     // check for "_up", "_down", "_up_small", "_down_small"
@@ -1135,42 +1137,50 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        //: Direction; Shortcut title suffix in the tooltips of the graphical user interface
                         addShortcutToToolTip(pWidget, shortcut, tr("right"));
 
                         subkey = configKey;
                         subkey.item += "_down";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        //: Direction; Shortcut title suffix in the tooltips of the graphical user interface
                         addShortcutToToolTip(pWidget, shortcut, tr("left"));
 
                         subkey = configKey;
                         subkey.item += "_up_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("right small"));
+                        addShortcutToToolTip
+                        (pWidget, shortcut, tr("right") + tr("small steps" , "to change sth. in small increments"));
 
                         subkey = configKey;
                         subkey.item += "_down_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("left small"));
+                        addShortcutToToolTip
+                        (pWidget, shortcut, tr("left") + tr("small steps" , "to change sth. in small increments"));
                     } else {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        //: Direction; Shortcut title suffix in the tooltips of the graphical user interface
                         addShortcutToToolTip(pWidget, shortcut, tr("up"));
 
                         subkey = configKey;
                         subkey.item += "_down";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
+                        //: Direction; Shortcut title suffix in the tooltips of the graphical user interface
                         addShortcutToToolTip(pWidget, shortcut, tr("down"));
 
                         subkey = configKey;
                         subkey.item += "_up_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("up small"));
+                        addShortcutToToolTip
+                        (pWidget, shortcut, tr("up") + tr("small steps" , "to change sth. in small increments"));
 
                         subkey = configKey;
                         subkey.item += "_down_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("down small"));
+                        addShortcutToToolTip
+                        (pWidget, shortcut, tr("down") + tr("small steps" , "to change sth. in small increments"));
                     }
                 }
             }
@@ -1195,6 +1205,7 @@ void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& sho
 #endif
 
     tooltip += "\n";
+    //: Title of shortcut in the tooltips of the graphical user interface
     tooltip += tr("Shortcut");
     if (!cmd.isEmpty()) {
         tooltip += " ";
