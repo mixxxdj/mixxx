@@ -9,6 +9,7 @@
 
 #include "library/starrating.h"
 #include "library/stardelegate.h"
+#include "library/bpmdelegate.h"
 #include "mixxxutils.cpp"
 
 const bool sDebug = false;
@@ -750,6 +751,8 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
+    } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
+        return new BPMDelegate(pParent,i);
     }
     return NULL;
 }

@@ -9,25 +9,23 @@ BPMDelegate::BPMDelegate(QObject *parent, int column)
     if (QTableView *tableView = qobject_cast<QTableView *>(parent)) {
         m_pTableView = tableView;
 
-        m_pWidget = new QWidget;
+        m_pWidget = new QWidget(m_pTableView);
 
-        m_pBPM = new QLabel;
-        m_pBPM->setText("349");
-        QFont f("Arial", 7, QFont::Normal);
-        m_pBPM->setFont(f);
+        m_pBPM = new QDoubleSpinBox(m_pWidget);
         m_pBPM->setMinimumWidth(1);
-        m_pButton = new QPushButton("", m_pTableView);
-        //TODO(kain88) the place of res/ is saved in the config, no obvious easy
-        // way to get this here
-        m_pButton->setIcon(QIcon("res/images/library/Play.png"));
+        m_pBPM->setDecimals(2);
+        m_pButton = new BPMButton(m_pWidget);
         m_pButton->setMinimumWidth(1);
-        // m_pButton->hide();
 
         m_pLayout = new QHBoxLayout;
         m_pLayout->addWidget(m_pButton);
+        m_pLayout->addSpacing(2);
         m_pLayout->addWidget(m_pBPM);
+        m_pLayout->setContentsMargins(0,0,0,0);
+        m_pLayout->setSpacing(0);
 
         m_pWidget->setLayout(m_pLayout);
+        m_pWidget->hide();
 
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
                 this, SLOT(cellEntered(QModelIndex)));
@@ -44,9 +42,21 @@ QWidget * BPMDelegate::createEditor(QWidget *parent,
                                               const QModelIndex &index) const {
     Q_UNUSED(option);
     Q_UNUSED(index);
-    QPushButton* btn = new QPushButton(parent);
-    btn->setIcon(QIcon("res/images/library/Play.png"));
-    return btn;
+    QWidget *pw = new QWidget(parent);
+    QPushButton * btn = new QPushButton(pw);
+    btn->setIcon(QIcon("res/images/library/uncheck.png"));
+    btn->setObjectName("oooo");
+    btn->setMaximumWidth(30);
+    QDoubleSpinBox *pSpin = new QDoubleSpinBox(pw);
+    pSpin->setValue(index.data().toDouble());pSpin->setDecimals(10);
+    pSpin->setMinimum(0);pSpin->setMaximum(1000);
+    pSpin->setSingleStep(0.1);
+    QHBoxLayout *pLayout = new QHBoxLayout;
+    pLayout->addWidget(btn);pLayout->addSpacing(2);
+    pLayout->addWidget(pSpin);pLayout->setContentsMargins(0,0,0,0);
+    pLayout->setSpacing(0);
+    pw->setLayout(pLayout);
+    return pw;
 }
 
 void BPMDelegate::setEditorData(QWidget *editor,
@@ -67,10 +77,8 @@ void BPMDelegate::paint(QPainter *painter,
                                   const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
     Q_UNUSED(index);
-    qDebug() << option.rect.x() << '\t' << option.rect.y();
-    m_pButton->setGeometry(option.rect);
-    m_pBPM->setGeometry(option.rect);
     m_pWidget->setGeometry(option.rect);
+    m_pBPM->setValue(index.data().toDouble());
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(m_pWidget);

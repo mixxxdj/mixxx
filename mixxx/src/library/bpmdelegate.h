@@ -5,9 +5,10 @@
 #include <QPushButton>
 #include <QTableView>
 #include <QHBoxLayout>
-#include <QLabel>
+#include <QDoubleSpinBox>
 
 #include "trackinfoobject.h"
+#include "bpmbutton.h"
 
 class BPMDelegate : public QStyledItemDelegate {
   Q_OBJECT
@@ -38,9 +39,9 @@ class BPMDelegate : public QStyledItemDelegate {
 
   private:
     QTableView *m_pTableView;
-    QPushButton *m_pButton;
+    BPMButton *m_pButton;
     QWidget *m_pWidget;
-    QLabel *m_pBPM;
+    QDoubleSpinBox *m_pBPM;
     QHBoxLayout *m_pLayout;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
