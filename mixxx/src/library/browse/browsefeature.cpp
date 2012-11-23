@@ -46,7 +46,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
 
-    //: Item in the BROWSE sidebar item
+    //: [plural] Item in the BROWSE sidebar item. Quick Link is a different term for Bookmark
     m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this, rootItem);
     rootItem->appendChild(m_pQuickLinkItem);
 
