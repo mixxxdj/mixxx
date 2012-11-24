@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-11-18 19:42+0200\n"
+"POT-Creation-Date: 2012-11-22 11:09+0200\n"
 "PO-Revision-Date: 2012-11-06 13:44+0000\n"
 "Last-Translator: Jerry Alan Carroll <jerry.alan.carroll@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-22 04:41+0000\n"
+"X-Launchpad-Export-Date: 2012-11-24 05:12+0000\n"
 "X-Generator: Launchpad (build 16293)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
@@ -3145,6 +3145,10 @@ msgstr "ミュージックライブラリをスキャンするのに若干時間
 #: LibraryScannerDlg#3
 msgid "Cancel"
 msgstr "キャンセル"
+
+#: LibraryScannerDlg#4
+msgid "Scanning: "
+msgstr ""
 
 #: MidiController#1
 msgid "MixxxControl not found"
