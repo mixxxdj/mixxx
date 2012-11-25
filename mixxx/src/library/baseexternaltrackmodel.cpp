@@ -17,6 +17,8 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
 
     QStringList columns;
     columns << "id";
+    // TODO(XXX) preview column, needs a temporary view
+
     setTable(trackTable, columns[0], columns,
              m_pTrackCollection->getTrackSource(trackSource));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
@@ -84,8 +86,8 @@ void BaseExternalTrackModel::slotSearch(const QString& searchText) {
 
 bool BaseExternalTrackModel::isColumnInternal(int column) {
     // Used for preview deck widgets.
-    if (PlayerManager::numPreviewDecks() == 0 &&
-        column == fieldIndex(LIBRARYTABLE_ID)) {
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
     return false;
