@@ -158,5 +158,6 @@ TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }

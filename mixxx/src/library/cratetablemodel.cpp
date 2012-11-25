@@ -10,6 +10,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "mixxxutils.cpp"
+#include "playermanager.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
@@ -168,7 +169,10 @@ void CrateTableModel::slotSearch(const QString& searchText) {
 }
 
 bool CrateTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(CRATETRACKSTABLE_TRACKID) ||
+    if (
+        // Used for preview deck widgets.
+        (PlayerManager::numPreviewDecks() == 0 &&
+         column == fieldIndex(CRATETRACKSTABLE_TRACKID)) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
@@ -192,6 +196,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS

@@ -5,8 +5,8 @@
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-
 #include "mixxxutils.cpp"
+#include "playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
         "mixxx_deleted=0 AND fs_deleted=0";
@@ -101,7 +101,10 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
 }
 
 bool LibraryTableModel::isColumnInternal(int column) {
-    if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
+    if (
+        // Used for preview deck widgets.
+        (PlayerManager::numPreviewDecks() == 0 &&
+         column == fieldIndex(LIBRARYTABLE_ID)) ||
         (column == fieldIndex(LIBRARYTABLE_URL)) ||
         (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
         (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
@@ -124,8 +127,6 @@ bool LibraryTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-
-
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_RECEIVEDROPS
@@ -135,6 +136,7 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_HIDE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS
