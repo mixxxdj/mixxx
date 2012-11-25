@@ -39,9 +39,10 @@ public:
             bool firstRun, RecordingManager* pRecordingManager);
     virtual ~Library();
 
-    void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget,
+    void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* pKeyboard);
+    void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
+
     void addFeature(LibraryFeature* feature);
     QList<TrackPointer> getTracksToAutoLoad();
 

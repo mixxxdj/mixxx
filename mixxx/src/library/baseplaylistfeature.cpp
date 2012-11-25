@@ -9,7 +9,6 @@
 #include "library/treeitem.h"
 #include "mixxxkeyboard.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 BasePlaylistFeature::BasePlaylistFeature(
@@ -374,10 +373,8 @@ TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                 WLibrary* libraryWidget,
-                                 MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
+void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
+                                     MixxxKeyboard* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());

@@ -9,7 +9,6 @@
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 #include "analyserqueue.h"
 
@@ -38,13 +37,11 @@ QIcon PrepareFeature::getIcon() {
     return QIcon(":/images/library/ic_library_prepare.png");
 }
 
-void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                WLibrary* libraryWidget,
+void PrepareFeature::bindWidget(WLibrary* libraryWidget,
                                 MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
     m_pPrepareView = new DlgPrepare(libraryWidget,
-                                              m_pConfig,
-                                              m_pTrackCollection);
+                                    m_pConfig,
+                                    m_pTrackCollection);
     connect(m_pPrepareView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pPrepareView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
