@@ -20,6 +20,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
+    columns << "'' as preview";
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
@@ -34,6 +35,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
+    tableColumns << "preview";
     setTable("library_view", LIBRARYTABLE_ID, tableColumns,
              pTrackCollection->getTrackSource("default"));
 
@@ -101,10 +103,7 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
 }
 
 bool LibraryTableModel::isColumnInternal(int column) {
-    if (
-        // Used for preview deck widgets.
-        (PlayerManager::numPreviewDecks() == 0 &&
-         column == fieldIndex(LIBRARYTABLE_ID)) ||
+    if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
         (column == fieldIndex(LIBRARYTABLE_URL)) ||
         (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
         (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
@@ -115,9 +114,11 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
         (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
-        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
+        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
+        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
+
     return false;
 }
 

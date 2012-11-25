@@ -323,6 +323,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
+    //m_pPlayerManager->addPreviewDeck();
 
     // Call inits to invoke all other construction parts
 

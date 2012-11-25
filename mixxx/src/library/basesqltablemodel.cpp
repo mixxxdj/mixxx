@@ -78,13 +78,8 @@ void BaseSqlTableModel::initHeaderData() {
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM_LOCK),
                   Qt::Horizontal, tr("BPM Lock"));
 
-    // Preview deck widgets masquerade under this column.
-    setHeaderData(fieldIndex(LIBRARYTABLE_ID),
-                  Qt::Horizontal, tr(""));
-    setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_TRACKID),
-                  Qt::Horizontal, tr(""));
-    setHeaderData(fieldIndex(CRATETRACKSTABLE_TRACKID),
-                  Qt::Horizontal, tr(""));
+    setHeaderData(fieldIndex("preview"),
+                  Qt::Horizontal, tr("Preview"));
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -325,7 +320,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
 
     // Build a map from the column names to their indices, used by fieldIndex()
     m_tableColumnIndex.clear();
-    for (int i = 0; i < tableColumns.size(); ++i) {
+    for (int i = 0; i < m_tableColumns.size(); ++i) {
         m_tableColumnIndex[m_tableColumns[i]] = i;
     }
 
@@ -415,9 +410,17 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
     if (tableIndex > -1) {
         return tableIndex;
     }
-    // Subtract one from the fieldIndex() result to account for the id column
-    return m_trackSource ? (m_tableColumns.size() +
-                            m_trackSource->fieldIndex(fieldName) - 1) : -1;
+
+    if (m_trackSource) {
+        // We need to account for the case where the field name is not a table
+        // column or a source column.
+        int sourceTableIndex = m_trackSource->fieldIndex(fieldName);
+        if (sourceTableIndex > -1) {
+            // Subtract one from the fieldIndex() result to account for the id column
+            return m_tableColumns.size() + sourceTableIndex - 1;
+        }
+    }
+    return -1;
 }
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
@@ -760,10 +763,7 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
-    } else if (PlayerManager::numPreviewDecks() > 0 &&
-               (i == fieldIndex(LIBRARYTABLE_ID) ||
-                i == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
-                i == fieldIndex(CRATETRACKSTABLE_TRACKID))) {
+    } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
         return new PreviewButtonDelegate(pParent, i);
     }
     return NULL;
