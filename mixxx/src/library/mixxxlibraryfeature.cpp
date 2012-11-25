@@ -24,6 +24,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
+            //has to be up here otherwise Played and TimesPlayed are not show
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
             << "library." + LIBRARYTABLE_ALBUM

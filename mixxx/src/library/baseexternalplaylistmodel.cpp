@@ -1,6 +1,7 @@
 #include "library/baseexternalplaylistmodel.h"
 
 #include "library/queryutil.h"
+#include "playermanager.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(
     QObject* parent, TrackCollection* pTrackCollection,
@@ -84,7 +85,8 @@ void BaseExternalPlaylistModel::slotSearch(const QString& searchText) {
 }
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex("track_id")) {
+    if (column == fieldIndex("track_id") ||
+        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
     return false;
@@ -158,5 +160,6 @@ TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }

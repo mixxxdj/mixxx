@@ -4,7 +4,7 @@
 
 #include "bpmdelegate.h"
 
-BPMDelegate::BPMDelegate(QObject *parent, int column)
+BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
                      : QStyledItemDelegate(parent) {
     if (QTableView *tableView = qobject_cast<QTableView *>(parent)) {
         m_pTableView = tableView;
@@ -31,6 +31,7 @@ BPMDelegate::BPMDelegate(QObject *parent, int column)
                 this, SLOT(cellEntered(QModelIndex)));
         m_isOneCellInEditMode = false;
         m_column=column;
+        m_columnLock= columnLock;
     }
 }
 
@@ -48,6 +49,7 @@ QWidget * BPMDelegate::createEditor(QWidget *parent,
     connect(btn, SIGNAL(released()),
             this, SLOT(commitAndCloseEditor()));
     btn->setMaximumWidth(20);
+    btn->setChecked(index.sibling(index.row(),m_columnLock).data().toBool());
     QDoubleSpinBox *pSpin = new QDoubleSpinBox(pw);
     pSpin->setValue(index.data().toDouble());pSpin->setDecimals(10);
     pSpin->setMinimum(0);pSpin->setMaximum(1000);
@@ -81,7 +83,7 @@ void BPMDelegate::paint(QPainter *painter,
     Q_UNUSED(index);
     m_pWidget->setGeometry(option.rect);
     m_pBPM->setValue(index.data().toDouble());
-    m_pButton->setChecked(index.sibling(index.row(),index.column()-1).data().toBool());
+    m_pButton->setChecked(index.sibling(index.row(),m_columnLock).data().toBool());
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(m_pWidget);
@@ -123,6 +125,7 @@ void BPMDelegate::cellEntered(const QModelIndex &index) {
 void BPMDelegate::commitAndCloseEditor() {
     if (BPMButton *editor = qobject_cast<BPMButton *>(sender())) {
         qDebug() << editor->isChecked();
+        
     }
     // emit commitData(sender());
     // emit closeEditor(sender());
