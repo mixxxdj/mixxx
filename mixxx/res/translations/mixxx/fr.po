@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-11-08 07:40+0000\n"
+"PO-Revision-Date: 2012-11-24 07:41+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-24 05:11+0000\n"
+"X-Launchpad-Export-Date: 2012-11-25 05:10+0000\n"
 "X-Generator: Launchpad (build 16293)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -17,7 +17,7 @@ msgstr ""
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -1128,7 +1128,7 @@ msgstr "1/4"
 #: DlgControllerLearning#83
 msgctxt "DlgControllerLearning#83"
 msgid "Library"
-msgstr ""
+msgstr "Bibliothèque"
 
 #: DlgControllerLearning#84
 msgid "Switch to the next view (library, playlist..)"
@@ -1179,7 +1179,7 @@ msgstr "Effet flanger : déphasage"
 #: DlgControllerLearning#95
 msgctxt "DlgControllerLearning#95"
 msgid "Microphone"
-msgstr ""
+msgstr "Microphone"
 
 #: DlgControllerLearning#96
 msgid "Microphone on/off"
@@ -1196,7 +1196,7 @@ msgstr "Orientation du canal microphone (ex. gauche, droite, centre)"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: DlgControllerLearning#100
 msgid "Shuffle the content of the Auto DJ playlist"
@@ -2273,12 +2273,12 @@ msgstr ""
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Encoding"
-msgstr ""
+msgstr "Encodage"
 
 #: DlgPrefShoutcastDlg#22
 msgctxt "DlgPrefShoutcastDlg#22"
 msgid "Bitrate"
-msgstr ""
+msgstr "Débit"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Format"
@@ -2299,12 +2299,12 @@ msgstr "Activer les métadonnées personnalisées"
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Artist"
-msgstr ""
+msgstr "Artiste"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: DlgPrefShoutcastDlg#29
 msgid ""
@@ -4530,7 +4530,7 @@ msgstr "Va à la fin du morceau."
 #: Tooltips#130
 msgctxt "Tooltips#130"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: Tooltips#131
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
