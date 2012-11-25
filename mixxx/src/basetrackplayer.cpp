@@ -23,7 +23,9 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  AnalyserQueue* pAnalyserQueue,
-                                 QString group)
+                                 QString group,
+                                 bool defaultMaster,
+                                 bool defaultHeadphones)
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
           m_pLoadedTrack(),
@@ -38,6 +40,19 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                           pConfig, defaultOrientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
+
+    // Set the routing option defaults for the master and headphone mixes.
+    {
+        ControlObjectThreadMain* pMaster = new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(getGroup(), "master")));
+        pMaster->slotSet(defaultMaster);
+        delete pMaster;
+
+        ControlObjectThreadMain* pHeadphones = new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(getGroup(), "pfl")));
+        pHeadphones->slotSet(defaultHeadphones);
+        delete pHeadphones;
+    }
 
     ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);

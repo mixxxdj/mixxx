@@ -6,6 +6,7 @@
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "mixxxutils.cpp"
+#include "playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
@@ -344,7 +345,10 @@ void PlaylistTableModel::slotSearch(const QString& searchText) {
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
+    if (
+        // Used for preview deck widgets.
+        (PlayerManager::numPreviewDecks() == 0 &&
+         column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID)) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
@@ -372,6 +376,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS

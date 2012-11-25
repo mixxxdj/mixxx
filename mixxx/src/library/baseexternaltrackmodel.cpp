@@ -1,5 +1,6 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/trackcollection.h"
+#include "playermanager.h"
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
                                                TrackCollection* pTrackCollection,
@@ -82,7 +83,9 @@ void BaseExternalTrackModel::slotSearch(const QString& searchText) {
 }
 
 bool BaseExternalTrackModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID)) {
+    // Used for preview deck widgets.
+    if (PlayerManager::numPreviewDecks() == 0 &&
+        column == fieldIndex(LIBRARYTABLE_ID)) {
         return true;
     }
     return false;
@@ -104,5 +107,6 @@ TrackModel::CapabilitiesFlags BaseExternalTrackModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }
