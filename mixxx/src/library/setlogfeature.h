@@ -27,9 +27,8 @@ public:
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    virtual void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+    virtual void bindWidget(WLibrary* libraryWidget,
+                            MixxxKeyboard* keyboard);
 
   public slots:
     void onRightClick(const QPoint& globalPos);
