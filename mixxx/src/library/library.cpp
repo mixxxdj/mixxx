@@ -109,8 +109,33 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
-void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
-                         WLibrary* pLibraryWidget,
+void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
+
+    // Setup the sources view
+    pSidebarWidget->setModel(m_pSidebarModel);
+    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
+            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
+    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
+            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+    // Lazy model: Let triange symbol increment the model
+    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
+            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
+
+    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+
+    // Enable the default selection
+
+    // TODO(rryan): This really should happen after the skin is fully loaded. We
+    // should build a generic way to perform actions after skin load.
+    pSidebarWidget->selectionModel()
+        ->select(m_pSidebarModel->getDefaultSelection(),
+                 QItemSelectionModel::SelectCurrent);
+    m_pSidebarModel->activateDefaultSelection();
+}
+
+void Library::bindWidget(WLibrary* pLibraryWidget,
                          MixxxKeyboard* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
@@ -126,32 +151,13 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    m_pLibraryControl->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
-
-    // Setup the sources view
-    pSidebarWidget->setModel(m_pSidebarModel);
-    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
-            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
-    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
-    // Lazy model: Let triange symbol increment the model
-    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
-            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
-
-    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
-            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
+        feature->bindWidget(pLibraryWidget, pKeyboard);
     }
-
-    // Enable the default selection
-    pSidebarWidget->selectionModel()
-        ->select(m_pSidebarModel->getDefaultSelection(),
-                 QItemSelectionModel::SelectCurrent);
-    m_pSidebarModel->activateDefaultSelection();
 }
 
 void Library::addFeature(LibraryFeature* feature) {
