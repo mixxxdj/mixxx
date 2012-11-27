@@ -240,9 +240,19 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         ControlObject* pControl = ControlObject::getControl(configKey);
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
-        if (pControl && ok) {
-            ControlObjectThreadMain mainControl(pControl);
-            mainControl.slotSet(value);
+        if (ok) {
+            if (pControl) {
+                ControlObjectThreadMain mainControl(pControl);
+                mainControl.slotSet(value);
+            } else {
+                // TODO(rryan): Make this configurable by the skin.
+                qWarning() << "Requested control does not exist:" << configKey << ". Creating it.";
+                // Since the usual behavior here is to create a skin-defined push
+                // button, actually make it a push button and set it to toggle.
+                ControlPushButton* controlButton = new ControlPushButton(configKey);
+                controlButton->setButtonMode(ControlPushButton::TOGGLE);
+                controlButton->set(value);
+            }
         }
     }
     // Force a sync to deliver the control change messages so they take effect
@@ -1137,6 +1147,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
         bool created = false;
         if (control == NULL) {
+            // TODO(rryan): Make this configurable by the skin.
             qWarning() << "Requested control does not exist:" << key << ". Creating it.";
             // Since the usual behavior here is to create a skin-defined push
             // button, actually make it a push button and set it to toggle.
