@@ -71,6 +71,9 @@ signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group);
     void restoreSearch(const QString&);
+    void search(const QString& text);
+    void searchCleared();
+    void searchStarting();
 
 private:
     ConfigObject<ConfigValue>* m_pConfig;
