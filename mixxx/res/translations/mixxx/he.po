@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-11-26 04:33+0000\n"
+"PO-Revision-Date: 2012-11-26 05:06+0000\n"
 "Last-Translator: Tal Regev <tal.regev@gmail.com>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-26 04:35+0000\n"
-"X-Generator: Launchpad (build 16293)\n"
+"X-Launchpad-Export-Date: 2012-11-27 05:11+0000\n"
+"X-Generator: Launchpad (build 16309)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -534,14 +534,16 @@ msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
+"צור ארגז בשביל המופע הבא, בשביל מועדפי הטראקים האלקטרונים שלך, או בשביל "
+"השירים הכי מבוקשים שלך."
 
 #: CrateFeature#19
 msgid "Crates let you organize your music however you'd like!"
-msgstr ""
+msgstr "ארגזים נותנים לך לארגן את המוזיקה שלך איך שאתה רוצה!"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "צור ארגז חדש"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -565,11 +567,11 @@ msgstr "<a href=\"http://mixxx.org/\">האתר הרשמי</a>"
 
 #: DlgAutoDJ#1
 msgid "Auto-DJ"
-msgstr ""
+msgstr "תקליטן אוטומטי"
 
 #: DlgAutoDJ#2
 msgid "One deck must be stopped to enable Auto-DJ mode."
-msgstr ""
+msgstr "משטח אחד צריך לעצור כדי לאפשר את התקליטן האוטומטי."
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
@@ -577,43 +579,43 @@ msgstr "ביטול תיקלוט אוטומטי"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr ""
+msgstr "ערבב את התוכן של רשימת השמעה של התקליטן האוטומטי"
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
-msgstr ""
+msgstr "ערבב"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "דלג על הטראק הבא בתקליטן האוטומטי"
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "דלג טראק"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "הפעל את המעבר אל הטראק הבא."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "עמעם עכשיו"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "קבע את משך הזמן של המעבר"
 
 #: DlgAutoDJ#11
 msgid "Seconds"
-msgstr ""
+msgstr "שניות"
 
 #: DlgAutoDJ#12
 msgid "sec."
-msgstr ""
+msgstr "ש'."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "כבה או הדלק את הנגן האוטומטי."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -622,11 +624,11 @@ msgstr "הפעלת תקליטן אוטומטי"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "נהל"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"
-msgstr ""
+msgstr "הגדרות גילוי קצב"
 
 #: DlgBeatsDlg#2
 msgid ""
@@ -634,26 +636,29 @@ msgid ""
 "of your tracks, automatically shows a beat-grid for them, and allows you to "
 "synchronize tracks using their beat information."
 msgstr ""
+"כאשר גילוי הקצב מופעל, Mixxx מגלה את הקצבים לדקה והקצבים של הטראקים שלך, "
+"מציג באופן אוטומטי את הקצב שלהם, ומאפשר לך לסנכרן את הטראקים דרך האינפורמציה "
+"של הקצב שלהם."
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr ""
+msgstr "הפעל קצב לדקה וגילוי קצב"
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
-msgstr ""
+msgstr "בחר מנתח"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr ""
+msgstr "מנתח קצב:"
 
 #: DlgBeatsDlg#6
 msgid "Choose between different algorithms to detect beats."
-msgstr ""
+msgstr "בחר בין אלגוריתמים שונים כדי לגלות את הקצבים."
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
-msgstr ""
+msgstr "הגדרות המנתח"
 
 #: DlgBeatsDlg#8
 msgid ""
@@ -664,7 +669,7 @@ msgstr ""
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
-msgstr ""
+msgstr "הפעל ניתוח קצב מהיר (בשביל מחשבים איטיים, הניתוח יהיה פחות מדוייק)"
 
 #: DlgBeatsDlg#10
 msgid ""
@@ -676,7 +681,7 @@ msgstr ""
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
-msgstr ""
+msgstr "הנח כי הקצב קבוע (מומלץ)"
 
 #: DlgBeatsDlg#12
 msgid ""
@@ -686,7 +691,7 @@ msgstr ""
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
-msgstr ""
+msgstr "הפעל תיקון אופסט (מומלץ)"
 
 #: DlgBeatsDlg#14
 msgid ""
@@ -704,24 +709,24 @@ msgstr ""
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
 msgid "BPM Range"
-msgstr ""
+msgstr "טווח קצב פעימות לשניה"
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "מינימום:"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "מקסימום:"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "אפס לברירת המחדל"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "תרשים BPM"
+msgstr "תרשים קצב פעימות לדקה"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
@@ -730,7 +735,7 @@ msgstr "שם התרשים:"
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
 msgid "BPM Range"
-msgstr ""
+msgstr "טווח קצב פעימות לשניה"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -742,11 +747,11 @@ msgstr "מינימום"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Track"
-msgstr ""
+msgstr "נתח את כל הטראק"
 
 #: DlgControllerLearning#1
 msgid "Controller Learning Wizard"
-msgstr ""
+msgstr "אשף בקר למידה"
 
 #: DlgControllerLearning#2
 msgid ""
@@ -757,32 +762,32 @@ msgstr ""
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "הושלם"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
-msgstr ""
+msgstr "כדי למפות פקד נוסף, לחץ על המקש או בחר מתוך הרשימה."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
-msgstr ""
+msgstr "בחר פקד"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
-msgstr ""
+msgstr "משטח %1"
 
 #: DlgControllerLearning#7
 msgctxt "DlgControllerLearning#7"
 msgid "Sampler %1"
-msgstr ""
+msgstr "דגימה %1"
 
 #: DlgControllerLearning#8
 msgid "Reset to default"
-msgstr ""
+msgstr "אפס לברירת מחדל"
 
 #: DlgControllerLearning#9
 msgid "Mixer"
-msgstr ""
+msgstr "מערבל"
 
 #: DlgControllerLearning#10
 msgctxt "DlgControllerLearning#10"
@@ -791,7 +796,7 @@ msgstr ""
 
 #: DlgControllerLearning#11
 msgid "Master volume"
-msgstr ""
+msgstr "עוצמת קול ראשית"
 
 #: DlgControllerLearning#12
 msgid "Master balance"
@@ -799,15 +804,15 @@ msgstr ""
 
 #: DlgControllerLearning#13
 msgid "Headphone volume"
-msgstr ""
+msgstr "עוצמת שמע של האוזניות"
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
-msgstr ""
+msgstr "מערבל האוזניות (לפני/ראשי)"
 
 #: DlgControllerLearning#15
 msgid "Transport"
-msgstr ""
+msgstr "תעבורה"
 
 #: DlgControllerLearning#16
 msgid "Strip-search through track"
@@ -815,27 +820,27 @@ msgstr ""
 
 #: DlgControllerLearning#17
 msgid "Play button"
-msgstr ""
+msgstr "מקש נגן"
 
 #: DlgControllerLearning#18
 msgid "Volume fader"
-msgstr ""
+msgstr "עוצמת שמע של העמעום"
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
-msgstr ""
+msgstr "מקש חזרה לאחור במהירות"
 
 #: DlgControllerLearning#20
 msgid "Fast forward button"
-msgstr ""
+msgstr "מקש קפיצה קדימה במהירות"
 
 #: DlgControllerLearning#21
 msgid "Jump to start of track"
-msgstr ""
+msgstr "קפוץ לתחילת הטראק"
 
 #: DlgControllerLearning#22
 msgid "Jump to end of track"
-msgstr ""
+msgstr "קפוץ לסוף הטראק"
 
 #: DlgControllerLearning#23
 msgid "Play reverse button"
@@ -847,27 +852,27 @@ msgstr ""
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
-msgstr ""
+msgstr "כפתור האזנה לאוזניות"
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
-msgstr ""
+msgstr "הפעל מצב חזרה"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
-msgstr ""
+msgstr "הוצא טראק"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "כיוון המערבל (שמאל, ימין, מרכז)"
 
 #: DlgControllerLearning#29
 msgid "BPM and Sync"
-msgstr ""
+msgstr "פעימות לדקה וסנכרון"
 
 #: DlgControllerLearning#30
 msgid "BPM tap button"
-msgstr ""
+msgstr "מקש לחיצה של פעימות לדקה"
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
