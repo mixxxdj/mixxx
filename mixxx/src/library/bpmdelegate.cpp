@@ -3,36 +3,14 @@
 #include <QDebug>
 
 #include "bpmdelegate.h"
+#include "bpmeditor.h"
 
-BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
+BPMDelegate::BPMDelegate(QObject *parent, int columnLock)
                      : QStyledItemDelegate(parent) {
-    if (QTableView *tableView = qobject_cast<QTableView *>(parent)) {
-        m_pTableView = tableView;
-
-        m_pWidget = new QWidget(m_pTableView);
-
-        m_pBPM = new QDoubleSpinBox(m_pWidget);
-        m_pBPM->setMinimumWidth(1);
-        m_pBPM->setDecimals(2);
-        m_pButton = new BPMButton(m_pWidget);
-        m_pButton->setMinimumWidth(1);
-        m_pButton->setMaximumWidth(20);
-
-        m_pLayout = new QHBoxLayout;
-        m_pLayout->addWidget(m_pButton);
-        m_pLayout->addWidget(m_pBPM);
-        m_pLayout->setContentsMargins(0,0,0,0);
-        m_pLayout->setSpacing(0);
-
-        m_pWidget->setLayout(m_pLayout);
-        m_pWidget->hide();
-
-        connect(m_pTableView, SIGNAL(entered(QModelIndex)),
-                this, SLOT(cellEntered(QModelIndex)));
-        m_isOneCellInEditMode = false;
-        m_column=column;
-        m_columnLock= columnLock;
-    }
+    m_pTableView = qobject_cast<QTableView *>(parent);
+    connect(m_pTableView, SIGNAL(entered(QModelIndex)),
+            this, SLOT(cellEntered(QModelIndex)));
+    m_columnLock= columnLock;
 }
 
 BPMDelegate::~BPMDelegate() {
@@ -45,30 +23,14 @@ QWidget * BPMDelegate::createEditor(QWidget *parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    QWidget *pw = new QWidget(parent);
-    BPMButton * btn = new BPMButton(pw);
-    btn->setObjectName("oooo");
-    connect(btn, SIGNAL(released()),
-            this, SLOT(commitAndCloseEditor()));
-    btn->setMaximumWidth(20);
-    btn->setChecked(index.sibling(index.row(),m_columnLock).data().toBool());
-    QDoubleSpinBox *pSpin = new QDoubleSpinBox(pw);
-    pSpin->setValue(index.data().toDouble());pSpin->setDecimals(10);
-    pSpin->setMinimum(0);pSpin->setMaximum(1000);
-    pSpin->setSingleStep(0.1);
-    QHBoxLayout *pLayout = new QHBoxLayout;
-    pLayout->addWidget(btn);
-    pLayout->addWidget(pSpin);
-    pLayout->setContentsMargins(0,0,0,0);
-    pLayout->setSpacing(0);
-    pw->setLayout(pLayout);
-    return pw;
+    BPMEditor *pEditor = new BPMEditor(newOption,m_pTableView);
+    return pEditor;
 }
 
 void BPMDelegate::setEditorData(QWidget *editor,
                                           const QModelIndex &index) const {
-    Q_UNUSED(editor);
-    Q_UNUSED(index);
+    BPMEditor *pEditor = qobject_cast<BPMEditor *>(editor);
+    pEditor->setData(index,m_columnLock);
 }
 
 void BPMDelegate::setModelData(QWidget *editor,
@@ -82,14 +44,33 @@ void BPMDelegate::setModelData(QWidget *editor,
 void BPMDelegate::paint(QPainter *painter,
                                   const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
-    Q_UNUSED(index);
-    m_pWidget->setGeometry(option.rect);
-    m_pBPM->setValue(index.data().toDouble());
-    m_pButton->setChecked(index.sibling(index.row(),m_columnLock).data().toBool());
-    if (option.state == QStyle::State_Selected)
-        painter->fillRect(option.rect, option.palette.base());
-    QPixmap map = QPixmap::grabWidget(m_pWidget);
-    painter->drawPixmap(option.rect.x(),option.rect.y(),map);
+    // Let the editor paint in this case
+    if (index==m_currentEditedCellIndex)
+        return;
+
+    // Populate the correct colors based on the styling
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
+
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    if (newOption.state & QStyle::State_Selected) {
+        QPalette::ColorGroup colorGroup =
+                newOption.state & QStyle::State_Active ?
+                QPalette::Active : QPalette::Inactive;
+        painter->fillRect(newOption.rect,
+            newOption.palette.color(colorGroup, QPalette::Highlight));
+        painter->setBrush(newOption.palette.color(
+            colorGroup, QPalette::HighlightedText));
+    } else {
+        painter->fillRect(newOption.rect, newOption.palette.base());
+        painter->setBrush(newOption.palette.text());
+    }
+
+    BPMEditor editor(option, m_pTableView);
+    editor.paint(painter, newOption.rect, newOption.palette, BPMEditor::ReadOnly,
+                     newOption.state & QStyle::State_Selected, m_column, index);
 }
 
 void BPMDelegate::updateEditorGeometry(QWidget *editor,
@@ -101,9 +82,9 @@ void BPMDelegate::updateEditorGeometry(QWidget *editor,
 
 QSize BPMDelegate::sizeHint(const QStyleOptionViewItem &option,
                                       const QModelIndex &index) const {
-    Q_UNUSED(option);
     Q_UNUSED(index);
-    return m_pWidget->sizeHint();
+    BPMEditor editor(option,m_pTableView);
+    return editor.sizeHint();
 }
 
 void BPMDelegate::cellEntered(const QModelIndex &index) {

@@ -766,7 +766,7 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
     } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
-        return new BPMDelegate(pParent,i,fieldIndex(LIBRARYTABLE_BPM_LOCK));
+        return new BPMDelegate(pParent, fieldIndex(LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
         return new PreviewButtonDelegate(pParent, i);
     }

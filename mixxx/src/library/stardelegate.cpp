@@ -31,19 +31,8 @@ StarDelegate::StarDelegate(QObject *pParent)
             this, SLOT(cellEntered(QModelIndex)));
 }
 
-/*
- * The function is invoked once for each item, represented by a QModelIndex object from the model.
- * If the data stored in the item is a StarRating, we paint it use a star editor for displaying;
- * otherwise, we let QStyledItemDelegate paint it for us.
- * This ensures that the StarDelegate can handle the most common data types.
- */
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if (!qVariantCanConvert<StarRating>(index.data())) {
-        QStyledItemDelegate::paint(painter, option, index);
-        return;
-    }
-    
     if(index==m_currentEditedCellIndex){
         return;
     }
@@ -75,12 +64,8 @@ void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if (qVariantCanConvert<StarRating>(index.data())) {
-        StarRating starRating = qVariantValue<StarRating>(index.data());
-        return starRating.sizeHint();
-    } else {
-        return QStyledItemDelegate::sizeHint(option, index);
-    }
+    StarRating starRating = qVariantValue<StarRating>(index.data());
+    return starRating.sizeHint();
 }
 /*
  * If the item is a StarRating, we create a StarEditor and connect

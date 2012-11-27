@@ -599,6 +599,7 @@ class MixxxCore(Feature):
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
                    "library/bpmdelegate.cpp",
+                   "library/bpmeditor.h",
                    "library/bpmbutton.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/previewdeckbuttonhandler.cpp",
