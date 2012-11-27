@@ -93,35 +93,23 @@ QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem 
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    if (qVariantCanConvert<StarRating>(index.data())) {
-        StarEditor *editor = new StarEditor(parent, newOption);
-        connect(editor, SIGNAL(editingFinished()),
-                this, SLOT(commitAndCloseEditor()));
-        return editor;
-    } else {
-        return QStyledItemDelegate::createEditor(parent, option, index);
-    }
+    StarEditor *editor = new StarEditor(parent, newOption);
+    connect(editor, SIGNAL(editingFinished()),
+            this, SLOT(commitAndCloseEditor()));
+    return editor;
 }
 
 void StarDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    if (qVariantCanConvert<StarRating>(index.data())) {
-        StarRating starRating = qVariantValue<StarRating>(index.data());
-        StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
-        starEditor->setStarRating(starRating);
-    } else {
-        QStyledItemDelegate::setEditorData(editor, index);
-    }
+    StarRating starRating = qVariantValue<StarRating>(index.data());
+    StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
+    starEditor->setStarRating(starRating);
 }
 
 void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    if (qVariantCanConvert<StarRating>(index.data())) {
-        StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
-        model->setData(index, qVariantFromValue(starEditor->starRating()));
-    } else {
-        QStyledItemDelegate::setModelData(editor, model, index);
-    }
+    StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
+    model->setData(index, qVariantFromValue(starEditor->starRating()));
 }
 
 /*

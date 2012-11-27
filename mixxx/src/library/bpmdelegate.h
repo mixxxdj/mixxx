@@ -32,7 +32,6 @@ class BPMDelegate : public QStyledItemDelegate {
                               const QModelIndex &index) const;
 
   signals:
-    void loadTrackToPlayer(TrackPointer Track, QString group);
 
   public slots:
     void cellEntered(const QModelIndex &index);

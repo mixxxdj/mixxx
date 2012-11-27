@@ -41,8 +41,10 @@ BPMDelegate::~BPMDelegate() {
 QWidget * BPMDelegate::createEditor(QWidget *parent,
                                               const QStyleOptionViewItem &option,
                                               const QModelIndex &index) const {
-    Q_UNUSED(option);
-    Q_UNUSED(index);
+    // Populate the correct colors based on the styling
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
+
     QWidget *pw = new QWidget(parent);
     BPMButton * btn = new BPMButton(pw);
     btn->setObjectName("oooo");
