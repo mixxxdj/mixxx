@@ -1,5 +1,6 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/trackcollection.h"
+#include "playermanager.h"
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
                                                TrackCollection* pTrackCollection,
@@ -16,6 +17,8 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
 
     QStringList columns;
     columns << "id";
+    // TODO(XXX) preview column, needs a temporary view
+
     setTable(trackTable, columns[0], columns,
              m_pTrackCollection->getTrackSource(trackSource));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
@@ -82,7 +85,9 @@ void BaseExternalTrackModel::slotSearch(const QString& searchText) {
 }
 
 bool BaseExternalTrackModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID)) {
+    // Used for preview deck widgets.
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
     return false;
@@ -104,5 +109,6 @@ TrackModel::CapabilitiesFlags BaseExternalTrackModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }

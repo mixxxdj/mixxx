@@ -14,7 +14,6 @@
 #include "library/trackcollection.h"
 #include "library/dao/trackdao.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
@@ -24,7 +23,7 @@ RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* p
                                    RecordingManager* pRecordingManager)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection), 
+          m_pTrackCollection(pTrackCollection),
           m_pRecordingView(0),
           m_pRecordingManager(pRecordingManager){
 
@@ -45,18 +44,14 @@ QIcon RecordingFeature::getIcon() {
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
-void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
-                             WLibrary *libraryWidget,
-                             MixxxKeyboard *keyboard)
-{
-    Q_UNUSED(sidebarWidget);
-
+void RecordingFeature::bindWidget(WLibrary *libraryWidget,
+                                  MixxxKeyboard *keyboard) {
     //The view will be deleted by LibraryWidget
     m_pRecordingView = new DlgRecording(libraryWidget,
-                                           m_pConfig,
-                                           m_pTrackCollection,
-                                           m_pRecordingManager,
-                                           keyboard);
+                                        m_pConfig,
+                                        m_pTrackCollection,
+                                        m_pRecordingManager,
+                                        keyboard);
 
     m_pRecordingView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sRecordingViewName, m_pRecordingView);
@@ -108,6 +103,6 @@ void RecordingFeature::onRightClickChild(const QPoint& globalPos, QModelIndex in
 }
 
 void RecordingFeature::onLazyChildExpandation(const QModelIndex &index){
-    Q_UNUSED(index);    
+    Q_UNUSED(index);
     // Nothing to do here since we have no child models
 }

@@ -758,8 +758,11 @@ def BuildUbuntuPackage(target, source, env):
                         result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
                         result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
                         result_file = os.path.join(result_path, result_filename)
+                        # Since we might build for multiple distros we need to
+                        # insert the distro name into the filename.
+                        dest_filename = "%s_%s_%s_%s.deb" % (package_name, package_version, ubuntu_distro, arch)
                         # ubuntu/ is one folder up
-                        dest_file = os.path.join('..', result_filename)
+                        dest_file = os.path.join('..', dest_filename)
 
                         if result == 0 and os.path.exists(result_file):
                                 print "Done! Package and tarballs are in %s" % result_path
