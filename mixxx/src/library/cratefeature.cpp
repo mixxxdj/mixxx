@@ -15,7 +15,6 @@
 #include "library/trackcollection.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
 #include "soundsourceproxy.h"
@@ -130,10 +129,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                              WLibrary* libraryWidget,
+void CrateFeature::bindWidget(WLibrary* libraryWidget,
                               MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());

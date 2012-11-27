@@ -21,7 +21,9 @@ class BaseTrackPlayer : public BasePlayer {
                     EngineMaster* pMixingEngine,
                     EngineChannel::ChannelOrientation defaultOrientation,
                     AnalyserQueue* pAnalyserQueue,
-                    QString group);
+                    QString group,
+                    bool defaultMaster,
+                    bool defaultHeadphones);
     virtual ~BaseTrackPlayer();
 
     AnalyserQueue* getAnalyserQueue() const;
@@ -43,6 +45,7 @@ class BaseTrackPlayer : public BasePlayer {
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
+    // TODO(XXX) remove, unused.
     AnalyserQueue* m_pAnalyserQueue;
 
     // Waveform display related controls

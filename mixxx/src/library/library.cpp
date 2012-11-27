@@ -111,27 +111,11 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
-void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
-                         WLibrary* pLibraryWidget,
-                         MixxxKeyboard* pKeyboard) {
-    WTrackTableView* pTrackTableView =
-            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
-    pTrackTableView->installEventFilter(pKeyboard);
-    connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
-            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
-    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
-            this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
-    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
-
-    connect(this, SIGNAL(switchToView(const QString&)),
-            pLibraryWidget, SLOT(switchToView(const QString&)));
-            
+void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
-    pSidebarWidget->setLibraryPrefix(prefix);            
-
-    m_pLibraryControl->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
+    pSidebarWidget->setLibraryPrefix(prefix);
+    
+    m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
@@ -146,17 +130,39 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
 
-    QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
-        LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
-    }
-
     // Enable the default selection
+
+    // TODO(rryan): This really should happen after the skin is fully loaded. We
+    // should build a generic way to perform actions after skin load.
     pSidebarWidget->selectionModel()
         ->select(m_pSidebarModel->getDefaultSelection(),
                  QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
+}
+
+void Library::bindWidget(WLibrary* pLibraryWidget,
+                         MixxxKeyboard* pKeyboard) {
+    WTrackTableView* pTrackTableView =
+            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
+    pTrackTableView->installEventFilter(pKeyboard);
+    connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
+            pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
+    connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
+            this, SLOT(slotLoadTrack(TrackPointer)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
+    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
+
+    connect(this, SIGNAL(switchToView(const QString&)),
+            pLibraryWidget, SLOT(switchToView(const QString&)));
+
+    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
+
+    QListIterator<LibraryFeature*> feature_it(m_features);
+    while(feature_it.hasNext()) {
+        LibraryFeature* feature = feature_it.next();
+        feature->bindWidget(pLibraryWidget, pKeyboard);
+    }
 }
 
 void Library::addFeature(LibraryFeature* feature) {

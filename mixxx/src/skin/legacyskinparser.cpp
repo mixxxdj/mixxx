@@ -771,9 +771,9 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
             pLineEditSearch, SLOT(restoreSearch(const QString&)));
 
-    m_pLibrary->bindWidget(pLibrarySidebar,
-                           pLibraryWidget,
+    m_pLibrary->bindWidget(pLibraryWidget,
                            m_pKeyboard);
+    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
     pLibraryWidget->setup(node);

@@ -21,10 +21,6 @@ PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
 PrepareLibraryTableModel::~PrepareLibraryTableModel() {
 }
 
-bool PrepareLibraryTableModel::isColumnInternal(int column) {
-    return LibraryTableModel::isColumnInternal(column);
-}
-
 void PrepareLibraryTableModel::search(const QString& searchText) {
     // qDebug() << "PrepareLibraryTableModel::search()" << searchText
     //          << QThread::currentThread();

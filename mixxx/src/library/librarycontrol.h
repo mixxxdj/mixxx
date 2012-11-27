@@ -29,7 +29,8 @@ class LibraryControl : public QObject {
   public:
     LibraryControl(QObject* pParent=NULL);
     virtual ~LibraryControl();
-    void bindWidget(WLibrarySidebar* pLibrarySidebar, WLibrary* pLibrary, MixxxKeyboard* pKeyboard);
+    void bindWidget(WLibrary* pLibrary, MixxxKeyboard* pKeyboard);
+    void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
 
   private slots:
     void libraryWidgetDeleted();

@@ -35,8 +35,7 @@ class LibraryFeature : public QObject {
     virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) = 0;
 
     // Reimplement this to register custom views with the library widget.
-    virtual void bindWidget(WLibrarySidebar* /* sidebarWidget */,
-                            WLibrary* /* libraryWidget */,
+    virtual void bindWidget(WLibrary* /* libraryWidget */,
                             MixxxKeyboard* /* keyboard */) {
     }
     virtual TreeItemModel* getChildModel() = 0;
