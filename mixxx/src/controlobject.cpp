@@ -275,72 +275,73 @@ double ControlObject::getValueToWidget(double v)
     return v;
 }
 
-void ControlObject::sync()
-{
+void ControlObject::sync() {
     // Update control objects with values recieved from threads
-    if (m_sqQueueMutexThread.tryLock())
-    {
-        QueueObjectThread * obj;
-        while(!m_sqQueueThread.isEmpty())
-        {
-            obj = m_sqQueueThread.dequeue();
+    if (m_sqQueueMutexThread.tryLock()) {
+        // We have to make a copy of the queue otherwise we can get deadlocks
+        // since responding to a queued event via setValueFromThread can trigger
+        // a slot which in turn could cause a lock of m_sqQueueMutexThread.
+        QQueue<QueueObjectThread*> qQueueThread = m_sqQueueThread;
+        m_sqQueueThread.clear();
+        m_sqQueueMutexThread.unlock();
 
-            if (obj->pControlObject)
-            {
+        while (!qQueueThread.isEmpty()) {
+            QueueObjectThread* obj = qQueueThread.dequeue();
+            if (obj == NULL) {
+                continue;
+            }
+            if (obj->pControlObject) {
                 obj->pControlObject->setValueFromThread(obj->value);
                 obj->pControlObject->updateProxies(obj->pControlObjectThread);
             }
             delete obj;
         }
-
-        //
-        // If the object is in m_sqQueueChanges, delete it from that queue.
-        //
-
-        m_sqQueueMutexThread.unlock();
     }
 
     // Update control objects with values recieved from MIDI
-    if (m_sqQueueMutexMidi.tryLock())
-    {
-        QueueObjectMidi * obj;
-        while(!m_sqQueueMidi.isEmpty())
-        {
-            obj = m_sqQueueMidi.dequeue();
+    if (m_sqQueueMutexMidi.tryLock()) {
+        // We have to make a copy of the queue otherwise we can get deadlocks
+        // since responding to a queued event via setValueFromMidi can trigger a
+        // slot which in turn could cause a lock of m_sqQueueMutexMidi.
+        QQueue<QueueObjectMidi*> qQueueMidi = m_sqQueueMidi;
+        m_sqQueueMidi.clear();
+        m_sqQueueMutexMidi.unlock();
+
+        while (!qQueueMidi.isEmpty()) {
+            QueueObjectMidi* obj = qQueueMidi.dequeue();
             if (obj == NULL) {
-                qDebug() << "Midi sent us a bad object!";
-            } else if (obj->pControlObject == NULL) {
-                qDebug() << "Midi object with null control object!";
-                delete obj;
-            } else {
-                obj->pControlObject->setValueFromMidi(obj->opcode,obj->value);
-                obj->pControlObject->updateProxies(0);
-                delete obj;
+                continue;
+            }
+            if (obj->pControlObject) {
+                obj->pControlObject->setValueFromMidi(obj->opcode, obj->value);
+                obj->pControlObject->updateProxies(NULL);
+            }
+            delete obj;
+        }
+    }
+
+    // Update app threads (ControlObjectThread derived objects) with changes in
+    // the corresponding ControlObjects. These updates should only occour if no
+    // changes has been in the object from widgets, midi or application threads.
+    if (m_sqQueueMutexChanges.tryLock()) {
+        QQueue<ControlObject*> qQueueChanges = m_sqQueueChanges;
+        m_sqQueueChanges.clear();
+        m_sqQueueMutexChanges.unlock();
+
+        QList<ControlObject*> failedUpdates;
+        while (!qQueueChanges.isEmpty()) {
+            ControlObject* obj = qQueueChanges.dequeue();
+
+            // If update is not successful, enqueue again
+            if (!obj->updateProxies()) {
+                failedUpdates.push_back(obj);
             }
         }
 
-        //
-        // If the object is in m_sqQueueChanges, delete it from that queue.
-        //
-
-        m_sqQueueMutexMidi.unlock();
-    }
-
-    // Update app threads (ControlObjectThread objects) with changes in the corresponding
-    // ControlObjects. These updates should only occour if no changes has been in the object
-    // from widgets, midi og application threads.
-    ControlObject * obj;
-    if(m_sqQueueMutexChanges.tryLock())
-    {
-        while(!m_sqQueueChanges.isEmpty())
-        {
-            obj = m_sqQueueChanges.dequeue();
-
-            // If update is not successful, enqueue again
-            if (!obj->updateProxies())
-                m_sqQueueChanges.enqueue(obj);
-
+        if (failedUpdates.size() > 0) {
+            m_sqQueueMutexChanges.lock();
+            m_sqQueueChanges.append(failedUpdates);
+            m_sqQueueMutexChanges.unlock();
         }
-        m_sqQueueMutexChanges.unlock();
     }
 }

@@ -78,7 +78,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_bScalerChanged(false),
     m_bLastBufferPaused(true),
-    m_bBufferPause(true), 
+    m_bBufferPause(true),
     m_fRampValue(0.0),
     m_iRampState(ENGINE_RAMP_NONE),
     m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
@@ -121,7 +121,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlPlayFromStart(double)),
             Qt::DirectConnection);
     playStartButton->set(0);
-    playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
 
     // Jump to start and stop button
     stopStartButton = new ControlPushButton(ConfigKey(group, "start_stop"));
@@ -129,7 +128,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlJumpToStartAndStop(double)),
             Qt::DirectConnection);
     stopStartButton->set(0);
-    stopStartButtonCOT = new ControlObjectThreadMain(stopStartButton);
 
     //Stop playback (for sampler)
     stopButton = new ControlPushButton(ConfigKey(group, "stop"));
@@ -137,7 +135,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlStop(double)),
             Qt::DirectConnection);
     stopButton->set(0);
-    stopButtonCOT = new ControlObjectThreadMain(stopButton);
 
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
@@ -255,17 +252,19 @@ EngineBuffer::~EngineBuffer()
 
     delete playButtonCOT;
     delete playButton;
-    delete playStartButtonCOT;
     delete playStartButton;
+    delete stopStartButton;
+
     delete startButton;
     delete endButton;
-    delete stopStartButtonCOT;
-    delete stopButtonCOT;
     delete stopButton;
     delete rateEngine;
     delete playposSlider;
     delete visualPlaypos;
+    delete visualBpm;
 
+    delete m_pSlipButton;
+    delete m_pSlipPosition;
     delete m_pRepeat;
 
     delete m_pTrackSamples;
@@ -328,6 +327,10 @@ double EngineBuffer::getBpm()
     return m_pBpmControl->getBpm();
 }
 
+double EngineBuffer::getFileBpm() {
+    return m_pBpmControl->getFileBpm();
+}
+
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
 {
     m_pBpmControl->setEngineMaster(pEngineMaster);
@@ -372,7 +375,7 @@ const char * EngineBuffer::getGroup()
 
 double EngineBuffer::getRate()
 {
-    return m_pRateControl->getRawRate();
+    return rate_old;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -393,9 +396,9 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         seekAbs = m_cueControl->loadTrack(pTrack);
     }
     slotControlSeekAbs(seekAbs);
-    // enable Buffer processing 
-    m_bBufferPause = false;     
-    m_pause.unlock(); 
+    // enable Buffer processing
+    m_bBufferPause = false;
+    m_pause.unlock();
 
     emit(trackLoaded(pTrack));
 }
@@ -420,7 +423,7 @@ void EngineBuffer::ejectTrack() {
     m_pause.lock();
     m_bBufferPause = true;
     m_pTrackSamples->set(0);
-    m_pTrackSampleRate->set(0); 
+    m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.clear();
     file_srate_old = 0;
@@ -597,7 +600,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 }
             }
 
-            rate_old = rate;
             if (baserate > 0) //Prevent division by 0
                 rate = baserate*m_pScale->setTempo(rate/baserate);
             m_pScale->setBaseRate(baserate);
@@ -903,9 +905,9 @@ void EngineBuffer::hintReader(const double dRate,
 void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     // Pause EngineBuffer from processing frames
     m_pause.lock();
-    m_bBufferPause = true; 
+    m_bBufferPause = true;
     m_pTrackSamples->set(0); // stop renderer
-    m_pause.unlock(); 
+    m_pause.unlock();
     //Stop playback
     playButtonCOT->slotSet(0.0);
 

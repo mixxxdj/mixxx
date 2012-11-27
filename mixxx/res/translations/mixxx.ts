@@ -151,110 +151,115 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="39"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="41"/>
         <source>Played</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="41"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="43"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="43"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="45"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="45"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="47"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="47"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="49"/>
         <source>Genre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="49"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="51"/>
         <source>Composer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="51"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="53"/>
         <source>Year</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="53"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="55"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="55"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="57"/>
         <source>Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="57"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="59"/>
         <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="59"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="61"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="61"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="63"/>
         <source>Rating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="63"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="65"/>
         <source>Bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="65"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="67"/>
         <source>BPM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="67"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="69"/>
         <source>Track #</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="69"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="71"/>
         <source>Date Added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="71"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="73"/>
         <source>#</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="73"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="75"/>
         <source>Timestamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="75"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="77"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="77"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="79"/>
         <source>BPM Lock</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
+        <source>Preview</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>BaseTrackPlayer</name>
     <message>
-        <location filename="../../src/basetrackplayer.cpp" line="179"/>
+        <location filename="../../src/basetrackplayer.cpp" line="194"/>
         <source>Couldn&apos;t load track.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -378,9 +383,9 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="91"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="176"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="192"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="379"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="172"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="188"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="376"/>
         <source>Mixxx Library</source>
         <translation type="unfinished"></translation>
     </message>
@@ -390,22 +395,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="177"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="173"/>
         <source>Warning: This will permanently delete the following files:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="179"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="175"/>
         <source>Are you sure you want to delete these files from your computer?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="193"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="189"/>
         <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="380"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="377"/>
         <source>Could not update file metadata.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4252,7 +4257,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="110"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="111"/>
         <source>Library</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5623,92 +5628,97 @@ Click OK to exit.</source>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="55"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="58"/>
         <source>Add to Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="57"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="60"/>
         <source>Add to Crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="53"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="56"/>
         <source>Load to Sampler</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="254"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="259"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="257"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="262"/>
         <source>Hide from Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="260"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="265"/>
         <source>Unhide from Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="263"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="268"/>
         <source>Purge from Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="266"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="271"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="270"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="275"/>
         <source>Open in File Browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="274"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="279"/>
         <source>Add to Auto-DJ Queue (bottom)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="277"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="282"/>
         <source>Add to Auto-DJ Queue (top)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="281"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="286"/>
         <source>Reload Track Metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="285"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="290"/>
+        <source>Load to Preview Deck</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="297"/>
         <source>Reset Play Count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="289"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="301"/>
         <source>Lock BPM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="290"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="302"/>
         <source>Unlock BPM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="296"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="308"/>
         <source>Clear BPM and Beatgrid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="469"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="482"/>
         <source>Load to Deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="487"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
         <source>Sampler %1</source>
         <translation type="unfinished"></translation>
     </message>
