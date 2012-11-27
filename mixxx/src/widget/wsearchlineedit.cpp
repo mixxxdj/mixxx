@@ -21,13 +21,18 @@ WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
     m_place = true;
     showPlaceholder();
 
-    QShortcut *setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut, SIGNAL(activated()), this, SLOT(setFocus()));
-    QShortcut *clearTextShortcut = new QShortcut(QKeySequence(tr("Esc", "Search|Clear")), this, 0, 0, Qt::WidgetShortcut);
-    connect(clearTextShortcut, SIGNAL(activated()), this, SLOT(clear()));
+    QShortcut *setFocusShortcut = new QShortcut(
+        QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
+    connect(setFocusShortcut, SIGNAL(activated()),
+            this, SLOT(setFocus()));
+    QShortcut *clearTextShortcut = new QShortcut(
+        QKeySequence(tr("Esc", "Search|Clear")), this, 0, 0,
+        Qt::WidgetShortcut);
+    connect(clearTextShortcut, SIGNAL(activated()),
+            this, SLOT(clear()));
 
-    //Set up a timer to search after a few hundred milliseconds timeout.
-    //This stops us from thrashing the database if you type really fast.
+    // Set up a timer to search after a few hundred milliseconds timeout.  This
+    // stops us from thrashing the database if you type really fast.
     m_searchTimer.setSingleShot(true);
     connect(&m_searchTimer, SIGNAL(timeout()),
             this, SLOT(triggerSearch()));
@@ -35,25 +40,25 @@ WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(slotSetupTimer(const QString&)));
 
-    //When you hit enter, it will trigger the search.
-    connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
+    // When you hit enter, it will trigger the search.
+    connect(this, SIGNAL(returnPressed()),
+            this, SLOT(triggerSearch()));
 
-    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clear()));
-    //Forces immediate update of tracktable
-    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(triggerSearch()));
+    connect(m_clearButton, SIGNAL(clicked()),
+            this, SLOT(clear()));
+    // Forces immediate update of tracktable
+    connect(m_clearButton, SIGNAL(clicked()),
+            this, SLOT(triggerSearch()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(updateCloseButton(const QString&)));
 
+    // The width of the frame for the widget based on the styling.
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+
+    // Ensures the text does not obscure the clear image.
     setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").
                   arg(m_clearButton->sizeHint().width() + frameWidth + 1));
-
-    QSize msz = minimumSizeHint();
-    setMinimumSize(qMax(msz.width(),
-                        m_clearButton->sizeHint().height() + frameWidth * 2 + 2),
-                   qMax(msz.height(),
-                        m_clearButton->sizeHint().height() + frameWidth * 2 + 2));
 }
 
 WSearchLineEdit::~WSearchLineEdit() {
@@ -86,8 +91,13 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
     QSize sz = m_clearButton->sizeHint();
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    m_clearButton->move(rect().right() - frameWidth - sz.width(),
-                      (rect().bottom() + 1 - sz.height())/2);
+    int height = (rect().bottom() + 1 - sz.height())/2;
+    if (layoutDirection() == Qt::LeftToRight) {
+        m_clearButton->move(rect().right() - frameWidth - sz.width() - 1,
+                            height);
+    } else {
+        m_clearButton->move(frameWidth + 1, height);
+    }
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
