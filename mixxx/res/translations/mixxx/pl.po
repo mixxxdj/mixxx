@@ -8,19 +8,19 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-10-01 00:56+0000\n"
-"Last-Translator: Sławomir Kur <Unknown>\n"
+"PO-Revision-Date: 2012-11-26 14:45+0000\n"
+"Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-24 05:13+0000\n"
-"X-Generator: Launchpad (build 16293)\n"
+"X-Launchpad-Export-Date: 2012-11-27 05:12+0000\n"
+"X-Generator: Launchpad (build 16309)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -596,11 +596,11 @@ msgstr "Pomiń utwór"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
-msgstr ""
+msgstr "Przełącz przejście do następnego utworu."
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "Wycisz teraz"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
@@ -667,6 +667,10 @@ msgid ""
 "minute of a track for beat information. This can speed up beat detection on "
 "slower computers but may result in lower quality beatgrids."
 msgstr ""
+"Włącz szybką detekcje uderzeń. Jeżeli funkcja jest aktywna, Mixxx analizuje "
+"tylko pierwszą minutę utworu. Może to przyśpieszyć detekcje bitu na "
+"wolniejszych komputerach, ale w rezultacie daje gorszej jakości siatkę "
+"uderzeń."
 
 #: DlgBeatsDlg#9
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
@@ -680,6 +684,10 @@ msgid ""
 "music). Often results in higher quality beatgrids, but will not do well on "
 "tracks that have tempo shifts."
 msgstr ""
+"Konwertuje rytm wykryty przez analizator na siatkę uderzeń ze stałym tempem. "
+"Użyj tej opcji jeżeli Twoje utwory posiadają stałe tempo (np. większość "
+"muzyki elektronicznej). Często owocuje to wyższymi jakościowo siatkami "
+"uderzeń, ale nie zadziała dla utworów o zmiennym tempie."
 
 #: DlgBeatsDlg#11
 msgid "Assume constant tempo (Recommended)"
@@ -690,6 +698,8 @@ msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
 "analyzing the beats to discard outliers."
 msgstr ""
+"Próbuje poprawić fazę (pierwsze uderzenie) siatki ze stałym tempem poprzez "
+"analizę beatu i odrzuceniem nie pasujących uderzeń."
 
 #: DlgBeatsDlg#13
 msgid "Enable Offset Correction (Recommended)"
@@ -710,6 +720,8 @@ msgid ""
 "Re-analyse beats when settings change or beats already present\n"
 "(e.g. from 3rd-party programs or older Mixxx versions)"
 msgstr ""
+"Ponownie analizuje beat kiedy zmieniają sie ustawienia lub beat jest obecny\n"
+"(np. dostarczony przez inne programy lub starsze wersje Mixxx)"
 
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
@@ -778,7 +790,7 @@ msgstr "Aby przypisać inny kontroler naciśnij klawisz lub wybierz z listy."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
-msgstr ""
+msgstr "Wybierz kontrolę"
 
 #: DlgControllerLearning#6
 msgid "Deck %1"
@@ -836,7 +848,7 @@ msgstr ""
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
-msgstr ""
+msgstr "Przycisk Szybkiego Cofania"
 
 #: DlgControllerLearning#20
 msgid "Fast forward button"
@@ -856,7 +868,7 @@ msgstr "Przycisk Reverse"
 
 #: DlgControllerLearning#24
 msgid "Gain knob"
-msgstr ""
+msgstr "Pokrętło wzmocnienia"
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
@@ -888,7 +900,7 @@ msgstr "Edytuj siatkę uderzeń"
 
 #: DlgControllerLearning#32
 msgid "Toggle quantize mode"
-msgstr ""
+msgstr "Przełącz tryb kwantyzacji"
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
@@ -908,7 +920,7 @@ msgstr ""
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
-msgstr ""
+msgstr "Przełączanie tryby blokowania"
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
@@ -965,15 +977,15 @@ msgstr "Pokrętło EQ - Niskie"
 
 #: DlgControllerLearning#51
 msgid "High EQ kill"
-msgstr ""
+msgstr "Wycisz tony wysokie"
 
 #: DlgControllerLearning#52
 msgid "Mid EQ kill"
-msgstr ""
+msgstr "Wycisz tony średnie"
 
 #: DlgControllerLearning#53
 msgid "Low EQ kill"
-msgstr ""
+msgstr "Wycisz tony niskie"
 
 #: DlgControllerLearning#54
 msgctxt "DlgControllerLearning#54"
@@ -982,7 +994,7 @@ msgstr "Vinyl Control"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control (ON/OFF)"
-msgstr ""
+msgstr "Przełącz kontrolę vinylem (włącz/wyłącz)"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
@@ -1002,11 +1014,11 @@ msgstr "Ustaw punkt CUE"
 
 #: DlgControllerLearning#60
 msgid "Go to cue point and stop"
-msgstr ""
+msgstr "Przejdz do punktu CUE i zatrzymaj"
 
 #: DlgControllerLearning#61
 msgid "Set or jump to hotcue %1"
-msgstr ""
+msgstr "Ustaw lub przejdz do hotcue %1"
 
 #: DlgControllerLearning#62
 msgid "Clear hotcue %1"
@@ -1026,11 +1038,11 @@ msgstr "Zapętlanie"
 
 #: DlgControllerLearning#66
 msgid "Loop In button"
-msgstr ""
+msgstr "Początek pętli"
 
 #: DlgControllerLearning#67
 msgid "Loop Out button"
-msgstr ""
+msgstr "Koniec pętli"
 
 #: DlgControllerLearning#68
 msgid "Reloop / Exit button"
@@ -1038,11 +1050,11 @@ msgstr ""
 
 #: DlgControllerLearning#69
 msgid "Halve the current loop's length"
-msgstr ""
+msgstr "Skróć o połowę aktualną długość pętli"
 
 #: DlgControllerLearning#70
 msgid "Double the current loop's length"
-msgstr ""
+msgstr "Podwój aktualną długość pętli"
 
 #: DlgControllerLearning#71
 msgid "Toggle slip mode"
@@ -1070,7 +1082,7 @@ msgstr "Zapętlanie beatu"
 
 #: DlgControllerLearning#77
 msgid "Create %1-beat loop"
-msgstr ""
+msgstr "Stwórz %1-beat'ową pętlę"
 
 #: DlgControllerLearning#78
 msgid "Create temporary %1-beat loop roll"
@@ -1095,7 +1107,7 @@ msgstr ""
 #: DlgControllerLearning#83
 msgctxt "DlgControllerLearning#83"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteka"
 
 #: DlgControllerLearning#84
 msgid "Switch to the next view (library, playlist..)"
@@ -1127,7 +1139,7 @@ msgstr "Efekty"
 
 #: DlgControllerLearning#91
 msgid "Toggle flange effect"
-msgstr ""
+msgstr "Przełącz efekt flangera"
 
 #: DlgControllerLearning#92
 msgid "Flange effect: Wavelength/period"
@@ -1135,7 +1147,7 @@ msgstr "Efekt flangera: Długość fali/Okres"
 
 #: DlgControllerLearning#93
 msgid "Flange effect: Intensity"
-msgstr ""
+msgstr "Efekt flangera: Intensywność"
 
 #: DlgControllerLearning#94
 msgid "Flange effect: Phase delay"
@@ -1144,7 +1156,7 @@ msgstr "Efekt flangera: Opóźnienie Frazy"
 #: DlgControllerLearning#95
 msgctxt "DlgControllerLearning#95"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: DlgControllerLearning#96
 msgid "Microphone on/off"
@@ -1161,7 +1173,7 @@ msgstr "Orientacja kanału mikrofonu (np. lewo, prawo, środek)"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: DlgControllerLearning#100
 msgid "Shuffle the content of the Auto DJ playlist"
@@ -1193,19 +1205,21 @@ msgstr "Pokaż/Ukryj sekcje mikrofonu"
 
 #: DlgControllerLearning#107
 msgid "Show/hide the vinyl control section"
-msgstr ""
+msgstr "Pokaż/Ukryj sekcje kontroli vinylem"
 
 #: DlgControllerLearning#108
 msgid "Show/hide spinning vinyl widget"
-msgstr ""
+msgstr "Pokaż/Ukryj wirującą płytę vinylową"
 
 #: DlgControllerLearning#109
 msgid "Ready to map: %1. Now move a control on your controller."
 msgstr ""
+"Gotowy do przypisania: %1. Użyj klawisza/suwaka/pokrętła kontrolera, który "
+"chcesz przypisać do tej funkcji."
 
 #: DlgControllerLearning#110
 msgid "Successfully mapped to:"
-msgstr ""
+msgstr "Mapowanie zakończone pomyślnie dla:"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -1227,7 +1241,7 @@ msgstr "Włącz Wykrywanie BPM"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Tracks BPM on Import"
-msgstr ""
+msgstr "Wykryj BMP Scieżki podczas Importowania"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -1331,11 +1345,11 @@ msgstr "Wsparcie:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
-msgstr ""
+msgstr "Kliknij aby uruchomić kreatora uczenia się kontrolera."
 
 #: DlgPrefControllerDlg#11
 msgid "Learning Wizard (MIDI Only)"
-msgstr ""
+msgstr "Kreator uczenia się kontrolera (tylko MIDI)"
 
 #: DlgPrefControls#1
 msgctxt "DlgPrefControls#1"
@@ -1389,7 +1403,7 @@ msgstr "10%"
 
 #: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
-msgstr ""
+msgstr "Wczytaj utwór do grającego odtwarzacza"
 
 #: DlgPrefControls#14
 msgid "The selected skin is bigger than your screen resolution."
@@ -1515,7 +1529,7 @@ msgstr "Pokazuje szybkość klatek"
 
 #: DlgPrefControlsDlg#17
 msgid "Normalize Overview"
-msgstr ""
+msgstr "Znormalizuj podgląd"
 
 #: DlgPrefControlsDlg#18
 msgid "Left click"
@@ -1548,7 +1562,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
-msgstr ""
+msgstr "Synchronizuj powiększenie wszystkich widoków ścieżek."
 
 #: DlgPrefControlsDlg#26
 msgid "OpenGl status"
@@ -4783,7 +4797,7 @@ msgstr ""
 
 #: WTrackTableView#8
 msgid "Properties"
-msgstr ""
+msgstr "Właściwości"
 
 #: WTrackTableView#9
 msgid "Open in File Browser"
@@ -4824,7 +4838,7 @@ msgstr "Wczytaj do Deck &1"
 #: WTrackTableView#18
 msgctxt "WTrackTableView#18"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
