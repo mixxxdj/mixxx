@@ -48,13 +48,15 @@ QModelIndex SidebarModel::getDefaultSelection() {
     return createIndex(m_iDefaultSelectedIndex, 0, (void*)this);
 }
 
-void SidebarModel::setDefaultSelection(unsigned int index)
-{
+void SidebarModel::setDefaultSelection(unsigned int index) {
     m_iDefaultSelectedIndex = index;
 }
 
 void SidebarModel::activateDefaultSelection() {
-    if (m_sFeatures.size() > 0) {
+    if (m_iDefaultSelectedIndex <
+            static_cast<unsigned int>(m_sFeatures.size())) {
+        emit(selectIndex(getDefaultSelection()));
+        // Selecting an index does not activate it.
         m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
 }
