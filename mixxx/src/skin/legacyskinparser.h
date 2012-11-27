@@ -67,12 +67,14 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseTableView(QDomElement node);
     QWidget* parseStyle(QDomElement node);
     QWidget* parseSpinny(QDomElement node);
+    QWidget* parseSearchBox(QDomElement node);
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
     void setupWidget(QDomNode node, QWidget* pWidget);
     void setupConnections(QDomNode node, QWidget* pWidget);
     void addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd);
+    QString getLibraryStyle(QDomNode node);
 
     QString lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);

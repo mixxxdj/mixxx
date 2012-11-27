@@ -190,7 +190,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode attributes_node = manifest_node.namedItem("attributes");
     if (!attributes_node.isNull() && attributes_node.isElement()) {
         QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
-        for (int i = 0; i < attribute_nodes.length(); ++i) {
+        for (unsigned int i = 0; i < attribute_nodes.length(); ++i) {
             QDomNode attribute_node = attribute_nodes.item(i);
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
@@ -323,6 +323,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseKnob(node);
     } else if (nodeName == "TableView") {
         return parseTableView(node);
+    } else if (nodeName == "SearchBox") {
+        return parseSearchBox(node);
     } else if (nodeName == "WidgetGroup") {
         return parseWidgetGroup(node);
     } else if (nodeName == "Style") {
@@ -714,6 +716,23 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     return spinny;
 }
 
+QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig, m_pParent);
+    setupWidget(node, pLineEditSearch);
+    pLineEditSearch->setup(node);
+
+    // Connect search box signals to the library
+    connect(pLineEditSearch, SIGNAL(search(const QString&)),
+            m_pLibrary, SIGNAL(search(const QString&)));
+    connect(pLineEditSearch, SIGNAL(searchCleared()),
+            m_pLibrary, SIGNAL(searchCleared()));
+    connect(pLineEditSearch, SIGNAL(searchStarting()),
+            m_pLibrary, SIGNAL(searchStarting()));
+    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
+            pLineEditSearch, SLOT(restoreSearch(const QString&)));
+
+    return pLineEditSearch;
+}
 
 QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     QStackedWidget* pTabWidget = new QStackedWidget(m_pParent);
@@ -741,38 +760,38 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
-    QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
+    // Connect Library search signals to the WLibrary
+    connect(m_pLibrary, SIGNAL(search(const QString&)),
+            pLibraryWidget, SLOT(search(const QString&)));
+    connect(m_pLibrary, SIGNAL(searchCleared()),
+            pLibraryWidget, SLOT(searchCleared()));
+    connect(m_pLibrary, SIGNAL(searchStarting()),
+            pLibraryWidget, SLOT(searchStarting()));
 
+    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
+
+    // This must come after the bindWidget or we will not style any of the
+    // LibraryView's because they have not been added yet.
+    pLibraryWidget->setup(node);
+
+    QWidget* pLibrarySidebarPage = NULL;
+
+    pLibrarySidebarPage = new QWidget(pSplitter);
     WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(pLibrarySidebarPage);
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
 
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig,
-                                                           pLibrarySidebarPage);
-    pLineEditSearch->setup(node);
+    QWidget* oldParent = m_pParent;
+    m_pParent = pLibrarySidebarPage;
+    QWidget* pLineEditSearch = parseSearchBox(node);
+    m_pParent = oldParent;
 
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
     vl->setContentsMargins(0,0,0,0); //Fill entire space
     vl->addWidget(pLineEditSearch);
     vl->addWidget(pLibrarySidebar);
     pLibrarySidebarPage->setLayout(vl);
-
-    // Connect search box signals to the library
-    connect(pLineEditSearch, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
-    connect(pLineEditSearch, SIGNAL(searchCleared()),
-            pLibraryWidget, SLOT(searchCleared()));
-    connect(pLineEditSearch, SIGNAL(searchStarting()),
-            pLibraryWidget, SLOT(searchStarting()));
-    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
-            pLineEditSearch, SLOT(restoreSearch(const QString&)));
-
-    m_pLibrary->bindWidget(pLibraryWidget,
-                           m_pKeyboard);
-    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
-    // This must come after the bindWidget or we will not style any of the
-    // LibraryView's because they have not been added yet.
-    pLibraryWidget->setup(node);
 
     pSplitter->addWidget(pLibrarySidebarPage);
     pSplitter->addWidget(pLibraryWidget);
@@ -792,7 +811,12 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
                                   0);   //Default alignment
 
     pTabWidget->addWidget(pLibraryPage);
+    pTabWidget->setStyleSheet(getLibraryStyle(node));
 
+    return pTabWidget;
+}
+
+QString LegacySkinParser::getLibraryStyle(QDomNode node) {
     QString style = XmlParse::selectNodeQString(node, "Style");
 
     // Workaround to support legacy color styling
@@ -885,12 +909,8 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
             styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
         }
     }
-
     style.prepend(styleHack);
-
-    pTabWidget->setStyleSheet(style);
-
-    return pTabWidget;
+    return style;
 }
 
 QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
