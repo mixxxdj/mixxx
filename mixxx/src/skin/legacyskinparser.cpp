@@ -246,7 +246,9 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
                 mainControl.slotSet(value);
             } else {
                 // TODO(rryan): Make this configurable by the skin.
-                qWarning() << "Requested control does not exist:" << configKey << ". Creating it.";
+                qWarning() << "Requested control does not exist:"
+                           << QString::fromStdString(attribute.config_key())
+                           << ". Creating it.";
                 // Since the usual behavior here is to create a skin-defined push
                 // button, actually make it a push button and set it to toggle.
                 ControlPushButton* controlButton = new ControlPushButton(configKey);
