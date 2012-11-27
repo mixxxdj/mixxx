@@ -32,10 +32,9 @@ BundledSongsWebView::BundledSongsWebView(QWidget* parent,
                                          ConfigObject<ConfigValue>* config) :
     QWebView(parent),
     LibraryView(),
-    m_pTrackCollection(trackCollection),
     m_bFirstRun(firstRun),
-    m_pConfig(config)
-{
+    m_pConfig(config),
+    m_pTrackCollection(trackCollection) {
     m_sPromoBundlePath = promoBundlePath;
     m_sLocalURL = localURL;
     m_statTracking = (int)m_pConfig->getValueString(ConfigKey(CONFIG_KEY,"StatTracking")).toInt();
@@ -76,11 +75,12 @@ void BundledSongsWebView::attachObjects()
 
 void BundledSongsWebView::setup(QDomNode node)
 {
-
+    Q_UNUSED(node);
 }
 
 void BundledSongsWebView::loadFinished(bool ok)
 {
+    Q_UNUSED(ok);
     if (m_bFirstRun)
         page()->mainFrame()->evaluateJavaScript("splash();");
 }
@@ -146,6 +146,7 @@ void BundledSongsWebView::handleClickedLink(const QUrl& url)
 //TODO: Implement this for MIDI control
 void BundledSongsWebView::keyPressEvent(QKeyEvent* event)
 {
+    Q_UNUSED(event);
     //Look at WTrackTableView::keyPressEvent(...) for some
     //code to start with...
 }
@@ -178,9 +179,11 @@ void BundledSongsWebView::loadSelectedTrack() {
 }
 
 void BundledSongsWebView::loadSelectedTrackToGroup(QString group) {
+    Q_UNUSED(group);
     // Do nothing for now. The web view doesn't have the concept of a selection right now.
 }
 
 void BundledSongsWebView::moveSelection(int delta) {
+    Q_UNUSED(delta);
     // Do nothing for now. The web view doesn't have the concept of a selection right now.
 }

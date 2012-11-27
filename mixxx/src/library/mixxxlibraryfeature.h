@@ -7,6 +7,7 @@
 #include <QStringListModel>
 
 #include "library/libraryfeature.h"
+#include "library/dao/trackdao.h"
 #include "treeitemmodel.h"
 
 class BaseTrackCache;
@@ -46,6 +47,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     MissingTableModel* m_pMissingTableModel;
     HiddenTableModel* m_pHiddenTableModel;
     TreeItemModel m_childModel;
+    TrackDAO& m_trackDao;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

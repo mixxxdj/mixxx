@@ -29,12 +29,14 @@
 
 VinylControlSignalWidget::VinylControlSignalWidget()
     : QWidget(),
-      m_iTimerId(0),
       m_pVinylControl(NULL),
+      m_iTimerId(0),
       m_iSize(MIXXX_VINYL_SCOPE_SIZE),
       m_qImage(),
-      m_bVinylActive(FALSE),
-      m_imageData(NULL) {
+      m_imageData(NULL),
+      m_iAngle(0),
+      m_fSignalQuality(0.0f),
+      m_bVinylActive(FALSE) {
 }
 
 void VinylControlSignalWidget::setSize(int size)
@@ -89,8 +91,8 @@ void VinylControlSignalWidget::stopDrawing() {
     }
 }
 
-void VinylControlSignalWidget::timerEvent(QTimerEvent *event)
-{
+void VinylControlSignalWidget::timerEvent(QTimerEvent *event) {
+    Q_UNUSED(event);
     if (m_pVinylControl) {
         m_iAngle = (int)m_pVinylControl->getAngle();
 
@@ -138,8 +140,8 @@ void VinylControlSignalWidget::resetWidget()
     m_controlLock.unlock();
 }
 
-void VinylControlSignalWidget::paintEvent(QPaintEvent* event)
-{
+void VinylControlSignalWidget::paintEvent(QPaintEvent* event) {
+    Q_UNUSED(event);
     int sizeX = this->width();
     int sizeY = this->height();
 

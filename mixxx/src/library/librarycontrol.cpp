@@ -81,14 +81,16 @@ LibraryControl::~LibraryControl() {
    delete m_pSelectTrackKnob;
 }
 
-void LibraryControl::bindWidget(WLibrarySidebar* pSidebarWidget, WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
+void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     if (m_pSidebarWidget != NULL) {
         disconnect(m_pSidebarWidget, 0, this, 0);
     }
     m_pSidebarWidget = pSidebarWidget;
     connect(m_pSidebarWidget, SIGNAL(destroyed()),
             this, SLOT(sidebarWidgetDeleted()));
+}
 
+void LibraryControl::bindWidget(WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
     if (m_pLibraryWidget != NULL) {
         disconnect(m_pLibraryWidget, 0, this, 0);
     }

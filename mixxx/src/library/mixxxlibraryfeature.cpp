@@ -12,16 +12,19 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
+#include "soundsourceproxy.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           kMissingTitle(tr("Missing Tracks")),
-          kHiddenTitle(tr("Hidden Tracks")){
+          kHiddenTitle(tr("Hidden Tracks")),
+          m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
+            //has to be up here otherwise Played and TimesPlayed are not show
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
             << "library." + LIBRARYTABLE_ALBUM
@@ -66,17 +69,17 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
         pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackDirty(int)),
+    connect(&m_trackDao, SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackClean(int)),
+    connect(&m_trackDao, SIGNAL(trackClean(int)),
             pBaseTrackCache, SLOT(slotTrackClean(int)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackChanged(int)),
+    connect(&m_trackDao, SIGNAL(trackChanged(int)),
             pBaseTrackCache, SLOT(slotTrackChanged(int)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksAdded(QSet<int>)),
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
             pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksRemoved(QSet<int>)),
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
             pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(dbTrackAdded(TrackPointer)),
+    connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
@@ -159,8 +162,19 @@ void MixxxLibraryFeature::onRightClickChild(const QPoint& globalPos,
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        // XXX: Possible WTF alert - Previously we thought we needed toString() here
+        // but what you actually want in any case when converting a QUrl to a file
+        // system path is QUrl::toLocalFile(). This is the second time we have
+        // flip-flopped on this, but I think toLocalFile() should work in any
+        // case. toString() absolutely does not work when you pass the result to a
+        files.append(url.toLocalFile());
+    }
+
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    QList<int> trackIds = m_trackDao.addTracks(files, true);
+    return trackIds.size() > 0;
 }
 
 bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
@@ -170,8 +184,8 @@ bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> 
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
+    QFileInfo file(url.toLocalFile());
+    return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
 
 bool MixxxLibraryFeature::dragMoveAcceptChild(const QModelIndex& index,
