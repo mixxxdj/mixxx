@@ -190,7 +190,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode attributes_node = manifest_node.namedItem("attributes");
     if (!attributes_node.isNull() && attributes_node.isElement()) {
         QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
-        for (int i = 0; i < attribute_nodes.length(); ++i) {
+        for (unsigned int i = 0; i < attribute_nodes.length(); ++i) {
             QDomNode attribute_node = attribute_nodes.item(i);
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
@@ -240,9 +240,19 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         ControlObject* pControl = ControlObject::getControl(configKey);
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
-        if (pControl && ok) {
-            ControlObjectThreadMain mainControl(pControl);
-            mainControl.slotSet(value);
+        if (ok) {
+            if (pControl) {
+                ControlObjectThreadMain mainControl(pControl);
+                mainControl.slotSet(value);
+            } else {
+                // TODO(rryan): Make this configurable by the skin.
+                qWarning() << "Requested control does not exist:" << configKey << ". Creating it.";
+                // Since the usual behavior here is to create a skin-defined push
+                // button, actually make it a push button and set it to toggle.
+                ControlPushButton* controlButton = new ControlPushButton(configKey);
+                controlButton->setButtonMode(ControlPushButton::TOGGLE);
+                controlButton->set(value);
+            }
         }
     }
     // Force a sync to deliver the control change messages so they take effect
@@ -323,6 +333,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseKnob(node);
     } else if (nodeName == "TableView") {
         return parseTableView(node);
+    } else if (nodeName == "SearchBox") {
+        return parseSearchBox(node);
     } else if (nodeName == "WidgetGroup") {
         return parseWidgetGroup(node);
     } else if (nodeName == "Style") {
@@ -331,11 +343,81 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseSpinny(node);
     } else if (nodeName == "Time") {
         return parseTime(node);
+    } else if (nodeName == "Splitter") {
+        return parseSplitter(node);
+    } else if (nodeName == "LibrarySidebar") {
+        return parseLibrarySidebar(node);
+    } else if (nodeName == "Library") {
+        return parseLibrary(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
 
     return NULL;
+}
+
+QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
+    QSplitter* pSplitter = new QSplitter(m_pParent);
+    setupWidget(node, pSplitter);
+
+    // Default orientation is horizontal.
+    if (!XmlParse::selectNode(node, "Orientation").isNull()) {
+        QString layout = XmlParse::selectNodeQString(node, "Orientation");
+        if (layout == "vertical") {
+            pSplitter->setOrientation(Qt::Vertical);
+        } else if (layout == "horizontal") {
+            pSplitter->setOrientation(Qt::Horizontal);
+        }
+    }
+
+    QDomNode childrenNode = XmlParse::selectNode(node, "Children");
+
+    QWidget* pOldParent = m_pParent;
+    m_pParent = pSplitter;
+
+    if (!childrenNode.isNull()) {
+        // Descend chilren
+        QDomNodeList children = childrenNode.childNodes();
+
+        for (int i = 0; i < children.count(); ++i) {
+            QDomNode node = children.at(i);
+
+            if (node.isElement()) {
+                QWidget* pChild = parseNode(node.toElement(), pSplitter);
+
+                if (pChild == NULL)
+                    continue;
+
+                pSplitter->addWidget(pChild);
+            }
+        }
+    }
+
+    if (!XmlParse::selectNode(node, "SplitSizes").isNull()) {
+        QString sizesJoined = XmlParse::selectNodeQString(node, "SplitSizes");
+        QStringList sizesSplit = sizesJoined.split(",");
+        QList<int> sizes;
+        bool ok = false;
+        foreach (const QString& sizeStr, sizesSplit) {
+            sizes.push_back(sizeStr.toInt(&ok));
+            if (!ok) {
+                break;
+            }
+        }
+        if (sizes.length() != pSplitter->count()) {
+            qDebug() << "<SplitSizes> for <Splitter> (" << sizesJoined
+                     << ") does not match the number of children nodes:"
+                     << pSplitter->count();
+            ok = false;
+        }
+        if (ok) {
+            pSplitter->setSizes(sizes);
+        }
+
+    }
+
+    m_pParent = pOldParent;
+    return pSplitter;
 }
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
@@ -714,6 +796,55 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     return spinny;
 }
 
+QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
+    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig, m_pParent);
+    setupWidget(node, pLineEditSearch);
+    pLineEditSearch->setup(node);
+
+    // Connect search box signals to the library
+    connect(pLineEditSearch, SIGNAL(search(const QString&)),
+            m_pLibrary, SIGNAL(search(const QString&)));
+    connect(pLineEditSearch, SIGNAL(searchCleared()),
+            m_pLibrary, SIGNAL(searchCleared()));
+    connect(pLineEditSearch, SIGNAL(searchStarting()),
+            m_pLibrary, SIGNAL(searchStarting()));
+    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
+            pLineEditSearch, SLOT(restoreSearch(const QString&)));
+
+    return pLineEditSearch;
+}
+
+QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
+    WLibrary* pLibraryWidget = new WLibrary(m_pParent);
+    pLibraryWidget->installEventFilter(m_pKeyboard);
+    pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+
+    // Connect Library search signals to the WLibrary
+    connect(m_pLibrary, SIGNAL(search(const QString&)),
+            pLibraryWidget, SLOT(search(const QString&)));
+    connect(m_pLibrary, SIGNAL(searchCleared()),
+            pLibraryWidget, SLOT(searchCleared()));
+    connect(m_pLibrary, SIGNAL(searchStarting()),
+            pLibraryWidget, SLOT(searchStarting()));
+
+    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
+
+    // This must come after the bindWidget or we will not style any of the
+    // LibraryView's because they have not been added yet.
+    setupWidget(node, pLibraryWidget);
+    pLibraryWidget->setup(node);
+
+    return pLibraryWidget;
+}
+
+QWidget* LegacySkinParser::parseLibrarySidebar(QDomElement node) {
+    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
+    pLibrarySidebar->installEventFilter(m_pKeyboard);
+    pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+    setupWidget(node, pLibrarySidebar);
+    return pLibrarySidebar;
+}
 
 QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     QStackedWidget* pTabWidget = new QStackedWidget(m_pParent);
@@ -737,42 +868,22 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     QSplitter* pSplitter = new QSplitter(pLibraryPage);
 
-    WLibrary* pLibraryWidget = new WLibrary(pSplitter);
-    pLibraryWidget->installEventFilter(m_pKeyboard);
-    pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    QWidget* oldParent = m_pParent;
+
+    m_pParent = pSplitter;
+    QWidget* pLibraryWidget = parseLibrary(node);
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
-
-    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(pLibrarySidebarPage);
-    pLibrarySidebar->installEventFilter(m_pKeyboard);
-    pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-
-    WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pConfig,
-                                                           pLibrarySidebarPage);
-    pLineEditSearch->setup(node);
+    m_pParent = pLibrarySidebarPage;
+    QWidget* pLibrarySidebar = parseLibrarySidebar(node);
+    QWidget* pLineEditSearch = parseSearchBox(node);
+    m_pParent = oldParent;
 
     QVBoxLayout* vl = new QVBoxLayout(pLibrarySidebarPage);
     vl->setContentsMargins(0,0,0,0); //Fill entire space
     vl->addWidget(pLineEditSearch);
     vl->addWidget(pLibrarySidebar);
     pLibrarySidebarPage->setLayout(vl);
-
-    // Connect search box signals to the library
-    connect(pLineEditSearch, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
-    connect(pLineEditSearch, SIGNAL(searchCleared()),
-            pLibraryWidget, SLOT(searchCleared()));
-    connect(pLineEditSearch, SIGNAL(searchStarting()),
-            pLibraryWidget, SLOT(searchStarting()));
-    connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
-            pLineEditSearch, SLOT(restoreSearch(const QString&)));
-
-    m_pLibrary->bindWidget(pLibrarySidebar,
-                           pLibraryWidget,
-                           m_pKeyboard);
-    // This must come after the bindWidget or we will not style any of the
-    // LibraryView's because they have not been added yet.
-    pLibraryWidget->setup(node);
 
     pSplitter->addWidget(pLibrarySidebarPage);
     pSplitter->addWidget(pLibraryWidget);
@@ -792,7 +903,12 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
                                   0);   //Default alignment
 
     pTabWidget->addWidget(pLibraryPage);
+    pTabWidget->setStyleSheet(getLibraryStyle(node));
 
+    return pTabWidget;
+}
+
+QString LegacySkinParser::getLibraryStyle(QDomNode node) {
     QString style = XmlParse::selectNodeQString(node, "Style");
 
     // Workaround to support legacy color styling
@@ -885,12 +1001,8 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
             styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
         }
     }
-
     style.prepend(styleHack);
-
-    pTabWidget->setStyleSheet(style);
-
-    return pTabWidget;
+    return style;
 }
 
 QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
@@ -1035,6 +1147,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
         bool created = false;
         if (control == NULL) {
+            // TODO(rryan): Make this configurable by the skin.
             qWarning() << "Requested control does not exist:" << key << ". Creating it.";
             // Since the usual behavior here is to create a skin-defined push
             // button, actually make it a push button and set it to toggle.

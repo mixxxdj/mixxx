@@ -7,9 +7,11 @@
 
 #include "library/basesqltablemodel.h"
 
-#include "library/starrating.h"
 #include "library/stardelegate.h"
+#include "library/starrating.h"
+#include "library/previewbuttondelegate.h"
 #include "mixxxutils.cpp"
+#include "playermanager.h"
 
 const bool sDebug = false;
 
@@ -75,6 +77,9 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Key"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM_LOCK),
                   Qt::Horizontal, tr("BPM Lock"));
+
+    setHeaderData(fieldIndex("preview"),
+                  Qt::Horizontal, tr("Preview"));
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -204,7 +209,7 @@ void BaseSqlTableModel::select() {
         tableColumnIndices.push_back(record.indexOf(column));
     }
 
-	// sqlite does not set size and m_rowInfo was just cleared    
+	// sqlite does not set size and m_rowInfo was just cleared
     //int rows = query.size();
     //if (sDebug) {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
@@ -218,7 +223,7 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located        
+        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
@@ -315,7 +320,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
 
     // Build a map from the column names to their indices, used by fieldIndex()
     m_tableColumnIndex.clear();
-    for (int i = 0; i < tableColumns.size(); ++i) {
+    for (int i = 0; i < m_tableColumns.size(); ++i) {
         m_tableColumnIndex[m_tableColumns[i]] = i;
     }
 
@@ -396,7 +401,7 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
 
     // Subtract one from trackSource::columnCount to ignore the id column
     int count = m_tableColumns.size() +
-            (m_trackSource ? m_trackSource->columnCount() - 1: 0);
+                (m_trackSource ? m_trackSource->columnCount() - 1: 0);
     return count;
 }
 
@@ -405,9 +410,17 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
     if (tableIndex > -1) {
         return tableIndex;
     }
-    // Subtract one from the fieldIndex() result to account for the id column
-    return m_trackSource ? (m_tableColumns.size() +
-                            m_trackSource->fieldIndex(fieldName) - 1) : -1;
+
+    if (m_trackSource) {
+        // We need to account for the case where the field name is not a table
+        // column or a source column.
+        int sourceTableIndex = m_trackSource->fieldIndex(fieldName);
+        if (sourceTableIndex > -1) {
+            // Subtract one from the fieldIndex() result to account for the id column
+            return m_tableColumns.size() + sourceTableIndex - 1;
+        }
+    }
+    return -1;
 }
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
@@ -750,6 +763,8 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
+    } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
+        return new PreviewButtonDelegate(pParent, i);
     }
     return NULL;
 }

@@ -48,13 +48,15 @@ QModelIndex SidebarModel::getDefaultSelection() {
     return createIndex(m_iDefaultSelectedIndex, 0, (void*)this);
 }
 
-void SidebarModel::setDefaultSelection(unsigned int index)
-{
+void SidebarModel::setDefaultSelection(unsigned int index) {
     m_iDefaultSelectedIndex = index;
 }
 
 void SidebarModel::activateDefaultSelection() {
-    if (m_sFeatures.size() > 0) {
+    if (m_iDefaultSelectedIndex <
+            static_cast<unsigned int>(m_sFeatures.size())) {
+        emit(selectIndex(getDefaultSelection()));
+        // Selecting an index does not activate it.
         m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
 }
@@ -165,23 +167,27 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     // qDebug("SidebarModel::data row=%d column=%d pointer=%8x, role=%d",
     //        index.row(), index.column(), index.internalPointer(), role);
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            if (role == Qt::DisplayRole) {
-                return m_sFeatures[index.row()]->title();
-            } else if (role == Qt::DecorationRole) {
-                return m_sFeatures[index.row()]->getIcon();
-            }
-        } else {
-            TreeItem* tree_item = (TreeItem*)index.internalPointer();
+    if (!index.isValid()) {
+        return QVariant();
+    }
 
-            if (tree_item) {
-                if (role == Qt::DisplayRole) {
-                    return tree_item->data();
-                } else if (role == Qt::DecorationRole) {
-                    return tree_item->getIcon();
-                }
-            }
+    if (index.internalPointer() == this) {
+        if (role == Qt::DisplayRole) {
+            return m_sFeatures[index.row()]->title();
+        } else if (role == Qt::DecorationRole) {
+            return m_sFeatures[index.row()]->getIcon();
+        }
+    }
+
+    TreeItem* tree_item = (TreeItem*)index.internalPointer();
+    if (tree_item) {
+        if (role == Qt::DisplayRole) {
+            return tree_item->data();
+        } else if (role == Qt::UserRole) {
+            // We use Qt::UserRole to ask for the datapath.
+            return tree_item->dataPath();
+        } else if (role == Qt::DecorationRole) {
+            return tree_item->getIcon();
         }
     }
     return QVariant();

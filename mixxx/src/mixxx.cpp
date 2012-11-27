@@ -50,6 +50,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
+#include "widget/wspinny.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -322,6 +323,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
+    //m_pPlayerManager->addPreviewDeck();
 
     // Call inits to invoke all other construction parts
 
@@ -358,6 +360,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pSkinLoader = new SkinLoader(m_pConfig);
     connect(this, SIGNAL(newSkinLoaded()),
             this, SLOT(onNewSkinLoaded()));
+    connect(this, SIGNAL(newSkinLoaded()),
+            m_pLibrary, SLOT(onSkinLoadFinished()));
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
@@ -401,7 +405,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
         }
     }
-
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
@@ -1165,7 +1168,7 @@ void MixxxApp::slotViewFullScreen(bool toggle)
         // Not for Mac OS because the native menu bar will unhide when moving
         // the mouse to the top of screen
 
-        //menuBar()->setNativeMenuBar(false); 
+        //menuBar()->setNativeMenuBar(false);
         // ^ This leaves a broken native Menu Bar with Ubuntu Unity Bug #1076789#
         // it is only allowed to change this prior initMenuBar()
 
@@ -1587,8 +1590,9 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
             // ON (only in Library)
             WWidget* pWidget = dynamic_cast<WWidget*>(obj);
             WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
+            WSpinny* pSpinny = dynamic_cast<WSpinny*>(obj);
             QLabel* pLabel = dynamic_cast<QLabel*>(obj);
-            return (pWidget || pWfViewer || pLabel);
+            return (pWidget || pWfViewer || pSpinny || pLabel);
         } else if (m_tooltips == 0) {
             // ON
             return false;

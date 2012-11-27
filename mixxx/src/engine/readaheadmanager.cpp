@@ -73,8 +73,16 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
 
-    if (samples_read != samples_needed)
+    if (samples_read != samples_needed) {
         qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
+    }
+
+    // Sometimes our read length reduces to 0. In this case, just return 0 and
+    // make sure not to record a 0-length ReadLogEntry because that will be
+    // interpreted as a seek.
+    if (samples_read == 0) {
+        return 0;
+    }
 
     // Increment or decrement current read-ahead position
     if (in_reverse) {

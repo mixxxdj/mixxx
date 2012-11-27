@@ -51,6 +51,17 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     for (int i = 0; i < m_searchColumns.size(); ++i) {
         m_searchColumnIndices[i] = m_columnIndex.value(m_searchColumns[i], -1);
     }
+    
+    // Duplicated from searchqueryparser.cpp
+    m_numericFilters << "year"
+                     << "track"
+                     << "bpm"
+                     << "duration"
+                     << "played"
+                     << "rating"
+                     << "bitrate";
+    m_operatorMatcher = QRegExp("^(>|>=|=|<|<=)(.*)$");
+    m_numericFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_numericFilters.join("|")));
 }
 
 BaseTrackCache::~BaseTrackCache() {
@@ -351,6 +362,8 @@ bool BaseTrackCache::trackMatches(const TrackPointer& pTrack,
                                   const QRegExp& matcher) const {
     // For every search column, lookup the value for the track and check
     // if it matches the search query.
+    // To properly AND search queries, concatenate all searchable fields
+    QString combined_values;
     int i = 0;
     foreach (QString column, m_searchColumns) {
         int columnIndex = m_searchColumnIndices[i++];
@@ -358,10 +371,105 @@ bool BaseTrackCache::trackMatches(const TrackPointer& pTrack,
         getTrackValueForColumn(pTrack, columnIndex, value);
         if (value.isValid() && qVariantCanConvert<QString>(value)) {
             QString valueStr = value.toString();
-            if (valueStr.contains(matcher)) {
-                return true;
+            combined_values += valueStr + " ";
+        }
+    }
+    return combined_values.contains(matcher);
+}
+
+bool BaseTrackCache::trackMatchesNumeric(const TrackPointer& pTrack,
+                                     const QStringList& numericMatchers) const {
+    foreach(QString numericMatcher, numericMatchers)
+    {
+        QString field, expression;
+        if (m_numericFilterMatcher.indexIn(numericMatcher) == -1) {
+            continue;
+        }
+        field = m_numericFilterMatcher.cap(1);
+        expression = m_numericFilterMatcher.cap(2);
+        if (field == "year") {
+            if (! evaluateNumeric(pTrack->getYear().toInt(), expression)) {
+                return false;
+            }
+        } else if (field == "track") {
+            if (! evaluateNumeric(pTrack->getTrackNumber().toInt(), expression)) {
+                return false;
+            }
+        } else if (field == "bpm") {
+            if (! evaluateNumeric((int)pTrack->getBpm(), expression)) {
+                return false;
+            }
+        } else if (field == "duration") {
+            if (! evaluateNumeric(pTrack->getDuration(), expression)) {
+                return false;
+            }
+        } else if (field == "played") {
+            if (! evaluateNumeric(pTrack->getTimesPlayed(), expression)) {
+                return false;
+            }
+        } else if (field == "rating") {
+            if (! evaluateNumeric(pTrack->getRating(), expression)) {
+                return false;
+            }
+        } else if (field == "bitrate") {
+            if (! evaluateNumeric(pTrack->getBitrate(), expression)) {
+                return false;
+            }
+        } 
+    }
+    return true;
+}
+
+bool BaseTrackCache::evaluateNumeric(const int value, const QString& expression) const {
+    // This is mostly duplicated from searchqueryparser.cpp
+    QString op = "=";
+    if (m_operatorMatcher.indexIn(expression) != -1) {
+        op = m_operatorMatcher.cap(1);
+        QString sCompare = m_operatorMatcher.cap(2);
+
+        bool parsed = false;
+        // Try to convert to see if it parses.
+        // TODO: this is double to be the same as searchqueryparser,
+        // but everything we are comparing are ints. Do we even want to be
+        // able to parse doubles?
+        double dCompare = sCompare.toDouble(&parsed);
+        if (parsed) {
+            // Round it to avoid floating point comparisons
+            int iCompare = (int)dCompare; 
+            if (op == "=" ) {
+                return (value == iCompare);
+            } else if (op == "<") { 
+                return (value < iCompare);
+            } else if (op == ">") { 
+                return (value > iCompare);
+            } else if (op == "<=") { 
+                return (value <= iCompare);
+            } else if (op == ">=") { 
+                return (value >= iCompare);
+            } else {
+                return false;
             }
         }
+        // Fail
+        return false;
+    }
+    QStringList rangeArgs = expression.split("-");
+    if (rangeArgs.length() == 2) {
+        bool ok = false;
+        double arg1 = rangeArgs[0].toDouble(&ok);
+        if (!ok) {
+            return false;
+        }
+        double arg2 = rangeArgs[1].toDouble(&ok);
+        if (!ok) {
+            return false;
+        }
+
+        // Nonsense
+        if (arg1 > arg2) {
+            return false;
+        }
+        return (value >= arg1 && value <= arg2);
     }
     return false;
 }
@@ -448,11 +556,20 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 
     // Make a regular expression that matches the query terms.
     QStringList searchTokens = searchQuery.split(" ");
-    // Escape every token to stuff in a regular expression
+    QStringList numericMatchers;
+    // Escape every token to stuff in a positive lookahead regular expression
     for (int i = 0; i < searchTokens.size(); ++i) {
-        searchTokens[i] = QRegExp::escape(searchTokens[i].trimmed());
+        QString escaped = QRegExp::escape(searchTokens[i].trimmed());
+        if (escaped.contains(m_numericFilterMatcher))
+        {
+            numericMatchers.append(escaped);
+            searchTokens[i] = "";
+        } else {
+            searchTokens[i] = "(?=.*" + escaped +")";
+        }
     }
-    QRegExp searchMatcher(searchTokens.join("|"), Qt::CaseInsensitive);
+    
+    QRegExp searchMatcher("^"+searchTokens.join(""), Qt::CaseInsensitive);
 
     foreach (int trackId, dirtyTracks) {
         // Only get the track if it is in the cache.
@@ -464,8 +581,12 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 
         // The track should be in the result set if the search is empty or the
         // track matches the search.
+        // TODO(owen): It would be better to parse the numeric matchers once
+        // and run all of the tracks through it instead of redoing that logic
+        // for every dirty track
         bool shouldBeInResultSet = searchQuery.isEmpty() ||
-                trackMatches(pTrack, searchMatcher);
+                (trackMatches(pTrack, searchMatcher) && 
+                trackMatchesNumeric(pTrack, numericMatchers));
 
         // If the track is in this result set.
         bool isInResultSet = trackToIndex->contains(trackId);

@@ -26,7 +26,6 @@
 #include "trackinfoobject.h"
 #include "defs_promo.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 QString PromoTracksFeature::m_sPromoLocalHTMLLocation;
@@ -131,11 +130,8 @@ QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
     return m_tracksToAutoLoad;
 }
 
-void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                    WLibrary* libraryWidget,
+void PromoTracksFeature::bindWidget(WLibrary* libraryWidget,
                                     MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
-
     QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
@@ -214,6 +210,8 @@ bool PromoTracksFeature::dragMoveAcceptChild(const QModelIndex& index,
     Q_UNUSED(url);
     return false;
 }
-void PromoTracksFeature::onLazyChildExpandation(const QModelIndex &index){
+
+void PromoTracksFeature::onLazyChildExpandation(const QModelIndex &index) {
+    Q_UNUSED(index);
     //Nothing to do because the childmodel is not of lazy nature.
 }

@@ -88,6 +88,7 @@ class WTrackTableView : public WLibraryTableView {
 
     ControlObjectThreadMain* m_pNumSamplers;
     ControlObjectThreadMain* m_pNumDecks;
+    ControlObjectThreadMain* m_pNumPreviewDecks;
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
@@ -95,6 +96,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
+
+    // Load Track to PreviewDeck
+    QAction* m_pAddToPreviewDeck;
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;

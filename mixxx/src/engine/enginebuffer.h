@@ -48,6 +48,7 @@ class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
 class EngineMaster;
+class CueControl;
 
 struct Hint;
 
@@ -97,11 +98,14 @@ public:
 
     // Add an engine control to the EngineBuffer
     void addControl(EngineControl* pControl);
+    void addCueControl(CueControl* pControl);
 
-    /** Return the current rate (not thread-safe) */
+    // Return the current rate (not thread-safe)
     double getRate();
-    /** Returns current bpm value (not thread-safe) */
+    // Returns current bpm value (not thread-safe)
     double getBpm();
+    // Returns the BPM of the loaded track (not thread-safe)
+    double getFileBpm();
     /** Sets pointer to other engine buffer/channel */
     void setEngineMaster(EngineMaster*);
 
@@ -198,7 +202,7 @@ private:
     int file_srate_old;
     /** Mutex controlling weather the process function is in pause mode. This happens
       * during seek and loading of a new track */
-    QMutex pause;
+    QMutex m_pause;
     /** Used in update of playpos slider */
     int m_iSamplesCalculated;
     int m_iUiSlowTick;
@@ -214,7 +218,7 @@ private:
     ControlObject* m_pTrackSampleRate;
 
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
-    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
+    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
     ControlPushButton* m_pSlipButton;
     ControlObject* m_pSlipPosition;
@@ -228,9 +232,6 @@ private:
     ControlPushButton *m_pKeylock;
 
     ControlPushButton *m_pEject;
-
-    /** Control used to signal when at end of file */
-    ControlObject *m_pTrackEnd;
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
@@ -255,6 +256,7 @@ private:
     float m_fLastSampleValue[2];
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
+    bool m_bBufferPause;
     float m_fRampValue;
     int m_iRampState;
     //int m_iRampIter;
@@ -269,6 +271,8 @@ private:
     CSAMPLE* m_pCrossFadeBuffer;
     int m_iCrossFadeSamples;
     int m_iLastBufferSize;
+
+    CueControl* m_cueControl;
 };
 
 #endif
