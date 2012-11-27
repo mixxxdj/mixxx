@@ -335,6 +335,10 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseTime(node);
     } else if (nodeName == "Splitter") {
         return parseSplitter(node);
+    } else if (nodeName == "LibrarySidebar") {
+        return parseLibrarySidebar(node);
+    } else if (nodeName == "Library") {
+        return parseLibrary(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -800,6 +804,38 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
     return pLineEditSearch;
 }
 
+QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
+    WLibrary* pLibraryWidget = new WLibrary(m_pParent);
+    pLibraryWidget->installEventFilter(m_pKeyboard);
+    pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+
+    // Connect Library search signals to the WLibrary
+    connect(m_pLibrary, SIGNAL(search(const QString&)),
+            pLibraryWidget, SLOT(search(const QString&)));
+    connect(m_pLibrary, SIGNAL(searchCleared()),
+            pLibraryWidget, SLOT(searchCleared()));
+    connect(m_pLibrary, SIGNAL(searchStarting()),
+            pLibraryWidget, SLOT(searchStarting()));
+
+    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
+
+    // This must come after the bindWidget or we will not style any of the
+    // LibraryView's because they have not been added yet.
+    setupWidget(node, pLibraryWidget);
+    pLibraryWidget->setup(node);
+
+    return pLibraryWidget;
+}
+
+QWidget* LegacySkinParser::parseLibrarySidebar(QDomElement node) {
+    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(m_pParent);
+    pLibrarySidebar->installEventFilter(m_pKeyboard);
+    pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
+    setupWidget(node, pLibrarySidebar);
+    return pLibrarySidebar;
+}
+
 QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     QStackedWidget* pTabWidget = new QStackedWidget(m_pParent);
 
@@ -822,34 +858,14 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     QSplitter* pSplitter = new QSplitter(pLibraryPage);
 
-    WLibrary* pLibraryWidget = new WLibrary(pSplitter);
-    pLibraryWidget->installEventFilter(m_pKeyboard);
-    pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-
-    // Connect Library search signals to the WLibrary
-    connect(m_pLibrary, SIGNAL(search(const QString&)),
-            pLibraryWidget, SLOT(search(const QString&)));
-    connect(m_pLibrary, SIGNAL(searchCleared()),
-            pLibraryWidget, SLOT(searchCleared()));
-    connect(m_pLibrary, SIGNAL(searchStarting()),
-            pLibraryWidget, SLOT(searchStarting()));
-
-    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
-
-    // This must come after the bindWidget or we will not style any of the
-    // LibraryView's because they have not been added yet.
-    pLibraryWidget->setup(node);
-
-    QWidget* pLibrarySidebarPage = NULL;
-
-    pLibrarySidebarPage = new QWidget(pSplitter);
-    WLibrarySidebar* pLibrarySidebar = new WLibrarySidebar(pLibrarySidebarPage);
-    pLibrarySidebar->installEventFilter(m_pKeyboard);
-    pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    m_pLibrary->bindSidebarWidget(pLibrarySidebar);
-
     QWidget* oldParent = m_pParent;
+
+    m_pParent = pSplitter;
+    QWidget* pLibraryWidget = parseLibrary(node);
+
+    QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
     m_pParent = pLibrarySidebarPage;
+    QWidget* pLibrarySidebar = parseLibrarySidebar(node);
     QWidget* pLineEditSearch = parseSearchBox(node);
     m_pParent = oldParent;
 
