@@ -333,11 +333,77 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseSpinny(node);
     } else if (nodeName == "Time") {
         return parseTime(node);
+    } else if (nodeName == "Splitter") {
+        return parseSplitter(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
 
     return NULL;
+}
+
+QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
+    QSplitter* pSplitter = new QSplitter(m_pParent);
+    setupWidget(node, pSplitter);
+
+    // Default orientation is horizontal.
+    if (!XmlParse::selectNode(node, "Orientation").isNull()) {
+        QString layout = XmlParse::selectNodeQString(node, "Orientation");
+        if (layout == "vertical") {
+            pSplitter->setOrientation(Qt::Vertical);
+        } else if (layout == "horizontal") {
+            pSplitter->setOrientation(Qt::Horizontal);
+        }
+    }
+
+    QDomNode childrenNode = XmlParse::selectNode(node, "Children");
+
+    QWidget* pOldParent = m_pParent;
+    m_pParent = pSplitter;
+
+    if (!childrenNode.isNull()) {
+        // Descend chilren
+        QDomNodeList children = childrenNode.childNodes();
+
+        for (int i = 0; i < children.count(); ++i) {
+            QDomNode node = children.at(i);
+
+            if (node.isElement()) {
+                QWidget* pChild = parseNode(node.toElement(), pSplitter);
+
+                if (pChild == NULL)
+                    continue;
+
+                pSplitter->addWidget(pChild);
+            }
+        }
+    }
+
+    if (!XmlParse::selectNode(node, "SplitSizes").isNull()) {
+        QString sizesJoined = XmlParse::selectNodeQString(node, "SplitSizes");
+        QStringList sizesSplit = sizesJoined.split(",");
+        QList<int> sizes;
+        bool ok = false;
+        foreach (const QString& sizeStr, sizesSplit) {
+            sizes.push_back(sizeStr.toInt(&ok));
+            if (!ok) {
+                break;
+            }
+        }
+        if (sizes.length() != pSplitter->count()) {
+            qDebug() << "<SplitSizes> for <Splitter> (" << sizesJoined
+                     << ") does not match the number of children nodes:"
+                     << pSplitter->count();
+            ok = false;
+        }
+        if (ok) {
+            pSplitter->setSizes(sizes);
+        }
+
+    }
+
+    m_pParent = pOldParent;
+    return pSplitter;
 }
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
