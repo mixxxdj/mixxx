@@ -124,15 +124,6 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
-
-    // Enable the default selection
-
-    // TODO(rryan): This really should happen after the skin is fully loaded. We
-    // should build a generic way to perform actions after skin load.
-    pSidebarWidget->selectionModel()
-        ->select(m_pSidebarModel->getDefaultSelection(),
-                 QItemSelectionModel::SelectCurrent);
-    m_pSidebarModel->activateDefaultSelection();
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
@@ -218,6 +209,10 @@ void Library::slotCreateCrate()
     m_pCrateFeature->slotCreateCrate();
 }
 
+void Library::onSkinLoadFinished() {
+    // Enable the default selection when a new skin is loaded.
+    m_pSidebarModel->activateDefaultSelection();
+}
 
 QList<TrackPointer> Library::getTracksToAutoLoad()
 {
