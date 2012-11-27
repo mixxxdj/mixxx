@@ -431,37 +431,29 @@ void DlgPreferences::setupControllerWidgets()
         controllerCompare
     );
     QListIterator<Controller*> ctrlr(controllerList);
-    while (ctrlr.hasNext())
-    {
+    while (ctrlr.hasNext()) {
         Controller* currentDevice = ctrlr.next();
         QString curDeviceName = currentDevice->getName();
         //qDebug() << "curDeviceName: " << curDeviceName;
+        DlgPrefController* controllerDlg = NULL;
         if (currentDevice->isMappable()) {
-            DlgPrefMappableController* controllerDlg =
-                new DlgPrefMappableController(this, currentDevice,
-                                              m_pControllerManager, config);
+            controllerDlg = new DlgPrefMappableController(
+                this, currentDevice, m_pControllerManager, config);
             connect(controllerDlg, SIGNAL(mappingStarted()),
                     this, SLOT(hide()));
             connect(controllerDlg, SIGNAL(mappingEnded()),
                     this, SLOT(show()));
-            m_controllerWindows.append(controllerDlg);
-            addPageWidget(controllerDlg);
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
-            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
-            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
         } else {
-            DlgPrefController* controllerDlg =
-                new DlgPrefController(this, currentDevice, m_pControllerManager,
-                                      config);
-            m_controllerWindows.append(controllerDlg);
-            addPageWidget(controllerDlg);
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
-            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
-            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)),
-                    this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
+            controllerDlg = new DlgPrefController(this, currentDevice,
+                                                  m_pControllerManager, config);
         }
+        m_controllerWindows.append(controllerDlg);
+        addPageWidget(controllerDlg);
+        connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
+        connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
+        connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
+        connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)),
+                this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
 
         QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
         //qDebug() << curDeviceName << " QTreeWidgetItem point is " << controllerWindowLink;
@@ -474,8 +466,7 @@ void DlgPreferences::setupControllerWidgets()
 
         // Set the font correctly
         QFont temp = controllerWindowLink->font(0);
-        if (currentDevice->isOpen()) temp.setBold(true);
-        else temp.setBold(false);
+        temp.setBold(currentDevice->isOpen());
         controllerWindowLink->setFont(0,temp);
     }
 }
@@ -489,8 +480,7 @@ void DlgPreferences::slotHighlightDevice(DlgPrefController* dialog, bool enabled
 {
     QTreeWidgetItem * controllerWindowLink = m_controllerWindowLinks.at(m_controllerWindows.indexOf(dialog));
     QFont temp = controllerWindowLink->font(0);
-    if (enabled) temp.setBold(true);
-    else temp.setBold(false);
+    temp.setBold(enabled);
     controllerWindowLink->setFont(0,temp);
 }
 
