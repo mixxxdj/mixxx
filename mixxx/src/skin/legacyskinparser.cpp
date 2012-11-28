@@ -50,11 +50,36 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wwidgetstack.h"
 
 using mixxx::skin::SkinManifest;
 
 QList<const char*> LegacySkinParser::s_channelStrs;
 QMutex LegacySkinParser::s_safeStringMutex;
+
+ControlObject* controlFromConfigKey(ConfigKey configKey, bool* created) {
+    ControlObject* pControl = ControlObject::getControl(configKey);
+
+    if (pControl) {
+        if (created) {
+            *created = false;
+        }
+        return pControl;
+    }
+
+    // TODO(rryan): Make this configurable by the skin.
+    qWarning() << "Requested control does not exist:"
+               << QString("%1,%2").arg(configKey.group, configKey.item)
+               << "Creating it.";
+    // Since the usual behavior here is to create a skin-defined push
+    // button, actually make it a push button and set it to toggle.
+    ControlPushButton* controlButton = new ControlPushButton(configKey);
+    controlButton->setButtonMode(ControlPushButton::TOGGLE);
+    if (created) {
+        *created = true;
+    }
+    return controlButton;
+}
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    MixxxKeyboard* pKeyboard,
@@ -237,24 +262,13 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         }
         ConfigKey configKey = ConfigKey::parseCommaSeparated(
             QString::fromStdString(attribute.config_key()));
-        ControlObject* pControl = ControlObject::getControl(configKey);
+
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            if (pControl) {
-                ControlObjectThreadMain mainControl(pControl);
-                mainControl.slotSet(value);
-            } else {
-                // TODO(rryan): Make this configurable by the skin.
-                qWarning() << "Requested control does not exist:"
-                           << QString::fromStdString(attribute.config_key())
-                           << ". Creating it.";
-                // Since the usual behavior here is to create a skin-defined push
-                // button, actually make it a push button and set it to toggle.
-                ControlPushButton* controlButton = new ControlPushButton(configKey);
-                controlButton->setButtonMode(ControlPushButton::TOGGLE);
-                controlButton->set(value);
-            }
+            ControlObject* pControl = controlFromConfigKey(configKey, NULL);
+            ControlObjectThreadMain mainControl(pControl);
+            mainControl.slotSet(value);
         }
     }
     // Force a sync to deliver the control change messages so they take effect
@@ -339,6 +353,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseSearchBox(node);
     } else if (nodeName == "WidgetGroup") {
         return parseWidgetGroup(node);
+    } else if (nodeName == "WidgetStack") {
+        return parseWidgetStack(node);
     } else if (nodeName == "Style") {
         return parseStyle(node);
     } else if (nodeName == "Spinny") {
@@ -475,6 +491,76 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     }
 
     return pGroup;
+}
+
+QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
+    ControlObject* pNextControl = NULL;
+    QString nextControl = XmlParse::selectNodeQString(node, "NextControl");
+    bool createdNext = false;
+    if (nextControl.length() > 0) {
+        ConfigKey nextConfigKey = ConfigKey::parseCommaSeparated(nextControl);
+        pNextControl = controlFromConfigKey(nextConfigKey, &createdNext);
+    }
+
+    ControlObject* pPrevControl = NULL;
+    bool createdPrev = false;
+    QString prevControl = XmlParse::selectNodeQString(node, "PrevControl");
+    if (prevControl.length() > 0) {
+        ConfigKey prevConfigKey = ConfigKey::parseCommaSeparated(prevControl);
+        pPrevControl = controlFromConfigKey(prevConfigKey, &createdPrev);
+    }
+
+    WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
+    pStack->setContentsMargins(0, 0, 0, 0);
+    setupWidget(node, pStack);
+    setupConnections(node, pStack);
+
+    if (createdNext && pNextControl) {
+        pNextControl->setParent(pStack);
+    }
+
+    if (createdPrev && pPrevControl) {
+        pPrevControl->setParent(pStack);
+    }
+
+    QDomNode childrenNode = XmlParse::selectNode(node, "Children");
+
+    QWidget* pOldParent = m_pParent;
+    m_pParent = pStack;
+
+    if (!childrenNode.isNull()) {
+        // Descend chilren
+        QDomNodeList children = childrenNode.childNodes();
+
+        for (int i = 0; i < children.count(); ++i) {
+            QDomNode node = children.at(i);
+
+            if (!node.isElement()) {
+                continue;
+            }
+            QDomElement element = node.toElement();
+
+            QWidget* pChild = parseNode(element, pStack);
+            if (pChild == NULL)
+                continue;
+
+            ControlObject* pControl = NULL;
+            QString trigger_configkey = element.attribute("trigger");
+            if (trigger_configkey.length() > 0) {
+                ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
+                bool created;
+                pControl = controlFromConfigKey(configKey, &created);
+                if (created) {
+                    // If we created the control, parent it to the child widget so
+                    // it doesn't leak.
+                    pControl->setParent(pChild);
+                }
+            }
+            pStack->addWidgetWithControl(pChild, pControl);
+        }
+    }
+    m_pParent = pOldParent;
+    return pStack;
 }
 
 QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandparent) {
@@ -1145,19 +1231,8 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
         ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 
         // Check that the control exists
-        ControlObject * control = ControlObject::getControl(configKey);
-
         bool created = false;
-        if (control == NULL) {
-            // TODO(rryan): Make this configurable by the skin.
-            qWarning() << "Requested control does not exist:" << key << ". Creating it.";
-            // Since the usual behavior here is to create a skin-defined push
-            // button, actually make it a push button and set it to toggle.
-            ControlPushButton* controlButton = new ControlPushButton(configKey);
-            controlButton->setButtonMode(ControlPushButton::TOGGLE);
-            control = controlButton;
-            created = true;
-        }
+        ControlObject * control = controlFromConfigKey(configKey, &created);
 
         QString property = XmlParse::selectNodeQString(con, "BindProperty");
         if (property != "") {
