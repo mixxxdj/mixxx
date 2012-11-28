@@ -1,7 +1,7 @@
 #ifndef BPMEDITOR_H
 #define BPMEDITOR_H
 
-#include <QtGui>
+#include <QWidget>
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
 
