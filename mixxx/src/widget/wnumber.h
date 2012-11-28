@@ -28,18 +28,20 @@
 
 class WNumber : public WWidget  {
     Q_OBJECT
-public:
+  public:
     WNumber(QWidget *parent=0);
     virtual ~WNumber();
+
     void setup(QDomNode node);
     void setNumDigits(int);
     void setConstFactor(double);
+    virtual QWidget* getComposedWidget() { return m_pLabel; }
 
-public slots:
+  public slots:
     void setValue(double dValue);
 
-protected:
-    QLabel *m_pLabel;
+  protected:
+    QLabel* m_pLabel;
     QString m_qsText;
     int m_iNoDigits;
     /** Foreground and background colors */

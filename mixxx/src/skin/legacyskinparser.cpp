@@ -710,6 +710,9 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 
     WTrackText* p = new WTrackText(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget());
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -739,6 +742,9 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 
     WTrackProperty* p = new WTrackProperty(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget());
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -801,9 +807,11 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
-
     WNumberRate * p = new WNumberRate(pSafeChannelStr, m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget());
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -819,17 +827,23 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
-    p->installEventFilter(m_pKeyboard);
-    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget());
+    }
     p->setup(node);
     setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     return p;
 }
 
 QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     WNumber* p = new WNumber(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget());
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -840,6 +854,9 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
 QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     WLabel * p = new WLabel(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget());
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -850,6 +867,9 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
 QWidget* LegacySkinParser::parseTime(QDomElement node) {
     WTime *p = new WTime(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget());
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
