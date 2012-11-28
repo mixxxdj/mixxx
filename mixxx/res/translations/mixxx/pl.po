@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-11-26 14:45+0000\n"
+"PO-Revision-Date: 2012-11-27 12:49+0000\n"
 "Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-27 05:12+0000\n"
+"X-Launchpad-Export-Date: 2012-11-28 04:37+0000\n"
 "X-Generator: Launchpad (build 16309)\n"
 
 #: AutoDJFeature#1
@@ -1928,7 +1928,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
-msgstr ""
+msgstr "Pokaż bibliotekę Rythmbox"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Show iTunes Library"
@@ -1936,7 +1936,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#13
 msgid "Show Traktor Library"
-msgstr ""
+msgstr "Pokaż Bibliotekę Tractor"
 
 #: DlgPrefPlaylistDlg#14
 msgid "    You will need to restart Mixxx for this to take effect"
@@ -2358,7 +2358,7 @@ msgstr ""
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
 msgid "Input"
-msgstr ""
+msgstr "Wejście"
 
 #: DlgPrefSoundDlg#9
 msgid "Query Devices"
@@ -2525,7 +2525,7 @@ msgstr "Jakość sygnału"
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
@@ -2542,7 +2542,7 @@ msgstr "Urządzenia Audio"
 
 #: DlgPreferences#3
 msgid "Controllers"
-msgstr ""
+msgstr "Kontrolery"
 
 #: DlgPreferences#4
 msgctxt "DlgPreferences#4"
@@ -3320,7 +3320,7 @@ msgstr ""
 
 #: MixxxApp#22
 msgid "Load track to Deck %1"
-msgstr ""
+msgstr "Załaduj utwór do odtwarzacza %1"
 
 #: MixxxApp#23
 msgid "Loads a track in deck %1"
@@ -3440,7 +3440,7 @@ msgstr "Utwórz nową Skrzynkę"
 
 #: MixxxApp#52
 msgid "Ctrl+Shift+F"
-msgstr ""
+msgstr "Ctrl+Shift+F"
 
 #: MixxxApp#53
 msgid "Enable Vinyl Control &1"
@@ -3485,7 +3485,7 @@ msgstr "O programie"
 
 #: MixxxApp#63
 msgid "A sampler is currently playing. Exit Mixxx?"
-msgstr ""
+msgstr "Sampler aktualnie odtwarza. Wyjśc z Mixxx?"
 
 #: MixxxApp#64
 msgid "&File"
@@ -3493,7 +3493,7 @@ msgstr "&Plik"
 
 #: MixxxApp#65
 msgid "Ctrl+Shift+N"
-msgstr ""
+msgstr "Ctrl+Shift+N"
 
 #: MixxxApp#66
 msgid "Toggles keyboard shortcuts on or off"
@@ -3501,7 +3501,7 @@ msgstr ""
 
 #: MixxxApp#67
 msgid "Ctrl+`"
-msgstr ""
+msgstr "Ctrl+`"
 
 #: MixxxApp#68
 msgid "&Translate This Application"
@@ -3525,7 +3525,7 @@ msgstr ""
 
 #: MixxxApp#73
 msgid "Ctrl+S"
-msgstr ""
+msgstr "Ctrl+S"
 
 #: MixxxApp#74
 msgid "Show Vinyl Control Widgets"
@@ -3537,7 +3537,7 @@ msgstr ""
 
 #: MixxxApp#76
 msgid "Ctrl+V"
-msgstr ""
+msgstr "Ctrl+V"
 
 #: MixxxApp#77
 msgid "Show Microphone Widgets"
@@ -3549,7 +3549,7 @@ msgstr ""
 
 #: MixxxApp#79
 msgid "Ctrl+M"
-msgstr ""
+msgstr "Ctrl+M"
 
 #: MixxxApp#80
 msgid "&Options"
