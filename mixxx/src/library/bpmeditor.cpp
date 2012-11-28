@@ -4,8 +4,8 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option, QWidget *parent)
           :QWidget(parent),
            m_pLock(new BPMButton(this)),
            m_pBPM(new QDoubleSpinBox(this)),
-           m_isSelected(option.state & QStyle::State_Selected),
-           m_pLayout(new QHBoxLayout(this)){
+           m_pLayout(new QHBoxLayout(this)),
+           m_isSelected(option.state & QStyle::State_Selected) {
     setPalette(option.palette);
     // configure Lock Button
     m_pLock->setMaximumWidth(20);
@@ -13,13 +13,19 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option, QWidget *parent)
     m_pBPM->setMinimum(0);
     m_pBPM->setMaximum(1000);
     m_pBPM->setSingleStep(0.1);
+    m_pBPM->setDecimals(10);
     //configure Layout
     m_pLayout->addWidget(m_pLock);
-    // m_pLayout->addSpacing();
+    m_pLayout->addSpacing(2);
+    m_pLayout->addWidget(m_pBPM);
     m_pLayout->setContentsMargins(0,0,0,0);
     m_pLayout->setSpacing(0);
     //add all to our widget
     setLayout(m_pLayout);
+    //connect signals
+    connect(m_pLock, SIGNAL(clicked(bool)), this, SIGNAL(finishedEditing()));
+    connect(m_pBPM, SIGNAL(valueChanged(double)),
+            this, SIGNAL(finishedEditing()));
 }
 
 BPMEditor::~BPMEditor(){
@@ -28,24 +34,15 @@ BPMEditor::~BPMEditor(){
     delete m_pLayout;
 }
 
-void BPMEditor::paintEvent(QPaintEvent *event, const QStyleOptionViewItem &option,
-                           const QModelindex &index) {
-    
+bool BPMEditor::getLock(){
+    return m_pLock->isChecked();
 }
 
-void BPMEditor::paint(QPainter *painter, const QRect &rect,
-                      const QPalette &palette, EditMode mode,
-                      bool isSelected, int lockColumn,
-                      const QModelIndex &index) const {
-    painter->save();
+double BPMEditor::getBPM(){
+    return m_pBPM->value();
+}
 
-    setGeometry(option.rect);
+void BPMEditor::setData(const QModelIndex &index, int lockColumn){
     m_pBPM->setValue(index.data().toDouble());
     m_pLock->setChecked(index.sibling(index.row(),lockColumn).data().toBool());
-    if (option.state == QStyle::State_Selected)
-        painter->fillRect(option.rect, option.palette.base());
-    QPixmap map = QPixmap::grabWidget(this);
-    painter->drawPixmap(option.rect.x(),option.rect.y(),map);
 }
-
-void BPMEditor::setEditorData(const QModelIndex &index, int lockColumn)

@@ -17,28 +17,29 @@ BPMDelegate::~BPMDelegate() {
 }
 
 QWidget * BPMDelegate::createEditor(QWidget *parent,
-                                              const QStyleOptionViewItem &option,
-                                              const QModelIndex &index) const {
+                                    const QStyleOptionViewItem &option,
+                                    const QModelIndex &index) const {
     // Populate the correct colors based on the styling
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
     BPMEditor *pEditor = new BPMEditor(newOption,m_pTableView);
+    connect(pEditor, SIGNAL(finishedEditing()),
+            this, SLOT(commitAndCloseEditor()));
     return pEditor;
 }
 
-void BPMDelegate::setEditorData(QWidget *editor,
-                                          const QModelIndex &index) const {
+void BPMDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     BPMEditor *pEditor = qobject_cast<BPMEditor *>(editor);
     pEditor->setData(index,m_columnLock);
 }
 
-void BPMDelegate::setModelData(QWidget *editor,
-                                         QAbstractItemModel *model,
-                                         const QModelIndex &index) const {
-    Q_UNUSED(editor);
-    Q_UNUSED(model);
-    Q_UNUSED(index);
+void BPMDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                               const QModelIndex &index) const {
+    BPMEditor *pEditor = qobject_cast<BPMEditor *>(editor);
+    model->setData(index,qVariantFromValue(pEditor->getBPM()));
+    model->setData(index.sibling(index.row(),m_columnLock),
+                   qVariantFromValue(pEditor->getLock()));
 }
 
 void BPMDelegate::paint(QPainter *painter,
@@ -69,19 +70,23 @@ void BPMDelegate::paint(QPainter *painter,
     }
 
     BPMEditor editor(option, m_pTableView);
-    editor.paint(painter, newOption.rect, newOption.palette, BPMEditor::ReadOnly,
-                     newOption.state & QStyle::State_Selected, m_column, index);
+    editor.setData(index,m_columnLock);
+    editor.setGeometry(option.rect);
+    if (option.state == QStyle::State_Selected)
+        painter->fillRect(option.rect, option.palette.base());
+    QPixmap map = QPixmap::grabWidget(&editor);
+    painter->drawPixmap(option.rect.x(),option.rect.y(),map);
 }
 
 void BPMDelegate::updateEditorGeometry(QWidget *editor,
-                                                 const QStyleOptionViewItem &option,
-                                                 const QModelIndex &index) const {
+                                       const QStyleOptionViewItem &option,
+                                       const QModelIndex &index) const {
     Q_UNUSED(index);
     editor->setGeometry(option.rect);
 }
 
 QSize BPMDelegate::sizeHint(const QStyleOptionViewItem &option,
-                                      const QModelIndex &index) const {
+                            const QModelIndex &index) const {
     Q_UNUSED(index);
     BPMEditor editor(option,m_pTableView);
     return editor.sizeHint();
@@ -106,10 +111,7 @@ void BPMDelegate::cellEntered(const QModelIndex &index) {
 }
 
 void BPMDelegate::commitAndCloseEditor() {
-    if (BPMButton *editor = qobject_cast<BPMButton *>(sender())) {
-        qDebug() << editor->isChecked();
-        
-    }
-    // emit commitData(sender());
-    // emit closeEditor(sender());
+    BPMEditor *editor = qobject_cast<BPMEditor *>(sender());
+    emit commitData(editor);
+    emit closeEditor(editor);
 }

@@ -2,6 +2,8 @@
 #define BPMEDITOR_H
 
 #include <QWidget>
+#include <QStyledItemDelegate>
+#include <QPainter>
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
 
@@ -14,12 +16,12 @@ class BPMEditor : public QWidget{
     BPMEditor(const QStyleOptionViewItem& option, QWidget *parent =0);
     ~BPMEditor();
 
-    void paint(QPainter *painter, const QRect &rect, const QPalette &palette, EditMode mode,
-                bool isSelected, int lockColumn, const QModelIndex &index) const;
     void setData(const QModelIndex &index, int lockColumn);
+    bool getLock();
+    double getBPM();
 
-  protected:
-    void paintEvent(QPaintEvent *event);
+  signals:
+    void finishedEditing();
 
   private:
     BPMButton *m_pLock;
