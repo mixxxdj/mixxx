@@ -1,6 +1,9 @@
+#include <QDebug>
+
 #include "bpmeditor.h"
 
-BPMEditor::BPMEditor(const QStyleOptionViewItem& option, QWidget *parent)
+BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
+                    EditMode mode, QWidget *parent)
           :QWidget(parent),
            m_pLock(new BPMButton(this)),
            m_pBPM(new QDoubleSpinBox(this)),
@@ -13,7 +16,10 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option, QWidget *parent)
     m_pBPM->setMinimum(0);
     m_pBPM->setMaximum(1000);
     m_pBPM->setSingleStep(0.1);
-    m_pBPM->setDecimals(10);
+    if (mode == Editable) {
+        m_pBPM->setDecimals(10);
+        qDebug() << "is in editmode";
+    }
     //configure Layout
     m_pLayout->addWidget(m_pLock);
     m_pLayout->addSpacing(2);

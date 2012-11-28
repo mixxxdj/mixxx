@@ -23,7 +23,7 @@ QWidget * BPMDelegate::createEditor(QWidget *parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    BPMEditor *pEditor = new BPMEditor(newOption,m_pTableView);
+    BPMEditor *pEditor = new BPMEditor(newOption,BPMEditor::Editable,m_pTableView);
     connect(pEditor, SIGNAL(finishedEditing()),
             this, SLOT(commitAndCloseEditor()));
     return pEditor;
@@ -69,7 +69,7 @@ void BPMDelegate::paint(QPainter *painter,
         painter->setBrush(newOption.palette.text());
     }
 
-    BPMEditor editor(option, m_pTableView);
+    BPMEditor editor(option,BPMEditor::ReadOnly, m_pTableView);
     editor.setData(index,m_columnLock);
     editor.setGeometry(option.rect);
     if (option.state == QStyle::State_Selected)
@@ -88,7 +88,7 @@ void BPMDelegate::updateEditorGeometry(QWidget *editor,
 QSize BPMDelegate::sizeHint(const QStyleOptionViewItem &option,
                             const QModelIndex &index) const {
     Q_UNUSED(index);
-    BPMEditor editor(option,m_pTableView);
+    BPMEditor editor(option,BPMEditor::ReadOnly,m_pTableView);
     return editor.sizeHint();
 }
 

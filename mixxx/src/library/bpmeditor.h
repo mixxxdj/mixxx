@@ -13,7 +13,7 @@ class BPMEditor : public QWidget{
     Q_OBJECT
   public:
     enum EditMode {Editable, ReadOnly};
-    BPMEditor(const QStyleOptionViewItem& option, QWidget *parent =0);
+    BPMEditor(const QStyleOptionViewItem& option,EditMode mode, QWidget *parent =0);
     ~BPMEditor();
 
     void setData(const QModelIndex &index, int lockColumn);
