@@ -628,6 +628,10 @@ void MixxxApp::slotViewShowMicrophone(bool enable) {
     toggleVisibility(ConfigKey("[Microphone]", "show_microphone"), enable);
 }
 
+void MixxxApp::slotViewShowPreviewDeck(bool enable) {
+    toggleVisibility(ConfigKey("[Previewdeck]", "show_previewdeck"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -641,6 +645,8 @@ void MixxxApp::onNewSkinLoaded() {
                              ConfigKey("[Samplers]", "show_samplers"));
     setVisibilityOptionState(m_pViewShowMicrophone,
                              ConfigKey("[Microphone]", "show_microphone"));
+    setVisibilityOptionState(m_pViewShowPreviewDeck,
+                             ConfigKey("[Previewdeck]", "show_previewdeck"));
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -999,6 +1005,16 @@ void MixxxApp::initActions()
     connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowMicrophone(bool)));
 
+    QString showPreviewDeckTitle = tr("Show Preview Deck");
+    QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
+    " " + mayNotBeSupported;
+    m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
+    m_pViewShowPreviewDeck->setCheckable(true);
+    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+P" , "Menu|View|Show Preview Deck"));
+    m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
+    m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
+    connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowPreviewDeck(bool)));
 
 
     QString recordTitle = tr("&Record Mix");
@@ -1058,6 +1074,7 @@ void MixxxApp::initMenuBar()
     m_pViewMenu->addAction(m_pViewShowSamplers);
     m_pViewMenu->addAction(m_pViewShowMicrophone);
     m_pViewMenu->addAction(m_pViewVinylControl);
+    m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
 
