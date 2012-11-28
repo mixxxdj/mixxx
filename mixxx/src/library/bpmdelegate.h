@@ -14,7 +14,7 @@ class BPMDelegate : public QStyledItemDelegate {
   Q_OBJECT
 
   public:
-    explicit BPMDelegate(QObject *parent = NULL, int columnLock=0);
+    explicit BPMDelegate(QObject *parent = NULL,int column=0, int columnLock=0);
     virtual ~BPMDelegate();
 
     QWidget* createEditor(QWidget *parent,

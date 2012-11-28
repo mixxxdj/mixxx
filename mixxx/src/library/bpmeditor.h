@@ -28,6 +28,7 @@ class BPMEditor : public QWidget{
     QDoubleSpinBox *m_pBPM;
     QHBoxLayout *m_pLayout;
     bool m_isSelected;
+    bool m_editor;
 };
 
 #endif // BPMEDITOR_H

@@ -5,12 +5,13 @@
 #include "bpmdelegate.h"
 #include "bpmeditor.h"
 
-BPMDelegate::BPMDelegate(QObject *parent, int columnLock)
-                     : QStyledItemDelegate(parent) {
+BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
+                     : QStyledItemDelegate(parent),
+                       m_column(column),
+                       m_columnLock(columnLock){
     m_pTableView = qobject_cast<QTableView *>(parent);
     connect(m_pTableView, SIGNAL(entered(QModelIndex)),
             this, SLOT(cellEntered(QModelIndex)));
-    m_columnLock= columnLock;
 }
 
 BPMDelegate::~BPMDelegate() {
@@ -23,7 +24,7 @@ QWidget * BPMDelegate::createEditor(QWidget *parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    BPMEditor *pEditor = new BPMEditor(newOption,BPMEditor::Editable,m_pTableView);
+    BPMEditor *pEditor = new BPMEditor(newOption,BPMEditor::Editable,parent);
     connect(pEditor, SIGNAL(finishedEditing()),
             this, SLOT(commitAndCloseEditor()));
     return pEditor;
@@ -49,13 +50,10 @@ void BPMDelegate::paint(QPainter *painter,
     if (index==m_currentEditedCellIndex)
         return;
 
-    // Populate the correct colors based on the styling
-    QStyleOptionViewItem newOption = option;
-    initStyleOption(&newOption, index);
-
     // Set the palette appropriately based on whether the row is selected or
     // not. We also have to check if it is inactive or not and use the
     // appropriate ColorGroup.
+    /*
     if (newOption.state & QStyle::State_Selected) {
         QPalette::ColorGroup colorGroup =
                 newOption.state & QStyle::State_Active ?
@@ -68,14 +66,18 @@ void BPMDelegate::paint(QPainter *painter,
         painter->fillRect(newOption.rect, newOption.palette.base());
         painter->setBrush(newOption.palette.text());
     }
+    */
 
     BPMEditor editor(option,BPMEditor::ReadOnly, m_pTableView);
     editor.setData(index,m_columnLock);
     editor.setGeometry(option.rect);
+    // painter->save();
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(&editor);
+    // painter->translate(option.rect.x(),option.rect.y());
     painter->drawPixmap(option.rect.x(),option.rect.y(),map);
+    // painter->restore();
 }
 
 void BPMDelegate::updateEditorGeometry(QWidget *editor,
@@ -106,6 +108,7 @@ void BPMDelegate::cellEntered(const QModelIndex &index) {
         if (m_isOneCellInEditMode) {
             m_isOneCellInEditMode = false;
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+            m_currentEditedCellIndex = QModelIndex();
         }
     }
 }

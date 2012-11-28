@@ -17,24 +17,27 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
     m_pBPM->setMaximum(1000);
     m_pBPM->setSingleStep(0.1);
     if (mode == Editable) {
-        m_pBPM->setDecimals(10);
-        qDebug() << "is in editmode";
+        m_pBPM->setDecimals(8);
     }
     //configure Layout
     m_pLayout->addWidget(m_pLock);
-    m_pLayout->addSpacing(2);
     m_pLayout->addWidget(m_pBPM);
     m_pLayout->setContentsMargins(0,0,0,0);
     m_pLayout->setSpacing(0);
     //add all to our widget
     setLayout(m_pLayout);
     //connect signals
-    connect(m_pLock, SIGNAL(clicked(bool)), this, SIGNAL(finishedEditing()));
-    connect(m_pBPM, SIGNAL(valueChanged(double)),
-            this, SIGNAL(finishedEditing()));
+    if (mode== Editable) {
+        connect(m_pLock, SIGNAL(clicked(bool)), this, SIGNAL(finishedEditing()));
+        connect(m_pBPM, SIGNAL(valueChanged(double)),
+                this, SIGNAL(finishedEditing()));
+    }
+    m_editor = mode==Editable;
 }
 
 BPMEditor::~BPMEditor(){
+    if (m_editor)
+        qDebug() << "editor destroyed";
     delete m_pLock;
     delete m_pBPM;
     delete m_pLayout;
