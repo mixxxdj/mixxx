@@ -49,10 +49,13 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
 
     void addControl(QString group, QString control, QString helpText, QMenu* pMenu, bool addReset=false);
     void addPlayerControl(QString control, QString helpText, QMenu* pMenu,
-                          bool deckControls, bool samplerControls, bool addReset=false);
+                          bool deckControls, bool samplerControls, bool previewdeckControls, bool addReset=false);
     void addDeckAndSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addDeckAndPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addDeckAndSamplerAndPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
     void addDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
     void addSamplerControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
+    void addPreviewDeckControl(QString control, QString helpText, QMenu* pMenu, bool addReset=false);
 
     QSet<MixxxControl> m_mappedControls;
     Controller* m_pController;
@@ -60,7 +63,7 @@ class DlgControllerLearning : public QDialog, public Ui::DlgControllerLearning {
     QMenu m_controlPickerMenu;
     QList<MixxxControl> m_controlsAvailable;
     MixxxControl m_currentControl;
-    QString m_deckStr, m_samplerStr, m_resetStr;
+    QString m_deckStr, m_previewdeckStr, m_samplerStr, m_resetStr;
 };
 
 #endif
