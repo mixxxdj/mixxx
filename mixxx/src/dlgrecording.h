@@ -34,17 +34,19 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
     virtual void moveSelection(int delta);
-    void refreshBrowseModel();
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
   public slots:
     void toggleRecording(bool toggle);
     void slotRecordingEnabled(bool);
     void slotBytesRecorded(long);
+    void refreshBrowseModel();
+    void slotRestoreSearch();
 
   signals:
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group);
+    void restoreSearch(QString search);
 
   private:
 

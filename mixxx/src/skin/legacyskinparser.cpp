@@ -710,6 +710,9 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 
     WTrackText* p = new WTrackText(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -739,6 +742,9 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 
     WTrackProperty* p = new WTrackProperty(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -801,9 +807,11 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     //palette.setBrush(QPalette::Background, WSkinColor::getCorrectColor(c));
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
-
     WNumberRate * p = new WNumberRate(pSafeChannelStr, m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -819,17 +827,23 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
-    p->installEventFilter(m_pKeyboard);
-    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     p->setup(node);
     setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     return p;
 }
 
 QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     WNumber* p = new WNumber(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -840,6 +854,9 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
 QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     WLabel * p = new WLabel(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -850,6 +867,9 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
 QWidget* LegacySkinParser::parseTime(QDomElement node) {
     WTime *p = new WTime(m_pParent);
     setupWidget(node, p);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
@@ -1145,6 +1165,7 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
         QSizePolicy sizePolicy;
+        bool shouldSetWidthFixed = false;
 
         if (xs.endsWith("me")) {
             //qDebug() << "horizontal minimum expanding";
@@ -1158,17 +1179,32 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             //qDebug() << "horizontal ignored";
             sizePolicy.setHorizontalPolicy(QSizePolicy::Ignored);
             xs = xs.left(xs.size()-1);
+        } else if (xs.endsWith("p")) {
+            //qDebug() << "horizontal preferred";
+            sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
+            xs = xs.left(xs.size()-1);
+        } else if (xs.endsWith("f")) {
+            //qDebug() << "horizontal fixed";
+            sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
+            xs = xs.left(xs.size()-1);
+            shouldSetWidthFixed = true;
         } else {
             sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
         }
 
-        bool ok;
-        int x = xs.toInt(&ok);
-        if (ok) {
-            //qDebug() << "setting width to" << x;
-            pWidget->setMinimumWidth(x);
+        bool widthOk = false;
+        int x = xs.toInt(&widthOk);
+        if (widthOk) {
+            if (shouldSetWidthFixed) {
+                //qDebug() << "setting width fixed to" << x;
+                pWidget->setFixedWidth(x);
+            } else {
+                //qDebug() << "setting width to" << x;
+                pWidget->setMinimumWidth(x);
+            }
         }
 
+        bool shouldSetHeightFixed = false;
         if (ys.endsWith("me")) {
             //qDebug() << "vertical minimum expanding";
             sizePolicy.setVerticalPolicy(QSizePolicy::MinimumExpanding);
@@ -1181,21 +1217,39 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             //qDebug() << "vertical ignored";
             sizePolicy.setVerticalPolicy(QSizePolicy::Ignored);
             ys = ys.left(ys.size()-1);
+        } else if (ys.endsWith("p")) {
+            //qDebug() << "vertical preferred";
+            sizePolicy.setVerticalPolicy(QSizePolicy::Preferred);
+            ys = ys.left(ys.size()-1);
+        } else if (ys.endsWith("f")) {
+            //qDebug() << "vertical fixed";
+            sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
+            ys = ys.left(ys.size()-1);
+            shouldSetHeightFixed = true;
         } else {
             sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
         }
 
-        int y = ys.toInt(&ok);
-        if (ok) {
-            //qDebug() << "setting height to" << y;
-            pWidget->setMinimumHeight(y);
+        bool heightOk = false;
+        int y = ys.toInt(&heightOk);
+        if (heightOk) {
+            if (shouldSetHeightFixed) {
+                //qDebug() << "setting height fixed to" << x;
+                pWidget->setFixedHeight(y);
+            } else {
+                //qDebug() << "setting height to" << y;
+                pWidget->setMinimumHeight(y);
+            }
         }
+
         pWidget->setSizePolicy(sizePolicy);
     }
 }
 
-void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget) {
-    setupPosition(node, pWidget);
+void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosition) {
+    if (setPosition) {
+        setupPosition(node, pWidget);
+    }
     setupSize(node, pWidget);
 
     // Tooltip
