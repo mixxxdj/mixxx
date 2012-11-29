@@ -5,6 +5,7 @@
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include <QDoubleSpinBox>
+#include <QLabel>
 #include <QHBoxLayout>
 
 #include "bpmbutton.h"
@@ -25,10 +26,10 @@ class BPMEditor : public QWidget{
 
   private:
     BPMButton *m_pLock;
-    QDoubleSpinBox *m_pBPM;
+    QDoubleSpinBox *m_pBPMSpinBox;
+    QLabel *m_pBPMLabel;
     QHBoxLayout *m_pLayout;
     bool m_isSelected;
-    bool m_editor;
 };
 
 #endif // BPMEDITOR_H

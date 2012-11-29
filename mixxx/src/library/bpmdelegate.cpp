@@ -10,8 +10,6 @@ BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
                        m_column(column),
                        m_columnLock(columnLock){
     m_pTableView = qobject_cast<QTableView *>(parent);
-    connect(m_pTableView, SIGNAL(entered(QModelIndex)),
-            this, SLOT(cellEntered(QModelIndex)));
 }
 
 BPMDelegate::~BPMDelegate() {
