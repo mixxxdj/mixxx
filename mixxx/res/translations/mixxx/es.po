@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-11-17 23:50+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2012-11-28 18:28+0000\n"
+"Last-Translator: Eduardo Alberto Calvo <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-24 05:14+0000\n"
-"X-Generator: Launchpad (build 16293)\n"
+"X-Launchpad-Export-Date: 2012-11-29 05:10+0000\n"
+"X-Generator: Launchpad (build 16319)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -1105,15 +1105,15 @@ msgstr ""
 
 #: DlgControllerLearning#80
 msgid "1/16th"
-msgstr ""
+msgstr "1/16th"
 
 #: DlgControllerLearning#81
 msgid "1/8th"
-msgstr ""
+msgstr "1/8th"
 
 #: DlgControllerLearning#82
 msgid "1/4th"
-msgstr ""
+msgstr "1/4th"
 
 #: DlgControllerLearning#83
 msgctxt "DlgControllerLearning#83"
@@ -1167,7 +1167,7 @@ msgstr "Efecto flange: Retraso de fase"
 #: DlgControllerLearning#95
 msgctxt "DlgControllerLearning#95"
 msgid "Microphone"
-msgstr ""
+msgstr "Micrófono"
 
 #: DlgControllerLearning#96
 msgid "Microphone on/off"
@@ -2259,12 +2259,12 @@ msgstr ""
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Encoding"
-msgstr ""
+msgstr "Codificación"
 
 #: DlgPrefShoutcastDlg#22
 msgctxt "DlgPrefShoutcastDlg#22"
 msgid "Bitrate"
-msgstr ""
+msgstr "Tasa de bits"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Format"
@@ -2285,12 +2285,12 @@ msgstr "Activar metadatos personalizados"
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: DlgPrefShoutcastDlg#29
 msgid ""
@@ -2675,7 +2675,7 @@ msgstr "Detener análisis"
 
 #: DlgPrepare#12
 msgid "Analyzing %1/%2 %3%"
-msgstr ""
+msgstr "Analizando %1/%2 %3%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -4503,7 +4503,7 @@ msgstr "Salta al final de la pista."
 #: Tooltips#130
 msgctxt "Tooltips#130"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: Tooltips#131
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "

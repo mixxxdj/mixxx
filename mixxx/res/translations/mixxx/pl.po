@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-11-27 12:49+0000\n"
+"PO-Revision-Date: 2012-11-28 18:31+0000\n"
 "Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-28 04:37+0000\n"
-"X-Generator: Launchpad (build 16309)\n"
+"X-Launchpad-Export-Date: 2012-11-29 05:10+0000\n"
+"X-Generator: Launchpad (build 16319)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -892,7 +892,7 @@ msgstr "BPM i Synchronizacja"
 
 #: DlgControllerLearning#30
 msgid "BPM tap button"
-msgstr ""
+msgstr "Przycisk wstukiwania bitu"
 
 #: DlgControllerLearning#31
 msgid "Adjust beatgrid"
@@ -924,15 +924,15 @@ msgstr "Przełączanie tryby blokowania"
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
-msgstr ""
+msgstr "Suwak kontroli wysokości tonu"
 
 #: DlgControllerLearning#39
 msgid "Adjust rate up (fine)"
-msgstr ""
+msgstr "Dopasuj prędkość w górę (dokładne)"
 
 #: DlgControllerLearning#40
 msgid "Adjust rate down (fine)"
-msgstr ""
+msgstr "Dopasuj prędkośc w dół (dokładne)"
 
 #: DlgControllerLearning#41
 msgid "Pitch-bend rate up (fine)"
@@ -940,11 +940,11 @@ msgstr ""
 
 #: DlgControllerLearning#42
 msgid "Adjust rate up (coarse)"
-msgstr ""
+msgstr "Dopasuj prędkość w górę (zgrubnie)"
 
 #: DlgControllerLearning#43
 msgid "Adjust rate down (coarse)"
-msgstr ""
+msgstr "Dopasuj prędkość w dół (zgrubnie)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (coarse)"
@@ -1090,19 +1090,19 @@ msgstr ""
 
 #: DlgControllerLearning#79
 msgid "1/32th"
-msgstr ""
+msgstr "1/32"
 
 #: DlgControllerLearning#80
 msgid "1/16th"
-msgstr ""
+msgstr "1/16"
 
 #: DlgControllerLearning#81
 msgid "1/8th"
-msgstr ""
+msgstr "1/8"
 
 #: DlgControllerLearning#82
 msgid "1/4th"
-msgstr ""
+msgstr "1/4"
 
 #: DlgControllerLearning#83
 msgctxt "DlgControllerLearning#83"
@@ -1123,7 +1123,7 @@ msgstr "Przewiń do następnego utworu w kolekcji/playliście"
 
 #: DlgControllerLearning#87
 msgid "Scroll to previous track in library/playlist"
-msgstr ""
+msgstr "Przewiń do poprzedniego utworu w bibliotece/liście odtwarzania"
 
 #: DlgControllerLearning#88
 msgid "Load selected track into first stopped deck"
@@ -1177,19 +1177,19 @@ msgstr "Auto DJ"
 
 #: DlgControllerLearning#100
 msgid "Shuffle the content of the Auto DJ playlist"
-msgstr ""
+msgstr "Mieszaj zawartosć listy odtwarzania Auto DJ"
 
 #: DlgControllerLearning#101
 msgid "Skip the next track in the Auto DJ playlist"
-msgstr ""
+msgstr "Pomiń następną ścieżkę na liście Auto DJ"
 
 #: DlgControllerLearning#102
 msgid "Trigger the transition to the next track"
-msgstr ""
+msgstr "Przełącz przejście do następnego utworu"
 
 #: DlgControllerLearning#103
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Przełącz Auto DJ (włącz/wyłącz)"
 
 #: DlgControllerLearning#104
 msgid "User Interface"
@@ -1322,6 +1322,8 @@ msgstr "Włączony"
 msgid ""
 "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
 msgstr ""
+"<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Rozwiązania "
+"problemów</a>"
 
 #: DlgPrefControllerDlg#5
 msgid "TextLabel"
@@ -1395,7 +1397,7 @@ msgstr "8% (Technics SL-1210)"
 
 #: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
-msgstr ""
+msgstr "W dół zwiększa prędkość (Technics SL-1210)"
 
 #: DlgPrefControls#12
 msgid "10%"
@@ -1411,7 +1413,7 @@ msgstr "Wybrana skórka jest wieksza niż rozdzielczość Twojego ekranu."
 
 #: DlgPrefControls#15
 msgid "On (only in Library)"
-msgstr ""
+msgstr "Włącz (tylko w Bibliotece)"
 
 #: DlgPrefControls#16
 msgid "20%"
@@ -1452,7 +1454,7 @@ msgstr "W górę, przyspiesza"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Informacja"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1558,7 +1560,7 @@ msgstr "Czułość Pitchbend"
 #: DlgPrefControlsDlg#24
 msgctxt "DlgPrefControlsDlg#24"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Wyświetlenie wykresu"
 
 #: DlgPrefControlsDlg#25
 msgid "Synchronize zoom level across all waveform displays."
@@ -1585,6 +1587,8 @@ msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
 msgstr ""
+"Tymczasowo ustawia przyciski wysokość/szybkość na zmienne stopniowo, zamiast "
+"skokowo (wszyskie na raz)."
 
 #: DlgPrefControlsDlg#31
 msgid "Value in milliseconds"
@@ -1596,11 +1600,11 @@ msgstr "Optyczne wzmocnienie wysokich częstotliwości"
 
 #: DlgPrefControlsDlg#33
 msgid "Visual gain of the middle frequencies"
-msgstr ""
+msgstr "Wizualne wzmocnienie średnich częstotliwości."
 
 #: DlgPrefControlsDlg#34
 msgid "Visual gain of the low frequencies"
-msgstr ""
+msgstr "Wizualne wzmocnienie niskich częstotliwości."
 
 #: DlgPrefControlsDlg#35
 msgid "Global visual gain"
@@ -1608,20 +1612,20 @@ msgstr ""
 
 #: DlgPrefControlsDlg#36
 msgid "Frame rate"
-msgstr ""
+msgstr "Liczba klatek na sekundę"
 
 #: DlgPrefControlsDlg#37
 msgid "Default zoom"
-msgstr ""
+msgstr "Domyślne powiększenie"
 
 #: DlgPrefControlsDlg#38
 msgid "Visual gain"
-msgstr ""
+msgstr "Wizualne wzmocnienie"
 
 #: DlgPrefControlsDlg#39
 msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronizuj"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1663,7 +1667,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Przywróć ustawienia domyślne"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1705,17 +1709,19 @@ msgstr "textLabel2"
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Przywróć ustawienia domyślne"
 
 #: DlgPrefMappableController#1
 msgid "Apply device settings?"
-msgstr ""
+msgstr "Zastosować ustawienia urządzenia?"
 
 #: DlgPrefMappableController#2
 msgid ""
 "Your settings must be applied before starting the learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"Twoje ustawienia muszą być zapisane przed uruchomieniem kreatora.\n"
+"Zastosować ustawienie i kontynuować?"
 
 #: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
@@ -1740,7 +1746,7 @@ msgstr ""
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
-msgstr ""
+msgstr "Brak dostępnych kontrolerów."
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
@@ -1853,7 +1859,7 @@ msgstr "Tryb względny"
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Włącz zabezpieczenie przeskoku igły"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
@@ -1907,7 +1913,7 @@ msgstr ""
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Różne"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Synchronize ID3 tags on track modifications"
@@ -1924,7 +1930,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#10
 msgid "Other Librarys"
-msgstr ""
+msgstr "Inne Biblioteki"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
@@ -1932,7 +1938,7 @@ msgstr "Pokaż bibliotekę Rythmbox"
 
 #: DlgPrefPlaylistDlg#12
 msgid "Show iTunes Library"
-msgstr ""
+msgstr "Pokaż Bibliotekę iTunes"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Show Traktor Library"
@@ -1940,17 +1946,17 @@ msgstr "Pokaż Bibliotekę Tractor"
 
 #: DlgPrefPlaylistDlg#14
 msgid "    You will need to restart Mixxx for this to take effect"
-msgstr ""
+msgstr "    Konieczne jest ponowne uruchomienie Mixxx aby to zadziałało."
 
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Browse..."
-msgstr ""
+msgstr "Przeglądaj..."
 
 #: DlgPrefPlaylistDlg#16
 msgctxt "DlgPrefPlaylistDlg#16"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteka"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
@@ -1979,11 +1985,11 @@ msgstr ""
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "kbps"
-msgstr ""
+msgstr "kbit/s"
 
 #: DlgPrefRecord#2
 msgid "Choose recordings directory"
-msgstr ""
+msgstr "Wybierz katalog nagrań"
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
@@ -1992,21 +1998,21 @@ msgstr "Form3"
 
 #: DlgPrefRecordDlg#2
 msgid "Recordings Directory"
-msgstr ""
+msgstr "Katalog nagrań"
 
 #: DlgPrefRecordDlg#3
 msgid "Recordings Directory:"
-msgstr ""
+msgstr "Katalog nagrań:"
 
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
 msgid "Browse..."
-msgstr ""
+msgstr "Przeglądaj.."
 
 #: DlgPrefRecordDlg#5
 msgctxt "DlgPrefRecordDlg#5"
 msgid "Encoding"
-msgstr ""
+msgstr "Kodowanie"
 
 #: DlgPrefRecordDlg#6
 msgid "Quality"
@@ -2027,7 +2033,7 @@ msgstr "Tagi"
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Title"
-msgstr ""
+msgstr "Tytuł"
 
 #: DlgPrefRecordDlg#11
 msgid "Author"
@@ -2036,12 +2042,12 @@ msgstr "Autor"
 #: DlgPrefRecordDlg#12
 msgctxt "DlgPrefRecordDlg#12"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefRecordDlg#13
 msgctxt "DlgPrefRecordDlg#13"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Różne"
 
 #: DlgPrefRecordDlg#14
 msgid "Create a CUE file"
@@ -2078,16 +2084,21 @@ msgid ""
 "calculated replaygain to be applied. To avoid abrupt volume changes Mixxx "
 "does not change the replaygain of playing tracks."
 msgstr ""
+"Może zająć kilka sekund po zakończeniu analizy utworu zanim obliczone "
+"wzmocnienie będzie zastosowane. Aby zapobiec nagłym zmianom głośności Mixxx "
+"nie zmienia wzmocnienia podczas odtwarzania utworu."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Apply volume normalization to loaded tracks."
-msgstr ""
+msgstr "zastosuj normalizację głośności do załadowanych ścieżek."
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
 "Calculate ReplayGain normalization for tracks which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Oblicza normalizację wzmocnienia odtwarzania (ReplayGain) dla utworów, które "
+"nie posiadają tego współczynnika w metadanych."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
@@ -2104,7 +2115,7 @@ msgstr "dB"
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Przywróć domyślne"
 
 #: DlgPrefShoutcast#1
 msgid "Icecast 2"
@@ -2137,7 +2148,7 @@ msgstr "Form3"
 
 #: DlgPrefShoutcastDlg#2
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Włącz nadawanie na żywo"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -2221,7 +2232,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#17
 msgctxt "DlgPrefShoutcastDlg#17"
 msgid "Genre"
-msgstr ""
+msgstr "Gatunek"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Live mix"
@@ -2233,17 +2244,17 @@ msgstr "Publiczny strumień"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Use UTF-8 encoding for metadata."
-msgstr ""
+msgstr "Użyj kodowania UTF-8 dla metadanych."
 
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Encoding"
-msgstr ""
+msgstr "Kodowanie"
 
 #: DlgPrefShoutcastDlg#22
 msgctxt "DlgPrefShoutcastDlg#22"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Format"
@@ -2264,12 +2275,12 @@ msgstr "Włącz własne metadane"
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Artist"
-msgstr ""
+msgstr "Wykonawca"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Title"
-msgstr ""
+msgstr "Tytuł"
 
 #: DlgPrefShoutcastDlg#29
 msgid ""
@@ -2331,11 +2342,11 @@ msgstr "Próbkowanie"
 
 #: DlgPrefSoundDlg#3
 msgid "Buffer Underflow Count"
-msgstr ""
+msgstr "Licznik niedomiaru bufora"
 
 #: DlgPrefSoundDlg#4
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: DlgPrefSoundDlg#5
 msgid "Latency Tips"
@@ -2349,11 +2360,16 @@ msgid ""
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
+"<ul>\n"
+"<li>Zwiększ opóźnienie, jeśli licznik niedomiaru się większa lub słyszysz "
+"trzaski podczas odtwarzania</li>\n"
+"<li>Zmniejsz opóźnienie aby poprawić reagowanie Mixxx'a</li>\n"
+"</ul>"
 
 #: DlgPrefSoundDlg#7
 msgctxt "DlgPrefSoundDlg#7"
 msgid "Output"
-msgstr ""
+msgstr "Wyjście"
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
@@ -2367,12 +2383,12 @@ msgstr "Zapytaj Urządzenia"
 #: DlgPrefSoundDlg#10
 msgctxt "DlgPrefSoundDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Przywróć domyślnie"
 
 #: DlgPrefSoundDlg#11
 msgctxt "DlgPrefSoundDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Zastosuj"
 
 #: DlgPrefSoundDlg#12
 msgid "Latency"
@@ -2490,7 +2506,7 @@ msgstr "Zastosuj"
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Czas Wprowadzenia (Lead-in)"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
@@ -2515,7 +2531,7 @@ msgstr "Tryb względny"
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Włącz zabezpieczenie przeskoku igły"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
@@ -2534,7 +2550,7 @@ msgstr "Powered by Adasqu"
 
 #: DlgPreferences#1
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencje"
 
 #: DlgPreferences#2
 msgid "Sound Hardware"
@@ -2547,7 +2563,7 @@ msgstr "Kontrolery"
 #: DlgPreferences#4
 msgctxt "DlgPreferences#4"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteka"
 
 #: DlgPreferences#5
 msgid "Interface"
@@ -2556,7 +2572,7 @@ msgstr "Interfejs"
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Equalizers"
-msgstr ""
+msgstr "Equalizery"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
@@ -2566,16 +2582,16 @@ msgstr ""
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "Recording"
-msgstr ""
+msgstr "Nagrywanie"
 
 #: DlgPreferences#9
 msgid "Beat Detection"
-msgstr ""
+msgstr "Detekcja rytmu (beat'u)"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Detekcja rytmu (beat'u)"
 
 #: DlgPreferences#11
 msgid "Normalization"
@@ -2606,7 +2622,7 @@ msgstr "Zarządzaj"
 
 #: DlgPrepare#2
 msgid "Shows tracks added to the library within the last 7 days."
-msgstr ""
+msgstr "Pokazuje ścieżki dodane do biblioteki w ciągu ostatnich 7 dni."
 
 #: DlgPrepare#3
 msgid "New"
@@ -2614,7 +2630,7 @@ msgstr "Nowy"
 
 #: DlgPrepare#4
 msgid "Shows all tracks in the library."
-msgstr ""
+msgstr "Pokazuje wszystkie ścieżki w bibliotece."
 
 #: DlgPrepare#5
 msgid "All"
@@ -2626,7 +2642,7 @@ msgstr "Postęp"
 
 #: DlgPrepare#7
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Pokazuje wszystkie ścieżki w tabeli poniżej."
 
 #: DlgPrepare#8
 msgid "Select All"
@@ -2637,11 +2653,13 @@ msgid ""
 "Runs the BPM and beatgrid detection on the selected tracks.\n"
 "Waveforms will be generated as part of a analysis as well."
 msgstr ""
+"Uruchamia detekcję rytmu i siatki rytmu na wybranych ścieżkach.\n"
+"Wykresy będą także generowane częścioiwo podczas analizy."
 
 #: DlgPrepare#10
 msgctxt "DlgPrepare#10"
 msgid "Analyze"
-msgstr ""
+msgstr "Analizuj"
 
 #: DlgPrepare#11
 msgid "Stop Analysis"
@@ -2649,7 +2667,7 @@ msgstr "Zatrzymaj analizę"
 
 #: DlgPrepare#12
 msgid "Analyzing %1/%2 %3%"
-msgstr ""
+msgstr "Analizuje %1/%2 %3%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -2674,11 +2692,11 @@ msgstr "Zakończ Nagrywanie"
 
 #: DlgRecording#6
 msgid "Recording to file: "
-msgstr ""
+msgstr "Zapisuję do pliku: "
 
 #: DlgRecording#7
 msgid "MB written"
-msgstr ""
+msgstr "MB zapisanych"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
@@ -2686,7 +2704,7 @@ msgstr "Edycja Ścieżki"
 
 #: DlgTrackInfo#2
 msgid "Summary"
-msgstr ""
+msgstr "Podsumowanie"
 
 #: DlgTrackInfo#3
 msgid "Title:"
@@ -2710,12 +2728,12 @@ msgstr "Gatunek:"
 
 #: DlgTrackInfo#8
 msgid "Composer:"
-msgstr ""
+msgstr "Kompozytor:"
 
 #: DlgTrackInfo#9
 msgctxt "DlgTrackInfo#9"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: DlgTrackInfo#10
 msgctxt "DlgTrackInfo#10"
@@ -2724,7 +2742,7 @@ msgstr ""
 
 #: DlgTrackInfo#11
 msgid "Filetype:"
-msgstr ""
+msgstr "Typ pliku:"
 
 #: DlgTrackInfo#12
 msgid "BPM:"
@@ -2732,7 +2750,7 @@ msgstr "BPM (uderzenia na minutę):"
 
 #: DlgTrackInfo#13
 msgid "Location:"
-msgstr ""
+msgstr "Lokalizacja:"
 
 #: DlgTrackInfo#14
 msgid "Filename:"
@@ -2740,20 +2758,20 @@ msgstr "Plik:"
 
 #: DlgTrackInfo#15
 msgid "Bitrate:"
-msgstr ""
+msgstr "Bitrate:"
 
 #: DlgTrackInfo#16
 msgctxt "DlgTrackInfo#16"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: DlgTrackInfo#17
 msgid "Double BPM"
-msgstr ""
+msgstr "Podwójny BPM"
 
 #: DlgTrackInfo#18
 msgid "Halve BPM"
-msgstr ""
+msgstr "Połowa BPM"
 
 #: DlgTrackInfo#19
 msgid "Cuepoints"
@@ -2933,7 +2951,7 @@ msgstr ""
 
 #: EngineShoutcast#6
 msgid "Error setting protocol!"
-msgstr ""
+msgstr "błąd ustawienia protokołu!"
 
 #: EngineShoutcast#7
 msgid "Error setting port!"
@@ -3312,7 +3330,7 @@ msgstr ""
 
 #: MixxxApp#20
 msgid "Add New &Crate"
-msgstr ""
+msgstr "Dodaj nową &Skrzynkę"
 
 #: MixxxApp#21
 msgid "Enable &Keyboard Shortcuts"
@@ -3833,7 +3851,7 @@ msgstr "Nie mogę odczytać plik sampler bank '%1'."
 
 #: SetlogFeature#1
 msgid "Join with previous"
-msgstr ""
+msgstr "Połącz z poprzednim"
 
 #: SetlogFeature#2
 msgid "History"
@@ -3977,11 +3995,11 @@ msgstr ""
 
 #: Tooltips#24
 msgid "Shows the current microphone volume."
-msgstr ""
+msgstr "Pokazuje bieżącą poziom głośności mikrofonu."
 
 #: Tooltips#25
 msgid "Master Channel Volume Meter"
-msgstr ""
+msgstr "Główny wskaźnik głośności kanału."
 
 #: Tooltips#26
 msgid "Shows the current master volume for the left channel."
@@ -4015,7 +4033,7 @@ msgstr ""
 
 #: Tooltips#33
 msgid "Balance"
-msgstr ""
+msgstr "Balans"
 
 #: Tooltips#34
 msgid "Adjusts the left/right channel balance on the master output."
@@ -4031,7 +4049,7 @@ msgstr ""
 
 #: Tooltips#37
 msgid "Headphone Mix"
-msgstr ""
+msgstr "Mikser słuchawek"
 
 #: Tooltips#38
 msgid "Controls what you hear on the headphone output."
@@ -4054,7 +4072,7 @@ msgstr ""
 #: Tooltips#42
 msgctxt "Tooltips#42"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: Tooltips#43
 msgid "Show/hide the Microphone section."
@@ -4075,11 +4093,11 @@ msgstr ""
 
 #: Tooltips#47
 msgid "Show/hide the Vinyl Control section."
-msgstr ""
+msgstr "Pokaż/ukryj sekcję kontroli vinylem."
 
 #: Tooltips#48
 msgid "Microphone Volume"
-msgstr ""
+msgstr "Głośność mikrofonu"
 
 #: Tooltips#49
 msgid "Adjusts the microphone volume."
@@ -4155,7 +4173,7 @@ msgstr ""
 
 #: Tooltips#67
 msgid "Mid EQ"
-msgstr ""
+msgstr "Średnie"
 
 #: Tooltips#68
 msgid "Adjusts the gain of the mid EQ filter."
@@ -4175,7 +4193,7 @@ msgstr ""
 
 #: Tooltips#72
 msgid "High EQ Kill"
-msgstr ""
+msgstr "Obcięcie wysokich"
 
 #: Tooltips#73
 msgid "Holds the gain of the high EQ to zero while active."
@@ -4310,7 +4328,7 @@ msgstr ""
 
 #: Tooltips#105
 msgid "Headphone"
-msgstr ""
+msgstr "Słuchawka"
 
 #: Tooltips#106
 msgid "Sends the selected channel's audio to the headphone output."
@@ -4329,6 +4347,8 @@ msgstr ""
 #: Tooltips#109
 msgid "Decks can't sync to samplers and samplers can only sync to decks."
 msgstr ""
+"Odtwarzaczy nie można synchronizować do samplerów, a samplery można "
+"synchronizować tylko do odtwarzaczy."
 
 #: Tooltips#110
 msgid "Setup a loop over the set number of beats."
@@ -4833,7 +4853,7 @@ msgstr ""
 
 #: WTrackTableView#17
 msgid "Load to Deck %1"
-msgstr "Wczytaj do Deck &1"
+msgstr "Wczytaj do Deck %1"
 
 #: WTrackTableView#18
 msgctxt "WTrackTableView#18"
