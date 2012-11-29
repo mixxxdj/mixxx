@@ -25,6 +25,10 @@
 WNumber::WNumber(QWidget * parent) : WWidget(parent)
 {
     m_pLabel = new QLabel(this);
+    QLayout* pLayout = new QVBoxLayout(this);
+    pLayout->setContentsMargins(0, 0, 0, 0);
+    pLayout->addWidget(m_pLabel);
+    setLayout(pLayout);
     m_qsText = "";
     m_dConstFactor = 0.;
 }
