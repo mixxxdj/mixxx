@@ -12,6 +12,7 @@
 class ControlObject;
 class Deck;
 class Sampler;
+class PreviewDeck;
 class BaseTrackPlayer;
 
 class Library;
@@ -36,17 +37,25 @@ class PlayerManager : public QObject {
     // Add a sampler to the PlayerManager
     Sampler* addSampler();
 
-    // Return the number of players
-    unsigned int numDecks() const;
+    // Add a PreviewDeck to the PlayerManager
+    PreviewDeck* addPreviewDeck();
 
-    // Return the number of samplers
-    unsigned int numSamplers() const;
+    // Return the number of players. Thread-safe.
+    static unsigned int numDecks();
+
+    // Return the number of samplers. Thread-safe.
+    static unsigned int numSamplers();
+
+    // Return the number of preview decks. Thread-safe.
+    static unsigned int numPreviewDecks();
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
     BaseTrackPlayer* getPlayer(QString group) const;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     Deck* getDeck(unsigned int player) const;
+
+    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const;
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const;
@@ -61,6 +70,11 @@ class PlayerManager : public QObject {
         return QString("[Channel%1]").arg(i+1);
     }
 
+    // Returns the group for the ith PreviewDeck where i is zero indexed
+    static QString groupForPreviewDeck(int i) {
+        return QString("[PreviewDeck%1]").arg(i+1);
+    }
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group);
@@ -70,12 +84,15 @@ class PlayerManager : public QObject {
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
     void slotLoadToDeck(QString location, int deckNumber);
 
+    //slots to PreviewDeck
+    void slotLoadToPreviewDeck(QString location, int libPreviewPlayer);
     // Slots for loading tracks to samplers
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
     void slotLoadToSampler(QString location, int samplerNumber);
 
     void slotNumDecksControlChanged(double v);
     void slotNumSamplersControlChanged(double v);
+    void slotNumPreviewDecksControlChanged(double v);
 
   private:
     TrackPointer lookupTrack(QString location);
@@ -87,9 +104,11 @@ class PlayerManager : public QObject {
     AnalyserQueue* m_pAnalyserQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
+    ControlObject* m_pCONumPreviewDecks;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
+    QList<PreviewDeck*> m_preview_decks;
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 

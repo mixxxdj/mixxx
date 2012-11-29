@@ -37,12 +37,12 @@ class PlayerManager;
 class RecordingManager;
 class SkinLoader;
 class VinylControlManager;
-class CmdlineArgs;
 
 class DlgPreferences;
 class SoundManager;
 
 #include "configobject.h"
+#include "util/cmdlineargs.h"
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -113,6 +113,8 @@ class MixxxApp : public QMainWindow {
     void slotViewShowMicrophone(bool);
     /** toogle full screen mode */
     void slotViewFullScreen(bool toggle);
+    // Reload the skin.
+    void slotDeveloperReloadSkin(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
 
@@ -171,6 +173,8 @@ class MixxxApp : public QMainWindow {
     QMenu *m_pViewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
     QMenu *m_pHelpMenu;
+    // Developer options.
+    QMenu* m_pDeveloperMenu;
 
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
@@ -200,6 +204,8 @@ class MixxxApp : public QMainWindow {
     QAction *m_pHelpTranslation;
     QAction *m_pHelpManual;
 
+    QAction *m_pDeveloperReloadSkin;
+
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */
@@ -215,69 +221,8 @@ class MixxxApp : public QMainWindow {
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 
     int m_tooltips; //0=ON, 1=ON (only in Library), 2=OFF
+
+    const CmdlineArgs& m_cmdLineArgs;
 };
-
-//A structure to store the parsed command-line arguments
-class CmdlineArgs
-{
-public:
-    static CmdlineArgs& Instance() {
-        static CmdlineArgs cla;
-        return cla;
-    }
-    bool Parse(int &argc, char **argv) {
-        for (int i = 0; i < argc; ++i) {
-            if (   argv[i] == QString("-h")
-                || argv[i] == QString("--h")
-                || argv[i] == QString("--help")) {
-                return false; // Display Help Message
-            }
-
-            if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
-            {
-                m_startInFullscreen = true;
-            } else if (argv[i] == QString("--locale") && i+1 < argc) {
-                m_locale = argv[i+1];
-            } else if (argv[i] == QString("--settingsPath") && i+1 < argc) {
-                m_settingsPath = QString::fromLocal8Bit(argv[i+1]);
-                if (!m_settingsPath.endsWith("/")) {
-                    m_settingsPath.append("/");
-                }
-            } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
-                m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
-            } else if (argv[i] == QString("--pluginPath") && i+1 < argc) {
-                m_pluginPath = QString::fromLocal8Bit(argv[i+1]);
-            } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive)) {
-                m_midiDebug = true;
-            } else {
-                m_musicFiles += QString::fromLocal8Bit(argv[i]);
-            }
-        }
-        return true;
-    }
-    const QList<QString>& getMusicFiles() const { return m_musicFiles; };
-    bool getStartInFullscreen() const { return m_startInFullscreen; };
-    bool getMidiDebug() const { return m_midiDebug; };
-    const QString& getLocale() const { return m_locale; };
-    const QString& getSettingsPath() const { return m_settingsPath; };
-    const QString& getResourcePath() const { return m_resourcePath; };
-    const QString& getPluginPath() const { return m_pluginPath; };
-
-private:
-    CmdlineArgs() :
-        m_startInFullscreen(false), //Initialize vars
-        m_midiDebug(false),
-        m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
-    }
-    ~CmdlineArgs() { };
-    QList<QString> m_musicFiles;    /* List of files to load into players at startup */
-    bool m_startInFullscreen;       /* Start in fullscreen mode */
-    bool m_midiDebug;
-    QString m_locale;
-    QString m_settingsPath;
-    QString m_resourcePath;
-    QString m_pluginPath;
-};
-
 
 #endif

@@ -501,6 +501,7 @@ class MixxxCore(Feature):
 
                    "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
+                   "widget/wwidgetstack.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
@@ -598,6 +599,8 @@ class MixxxCore(Feature):
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
+                   "library/previewbuttondelegate.cpp",
+                   "library/previewdeckbuttonhandler.cpp",
                    "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
@@ -671,6 +674,7 @@ class MixxxCore(Feature):
                    "basetrackplayer.cpp",
                    "deck.cpp",
                    "sampler.cpp",
+                   "previewdeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
                    "sounddevice.cpp",

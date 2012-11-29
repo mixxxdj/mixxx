@@ -9,7 +9,6 @@
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 #include "analyserqueue.h"
 
@@ -38,13 +37,11 @@ QIcon PrepareFeature::getIcon() {
     return QIcon(":/images/library/ic_library_prepare.png");
 }
 
-void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                WLibrary* libraryWidget,
+void PrepareFeature::bindWidget(WLibrary* libraryWidget,
                                 MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
     m_pPrepareView = new DlgPrepare(libraryWidget,
-                                              m_pConfig,
-                                              m_pTrackCollection);
+                                    m_pConfig,
+                                    m_pTrackCollection);
     connect(m_pPrepareView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pPrepareView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -84,7 +81,9 @@ void PrepareFeature::refreshLibraryModels()
 void PrepareFeature::activate() {
     //qDebug() << "PrepareFeature::activate()";
     emit(switchToView(m_sPrepareViewName));
-    emit(restoreSearch(m_pPrepareView->currentSearch()));
+    if (m_pPrepareView) {
+        emit(restoreSearch(m_pPrepareView->currentSearch()));
+    }
 }
 
 void PrepareFeature::activateChild(const QModelIndex& index) {

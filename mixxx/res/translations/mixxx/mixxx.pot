@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-22 11:09+0200\n"
+"POT-Creation-Date: 2012-11-25 16:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,6 +223,10 @@ msgstr ""
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
+msgstr ""
+
+#: BaseSqlTableModel#21
+msgid "Preview"
 msgstr ""
 
 #: BaseTrackPlayer#1
@@ -4672,27 +4676,31 @@ msgid "Reload Track Metadata"
 msgstr ""
 
 #: WTrackTableView#13
-msgid "Reset Play Count"
+msgid "Load to Preview Deck"
 msgstr ""
 
 #: WTrackTableView#14
-msgid "Lock BPM"
+msgid "Reset Play Count"
 msgstr ""
 
 #: WTrackTableView#15
-msgid "Unlock BPM"
+msgid "Lock BPM"
 msgstr ""
 
 #: WTrackTableView#16
-msgid "Clear BPM and Beatgrid"
+msgid "Unlock BPM"
 msgstr ""
 
 #: WTrackTableView#17
-msgid "Load to Deck %1"
+msgid "Clear BPM and Beatgrid"
 msgstr ""
 
 #: WTrackTableView#18
-msgctxt "WTrackTableView#18"
+msgid "Load to Deck %1"
+msgstr ""
+
+#: WTrackTableView#19
+msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
 msgstr ""
 

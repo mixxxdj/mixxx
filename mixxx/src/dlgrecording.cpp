@@ -127,6 +127,10 @@ void DlgRecording::onSearch(const QString& text)
     m_proxyModel.search(text);
 }
 
+void DlgRecording::slotRestoreSearch() {
+    emit(restoreSearch(currentSearch()));
+}
+
 void DlgRecording::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }

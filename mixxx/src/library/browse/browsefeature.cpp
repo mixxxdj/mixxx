@@ -17,7 +17,6 @@
 #include "library/dao/trackdao.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 const QString kQuickLinksSeparator = "-+-";
@@ -173,10 +172,8 @@ bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
 
-void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget,
+void BrowseFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
