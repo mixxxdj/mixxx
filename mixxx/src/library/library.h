@@ -56,7 +56,7 @@ public:
 
     //static Library* buildDefaultLibrary();
 
-public slots:
+  public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
@@ -65,14 +65,19 @@ public slots:
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-signals:
+    void onSkinLoadFinished();
+
+  signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group);
     void restoreSearch(const QString&);
+    void search(const QString& text);
+    void searchCleared();
+    void searchStarting();
 
-private:
+  private:
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
