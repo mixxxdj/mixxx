@@ -711,7 +711,7 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
     WTrackText* p = new WTrackText(m_pParent);
     setupWidget(node, p);
     if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget());
+        setupWidget(node, p->getComposedWidget(), false);
     }
     p->setup(node);
     setupConnections(node, p);
@@ -743,7 +743,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
     WTrackProperty* p = new WTrackProperty(m_pParent);
     setupWidget(node, p);
     if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget());
+        setupWidget(node, p->getComposedWidget(), false);
     }
     p->setup(node);
     setupConnections(node, p);
@@ -810,7 +810,7 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     WNumberRate * p = new WNumberRate(pSafeChannelStr, m_pParent);
     setupWidget(node, p);
     if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget());
+        setupWidget(node, p->getComposedWidget(), false);
     }
     p->setup(node);
     setupConnections(node, p);
@@ -829,7 +829,7 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
     setupWidget(node, p);
     if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget());
+        setupWidget(node, p->getComposedWidget(), false);
     }
     p->setup(node);
     setupConnections(node, p);
@@ -842,7 +842,7 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     WNumber* p = new WNumber(m_pParent);
     setupWidget(node, p);
     if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget());
+        setupWidget(node, p->getComposedWidget(), false);
     }
     p->setup(node);
     setupConnections(node, p);
@@ -855,7 +855,7 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     WLabel * p = new WLabel(m_pParent);
     setupWidget(node, p);
     if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget());
+        setupWidget(node, p->getComposedWidget(), false);
     }
     p->setup(node);
     setupConnections(node, p);
@@ -868,7 +868,7 @@ QWidget* LegacySkinParser::parseTime(QDomElement node) {
     WTime *p = new WTime(m_pParent);
     setupWidget(node, p);
     if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget());
+        setupWidget(node, p->getComposedWidget(), false);
     }
     p->setup(node);
     setupConnections(node, p);
@@ -1178,13 +1178,17 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             //qDebug() << "horizontal ignored";
             sizePolicy.setHorizontalPolicy(QSizePolicy::Ignored);
             xs = xs.left(xs.size()-1);
+        } else if (xs.endsWith("p")) {
+            //qDebug() << "horizontal preferred";
+            sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
+            xs = xs.left(xs.size()-1);
         } else {
             sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
         }
 
-        bool ok;
-        int x = xs.toInt(&ok);
-        if (ok) {
+        bool widthOk = false;
+        int x = xs.toInt(&widthOk);
+        if (widthOk) {
             //qDebug() << "setting width to" << x;
             pWidget->setMinimumWidth(x);
         }
@@ -1201,21 +1205,29 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             //qDebug() << "vertical ignored";
             sizePolicy.setVerticalPolicy(QSizePolicy::Ignored);
             ys = ys.left(ys.size()-1);
+        } else if (ys.endsWith("p")) {
+            //qDebug() << "vertical preferred";
+            sizePolicy.setVerticalPolicy(QSizePolicy::Preferred);
+            ys = ys.left(ys.size()-1);
         } else {
             sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
         }
 
-        int y = ys.toInt(&ok);
-        if (ok) {
+        bool heightOk = false;
+        int y = ys.toInt(&heightOk);
+        if (heightOk) {
             //qDebug() << "setting height to" << y;
             pWidget->setMinimumHeight(y);
         }
+
         pWidget->setSizePolicy(sizePolicy);
     }
 }
 
-void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget) {
-    setupPosition(node, pWidget);
+void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosition) {
+    if (setPosition) {
+        setupPosition(node, pWidget);
+    }
     setupSize(node, pWidget);
 
     // Tooltip

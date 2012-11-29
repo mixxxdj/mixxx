@@ -75,7 +75,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
-    void setupWidget(QDomNode node, QWidget* pWidget);
+    void setupWidget(QDomNode node, QWidget* pWidget, bool setupPosition=true);
     void setupConnections(QDomNode node, QWidget* pWidget);
     void addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString getLibraryStyle(QDomNode node);
