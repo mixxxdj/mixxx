@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-11-22 11:09+0200\n"
+"POT-Creation-Date: 2012-11-25 16:06+0200\n"
 "PO-Revision-Date: 2012-11-06 13:44+0000\n"
 "Last-Translator: Jerry Alan Carroll <jerry.alan.carroll@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-24 05:12+0000\n"
-"X-Generator: Launchpad (build 16293)\n"
+"X-Launchpad-Export-Date: 2012-11-30 04:38+0000\n"
+"X-Generator: Launchpad (build 16319)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: AutoDJFeature#1
@@ -227,6 +227,10 @@ msgstr "キー"
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
 msgstr "BPMロック"
+
+#: BaseSqlTableModel#21
+msgid "Preview"
+msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -4757,27 +4761,31 @@ msgid "Reload Track Metadata"
 msgstr "トラックのメタデータを再読み込み"
 
 #: WTrackTableView#13
-msgid "Reset Play Count"
+msgid "Load to Preview Deck"
 msgstr ""
 
 #: WTrackTableView#14
-msgid "Lock BPM"
+msgid "Reset Play Count"
 msgstr ""
 
 #: WTrackTableView#15
-msgid "Unlock BPM"
+msgid "Lock BPM"
 msgstr ""
 
 #: WTrackTableView#16
-msgid "Clear BPM and Beatgrid"
+msgid "Unlock BPM"
 msgstr ""
 
 #: WTrackTableView#17
+msgid "Clear BPM and Beatgrid"
+msgstr ""
+
+#: WTrackTableView#18
 msgid "Load to Deck %1"
 msgstr "デッキ %1 に読み込む"
 
-#: WTrackTableView#18
-msgctxt "WTrackTableView#18"
+#: WTrackTableView#19
+msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
 msgstr ""
 
