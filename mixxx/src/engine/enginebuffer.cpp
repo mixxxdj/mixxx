@@ -562,12 +562,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     double rate = 0;
 
     bool bTrackLoading = m_iTrackLoading != 0;
-
-    if (bTrackLoading) {
-        m_pTrackSamples->set(0);
-        m_pTrackSampleRate->set(0);
-    }
-
     if (!bTrackLoading && m_pause.tryLock()) {
         float sr = m_pSampleRate->get();
 
