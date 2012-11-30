@@ -48,34 +48,13 @@ void BPMDelegate::paint(QPainter *painter,
     if (index==m_currentEditedCellIndex)
         return;
 
-    // Set the palette appropriately based on whether the row is selected or
-    // not. We also have to check if it is inactive or not and use the
-    // appropriate ColorGroup.
-    /*
-    if (newOption.state & QStyle::State_Selected) {
-        QPalette::ColorGroup colorGroup =
-                newOption.state & QStyle::State_Active ?
-                QPalette::Active : QPalette::Inactive;
-        painter->fillRect(newOption.rect,
-            newOption.palette.color(colorGroup, QPalette::Highlight));
-        painter->setBrush(newOption.palette.color(
-            colorGroup, QPalette::HighlightedText));
-    } else {
-        painter->fillRect(newOption.rect, newOption.palette.base());
-        painter->setBrush(newOption.palette.text());
-    }
-    */
-
     BPMEditor editor(option,BPMEditor::ReadOnly, m_pTableView);
     editor.setData(index,m_columnLock);
     editor.setGeometry(option.rect);
-    // painter->save();
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(&editor);
-    // painter->translate(option.rect.x(),option.rect.y());
     painter->drawPixmap(option.rect.x(),option.rect.y(),map);
-    // painter->restore();
 }
 
 void BPMDelegate::updateEditorGeometry(QWidget *editor,
