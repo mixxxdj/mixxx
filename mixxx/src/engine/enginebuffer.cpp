@@ -109,12 +109,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             Qt::DirectConnection);
 
     // Play button
-    playButton = new ControlPushButton(ConfigKey(group, "play"));
-    playButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(playButton, SIGNAL(valueChanged(double)),
+    m_playButton = new ControlPushButton(ConfigKey(group, "play"));
+    m_playButton->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_playButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)),
             Qt::DirectConnection);
-    playButtonCOT = new ControlObjectThreadMain(playButton);
 
     //Play from Start Button (for sampler)
     playStartButton = new ControlPushButton(ConfigKey(group, "start_play"));
@@ -251,8 +250,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pReadAheadManager;
     delete m_pReader;
 
-    delete playButtonCOT;
-    delete playButton;
+    delete m_playButton;
     delete playStartButton;
     delete stopStartButton;
 
@@ -388,7 +386,7 @@ void EngineBuffer::slotTrackLoading() {
     m_iTrackLoading = 1;
     m_pause.unlock();
 
-    playButtonCOT->slotSet(0.0); //Stop playback
+    m_playButton->set(0.0); //Stop playback
     m_pTrackSamples->set(0); // stop renderer
 }
 
@@ -415,7 +413,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
-    playButton->set(0.0f);
+    m_playButton->set(0.0f);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -427,7 +425,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 void EngineBuffer::ejectTrack() {
     // Don't allow ejections while playing a track. We don't need to lock to
     // call ControlObject::get() so this is fine.
-    if (playButton->get() > 0)
+    if (m_playButton->get() > 0)
         return;
 
     m_pause.lock();
@@ -438,7 +436,7 @@ void EngineBuffer::ejectTrack() {
     m_pCurrentTrack.clear();
     file_srate_old = 0;
     file_length_old = 0;
-    playButton->set(0.0);
+    m_playButton->set(0.0);
     visualBpm->set(0.0);
     slotControlSeek(0.);
     m_pause.unlock();
@@ -481,7 +479,7 @@ void EngineBuffer::slotControlPlay(double v)
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
-        playButton->set(0.0f);
+        m_playButton->set(0.0f);
     }
 }
 
@@ -503,7 +501,7 @@ void EngineBuffer::slotControlPlayFromStart(double v)
 {
     if (v > 0.0) {
         slotControlSeek(0.);
-        playButton->set(1);
+        m_playButton->set(1);
     }
 }
 
@@ -511,14 +509,14 @@ void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
         slotControlSeek(0.);
-        playButton->set(0);
+        m_playButton->set(0);
     }
 }
 
 void EngineBuffer::slotControlStop(double v)
 {
     if (v > 0.0) {
-        playButton->set(0);
+        m_playButton->set(0);
     }
 }
 
@@ -578,7 +576,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (sr > 0)
             baserate = ((double)file_srate_old/sr);
 
-        bool paused = playButton->get() != 0.0f ? false : true;
+        bool paused = m_playButton->get() != 0.0f ? false : true;
 
         bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
@@ -769,13 +767,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             (at_end && !backwards);
 
         // If playbutton is pressed, check if we are at start or end of track
-        if ((playButton->get() || (fwdButton->get() || backButton->get()))
+        if ((m_playButton->get() || (fwdButton->get() || backButton->get()))
             && end_of_track) {
             if (repeat_enabled) {
                 double seekPosition = at_start ? file_length_old : 0;
                 slotControlSeek(seekPosition);
             } else {
-                playButton->set(0.);
+                m_playButton->set(0.);
             }
         }
 
