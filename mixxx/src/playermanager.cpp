@@ -38,6 +38,8 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
             this, SLOT(slotNumDecksControlChanged(double)));
     connect(m_pCONumSamplers, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumSamplersControlChanged(double)));
+    connect(m_pCONumPreviewDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumPreviewDecksControlChanged(double)));
 
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig);
 
@@ -141,8 +143,22 @@ void PlayerManager::slotNumSamplersControlChanged(double v) {
     }
 }
 
+void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
+    // First off, undo any changes to the control.
+    m_pCONumPreviewDecks->set(m_preview_decks.size());
+
+    int num = v;
+    if (num < m_preview_decks.size()) {
+        qDebug() << "Ignoring request to reduce the number of preview decks to" << num;
+        return;
+    }
+
+    while (m_preview_decks.size() < num) {
+        addPreviewDeck();
+    }
+}
+
 Deck* PlayerManager::addDeck() {
-    Deck* pDeck;
     QString group = groupForDeck(numDecks());
     int number = numDecks() + 1;
 
@@ -150,7 +166,7 @@ Deck* PlayerManager::addDeck() {
     if (number % 2 == 0)
         orientation = EngineChannel::RIGHT;
 
-    pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, m_pAnalyserQueue, group);
+    Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, m_pAnalyserQueue, group);
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
@@ -177,13 +193,12 @@ Deck* PlayerManager::addDeck() {
 }
 
 Sampler* PlayerManager::addSampler() {
-    Sampler* pSampler;
     QString group = groupForSampler(numSamplers());
 
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
-    pSampler = new Sampler(this, m_pConfig, m_pEngine, orientation, group);
+    Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine, orientation, group);
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
@@ -199,13 +214,13 @@ Sampler* PlayerManager::addSampler() {
 }
 
 PreviewDeck* PlayerManager::addPreviewDeck() {
-    PreviewDeck* pPreviewDeck;
     QString group = groupForPreviewDeck(numPreviewDecks());
 
-    // All samplers are in the center
+    // All preview decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
-    pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine, orientation, group);
+    PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine, orientation, group);
+
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
     connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),

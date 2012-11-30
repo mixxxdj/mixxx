@@ -92,6 +92,7 @@ class PlayerManager : public QObject {
 
     void slotNumDecksControlChanged(double v);
     void slotNumSamplersControlChanged(double v);
+    void slotNumPreviewDecksControlChanged(double v);
 
   private:
     TrackPointer lookupTrack(QString location);

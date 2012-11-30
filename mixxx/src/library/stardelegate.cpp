@@ -33,6 +33,7 @@ StarDelegate::StarDelegate(QObject *pParent)
 
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    //let the editor to the painting if this is true
     if(index==m_currentEditedCellIndex){
         return;
     }
@@ -64,14 +65,11 @@ void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(option);
     StarRating starRating = qVariantValue<StarRating>(index.data());
     return starRating.sizeHint();
 }
-/*
- * If the item is a StarRating, we create a StarEditor and connect
- * its editingFinished() signal to our commitAndCloseEditor() slot,
- * so we can update the model when the editor closes.
- */
+
 QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,const QModelIndex &index) const
 {
     // Populate the correct colors based on the styling

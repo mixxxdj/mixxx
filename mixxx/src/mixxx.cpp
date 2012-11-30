@@ -88,7 +88,7 @@ bool loadTranslations(const QLocale& systemLocale, QString userLocale,
 }
 
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
-{
+        : m_cmdLineArgs(args) {
 
     QString buildBranch, buildRevision, buildFlags;
 #ifdef BUILD_BRANCH
@@ -360,6 +360,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pSkinLoader = new SkinLoader(m_pConfig);
     connect(this, SIGNAL(newSkinLoaded()),
             this, SLOT(onNewSkinLoaded()));
+    connect(this, SIGNAL(newSkinLoaded()),
+            m_pLibrary, SLOT(onSkinLoadFinished()));
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
@@ -1009,6 +1011,18 @@ void MixxxApp::initActions()
     m_pOptionsRecord->setWhatsThis(buildWhatsThis(recordTitle, recordText));
     connect(m_pOptionsRecord, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsRecord(bool)));
+
+    QString reloadSkinTitle = tr("&Reload Skin");
+    QString reloadSkinText = tr("Reload the skin");
+    m_pDeveloperReloadSkin = new QAction(reloadSkinTitle, this);
+    m_pDeveloperReloadSkin->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
+    m_pDeveloperReloadSkin->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperReloadSkin->setCheckable(true);
+    m_pDeveloperReloadSkin->setChecked(false);
+    m_pDeveloperReloadSkin->setStatusTip(reloadSkinText);
+    m_pDeveloperReloadSkin->setWhatsThis(buildWhatsThis(reloadSkinTitle, reloadSkinText));
+    connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
+            this, SLOT(slotDeveloperReloadSkin(bool)));
 }
 
 void MixxxApp::initMenuBar()
@@ -1019,6 +1033,7 @@ void MixxxApp::initMenuBar()
     m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
     m_pViewMenu = new QMenu(tr("&View"), menuBar());
     m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
+    m_pDeveloperMenu = new QMenu(tr("Developer"), menuBar());
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
@@ -1059,6 +1074,9 @@ void MixxxApp::initMenuBar()
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
 
+    // Developer Menu
+    m_pDeveloperMenu->addAction(m_pDeveloperReloadSkin);
+
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
     m_pHelpMenu->addAction(m_pHelpManual);
@@ -1071,6 +1089,10 @@ void MixxxApp::initMenuBar()
     menuBar()->addMenu(m_pLibraryMenu);
     menuBar()->addMenu(m_pViewMenu);
     menuBar()->addMenu(m_pOptionsMenu);
+
+    if (m_cmdLineArgs.getDeveloper()) {
+        menuBar()->addMenu(m_pDeveloperMenu);
+    }
 
     menuBar()->addSeparator();
     menuBar()->addMenu(m_pHelpMenu);
@@ -1136,6 +1158,10 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
         m_pKeyboard->setKeyboardConfig(m_pKbdConfigEmpty);
         m_pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(0));
     }
+}
+
+void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
+    rebootMixxxView();
 }
 
 void MixxxApp::slotViewFullScreen(bool toggle)

@@ -121,7 +121,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlPlayFromStart(double)),
             Qt::DirectConnection);
     playStartButton->set(0);
-    playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
 
     // Jump to start and stop button
     stopStartButton = new ControlPushButton(ConfigKey(group, "start_stop"));
@@ -129,7 +128,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlJumpToStartAndStop(double)),
             Qt::DirectConnection);
     stopStartButton->set(0);
-    stopStartButtonCOT = new ControlObjectThreadMain(stopStartButton);
 
     //Stop playback (for sampler)
     stopButton = new ControlPushButton(ConfigKey(group, "stop"));
@@ -137,7 +135,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlStop(double)),
             Qt::DirectConnection);
     stopButton->set(0);
-    stopButtonCOT = new ControlObjectThreadMain(stopButton);
 
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
@@ -255,17 +252,19 @@ EngineBuffer::~EngineBuffer()
 
     delete playButtonCOT;
     delete playButton;
-    delete playStartButtonCOT;
     delete playStartButton;
+    delete stopStartButton;
+
     delete startButton;
     delete endButton;
-    delete stopStartButtonCOT;
-    delete stopButtonCOT;
     delete stopButton;
     delete rateEngine;
     delete playposSlider;
     delete visualPlaypos;
+    delete visualBpm;
 
+    delete m_pSlipButton;
+    delete m_pSlipPosition;
     delete m_pRepeat;
 
     delete m_pTrackSamples;

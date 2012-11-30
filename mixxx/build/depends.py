@@ -501,6 +501,7 @@ class MixxxCore(Feature):
 
                    "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
+                   "widget/wwidgetstack.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
