@@ -13,16 +13,6 @@ BPMButton::BPMButton(QWidget *parent) : QAbstractButton(parent),
 BPMButton::~BPMButton(){
 }
 
-void BPMButton::setCheckedImage(QPixmap &image){
-    m_Checked = image;
-    update();
-}
-
-void BPMButton::setUncheckedImage(QPixmap &image){
-    m_Unchecked = image;
-    update();
-}
-
 QSize BPMButton::sizeHint() const {
     if (isChecked())
         return m_Checked.size();

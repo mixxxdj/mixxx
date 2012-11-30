@@ -1,7 +1,3 @@
-#include <QPainter>
-#include <QFont>
-#include <QDebug>
-
 #include "bpmdelegate.h"
 #include "bpmeditor.h"
 

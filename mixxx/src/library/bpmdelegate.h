@@ -2,10 +2,7 @@
 #define BPMDELEGATE_H
 
 #include <QStyledItemDelegate>
-#include <QPushButton>
 #include <QTableView>
-#include <QHBoxLayout>
-#include <QDoubleSpinBox>
 
 #include "trackinfoobject.h"
 #include "bpmbutton.h"
@@ -39,10 +36,6 @@ class BPMDelegate : public QStyledItemDelegate {
 
   private:
     QTableView *m_pTableView;
-    BPMButton *m_pButton;
-    QWidget *m_pWidget;
-    QDoubleSpinBox *m_pBPM;
-    QHBoxLayout *m_pLayout;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;

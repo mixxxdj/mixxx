@@ -1,5 +1,3 @@
-#include <QDebug>
-
 #include "bpmeditor.h"
 
 BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
