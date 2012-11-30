@@ -37,7 +37,6 @@
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/quantizecontrol.h"
-#include "engine/cuecontrol.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
@@ -78,15 +77,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_bScalerChanged(false),
     m_bLastBufferPaused(true),
-    m_bBufferPause(true),
+    m_iTrackLoading(0),
     m_fRampValue(0.0),
     m_iRampState(ENGINE_RAMP_NONE),
     m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
     m_iDitherBufferReadIndex(0),
     m_pCrossFadeBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
     m_iCrossFadeSamples(0),
-    m_iLastBufferSize(0),
-    m_cueControl(NULL) {
+    m_iLastBufferSize(0) {
 
     // Generate dither values
     for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
@@ -100,6 +98,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_fLastSampleValue[1] = 0;
 
     m_pReader = new CachingReader(_group, _config);
+    connect(m_pReader, SIGNAL(trackLoading()),
+            this, SLOT(slotTrackLoading()),
+            Qt::DirectConnection);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
             this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
             Qt::DirectConnection);
@@ -379,6 +380,19 @@ double EngineBuffer::getRate()
 }
 
 // WARNING: Always called from the EngineWorker thread pool
+void EngineBuffer::slotTrackLoading() {
+    // Pause EngineBuffer from processing frames
+    m_pause.lock();
+    // Setting m_iTrackLoading inside a m_pause.lock ensures that
+    // track buffer is not processed when starting to load a new one
+    m_iTrackLoading = 1;
+    m_pause.unlock();
+
+    playButtonCOT->slotSet(0.0); //Stop playback
+    m_pTrackSamples->set(0); // stop renderer
+}
+
+// WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
@@ -387,25 +401,21 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pCurrentTrack = pTrack;
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
-    // TODO(XXX): Not sure if updating the COs here is critical, because
-    // all user classes are still having the old track as current
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
-    double seekAbs = 0;
-    if (m_cueControl) {
-        seekAbs = m_cueControl->loadTrack(pTrack);
-    }
-    slotControlSeekAbs(seekAbs);
-    // enable Buffer processing
-    m_bBufferPause = false;
     m_pause.unlock();
 
+    // All EngingeControls are connected directly
     emit(trackLoaded(pTrack));
+    // Start buffer processing after all EngineContols are up to date
+    // with the current track e.g track is seeked to Cue
+    m_iTrackLoading = 0;
 }
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
+    playButton->set(0.0f);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
 }
@@ -421,7 +431,7 @@ void EngineBuffer::ejectTrack() {
         return;
 
     m_pause.lock();
-    m_bBufferPause = true;
+    m_iTrackLoading = 0;
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
@@ -459,7 +469,7 @@ void EngineBuffer::slotControlSeek(double change)
     setNewPlaypos(new_playpos);
 }
 
-// WARNING: This method runs in both the GUI thread and the Engine Thread
+// WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double abs)
 {
     slotControlSeek(abs/file_length_old);
@@ -467,8 +477,10 @@ void EngineBuffer::slotControlSeekAbs(double abs)
 
 void EngineBuffer::slotControlPlay(double v)
 {
-    // If no track is currently loaded, turn play off.
-    if (v > 0.0 && !m_pCurrentTrack) {
+    // If no track is currently loaded, turn play off. If a track is loading
+    // allow the set since it might apply to a track we are loading due to the
+    // asynchrony.
+    if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
         playButton->set(0.0f);
     }
 }
@@ -552,7 +564,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     bool bCurBufferPaused = false;
     double rate = 0;
 
-    if (!m_bBufferPause && m_pause.tryLock()) {
+    bool bTrackLoading = m_iTrackLoading != 0;
+
+    if (bTrackLoading) {
+        m_pTrackSamples->set(0);
+        m_pTrackSampleRate->set(0);
+    }
+
+    if (!bTrackLoading && m_pause.tryLock()) {
         float sr = m_pSampleRate->get();
 
         double baserate = 0.0f;
@@ -762,7 +781,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // release the pauselock
         m_pause.unlock();
-    } else { // if (!m_bBufferPause && m_pause.tryLock()) {
+    } else { // if (!bTrackLoading && m_pause.tryLock()) {
         // If we can't get the pause lock then this buffer will be silence.
         bCurBufferPaused = true;
     }
@@ -880,7 +899,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.lock();
 
     m_hintList.clear();
-    m_pReadAheadManager->hintReader(dRate, m_hintList, iSourceSamples);
+    m_pReadAheadManager->hintReader(dRate, m_hintList);
 
     //if slipping, hint about virtual position so we're ready for it
     if (m_bSlipEnabled) {
@@ -903,23 +922,10 @@ void EngineBuffer::hintReader(const double dRate,
 
 // WARNING: This method runs in the GUI thread
 void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
-    // Pause EngineBuffer from processing frames
-    m_pause.lock();
-    m_bBufferPause = true;
-    m_pTrackSamples->set(0); // stop renderer
-    m_pause.unlock();
-    //Stop playback
-    playButtonCOT->slotSet(0.0);
-
     // Signal to the reader to load the track. The reader will respond with
-    // either trackLoaded or trackLoadFailed signals.
+    // trackLoading and then either with trackLoaded or trackLoadFailed signals.
     m_pReader->newTrack(pTrack);
     m_pReader->wake();
-}
-
-void EngineBuffer::addCueControl(CueControl* pControl) {
-    m_cueControl = pControl;
-    addControl(static_cast<EngineControl*>(pControl));
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {
@@ -963,6 +969,9 @@ void EngineBuffer::setReader(CachingReader* pReader) {
     delete m_pReader;
     m_pReader = pReader;
     m_pReadAheadManager->setReader(pReader);
+    connect(m_pReader, SIGNAL(trackLoading()),
+            this, SLOT(slotTrackLoading()),
+            Qt::DirectConnection);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
             this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
             Qt::DirectConnection);

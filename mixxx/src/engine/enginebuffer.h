@@ -20,6 +20,8 @@
 
 #include <qapplication.h>
 #include <QMutex>
+#include <QAtomicInt>
+
 #include "defs.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
@@ -48,7 +50,6 @@ class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
 class EngineMaster;
-class CueControl;
 
 struct Hint;
 
@@ -98,7 +99,6 @@ public:
 
     // Add an engine control to the EngineBuffer
     void addControl(EngineControl* pControl);
-    void addCueControl(CueControl* pControl);
 
     // Return the current rate (not thread-safe)
     double getRate();
@@ -146,6 +146,7 @@ public:
     void trackUnloaded(TrackPointer pTrack);
 
   private slots:
+    void slotTrackLoading();
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
@@ -218,7 +219,7 @@ private:
     ControlObject* m_pTrackSampleRate;
 
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
-    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopButtonCOT;
+    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT;
     ControlObject *fwdButton, *backButton;
     ControlPushButton* m_pSlipButton;
     ControlObject* m_pSlipPosition;
@@ -256,7 +257,7 @@ private:
     float m_fLastSampleValue[2];
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
-    bool m_bBufferPause;
+    QAtomicInt m_iTrackLoading;
     float m_fRampValue;
     int m_iRampState;
     //int m_iRampIter;
@@ -271,8 +272,6 @@ private:
     CSAMPLE* m_pCrossFadeBuffer;
     int m_iCrossFadeSamples;
     int m_iLastBufferSize;
-
-    CueControl* m_cueControl;
 };
 
 #endif
