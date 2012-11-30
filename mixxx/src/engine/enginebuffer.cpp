@@ -23,7 +23,6 @@
 #include "sampleutil.h"
 
 #include "controlpushbutton.h"
-#include "controlobjectthreadmain.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "engine/enginebufferscalest.h"
