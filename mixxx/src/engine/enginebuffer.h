@@ -218,8 +218,8 @@ private:
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
-    ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
-    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT;
+    ControlPushButton *m_playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
+    ControlObjectThreadMain *playStartButtonCOT;
     ControlObject *fwdButton, *backButton;
     ControlPushButton* m_pSlipButton;
     ControlObject* m_pSlipPosition;
