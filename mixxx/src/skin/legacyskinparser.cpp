@@ -376,6 +376,7 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     QSplitter* pSplitter = new QSplitter(m_pParent);
+    pSplitter->setObjectName("Splitter");
     setupWidget(node, pSplitter);
 
     // Default orientation is horizontal.
@@ -440,6 +441,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     QWidget* pGroup = new QGroupBox(m_pParent);
+    pGroup->setObjectName("WidgetGroup");
     pGroup->setContentsMargins(0, 0, 0, 0);
     setupWidget(node, pGroup);
     setupConnections(node, pGroup);
@@ -511,6 +513,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     }
 
     WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
+    pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     setupWidget(node, pStack);
     setupConnections(node, pStack);
