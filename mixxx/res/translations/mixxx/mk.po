@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-11-22 11:09+0200\n"
+"POT-Creation-Date: 2012-11-25 16:06+0200\n"
 "PO-Revision-Date: 2012-08-11 20:46+0000\n"
 "Last-Translator: kikola <nvelkovski@hotmail.com>\n"
 "Language-Team: Macedonian <mk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-24 05:12+0000\n"
-"X-Generator: Launchpad (build 16293)\n"
+"X-Launchpad-Export-Date: 2012-11-30 04:38+0000\n"
+"X-Generator: Launchpad (build 16319)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -226,6 +226,10 @@ msgstr "Нота"
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
 msgstr "Заклучи ги битовите во минута"
+
+#: BaseSqlTableModel#21
+msgid "Preview"
+msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -4694,27 +4698,31 @@ msgid "Reload Track Metadata"
 msgstr ""
 
 #: WTrackTableView#13
-msgid "Reset Play Count"
+msgid "Load to Preview Deck"
 msgstr ""
 
 #: WTrackTableView#14
-msgid "Lock BPM"
+msgid "Reset Play Count"
 msgstr ""
 
 #: WTrackTableView#15
-msgid "Unlock BPM"
+msgid "Lock BPM"
 msgstr ""
 
 #: WTrackTableView#16
-msgid "Clear BPM and Beatgrid"
+msgid "Unlock BPM"
 msgstr ""
 
 #: WTrackTableView#17
-msgid "Load to Deck %1"
+msgid "Clear BPM and Beatgrid"
 msgstr ""
 
 #: WTrackTableView#18
-msgctxt "WTrackTableView#18"
+msgid "Load to Deck %1"
+msgstr ""
+
+#: WTrackTableView#19
+msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
 msgstr ""
 

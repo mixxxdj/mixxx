@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-11-28 18:31+0000\n"
+"POT-Creation-Date: 2012-11-25 16:06+0200\n"
+"PO-Revision-Date: 2012-11-29 20:59+0000\n"
 "Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-29 05:10+0000\n"
+"X-Launchpad-Export-Date: 2012-11-30 04:38+0000\n"
 "X-Generator: Launchpad (build 16319)\n"
 
 #: AutoDJFeature#1
@@ -224,6 +224,10 @@ msgstr "Klucz"
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
 msgstr "Zablokuj BPM"
+
+#: BaseSqlTableModel#21
+msgid "Preview"
+msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -3523,7 +3527,7 @@ msgstr "Ctrl+`"
 
 #: MixxxApp#68
 msgid "&Translate This Application"
-msgstr ""
+msgstr "Prze&tłumacz ten program"
 
 #: MixxxApp#69
 msgid "Enable Live &Broadcasting"
@@ -4382,11 +4386,11 @@ msgstr ""
 
 #: Tooltips#116
 msgid "Clock"
-msgstr ""
+msgstr "Zegar"
 
 #: Tooltips#117
 msgid "Displays the current time."
-msgstr ""
+msgstr "Wyświetla aktualny czas."
 
 #: Tooltips#118
 msgid ""
@@ -4748,7 +4752,7 @@ msgstr ""
 
 #: TrackCollection#8
 msgid "Try renaming it and restarting Mixxx."
-msgstr ""
+msgstr "Spróbuj zmienić nazwę i ponownie uruchomić Mixxx."
 
 #: TrackCollection#9
 msgid "Your %1 file may be missing or invalid."
@@ -4836,29 +4840,33 @@ msgid "Reload Track Metadata"
 msgstr "Przeładuj metadane utworu"
 
 #: WTrackTableView#13
-msgid "Reset Play Count"
+msgid "Load to Preview Deck"
 msgstr ""
 
 #: WTrackTableView#14
-msgid "Lock BPM"
+msgid "Reset Play Count"
 msgstr ""
 
 #: WTrackTableView#15
-msgid "Unlock BPM"
+msgid "Lock BPM"
 msgstr ""
 
 #: WTrackTableView#16
-msgid "Clear BPM and Beatgrid"
+msgid "Unlock BPM"
 msgstr ""
 
 #: WTrackTableView#17
+msgid "Clear BPM and Beatgrid"
+msgstr ""
+
+#: WTrackTableView#18
 msgid "Load to Deck %1"
 msgstr "Wczytaj do Deck %1"
 
-#: WTrackTableView#18
-msgctxt "WTrackTableView#18"
+#: WTrackTableView#19
+msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
-msgstr "Sampler %1"
+msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."

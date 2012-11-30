@@ -7,20 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-11-22 11:09+0200\n"
-"PO-Revision-Date: 2012-09-27 08:17+0000\n"
-"Last-Translator: Sergey Koptev <Unknown>\n"
+"POT-Creation-Date: 2012-11-25 16:06+0200\n"
+"PO-Revision-Date: 2012-11-29 12:57+0000\n"
+"Last-Translator: Eugene Marshal <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-24 05:13+0000\n"
-"X-Generator: Launchpad (build 16293)\n"
+"X-Launchpad-Export-Date: 2012-11-30 04:39+0000\n"
+"X-Generator: Launchpad (build 16319)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Автоматический диджеинг"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -227,6 +227,10 @@ msgstr "Ключ"
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
 msgstr "Блокирование уд./мин."
+
+#: BaseSqlTableModel#21
+msgid "Preview"
+msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -1119,7 +1123,7 @@ msgstr ""
 #: DlgControllerLearning#83
 msgctxt "DlgControllerLearning#83"
 msgid "Library"
-msgstr ""
+msgstr "Медиатека"
 
 #: DlgControllerLearning#84
 msgid "Switch to the next view (library, playlist..)"
@@ -1141,11 +1145,11 @@ msgstr "Перейти на предыдущую дорожку в библио�
 
 #: DlgControllerLearning#88
 msgid "Load selected track into first stopped deck"
-msgstr ""
+msgstr "Загрузить выбранную дорожку в первую бездействующую деку."
 
 #: DlgControllerLearning#89
 msgid "Load selected track"
-msgstr ""
+msgstr "Загрузить выбранную дорожку"
 
 #: DlgControllerLearning#90
 msgid "Effects"
@@ -1170,7 +1174,7 @@ msgstr "Фленджер: Задержка фазы"
 #: DlgControllerLearning#95
 msgctxt "DlgControllerLearning#95"
 msgid "Microphone"
-msgstr ""
+msgstr "Микрофон"
 
 #: DlgControllerLearning#96
 msgid "Microphone on/off"
@@ -1187,11 +1191,13 @@ msgstr ""
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Автоматический диджеинг"
 
 #: DlgControllerLearning#100
 msgid "Shuffle the content of the Auto DJ playlist"
 msgstr ""
+"Случайный порядок содержимого списка воспроизведения во время "
+"автоматического диджеинга"
 
 #: DlgControllerLearning#101
 msgid "Skip the next track in the Auto DJ playlist"
@@ -1203,7 +1209,7 @@ msgstr ""
 
 #: DlgControllerLearning#103
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Включение/отключение автоматического диджеинга"
 
 #: DlgControllerLearning#104
 msgid "User Interface"
@@ -1467,7 +1473,7 @@ msgstr "Вверх - увеличивает скорость"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Сведения"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1536,11 +1542,11 @@ msgstr "Кнопки постоянного тона/скорости"
 
 #: DlgPrefControlsDlg#15
 msgid "Displays which OpenGL version is supported by the current platform."
-msgstr ""
+msgstr "Показывает поддерживаемую этой платформой версию OpenGL."
 
 #: DlgPrefControlsDlg#16
 msgid "Displays the actual frame rate."
-msgstr ""
+msgstr "Показывает актуальную частоту кадров."
 
 #: DlgPrefControlsDlg#17
 msgid "Normalize Overview"
@@ -1636,7 +1642,7 @@ msgstr ""
 #: DlgPrefControlsDlg#39
 msgctxt "DlgPrefControlsDlg#39"
 msgid "Synchronize"
-msgstr ""
+msgstr "Синхронизировать"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1678,7 +1684,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "По умолчанию"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1731,6 +1737,8 @@ msgid ""
 "Your settings must be applied before starting the learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"Ваши настройки должны быть применены перед запуском мастера обучения.\n"
+"Применить настройки и продолжить?"
 
 #: DlgPrefMappableController#3
 msgid "Clear Input Bindings"
@@ -1962,7 +1970,7 @@ msgstr "    Вы должны перезапустить Mixxx для измен
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Browse..."
-msgstr ""
+msgstr "Обзор…"
 
 #: DlgPrefPlaylistDlg#16
 msgctxt "DlgPrefPlaylistDlg#16"
@@ -2250,17 +2258,17 @@ msgstr "Общедоступный поток"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Use UTF-8 encoding for metadata."
-msgstr ""
+msgstr "Использовать для метаданных кодировку UTF-8."
 
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Encoding"
-msgstr ""
+msgstr "Кодировка"
 
 #: DlgPrefShoutcastDlg#22
 msgctxt "DlgPrefShoutcastDlg#22"
 msgid "Bitrate"
-msgstr ""
+msgstr "Качество звука"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Format"
@@ -2281,12 +2289,12 @@ msgstr "Использовать собственные метаданные"
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: DlgPrefShoutcastDlg#29
 msgid ""
@@ -2383,12 +2391,12 @@ msgstr "Запрашивающие устройства"
 #: DlgPrefSoundDlg#10
 msgctxt "DlgPrefSoundDlg#10"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "По умолчанию"
 
 #: DlgPrefSoundDlg#11
 msgctxt "DlgPrefSoundDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: DlgPrefSoundDlg#12
 msgid "Latency"
@@ -2665,7 +2673,7 @@ msgstr "Остановить анализатор"
 
 #: DlgPrepare#12
 msgid "Analyzing %1/%2 %3%"
-msgstr ""
+msgstr "Выполняется анализ %1/%2 %3%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -2951,19 +2959,19 @@ msgstr "Ошибка установки неблокирующего режим�
 
 #: EngineShoutcast#5
 msgid "Error setting hostname!"
-msgstr ""
+msgstr "Ошибка установки названия узла!"
 
 #: EngineShoutcast#6
 msgid "Error setting protocol!"
-msgstr ""
+msgstr "Ошибка установки протокола!"
 
 #: EngineShoutcast#7
 msgid "Error setting port!"
-msgstr ""
+msgstr "Ошибка установки порта!"
 
 #: EngineShoutcast#8
 msgid "Error setting password!"
-msgstr ""
+msgstr "Ошибка установки пароля!"
 
 #: EngineShoutcast#9
 msgid "Error setting mount!"
@@ -2971,23 +2979,23 @@ msgstr ""
 
 #: EngineShoutcast#10
 msgid "Error setting username!"
-msgstr ""
+msgstr "Ошибка установки имени пользователя!"
 
 #: EngineShoutcast#11
 msgid "Error setting stream name!"
-msgstr ""
+msgstr "Ошибка установки названия потока!"
 
 #: EngineShoutcast#12
 msgid "Error setting stream description!"
-msgstr ""
+msgstr "Ошибка установки описания потока!"
 
 #: EngineShoutcast#13
 msgid "Error setting stream genre!"
-msgstr ""
+msgstr "Ошибка установки жанра потока!"
 
 #: EngineShoutcast#14
 msgid "Error setting stream url!"
-msgstr ""
+msgstr "Ошибка установки веб-ссылки потока!"
 
 #: EngineShoutcast#15
 msgid ""
@@ -3002,11 +3010,11 @@ msgstr ""
 
 #: EngineShoutcast#17
 msgid "Error setting bitrate"
-msgstr ""
+msgstr "Ошибка установки качества звука"
 
 #: EngineShoutcast#18
 msgid "Error: unknown server protocol!"
-msgstr ""
+msgstr "Ошибка: неизвестный протокол сервера"
 
 #: EngineShoutcast#19
 msgid "Error: libshout only supports Shoutcast with MP3 format!"
@@ -3220,7 +3228,7 @@ msgstr ""
 
 #: MidiController#1
 msgid "MixxxControl not found"
-msgstr ""
+msgstr "MixxxControl не найден"
 
 #: MidiController#2
 msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
@@ -3309,7 +3317,7 @@ msgstr "Выйти"
 
 #: MixxxApp#14
 msgid "No Output Devices"
-msgstr ""
+msgstr "Отсутствуют устройства вывода"
 
 #: MixxxApp#15
 msgid ""
@@ -3327,11 +3335,11 @@ msgstr "Продолжить"
 
 #: MixxxApp#18
 msgid "Load Track to Deck %1"
-msgstr ""
+msgstr "Загрузить дорожку в деку %1"
 
 #: MixxxApp#19
 msgid "Add &New Playlist"
-msgstr ""
+msgstr "Добавить &новый список воспроизведения"
 
 #: MixxxApp#20
 msgid "Add New &Crate"
@@ -3343,11 +3351,11 @@ msgstr ""
 
 #: MixxxApp#22
 msgid "Load track to Deck %1"
-msgstr ""
+msgstr "Загрузить дорожку в деку %1"
 
 #: MixxxApp#23
 msgid "Loads a track in deck %1"
-msgstr ""
+msgstr "Загрузить дорожку в деку %1"
 
 #: MixxxApp#24
 msgid "Open"
@@ -3367,7 +3375,7 @@ msgstr "&Выйти"
 
 #: MixxxApp#28
 msgid "Quits Mixxx"
-msgstr ""
+msgstr "Выйти из Mixxx"
 
 #: MixxxApp#29
 msgid "Ctrl+Q"
@@ -3380,6 +3388,7 @@ msgstr "&Обновить библиотеку"
 #: MixxxApp#31
 msgid "Rescans library folders for changes to tracks."
 msgstr ""
+"Повторное сканирование папок библиотеки на предмет изменения дорожек."
 
 #: MixxxApp#32
 msgid "Ctrl+N"
@@ -3387,7 +3396,7 @@ msgstr "Ctrl+Н"
 
 #: MixxxApp#33
 msgid "Deck %1 is currently playing a track."
-msgstr ""
+msgstr "В настоящее время дека %1 воспроизводит дорожку."
 
 #: MixxxApp#34
 msgid "Are you sure you want to load a new track?"
@@ -3424,7 +3433,7 @@ msgstr "Поддержка &сообщества"
 
 #: MixxxApp#42
 msgid "Get help with Mixxx"
-msgstr ""
+msgstr "Справка Mixxx"
 
 #: MixxxApp#43
 msgid "&User Manual"
@@ -3518,27 +3527,27 @@ msgstr "&Файл"
 
 #: MixxxApp#65
 msgid "Ctrl+Shift+N"
-msgstr ""
+msgstr "Ctrl+Shift+N"
 
 #: MixxxApp#66
 msgid "Toggles keyboard shortcuts on or off"
-msgstr ""
+msgstr "Включает/отключает сочетания клавиш быстрого доступа с клавиатуры"
 
 #: MixxxApp#67
 msgid "Ctrl+`"
-msgstr ""
+msgstr "Ctrl+`"
 
 #: MixxxApp#68
 msgid "&Translate This Application"
-msgstr ""
+msgstr "&Перевести это приложение"
 
 #: MixxxApp#69
 msgid "Enable Live &Broadcasting"
-msgstr ""
+msgstr "Задействовать &вещание в прямом эфире"
 
 #: MixxxApp#70
 msgid "May not be supported on all skins."
-msgstr ""
+msgstr "Может не поддерживаться на всех обложках."
 
 #: MixxxApp#71
 msgid "Show Sample Deck Widgets"
@@ -3550,7 +3559,7 @@ msgstr ""
 
 #: MixxxApp#73
 msgid "Ctrl+S"
-msgstr ""
+msgstr "Ctrl+S"
 
 #: MixxxApp#74
 msgid "Show Vinyl Control Widgets"
@@ -3562,7 +3571,7 @@ msgstr ""
 
 #: MixxxApp#76
 msgid "Ctrl+V"
-msgstr ""
+msgstr "Ctrl+V"
 
 #: MixxxApp#77
 msgid "Show Microphone Widgets"
@@ -3570,11 +3579,11 @@ msgstr ""
 
 #: MixxxApp#78
 msgid "Show the microphone section of the Mixxx interface."
-msgstr ""
+msgstr "Показать раздел микрофона интерфейса Mixxx."
 
 #: MixxxApp#79
 msgid "Ctrl+M"
-msgstr ""
+msgstr "Ctrl+M"
 
 #: MixxxApp#80
 msgid "&Options"
@@ -3627,11 +3636,11 @@ msgstr "Бывшие соавторы"
 
 #: MixxxApp#91
 msgid "Error in skin file"
-msgstr ""
+msgstr "Ошибка в файле обложки"
 
 #: MixxxApp#92
 msgid "The selected skin cannot be loaded."
-msgstr ""
+msgstr "Выбранная обложка не может быть загружена."
 
 #: MixxxApp#93
 msgid "OpenGL Direct Rendering"
@@ -3659,29 +3668,29 @@ msgstr ""
 
 #: MixxxApp#97
 msgid "The preferences window is still open."
-msgstr ""
+msgstr "Окно настроек всё ещё открыто."
 
 #: MixxxApp#98
 msgid "Discard any changes and exit Mixxx?"
-msgstr ""
+msgstr "Отменить все изменения и выйти из Mixxx?"
 
 #: MixxxLibraryFeature#1
 msgid "Missing Tracks"
-msgstr ""
+msgstr "Отсутствующие дорожки"
 
 #: MixxxLibraryFeature#2
 msgid "Hidden Tracks"
-msgstr ""
+msgstr "Скрытые дорожки"
 
 #: MixxxLibraryFeature#3
 msgctxt "MixxxLibraryFeature#3"
 msgid "Library"
-msgstr ""
+msgstr "Медиатека"
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
 msgid "Location"
-msgstr ""
+msgstr "Расположение"
 
 #: ParserCsv#2
 msgctxt "ParserCsv#2"
@@ -3745,6 +3754,8 @@ msgstr ""
 msgid ""
 "Playlists are ordered lists of songs that allow you to plan your DJ sets."
 msgstr ""
+"Списки воспроизведения это упорядоченные списки композиций, которые вы "
+"планируете использовать в DJ-сетах."
 
 #: PlaylistFeature#5
 msgid ""
@@ -3766,7 +3777,7 @@ msgstr ""
 
 #: PlaylistFeature#8
 msgid "Create new playlist"
-msgstr ""
+msgstr "Создать новый список воспроизведения"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3876,6 +3887,8 @@ msgid ""
 "The history section automatically keeps a list of tracks you play in your DJ "
 "sets."
 msgstr ""
+"Раздел журнала событий, автоматически сохраняет список дорожек, которые вы "
+"воспроизводили в своих DJ-сетах."
 
 #: SetlogFeature#6
 msgid ""
@@ -3906,11 +3919,11 @@ msgstr ""
 
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
-msgstr ""
+msgstr "Перетаскивайте дорожки из медиатеки или обозревателя файлов сюда."
 
 #: Tooltips#2
 msgid "Reset to default value."
-msgstr ""
+msgstr "Восстановить значение по умолчанию."
 
 #: Tooltips#3
 msgid "Left-click"
@@ -3927,6 +3940,7 @@ msgstr ""
 #: Tooltips#6
 msgid "Shows information about the track currently loaded in this channel."
 msgstr ""
+"Показывает сведения о дорожке загруженной в настоящее время в этот канал."
 
 #: Tooltips#7
 msgid "Jump around in the track by clicking somewhere on the waveform."
@@ -3991,15 +4005,15 @@ msgstr ""
 
 #: Tooltips#22
 msgid "Shows the current channel volume."
-msgstr ""
+msgstr "Показывает громкость текущего канала."
 
 #: Tooltips#23
 msgid "Microphone Volume Meter"
-msgstr ""
+msgstr "Средство измерения громкости микрофона"
 
 #: Tooltips#24
 msgid "Shows the current microphone volume."
-msgstr ""
+msgstr "Показывает громкость текущего микрофона."
 
 #: Tooltips#25
 msgid "Master Channel Volume Meter"
@@ -4308,7 +4322,7 @@ msgstr ""
 
 #: Tooltips#99
 msgid "Plays or pauses the track."
-msgstr ""
+msgstr "Воспроизводит или приостанавливает дорожку."
 
 #: Tooltips#100
 msgid "(while playing)"
@@ -4332,7 +4346,7 @@ msgstr ""
 
 #: Tooltips#105
 msgid "Headphone"
-msgstr ""
+msgstr "Наушники"
 
 #: Tooltips#106
 msgid "Sends the selected channel's audio to the headphone output."
@@ -4384,11 +4398,11 @@ msgstr ""
 
 #: Tooltips#116
 msgid "Clock"
-msgstr ""
+msgstr "Часы"
 
 #: Tooltips#117
 msgid "Displays the current time."
-msgstr ""
+msgstr "Показывает текущее время."
 
 #: Tooltips#118
 msgid ""
@@ -4438,12 +4452,12 @@ msgstr ""
 
 #: Tooltips#129
 msgid "Jumps to the end of the track."
-msgstr ""
+msgstr "Переход в самый конец дорожки."
 
 #: Tooltips#130
 msgctxt "Tooltips#130"
 msgid "Synchronize"
-msgstr ""
+msgstr "Синхронизировать"
 
 #: Tooltips#131
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4494,7 +4508,7 @@ msgstr ""
 #: Tooltips#142
 msgctxt "Tooltips#142"
 msgid "Hotcue"
-msgstr ""
+msgstr "Быстрые метки"
 
 #: Tooltips#143
 msgid "If hotcue is set, jumps to the hotcue."
@@ -4652,7 +4666,7 @@ msgstr "Исполнитель"
 
 #: Tooltips#180
 msgid "Displays the artist of the loaded track."
-msgstr ""
+msgstr "Показывает исполнителя загруженной дорожки."
 
 #: Tooltips#181
 msgid "Track Title"
@@ -4660,7 +4674,7 @@ msgstr "Название"
 
 #: Tooltips#182
 msgid "Displays the title of the loaded track."
-msgstr ""
+msgstr "Показывает название загруженной дорожки."
 
 #: Tooltips#183
 msgid "Track Album"
@@ -4730,7 +4744,7 @@ msgstr ""
 
 #: TrackCollection#3
 msgid "Click OK to exit."
-msgstr ""
+msgstr "Щёлкните ОК, чтобы выйти."
 
 #: TrackCollection#4
 msgid "Cannot upgrade database schema"
@@ -4742,19 +4756,19 @@ msgstr ""
 
 #: TrackCollection#6
 msgid "Your %1 file may be outdated."
-msgstr ""
+msgstr "Файл %1 может быть не актуальным."
 
 #: TrackCollection#7
 msgid "Your mixxxdb.sqlite file may be corrupt."
-msgstr ""
+msgstr "Файл mixxxdb.sqlite может быть повреждён."
 
 #: TrackCollection#8
 msgid "Try renaming it and restarting Mixxx."
-msgstr ""
+msgstr "Попытайтесь переименовать его и перезапустить Mixxx."
 
 #: TrackCollection#9
 msgid "Your %1 file may be missing or invalid."
-msgstr ""
+msgstr "Файл %1 отсутствует или недопустим."
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -4807,11 +4821,11 @@ msgstr "Удалить"
 
 #: WTrackTableView#5
 msgid "Hide from Library"
-msgstr ""
+msgstr "Скрыть в медиатеке"
 
 #: WTrackTableView#6
 msgid "Unhide from Library"
-msgstr ""
+msgstr "Показать в медиатеке"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
@@ -4819,7 +4833,7 @@ msgstr ""
 
 #: WTrackTableView#8
 msgid "Properties"
-msgstr ""
+msgstr "Свойства"
 
 #: WTrackTableView#9
 msgid "Open in File Browser"
@@ -4838,29 +4852,33 @@ msgid "Reload Track Metadata"
 msgstr "Обновить метаданные"
 
 #: WTrackTableView#13
+msgid "Load to Preview Deck"
+msgstr ""
+
+#: WTrackTableView#14
 msgid "Reset Play Count"
 msgstr "Сбросить счётчик воспроизведения"
 
-#: WTrackTableView#14
+#: WTrackTableView#15
 msgid "Lock BPM"
 msgstr "Заблокировать BPM"
 
-#: WTrackTableView#15
+#: WTrackTableView#16
 msgid "Unlock BPM"
 msgstr "Разблокировать BPM"
 
-#: WTrackTableView#16
+#: WTrackTableView#17
 msgid "Clear BPM and Beatgrid"
 msgstr ""
 
-#: WTrackTableView#17
+#: WTrackTableView#18
 msgid "Load to Deck %1"
 msgstr "Загрузить в деку %1"
 
-#: WTrackTableView#18
-msgctxt "WTrackTableView#18"
+#: WTrackTableView#19
+msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
-msgstr "Сэмплер %1"
+msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
