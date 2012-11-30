@@ -17,11 +17,11 @@ CueControl::CueControl(const char * _group,
         EngineControl(_group, _config),
         m_bPreviewing(false),
         m_bPreviewingHotcue(false),
+        m_bHotcueCancel(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
         m_iCurrentlyPreviewingHotcues(0),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
-        m_bHotcueCancel(false),
         m_mutex(QMutex::Recursive) {
     createControls();
 
@@ -164,14 +164,13 @@ void CueControl::detachCue(int hotCue) {
     pControl->getEnabled()->set(0);
 }
 
-// WARNING: Always called from the EngineWorker thread pool
-double CueControl::loadTrack(TrackPointer pTrack) {
+void CueControl::trackLoaded(TrackPointer pTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack)
-        unloadTrack(m_pLoadedTrack);
+        trackUnloaded(m_pLoadedTrack);
 
     if (!pTrack) {
-        return 0;
+        return;
     }
 
     m_pLoadedTrack = pTrack;
@@ -208,10 +207,12 @@ double CueControl::loadTrack(TrackPointer pTrack) {
     if (loadCue && cueRecall == 0) {
         loadCuePoint = loadCue->getPosition();
     }
-    return loadCuePoint;
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+    emit(seekAbs(loadCuePoint));
 }
 
-void CueControl::unloadTrack(TrackPointer pTrack) {
+void CueControl::trackUnloaded(TrackPointer pTrack) {
     QMutexLocker lock(&m_mutex);
     disconnect(pTrack.data(), 0, this, 0);
     for (int i = 0; i < m_iNumHotCues; ++i) {
