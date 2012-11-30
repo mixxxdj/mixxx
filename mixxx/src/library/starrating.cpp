@@ -68,7 +68,10 @@ void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &pal
     painter->translate(rect.x(), rect.y() + yOffset);
     painter->scale(PaintingScaleFactor, PaintingScaleFactor);
 
-    for (int i = 0; i < m_myMaxStarCount; ++i) {
+    //determine number of stars that are possible to paint
+    int n = rect.width()/PaintingScaleFactor;
+
+    for (int i = 0; i < m_myMaxStarCount && i<n; ++i) {
         if (i < m_myStarCount) {
             painter->drawPolygon(m_starPolygon, Qt::WindingFill);
         } else {
