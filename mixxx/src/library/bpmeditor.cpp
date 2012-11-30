@@ -19,7 +19,7 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
         m_pBPMSpinBox = new QDoubleSpinBox(this);
         m_pBPMSpinBox->setMinimum(0);
         m_pBPMSpinBox->setMaximum(1000);
-        m_pBPMSpinBox->setSingleStep(0.1);
+        m_pBPMSpinBox->setSingleStep(1e-8);
         m_pBPMSpinBox->setDecimals(8);
         m_pLayout->addWidget(m_pBPMSpinBox);
         connect(m_pBPMSpinBox, SIGNAL(editingFinished()),
@@ -55,7 +55,9 @@ void BPMEditor::setData(const QModelIndex &index, int lockColumn){
     if (m_pBPMSpinBox) {
         m_pBPMSpinBox->setValue(index.data().toDouble());
     } else {
-        m_pBPMLabel->setText(index.data().toString());
+        // cut of BPM two digits after the dot
+        int bpm = index.data().toDouble()*1e2;
+        m_pBPMLabel->setText(QString::number(bpm*1e-2));
     }
     m_pLock->setChecked(index.sibling(index.row(),lockColumn).data().toBool());
 }

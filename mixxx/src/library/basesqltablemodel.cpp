@@ -9,7 +9,6 @@
 
 #include "library/stardelegate.h"
 #include "library/starrating.h"
-#include "library/stardelegate.h"
 #include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "mixxxutils.cpp"
