@@ -376,6 +376,7 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     QSplitter* pSplitter = new QSplitter(m_pParent);
+    pSplitter->setObjectName("Splitter");
     setupWidget(node, pSplitter);
 
     // Default orientation is horizontal.
@@ -440,6 +441,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     QWidget* pGroup = new QGroupBox(m_pParent);
+    pGroup->setObjectName("WidgetGroup");
     pGroup->setContentsMargins(0, 0, 0, 0);
     setupWidget(node, pGroup);
     setupConnections(node, pGroup);
@@ -511,6 +513,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     }
 
     WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
+    pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     setupWidget(node, pStack);
     setupConnections(node, pStack);
@@ -1169,6 +1172,7 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
         QSizePolicy sizePolicy;
+        bool shouldSetWidthFixed = false;
 
         if (xs.endsWith("me")) {
             //qDebug() << "horizontal minimum expanding";
@@ -1186,6 +1190,11 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             //qDebug() << "horizontal preferred";
             sizePolicy.setHorizontalPolicy(QSizePolicy::Preferred);
             xs = xs.left(xs.size()-1);
+        } else if (xs.endsWith("f")) {
+            //qDebug() << "horizontal fixed";
+            sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
+            xs = xs.left(xs.size()-1);
+            shouldSetWidthFixed = true;
         } else {
             sizePolicy.setHorizontalPolicy(QSizePolicy::Fixed);
         }
@@ -1193,10 +1202,16 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool widthOk = false;
         int x = xs.toInt(&widthOk);
         if (widthOk) {
-            //qDebug() << "setting width to" << x;
-            pWidget->setMinimumWidth(x);
+            if (shouldSetWidthFixed) {
+                //qDebug() << "setting width fixed to" << x;
+                pWidget->setFixedWidth(x);
+            } else {
+                //qDebug() << "setting width to" << x;
+                pWidget->setMinimumWidth(x);
+            }
         }
 
+        bool shouldSetHeightFixed = false;
         if (ys.endsWith("me")) {
             //qDebug() << "vertical minimum expanding";
             sizePolicy.setVerticalPolicy(QSizePolicy::MinimumExpanding);
@@ -1213,6 +1228,11 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             //qDebug() << "vertical preferred";
             sizePolicy.setVerticalPolicy(QSizePolicy::Preferred);
             ys = ys.left(ys.size()-1);
+        } else if (ys.endsWith("f")) {
+            //qDebug() << "vertical fixed";
+            sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
+            ys = ys.left(ys.size()-1);
+            shouldSetHeightFixed = true;
         } else {
             sizePolicy.setVerticalPolicy(QSizePolicy::Fixed);
         }
@@ -1220,8 +1240,13 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
         if (heightOk) {
-            //qDebug() << "setting height to" << y;
-            pWidget->setMinimumHeight(y);
+            if (shouldSetHeightFixed) {
+                //qDebug() << "setting height fixed to" << x;
+                pWidget->setFixedHeight(y);
+            } else {
+                //qDebug() << "setting height to" << y;
+                pWidget->setMinimumHeight(y);
+            }
         }
 
         pWidget->setSizePolicy(sizePolicy);

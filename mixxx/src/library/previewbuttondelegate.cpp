@@ -9,6 +9,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
         m_pButton = new QPushButton("", m_pTableView);
+        m_pButton->setObjectName("LibraryPreviewButton");
         m_pButton->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
         m_pButton->hide();
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
@@ -31,6 +32,7 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
                                              const QModelIndex &index) const {
     Q_UNUSED(option);
     QPushButton* btn = new QPushButton(parent);
+    btn->setObjectName("LibraryPreviewButton");
     btn->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
     //the handle will emit the signal to load the track
     PreviewDeckButtonHandler *phandle = new PreviewDeckButtonHandler(
