@@ -4,25 +4,15 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-11-30 12:58+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2012-12-01 11:49+0000\n"
+"Last-Translator: birgitta Selma <birgitta601@web.de>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-01 04:33+0000\n"
+"X-Launchpad-Export-Date: 2012-12-02 04:34+0000\n"
 "X-Generator: Launchpad (build 16319)\n"
 "Language: de\n"
-
-#: BaseExternalLibraryFeature#3
-msgctxt "BaseExternalLibraryFeature#3"
-msgid "Import Playlist"
-msgstr "Wiedergabeliste importieren"
-
-#: BaseExternalLibraryFeature#5
-msgctxt "BaseExternalLibraryFeature#5"
-msgid "An unknown error occurred while creating playlist: "
-msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -39,10 +29,20 @@ msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
 msgstr "Zur Auto-DJ Warteschlange hinzufügen (oben)"
 
+#: BaseExternalLibraryFeature#3
+msgctxt "BaseExternalLibraryFeature#3"
+msgid "Import Playlist"
+msgstr "Wiedergabeliste importieren"
+
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
 msgstr "Erstellung der Wiedergabeliste fehlgeschlagen"
+
+#: BaseExternalLibraryFeature#5
+msgctxt "BaseExternalLibraryFeature#5"
+msgid "An unknown error occurred while creating playlist: "
+msgstr "Beim Erstellen der Wiedergabeliste ist ein Fehler aufgetreten: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
@@ -66,12 +66,12 @@ msgstr "Entfernen"
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "Umbenennen"
+msgstr "Rinomina"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr "Sperren"
+msgstr "Verriegelung"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
@@ -80,7 +80,7 @@ msgstr "Wiedergabeliste importieren"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr "Wiedergabeliste exportieren"
+msgstr "Wiedergabelisten exportieren"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
