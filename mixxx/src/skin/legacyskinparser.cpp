@@ -1042,6 +1042,7 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
 
     // Style the library preview button with a default image.
     styleHack = (
+        "#LibraryPreviewButton { background: transparent; border: 0; }"
         "#LibraryPreviewButton:checked {"
         "  image: url(:/images/library/ic_library_preview_pause.png);"
         "}"
