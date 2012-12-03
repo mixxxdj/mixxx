@@ -73,12 +73,17 @@ void PreviewButtonDelegate::setModelData(QWidget *editor,
 void PreviewButtonDelegate::paint(QPainter *painter,
                                   const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
-    Q_UNUSED(index);
+    // Let the editor paint in this case
+    if (m_isOneCellInEditMode && index == m_currentEditedCellIndex) {
+        return;
+    }
+
     m_pButton->setGeometry(option.rect);
     bool playing = m_pPreviewDeckPlay->get() > 0.0;
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
     m_pButton->setChecked(index.data().toBool() && playing);
+
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(m_pButton);
