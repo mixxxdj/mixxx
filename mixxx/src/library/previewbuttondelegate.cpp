@@ -14,9 +14,13 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
           m_pTableView(NULL),
           m_pButton(NULL),
           m_isOneCellInEditMode(false),
-          m_column(-1) {
+          m_column(column) {
     m_pPreviewDeckPlay = new ControlObjectThreadMain(
         ControlObject::getControl(PlayerManager::groupForPreviewDeck(0), "play"));
+
+    // This assumes that the parent is wtracktableview
+    connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
@@ -27,13 +31,6 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
         m_pButton->hide();
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
                 this, SLOT(cellEntered(QModelIndex)));
-
-        // This assumes that the parent is wtracktableview
-        connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-                parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-
-        m_isOneCellInEditMode = false;
-        m_column = column;
     }
 }
 
@@ -79,6 +76,10 @@ void PreviewButtonDelegate::paint(QPainter *painter,
         return;
     }
 
+    if (!m_pButton) {
+        return;
+    }
+
     m_pButton->setGeometry(option.rect);
     bool playing = m_pPreviewDeckPlay->get() > 0.0;
     // Check-state is whether the track is loaded (index.data()) and whether
@@ -103,10 +104,16 @@ QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option,
                                       const QModelIndex &index) const {
     Q_UNUSED(option);
     Q_UNUSED(index);
+    if (!m_pButton) {
+        return QSize();
+    }
     return m_pButton->sizeHint();
 }
 
 void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
+    if (!m_pTableView) {
+        return;
+    }
     //this slot is called if the mouse pointer enters ANY cell on
     //the QTableView but the code should only be executed on a button
     if (index.column() == m_column) {
