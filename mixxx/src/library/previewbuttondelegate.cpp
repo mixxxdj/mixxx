@@ -22,7 +22,6 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
         m_pTableView = tableView;
         m_pButton = new QPushButton("", m_pTableView);
         m_pButton->setObjectName("LibraryPreviewButton");
-        m_pButton->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
         m_pButton->setCheckable(true);
         m_pButton->setChecked(false);
         m_pButton->hide();
@@ -48,7 +47,6 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     Q_UNUSED(option);
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
-    btn->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
     btn->setCheckable(true);
     bool playing = m_pPreviewDeckPlay->get() > 0.0;
     // Check-state is whether the track is loaded (index.data()) and whether
