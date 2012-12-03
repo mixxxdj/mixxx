@@ -323,7 +323,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-    //m_pPlayerManager->addPreviewDeck();
+    m_pPlayerManager->addPreviewDeck();
 
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
