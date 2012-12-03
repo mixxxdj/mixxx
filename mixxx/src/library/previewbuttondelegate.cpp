@@ -75,7 +75,7 @@ void PreviewButtonDelegate::paint(QPainter *painter,
                                   const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
     // Let the editor paint in this case
-    if (m_isOneCellInEditMode && index == m_currentEditedCellIndex) {
+    if (index == m_currentEditedCellIndex) {
         return;
     }
 
@@ -87,6 +87,7 @@ void PreviewButtonDelegate::paint(QPainter *painter,
 
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
+
     QPixmap map = QPixmap::grabWidget(m_pButton);
     painter->drawPixmap(option.rect.x(), option.rect.y(), map);
 }
@@ -115,11 +116,10 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
         m_pTableView->openPersistentEditor(index);
         m_isOneCellInEditMode = true;
         m_currentEditedCellIndex = index;
-    } else { // close editor if the mouse leaves the button
-        if (m_isOneCellInEditMode) {
-            m_isOneCellInEditMode = false;
-            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-        }
+    } else if (m_isOneCellInEditMode) { // close editor if the mouse leaves the button
+        m_isOneCellInEditMode = false;
+        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+        m_currentEditedCellIndex = QModelIndex();
     }
 }
 
