@@ -6,23 +6,10 @@
 #include <QRect>
 
 BPMButton::BPMButton(QWidget *parent) : QAbstractButton(parent),
-                                        m_Checked("res/images/library/checked.png"){
+                                        m_Checked("res/images/library/checked.png"),
+                                        m_Unchecked("res/images/library/unchecked.png"){
     setCheckable(true);
     setChecked(false);
-    //convert image to greyscale
-    QImage image("res/images/library/checked.png");
-    QRgb col;
-    int gray;
-    int width = m_Checked.width();
-    int height = m_Checked.height();
-    for (int i = 0; i < width; ++i) {
-        for (int j = 0; j < height; ++j) {
-            col = image.pixel(i, j);
-            gray = qGray(col);
-            image.setPixel(i, j, qRgb(gray, gray, gray));
-        }
-    }
-    m_Unchecked = m_Unchecked.fromImage(image);
 }
 
 BPMButton::~BPMButton(){
