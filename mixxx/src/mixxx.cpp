@@ -316,7 +316,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
-                                         m_pLibrary, m_pVCManager);
+                                         m_pVCManager);
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
@@ -1161,6 +1162,7 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
 }
 
 void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
+    Q_UNUSED(toggle);
     rebootMixxxView();
 }
 
