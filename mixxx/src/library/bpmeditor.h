@@ -10,7 +10,7 @@
 
 #include "bpmbutton.h"
 
-class BPMEditor : public QWidget{
+class BPMEditor : public QWidget {
     Q_OBJECT
   public:
     enum EditMode {Editable, ReadOnly};

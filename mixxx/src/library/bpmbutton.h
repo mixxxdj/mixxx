@@ -5,8 +5,7 @@
 #include <QPixmap>
 #include <QPaintEvent>
 
-class BPMButton : public QAbstractButton
-{
+class BPMButton : public QAbstractButton {
     Q_OBJECT
     
   public:
