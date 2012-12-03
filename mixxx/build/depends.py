@@ -601,7 +601,6 @@ class MixxxCore(Feature):
                    "library/stareditor.cpp",
                    "library/bpmdelegate.cpp",
                    "library/bpmeditor.cpp",
-                   "library/bpmbutton.cpp",
                    "library/previewbuttondelegate.cpp",
                    "audiotagger.cpp",
 
