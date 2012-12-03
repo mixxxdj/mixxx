@@ -303,9 +303,9 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     if (!QDir(args.getSettingsPath()).exists()) {
         QDir().mkpath(args.getSettingsPath());
     }
-    m_pLibrary = new Library(this, m_pConfig,
-                             bFirstRun || bUpgraded,
-                             m_pRecordingManager);
+
+    // Register TrackPointer as a metatype since we use it in signals/slots
+    // regularly.
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
 #ifdef __VINYLCONTROL__
@@ -316,14 +316,19 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
-                                         m_pLibrary, m_pVCManager);
+                                         m_pVCManager);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-    //m_pPlayerManager->addPreviewDeck();
+    m_pPlayerManager->addPreviewDeck();
+
+    m_pLibrary = new Library(this, m_pConfig,
+                             bFirstRun || bUpgraded,
+                             m_pRecordingManager);
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     // Call inits to invoke all other construction parts
 
@@ -536,7 +541,7 @@ MixxxApp::~MixxxApp()
     m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
-    // PlayerManager depends on Engine, Library, SoundManager, VinylControlManager, and Config
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
 
@@ -1161,6 +1166,7 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
 }
 
 void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
+    Q_UNUSED(toggle);
     rebootMixxxView();
 }
 

@@ -603,7 +603,6 @@ class MixxxCore(Feature):
                    "library/bpmeditor.cpp",
                    "library/bpmbutton.cpp",
                    "library/previewbuttondelegate.cpp",
-                   "library/previewdeckbuttonhandler.cpp",
                    "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",

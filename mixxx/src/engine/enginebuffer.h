@@ -20,6 +20,8 @@
 
 #include <qapplication.h>
 #include <QMutex>
+#include <QAtomicInt>
+
 #include "defs.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
@@ -48,7 +50,6 @@ class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
 class EngineMaster;
-class CueControl;
 
 struct Hint;
 
@@ -98,7 +99,6 @@ public:
 
     // Add an engine control to the EngineBuffer
     void addControl(EngineControl* pControl);
-    void addCueControl(CueControl* pControl);
 
     // Return the current rate (not thread-safe)
     double getRate();
@@ -146,6 +146,7 @@ public:
     void trackUnloaded(TrackPointer pTrack);
 
   private slots:
+    void slotTrackLoading();
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
@@ -156,8 +157,7 @@ private:
 
     void updateIndicators(double rate, int iBufferSize);
 
-    void hintReader(const double rate,
-                    const int iSourceSamples);
+    void hintReader(const double rate);
 
     void ejectTrack();
 
@@ -168,7 +168,7 @@ private:
     QMutex m_engineLock;
 
     /** Holds the name of the control group */
-    const char* group;
+    const char* m_group;
     ConfigObject<ConfigValue>* m_pConfig;
 
     /** Pointer to the loop control object */
@@ -193,13 +193,13 @@ private:
     QList<Hint> m_hintList;
 
     /** The current sample to play in the file. */
-    double filepos_play;
+    double m_filepos_play;
     /** Copy of rate_exchange, used to check if rate needs to be updated */
-    double rate_old;
+    double m_rate_old;
     /** Copy of length of file */
-    long int file_length_old;
+    long int m_file_length_old;
     /** Copy of file sample rate*/
-    int file_srate_old;
+    int m_file_srate_old;
     /** Mutex controlling weather the process function is in pause mode. This happens
       * during seek and loading of a new track */
     QMutex m_pause;
@@ -217,37 +217,42 @@ private:
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
-    ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
-    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopButtonCOT;
-    ControlObject *fwdButton, *backButton;
+    ControlPushButton* m_playButton;
+    ControlPushButton* m_playStartButton;
+    ControlPushButton* m_stopStartButton;
+    ControlPushButton* m_stopButton;
+
+    ControlObject* m_fwdButton;
+    ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
     ControlObject* m_pSlipPosition;
 
-    ControlObject *rateEngine;
-    ControlObject *visualBpm;
-    ControlObject *m_pMasterRate;
-    ControlPotmeter *playposSlider;
-    ControlPotmeter *visualPlaypos;
-    ControlObject *m_pSampleRate;
-    ControlPushButton *m_pKeylock;
+    ControlObject* m_rateEngine;
+    ControlObject* m_visualBpm;
+    ControlObject* m_pMasterRate;
+    ControlPotmeter* m_playposSlider;
+    ControlPotmeter* m_visualPlaypos;
+    ControlObject* m_pSampleRate;
+    ControlPushButton* m_pKeylock;
 
-    ControlPushButton *m_pEject;
+    ControlPushButton* m_pEject;
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
 
-    ControlObject *m_pVinylStatus;  //Status of vinyl control
-    ControlObject *m_pVinylSeek;
+    ControlObject* m_pVinylStatus;  //Status of vinyl control
+    ControlObject* m_pVinylSeek;
 
     /** Fwd and back controls, start and end of track control */
-    ControlPushButton *startButton, *endButton;
+    ControlPushButton* m_startButton;
+    ControlPushButton* m_endButton;
 
     /** Object used to perform waveform scaling (sample rate conversion) */
-    EngineBufferScale *m_pScale;
+    EngineBufferScale* m_pScale;
     /** Object used for linear interpolation scaling of the audio */
-    EngineBufferScaleLinear *m_pScaleLinear;
+    EngineBufferScaleLinear* m_pScaleLinear;
     /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
-    EngineBufferScaleST *m_pScaleST;
+    EngineBufferScaleST* m_pScaleST;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
 
@@ -256,7 +261,7 @@ private:
     float m_fLastSampleValue[2];
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
-    bool m_bBufferPause;
+    QAtomicInt m_iTrackLoading;
     float m_fRampValue;
     int m_iRampState;
     //int m_iRampIter;
@@ -271,8 +276,6 @@ private:
     CSAMPLE* m_pCrossFadeBuffer;
     int m_iCrossFadeSamples;
     int m_iLastBufferSize;
-
-    CueControl* m_cueControl;
 };
 
 #endif

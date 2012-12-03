@@ -20,12 +20,10 @@
 PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
                              SoundManager* pSoundManager,
                              EngineMaster* pEngine,
-                             Library* pLibrary,
                              VinylControlManager* pVCManager)
         : m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
           m_pEngine(pEngine),
-          m_pLibrary(pLibrary),
           m_pVCManager(pVCManager),
           // NOTE(XXX) LegacySkinParser relies on these controls being COs and
           // not COTMs listening to a CO.
@@ -46,11 +44,6 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
     // This is parented to the PlayerManager so does not need to be deleted
     SamplerBank* pSamplerBank = new SamplerBank(this);
     Q_UNUSED(pSamplerBank);
-
-    connect(m_pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
-    connect(m_pLibrary, SIGNAL(loadTrack(TrackPointer)),
-             this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
 
     // Redundant
     m_pCONumDecks->set(0);
@@ -75,6 +68,15 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumDecks;
     delete m_pCONumPreviewDecks;
     delete m_pAnalyserQueue;
+}
+
+void PlayerManager::bindToLibrary(Library* pLibrary) {
+    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
+    connect(pLibrary, SIGNAL(loadTrack(TrackPointer)),
+            this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
+    connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
+            pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 }
 
 // static
@@ -279,17 +281,21 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
 }
 
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
-    BaseTrackPlayer* pPlayer = getPlayer(group);
+    // The library will get the track and then signal back to us to load the
+    // track via slotLoadTrackToPlayer.
+    emit(loadLocationToPlayer(location, group));
+}
 
-    if (pPlayer == NULL) {
-        qWarning() << "Invalid group argument " << group << " to slotLoadToPlayer.";
-        return;
-    }
+void PlayerManager::slotLoadToDeck(QString location, int deck) {
+    slotLoadToPlayer(location, groupForDeck(deck));
+}
 
-    TrackPointer pTrack = lookupTrack(location);
+void PlayerManager::slotLoadToPreviewDeck(QString location, int previewDeck) {
+    slotLoadToPlayer(location, groupForPreviewDeck(previewDeck));
+}
 
-    //Load the track into the Player.
-    pPlayer->slotLoadTrack(pTrack);
+void PlayerManager::slotLoadToSampler(QString location, int sampler) {
+    slotLoadToPlayer(location, groupForSampler(sampler));
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
@@ -322,56 +328,4 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack)
     }
 }
 
-TrackPointer PlayerManager::lookupTrack(QString location) {
-    // Try to get TrackPointer from library, identified by location.
-    TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-    // If not, create a new TrackPointer
-    if (pTrack == NULL)
-    {
-        pTrack = TrackPointer(new TrackInfoObject(location));
-    }
-    return pTrack;
-}
-
-void PlayerManager::slotLoadToDeck(QString location, int deck) {
-    Deck* pDeck = getDeck(deck);
-
-    if (pDeck == NULL) {
-        qWarning() << "Invalid deck argument " << deck << " to slotLoadToDeck.";
-        return;
-    }
-
-    TrackPointer pTrack = lookupTrack(location);
-
-    //Load the track into the Deck.
-    pDeck->slotLoadTrack(pTrack);
-}
-
-void PlayerManager::slotLoadToPreviewDeck(QString location, int libPreviewPlayer) {
-    PreviewDeck* pPreviewDeck = getPreviewDeck(libPreviewPlayer);
-    if (pPreviewDeck == NULL) {
-        qWarning() << "Invalid PreviewDeck argument " << libPreviewPlayer << " to slotLoadToPreviewDeck.";
-        return;
-    }
-
-    TrackPointer pTrack = lookupTrack(location);
-
-    //Load the track into the Deck.
-    pPreviewDeck->slotLoadTrack(pTrack);
-}
-
-void PlayerManager::slotLoadToSampler(QString location, int sampler) {
-    Sampler* pSampler = getSampler(sampler);
-
-    if (pSampler == NULL) {
-        qWarning() << "Invalid sampler argument " << sampler << " to slotLoadToSampler.";
-        return;
-    }
-
-    TrackPointer pTrack = lookupTrack(location);
-
-    //Load the track into the Sampler.
-    pSampler->slotLoadTrack(pTrack);
-}
 
