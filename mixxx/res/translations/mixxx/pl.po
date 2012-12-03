@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-11-30 17:54+0000\n"
+"PO-Revision-Date: 2012-12-02 21:28+0000\n"
 "Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-01 04:34+0000\n"
+"X-Launchpad-Export-Date: 2012-12-03 04:33+0000\n"
 "X-Generator: Launchpad (build 16319)\n"
 
 #: AutoDJFeature#1
@@ -1385,11 +1385,11 @@ msgstr "Prosty"
 
 #: DlgPrefControls#6
 msgid "On"
-msgstr ""
+msgstr "Włączony"
 
 #: DlgPrefControls#7
 msgid "Off"
-msgstr ""
+msgstr "Wyłączony"
 
 #: DlgPrefControls#8
 msgid "This skin does not support schemes"
@@ -2608,7 +2608,7 @@ msgstr "Normalizacja"
 #: DlgPreferences#12
 msgctxt "DlgPreferences#12"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Kontrola vinylem"
 
 #: DlgPreferences#13
 msgid "Live Broadcasting"
@@ -2787,7 +2787,7 @@ msgstr ""
 
 #: DlgTrackInfo#20
 msgid "&Previous"
-msgstr ""
+msgstr "&Poprzedni"
 
 #: DlgTrackInfo#21
 msgid "&Next"
@@ -2855,7 +2855,7 @@ msgstr "&Anuluj"
 #: DlgTrackInfo#36
 msgctxt "DlgTrackInfo#36"
 msgid "kbps"
-msgstr ""
+msgstr "kbit/s"
 
 #: EmptyWaveformWidget#1
 msgid "Empty"
@@ -2955,7 +2955,7 @@ msgstr "Błąd podczas ustawiania trybu non-blocking:"
 
 #: EngineShoutcast#5
 msgid "Error setting hostname!"
-msgstr ""
+msgstr "Błąd ustawienia nazwy serwera!"
 
 #: EngineShoutcast#6
 msgid "Error setting protocol!"
@@ -2963,7 +2963,7 @@ msgstr "błąd ustawienia protokołu!"
 
 #: EngineShoutcast#7
 msgid "Error setting port!"
-msgstr ""
+msgstr "Błąd ustawienia portu!"
 
 #: EngineShoutcast#8
 msgid "Error setting password!"
@@ -2971,7 +2971,7 @@ msgstr "Błąd ustawienia hasła!"
 
 #: EngineShoutcast#9
 msgid "Error setting mount!"
-msgstr ""
+msgstr "Błąd ustawienia podłączenia!"
 
 #: EngineShoutcast#10
 msgid "Error setting username!"
@@ -3010,7 +3010,7 @@ msgstr ""
 
 #: EngineShoutcast#17
 msgid "Error setting bitrate"
-msgstr ""
+msgstr "Błąd ustawienia przepustowości!"
 
 #: EngineShoutcast#18
 msgid "Error: unknown server protocol!"
@@ -3018,7 +3018,7 @@ msgstr "Błąd: nieznany protokół serwera!"
 
 #: EngineShoutcast#19
 msgid "Error: libshout only supports Shoutcast with MP3 format!"
-msgstr ""
+msgstr "Błąd: libshout wspiera wyłącznie nadawanie Shoutcast w formacie MP3!"
 
 #: EngineShoutcast#20
 msgid "Lost connection to streaming server"
@@ -3071,7 +3071,7 @@ msgstr "Pytanie"
 #: GLSLWaveformWidget#1
 msgctxt "GLSLWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Przefiltrowane"
 
 #: GLSLWaveformWidget#2
 msgid "experimental"
@@ -3169,43 +3169,43 @@ msgstr "aktywny"
 
 #: LegacySkinParser#2
 msgid "toggle"
-msgstr ""
+msgstr "przełącz"
 
 #: LegacySkinParser#3
 msgid "right"
-msgstr ""
+msgstr "w prawo"
 
 #: LegacySkinParser#4
 msgid "left"
-msgstr ""
+msgstr "w lewo"
 
 #: LegacySkinParser#5
 msgid "right small"
-msgstr ""
+msgstr "odrobinę w prawo"
 
 #: LegacySkinParser#6
 msgid "left small"
-msgstr ""
+msgstr "odrobinę w lewo"
 
 #: LegacySkinParser#7
 msgid "up"
-msgstr ""
+msgstr "w górę"
 
 #: LegacySkinParser#8
 msgid "down"
-msgstr ""
+msgstr "w dół"
 
 #: LegacySkinParser#9
 msgid "up small"
-msgstr ""
+msgstr "odrobinę w górę"
 
 #: LegacySkinParser#10
 msgid "down small"
-msgstr ""
+msgstr "odrobinę w dół"
 
 #: LegacySkinParser#11
 msgid "Shortcut"
-msgstr ""
+msgstr "Skrót"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
@@ -3223,15 +3223,16 @@ msgstr "Anuluj"
 
 #: LibraryScannerDlg#4
 msgid "Scanning: "
-msgstr ""
+msgstr "Skanowanie: "
 
 #: MidiController#1
 msgid "MixxxControl not found"
-msgstr ""
+msgstr "Kontroler Mixxx nie znaleziony"
 
 #: MidiController#2
 msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
 msgstr ""
+"Kontroler Mixxx '%1 %2' określony w pliku mapowania jest nieprawidłowy."
 
 #: MidiController#3
 msgid ""
@@ -3702,7 +3703,7 @@ msgstr "Biblioteka"
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
 msgid "Location"
-msgstr ""
+msgstr "Lokalizacja"
 
 #: ParserCsv#2
 msgctxt "ParserCsv#2"
@@ -3725,11 +3726,11 @@ msgstr "Eksport listy odtwarzania nie powiódł się"
 
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
-msgstr ""
+msgstr "ścieżka pliku zawiera znaki niedozwolone w liście typu m3u.\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "Eksport zamiennie do listy odtwarzania w formacie m3u8!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
@@ -3749,7 +3750,7 @@ msgstr "Nie mogę utworzyć pliku"
 #: PlaylistFeature#1
 msgctxt "PlaylistFeature#1"
 msgid "Lock"
-msgstr ""
+msgstr "Zablokuj"
 
 #: PlaylistFeature#2
 msgid "Playlists"
@@ -3758,12 +3759,14 @@ msgstr "Listy odtwarzania"
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Unlock"
-msgstr ""
+msgstr "Odblokuj"
 
 #: PlaylistFeature#4
 msgid ""
 "Playlists are ordered lists of songs that allow you to plan your DJ sets."
 msgstr ""
+"Listy odtwarzania to uporządkowane listy utworów, które pozwalają zaplanować "
+"twoje zestawy DJ-skie."
 
 #: PlaylistFeature#5
 msgid ""
@@ -3792,7 +3795,7 @@ msgstr ""
 
 #: PlaylistFeature#8
 msgid "Create new playlist"
-msgstr ""
+msgstr "Utwórz nową listę odtwarzania"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -3841,7 +3844,7 @@ msgstr "Prosty"
 #: QtWaveformWidget#1
 msgctxt "QtWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Przefiltrowane"
 
 #: RecordingFeature#1
 msgid "Recordings"
@@ -3902,49 +3905,59 @@ msgid ""
 "The history section automatically keeps a list of tracks you play in your DJ "
 "sets."
 msgstr ""
+"Sekcja Historii automatycznie zachowuje listę odtworzonych przez Ciebie "
+"utworów w Twoim zestawie DJ-skim."
 
 #: SetlogFeature#6
 msgid ""
 "This is handy for remembering what worked in your DJ sets, posting set-"
 "lists, or reporting your plays to licensing organizations."
 msgstr ""
+"Jest to przydatne dla zapamiętywania zestawów DJ-skich na których "
+"pracowałeś, publikowania list odtwarzania oraz zgłaszania Twojego "
+"odtwarzania do organizacji koncesjonujących."
 
 #: SetlogFeature#7
 msgid ""
 "Every time you start Mixxx, a new history section is created. You can export "
 "it as a playlist in various formats or play it again with Auto DJ."
 msgstr ""
+"Przy każdym uruchomieniu Mixxx jest tworzona nowa sekcja Historii. Możesz ją "
+"wyeksportować jako listę odtwarzania w różnych formatach lub odtworzyć "
+"ponownie za pomocą AutoDJ."
 
 #: SetlogFeature#8
 msgid ""
 "You can join the current history session with a previous one by right-"
 "clicking and selecting \"Join with previous\"."
 msgstr ""
+"Możesz połączyć bieżącą sesję Historii z poprzednią klikając prawy przycisk "
+"myszki i wybierając \"Połącz z poprzdenią\""
 
 #: SoftwareWaveformWidget#1
 msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
-msgstr ""
+msgstr "Przefiltrowane"
 
 #: SoftwareWaveformWidget#2
 msgid "Software"
-msgstr ""
+msgstr "Oprogramowanie"
 
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
-msgstr ""
+msgstr "Upuść tutaj utwory z biblioteki lub zewnętrznego menedżera plików."
 
 #: Tooltips#2
 msgid "Reset to default value."
-msgstr ""
+msgstr "Zresetuj do wartości domyślnej."
 
 #: Tooltips#3
 msgid "Left-click"
-msgstr ""
+msgstr "Lewy-klik"
 
 #: Tooltips#4
 msgid "Right-click"
-msgstr ""
+msgstr "Prawy-klik"
 
 #: Tooltips#5
 msgid "Waveform Overview"
@@ -3952,40 +3965,44 @@ msgstr ""
 
 #: Tooltips#6
 msgid "Shows information about the track currently loaded in this channel."
-msgstr ""
+msgstr "Pokazuje informację o aktualnie załadowanym utworze w tym kanale."
 
 #: Tooltips#7
 msgid "Jump around in the track by clicking somewhere on the waveform."
 msgstr ""
+"Skocz do dowolnego miejsca w utworze klikając gdziekolwiek na wykresie."
 
 #: Tooltips#8
 msgid "Use the mouse to scratch, spin-back or throw tracks."
 msgstr ""
+"Użyj lewego przycisku myszy aby skreczować, cofać lub wrzucać utwory."
 
 #: Tooltips#9
 msgctxt "Tooltips#9"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Wyświetlenie wykresu"
 
 #: Tooltips#10
 msgid "Shows the loaded track's waveform near the playback position."
 msgstr ""
+"Pokazuje wykres załadowanego utworu obok aktualnej pozycji odtwarzania."
 
 #: Tooltips#11
 msgid "Drag with mouse to make temporary pitch adjustments."
 msgstr ""
+"Przeciągnij myszką, aby utworzyć tymczasowe ustawienia wysokości dźwięku."
 
 #: Tooltips#12
 msgid "Spinning Vinyl"
-msgstr ""
+msgstr "Obracajacy się vinyl"
 
 #: Tooltips#13
 msgid "Rotates during playback and shows the position of a track."
-msgstr ""
+msgstr "Obraca się w trakcie odtwarzania i pokazuje pozycję utworu."
 
 #: Tooltips#14
 msgid "Gain"
-msgstr ""
+msgstr "Wzmocnienie"
 
 #: Tooltips#15
 msgid "Adjusts the pre-fader gain of the track (to avoid clipping)."
@@ -3993,7 +4010,7 @@ msgstr ""
 
 #: Tooltips#16
 msgid "(too loud for the hardware and is being distorted)."
-msgstr ""
+msgstr "(za głośne dla sprzętu i jest zniekształcane)"
 
 #: Tooltips#17
 msgid "Peak Indicator"
@@ -4001,7 +4018,7 @@ msgstr ""
 
 #: Tooltips#18
 msgid "Indicates when the signal on the channel is clipping,"
-msgstr ""
+msgstr "Wskazuje kiedy sygnał w kanale jest obcinany."
 
 #: Tooltips#19
 msgid "Master Peak Indicator"
@@ -4009,19 +4026,19 @@ msgstr ""
 
 #: Tooltips#20
 msgid "Indicates when the signal on the master output is clipping,"
-msgstr ""
+msgstr "Wskazuje kiedy sygnał na wyjściu głównym jest obcinany."
 
 #: Tooltips#21
 msgid "Channel Volume Meter"
-msgstr ""
+msgstr "Wskaźnik głośności kanału"
 
 #: Tooltips#22
 msgid "Shows the current channel volume."
-msgstr ""
+msgstr "Pokazuje bieżący poziom głośności kanału."
 
 #: Tooltips#23
 msgid "Microphone Volume Meter"
-msgstr ""
+msgstr "Wskaźnik głosności mikrofonu."
 
 #: Tooltips#24
 msgid "Shows the current microphone volume."
@@ -4033,15 +4050,15 @@ msgstr "Główny wskaźnik głośności kanału."
 
 #: Tooltips#26
 msgid "Shows the current master volume for the left channel."
-msgstr ""
+msgstr "Pokazuje bieżący poziom głównej głośności kanału."
 
 #: Tooltips#27
 msgid "Volume Control"
-msgstr ""
+msgstr "Regulacja głośności"
 
 #: Tooltips#28
 msgid "Adjusts the volume of the selected channel."
-msgstr ""
+msgstr "Reguluje głosność wybranego kanału."
 
 #: Tooltips#29
 msgid "Master Volume"
@@ -4049,7 +4066,7 @@ msgstr ""
 
 #: Tooltips#30
 msgid "Adjusts the master output volume."
-msgstr ""
+msgstr "Reguluje głośność na wyjściu głównym."
 
 #: Tooltips#31
 msgctxt "Tooltips#31"
@@ -4060,6 +4077,8 @@ msgstr ""
 msgid ""
 "Determines the master output by fading between the left and right channels."
 msgstr ""
+"Określa sygnał na wyjściu głównym przez wyciszenie między lewym i prawym "
+"kanałem."
 
 #: Tooltips#33
 msgid "Balance"
@@ -4067,15 +4086,15 @@ msgstr "Balans"
 
 #: Tooltips#34
 msgid "Adjusts the left/right channel balance on the master output."
-msgstr ""
+msgstr "Reguluje balans między lewym i prawym kanałem na wyjściu głównym."
 
 #: Tooltips#35
 msgid "Headphone Volume"
-msgstr ""
+msgstr "Głośność słuchawek"
 
 #: Tooltips#36
 msgid "Adjusts the headphone output volume."
-msgstr ""
+msgstr "Reguluje poziom głośnosci na wyjściu słuchawkowym."
 
 #: Tooltips#37
 msgid "Headphone Mix"
@@ -4083,7 +4102,7 @@ msgstr "Mikser słuchawek"
 
 #: Tooltips#38
 msgid "Controls what you hear on the headphone output."
-msgstr ""
+msgstr "Steruje tym co słyszysz na wyjściu słuchawkowym."
 
 #: Tooltips#39
 msgid "Mix Orientation"
@@ -4106,20 +4125,20 @@ msgstr "Mikrofon"
 
 #: Tooltips#43
 msgid "Show/hide the Microphone section."
-msgstr ""
+msgstr "Pokaż/ukryj sekcję mikrofonu."
 
 #: Tooltips#44
 msgid "Sampler"
-msgstr ""
+msgstr "Sampler"
 
 #: Tooltips#45
 msgid "Show/hide the Sampler section."
-msgstr ""
+msgstr "Pokaż/ukryj sekcję samplera."
 
 #: Tooltips#46
 msgctxt "Tooltips#46"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Kontrola vinylem"
 
 #: Tooltips#47
 msgid "Show/hide the Vinyl Control section."
@@ -4131,7 +4150,7 @@ msgstr "Głośność mikrofonu"
 
 #: Tooltips#49
 msgid "Adjusts the microphone volume."
-msgstr ""
+msgstr "Reguluje poziom głośności mikrofonu."
 
 #: Tooltips#50
 msgid "Microphone Talk-Over"
@@ -4143,55 +4162,57 @@ msgstr ""
 
 #: Tooltips#52
 msgid "mix microphone input into the master output."
-msgstr ""
+msgstr "łączy wejście mikrofonu z wyjściem głównym."
 
 #: Tooltips#53
 msgid "Raise Pitch"
-msgstr ""
+msgstr "Podnieś wysokosc."
 
 #: Tooltips#54
 msgid "Sets the pitch higher."
-msgstr ""
+msgstr "Podnosi poziom wysokości tonu."
 
 #: Tooltips#55
 msgid "Sets the pitch higher in small steps."
-msgstr ""
+msgstr "Podnosi poziom wysokości tonu małymi krokami."
 
 #: Tooltips#56
 msgid "Lower Pitch"
-msgstr ""
+msgstr "Opuść wysokosc."
 
 #: Tooltips#57
 msgid "Sets the pitch lower."
-msgstr ""
+msgstr "Obniża poziom wysokości tonu."
 
 #: Tooltips#58
 msgid "Sets the pitch lower in small steps."
-msgstr ""
+msgstr "Obniża poziom wysokości tonu małymi krokami."
 
 #: Tooltips#59
 msgid "Raise Pitch Temporary (Nudge)"
-msgstr ""
+msgstr "Podnosi wysokość tonu tymczasowo"
 
 #: Tooltips#60
 msgid "Holds the pitch higher while active."
-msgstr ""
+msgstr "Przytrzymuje wysokość tonu na wyższym poziomie kiedy aktywne."
 
 #: Tooltips#61
 msgid "Holds the pitch higher (small amount) while active."
 msgstr ""
+"Przytrzymuje wysokość tonu na wyższym poziomie (odrobinę) kiedy aktywne."
 
 #: Tooltips#62
 msgid "Lower Pitch Temporary (Nudge)"
-msgstr ""
+msgstr "Obniza wysokosc tonu tymczasowo."
 
 #: Tooltips#63
 msgid "Holds the pitch lower while active."
-msgstr ""
+msgstr "Przytrzymuje wysokość tonu na niższym poziomie kiedy aktywne."
 
 #: Tooltips#64
 msgid "Holds the pitch lower (small amount) while active."
 msgstr ""
+"Przytrzymuje wysokość tonu na niższym poziomie (odrobinę) kiedy aktywne."
 
 #: Tooltips#65
 msgid "Low EQ"
@@ -4199,7 +4220,7 @@ msgstr ""
 
 #: Tooltips#66
 msgid "Adjusts the gain of the low EQ filter."
-msgstr ""
+msgstr "Reguluje wzmocnienie niskich częstotliwości."
 
 #: Tooltips#67
 msgid "Mid EQ"
@@ -4207,15 +4228,15 @@ msgstr "Średnie"
 
 #: Tooltips#68
 msgid "Adjusts the gain of the mid EQ filter."
-msgstr ""
+msgstr "Reguluje wzmocnienie tonów średnich."
 
 #: Tooltips#69
 msgid "High EQ"
-msgstr ""
+msgstr "Wysokie"
 
 #: Tooltips#70
 msgid "Adjusts the gain of the high EQ filter."
-msgstr ""
+msgstr "Reguluje wzmocnienie tonów wysokich."
 
 #: Tooltips#71
 msgid "Hold-to-kill or short click for latching."
@@ -4227,31 +4248,32 @@ msgstr "Obcięcie wysokich"
 
 #: Tooltips#73
 msgid "Holds the gain of the high EQ to zero while active."
-msgstr ""
+msgstr "Utrzymuje wzmocnienie tonów wysokich na pozimie 0 kiedy jestaktywne."
 
 #: Tooltips#74
 msgid "Mid EQ Kill"
-msgstr ""
+msgstr "Obcięcie średnich"
 
 #: Tooltips#75
 msgid "Holds the gain of the mid EQ to zero while active."
-msgstr ""
+msgstr "Utrzymuje wzmocnienie tonów średnich na pozimie 0 kiedy jestaktywne."
 
 #: Tooltips#76
 msgid "Low EQ Kill"
-msgstr ""
+msgstr "Obcięcie basów"
 
 #: Tooltips#77
 msgid "Holds the gain of the low EQ to zero while active."
-msgstr ""
+msgstr "Utrzymuje wzmocnienie tonów niskich na pozimie 0 kiedy jestaktywne."
 
 #: Tooltips#78
 msgid "Displays the tempo of the loaded track in BPM (beats per minute)."
 msgstr ""
+"Wyświetla prędkość załadowanego utworu w uderzeniach na minutę (BPM)."
 
 #: Tooltips#79
 msgid "Tempo"
-msgstr ""
+msgstr "Prędkosc"
 
 #: Tooltips#80
 msgid "BPM Tap"
@@ -4260,6 +4282,8 @@ msgstr ""
 #: Tooltips#81
 msgid "When tapped repeatedly, adjusts the BPM to match the tapped BPM."
 msgstr ""
+"Uderzane cyklicznie reguluje tempo utworu (BPM) aby pasowało do wybitego "
+"rytmu."
 
 #: Tooltips#82
 msgid "Tempo and BPM Tap"
@@ -4267,17 +4291,19 @@ msgstr ""
 
 #: Tooltips#83
 msgid "Show/hide the spinning vinyl section."
-msgstr ""
+msgstr "Pokaż/ukryj sekcję obracającego się vinyla"
 
 #: Tooltips#84
 msgid "Adjust Beatgrid"
-msgstr ""
+msgstr "Reguluje siatkę uderzeń"
 
 #: Tooltips#85
 msgid ""
 "Adjust beatgrid so the closest beat is aligned with the current play "
 "position."
 msgstr ""
+"Ustawia siatkę uderzeń tak aby najbliższa linia siatki została wyrównana do "
+"aktualnej pozycji odtwarzania."
 
 #: Tooltips#86
 msgid "Key-Lock"
@@ -4295,14 +4321,15 @@ msgstr ""
 #: Tooltips#89
 msgid "If quantize is enabled, snaps to the nearest beat."
 msgstr ""
+"Jeśli kwantyzacja jest włączona, przeskakuje do najbliższego uderzenia."
 
 #: Tooltips#90
 msgid "Quantize"
-msgstr ""
+msgstr "Kwantyzuje"
 
 #: Tooltips#91
 msgid "Toggles quantization."
-msgstr ""
+msgstr "Przełącza kwantyzację."
 
 #: Tooltips#92
 msgid "Loops and cues snap to the nearest beat when quantization is enabled."
@@ -4310,39 +4337,39 @@ msgstr ""
 
 #: Tooltips#93
 msgid "Reverse"
-msgstr ""
+msgstr "Wstecz"
 
 #: Tooltips#94
 msgid "Reverses track playback during regular playback."
-msgstr ""
+msgstr "Odwraca kierunek odtwarzania podczas odtwarzania utworu."
 
 #: Tooltips#95
 msgid "Play/Pause"
-msgstr ""
+msgstr "Odtwórz/Wstrzymaj"
 
 #: Tooltips#96
 msgid "Toggles playing or pausing the track."
-msgstr ""
+msgstr "Przełącza odtwarzanie lub pauzowanie utworu."
 
 #: Tooltips#97
 msgid "Jumps to the beginning of the track."
-msgstr ""
+msgstr "Skacze do początku utworu."
 
 #: Tooltips#98
 msgid "Places a cue-point at the current position on the waveform."
-msgstr ""
+msgstr "Umieszcza wskaźnik Cue na bieżącej pozycji wykresu dźwięku."
 
 #: Tooltips#99
 msgid "Plays or pauses the track."
-msgstr ""
+msgstr "Odtwarza lub pauzuje utwór."
 
 #: Tooltips#100
 msgid "(while playing)"
-msgstr ""
+msgstr "(podczas odtwarzania)"
 
 #: Tooltips#101
 msgid "(while stopped)"
-msgstr ""
+msgstr "(kiedy zatrzymane)"
 
 #: Tooltips#102
 msgid "Cue"
@@ -4362,7 +4389,7 @@ msgstr "Słuchawka"
 
 #: Tooltips#106
 msgid "Sends the selected channel's audio to the headphone output."
-msgstr ""
+msgstr "Wysyła wybrany kanał audio do wyjścia słuchawkowego."
 
 #: Tooltips#107
 msgid ""
@@ -4382,7 +4409,7 @@ msgstr ""
 
 #: Tooltips#110
 msgid "Setup a loop over the set number of beats."
-msgstr ""
+msgstr "Ustawia pętlę na określoną ilość uderzeń."
 
 #: Tooltips#111
 msgid "Temporarily setup a rolling loop over the set number of beats."
@@ -4423,18 +4450,20 @@ msgid ""
 "If Vinyl control is enabled, displays time-coded vinyl signal quality (see "
 "Preferences -> Vinyl Control)."
 msgstr ""
+"Jeśli kontrola vinylem jest włączona wyświetla poziom jakości sygnału kodu "
+"czasowego (zobacz Ustawienia -> Kontrola vinylem)"
 
 #: Tooltips#119
 msgid "Shows the current master volume for the right channel."
-msgstr ""
+msgstr "Pokazuje główny poziom głosności dla prawego kanału."
 
 #: Tooltips#120
 msgid "Change the crossfader curve in Preferences -> Crossfader"
-msgstr ""
+msgstr "Zmień krzywą Crossfader'a w Ustawienia -> Crossfader."
 
 #: Tooltips#121
 msgid "Activate Vinyl Control from the Menu -> Options."
-msgstr ""
+msgstr "Aktywuj kontrolę vinylem z Menu -> Opcje"
 
 #: Tooltips#122
 msgid "Change the step-size in the Preferences -> Interface menu."
@@ -4466,12 +4495,12 @@ msgstr ""
 
 #: Tooltips#129
 msgid "Jumps to the end of the track."
-msgstr ""
+msgstr "Przeskakuje do końca utworu."
 
 #: Tooltips#130
 msgctxt "Tooltips#130"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronizuj"
 
 #: Tooltips#131
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4503,7 +4532,7 @@ msgstr ""
 
 #: Tooltips#138
 msgid "Repeat"
-msgstr ""
+msgstr "Powtórz"
 
 #: Tooltips#139
 msgid ""
@@ -4513,7 +4542,7 @@ msgstr ""
 
 #: Tooltips#140
 msgid "Eject"
-msgstr ""
+msgstr "Wysuń"
 
 #: Tooltips#141
 msgid "Ejects track from the player."
