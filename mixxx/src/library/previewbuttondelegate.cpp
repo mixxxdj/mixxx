@@ -50,7 +50,10 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     btn->setObjectName("LibraryPreviewButton");
     btn->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
     btn->setCheckable(true);
-    btn->setChecked(index.data().toBool());
+    bool playing = m_pPreviewDeckPlay->get() > 0.0;
+    // Check-state is whether the track is loaded (index.data()) and whether
+    // it's playing.
+    btn->setChecked(index.data().toBool() && playing);
     connect(btn, SIGNAL(clicked()),
             this, SLOT(buttonClicked()));
     return btn;

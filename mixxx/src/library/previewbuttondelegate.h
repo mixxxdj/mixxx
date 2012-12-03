@@ -7,6 +7,8 @@
 
 #include "trackinfoobject.h"
 
+class ControlObjectThreadMain;
+
 class PreviewButtonDelegate : public QStyledItemDelegate {
   Q_OBJECT
 
@@ -37,6 +39,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
 
   private:
     QTableView *m_pTableView;
+    ControlObjectThreadMain* m_pPreviewDeckPlay;
     QPushButton *m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
