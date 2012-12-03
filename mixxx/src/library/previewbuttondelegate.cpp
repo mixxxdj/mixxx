@@ -10,12 +10,21 @@
 #include "controlobject.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
-        : QStyledItemDelegate(parent) {
+        : QStyledItemDelegate(parent),
+          m_pTableView(NULL),
+          m_pButton(NULL),
+          m_isOneCellInEditMode(false),
+          m_column(-1) {
+    m_pPreviewDeckPlay = new ControlObjectThreadMain(
+        ControlObject::getControl(PlayerManager::groupForPreviewDeck(0), "play"));
+
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
         m_pButton = new QPushButton("", m_pTableView);
         m_pButton->setObjectName("LibraryPreviewButton");
         m_pButton->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
+        m_pButton->setCheckable(true);
+        m_pButton->setChecked(false);
         m_pButton->hide();
         connect(m_pTableView, SIGNAL(entered(QModelIndex)),
                 this, SLOT(cellEntered(QModelIndex)));
@@ -30,6 +39,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
 }
 
 PreviewButtonDelegate::~PreviewButtonDelegate() {
+    delete m_pPreviewDeckPlay;
 }
 
 QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
@@ -39,6 +49,8 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
     btn->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
+    btn->setCheckable(true);
+    btn->setChecked(index.data().toBool());
     connect(btn, SIGNAL(clicked()),
             this, SLOT(buttonClicked()));
     return btn;
@@ -63,6 +75,10 @@ void PreviewButtonDelegate::paint(QPainter *painter,
                                   const QModelIndex &index) const {
     Q_UNUSED(index);
     m_pButton->setGeometry(option.rect);
+    bool playing = m_pPreviewDeckPlay->get() > 0.0;
+    // Check-state is whether the track is loaded (index.data()) and whether
+    // it's playing.
+    m_pButton->setChecked(index.data().toBool() && playing);
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
     QPixmap map = QPixmap::grabWidget(m_pButton);
@@ -114,17 +130,13 @@ void PreviewButtonDelegate::buttonClicked() {
     QString group = PlayerManager::groupForPreviewDeck(0);
     TrackPointer pOldTrack = PlayerInfo::Instance().getTrackInfo(group);
 
-    ControlObjectThreadMain* playStatus = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "play")));
-
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
         emit(loadTrackToPlayer(pTrack, group));
-        playStatus->slotSet(1.0);
-    } else if (pTrack == pOldTrack && playStatus->get()==0.0) {
-        playStatus->slotSet(1.0);
+        m_pPreviewDeckPlay->slotSet(1.0);
+    } else if (pTrack == pOldTrack && m_pPreviewDeckPlay->get()==0.0) {
+        m_pPreviewDeckPlay->slotSet(1.0);
     } else {
-        playStatus->slotSet(0.0);
+        m_pPreviewDeckPlay->slotSet(0.0);
     }
-    delete playStatus;
 }
