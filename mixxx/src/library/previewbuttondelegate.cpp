@@ -2,7 +2,12 @@
 #include <QPushButton>
 
 #include "library/previewbuttondelegate.h"
-#include "library/previewdeckbuttonhandler.h"
+#include "library/trackmodel.h"
+#include "playerinfo.h"
+#include "playermanager.h"
+#include "trackinfoobject.h"
+#include "controlobjectthreadmain.h"
+#include "controlobject.h"
 
 PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
         : QStyledItemDelegate(parent) {
@@ -34,13 +39,8 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
     btn->setIcon(QIcon(":/images/library/ic_library_preview_play.png"));
-    //the handle will emit the signal to load the track
-    PreviewDeckButtonHandler *phandle = new PreviewDeckButtonHandler(
-        parent, index, m_pTableView);
     connect(btn, SIGNAL(clicked()),
-            phandle, SLOT(buttonclicked()));
-    connect(phandle, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+            this, SLOT(buttonClicked()));
     return btn;
 }
 
@@ -99,4 +99,32 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }
     }
+}
+
+void PreviewButtonDelegate::buttonClicked() {
+    if (!m_pTableView) {
+        return;
+    }
+
+    TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+    if (!pTrackModel) {
+        return;
+    }
+
+    QString group = PlayerManager::groupForPreviewDeck(0);
+    TrackPointer pOldTrack = PlayerInfo::Instance().getTrackInfo(group);
+
+    ControlObjectThreadMain* playStatus = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "play")));
+
+    TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
+    if (pTrack && pTrack != pOldTrack) {
+        emit(loadTrackToPlayer(pTrack, group));
+        playStatus->slotSet(1.0);
+    } else if (pTrack == pOldTrack && playStatus->get()==0.0) {
+        playStatus->slotSet(1.0);
+    } else {
+        playStatus->slotSet(0.0);
+    }
+    delete playStatus;
 }

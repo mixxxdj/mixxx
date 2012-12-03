@@ -33,6 +33,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
 
   public slots:
     void cellEntered(const QModelIndex &index);
+    void buttonClicked();
 
   private:
     QTableView *m_pTableView;
