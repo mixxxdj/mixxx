@@ -35,6 +35,8 @@
         <file>images/library/ic_library_rhythmbox.png</file>
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_preview_play.png</file>
+        <file>images/library/checked.png</file>
+        <file>images/library/unchecked.png</file>
         <file>shaders/computemaxsignal.frag</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>

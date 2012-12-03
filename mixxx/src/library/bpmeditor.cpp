@@ -3,7 +3,7 @@
 BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
                     EditMode mode, QWidget *parent)
           :QWidget(parent),
-           m_pLock(new BPMButton(this)),
+           m_pLock(new QPushButton(this)),
            m_pBPMSpinBox(NULL),
            m_pBPMLabel(NULL),
            m_pLayout(new QHBoxLayout(this)),
@@ -11,6 +11,9 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
     setPalette(option.palette);
     // configure Lock Button
     m_pLock->setMaximumWidth(20);
+    m_pLock->setCheckable(true);
+    m_pLock->setChecked(false);
+    m_pLock->setObjectName("LibraryBPMButton");
     m_pLayout->addWidget(m_pLock);
     // configure SpinBox of Label depending on mode
     if (mode==Editable && !getLock()) {
@@ -19,6 +22,7 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
         m_pBPMSpinBox->setMaximum(1000);
         m_pBPMSpinBox->setSingleStep(1e-8);
         m_pBPMSpinBox->setDecimals(8);
+        m_pBPMSpinBox->setObjectName("LibraryBPM");
         m_pLayout->addWidget(m_pBPMSpinBox);
         connect(m_pBPMSpinBox, SIGNAL(editingFinished()),
                 this, SIGNAL(finishedEditing()));

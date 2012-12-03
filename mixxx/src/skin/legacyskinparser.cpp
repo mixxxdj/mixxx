@@ -1037,6 +1037,15 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
 
     QString styleHack = "";
 
+    styleHack = (
+        "#LibraryBPMButton { background: transparent; border: 0; }"
+        "#LibraryBPMButton:checked {"
+        "  image: url(:/images/library/checked.png);"
+        "}"
+        "#LibraryBPMButton:!checked {"
+        "  image: url(:/images/library/unchecked.png);"
+        "}");
+
     if (!XmlParse::selectNode(node, "FgColor").isNull()) {
         color.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
         color = WSkinColor::getCorrectColor(color);
