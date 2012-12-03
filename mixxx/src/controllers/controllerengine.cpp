@@ -247,6 +247,7 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
 // Slot to run when a script file has changed
 void ControllerEngine::scriptHasChanged(QString scriptFilename) {
+    Q_UNUSED(scriptFilename);
     qDebug() << "ControllerEngine: Reloading Scripts";
     ControllerPresetPointer pPreset = m_pController->getPreset();
 

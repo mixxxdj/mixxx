@@ -27,7 +27,6 @@ class PlayerManager : public QObject {
     PlayerManager(ConfigObject<ConfigValue> *pConfig,
                   SoundManager* pSoundManager,
                   EngineMaster* pEngine,
-                  Library* pLibrary,
                   VinylControlManager* pVCManager);
     virtual ~PlayerManager();
 
@@ -59,6 +58,10 @@ class PlayerManager : public QObject {
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const;
+
+    // Binds signals between PlayerManager and Library. Does not store a pointer
+    // to the Library.
+    void bindToLibrary(Library* pLibrary);
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
@@ -94,12 +97,14 @@ class PlayerManager : public QObject {
     void slotNumSamplersControlChanged(double v);
     void slotNumPreviewDecksControlChanged(double v);
 
+  signals:
+    void loadLocationToPlayer(QString location, QString group);
+
   private:
     TrackPointer lookupTrack(QString location);
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;
-    Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
     AnalyserQueue* m_pAnalyserQueue;
     ControlObject* m_pCONumDecks;
