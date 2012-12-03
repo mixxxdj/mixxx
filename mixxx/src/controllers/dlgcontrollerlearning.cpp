@@ -38,6 +38,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
+    m_previewdeckStr = tr("Preview Deck %1");
     m_resetStr = tr("Reset to default");
 
     // Master Controls
@@ -50,18 +51,18 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     // Transport
     QMenu* transportMenu = addSubmenu(tr("Transport"));
-    addDeckControl("playposition", tr("Strip-search through track"), transportMenu);
-    addDeckAndSamplerControl("play", tr("Play button"), transportMenu);
+    addDeckAndPreviewDeckControl("playposition", tr("Strip-search through track"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("play", tr("Play button"), transportMenu);
     addDeckControl("volume", tr("Volume fader"), transportMenu, true);
     addDeckControl("back", tr("Fast rewind button"), transportMenu);
     addDeckControl("fwd", tr("Fast forward button"), transportMenu);
-    addDeckControl("start", tr("Jump to start of track"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("start", tr("Jump to start of track"), transportMenu);
     addDeckControl("end", tr("Jump to end of track"), transportMenu);
     addDeckControl("reverse", tr("Play reverse button"), transportMenu);
-    addDeckAndSamplerControl("pregain", tr("Gain knob"), transportMenu, true);
+    addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("pfl", tr("Headphone listen button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);
-    addDeckAndSamplerControl("eject", tr("Eject track"), transportMenu);
+    addDeckAndSamplerAndPreviewDeckControl("eject", tr("Eject track"), transportMenu);
     addSamplerControl("orientation", tr("Mix orientation (e.g. left, right, center)"), transportMenu);
     addDeckAndSamplerControl("slip_enabled", tr("Toggle slip mode"), transportMenu);
 
@@ -203,6 +204,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Samplers]", "show_samplers", tr("Show/hide the sampler section"), guiMenu);
     addControl("[Microphone]", "show_microphone", tr("Show/hide the microphone section"), guiMenu);
     addControl("[Vinylcontrol]", "show_vinylcontrol", tr("Show/hide the vinyl control section"), guiMenu);
+    addControl("[PreviewDeck]", "show_previewdeck", tr("Show/hide the preview deck"), guiMenu);
 
     ControlObject *co = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
     const int iNumDecks = co->get();
@@ -245,11 +247,13 @@ void DlgControllerLearning::addControl(QString group, QString control, QString d
 
 void DlgControllerLearning::addPlayerControl(
     QString control, QString controlDescription, QMenu* pMenu,
-    bool deckControls, bool samplerControls, bool addReset) {
+    bool deckControls, bool samplerControls, bool previewdeckControls, bool addReset) {
     ControlObject* numSamplers = ControlObject::getControl(ConfigKey("[Master]", "num_samplers"));
     const int iNumSamplers = numSamplers->get();
     ControlObject* numDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
     const int iNumDecks = numDecks->get();
+    ControlObject* numPreviewDecks = ControlObject::getControl(ConfigKey("[Master]", "num_preview_decks"));
+    const int iNumPreviewDecks = numPreviewDecks->get();
 
     QMenu* controlMenu = new QMenu(controlDescription, pMenu);
     pMenu->addMenu(controlMenu);
@@ -278,6 +282,22 @@ void DlgControllerLearning::addPlayerControl(
         }
     }
 
+    for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
+        QString group = QString("[PreviewDeck%1]").arg(i);
+        QString description = QString("%1: %2").arg(
+            m_previewdeckStr.arg(QString::number(i)), controlDescription);
+        QAction* pAction = controlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));
+        m_actionMapper.setMapping(pAction, m_controlsAvailable.size());
+        m_controlsAvailable.append(MixxxControl(group, control, description));
+
+        if (resetControlMenu) {
+            QString resetDescription = QString("%1 (%2)").arg(description, m_resetStr);
+            QAction* pResetAction = resetControlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));
+            m_actionMapper.setMapping(pResetAction, m_controlsAvailable.size());
+            m_controlsAvailable.append(MixxxControl(group, resetControl, resetDescription));
+        }
+    }
+
     for (int i = 1; samplerControls && i <= iNumSamplers; ++i) {
         QString group = QString("[Sampler%1]").arg(i);
         QString description = QString("%1: %2").arg(
@@ -298,19 +318,37 @@ void DlgControllerLearning::addPlayerControl(
 void DlgControllerLearning::addDeckAndSamplerControl(QString control, QString controlDescription,
                                                      QMenu* pMenu,
                                                      bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, true, true, addReset);
+    addPlayerControl(control, controlDescription, pMenu, true, true, false, addReset);
+}
+
+void DlgControllerLearning::addDeckAndPreviewDeckControl(QString control, QString controlDescription,
+                                                     QMenu* pMenu,
+                                                     bool addReset) {
+    addPlayerControl(control, controlDescription, pMenu, true, false, true, addReset);
+}
+
+void DlgControllerLearning::addDeckAndSamplerAndPreviewDeckControl(QString control, QString controlDescription,
+                                                                   QMenu* pMenu,
+                                                         bool addReset) {
+    addPlayerControl(control, controlDescription, pMenu, true, true, true, addReset);
 }
 
 void DlgControllerLearning::addDeckControl(QString control, QString controlDescription,
                                            QMenu* pMenu,
                                            bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, true, false, addReset);
+    addPlayerControl(control, controlDescription, pMenu, true, false, false, addReset);
 }
 
 void DlgControllerLearning::addSamplerControl(QString control, QString controlDescription,
                                               QMenu* pMenu,
                                               bool addReset) {
-    addPlayerControl(control, controlDescription, pMenu, false, true, addReset);
+    addPlayerControl(control, controlDescription, pMenu, false, true, false, addReset);
+}
+
+void DlgControllerLearning::addPreviewDeckControl(QString control, QString controlDescription,
+                                              QMenu* pMenu,
+                                              bool addReset) {
+    addPlayerControl(control, controlDescription, pMenu, false, false, true, addReset);
 }
 
 void DlgControllerLearning::showControlMenu() {
