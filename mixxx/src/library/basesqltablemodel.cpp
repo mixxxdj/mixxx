@@ -631,6 +631,17 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
 
 void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
+        // If there was a previously loaded track, refresh its rows so the
+        // preview state will update.
+        if (m_iPreviewDeckTrackId > -1) {
+            const int numColumns = columnCount();
+            QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
+            foreach (int row, rows) {
+                QModelIndex left = index(row, 0);
+                QModelIndex right = index(row, numColumns);
+                emit(dataChanged(left, right));
+            }
+        }
         m_iPreviewDeckTrackId = pTrack ? pTrack->getId() : -1;
     }
 }
