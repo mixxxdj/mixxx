@@ -61,13 +61,18 @@ class ControlObject : public QObject
 public:
     ControlObject();
     ControlObject(ConfigKey key, bool bIgnoreNops=true);
+    ControlObject(const QString& group, const QString& item, bool bIgnoreNops=true);
     virtual ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest. */
     static bool connectControls(ConfigKey src, ConfigKey dest);
     /** Disonnect a control object. */
     static bool disconnectControl(ConfigKey key);
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
-    static ControlObject *getControl(ConfigKey key);
+    static ControlObject* getControl(const ConfigKey& key);
+    static inline ControlObject* getControl(const QString& group, const QString& item) {
+        ConfigKey key(group, item);
+        return getControl(key);
+    }
 
     // Adds all ControlObjects that currently exist to pControlList
     static void getControls(QList<ControlObject*>* pControlsList);
@@ -80,7 +85,7 @@ public:
       * happend, otherwise false. */
     bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
     /** Return the key of the object */
-    inline ConfigKey getKey() { return m_Key; }
+    inline ConfigKey getKey() { return m_key; }
     /** Return the value of the ControlObject */
     inline double get() { return m_dValue; }
     /** Add to value. Not thread safe. */
@@ -127,7 +132,7 @@ protected:
     double m_dValue;
     double m_dDefaultValue;
     /** Key of the object */
-    ConfigKey m_Key;
+    ConfigKey m_key;
 
 private:
     // Whether to ignore set/add/sub()'s which would have no effect
