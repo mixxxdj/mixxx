@@ -10,7 +10,7 @@
 #include "wspinny.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
-        : QGLWidget(SharedGLContext::getContext(), parent),
+        : QGLWidget(parent, SharedGLContext::getWidget()),
           m_pBG(NULL),
           m_pFG(NULL),
           m_pGhost(NULL),
@@ -42,6 +42,9 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
 #endif
     //Drag and drop
     setAcceptDrops(true);
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
 }
 
 WSpinny::~WSpinny()

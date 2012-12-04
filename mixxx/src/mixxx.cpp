@@ -51,6 +51,7 @@
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
+#include "sharedglcontext.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -422,6 +423,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     initActions();
     initMenuBar();
+
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    QGLWidget* pContextWidget = new QGLWidget(this);
+    pContextWidget->hide();
+    SharedGLContext::setWidget(pContextWidget);
 
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame();
