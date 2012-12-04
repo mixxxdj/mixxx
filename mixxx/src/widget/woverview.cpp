@@ -250,10 +250,16 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 bool WOverview::drawNextPixmapPart() {
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
+    int currentCompletion;
+
+    if (!m_waveform) {
+        return false;
+    }
+
     m_visualSamplesByPixel = static_cast<double>(m_waveform->getDataSize()) /
             static_cast<double>(width());
 
-    if (!m_waveform || m_visualSamplesByPixel < 0.0001) {
+    if (m_visualSamplesByPixel < 0.0001) {
         return false;
     }
 
@@ -301,48 +307,58 @@ bool WOverview::drawNextPixmapPart() {
 
     QColor lowColor = m_signalColors.getLowColor();
     lowColor.setAlphaF(alpha);
-    QPen lowColorPen( QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
+    QPen lowColorPen(QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
 
     QColor midColor = m_signalColors.getMidColor();
     midColor.setAlphaF(alpha);
-    QPen midColorPen( QBrush(midColor), 1.25, Qt::SolidLine, Qt::RoundCap);
+    QPen midColorPen(QBrush(midColor), 1.25, Qt::SolidLine, Qt::RoundCap);
 
     QColor highColor = m_signalColors.getHighColor();
     highColor.setAlphaF(alpha);
-    QPen highColorPen( QBrush(highColor), 1.25, Qt::SolidLine, Qt::RoundCap);
+    QPen highColorPen(QBrush(highColor), 1.25, Qt::SolidLine, Qt::RoundCap);
 
-    int currentCompletion = m_actualCompletion;
+    QColor axesColor = m_signalColors.getAxesColor();
+    axesColor.setAlphaF(alpha);
+    QPen axesColorPen(QBrush(axesColor), 1.25, Qt::SolidLine, Qt::RoundCap);
+
     float pixelPosition = pixelStartPosition;
-    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen( lowColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getLow(currentCompletion+1)),
-                          QPointF(pixelPosition, m_waveform->getLow(currentCompletion)));
+    for(currentCompletion = m_actualCompletion;
+            currentCompletion < nextCompletion; currentCompletion += 2) {
+        unsigned char lowPos = m_waveform->getLow(currentCompletion);
+        unsigned char lowNeg = m_waveform->getLow(currentCompletion+1);
+        if (lowPos || lowNeg) {
+            painter.setPen(lowColorPen);
+            painter.drawLine(QPointF(pixelPosition, -lowNeg),
+                             QPointF(pixelPosition, lowPos));
+        } else {
+            // Draw flat axes for progress when silence
+            painter.setPen(axesColorPen);
+            painter.drawPoint(QPointF(pixelPosition, 0));
+        }
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
-    currentCompletion = m_actualCompletion;
     pixelPosition = pixelStartPosition;
-    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen( midColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getMid(currentCompletion+1)),
-                          QPointF(pixelPosition, m_waveform->getMid(currentCompletion)));
+    for(currentCompletion = m_actualCompletion; currentCompletion < nextCompletion; currentCompletion += 2) {
+        painter.setPen(midColorPen);
+        painter.drawLine(QPointF(pixelPosition, - m_waveform->getMid(currentCompletion+1)),
+                         QPointF(pixelPosition, m_waveform->getMid(currentCompletion)));
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
-    currentCompletion = m_actualCompletion;
     pixelPosition = pixelStartPosition;
-    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen( highColorPen);
-        painter.drawLine( QPointF(pixelPosition, - m_waveform->getHigh(currentCompletion+1)),
-                          QPointF(pixelPosition, m_waveform->getHigh(currentCompletion)));
+    for(currentCompletion = m_actualCompletion; currentCompletion < nextCompletion; currentCompletion += 2) {
+        painter.setPen(highColorPen);
+        painter.drawLine(QPointF(pixelPosition, - m_waveform->getHigh(currentCompletion+1)),
+                         QPointF(pixelPosition, m_waveform->getHigh(currentCompletion)));
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
     //evaluate waveform ratio peak
-    currentCompletion = m_actualCompletion;
-    for( ; currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max( m_waveformPeak, (float)m_waveform->getAll(currentCompletion+1));
-        m_waveformPeak = math_max( m_waveformPeak, (float)m_waveform->getAll(currentCompletion));
+
+    for(currentCompletion = m_actualCompletion; currentCompletion < nextCompletion; currentCompletion += 2) {
+        m_waveformPeak = math_max(m_waveformPeak, (float)m_waveform->getAll(currentCompletion+1));
+        m_waveformPeak = math_max(m_waveformPeak, (float)m_waveform->getAll(currentCompletion));
     }
 
     m_actualCompletion = nextCompletion;
