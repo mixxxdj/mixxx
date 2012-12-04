@@ -1,4 +1,7 @@
 #include <math.h>
+
+#include <QtDebug>
+
 #include "mathstuff.h"
 #include "wpixmapstore.h"
 #include "controlobject.h"
@@ -31,7 +34,8 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_iStartMouseX(-1),
           m_iStartMouseY(-1),
           m_iFullRotations(0),
-          m_dPrevTheta(0.) {
+          m_dPrevTheta(0.),
+          m_bClampFailedWarning(false) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
     m_pVinylControl = NULL;
@@ -117,17 +121,6 @@ void WSpinny::setup(QDomNode node, QString group)
         ConfigKey(group, "slip_enabled")));
     m_pSlipPosition = new ControlObjectThreadMain(ControlObject::getControl(
         ConfigKey(group, "slip_playposition")));
-    connect(m_pSlipPosition, SIGNAL(valueChanged(double)),
-            this, SLOT(updateGhostAngleFromPlaypos(double)));
-
-    //Repaint when visual_playposition changes.
-    connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
-            this, SLOT(updateAngleFromPlaypos(double)));
-
-    connect(m_pSlipPosition, SIGNAL(valueChanged(double)),
-            this, SLOT(updateGhostAngleFromPlaypos(double)));
-
-
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
@@ -283,8 +276,13 @@ double WSpinny::calculateAngle(double playpos) {
     }
 
     if (angle <= -180 || angle > 180) {
-        qDebug() << "Angle clamping failed!" << t << originalAngle << "->" << angle
-                 << "Please file a bug or email mixxx-devel@lists.sourceforge.net";
+        // Only warn once per session. This can tank performance since it prints
+        // like crazy.
+        if (!m_bClampFailedWarning) {
+            qDebug() << "Angle clamping failed!" << t << originalAngle << "->" << angle
+                     << "Please file a bug or email mixxx-devel@lists.sourceforge.net";
+            m_bClampFailedWarning = true;
+        }
         return 0.0;
     }
     return angle;
@@ -335,11 +333,15 @@ double WSpinny::calculatePositionFromAngle(double angle)
 }
 
 void WSpinny::updateAngleFromPlaypos(double playpos) {
-    m_fAngle = calculateAngle(playpos);
+    if (isVisible()) {
+        m_fAngle = calculateAngle(playpos);
+    }
 }
 
 void WSpinny::updateGhostAngleFromPlaypos(double playpos) {
-    m_fGhostAngle = calculateAngle(playpos);
+    if (isVisible()) {
+        m_fGhostAngle = calculateAngle(playpos);
+    }
 }
 
 void WSpinny::updateRate(double rate) {
@@ -488,6 +490,25 @@ void WSpinny::wheelEvent(QWheelEvent *e)
 
     e->accept();
     */
+}
+
+void WSpinny::showEvent(QShowEvent* e) {
+    Q_UNUSED(e);
+    // Update angles on show since we don't calculate while we're hidden.
+    m_fAngle = calculateAngle(m_pVisualPlayPos->get());
+    m_fGhostAngle = calculateAngle(m_pSlipPosition->get());
+    connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
+            this, SLOT(updateAngleFromPlaypos(double)));
+    connect(m_pSlipPosition, SIGNAL(valueChanged(double)),
+            this, SLOT(updateGhostAngleFromPlaypos(double)));
+}
+
+void WSpinny::hideEvent(QHideEvent* e) {
+    Q_UNUSED(e);
+    disconnect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
+               this, SLOT(updateAngleFromPlaypos(double)));
+    disconnect(m_pSlipPosition, SIGNAL(valueChanged(double)),
+               this, SLOT(updateGhostAngleFromPlaypos(double)));
 }
 
 /** DRAG AND DROP **/

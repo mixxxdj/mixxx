@@ -43,6 +43,8 @@ class WSpinny : public QGLWidget {
     void mousePressEvent(QMouseEvent * e);
     void mouseReleaseEvent(QMouseEvent * e);
     void wheelEvent(QWheelEvent *e);
+    void showEvent(QShowEvent* e);
+    void hideEvent(QHideEvent* e);
 
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
@@ -90,6 +92,7 @@ class WSpinny : public QGLWidget {
     double m_dTheta;
     /** Speed of the vinyl rotation. */
     double m_dRotationsPerSecond;
+    bool m_bClampFailedWarning;
 };
 
 #endif //_WSPINNY_H
