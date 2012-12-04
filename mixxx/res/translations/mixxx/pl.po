@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-12-02 21:28+0000\n"
-"Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
+"PO-Revision-Date: 2012-12-03 10:54+0000\n"
+"Last-Translator: Sławomir Kur <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-03 04:33+0000\n"
-"X-Generator: Launchpad (build 16319)\n"
+"X-Launchpad-Export-Date: 2012-12-04 04:43+0000\n"
+"X-Generator: Launchpad (build 16335)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -1071,6 +1071,8 @@ msgstr ""
 #: DlgControllerLearning#72
 msgid "Single deck mode - Toggle vinyl control to next deck"
 msgstr ""
+"Tryb pojedynczego odtwarzacza - Przełącza kontrolę vinylem do następnego "
+"odtwarzacza"
 
 #: DlgControllerLearning#73
 msgid "Cues"
@@ -3717,7 +3719,7 @@ msgstr "Nie mogę utworzyć pliku"
 
 #: ParserCsv#4
 msgid "Readable text Export Failed"
-msgstr ""
+msgstr "Eksport do pliku .txt zakończony niepowowodzeniem"
 
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
@@ -4014,7 +4016,7 @@ msgstr "(za głośne dla sprzętu i jest zniekształcane)"
 
 #: Tooltips#17
 msgid "Peak Indicator"
-msgstr ""
+msgstr "Wskaźnik przesterowania"
 
 #: Tooltips#18
 msgid "Indicates when the signal on the channel is clipping,"
@@ -4022,7 +4024,7 @@ msgstr "Wskazuje kiedy sygnał w kanale jest obcinany."
 
 #: Tooltips#19
 msgid "Master Peak Indicator"
-msgstr ""
+msgstr "Główny wskaźnik przesterowania"
 
 #: Tooltips#20
 msgid "Indicates when the signal on the master output is clipping,"
@@ -4615,7 +4617,7 @@ msgstr ""
 
 #: Tooltips#157
 msgid "Loop-Out Marker"
-msgstr ""
+msgstr "Znacznik końca pętli."
 
 #: Tooltips#158
 msgid "Sets the deck loop-out position to the current play position."
@@ -4713,7 +4715,7 @@ msgstr ""
 
 #: Tooltips#181
 msgid "Track Title"
-msgstr ""
+msgstr "Tytuł utworu"
 
 #: Tooltips#182
 msgid "Displays the title of the loaded track."
@@ -4721,7 +4723,7 @@ msgstr ""
 
 #: Tooltips#183
 msgid "Track Album"
-msgstr ""
+msgstr "Album utworu"
 
 #: Tooltips#184
 msgid "Displays the album name of the loaded track."
@@ -4757,7 +4759,7 @@ msgstr ""
 
 #: Tooltips#192
 msgid "Adjusts the intensity of the flange effect (when active)."
-msgstr ""
+msgstr "Reguluje intensywnośc efektu Flanger'a (kiedy efekt jest aktywny)."
 
 #: Tooltips#193
 msgid "Flanger LFO Period"
@@ -4765,7 +4767,7 @@ msgstr ""
 
 #: Tooltips#194
 msgid "Adjusts the wavelength of the flange effect (when active)."
-msgstr ""
+msgstr "Reguluje długośc efektu Flanger'a (iedy efekt jest aktywny)."
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -4787,7 +4789,7 @@ msgstr ""
 
 #: TrackCollection#3
 msgid "Click OK to exit."
-msgstr ""
+msgstr "Kliknij OK aby wyjść."
 
 #: TrackCollection#4
 msgid "Cannot upgrade database schema"
@@ -4795,11 +4797,11 @@ msgstr "Nie mogę uaktualnić schematu bazy danych"
 
 #: TrackCollection#5
 msgid "Unable to upgrade your database schema to version %1"
-msgstr ""
+msgstr "Uaktualnienie schematu bazy danych do wersji %1 jest niemożliwe"
 
 #: TrackCollection#6
 msgid "Your %1 file may be outdated."
-msgstr ""
+msgstr "Twój plik %1 może być niekatualny."
 
 #: TrackCollection#7
 msgid "Your mixxxdb.sqlite file may be corrupt."
@@ -4839,7 +4841,7 @@ msgstr "Ctrl+F"
 
 #: WSearchLineEdit#2
 msgid "Esc"
-msgstr ""
+msgstr "Esc"
 
 #: WSearchLineEdit#3
 msgid "Search..."
@@ -4933,7 +4935,7 @@ msgstr ""
 
 #: WaveformWidgetFactory#2
 msgid "(GL)"
-msgstr ""
+msgstr "(GL)"
 
 #~ msgctxt "DlgAutoDJ#3"
 #~ msgid "Manage"
