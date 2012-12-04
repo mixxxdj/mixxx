@@ -190,6 +190,18 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
+void Library::slotLoadLocationToPlayer(QString location, QString group) {
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+    // Try to get TrackPointer from library, identified by location.
+    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+
+    // If not, create a new TrackPointer
+    if (!pTrack) {
+        pTrack = TrackPointer(new TrackInfoObject(location));
+    }
+    emit(loadTrackToPlayer(pTrack, group));
+}
+
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
     emit(loadTrackToPlayer(pTrack, group));
 }

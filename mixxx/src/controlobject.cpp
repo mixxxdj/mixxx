@@ -15,9 +15,10 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qwidget.h>
 #include <QtDebug>
 #include <QHash>
+#include <QMutexLocker>
+
 #include "controlobject.h"
 #include "controlevent.h"
 
@@ -32,25 +33,35 @@ QQueue<QueueObjectMidi*> ControlObject::m_sqQueueMidi;
 QQueue<QueueObjectThread*> ControlObject::m_sqQueueThread;
 QQueue<ControlObject*> ControlObject::m_sqQueueChanges;
 
-ControlObject::ControlObject() :
-    m_dValue(0),
-    m_dDefaultValue(0),
-    m_bIgnoreNops(true) {
+ControlObject::ControlObject()
+        : m_dValue(0),
+          m_dDefaultValue(0),
+          m_bIgnoreNops(true) {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops) :
-    m_dValue(0),
-    m_Key(key),
-    m_bIgnoreNops(bIgnoreNops) {
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops)
+        : m_dValue(0),
+          m_dDefaultValue(0),
+          m_key(key),
+          m_bIgnoreNops(bIgnoreNops) {
     m_sqCOHashMutex.lock();
-    m_sqCOHash.insert(key,this);
+    m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
 }
 
-ControlObject::~ControlObject()
-{
+ControlObject::ControlObject(const QString& group, const QString& item, bool bIgnoreNops)
+        : m_dValue(0),
+          m_dDefaultValue(0),
+          m_key(group, item),
+          m_bIgnoreNops(bIgnoreNops) {
     m_sqCOHashMutex.lock();
-    m_sqCOHash.remove(m_Key);
+    m_sqCOHash.insert(m_key, this);
+    m_sqCOHashMutex.unlock();
+}
+
+ControlObject::~ControlObject() {
+    m_sqCOHashMutex.lock();
+    m_sqCOHash.remove(m_key);
     m_sqCOHashMutex.unlock();
 
     ControlObjectThread * obj;
@@ -141,7 +152,7 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
 {
     ControlObjectThread * obj;
     bool bUpdateSuccess = true;
-    // qDebug() << "updateProxies: Group" << m_Key.group << "/ Item" << m_Key.item;
+    // qDebug() << "updateProxies: Group" << m_key.group << "/ Item" << m_key.item;
     m_qProxyListMutex.lock();
     QListIterator<ControlObjectThread*> it(m_qProxyList);
     while (it.hasNext())
@@ -159,23 +170,21 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
 
 void ControlObject::getControls(QList<ControlObject*>* pControlList) {
     m_sqCOHashMutex.lock();
-    for (QHash<ConfigKey, ControlObject*>::const_iterator it = m_sqCOHash.constBegin();
-         it != m_sqCOHash.constEnd(); ++it) {
+    for (QHash<ConfigKey, ControlObject*>::const_iterator it = m_sqCOHash.begin();
+         it != m_sqCOHash.end(); ++it) {
         pControlList->push_back(it.value());
     }
     m_sqCOHashMutex.unlock();
 }
 
-ControlObject * ControlObject::getControl(ConfigKey key)
-{
+ControlObject* ControlObject::getControl(const ConfigKey& key) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    m_sqCOHashMutex.lock();
-    if(m_sqCOHash.contains(key)) {
-        ControlObject *co = m_sqCOHash[key];
-        m_sqCOHashMutex.unlock();
+    QMutexLocker locker(&m_sqCOHashMutex);
+    QHash<ConfigKey, ControlObject*>::const_iterator it = m_sqCOHash.find(key);
+    if (it != m_sqCOHash.end()) {
+        ControlObject* co = it.value();
         return co;
     }
-    m_sqCOHashMutex.unlock();
 
 	if (key.group != "" || key.item != "")
     	qDebug() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";

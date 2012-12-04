@@ -159,7 +159,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlSlip(double)),
             Qt::DirectConnection);
-            
     m_pSlipPosition = new ControlObject(ConfigKey(m_group, "slip_playposition"));
 
     // Actual rate (used in visuals, not for control)

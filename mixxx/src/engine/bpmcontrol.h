@@ -52,6 +52,11 @@ class BpmControl : public EngineControl {
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
 
+    // ControlObjects that come from LoopingControl
+    ControlObject* m_pLoopEnabled;
+    ControlObject* m_pLoopStartPosition;
+    ControlObject* m_pLoopEndPosition;
+
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;
 

@@ -135,6 +135,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Show/hide the Vinyl Control section.")
             << tr("Activate Vinyl Control from the Menu -> Options.");
 
+    add("show_previewdeck")
+            << tr("Preview Deck")
+            << tr("Show/hide the Preview deck.");
+
     add("microphone_volume")
             << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")
