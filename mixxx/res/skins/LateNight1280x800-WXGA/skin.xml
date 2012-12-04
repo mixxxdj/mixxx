@@ -2186,8 +2186,9 @@
 						The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
 						-->
 						<!--transition time in Auto DJ tab-->
-						QSpinBox:editable { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC }
-						QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+						LibraryBPM:editable { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC }
+						LibraryBPM { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+						
 
 						<!--library search bar-->
 						WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }

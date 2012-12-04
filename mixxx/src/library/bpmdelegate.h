@@ -5,7 +5,6 @@
 #include <QTableView>
 
 #include "trackinfoobject.h"
-#include "bpmbutton.h"
 
 class BPMDelegate : public QStyledItemDelegate {
   Q_OBJECT
