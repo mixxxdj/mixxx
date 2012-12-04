@@ -51,6 +51,7 @@
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
+#include "sharedglcontext.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -303,9 +304,9 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     if (!QDir(args.getSettingsPath()).exists()) {
         QDir().mkpath(args.getSettingsPath());
     }
-    m_pLibrary = new Library(this, m_pConfig,
-                             bFirstRun || bUpgraded,
-                             m_pRecordingManager);
+
+    // Register TrackPointer as a metatype since we use it in signals/slots
+    // regularly.
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
 #ifdef __VINYLCONTROL__
@@ -316,14 +317,19 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
-                                         m_pLibrary, m_pVCManager);
+                                         m_pVCManager);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-    //m_pPlayerManager->addPreviewDeck();
+    m_pPlayerManager->addPreviewDeck();
+
+    m_pLibrary = new Library(this, m_pConfig,
+                             bFirstRun || bUpgraded,
+                             m_pRecordingManager);
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     // Call inits to invoke all other construction parts
 
@@ -417,6 +423,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     initActions();
     initMenuBar();
+
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    QGLWidget* pContextWidget = new QGLWidget(this);
+    pContextWidget->hide();
+    SharedGLContext::setWidget(pContextWidget);
 
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame();
@@ -536,7 +548,7 @@ MixxxApp::~MixxxApp()
     m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
-    // PlayerManager depends on Engine, Library, SoundManager, VinylControlManager, and Config
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
 
@@ -628,6 +640,10 @@ void MixxxApp::slotViewShowMicrophone(bool enable) {
     toggleVisibility(ConfigKey("[Microphone]", "show_microphone"), enable);
 }
 
+void MixxxApp::slotViewShowPreviewDeck(bool enable) {
+    toggleVisibility(ConfigKey("[PreviewDeck]", "show_previewdeck"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -641,6 +657,8 @@ void MixxxApp::onNewSkinLoaded() {
                              ConfigKey("[Samplers]", "show_samplers"));
     setVisibilityOptionState(m_pViewShowMicrophone,
                              ConfigKey("[Microphone]", "show_microphone"));
+    setVisibilityOptionState(m_pViewShowPreviewDeck,
+                             ConfigKey("[PreviewDeck]", "show_previewdeck"));
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -999,6 +1017,16 @@ void MixxxApp::initActions()
     connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowMicrophone(bool)));
 
+    QString showPreviewDeckTitle = tr("Show Preview Deck");
+    QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
+    " " + mayNotBeSupported;
+    m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
+    m_pViewShowPreviewDeck->setCheckable(true);
+    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+P" , "Menu|View|Show Preview Deck"));
+    m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
+    m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
+    connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowPreviewDeck(bool)));
 
 
     QString recordTitle = tr("&Record Mix");
@@ -1071,6 +1099,7 @@ void MixxxApp::initMenuBar()
     m_pViewMenu->addAction(m_pViewShowSamplers);
     m_pViewMenu->addAction(m_pViewShowMicrophone);
     m_pViewMenu->addAction(m_pViewVinylControl);
+    m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
 
@@ -1161,6 +1190,7 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
 }
 
 void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
+    Q_UNUSED(toggle);
     rebootMixxxView();
 }
 
