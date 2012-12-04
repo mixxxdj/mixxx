@@ -23,12 +23,6 @@ class WSpinny : public QGLWidget {
     void dropEvent(QDropEvent *event);
 
   public slots:
-    // Update the playback angle saved in the widget and repaint. Playpos is a
-    // normalized (0.0-1.0) playback position. (Not an angle!)
-    void updateAngleFromPlaypos(double playpos);
-    void updateGhostAngleFromPlaypos(double playpos);
-
-    void updateRate(double);
     void updateVinylControlSpeed(double rpm);
     void updateVinylControlEnabled(double enabled);
     void invalidateVinylControl();
@@ -43,8 +37,6 @@ class WSpinny : public QGLWidget {
     void mousePressEvent(QMouseEvent * e);
     void mouseReleaseEvent(QMouseEvent * e);
     void wheelEvent(QWheelEvent *e);
-    void showEvent(QShowEvent* e);
-    void hideEvent(QHideEvent* e);
 
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
@@ -84,7 +76,9 @@ class WSpinny : public QGLWidget {
     int m_iSignalUpdateTick;
     QString m_group;
     float m_fAngle; //Degrees
+    double m_dAngleLastPlaypos;
     float m_fGhostAngle;
+    double m_dGhostAngleLastPlaypos;
     int m_iStartMouseX;
     int m_iStartMouseY;
     int m_iFullRotations;
