@@ -30,7 +30,9 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_iSize(0),
           m_iSignalUpdateTick(0),
           m_fAngle(0.0f),
+          m_dAngleLastPlaypos(-1),
           m_fGhostAngle(0.0f),
+          m_dGhostAngleLastPlaypos(-1),
           m_iStartMouseX(-1),
           m_iStartMouseY(-1),
           m_iFullRotations(0),
@@ -70,7 +72,6 @@ WSpinny::~WSpinny()
     delete m_pVinylControlSpeedType;
     delete m_pVinylControlEnabled;
     delete m_pSignalEnabled;
-    delete m_pRate;
 #endif
 
 }
@@ -137,8 +138,6 @@ void WSpinny::setup(QDomNode node, QString group)
                         ConfigKey(group, "vinylcontrol_enabled")));
     m_pSignalEnabled = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_signal_enabled")));
-    m_pRate = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "rate")));
 
     //Match the vinyl control's set RPM so that the spinny widget rotates at the same
     //speed as your physical decks, if you're using vinyl control.
@@ -149,9 +148,6 @@ void WSpinny::setup(QDomNode node, QString group)
     connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlEnabled(double)));
 
-    //Check the rate to see if we are stopped
-    connect(m_pRate, SIGNAL(valueChanged(double)),
-            this, SLOT(updateRate(double)));
 #else
     //if no vinyl control, just call it 33
     this->updateVinylControlSpeed(33.0);
@@ -167,6 +163,16 @@ void WSpinny::paintEvent(QPaintEvent *e)
 
     if (m_pBG) {
         p.drawPixmap(0, 0, *m_pBG);
+    }
+
+    if (m_pVisualPlayPos->get() != m_dAngleLastPlaypos) {
+        m_fAngle = calculateAngle(m_pVisualPlayPos->get());
+        m_dAngleLastPlaypos = m_pVisualPlayPos->get();
+    }
+
+    if (m_pSlipPosition->get() != m_dGhostAngleLastPlaypos) {
+        m_fGhostAngle = calculateAngle(m_pSlipPosition->get());
+        m_dGhostAngleLastPlaypos = m_pSlipPosition->get();
     }
 
 #ifdef __VINYLCONTROL__
@@ -335,21 +341,6 @@ double WSpinny::calculatePositionFromAngle(double angle)
     return playpos;
 }
 
-void WSpinny::updateAngleFromPlaypos(double playpos) {
-    if (isVisible()) {
-        m_fAngle = calculateAngle(playpos);
-    }
-}
-
-void WSpinny::updateGhostAngleFromPlaypos(double playpos) {
-    if (isVisible()) {
-        m_fGhostAngle = calculateAngle(playpos);
-    }
-}
-
-void WSpinny::updateRate(double rate) {
-}
-
 void WSpinny::updateVinylControlSpeed(double rpm) {
     m_dRotationsPerSecond = rpm/60.;
 }
@@ -388,9 +379,7 @@ void WSpinny::invalidateVinylControl() {
 #endif
 }
 
-
-void WSpinny::mouseMoveEvent(QMouseEvent * e)
-{
+void WSpinny::mouseMoveEvent(QMouseEvent * e) {
     int y = e->y();
     int x = e->x();
 
@@ -493,25 +482,6 @@ void WSpinny::wheelEvent(QWheelEvent *e)
 
     e->accept();
     */
-}
-
-void WSpinny::showEvent(QShowEvent* e) {
-    Q_UNUSED(e);
-    // Update angles on show since we don't calculate while we're hidden.
-    m_fAngle = calculateAngle(m_pVisualPlayPos->get());
-    m_fGhostAngle = calculateAngle(m_pSlipPosition->get());
-    connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
-            this, SLOT(updateAngleFromPlaypos(double)));
-    connect(m_pSlipPosition, SIGNAL(valueChanged(double)),
-            this, SLOT(updateGhostAngleFromPlaypos(double)));
-}
-
-void WSpinny::hideEvent(QHideEvent* e) {
-    Q_UNUSED(e);
-    disconnect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
-               this, SLOT(updateAngleFromPlaypos(double)));
-    disconnect(m_pSlipPosition, SIGNAL(valueChanged(double)),
-               this, SLOT(updateGhostAngleFromPlaypos(double)));
 }
 
 /** DRAG AND DROP **/
