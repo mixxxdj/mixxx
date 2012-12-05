@@ -9,6 +9,7 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
            m_pLayout(new QHBoxLayout(this)),
            m_isSelected(option.state & QStyle::State_Selected) {
     setPalette(option.palette);
+    setObjectName("LibraryBPM");
     // configure Lock Button
     m_pLock->setMaximumWidth(20);
     m_pLock->setCheckable(true);
@@ -22,7 +23,7 @@ BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
         m_pBPMSpinBox->setMaximum(1000);
         m_pBPMSpinBox->setSingleStep(1e-8);
         m_pBPMSpinBox->setDecimals(8);
-        m_pBPMSpinBox->setObjectName("LibraryBPM");
+        m_pBPMSpinBox->setObjectName("LibraryBPMSpinBox");
         m_pLayout->addWidget(m_pBPMSpinBox);
         connect(m_pBPMSpinBox, SIGNAL(editingFinished()),
                 this, SIGNAL(finishedEditing()));
