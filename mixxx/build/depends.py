@@ -818,8 +818,6 @@ class MixxxCore(Feature):
 
 
         elif build.platform_is_osx:
-            # Need CoreServices for time utilities (src/util/timer.cpp)
-            build.env.Append(LINKFLAGS='-framework CoreServices')
             #Stuff you may have compiled by hand
             if os.path.isdir('/usr/local/include'):
                 build.env.Append(LIBPATH = ['/usr/local/lib'])
