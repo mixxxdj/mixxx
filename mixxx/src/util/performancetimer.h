@@ -3,14 +3,9 @@
 
 #include <QtGlobal>
 
-class AbstractPerformanceTimer {
-    virtual void start() = 0;
-    virtual quint64 elapsed() = 0;
-    virtual quint64 restart() = 0;
-};
+class QTime;
 
-#ifdef __APPLE__
-class PerformanceTimer : public AbstractPerformanceTimer {
+class PerformanceTimer {
   public:
     PerformanceTimer();
     virtual ~PerformanceTimer();
@@ -20,33 +15,17 @@ class PerformanceTimer : public AbstractPerformanceTimer {
     quint64 elapsed();
 
   private:
+    quint64 count() const;
+    quint64 countDeltaToNanoseconds(quint64 delta) const;
+
     bool m_running;
     quint64 m_start;
+    quint64 m_freq_numerator;
+    quint64 m_freq_denominator;
+
+    // This is the crappy, millisecond-precision fallback if we don't have a
+    // high-resolution timer for the platform.
+    QTime* m_time;
 };
-#else
-#include <QTime>
-
-// This is the crappy, millisecond-precision fallback if we don't have a
-// high-resolution timer for the platform.
-class PerformanceTimer : public AbstractPerformanceTimer {
-  public:
-    PerformanceTimer() {}
-    virtual ~PerformanceTimer() {}
-
-    void start() {
-        m_time.start();
-    }
-    quint64 restart() {
-        // QTime is millisecond precision.
-        return m_time.restart() * 1e6;
-    }
-    quint64 elapsed() {
-        return m_time.elapsed() * 1e6;
-    }
-  private:
-    QTime m_time;
-};
-#endif
-
 
 #endif /* PERFORMANCETIMER_H */
