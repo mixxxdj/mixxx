@@ -2188,8 +2188,8 @@
 						<!--transition time in Auto DJ tab-->
 						QSpinBox:editable { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC }
 						QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
-						QDoubleSpinBox#LibraryBPMSpinBox { background: transparent; border-color: transparent}
-						QWidget#LibraryBPM {background: transparent;}
+						<!-- Style of the SpinBox in the TableView, 'border : 0' has to be set for the rest to obey the styling commands-->
+						QDoubleSpinBox#LibraryBPMSpinBox {border: 0; background: #656565}
 						
 
 						<!--library search bar-->
