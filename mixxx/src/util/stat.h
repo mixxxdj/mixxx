@@ -12,6 +12,7 @@ class Stat {
     enum StatType {
         UNSPECIFIED = 0,
         DURATION_MSEC,
+        DURATION_NANOSEC,
         DURATION_SEC,
         TRACE_START,
         TRACE_FINISH,
@@ -37,6 +38,10 @@ class Stat {
         // O(1) in time, O(n) in space where n is the # of reports.
         // Use carefully!
         VALUES          = 0x0100,
+        // TODO, track average reports per second
+        REPORTS_PER_SECOND = 0x0200,
+        // TODO, track the time in between received reports.
+        REPORT_TIME_DELTA = 0x0400,
     };
     typedef int ComputeFlags;
 

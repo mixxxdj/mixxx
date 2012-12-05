@@ -693,6 +693,8 @@ class MixxxCore(Feature):
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",
                    "util/stat.cpp",
+                   "util/timer.cpp",
+                   "util/performancetimer.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)
@@ -816,6 +818,8 @@ class MixxxCore(Feature):
 
 
         elif build.platform_is_osx:
+            # Need CoreServices for time utilities (src/util/timer.cpp)
+            build.env.Append(LINKFLAGS='-framework CoreServices')
             #Stuff you may have compiled by hand
             if os.path.isdir('/usr/local/include'):
                 build.env.Append(LIBPATH = ['/usr/local/lib'])

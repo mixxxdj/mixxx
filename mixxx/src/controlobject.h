@@ -25,7 +25,6 @@
 #include "configobject.h"
 #include "controlobjectthread.h"
 #include "controllers/midi/midimessage.h"
-#include "util/stat.h"
 
 class QWidget;
 class ConfigKey;
@@ -142,8 +141,8 @@ private:
     // Whether to track value changes with the stats framework.
     bool m_bTrack;
     QString m_trackKey;
-    Stat::StatType m_trackType;
-    Stat::ComputeFlags m_trackFlags;
+    int m_trackType;
+    int m_trackFlags;
     /** List of associated proxy objects */
     QList<ControlObjectThread*> m_qProxyList;
     /** Mutex for the proxy list */
