@@ -33,7 +33,8 @@ AnalyserQueue::AnalyserQueue() :
     m_aiCheckPriorities(false),
     m_tioq(),
     m_qm(),
-    m_qwait() {
+    m_qwait(),
+    m_queue_size(0) {
     connect(this, SIGNAL(updateProgress()),
             this, SLOT(slotUpdateProgress()));
 }
@@ -88,7 +89,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
         }
     }
 
-    if (!pLoadTrack && m_tioq.size() > 0) {
+    if (!pLoadTrack && !m_tioq.isEmpty()) {
         pLoadTrack = m_tioq.dequeue();
     }
 
@@ -170,10 +171,10 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
         progress = (int)(((float)processedSamples)/totalSamples *
                          (1000 - FINALISE_PERCENT));
 
-        if (m_iTrackProgress != progress) {
+        if (m_progressInfo.track_progress != progress) {
             if (progressUpdateInhibitTimer.elapsed() > 60) {
                 // Inhibit Updates for 60 milliseconds
-                emitTrackProgress(tio, progress);
+                emitUpdateProgress(tio, progress);
                 progressUpdateInhibitTimer.start();
             }
         }
@@ -220,16 +221,17 @@ void AnalyserQueue::stop() {
 }
 
 void AnalyserQueue::run() {
-
-    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    unsigned static id = 0; //the id of this thread, for debugging purposes
     QThread::currentThread()->setObjectName(QString("AnalyserQueue %1").arg(++id));
 
     // If there are no analyzers, don't waste time running.
     if (m_aq.size() == 0)
         return;
 
-    m_iTrackProgress = 0;
-    int queue_size = 0;
+    m_progressInfo.current_track = TrackPointer();
+    m_progressInfo.track_progress = 0;
+    m_progressInfo.queue_size = 0;
+    m_progressInfo.sema.release(); // Initalise with one
 
     while (!m_exit) {
         TrackPointer nextTrack = dequeueNextBlocking();
@@ -267,7 +269,7 @@ void AnalyserQueue::run() {
         }
 
         m_qm.lock();
-        queue_size = m_tioq.size();
+        m_queue_size = m_tioq.size();
         m_qm.unlock();
 
         if (processTrack) {
@@ -279,7 +281,7 @@ void AnalyserQueue::run() {
                 }
                 queueAnalyseTrack(nextTrack);
             } else {
-                emitTrackProgress(nextTrack, 0);
+                emitUpdateProgress(nextTrack, 0);
                 bool completed = doAnalysis(nextTrack, pSoundSource);
 
                 if (!completed) {
@@ -289,7 +291,7 @@ void AnalyserQueue::run() {
                         itf.next()->cleanup(nextTrack);
                     }
                     queueAnalyseTrack(nextTrack);
-                    emitTrackProgress(nextTrack, 0);
+                    emitUpdateProgress(nextTrack, 0);
                } else {
                     // 100% - FINALISE_PERCENT finished
                     // This takes around 3 sec on a Atom Netbook
@@ -297,20 +299,20 @@ void AnalyserQueue::run() {
                     while (itf.hasNext()) {
                         itf.next()->finalise(nextTrack);
                     }
-                    emitTrackFinished(nextTrack, queue_size);
+                    emitUpdateProgress(nextTrack, 1000);
                 }
             }
         } else {
-            emitTrackFinished(nextTrack, queue_size);
+            emitUpdateProgress(nextTrack, 1000); // 100%
             qDebug() << "Skipping track analysis because no analyzer initialized.";
         }
 
         delete pSoundSource;
 
         m_qm.lock();
-        queue_size = m_tioq.size();
+        m_queue_size = m_tioq.size();
         m_qm.unlock();
-        if (queue_size == 0) {
+        if (m_queue_size == 0) {
             emit(queueEmpty()); // emit asynchrony for no deadlock
         }
     }
@@ -318,18 +320,37 @@ void AnalyserQueue::run() {
 }
 
 // This is called from the AnalyserQueue thread
-void AnalyserQueue::emitTrackProgress(TrackPointer pTrack, int progress) {
-    m_iTrackProgress = progress;
-    if (pTrack) {
-        pTrack->setAnalyserProgress(progress);
+void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
+    if (!m_exit) {    
+        // First tryAcqire will have always success because sema is initalised with on
+        // The following tries will success if the previous signal was processed in the GUI Thread
+        // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
+        // 100 % is emitted in any case
+        if (progress < 1000 && progress > 0 ) {
+            // Signals during processing are not required in any case
+            if (!m_progressInfo.sema.tryAcquire()) {
+               return;
+            }
+        } else {
+            m_progressInfo.sema.acquire();
+        }
+        m_progressInfo.current_track = tio;
+        m_progressInfo.track_progress = progress;
+        m_progressInfo.queue_size = m_queue_size;
+        emit(updateProgress());
     }
-    emit(trackProgress(pTrack, progress/10));
 }
 
-// This is called from the AnalyserQueue thread
-void AnalyserQueue::emitTrackFinished(TrackPointer pTrack, int queue_size) {
-    emitTrackProgress(pTrack, 1000);
-    emit(trackFinished(pTrack, queue_size));
+//slot
+void AnalyserQueue::slotUpdateProgress() {
+    if (m_progressInfo.current_track) {
+        m_progressInfo.current_track->setAnalyserProgress(m_progressInfo.track_progress);
+    }
+    emit(trackProgress(m_progressInfo.track_progress/10));
+    if (m_progressInfo.track_progress == 1000) {
+        emit(trackFinished(m_progressInfo.queue_size));
+    }
+    m_progressInfo.sema.release();
 }
 
 //slot
@@ -398,6 +419,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
 
 AnalyserQueue::~AnalyserQueue() {
     stop();
+    m_progressInfo.sema.release();
     wait(); //Wait until thread has actually stopped before proceeding.
 
     QListIterator<Analyser*> it(m_aq);

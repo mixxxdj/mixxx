@@ -34,9 +34,10 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
     : WWidget(parent),
       m_pGroup(pGroup),
       m_pConfig(pConfig),
-      m_analyserProgress(0) {
-    m_iPos = 0;
-    m_bDrag = false;
+      m_bDrag(false),
+      m_iPos(0),
+      m_analyserProgress(-1),
+      m_trackLoaded(false) {
 
     m_totalGainControl = new ControlObjectThreadMain(
                 ControlObject::getControl( ConfigKey(m_pGroup,"total_gain")));
@@ -191,6 +192,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
     m_waveformPixmap.fill(QColor(0, 0, 0, 0));
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
+    m_trackLoaded = false;
 
     if (pTrack) {
         m_pCurrentTrack = pTrack;
@@ -209,6 +211,13 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
     update();
 }
 
+void WOverview::slotTrackLoaded(TrackPointer pTrack) {
+    if (m_pCurrentTrack == pTrack) {
+        m_trackLoaded = true;
+        update();
+    }
+}
+
 void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
@@ -222,6 +231,7 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
     m_visualSamplesByPixel = 0.0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
+    m_trackLoaded = false;
 
     update();
 }
@@ -378,7 +388,7 @@ bool WOverview::drawNextPixmapPart() {
 
 void WOverview::mouseMoveEvent(QMouseEvent * e)
 {
-    m_iPos = e->x()-m_iStartMousePos;
+    m_iPos = e->x();
     m_iPos = math_max(1,math_min(m_iPos,width()-1));
 
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
@@ -405,8 +415,6 @@ void WOverview::mouseReleaseEvent(QMouseEvent * e)
 void WOverview::mousePressEvent(QMouseEvent * e)
 {
     //qDebug() << "WOverview::mousePressEvent" << e->pos();
-
-    m_iStartMousePos = 0;
     mouseMoveEvent(e);
     m_bDrag = true;
 }
@@ -417,8 +425,9 @@ void WOverview::paintEvent(QPaintEvent *) {
     QPainter painter(this);
     painter.resetTransform();
     // Fill with transparent pixels
-    if( !m_backgroundPixmap.isNull())
+    if (!m_backgroundPixmap.isNull()) {
         painter.drawPixmap(rect(), m_backgroundPixmap);
+    }
 
     //Display viewer contour if end of track
     if (m_endOfTrack) {
