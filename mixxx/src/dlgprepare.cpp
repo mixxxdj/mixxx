@@ -127,13 +127,11 @@ void DlgPrepare::moveSelection(int delta) {
     m_pPrepareLibraryTableView->moveSelection(delta);
 }
 
-void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
-{
+void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected) {
+    Q_UNUSED(selected);
     Q_UNUSED(deselected);
-    if (selected == QItemSelection()) //Empty selection
-        pushButtonAnalyze->setEnabled(false);
-    else
-        pushButtonAnalyze->setEnabled(true);
+    bool tracksSelected = m_pPrepareLibraryTableView->selectionModel()->hasSelection();
+    pushButtonAnalyze->setEnabled(tracksSelected);
 }
 
 void DlgPrepare::selectAll() {

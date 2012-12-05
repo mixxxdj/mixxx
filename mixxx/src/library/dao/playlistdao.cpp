@@ -597,8 +597,8 @@ void PlaylistDAO::removeTracksFromPlaylists(QList<int> ids) {
         idList << QString::number(id);
     }
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM PlaylistTracks WHERE track_id in ("
-                  +idList.join(",") + ")");
+    query.prepare(QString("DELETE FROM PlaylistTracks WHERE track_id in (%1)")
+                  .arg(idList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
