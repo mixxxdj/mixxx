@@ -45,7 +45,7 @@ class PerformanceTimer : public AbstractPerformanceTimer {
     }
   private:
     QTime m_time;
-}
+};
 #endif
 
 

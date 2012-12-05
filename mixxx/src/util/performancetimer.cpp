@@ -1,15 +1,11 @@
 #include "util/performancetimer.h"
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 #include <CoreServices/CoreServices.h>
 #include <mach/mach_time.h>
 
 quint64 durationToNanoseconds(quint64 duration) {
-    // Convert to nanoseconds.
-    // Have to do some pointer fun because AbsoluteToNanoseconds
-    // works in terms of UnsignedWide, which is a structure rather
-    // than a proper 64-bit integer.
-
+    // See http://developer.apple.com/library/mac/#qa/qa1398/_index.html
     Nanoseconds nsec = AbsoluteToNanoseconds(*(AbsoluteTime*)&duration);
     return *(quint64*)&nsec;
 }
@@ -46,6 +42,8 @@ quint64 PerformanceTimer::elapsed() {
     quint64 duration = now - m_start;
     return durationToNanoseconds(duration);
 }
+
+#else defined(__WINDOWS__)
 
 #endif
 
