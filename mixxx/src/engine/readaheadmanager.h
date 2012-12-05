@@ -53,8 +53,7 @@ class ReadAheadManager {
 
     // hintReader allows the ReadAheadManager to provide hints to the reader to
     // indicate that the given portion of a song is about to be read.
-    virtual void hintReader(double dRate, QList<Hint>& hintList,
-                            int iSamplesPerBuffer);
+    virtual void hintReader(double dRate, QList<Hint>& hintList);
 
     virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                        double numConsumedSamples);

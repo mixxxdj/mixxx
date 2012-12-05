@@ -115,29 +115,24 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
             m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
             m_iMinBpm, m_iMaxBpm, extraVersionInfo);
 
-        m_bShouldAnalyze = m_bPreferencesReanalyzeOldBpm;
-        if (!m_bPreferencesReanalyzeOldBpm) {
+        if (version == newVersion && subVersion == newSubVersion) {
+            // If the version and settings have not changed then if the world is
+            // sane, re-analyzing will do nothing.
+            m_bShouldAnalyze = false;
+            qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
+        } else if (m_bPreferencesReanalyzeOldBpm) {
+            m_bShouldAnalyze = true;
+        } else if (pBeats->getBpm() == 0.0) {
+            m_bShouldAnalyze = true;
+            qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
+        } else if (pBeats->findNextBeat(0) <= 0.0) {
+            m_bShouldAnalyze = true;
+            qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
+        } else {
+            m_bShouldAnalyze = false;
             qDebug() << "Beat calculation skips analyzing because the track has"
                      << "a BPM computed by a previous Mixxx version and user"
                      << "preferences indicate we should not change it.";
-        }
-
-        // Override preference if the BPM is 0.
-        if (!m_bShouldAnalyze && pBeats->getBpm() == 0.0) {
-            m_bShouldAnalyze = true;
-            qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
-        } else if (!m_bShouldAnalyze && pBeats->findNextBeat(0) <= 0.0) {
-            m_bShouldAnalyze = true;
-            qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
-        }
-
-        // If the version and settings have not changed then if the world is
-        // sane, re-analyzing will do nothing.
-        if (version == newVersion && subVersion == newSubVersion) {
-            // Do not re-analyze if the settings are the same and the BPM is not
-            // 0.
-            qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
-            m_bShouldAnalyze = false;
         }
     }
 

@@ -47,6 +47,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Parsers for each node
     QWidget* parseWidgetGroup(QDomElement node);
+    QWidget* parseWidgetStack(QDomElement node);
     QWidget* parseBackground(QDomElement node, QWidget* pGrandparent);
     QWidget* parsePushButton(QDomElement node);
     QWidget* parseSliderComposed(QDomElement node);
@@ -74,7 +75,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
-    void setupWidget(QDomNode node, QWidget* pWidget);
+    void setupWidget(QDomNode node, QWidget* pWidget, bool setupPosition=true);
     void setupConnections(QDomNode node, QWidget* pWidget);
     void addShortcutToToolTip(QWidget* pWidget, const QString& shortcut, const QString& cmd);
     QString getLibraryStyle(QDomNode node);
