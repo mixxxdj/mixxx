@@ -691,6 +691,8 @@ class MixxxCore(Feature):
 
                    "util/pa_ringbuffer.c",
                    "util/sleepableqthread.cpp",
+                   "util/statsmanager.cpp",
+                   "util/stat.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)

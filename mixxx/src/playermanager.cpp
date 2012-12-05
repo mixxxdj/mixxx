@@ -16,6 +16,7 @@
 #include "engine/enginemaster.h"
 #include "soundmanager.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#include "util/stat.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
                              SoundManager* pSoundManager,
@@ -27,9 +28,9 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue> *pConfig,
           m_pVCManager(pVCManager),
           // NOTE(XXX) LegacySkinParser relies on these controls being COs and
           // not COTMs listening to a CO.
-          m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"))),
-          m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"))),
-          m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"))) {
+          m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true, true)),
+          m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
+          m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
 
 
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),

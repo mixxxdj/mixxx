@@ -34,16 +34,15 @@
 #include "enginesidechain.h"
 #include "engine/syncworker.h"
 #include "sampleutil.h"
+#include "util/timer.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
 
-
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
                            bool bEnableSidechain) {
-
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
     m_pSyncWorker = new SyncWorker(m_pWorkerScheduler);
@@ -204,6 +203,8 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
         }
     }
 
+    ScopedTimer t(QString("EngineMaster::mixChannels_%1active").arg(totalActive));
+
     if (totalActive == 0) {
         SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
     } else if (totalActive == 1) {
@@ -330,6 +331,8 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
 
 void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
+    ScopedTimer t("EngineMaster::process");
+
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
 
