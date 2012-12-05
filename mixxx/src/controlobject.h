@@ -21,9 +21,11 @@
 #include <QObject>
 #include <QEvent>
 #include <QMutex>
+
 #include "configobject.h"
 #include "controlobjectthread.h"
 #include "controllers/midi/midimessage.h"
+#include "util/stat.h"
 
 class QWidget;
 class ConfigKey;
@@ -60,7 +62,7 @@ class ControlObject : public QObject
     Q_OBJECT
 public:
     ControlObject();
-    ControlObject(ConfigKey key, bool bIgnoreNops=true);
+    ControlObject(ConfigKey key, bool bIgnoreNops=true, bool track=false);
     ControlObject(const QString& group, const QString& item, bool bIgnoreNops=true);
     virtual ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest. */
@@ -137,6 +139,11 @@ protected:
 private:
     // Whether to ignore set/add/sub()'s which would have no effect
     bool m_bIgnoreNops;
+    // Whether to track value changes with the stats framework.
+    bool m_bTrack;
+    QString m_trackKey;
+    Stat::StatType m_trackType;
+    Stat::ComputeFlags m_trackFlags;
     /** List of associated proxy objects */
     QList<ControlObjectThread*> m_qProxyList;
     /** Mutex for the proxy list */

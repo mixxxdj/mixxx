@@ -25,6 +25,7 @@
 #include "wskincolor.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
+#include "util/timer.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -248,6 +249,8 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 }
 
 bool WOverview::drawNextPixmapPart() {
+    ScopedTimer t("WOverview::drawNextPixmapPart");
+
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
     int currentCompletion;
@@ -408,8 +411,9 @@ void WOverview::mousePressEvent(QMouseEvent * e)
     m_bDrag = true;
 }
 
-void WOverview::paintEvent(QPaintEvent *)
-{
+void WOverview::paintEvent(QPaintEvent *) {
+    ScopedTimer t("WOverview::paintEvent");
+
     QPainter painter(this);
     painter.resetTransform();
     // Fill with transparent pixels
