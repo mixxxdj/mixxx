@@ -1,4 +1,7 @@
 #include <math.h>
+
+#include <QtDebug>
+
 #include "mathstuff.h"
 #include "wpixmapstore.h"
 #include "controlobject.h"
@@ -7,7 +10,7 @@
 #include "wspinny.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
-        : QGLWidget(SharedGLContext::getContext(), parent),
+        : QGLWidget(parent, SharedGLContext::getWidget()),
           m_pBG(NULL),
           m_pFG(NULL),
           m_pGhost(NULL),
@@ -27,17 +30,23 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_iSize(0),
           m_iSignalUpdateTick(0),
           m_fAngle(0.0f),
+          m_dAngleLastPlaypos(-1),
           m_fGhostAngle(0.0f),
+          m_dGhostAngleLastPlaypos(-1),
           m_iStartMouseX(-1),
           m_iStartMouseY(-1),
           m_iFullRotations(0),
-          m_dPrevTheta(0.) {
+          m_dPrevTheta(0.),
+          m_bClampFailedWarning(false) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
     m_pVinylControl = NULL;
 #endif
     //Drag and drop
     setAcceptDrops(true);
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
 }
 
 WSpinny::~WSpinny()
@@ -63,7 +72,6 @@ WSpinny::~WSpinny()
     delete m_pVinylControlSpeedType;
     delete m_pVinylControlEnabled;
     delete m_pSignalEnabled;
-    delete m_pRate;
 #endif
 
 }
@@ -117,17 +125,6 @@ void WSpinny::setup(QDomNode node, QString group)
         ConfigKey(group, "slip_enabled")));
     m_pSlipPosition = new ControlObjectThreadMain(ControlObject::getControl(
         ConfigKey(group, "slip_playposition")));
-    connect(m_pSlipPosition, SIGNAL(valueChanged(double)),
-            this, SLOT(updateGhostAngleFromPlaypos(double)));
-
-    //Repaint when visual_playposition changes.
-    connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
-            this, SLOT(updateAngleFromPlaypos(double)));
-
-    connect(m_pSlipPosition, SIGNAL(valueChanged(double)),
-            this, SLOT(updateGhostAngleFromPlaypos(double)));
-
-
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
@@ -141,8 +138,6 @@ void WSpinny::setup(QDomNode node, QString group)
                         ConfigKey(group, "vinylcontrol_enabled")));
     m_pSignalEnabled = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_signal_enabled")));
-    m_pRate = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "rate")));
 
     //Match the vinyl control's set RPM so that the spinny widget rotates at the same
     //speed as your physical decks, if you're using vinyl control.
@@ -153,9 +148,6 @@ void WSpinny::setup(QDomNode node, QString group)
     connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlEnabled(double)));
 
-    //Check the rate to see if we are stopped
-    connect(m_pRate, SIGNAL(valueChanged(double)),
-            this, SLOT(updateRate(double)));
 #else
     //if no vinyl control, just call it 33
     this->updateVinylControlSpeed(33.0);
@@ -171,6 +163,16 @@ void WSpinny::paintEvent(QPaintEvent *e)
 
     if (m_pBG) {
         p.drawPixmap(0, 0, *m_pBG);
+    }
+
+    if (m_pVisualPlayPos->get() != m_dAngleLastPlaypos) {
+        m_fAngle = calculateAngle(m_pVisualPlayPos->get());
+        m_dAngleLastPlaypos = m_pVisualPlayPos->get();
+    }
+
+    if (m_pSlipPosition->get() != m_dGhostAngleLastPlaypos) {
+        m_fGhostAngle = calculateAngle(m_pSlipPosition->get());
+        m_dGhostAngleLastPlaypos = m_pSlipPosition->get();
     }
 
 #ifdef __VINYLCONTROL__
@@ -283,8 +285,13 @@ double WSpinny::calculateAngle(double playpos) {
     }
 
     if (angle <= -180 || angle > 180) {
-        qDebug() << "Angle clamping failed!" << t << originalAngle << "->" << angle
-                 << "Please file a bug or email mixxx-devel@lists.sourceforge.net";
+        // Only warn once per session. This can tank performance since it prints
+        // like crazy.
+        if (!m_bClampFailedWarning) {
+            qDebug() << "Angle clamping failed!" << t << originalAngle << "->" << angle
+                     << "Please file a bug or email mixxx-devel@lists.sourceforge.net";
+            m_bClampFailedWarning = true;
+        }
         return 0.0;
     }
     return angle;
@@ -334,17 +341,6 @@ double WSpinny::calculatePositionFromAngle(double angle)
     return playpos;
 }
 
-void WSpinny::updateAngleFromPlaypos(double playpos) {
-    m_fAngle = calculateAngle(playpos);
-}
-
-void WSpinny::updateGhostAngleFromPlaypos(double playpos) {
-    m_fGhostAngle = calculateAngle(playpos);
-}
-
-void WSpinny::updateRate(double rate) {
-}
-
 void WSpinny::updateVinylControlSpeed(double rpm) {
     m_dRotationsPerSecond = rpm/60.;
 }
@@ -383,9 +379,7 @@ void WSpinny::invalidateVinylControl() {
 #endif
 }
 
-
-void WSpinny::mouseMoveEvent(QMouseEvent * e)
-{
+void WSpinny::mouseMoveEvent(QMouseEvent * e) {
     int y = e->y();
     int x = e->x();
 

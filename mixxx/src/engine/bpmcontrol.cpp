@@ -46,6 +46,13 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotRateChanged(double)),
             Qt::DirectConnection);
 
+    m_pLoopEnabled = ControlObject::getControl(
+        ConfigKey(_group, "loop_enabled"));
+    m_pLoopStartPosition = ControlObject::getControl(
+        ConfigKey(_group, "loop_start_position"));
+    m_pLoopEndPosition = ControlObject::getControl(
+        ConfigKey(_group, "loop_end_position"));
+
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
@@ -378,6 +385,51 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
     } else {  //!this_near_next && other_near_next
         dThisPrevBeat = m_pBeats->findNthBeat(dThisPosition, -2);
         dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
+    }
+
+    // We might be seeking outside the loop.
+    const bool loop_enabled = m_pLoopEnabled->get() > 0.0;
+    const double loop_start_position = m_pLoopStartPosition->get();
+    const double loop_end_position = m_pLoopEndPosition->get();
+
+    // Cases for sanity:
+    //
+    // CASE 1
+    // Two identical 1-beat loops, out of phase by X samples.
+    // Other deck is at its loop start.
+    // This deck is half way through. We want to jump forward X samples to the loop end point.
+    //
+    // Two identical 1-beat loop, out of phase by X samples.
+    // Other deck is
+
+    // If sync target is 50% through the beat,
+    // If we are at the loop end point and hit sync, jump forward X samples.
+
+
+    // TODO(rryan): Revise this with something that keeps a broader number of
+    // cases in sync. This at least prevents breaking out of the loop.
+    if (loop_enabled) {
+        const double loop_length = loop_end_position - loop_start_position;
+        if (loop_length <= 0.0) {
+            return false;
+        }
+
+        // TODO(rryan): If loop_length is not a multiple of dThisBeatLength should
+        // we bail and not sync phase?
+
+        // Syncing to after the loop end.
+        double end_delta = dNewPlaypos - loop_end_position;
+        if (end_delta > 0) {
+            int i = end_delta / loop_length;
+            dNewPlaypos = loop_start_position + end_delta - i * loop_length;
+        }
+
+        // Syncing to before the loop beginning.
+        double start_delta = loop_start_position - dNewPlaypos;
+        if (start_delta > 0) {
+            int i = start_delta / loop_length;
+            dNewPlaypos = loop_end_position - start_delta + i * loop_length;
+        }
     }
 
     emit(seekAbs(dNewPlaypos));

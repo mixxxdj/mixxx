@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QDesktopServices>
 
+#include "dlgrecording.h"
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
@@ -24,7 +25,6 @@ RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* p
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingView(0),
           m_pRecordingManager(pRecordingManager){
 
 }
@@ -47,18 +47,24 @@ TreeItemModel* RecordingFeature::getChildModel() {
 void RecordingFeature::bindWidget(WLibrary *libraryWidget,
                                   MixxxKeyboard *keyboard) {
     //The view will be deleted by LibraryWidget
-    m_pRecordingView = new DlgRecording(libraryWidget,
-                                        m_pConfig,
-                                        m_pTrackCollection,
-                                        m_pRecordingManager,
-                                        keyboard);
+    DlgRecording* pRecordingView = new DlgRecording(libraryWidget,
+                                                      m_pConfig,
+                                                      m_pTrackCollection,
+                                                      m_pRecordingManager,
+                                                      keyboard);
 
-    m_pRecordingView->installEventFilter(keyboard);
-    libraryWidget->registerView(m_sRecordingViewName, m_pRecordingView);
-    connect(m_pRecordingView, SIGNAL(loadTrack(TrackPointer)),
+    pRecordingView->installEventFilter(keyboard);
+    libraryWidget->registerView(m_sRecordingViewName, pRecordingView);
+    connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(this, SIGNAL(refreshBrowseModel()),
+            pRecordingView, SLOT(refreshBrowseModel()));
+    connect(this, SIGNAL(requestRestoreSearch()),
+            pRecordingView, SLOT(slotRestoreSearch()));
+    connect(pRecordingView, SIGNAL(restoreSearch(QString)),
+            this, SIGNAL(restoreSearch(QString)));
 }
 
 bool RecordingFeature::dropAccept(QList<QUrl> urls) {
@@ -84,9 +90,10 @@ bool RecordingFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void RecordingFeature::activate() {
-    m_pRecordingView->refreshBrowseModel();
+    emit(refreshBrowseModel());
     emit(switchToView(m_sRecordingViewName));
-    emit(restoreSearch(m_pRecordingView->currentSearch()));
+    // Ask the view to emit a restoreSearch signal.
+    emit(requestRestoreSearch());
 }
 
 void RecordingFeature::activateChild(const QModelIndex& index) {

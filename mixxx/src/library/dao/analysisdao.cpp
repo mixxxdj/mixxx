@@ -206,8 +206,8 @@ void AnalysisDao::deleteAnalysises(QList<int> ids) {
         idList << QString::number(id);
     }
     QSqlQuery query(m_db);
-    query.prepare("SELECT track_analysis.id FROM track_analysis WHERE "
-                  "track_id in (" + idList.join(",")+ ")");
+    query.prepare(QString("SELECT track_analysis.id FROM track_analysis WHERE "
+                          "track_id in (%1)").arg(idList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }

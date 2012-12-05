@@ -354,7 +354,7 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     result << mixxx_music_dir+"/";
 
     if (mixxx_music_dir != os_music_folder_dir) {
-        result << os_music_folder_dir;
+        result << os_music_folder_dir + "/";
     }
 
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it

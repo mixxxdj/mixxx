@@ -38,16 +38,19 @@ class LibraryControl : public QObject {
     void slotLoadSelectedTrackToGroup(QString group);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
-    void slotSelectNextPlaylist(double v);
-    void slotSelectPrevPlaylist(double v);
+    void slotSelectNextSidebarItem(double v);
+    void slotSelectPrevSidebarItem(double v);
+    void slotToggleSelectedSidebarItem(double v);
     void slotLoadSelectedIntoFirstStopped(double v);
     void slotSelectTrackKnob(double v);
+
 
   private:
     ControlObjectThreadMain* m_pSelectNextTrack;
     ControlObjectThreadMain* m_pSelectPrevTrack;
     ControlObjectThreadMain* m_pSelectNextPlaylist;
     ControlObjectThreadMain* m_pSelectPrevPlaylist;
+    ControlObjectThreadMain* m_pToggleSidebarItem;
     ControlObjectThreadMain* m_pLoadSelectedIntoFirstStopped;
     ControlObjectThreadMain* m_pSelectTrackKnob;
     WLibrary* m_pLibraryWidget;
