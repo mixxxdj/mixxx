@@ -22,6 +22,8 @@ QString Stat::valueUnits() const {
     switch (m_type) {
         case DURATION_MSEC:
             return "ms";
+        case DURATION_NANOSEC:
+            return "ns";
         case DURATION_SEC:
             return "s";
         case TRACE_START:

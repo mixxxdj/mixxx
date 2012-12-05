@@ -45,17 +45,19 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
           m_dDefaultValue(0),
           m_key(key),
           m_bIgnoreNops(bIgnoreNops),
-          m_bTrack(track) {
+          m_bTrack(track),
+          m_trackKey("control " + m_key.group + "," + m_key.item),
+          m_trackType(Stat::UNSPECIFIED),
+          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
 
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
-        m_trackKey = "control " + m_key.group + "," + m_key.item;
-        m_trackType = Stat::UNSPECIFIED;
-        m_trackFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX;
-        Stat::track(m_trackKey, m_trackType, m_trackFlags, m_dValue);
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
     }
 }
 
@@ -227,7 +229,8 @@ void ControlObject::setValueFromEngine(double dValue)
 {
     m_dValue = dValue;
     if (m_bTrack) {
-        Stat::track(m_trackKey, m_trackType, m_trackFlags, m_dValue);
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
     }
     emit(valueChangedFromEngine(m_dValue));
 }
@@ -237,7 +240,8 @@ void ControlObject::setValueFromMidi(MidiOpCode o, double v)
     Q_UNUSED(o);
     m_dValue = v;
     if (m_bTrack) {
-        Stat::track(m_trackKey, m_trackType, m_trackFlags, m_dValue);
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
     }
     emit(valueChanged(m_dValue));
 }
@@ -254,7 +258,8 @@ void ControlObject::setValueFromThread(double dValue)
 
     m_dValue = dValue;
     if (m_bTrack) {
-        Stat::track(m_trackKey, m_trackType, m_trackFlags, m_dValue);
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
     }
     emit(valueChanged(m_dValue));
 }
