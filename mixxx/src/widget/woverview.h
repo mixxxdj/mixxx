@@ -64,7 +64,6 @@ protected:
     virtual void dropEvent(QDropEvent* event);
 
 private slots:
-    void onTotalGainChange(double v);
     void onEndOfTrackChange(double v);
 
     void onMarkChanged(double v);
@@ -85,8 +84,6 @@ private slots:
 
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObjectThreadMain* m_totalGainControl;
-    double m_totalGain;
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;
     ControlObjectThreadMain* m_trackSamplesControl;
