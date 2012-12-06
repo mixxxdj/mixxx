@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-12-03 10:54+0000\n"
-"Last-Translator: Sławomir Kur <Unknown>\n"
+"PO-Revision-Date: 2012-12-05 15:24+0000\n"
+"Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-04 04:43+0000\n"
-"X-Generator: Launchpad (build 16335)\n"
+"X-Launchpad-Export-Date: 2012-12-06 04:37+0000\n"
+"X-Generator: Launchpad (build 16341)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -1076,7 +1076,7 @@ msgstr ""
 
 #: DlgControllerLearning#73
 msgid "Cues"
-msgstr ""
+msgstr "Znaczniki (Cue)"
 
 #: DlgControllerLearning#74
 msgid "Hotcues"
@@ -1648,7 +1648,7 @@ msgstr "Krzywa Crossfadera"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade/Fast cut (additive)"
-msgstr ""
+msgstr "Wolne wyciszenie/szybkie obcięcie (addytywnie)"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Constant power"
@@ -2748,7 +2748,7 @@ msgstr "Rok"
 #: DlgTrackInfo#10
 msgctxt "DlgTrackInfo#10"
 msgid "Key"
-msgstr ""
+msgstr "Tonacja"
 
 #: DlgTrackInfo#11
 msgid "Filetype:"
@@ -2785,7 +2785,7 @@ msgstr "Połowa BPM"
 
 #: DlgTrackInfo#19
 msgid "Cuepoints"
-msgstr ""
+msgstr "Punkty znaczników"
 
 #: DlgTrackInfo#20
 msgid "&Previous"
@@ -2832,7 +2832,7 @@ msgstr "Pozycja"
 #: DlgTrackInfo#30
 msgctxt "DlgTrackInfo#30"
 msgid "Hotcue"
-msgstr ""
+msgstr "Szybiki znacznik (Hotcue)"
 
 #: DlgTrackInfo#31
 msgid "Label"
@@ -3560,7 +3560,7 @@ msgstr "Może nie być wspierane we wszystkich skórkach."
 
 #: MixxxApp#71
 msgid "Show Sample Deck Widgets"
-msgstr ""
+msgstr "Pokaż widżety odtwarzaczy próbek (samplerów)"
 
 #: MixxxApp#72
 msgid "Show the sample deck section of the Mixxx interface."
@@ -3572,7 +3572,7 @@ msgstr "Ctrl+S"
 
 #: MixxxApp#74
 msgid "Show Vinyl Control Widgets"
-msgstr ""
+msgstr "Pokaż widżety kontoli vinylem"
 
 #: MixxxApp#75
 msgid "Show the vinyl control section of the Mixxx interface."
@@ -3584,7 +3584,7 @@ msgstr "Ctrl+V"
 
 #: MixxxApp#77
 msgid "Show Microphone Widgets"
-msgstr ""
+msgstr "Pokakaż widżety mikrofonu"
 
 #: MixxxApp#78
 msgid "Show the microphone section of the Mixxx interface."
@@ -3963,7 +3963,7 @@ msgstr "Prawy-klik"
 
 #: Tooltips#5
 msgid "Waveform Overview"
-msgstr ""
+msgstr "Przegląd wykresu dźwięku"
 
 #: Tooltips#6
 msgid "Shows information about the track currently loaded in this channel."
@@ -4009,6 +4009,7 @@ msgstr "Wzmocnienie"
 #: Tooltips#15
 msgid "Adjusts the pre-fader gain of the track (to avoid clipping)."
 msgstr ""
+"Reguluje wzmocnienie utworu na przedzmacniaczu (aby zapobiec obcinaniu)."
 
 #: Tooltips#16
 msgid "(too loud for the hardware and is being distorted)."
@@ -4108,11 +4109,11 @@ msgstr "Steruje tym co słyszysz na wyjściu słuchawkowym."
 
 #: Tooltips#39
 msgid "Mix Orientation"
-msgstr ""
+msgstr "Kierunek miksowania"
 
 #: Tooltips#40
 msgid "Set the channel's mix orientation."
-msgstr ""
+msgstr "Ustawia kierunek miksowania kanału."
 
 #: Tooltips#41
 msgid ""
@@ -4156,11 +4157,11 @@ msgstr "Reguluje poziom głośności mikrofonu."
 
 #: Tooltips#50
 msgid "Microphone Talk-Over"
-msgstr ""
+msgstr "Dołączenie mikrofonu"
 
 #: Tooltips#51
 msgid "Hold-to-talk or short click for latching to"
-msgstr ""
+msgstr "Przytrzymaj i mów lub krótko kliknij aby załączyć."
 
 #: Tooltips#52
 msgid "mix microphone input into the master output."
@@ -4218,7 +4219,7 @@ msgstr ""
 
 #: Tooltips#65
 msgid "Low EQ"
-msgstr ""
+msgstr "Basy"
 
 #: Tooltips#66
 msgid "Adjusts the gain of the low EQ filter."
@@ -4309,16 +4310,20 @@ msgstr ""
 
 #: Tooltips#86
 msgid "Key-Lock"
-msgstr ""
+msgstr "Blokada tonacji"
 
 #: Tooltips#87
 msgid "Prevents the pitch from from changing when the rate changes."
 msgstr ""
+"Zabezpiecza wysokość tonu przed zmianą kiedy zmienia się prędkość "
+"odtwarzania."
 
 #: Tooltips#88
 msgid ""
 "Toggling key-lock during playback may result in a momentary audio glitch."
 msgstr ""
+"Przełączanie blokady tonacji podczas odtwarzania może skutkować chwilową "
+"usterką."
 
 #: Tooltips#89
 msgid "If quantize is enabled, snaps to the nearest beat."
@@ -4336,6 +4341,8 @@ msgstr "Przełącza kwantyzację."
 #: Tooltips#92
 msgid "Loops and cues snap to the nearest beat when quantization is enabled."
 msgstr ""
+"Pętle i wskaźniki przeuwają się do najbliższego uderzenia kiedy kwantyzacja "
+"jest włączona."
 
 #: Tooltips#93
 msgid "Reverse"
@@ -4375,15 +4382,17 @@ msgstr "(kiedy zatrzymane)"
 
 #: Tooltips#102
 msgid "Cue"
-msgstr ""
+msgstr "Wskaźnik (Cue)"
 
 #: Tooltips#103
 msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
 msgstr ""
+"Przeszukuje utwór do punktów wkaźnika (Cue) i zatrzymuje się (=CDJ) lub "
+"odtwarza (=proste)."
 
 #: Tooltips#104
 msgid "Seeks the track to the cue-point and stops."
-msgstr ""
+msgstr "Przeszukuje utwór do punktów wkaźnika (Cue) i zatrzymuje się"
 
 #: Tooltips#105
 msgid "Headphone"
@@ -4477,11 +4486,11 @@ msgstr ""
 
 #: Tooltips#124
 msgid "selected in Preferences -> Sound Hardware."
-msgstr ""
+msgstr "wybrane w Ustawienia -> Urządzenia audio"
 
 #: Tooltips#125
 msgid "Fast Rewind"
-msgstr ""
+msgstr "Szybkie cofanie"
 
 #: Tooltips#126
 msgid "Fast rewind through the track."
@@ -4510,15 +4519,15 @@ msgstr ""
 
 #: Tooltips#132
 msgid "if BPM is detected on both."
-msgstr ""
+msgstr "jeśli tempo (BPM) jest wykryte na obydwu."
 
 #: Tooltips#133
 msgid "Syncs the tempo (BPM) to that of the other track,"
-msgstr ""
+msgstr "Synchronizuje tempo (BPM) to tego w drugim odtwarzaczu,"
 
 #: Tooltips#134
 msgid "Pitch Control"
-msgstr ""
+msgstr "Kontrola wysoości tonu"
 
 #: Tooltips#135
 msgid "Changes the track playback rate."
@@ -4548,12 +4557,12 @@ msgstr "Wysuń"
 
 #: Tooltips#141
 msgid "Ejects track from the player."
-msgstr ""
+msgstr "Wysuwa ścieżkę z odtwarzacza."
 
 #: Tooltips#142
 msgctxt "Tooltips#142"
 msgid "Hotcue"
-msgstr ""
+msgstr "Szybiki znacznik (Hotcue)"
 
 #: Tooltips#143
 msgid "If hotcue is set, jumps to the hotcue."
@@ -4569,51 +4578,57 @@ msgstr ""
 
 #: Tooltips#146
 msgid "Vinyl Control Mode"
-msgstr ""
+msgstr "Tryb kontroli vinylem"
 
 #: Tooltips#147
 msgid "Absolute mode - track position equals needle position and speed."
 msgstr ""
+"Tryb bezwzględny - pozycja utworu jest równa pozycji  i prędkosci igły."
 
 #: Tooltips#148
 msgid ""
 "Relative mode - track speed equals needle speed regardless of needle "
 "position."
 msgstr ""
+"Tryb względny - Prędkość utworu jest równa prędkości igły niezależnie od jej "
+"pozycji."
 
 #: Tooltips#149
 msgid ""
 "Constant mode - track speed equals last known-steady speed regardless of "
 "needle input."
 msgstr ""
+"Tryb stały - prędkość utworu jest równa ostatniej stałej prędkości igły "
+"niezależnie od wejścia."
 
 #: Tooltips#150
 msgid "Vinyl Status"
-msgstr ""
+msgstr "Status vinyla"
 
 #: Tooltips#151
 msgid "Provides visual feedback for vinyl control status:"
-msgstr ""
+msgstr "Pokazuje wizualne sprzężenie zwrotne stanu kontroli vinylem."
 
 #: Tooltips#152
 msgid "Green for control enabled."
-msgstr ""
+msgstr "Zielone jeśli kontrola jest włączona."
 
 #: Tooltips#153
 msgid "Blinking yellow for when the needle reaches the end of the record."
-msgstr ""
+msgstr "Mrugające żółte kiedy igła osiągnie koniec nagrania."
 
 #: Tooltips#154
 msgid "Red for needle skip detected."
-msgstr ""
+msgstr "Czerwone jeśli wykryto przeskoczenie igły."
 
 #: Tooltips#155
 msgid "Loop-In Marker"
-msgstr ""
+msgstr "Znacznik początku pętli"
 
 #: Tooltips#156
 msgid "Sets the deck loop-in position to the current play position."
 msgstr ""
+"Ustawia znacznik początku pętli dla odtwarzacza w miejscu odtwarzania."
 
 #: Tooltips#157
 msgid "Loop-Out Marker"
@@ -4621,27 +4636,28 @@ msgstr "Znacznik końca pętli."
 
 #: Tooltips#158
 msgid "Sets the deck loop-out position to the current play position."
-msgstr ""
+msgstr "Ustawia znacznik końca pętli dla odtwarzacza w miejscu odtwarzania."
 
 #: Tooltips#159
 msgid "Loop Halve"
-msgstr ""
+msgstr "Połowa pętli"
 
 #: Tooltips#160
 msgid "Halves the current loop's length by moving the end marker."
-msgstr ""
+msgstr "Skraca o połowę aktualną petlę przenosząc znacznik końca pętli."
 
 #: Tooltips#161
 msgid "Deck immediately loops if past the new endpoint."
 msgstr ""
+"Odtwarzacz natychmiast zapętla się jeśli przekroczy nowy punkt końcowy."
 
 #: Tooltips#162
 msgid "Loop Double"
-msgstr ""
+msgstr "Podwojenie pętli"
 
 #: Tooltips#163
 msgid "Doubles the current loop's length by moving the end marker."
-msgstr ""
+msgstr "Podwaja długość aktualnej pętli przenosząc znacznik końca pętli."
 
 #: Tooltips#164
 msgid "Beatloop"
@@ -4649,15 +4665,15 @@ msgstr ""
 
 #: Tooltips#165
 msgid "Reloop/Exit"
-msgstr ""
+msgstr "Zapętl/Wyjdź"
 
 #: Tooltips#166
 msgid "Toggles the current loop on or off."
-msgstr ""
+msgstr "Przełacza biezacą pętlę (Wł./Wył.)"
 
 #: Tooltips#167
 msgid "Works only if Loop-In and Loop-Out marker are set."
-msgstr ""
+msgstr "Dziala tylko iedy znaczniki początku i końca petli są ustawione."
 
 #: Tooltips#168
 msgid "Vinyl Cueing Mode"
@@ -4683,15 +4699,19 @@ msgstr ""
 
 #: Tooltips#173
 msgid "Track Time"
-msgstr ""
+msgstr "Całkowity czas utworu"
 
 #: Tooltips#174
 msgid "Displays the elapsed or remaining time of the track loaded."
 msgstr ""
+"Wyświetla czas, który upłynął od początku lub pozostał do końca załadowanego "
+"utworu."
 
 #: Tooltips#175
 msgid "Click to toggle between time elapsed/remaining time."
 msgstr ""
+"Kliknij, zby przełączyć pomiędzy czasem, który upłynął od początku lub "
+"pozostał do końca załadowanego utworu."
 
 #: Tooltips#176
 msgid "Track Duration"
@@ -4703,15 +4723,15 @@ msgstr ""
 
 #: Tooltips#178
 msgid "Information is loaded from the track's metadata tags."
-msgstr ""
+msgstr "Informacja jest załadowana z metadanych utworu."
 
 #: Tooltips#179
 msgid "Track Artist"
-msgstr ""
+msgstr "Wykonawca utworu."
 
 #: Tooltips#180
 msgid "Displays the artist of the loaded track."
-msgstr ""
+msgstr "Wyświetla wykonawcę załadowanego utworu."
 
 #: Tooltips#181
 msgid "Track Title"
@@ -4719,7 +4739,7 @@ msgstr "Tytuł utworu"
 
 #: Tooltips#182
 msgid "Displays the title of the loaded track."
-msgstr ""
+msgstr "Wyświetla tytuł załadowanego utworu."
 
 #: Tooltips#183
 msgid "Track Album"
@@ -4727,31 +4747,33 @@ msgstr "Album utworu"
 
 #: Tooltips#184
 msgid "Displays the album name of the loaded track."
-msgstr ""
+msgstr "Wyświetla tytuł albumu, z którego pochodzi utwór."
 
 #: Tooltips#185
 msgid "Track Artist/Title"
-msgstr ""
+msgstr "Wykonawca/tytuł utworu"
 
 #: Tooltips#186
 msgid "Displays the artist and title of the loaded track."
-msgstr ""
+msgstr "Wyświetla nazwę wykonawcy oraz tytuł załadowanego utworu."
 
 #: Tooltips#187
 msgid "Flanger"
-msgstr ""
+msgstr "Flanger"
 
 #: Tooltips#188
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
 msgstr ""
+"Przełącza efekt Flanger'a. Użyj głałek Głębokość/Opóźnienie/LFO do regulacji "
+"efektu."
 
 #: Tooltips#189
 msgid "Flanger Delay"
-msgstr ""
+msgstr "Opóźninenie"
 
 #: Tooltips#190
 msgid "Adjusts the phase delay of the flange effect (when active)."
-msgstr ""
+msgstr "Reguluje opóźnienie fazy efektu Flager'a (kiedy efekt jest atywny)."
 
 #: Tooltips#191
 msgid "Flanger Depth"
@@ -4805,7 +4827,7 @@ msgstr "Twój plik %1 może być niekatualny."
 
 #: TrackCollection#7
 msgid "Your mixxxdb.sqlite file may be corrupt."
-msgstr ""
+msgstr "Twój plik mixxxdb.sqlite może być uszkodzony"
 
 #: TrackCollection#8
 msgid "Try renaming it and restarting Mixxx."
@@ -4813,7 +4835,7 @@ msgstr "Spróbuj zmienić nazwę i ponownie uruchomić Mixxx."
 
 #: TrackCollection#9
 msgid "Your %1 file may be missing or invalid."
-msgstr ""
+msgstr "Brauje pliku %1 lub jest uszkodzony."
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -4821,7 +4843,7 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(ładuję) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -4866,11 +4888,11 @@ msgstr "Usuń"
 
 #: WTrackTableView#5
 msgid "Hide from Library"
-msgstr ""
+msgstr "Ukryj w bibliotece"
 
 #: WTrackTableView#6
 msgid "Unhide from Library"
-msgstr ""
+msgstr "Odkryj w bibliotece"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
@@ -4906,15 +4928,15 @@ msgstr ""
 
 #: WTrackTableView#15
 msgid "Lock BPM"
-msgstr ""
+msgstr "Zablokuj BPM"
 
 #: WTrackTableView#16
 msgid "Unlock BPM"
-msgstr ""
+msgstr "Odblokuj BPM"
 
 #: WTrackTableView#17
 msgid "Clear BPM and Beatgrid"
-msgstr ""
+msgstr "Wyczyść BPM i siatkę beat'u"
 
 #: WTrackTableView#18
 msgid "Load to Deck %1"
@@ -4923,7 +4945,7 @@ msgstr "Wczytaj do Deck %1"
 #: WTrackTableView#19
 msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
@@ -4931,7 +4953,7 @@ msgstr "Pokaż lub ukryj kolumny."
 
 #: WaveformWidgetFactory#1
 msgid "(GLSL)"
-msgstr ""
+msgstr "(GLSL)"
 
 #: WaveformWidgetFactory#2
 msgid "(GL)"
