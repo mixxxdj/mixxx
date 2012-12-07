@@ -178,8 +178,7 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
     // }
 }
 
-void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
-                                  int iSamplesPerBuffer) {
+void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList) {
     bool in_reverse = dRate < 0;
     Hint current_position;
 

@@ -13,10 +13,11 @@ public:
 
     bool setup(const QDomNode &node);
 
-    const QColor& getSignalColor() const { return m_signalColor;}
-    const QColor& getLowColor() const { return m_lowColor;}
-    const QColor& getMidColor() const { return m_midColor;}
-    const QColor& getHighColor() const { return m_highColor;}
+    inline const QColor& getSignalColor() const { return m_signalColor;}
+    inline const QColor& getLowColor() const { return m_lowColor;}
+    inline const QColor& getMidColor() const { return m_midColor;}
+    inline const QColor& getHighColor() const { return m_highColor;}
+    inline const QColor& getAxesColor() const { return m_axesColor;}
 
 protected:
     void fallBackFromSignalColor();
@@ -29,6 +30,7 @@ private:
     QColor m_lowColor;
     QColor m_midColor;
     QColor m_highColor;
+    QColor m_axesColor;
 };
 
 #endif // WAVEFORMSIGNALCOLORS_H

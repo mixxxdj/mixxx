@@ -31,7 +31,7 @@ class BulkReader : public QThread {
     void run();
 
   private:
-    libusb_device_handle *m_phandle;
+    libusb_device_handle* m_phandle;
     QAtomicInt m_stop;
     unsigned char m_in_epaddr;
 };
@@ -39,7 +39,8 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
-    BulkController(libusb_device_handle *handle, struct libusb_device_descriptor *desc);
+    BulkController(libusb_context* context, libusb_device_handle *handle,
+                   struct libusb_device_descriptor *desc);
     virtual ~BulkController();
 
     virtual QString presetExtension();
@@ -88,6 +89,7 @@ class BulkController : public Controller {
         return &m_preset;
     }
 
+    libusb_context* m_context;
     libusb_device_handle *m_phandle;
 
     // Local copies of things we need from desc
