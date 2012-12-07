@@ -1,16 +1,26 @@
 #include <QtDebug>
+#include <QMutexLocker>
 
 #include "util/statsmanager.h"
 
 // Roughly a million.
-const int kStatsPipeSize = 2 << 20;
-
+const int kStatsPipeSize = 1 << 20;
 // Process when half-full.
-const int kProcessLength = kStatsPipeSize / 2;
+const int kProcessLength = kStatsPipeSize >> 1;
+
+StatsPipe::StatsPipe(StatsManager* pManager)
+        : FIFO<StatReport>(kStatsPipeSize),
+          m_pManager(pManager) {
+}
+
+StatsPipe::~StatsPipe() {
+    if (m_pManager) {
+        m_pManager->onStatsPipeDestroyed(this);
+    }
+}
 
 StatsManager::StatsManager()
     : QThread(),
-      m_statsPipe(kStatsPipeSize),
       m_quit(0) {
     setObjectName("StatsManager");
     moveToThread(this);
@@ -30,9 +40,26 @@ StatsManager::~StatsManager() {
     qDebug() << "=====================================";
 }
 
+void StatsManager::onStatsPipeDestroyed(StatsPipe* pPipe) {
+    QMutexLocker locker(&m_statsPipeLock);
+    m_statsPipes.removeAll(pPipe);
+}
+
+StatsPipe* StatsManager::getStatsPipeForThread() {
+    if (m_threadStatsPipes.hasLocalData()) {
+        return m_threadStatsPipes.localData();
+    }
+    StatsPipe* pResult = new StatsPipe(this);
+    m_threadStatsPipes.setLocalData(pResult);
+    QMutexLocker locker(&m_statsPipeLock);
+    m_statsPipes.push_back(pResult);
+    return pResult;
+}
+
 bool StatsManager::maybeWriteReport(const StatReport& report) {
-    bool success = m_statsPipe.write(&report, 1) == 1;
-    int space = m_statsPipe.writeAvailable();
+    StatsPipe* pStatsPipe = getStatsPipeForThread();
+    bool success = pStatsPipe->write(&report, 1) == 1;
+    int space = pStatsPipe->writeAvailable();
     if (space < kProcessLength) {
         m_statsPipeCondition.wakeAll();
     }
@@ -44,14 +71,17 @@ bool StatsManager::maybeWriteReport(const StatReport& report) {
 
 void StatsManager::processIncomingStatReports() {
     StatReport report;
-    while (m_statsPipe.read(&report, 1) == 1) {
-        QString tag(report.tag);
-        Stat& info = m_stats[tag];
-        info.m_tag = tag;
-        info.m_type = report.type;
-        info.m_compute = report.compute;
-        info.processReport(report);
-        free(report.tag);
+    QMutexLocker locker(&m_statsPipeLock);
+    foreach (StatsPipe* pStatsPipe, m_statsPipes) {
+        while (pStatsPipe->read(&report, 1) == 1) {
+            QString tag(report.tag);
+            Stat& info = m_stats[tag];
+            info.m_tag = tag;
+            info.m_type = report.type;
+            info.m_compute = report.compute;
+            info.processReport(report);
+            free(report.tag);
+        }
     }
 }
 
