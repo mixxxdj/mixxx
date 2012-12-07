@@ -19,6 +19,7 @@
 #include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
+#include "util/timer.h"
 
 ///////////////////////////////////////////
 
@@ -50,7 +51,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
         m_time(new QTime()),
-        m_lastFrameTime(0), 
+        m_lastFrameTime(0),
         m_actualFrameRate(0) {
 
     m_visualGain[All] = 1.5;
@@ -378,6 +379,9 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 void WaveformWidgetFactory::refresh() {
     if (m_skipRender)
         return;
+
+    ScopedTimer t(QString("WaveformWidgetFactory::refresh() %1waveforms")
+                  .arg(m_waveformWidgetHolders.size()));
 
     for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->preRender();

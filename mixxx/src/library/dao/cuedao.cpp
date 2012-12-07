@@ -133,8 +133,8 @@ bool CueDAO::deleteCuesForTracks(QList<int> ids) {
     }
 
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM " CUE_TABLE " WHERE track_id in (" 
-                  +idList.join(",") + ")");
+    query.prepare(QString("DELETE FROM " CUE_TABLE " WHERE track_id in (%1)")
+                  .arg(idList.join(",")));
     if (query.exec()) {
         return true;
     } else {
@@ -256,7 +256,8 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
 
     // Delete cues that are no longer on the track.
     QSqlQuery query(m_database);
-    query.prepare(QString("DELETE FROM cues where track_id=:track_id and not id in (%1)").arg(list));
+    query.prepare(QString("DELETE FROM cues where track_id=:track_id and not id in (%1)")
+                  .arg(list));
     query.bindValue(":track_id", trackId);
 
     if (!query.exec()) {

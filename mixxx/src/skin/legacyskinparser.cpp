@@ -648,8 +648,12 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
     // Connect the player's load and unload signals to the overview widget.
-    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+    connect(pPlayer, SIGNAL(loadTrack(TrackPointer)),
             overviewWidget, SLOT(slotLoadNewTrack(TrackPointer)));
+    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+            overviewWidget, SLOT(slotTrackLoaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
+               overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
 

@@ -288,10 +288,10 @@ void LibraryScanner::run()
     emit(scanFinished());
 }
 
-void LibraryScanner::scan(QString libraryPath)
+void LibraryScanner::scan(QString libraryPath, QWidget *parent)
 {
     m_qLibraryPath = libraryPath;
-    m_pProgress = new LibraryScannerDlg();
+    m_pProgress = new LibraryScannerDlg(parent);
     m_pProgress->setAttribute(Qt::WA_DeleteOnClose);
 
     // The important part here is that we need to use
