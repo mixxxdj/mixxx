@@ -58,9 +58,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     pEngineBuffer->addControl(pClockControl);
 
     CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
-    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
-            pCueControl, SLOT(unloadTrack(TrackPointer)));
-    pEngineBuffer->addCueControl(pCueControl);
+    pEngineBuffer->addControl(pCueControl);
 
     // Connect our signals and slots with the EngineBuffer's signals and
     // slots. This will let us know when the reader is done loading a track, and

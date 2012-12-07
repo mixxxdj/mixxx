@@ -1,5 +1,6 @@
 #include <QPainter>
 #include <QGLContext>
+#include <QtDebug>
 
 #include "glwaveformwidget.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -14,7 +15,7 @@
 #include "sharedglcontext.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent)
-        : QGLWidget(SharedGLContext::getContext(), parent),
+        : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
 
     addRenderer<WaveformRenderBackground>();
@@ -30,6 +31,9 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent)
 
     setAutoBufferSwap(false);
 
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }

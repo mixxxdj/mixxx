@@ -204,7 +204,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Samplers]", "show_samplers", tr("Show/hide the sampler section"), guiMenu);
     addControl("[Microphone]", "show_microphone", tr("Show/hide the microphone section"), guiMenu);
     addControl("[Vinylcontrol]", "show_vinylcontrol", tr("Show/hide the vinyl control section"), guiMenu);
-    addControl("[Previewdeck]", "show_previewdeck", tr("Show/hide the preview deck"), guiMenu);
+    addControl("[PreviewDeck]", "show_previewdeck", tr("Show/hide the preview deck"), guiMenu);
 
     ControlObject *co = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
     const int iNumDecks = co->get();
@@ -253,7 +253,7 @@ void DlgControllerLearning::addPlayerControl(
     ControlObject* numDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
     const int iNumDecks = numDecks->get();
     ControlObject* numPreviewDecks = ControlObject::getControl(ConfigKey("[Master]", "num_preview_decks"));
-    const int inumPreviewDecks = numPreviewDecks->get();
+    const int iNumPreviewDecks = numPreviewDecks->get();
 
     QMenu* controlMenu = new QMenu(controlDescription, pMenu);
     pMenu->addMenu(controlMenu);
@@ -282,8 +282,8 @@ void DlgControllerLearning::addPlayerControl(
         }
     }
 
-    for (int i = 1; previewdeckControls && i <= inumPreviewDecks; ++i) {
-        QString group = QString("[Previewdeck%1]").arg(i);
+    for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
+        QString group = QString("[PreviewDeck%1]").arg(i);
         QString description = QString("%1: %2").arg(
             m_previewdeckStr.arg(QString::number(i)), controlDescription);
         QAction* pAction = controlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));

@@ -86,6 +86,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
   private slots:
     void tracksChanged(QSet<int> trackIds);
+    void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
@@ -126,6 +127,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
     QString m_currentSearch;
     QString m_currentSearchFilter;
+
+    QString m_previewDeckGroup;
+    int m_iPreviewDeckTrackId;
 
     QVector<QHash<int, QVariant> > m_headerInfo;
 

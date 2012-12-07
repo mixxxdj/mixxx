@@ -376,6 +376,7 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     QSplitter* pSplitter = new QSplitter(m_pParent);
+    pSplitter->setObjectName("Splitter");
     setupWidget(node, pSplitter);
 
     // Default orientation is horizontal.
@@ -440,6 +441,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     QWidget* pGroup = new QGroupBox(m_pParent);
+    pGroup->setObjectName("WidgetGroup");
     pGroup->setContentsMargins(0, 0, 0, 0);
     setupWidget(node, pGroup);
     setupConnections(node, pGroup);
@@ -511,6 +513,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     }
 
     WWidgetStack* pStack = new WWidgetStack(m_pParent, pNextControl, pPrevControl);
+    pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     setupWidget(node, pStack);
     setupConnections(node, pStack);
@@ -643,8 +646,12 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
     // Connect the player's load and unload signals to the overview widget.
-    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+    connect(pPlayer, SIGNAL(loadTrack(TrackPointer)),
             overviewWidget, SLOT(slotLoadNewTrack(TrackPointer)));
+    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+            overviewWidget, SLOT(slotTrackLoaded(TrackPointer)));
+    connect(pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
+               overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
 
@@ -1036,6 +1043,16 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
 #endif
 
     QString styleHack = "";
+
+    // Style the library preview button with a default image.
+    styleHack = (
+        "#LibraryPreviewButton { background: transparent; border: 0; }"
+        "#LibraryPreviewButton:checked {"
+        "  image: url(:/images/library/ic_library_preview_pause.png);"
+        "}"
+        "#LibraryPreviewButton:!checked {"
+        "  image: url(:/images/library/ic_library_preview_play.png);"
+        "}");
 
     if (!XmlParse::selectNode(node, "FgColor").isNull()) {
         color.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));

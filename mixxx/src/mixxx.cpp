@@ -51,6 +51,8 @@
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
+#include "sharedglcontext.h"
+#include "util/statsmanager.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -133,6 +135,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     setWindowTitle(tr("Mixxx " VERSION));
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+
+    StatsManager::create();
 
     //Reset pointer to players
     m_pSoundManager = NULL;
@@ -303,9 +307,9 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     if (!QDir(args.getSettingsPath()).exists()) {
         QDir().mkpath(args.getSettingsPath());
     }
-    m_pLibrary = new Library(this, m_pConfig,
-                             bFirstRun || bUpgraded,
-                             m_pRecordingManager);
+
+    // Register TrackPointer as a metatype since we use it in signals/slots
+    // regularly.
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
 #ifdef __VINYLCONTROL__
@@ -316,14 +320,19 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
-                                         m_pLibrary, m_pVCManager);
+                                         m_pVCManager);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
-    //m_pPlayerManager->addPreviewDeck();
+    m_pPlayerManager->addPreviewDeck();
+
+    m_pLibrary = new Library(this, m_pConfig,
+                             bFirstRun || bUpgraded,
+                             m_pRecordingManager);
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     // Call inits to invoke all other construction parts
 
@@ -418,6 +427,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     initActions();
     initMenuBar();
 
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    QGLWidget* pContextWidget = new QGLWidget(this);
+    pContextWidget->hide();
+    SharedGLContext::setWidget(pContextWidget);
+
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame();
 
@@ -500,7 +515,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     if (rescan || hasChanged_MusicDir) {
         m_pLibraryScanner->scan(
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
         qDebug() << "Rescan finished";
     }
 }
@@ -536,7 +551,7 @@ MixxxApp::~MixxxApp()
     m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
-    // PlayerManager depends on Engine, Library, SoundManager, VinylControlManager, and Config
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
 
@@ -605,6 +620,7 @@ MixxxApp::~MixxxApp()
    delete m_pKbdConfigEmpty;
 
    WaveformWidgetFactory::destroy();
+   StatsManager::destroy();
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
@@ -629,7 +645,7 @@ void MixxxApp::slotViewShowMicrophone(bool enable) {
 }
 
 void MixxxApp::slotViewShowPreviewDeck(bool enable) {
-    toggleVisibility(ConfigKey("[Previewdeck]", "show_previewdeck"), enable);
+    toggleVisibility(ConfigKey("[PreviewDeck]", "show_previewdeck"), enable);
 }
 
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
@@ -646,7 +662,7 @@ void MixxxApp::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewShowMicrophone,
                              ConfigKey("[Microphone]", "show_microphone"));
     setVisibilityOptionState(m_pViewShowPreviewDeck,
-                             ConfigKey("[Previewdeck]", "show_previewdeck"));
+                             ConfigKey("[PreviewDeck]", "show_previewdeck"));
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -1178,6 +1194,7 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
 }
 
 void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
+    Q_UNUSED(toggle);
     rebootMixxxView();
 }
 
@@ -1657,7 +1674,7 @@ void MixxxApp::slotScanLibrary()
 {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
 }
 
 void MixxxApp::slotEnableRescanLibraryAction()
