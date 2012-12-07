@@ -25,7 +25,7 @@
 #include "wskincolor.h"
 #include "trackinfoobject.h"
 #include "mathstuff.h"
-#include "util/timer.h"
+//#include "util/timer.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -249,7 +249,7 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 }
 
 bool WOverview::drawNextPixmapPart() {
-    ScopedTimer t("WOverview::drawNextPixmapPart");
+    //ScopedTimer t("WOverview::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
@@ -405,7 +405,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
 }
 
 void WOverview::paintEvent(QPaintEvent *) {
-    ScopedTimer t("WOverview::paintEvent");
+    //ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
     painter.resetTransform();

@@ -35,7 +35,7 @@
 #include "enginepfldelay.h"
 #include "engine/syncworker.h"
 #include "sampleutil.h"
-#include "util/timer.h"
+//#include "util/timer.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -216,7 +216,7 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
         }
     }
 
-    ScopedTimer t(QString("EngineMaster::mixChannels_%1active").arg(totalActive));
+    //ScopedTimer t(QString("EngineMaster::mixChannels_%1active").arg(totalActive));
 
     if (totalActive == 0) {
         SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
@@ -344,7 +344,7 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
 
 void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
-    ScopedTimer t("EngineMaster::process");
+    //ScopedTimer t("EngineMaster::process");
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
@@ -364,7 +364,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
 
-    Timer timer("EngineMaster::process channels");
+    //Timer timer("EngineMaster::process channels");
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
@@ -393,7 +393,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
         }
     }
-    timer.elapsed(true);
+    //timer.elapsed(true);
 
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);

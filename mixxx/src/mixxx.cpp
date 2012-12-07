@@ -55,7 +55,7 @@
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
 #include "sharedglcontext.h"
-#include "util/statsmanager.h"
+//#include "util/statsmanager.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -139,7 +139,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
-    StatsManager::create();
+    //StatsManager::create();
 
     //Reset pointer to players
     m_pSoundManager = NULL;
@@ -639,7 +639,7 @@ MixxxApp::~MixxxApp()
    delete m_pKbdConfigEmpty;
 
    WaveformWidgetFactory::destroy();
-   StatsManager::destroy();
+   //StatsManager::destroy();
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
