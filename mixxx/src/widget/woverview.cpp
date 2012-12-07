@@ -35,6 +35,9 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
       m_pGroup(pGroup),
       m_pConfig(pConfig),
       m_sPrefix(""),
+      m_bDrag(false),
+      m_iPos(0),
+      m_analyserProgress(-1),
       m_trackLoaded(false) {
     m_endOfTrackControl = new ControlObjectThreadMain(
                 ControlObject::getControl( ConfigKey(m_pGroup,"end_of_track")));

@@ -137,6 +137,7 @@ EngineMaster::~EngineMaster()
     delete m_pMasterVolume;
     delete m_pHeadVolume;
     delete m_pHeadDelay;
+    delete m_pBypassEq;
     delete clipping;
     delete vumeter;
     delete head_clipping;
@@ -449,10 +450,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Head volume and clipping
     SampleUtil::applyGain(m_pHead, m_pHeadVolume->get(), iBufferSize);
-    //head_clipping->process(m_pHead, m_pHead, iBufferSize);
+    head_clipping->process(m_pHead, m_pHead, iBufferSize);
     
     //delay the headphone sound by the appropriate amount
-    //m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
+    m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07

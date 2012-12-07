@@ -875,11 +875,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
 
-/*#ifdef __SCALER_DEBUG__
+#ifdef __SCALER_DEBUG__
     for (int i=0; i<iBufferSize; i+=2) {
         writer << pOutput[i] <<  "\n";
     }
-#endif*/
+#endif
     
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;

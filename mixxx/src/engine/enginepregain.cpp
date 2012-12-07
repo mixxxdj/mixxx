@@ -33,7 +33,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char * group)
 {
-    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 6.);
+    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
@@ -51,6 +51,7 @@ EnginePregain::~EnginePregain()
     delete potmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;
+    delete m_pPassthroughEnabled;
 
     delete s_pEnableReplayGain;
     s_pEnableReplayGain = NULL;
