@@ -81,7 +81,6 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
         // We want to smoothly fade to this last.
         // Anyway we have some the problem that code cannot block the full process for one second.
         // So we need to alter gain each time ::process is called.
-        if (m_bSmoothFade) { // This means that a ReplayGain value has been calculated after the track has been loaded
 
         // This means that a ReplayGain value has been calculated after the track has been loaded
         if (m_bSmoothFade) {
