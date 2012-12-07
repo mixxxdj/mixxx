@@ -335,7 +335,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         QThread::currentThread()->setObjectName("Engine");
         haveSetName = true;
     }
-
     ScopedTimer t("EngineMaster::process");
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
