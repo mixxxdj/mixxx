@@ -329,8 +329,13 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
     }
 }
 
-void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
-{
+void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
+    static bool haveSetName = false;
+    if (!haveSetName) {
+        QThread::currentThread()->setObjectName("Engine");
+        haveSetName = true;
+    }
+
     ScopedTimer t("EngineMaster::process");
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
