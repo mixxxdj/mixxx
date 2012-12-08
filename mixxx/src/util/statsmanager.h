@@ -9,10 +9,21 @@
 #include <QtDebug>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QThreadStorage>
 
 #include "util/fifo.h"
 #include "singleton.h"
 #include "util/stat.h"
+
+class StatsManager;
+
+class StatsPipe : public FIFO<StatReport> {
+  public:
+    StatsPipe(StatsManager* pManager);
+    virtual ~StatsPipe();
+  private:
+    StatsManager* m_pManager;
+};
 
 class StatsManager : public QThread, public Singleton<StatsManager> {
   public:
@@ -27,12 +38,18 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
 
   private:
     void processIncomingStatReports();
+    StatsPipe* getStatsPipeForThread();
+    void onStatsPipeDestroyed(StatsPipe* pPipe);
 
-    FIFO<StatReport> m_statsPipe;
-    QWaitCondition m_statsPipeCondition;
-    QMutex m_statsPipeLock;
     QAtomicInt m_quit;
     QMap<QString, Stat> m_stats;
+
+    QWaitCondition m_statsPipeCondition;
+    QMutex m_statsPipeLock;
+    QList<StatsPipe*> m_statsPipes;
+    QThreadStorage<StatsPipe*> m_threadStatsPipes;
+
+    friend class StatsPipe;
 };
 
 

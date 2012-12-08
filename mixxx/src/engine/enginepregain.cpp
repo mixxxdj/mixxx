@@ -111,7 +111,6 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
 
     m_pTotalGain->set(fGain);
 
-    //qDebug()<<"Clock"<<(float)clock()/CLOCKS_PER_SEC;
     // SampleUtil deals with aliased buffers and gains of 1 or 0.
     SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
 }

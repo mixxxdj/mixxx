@@ -19,6 +19,9 @@
 
 #include "enginebufferscalest.h"
 
+// Fixes redefinition warnings from SoundTouch.
+#undef TRUE
+#undef FALSE
 #include "SoundTouch.h"
 #include "mathstuff.h"
 #include "controlobject.h"
