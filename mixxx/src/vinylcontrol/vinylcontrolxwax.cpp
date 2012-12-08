@@ -845,10 +845,10 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		atRecordEnd = false;
 	}
     if (is && !was)
-	{
-		vinylStatus->slotSet(VINYL_STATUS_OK);
-	} else if (!is) {
-		vinylStatus->slotSet(VINYL_STATUS_DISABLED);
+    {
+        vinylStatus->slotSet(VINYL_STATUS_OK);
+    } else if (!is) {
+        vinylStatus->slotSet(VINYL_STATUS_DISABLED);
     }
 
     return is;
