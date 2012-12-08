@@ -24,7 +24,7 @@ PerformanceTimer::PerformanceTimer()
     m_freq_numerator = sTimebaseInfo.numer;
     m_freq_denominator = sTimebaseInfo.denom;
 #elif defined(__WINDOWS__)
-    static LARGE_INTEGER frequency = 0;
+    static LARGE_INTEGER frequency = { 0, 0 };
     if (frequency.QuadPart == 0) {
         if (QueryPerformanceFrequency(&frequency)) {
             // Dividing a delta by the frequency produces seconds so multiplying by

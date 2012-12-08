@@ -89,7 +89,7 @@ VinylControl::~VinylControl()
         //be enabled
         wantenabled->slotSet(true);
     }
-    
+
     delete playPos;
     delete trackSamples;
     delete trackSampleRate;

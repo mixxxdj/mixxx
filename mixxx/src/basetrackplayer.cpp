@@ -191,6 +191,7 @@ void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
 	}
 	if (track != NULL) {
         qDebug() << "Failed to load track" << track->getLocation() << reason;
+        emit(loadTrackFailed(track));
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }

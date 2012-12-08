@@ -431,6 +431,20 @@ void WOverview::paintEvent(QPaintEvent *) {
     //Draw waveform pixmap
     WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     if (m_waveform) {
+        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable (5%)
+            // We have a valid m_waveform, so here we have a track in analysis queue
+            QColor lowColor = m_signalColors.getLowColor();
+            lowColor.setAlphaF(0.5);
+            QPen lowColorPen( QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
+            painter.setPen(lowColorPen);
+            if (m_trackLoaded) {
+                //: Text on waveform overview when file is cached from source                
+                painter.drawText(1, 12, tr("Ready to play, analyzing .."));
+            } else {
+                //: Text on waveform overview when file is playable but no waveform is visible
+                painter.drawText(1, 12, tr("Loading track .."));
+            }
+        }
         painter.setOpacity(1.0);
 
         bool normalize = widgetFactory->isOverviewNormalized();
