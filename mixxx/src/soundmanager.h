@@ -20,9 +20,6 @@
 #include <QObject>
 #include "defs.h"
 #include "configobject.h"
-#include "controlobject.h"
-#include "controlobjectthreadmain.h"
-#include "defs.h"
 #include "soundmanagerconfig.h"
 #include "controlobjectthreadmain.h"
 
