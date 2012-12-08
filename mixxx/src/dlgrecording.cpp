@@ -22,7 +22,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_proxyModel(&m_browseModel),
           m_pRecordingManager(pRecordingManager) {
     setupUi(this);
-    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
+    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection, false); // No sorting
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
@@ -49,14 +49,9 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_browseModel.setPath(m_recordingDir);
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
-    //Sort by the position column and lock it
-    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
-    m_pTrackTableView->setSortingEnabled(false);
-
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
     label->setText(tr("Start recording here ..."));
-
 }
 
 DlgRecording::~DlgRecording()
