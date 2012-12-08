@@ -87,6 +87,26 @@ VinylControl::~VinylControl()
         //be enabled
         wantenabled->slotSet(true);
     }
+
+    delete playPos;
+    delete trackSamples;
+    delete trackSampleRate;
+    delete vinylSeek;
+    delete controlScratch;
+    delete rateSlider;
+    delete playButton;
+    delete reverseButton;
+    delete duration;
+    delete mode;
+    delete enabled;
+    delete wantenabled;
+    delete cueing;
+    delete scratching;
+    delete rateRange;
+    delete vinylStatus;
+    delete rateDir;
+    delete loopEnabled;
+    delete signalenabled;
 }
 
 float VinylControl::getSpeed()
