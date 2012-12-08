@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-11-22 09:48+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2012-12-07 16:37+0000\n"
+"Last-Translator: Mário <creator.w3@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-30 04:39+0000\n"
-"X-Generator: Launchpad (build 16319)\n"
+"X-Launchpad-Export-Date: 2012-12-08 04:35+0000\n"
+"X-Generator: Launchpad (build 16341)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -229,7 +229,7 @@ msgstr "Bloquear BPM"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "Pré-visualizar"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -1083,6 +1083,7 @@ msgstr "Alterar modo de deslizamento"
 #: DlgControllerLearning#72
 msgid "Single deck mode - Toggle vinyl control to next deck"
 msgstr ""
+"Modo de Deck único - Alternar o controlo do Vinyl para o próximo Deck"
 
 #: DlgControllerLearning#73
 msgid "Cues"
@@ -1094,7 +1095,7 @@ msgstr ""
 
 #: DlgControllerLearning#75
 msgid "Hotcue %1"
-msgstr ""
+msgstr "Pistas Quentes %1"
 
 #: DlgControllerLearning#76
 msgid "Beat-Looping"
@@ -1197,19 +1198,19 @@ msgstr "Auto DJ"
 
 #: DlgControllerLearning#100
 msgid "Shuffle the content of the Auto DJ playlist"
-msgstr ""
+msgstr "Misturar o conteúdo da lista Auto DJ"
 
 #: DlgControllerLearning#101
 msgid "Skip the next track in the Auto DJ playlist"
-msgstr ""
+msgstr "Saltar a próxima pista da lista do Auto DJ"
 
 #: DlgControllerLearning#102
 msgid "Trigger the transition to the next track"
-msgstr ""
+msgstr "Desencadear a transição para a próxima faixa"
 
 #: DlgControllerLearning#103
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Alternar Auto DJ (ON/OFF)"
 
 #: DlgControllerLearning#104
 msgid "User Interface"
@@ -2248,17 +2249,17 @@ msgstr "Transmissão pública"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Use UTF-8 encoding for metadata."
-msgstr ""
+msgstr "Use codificação UTF-8 para metadados"
 
 #: DlgPrefShoutcastDlg#21
 msgctxt "DlgPrefShoutcastDlg#21"
 msgid "Encoding"
-msgstr ""
+msgstr "A codificar..."
 
 #: DlgPrefShoutcastDlg#22
 msgctxt "DlgPrefShoutcastDlg#22"
 msgid "Bitrate"
-msgstr ""
+msgstr "Taxa de bits"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Format"
@@ -2279,12 +2280,12 @@ msgstr "Activar metadados personalizados"
 #: DlgPrefShoutcastDlg#27
 msgctxt "DlgPrefShoutcastDlg#27"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: DlgPrefShoutcastDlg#29
 msgid ""
@@ -2658,7 +2659,7 @@ msgstr "Parar a análise"
 
 #: DlgPrepare#12
 msgid "Analyzing %1/%2 %3%"
-msgstr ""
+msgstr "A analizar  %1/%2 %3%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -3209,7 +3210,7 @@ msgstr "Cancelar"
 
 #: LibraryScannerDlg#4
 msgid "Scanning: "
-msgstr ""
+msgstr "A pesquisar "
 
 #: MidiController#1
 msgid "MixxxControl not found"
@@ -4389,14 +4390,19 @@ msgid ""
 "Syncs to the first deck (in numerical order) that is playing a track and has "
 "a BPM."
 msgstr ""
+"Sincroniza com o primeiro Deck (em ordem numérica) que está tocar uma faixa "
+"e que tem um BPM."
 
 #: Tooltips#108
 msgid "If no deck is playing, syncs to the first deck that has a BPM."
 msgstr ""
+"Se nenhum Deck estiver a tocar, sincroniza com o primeiro Deck que tenha BPM"
 
 #: Tooltips#109
 msgid "Decks can't sync to samplers and samplers can only sync to decks."
 msgstr ""
+"os Deck não conseguem sincronizar com as amostras e as amostras só conseguem "
+"sincronizar com os Decks"
 
 #: Tooltips#110
 msgid "Setup a loop over the set number of beats."
@@ -4499,7 +4505,7 @@ msgstr "Salta para o fim da faixa."
 #: Tooltips#130
 msgctxt "Tooltips#130"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: Tooltips#131
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4918,7 +4924,7 @@ msgstr "Recarregar os metadados da faixa"
 
 #: WTrackTableView#13
 msgid "Load to Preview Deck"
-msgstr ""
+msgstr "Carregar no Deck de Previsualização"
 
 #: WTrackTableView#14
 msgid "Reset Play Count"
@@ -4943,7 +4949,7 @@ msgstr "Carregar no Leitor %1"
 #: WTrackTableView#19
 msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Amostra %1"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
