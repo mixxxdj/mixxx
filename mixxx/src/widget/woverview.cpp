@@ -437,10 +437,10 @@ void WOverview::paintEvent(QPaintEvent *) {
             QPen lowColorPen( QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
             painter.setPen(lowColorPen);
             if (m_trackLoaded) {
-                // Text on waveform overview when file is cached from source                
+                //: Text on waveform overview when file is cached from source                
                 painter.drawText(1, 12, tr("Ready to play, analyzing .."));
             } else {
-                // Text on waveform overview when file is playable but no waveform is visible
+                //: Text on waveform overview when file is playable but no waveform is visible
                 painter.drawText(1, 12, tr("Loading track .."));
             }
         }
