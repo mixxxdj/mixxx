@@ -844,9 +844,9 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
     if (is && !was)
     {
         vinylStatus->slotSet(VINYL_STATUS_OK);
-    }
-    if (!is)
+    } else if (!is) {
         vinylStatus->slotSet(VINYL_STATUS_DISABLED);
+    }
 
     return is;
 }
