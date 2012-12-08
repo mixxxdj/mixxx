@@ -3,10 +3,9 @@
 
 #include "util/statsmanager.h"
 
-// Roughly a million.
+// In practice we process stats pipes about once a minute @1ms latency.
 const int kStatsPipeSize = 1 << 20;
-// Process when half-full.
-const int kProcessLength = kStatsPipeSize >> 1;
+const int kProcessLength = kStatsPipeSize * 4 / 5;
 
 StatsPipe::StatsPipe(StatsManager* pManager)
         : FIFO<StatReport>(kStatsPipeSize),
@@ -42,6 +41,7 @@ StatsManager::~StatsManager() {
 
 void StatsManager::onStatsPipeDestroyed(StatsPipe* pPipe) {
     QMutexLocker locker(&m_statsPipeLock);
+    processIncomingStatReports();
     m_statsPipes.removeAll(pPipe);
 }
 
@@ -58,20 +58,19 @@ StatsPipe* StatsManager::getStatsPipeForThread() {
 
 bool StatsManager::maybeWriteReport(const StatReport& report) {
     StatsPipe* pStatsPipe = getStatsPipeForThread();
+    if (pStatsPipe == NULL) {
+        return false;
+    }
     bool success = pStatsPipe->write(&report, 1) == 1;
     int space = pStatsPipe->writeAvailable();
     if (space < kProcessLength) {
         m_statsPipeCondition.wakeAll();
-    }
-    if (!success) {
-        qDebug() << "Failed to write StatReport!";
     }
     return success;
 }
 
 void StatsManager::processIncomingStatReports() {
     StatReport report;
-    QMutexLocker locker(&m_statsPipeLock);
     foreach (StatsPipe* pStatsPipe, m_statsPipes) {
         while (pStatsPipe->read(&report, 1) == 1) {
             QString tag(report.tag);
@@ -88,15 +87,16 @@ void StatsManager::processIncomingStatReports() {
 void StatsManager::run() {
     qDebug() << "StatsManager thread starting up.";
     while (true) {
+        m_statsPipeLock.lock();
+        m_statsPipeCondition.wait(&m_statsPipeLock);
         // We want to process reports even when we are about to quit since we
         // want to print the most accurate stat report on shutdown.
         processIncomingStatReports();
+        m_statsPipeLock.unlock();
+
         if (m_quit == 1) {
             qDebug() << "StatsManager thread shutting down.";
             break;
         }
-        m_statsPipeLock.lock();
-        m_statsPipeCondition.wait(&m_statsPipeLock);
-        m_statsPipeLock.unlock();
     }
 }

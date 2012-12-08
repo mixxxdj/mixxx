@@ -17,7 +17,7 @@ PerformanceTimer::PerformanceTimer()
 
 #if defined(__APPLE__)
     // See http://developer.apple.com/library/mac/#qa/qa1398/_index.html
-    static mach_timebase_info_data_t sTimebaseInfo;
+    static mach_timebase_info_data_t sTimebaseInfo = { 0, 0 };
     if (sTimebaseInfo.denom == 0) {
         mach_timebase_info(&sTimebaseInfo);
     }
