@@ -15,6 +15,19 @@ void SharedGLContext::setWidget(const QGLWidget* pWidget) {
     const QGLContext* pContext = pWidget->context();
     qDebug() << "Created root GL Context valid:" << pContext
              << (pContext && pContext->isValid());
+    if (pWidget) {
+        QGLFormat format = pWidget->format();
+        qDebug() << "Root GL Context format:";
+        qDebug() << "Double Buffering:" << format.doubleBuffer();
+        qDebug() << "Swap interval:" << format.swapInterval();
+        qDebug() << "Depth buffer:" << format.depth();
+        qDebug() << "Direct rendering:" << format.directRendering();
+        qDebug() << "Has overlay:" << format.hasOverlay();
+        qDebug() << "RGBA:" << format.rgba();
+        qDebug() << "Sample buffers:" << format.sampleBuffers();
+        qDebug() << "Stencil buffers:" << format.stencil();
+        qDebug() << "Stereo:" << format.stereo();
+    }
 }
 
 // static
