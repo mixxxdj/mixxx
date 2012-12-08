@@ -838,7 +838,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
 		controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f + m_dKnobTweak);
 		resetSteadyPitch(0.0f, 0.0f);
-		bForceResync = true; 
+		bForceResync = true;
 		if (!was)
 			dOldFilePos = 0.0f;
 		iVCMode = mode->get();
@@ -847,11 +847,11 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
     if (is && !was)
 	{
 		vinylStatus->slotSet(VINYL_STATUS_OK);
-	}
-	else if (!is)
+	} else if (!is) {
 		vinylStatus->slotSet(VINYL_STATUS_DISABLED);
-		
-	return is;
+    }
+
+    return is;
 }
 
 bool VinylControlXwax::isEnabled()

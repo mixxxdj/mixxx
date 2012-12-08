@@ -17,8 +17,6 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
     setDropIndicatorShown(true);
     setAcceptDrops(true);
     setAutoScroll(true);
-    setIndentation(10);
-    header()->setStretchLastSection(true);
 }
 
 WLibrarySidebar::~WLibrarySidebar() {

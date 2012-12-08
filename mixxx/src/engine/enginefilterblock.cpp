@@ -106,7 +106,6 @@ EngineFilterBlock::~EngineFilterBlock()
     delete filterKillMid;
     delete filterpotHigh;
     delete filterKillHigh;
-    delete bypassEq;
 
     // Delete and clear these static controls. We need to clear them so that
     // other instances of EngineFilterBlock won't delete them as well.

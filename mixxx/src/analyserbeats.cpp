@@ -96,7 +96,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
 
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
-    
+
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
     BeatsPointer pBeats = tio->getBeats();

@@ -102,6 +102,11 @@ WTrackTableView::~WTrackTableView()
     delete m_pNumPreviewDecks;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
+    delete m_pPurgeAct;
+    delete m_pFileBrowserAct;
+    delete m_pResetPlayedAct;
+    delete m_pSyncTags;
+    delete m_pSamplerMenu;
 }
 
 // slot
@@ -1069,7 +1074,7 @@ void WTrackTableView::slotResetPlayed() {
     }
 }
 
-//slot for syncing id3 tags
+// Slot for writing current metadata to the id3 tags of a file (supports multi-select for batches)
 void WTrackTableView::slotSyncTags() {
     QModelIndexList indices = selectionModel()->selectedRows();
     TrackModel* trackModel = getTrackModel();
