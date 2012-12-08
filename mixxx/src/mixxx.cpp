@@ -570,10 +570,6 @@ MixxxApp::~MixxxApp()
     m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << "delete playerManager " << qTime.elapsed();
-    delete m_pPlayerManager;
-
 #ifdef __VINYLCONTROL__
     // VinylControlManager depends on a CO the engine owns
     // (vinylcontrol_enabled in VinylControlControl)
@@ -584,6 +580,10 @@ MixxxApp::~MixxxApp()
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
+
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
+    qDebug() << "delete playerManager " << qTime.elapsed();
+    delete m_pPlayerManager;
 
     // LibraryScanner depends on Library
     qDebug() << "delete library scanner " <<  qTime.elapsed();

@@ -161,7 +161,6 @@ EngineMaster::~EngineMaster()
         ChannelInfo* pChannelInfo = channel_it.next();
         channel_it.remove();
         SampleUtil::free(pChannelInfo->m_pBuffer);
-        delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
