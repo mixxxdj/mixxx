@@ -250,10 +250,10 @@ bool CrateDAO::removeTracksFromCrate(QList<int> ids, int crateId) {
         idList << QString::number(id);
     }
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE "
-                  "crate_id = :crate_id AND track_id in :track_id");
+    query.prepare(QString("DELETE FROM " CRATE_TRACKS_TABLE " WHERE "
+                          "crate_id = :crate_id AND track_id in (%1)")
+                  .arg(idList.join(",")));
     query.bindValue(":crate_id", crateId);
-    query.bindValue(":track_id", idList.join(","));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

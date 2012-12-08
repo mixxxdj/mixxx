@@ -52,6 +52,7 @@
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
 #include "sharedglcontext.h"
+#include "util/statsmanager.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -134,6 +135,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     setWindowTitle(tr("Mixxx " VERSION));
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+
+    StatsManager::create();
 
     //Reset pointer to players
     m_pSoundManager = NULL;
@@ -512,7 +515,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     if (rescan || hasChanged_MusicDir) {
         m_pLibraryScanner->scan(
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
         qDebug() << "Rescan finished";
     }
 }
@@ -617,6 +620,7 @@ MixxxApp::~MixxxApp()
    delete m_pKbdConfigEmpty;
 
    WaveformWidgetFactory::destroy();
+   StatsManager::destroy();
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
@@ -1670,7 +1674,7 @@ void MixxxApp::slotScanLibrary()
 {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
 }
 
 void MixxxApp::slotEnableRescanLibraryAction()

@@ -27,7 +27,6 @@
 
 #include <QMutex>
 #include "enginebufferscale.h"
-#include "SoundTouch.h"
 
 /**
   * Number of samples to read ahead
@@ -35,9 +34,11 @@
   * Setting this too high (10000) causes stuttering
   */
 const int kiSoundTouchReadAheadLength = 1000;
-using namespace soundtouch;
-
 class ReadAheadManager;
+
+namespace soundtouch {
+class SoundTouch;
+}  // namespace soundtouch
 
 /**
   * Performs time scaling of audio based on the SoundTouch library.
@@ -76,7 +77,7 @@ private:
     CSAMPLE *buffer_back;
 
     /** SoundTouch time/pitch scaling lib */
-    SoundTouch *m_pSoundTouch;
+    soundtouch::SoundTouch* m_pSoundTouch;
 
     /** True if in pitch independent time stretch mode */
     bool m_bPitchIndpTimeStretch;

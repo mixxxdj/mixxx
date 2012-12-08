@@ -21,6 +21,7 @@
 
 #include "controlobject.h"
 #include "controlevent.h"
+#include "util/stat.h"
 
 // Static member variable definition
 QHash<ConfigKey,ControlObject*> ControlObject::m_sqCOHash;
@@ -39,14 +40,25 @@ ControlObject::ControlObject()
           m_bIgnoreNops(true) {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops)
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
         : m_dValue(0),
           m_dDefaultValue(0),
           m_key(key),
-          m_bIgnoreNops(bIgnoreNops) {
+          m_bIgnoreNops(bIgnoreNops),
+          m_bTrack(track),
+          m_trackKey("control " + m_key.group + "," + m_key.item),
+          m_trackType(Stat::UNSPECIFIED),
+          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
+
+    if (m_bTrack) {
+        // TODO(rryan): Make configurable.
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+    }
 }
 
 ControlObject::ControlObject(const QString& group, const QString& item, bool bIgnoreNops)
@@ -216,6 +228,10 @@ void ControlObject::queueFromMidi(MidiOpCode o, double v)
 void ControlObject::setValueFromEngine(double dValue)
 {
     m_dValue = dValue;
+    if (m_bTrack) {
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+    }
     emit(valueChangedFromEngine(m_dValue));
 }
 
@@ -223,6 +239,10 @@ void ControlObject::setValueFromMidi(MidiOpCode o, double v)
 {
     Q_UNUSED(o);
     m_dValue = v;
+    if (m_bTrack) {
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+    }
     emit(valueChanged(m_dValue));
 }
 
@@ -237,6 +257,10 @@ void ControlObject::setValueFromThread(double dValue)
         return;
 
     m_dValue = dValue;
+    if (m_bTrack) {
+        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+    }
     emit(valueChanged(m_dValue));
 }
 

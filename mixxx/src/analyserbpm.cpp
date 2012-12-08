@@ -1,5 +1,7 @@
 #include <QtDebug>
 
+#undef TRUE
+#undef FALSE
 #include "BPMDetect.h"
 
 #include "trackinfoobject.h"
