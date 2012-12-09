@@ -515,7 +515,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     if (rescan || hasChanged_MusicDir) {
         m_pLibraryScanner->scan(
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
         qDebug() << "Rescan finished";
     }
 }
@@ -551,16 +551,15 @@ MixxxApp::~MixxxApp()
     m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << "delete playerManager " << qTime.elapsed();
-    delete m_pPlayerManager;
-
 #ifdef __VINYLCONTROL__
     // VinylControlManager depends on a CO the engine owns
     // (vinylcontrol_enabled in VinylControlControl)
     qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
     delete m_pVCManager;
 #endif
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
+    qDebug() << "delete playerManager " << qTime.elapsed();
+    delete m_pPlayerManager;
 
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
@@ -1674,7 +1673,7 @@ void MixxxApp::slotScanLibrary()
 {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
 }
 
 void MixxxApp::slotEnableRescanLibraryAction()

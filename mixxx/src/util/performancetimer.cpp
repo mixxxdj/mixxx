@@ -14,17 +14,16 @@ PerformanceTimer::PerformanceTimer()
           m_freq_numerator(1),
           m_freq_denominator(1),
           m_time(NULL) {
-
 #if defined(__APPLE__)
     // See http://developer.apple.com/library/mac/#qa/qa1398/_index.html
-    static mach_timebase_info_data_t sTimebaseInfo;
+    static mach_timebase_info_data_t sTimebaseInfo = { 0, 0 };
     if (sTimebaseInfo.denom == 0) {
         mach_timebase_info(&sTimebaseInfo);
     }
     m_freq_numerator = sTimebaseInfo.numer;
     m_freq_denominator = sTimebaseInfo.denom;
 #elif defined(__WINDOWS__)
-    static LARGE_INTEGER frequency = 0;
+    static LARGE_INTEGER frequency = {{ 0, 0 }};
     if (frequency.QuadPart == 0) {
         if (QueryPerformanceFrequency(&frequency)) {
             // Dividing a delta by the frequency produces seconds so multiplying by

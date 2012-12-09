@@ -2190,10 +2190,8 @@
 						QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 						<!-- Style of the SpinBox in the TableView, 'border : 0' has to be set for the rest to obey the styling commands-->
 						QDoubleSpinBox#LibraryBPMSpinBox {border: 0; background: #656565}
-						QDoubleSpinBox#LibraryBPMSpinBox::up-button {subcontrol-position: top right; subcontrol-origin: border;}
-						QDoubleSpinBox#LibraryBPMSpinBox::up-arrow {image: url(:/images/library/up_arrow.png); width:4px; height:4px; }
+						QDoubleSpinBox#LibraryBPMSpinBox::up-arrow {image: url(:/images/library/up_arrow.png)}
 						QDoubleSpinBox#LibraryBPMSpinBox::down-arrow {image: url(:/images/library/down_arrow.png)}
-						
 
 						<!--library search bar-->
 						WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
