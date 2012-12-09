@@ -17,6 +17,7 @@
 #include "mathstuff.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "analyserqueue.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,

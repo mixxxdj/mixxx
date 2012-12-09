@@ -15,14 +15,11 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qapplication.h>
+#include <QApplication>
+#include <QtDebug>
+
 #include "controlobjectthread.h"
 #include "controlobject.h"
-
-
-QWaitCondition ControlObjectThread::m_sqWait;
-QMutex ControlObjectThread::m_sqMutex;
-QQueue<ControlObjectThread*> ControlObjectThread::m_sqQueue;
 
 ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
         : QObject(pParent),
@@ -59,7 +56,7 @@ void ControlObjectThread::slotSet(double v) {
     m_dValue = v;
     m_dataMutex.unlock();
 
-    updateControlObject();
+    updateControlObject(v);
 }
 
 bool ControlObjectThread::setExtern(double v) {
@@ -69,42 +66,7 @@ bool ControlObjectThread::setExtern(double v) {
         m_dValue = v;
         result = true;
         m_dataMutex.unlock();
-    }
-
-    // if ( m_sqMutex.tryLock() )
-    // {
-    //     if( m_dataMutex.tryLock() )
-    //     {
-    //         m_sqQueue.enqueue(this);
-    //         m_dValue = v;
-
-    //         m_dataMutex.unlock();
-    //         m_sqMutex.unlock();
-
-    //         result = true;
-    //     }
-    //     else
-    //     {
-    //         m_sqMutex.unlock();
-    //     }
-    // }
-
-    emitValueChanged();
-    return result;
-}
-
-bool ControlObjectThread::update() {
-    bool result = false;
-
-    m_sqMutex.lock();
-    ControlObjectThread* p = NULL;
-    if (!m_sqQueue.isEmpty())
-        p = m_sqQueue.dequeue();
-    m_sqMutex.unlock();
-
-    if (p) {
-        p->emitValueChanged();
-        result = true;
+        emitValueChanged();
     }
 
     return result;
@@ -116,23 +78,25 @@ void ControlObjectThread::emitValueChanged() {
 
 void ControlObjectThread::add(double v) {
     m_dataMutex.lock();
-    m_dValue += v;
+    double newValue = m_dValue + v;
+    m_dValue = newValue;
     m_dataMutex.unlock();
 
-    updateControlObject();
+    updateControlObject(newValue);
 }
 
 void ControlObjectThread::sub(double v) {
     m_dataMutex.lock();
-    m_dValue -= v;
+    double newValue = m_dValue - v;
+    m_dValue = newValue;
     m_dataMutex.unlock();
 
-    updateControlObject();
+    updateControlObject(newValue);
 }
 
-void ControlObjectThread::updateControlObject() {
+void ControlObjectThread::updateControlObject(double v) {
     if (m_pControlObject) {
-        m_pControlObject->queueFromThread(get(), this);
+        m_pControlObject->queueFromThread(v, this);
     }
 }
 
