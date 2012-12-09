@@ -57,7 +57,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
-    m_pSteadySubtle = new SteadyPitch(0.08);
+    m_pSteadySubtle = new SteadyPitch(0.12);
     m_pSteadyGross = new SteadyPitch(0.5);
 
     iQualPos = 0;
@@ -405,7 +405,7 @@ void VinylControlXwax::run()
                             qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
                             bTrackSelectMode = true;
                             togglePlayButton(FALSE);
-                               resetSteadyPitch(0.0f, 0.0f);
+                            resetSteadyPitch(0.0f, 0.0f);
                             controlScratch->slotSet(0.0f);
                         }
                         doTrackSelection(true, dVinylPitch, iPosition);
