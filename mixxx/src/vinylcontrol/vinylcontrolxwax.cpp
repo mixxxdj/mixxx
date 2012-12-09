@@ -56,7 +56,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
-    m_pSteadySubtle = new SteadyPitch(0.08);
+    m_pSteadySubtle = new SteadyPitch(0.12);
     m_pSteadyGross = new SteadyPitch(0.5);
 
     iQualPos = 0;
