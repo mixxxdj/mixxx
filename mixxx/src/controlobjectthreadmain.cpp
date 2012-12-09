@@ -30,19 +30,12 @@ ControlObjectThreadMain::~ControlObjectThreadMain() {
 bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
 {
     // Handle events
-    if (e->type() == MIXXXEVENT_CONTROL)
-    {
+    if (e && e->type() == MIXXXEVENT_CONTROL) {
         ControlEvent * ce = (ControlEvent *)e;
-
-        m_dataMutex.lock();
-        m_dValue = ce->value();
-        m_dataMutex.unlock();
-
         //qDebug() << "ControlEvent " << ce->value();
+        m_dValue = ce->value();
         emit(valueChanged(ce->value()));
-    }
-    else
-    {
+    } else {
         // standard event processing
         return QObject::eventFilter(o,e);
     }
