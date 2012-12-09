@@ -38,6 +38,8 @@
         <file>images/library/ic_library_preview_pause.png</file>
         <file>images/library/checked.png</file>
         <file>images/library/unchecked.png</file>
+        <file>images/library/down_arrow.png</file>
+        <file>images/library/up_arrow.png</file>
         <file>shaders/computemaxsignal.frag</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
