@@ -357,6 +357,11 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Temporarily setup a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
+    add("loop_exit")
+            << tr("Loop Exit")
+            << tr("Turns the current loop off.")
+            << tr("Works only if Loop-In and Loop-Out marker are set.");
+
     add("reloop_exit")
             << tr("Reloop/Exit")
             << tr("Toggles the current loop on or off.")
