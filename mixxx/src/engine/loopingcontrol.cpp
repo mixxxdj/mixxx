@@ -546,12 +546,12 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
-    slotReloopExit(1);
+    setLoopingEnabled(false);
 }
 
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
-    slotReloopExit(1);
+    setLoopingEnabled(false);
     m_pSlipEnabled->set(0);
 }
 
