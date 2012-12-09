@@ -584,10 +584,6 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
 
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << "delete playerManager " << qTime.elapsed();
-    delete m_pPlayerManager;
-
     // LibraryScanner depends on Library
     qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
