@@ -304,11 +304,32 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
     QList<Deck*>::iterator it = m_decks.begin();
     while (it != m_decks.end()) {
         Deck* pDeck = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            pDeck->slotLoadTrack(pTrack, false);
-            break;
+        
+        ControlObject* vinylControlEnabled =
+                ControlObject::getControl(ConfigKey(pDeck->getGroup(), 
+                                          "vinylcontrol_enabled"));
+                                          
+        if (vinylControlEnabled && vinylControlEnabled->get())
+        {
+            // With vinyl, we can't rely solely on play-button status.  Load if
+            // either no track is loaded, or if the scratch2 rate is very low.
+            TrackPointer tp = pDeck->getLoadedTrack();
+            ControlObject* vinylRate =
+                    ControlObject::getControl(ConfigKey(pDeck->getGroup(), 
+                                              "scratch2"));
+            if (vinylRate && (tp == NULL || fabs(vinylRate->get()) < 0.1 )) {
+                pDeck->slotLoadTrack(pTrack, false);
+                break;
+            }
+        }
+        else
+        {
+            ControlObject* playControl =
+                    ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
+            if (playControl && playControl->get() != 1. ) {
+                pDeck->slotLoadTrack(pTrack, false);
+                break;
+            }
         }
         it++;
     }
