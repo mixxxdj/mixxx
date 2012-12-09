@@ -75,19 +75,24 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
         // Anyway we have some the problem that code cannot block the full process for one second.
         // So we need to alter gain each time ::process is called.
 
+        const float fullReplayGainBoost = fReplayGain*pow(10, fReplayGainBoost/20);
+
         // This means that a ReplayGain value has been calculated after the track has been loaded
+        const double kFadeSeconds = 1.0;
+
         if (m_bSmoothFade) {
             double seconds = static_cast<double>(m_timer.elapsed()) / 1e9;
-            if (seconds < 1.0) {
+            if (seconds < kFadeSeconds) {
                 // Fade smoothly
-                fReplayGainCorrection=(1.0-seconds)+seconds*fReplayGain*pow(10, fReplayGainBoost/20);
+                double fadeFrac = seconds / kFadeSeconds;
+                fReplayGainCorrection=(1.0-fadeFrac)+fadeFrac*fullReplayGainBoost;
             } else {
                 m_bSmoothFade = false;
-                fReplayGainCorrection = fReplayGain*pow(10, fReplayGainBoost/20);
+                fReplayGainCorrection = fullReplayGainBoost;
             }
         } else {
             // Passing a user defined boost
-            fReplayGainCorrection = fReplayGain*pow(10, fReplayGainBoost/20);
+            fReplayGainCorrection = fullReplayGainBoost;
         }
     } else if (fEnableReplayGain != 0) {
         // If track has not ReplayGain value and ReplayGain is enabled
