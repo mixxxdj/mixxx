@@ -17,11 +17,13 @@
 
 #include <QtDebug>
 #include <QHash>
+#include <QSet>
 #include <QMutexLocker>
 
 #include "controlobject.h"
 #include "controlevent.h"
 #include "util/stat.h"
+#include "util/timer.h"
 
 // Static member variable definition
 QHash<ConfigKey,ControlObject*> ControlObject::m_sqCOHash;
@@ -358,18 +360,25 @@ void ControlObject::sync() {
     // the corresponding ControlObjects. These updates should only occour if no
     // changes has been in the object from widgets, midi or application threads.
     {
+        ScopedTimer t("ControlObject::sync qQueueChanges");
         m_sqQueueMutexChanges.lock();
-        QQueue<ControlObject*> qQueueChanges = m_sqQueueChanges;
+        QSet<ControlObject*> setChanges = QSet<ControlObject*>::fromList(m_sqQueueChanges);
+        Stat::track("ControlObject::sync qQueueChanges dupes", Stat::UNSPECIFIED,
+                    Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::MIN | Stat::MAX,
+                    m_sqQueueChanges.size() - setChanges.size());
         m_sqQueueChanges.clear();
         m_sqQueueMutexChanges.unlock();
 
         QList<ControlObject*> failedUpdates;
-        while (!qQueueChanges.isEmpty()) {
-            ControlObject* obj = qQueueChanges.dequeue();
-
+        for (QSet<ControlObject*>::iterator it = setChanges.begin();
+             it != setChanges.end(); ++it) {
+            ControlObject* obj = *it;
             // If update is not successful, enqueue again
             if (!obj->updateProxies()) {
                 failedUpdates.push_back(obj);
+                Stat::track("ControlObject::sync qQueueChanges failed CO update",
+                            Stat::UNSPECIFIED, Stat::COUNT | Stat::SUM | Stat::AVERAGE, 1.0);
+
             }
         }
 
