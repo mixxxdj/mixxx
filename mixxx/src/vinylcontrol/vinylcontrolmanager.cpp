@@ -56,6 +56,7 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::init()
 {
+    // Load saved preferences now that the objects exist
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
         ->queueFromThread(0);
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
