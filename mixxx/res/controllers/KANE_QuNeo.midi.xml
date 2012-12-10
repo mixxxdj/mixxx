@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset mixxxVersion="1.11.0+" schemaVersion="1">
   <info>
-    <name>KANE QuNeo Mixxx Preset</name>
+    <name>Keith McMillen Instruments QuNeo</name>
     <author>Daniel Leja</author>
     <description>This is a fully customized DJ mapping for the QuNeo, complete with beat-jumping and pulsing LED sequencers.</description>
-    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;amp;t=4130&amp;amp;sid=bc90140a4dc6e650e06dae0df8562604</forums>
+    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=4130</forums>
     <wiki>https://github.com/wolfbiter/kane-quneo-mixxx</wiki>
   </info>
   <controller id="QUNEO">
