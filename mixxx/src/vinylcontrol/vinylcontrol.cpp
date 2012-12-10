@@ -51,9 +51,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     //RIAA correction
     iRIAACorrection =  m_pConfig->getValueString(ConfigKey("[VinylControl]","InputRIAACorrection")).toInt();
 
-    //Vinyl control mode
-    iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toInt();
-
     //Enabled or not -- load from saved value in case vinyl control is restarting 
     bIsEnabled = wantenabled->get();
 
