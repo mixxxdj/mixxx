@@ -139,6 +139,9 @@ bool Stat::track(const QString& tag,
                  Stat::StatType type,
                  Stat::ComputeFlags compute,
                  double value) {
+    if (!StatsManager::s_bStatsManagerEnabled) {
+        return false;
+    }
     StatReport report;
     report.tag = strdup(tag.toAscii().constData());
     report.type = type;
