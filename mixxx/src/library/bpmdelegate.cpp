@@ -1,11 +1,13 @@
 #include "bpmdelegate.h"
-#include "bpmeditor.h"
+
 
 BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
                      : QStyledItemDelegate(parent),
+                       m_pTableView(qobject_cast<QTableView *>(parent)),
+                       m_pEditor(new BPMEditor(BPMEditor::ReadOnly, m_pTableView)),
                        m_column(column),
                        m_columnLock(columnLock){
-    m_pTableView = qobject_cast<QTableView *>(parent);
+    m_pEditor->hide();
 }
 
 BPMDelegate::~BPMDelegate() {
@@ -18,7 +20,8 @@ QWidget * BPMDelegate::createEditor(QWidget *parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    BPMEditor *pEditor = new BPMEditor(newOption,BPMEditor::Editable,parent);
+    BPMEditor *pEditor = new BPMEditor(BPMEditor::Editable,parent);
+    pEditor->setPalette(option.palette);
     connect(pEditor, SIGNAL(finishedEditing()),
             this, SLOT(commitAndCloseEditor()));
     return pEditor;
@@ -44,12 +47,12 @@ void BPMDelegate::paint(QPainter *painter,
     if (index==m_currentEditedCellIndex)
         return;
 
-    BPMEditor editor(option,BPMEditor::ReadOnly, m_pTableView);
-    editor.setData(index,m_columnLock);
-    editor.setGeometry(option.rect);
+    m_pEditor->setData(index,m_columnLock);
+    m_pEditor->setPalette(option.palette);
+    m_pEditor->setGeometry(option.rect);
     if (option.state == QStyle::State_Selected)
         painter->fillRect(option.rect, option.palette.base());
-    QPixmap map = QPixmap::grabWidget(&editor);
+    QPixmap map = QPixmap::grabWidget(m_pEditor);
     painter->drawPixmap(option.rect.x(),option.rect.y(),map);
 }
 
@@ -63,27 +66,8 @@ void BPMDelegate::updateEditorGeometry(QWidget *editor,
 QSize BPMDelegate::sizeHint(const QStyleOptionViewItem &option,
                             const QModelIndex &index) const {
     Q_UNUSED(index);
-    BPMEditor editor(option,BPMEditor::ReadOnly,m_pTableView);
-    return editor.sizeHint();
-}
-
-void BPMDelegate::cellEntered(const QModelIndex &index) {
-    //this slot is called if the mouse pointer enters ANY cell on
-    //the QTableView but the code should only be executed on a button
-    if (index.column()==m_column) {
-        if (m_isOneCellInEditMode) {
-            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-        }
-        m_pTableView->openPersistentEditor(index);
-        m_isOneCellInEditMode = true;
-        m_currentEditedCellIndex = index;
-    } else { // close editor if the mouse leaves the button
-        if (m_isOneCellInEditMode) {
-            m_isOneCellInEditMode = false;
-            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-            m_currentEditedCellIndex = QModelIndex();
-        }
-    }
+    Q_UNUSED(option);
+    return m_pEditor->sizeHint();
 }
 
 void BPMDelegate::commitAndCloseEditor() {

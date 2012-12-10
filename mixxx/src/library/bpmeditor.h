@@ -13,7 +13,7 @@ class BPMEditor : public QWidget {
     Q_OBJECT
   public:
     enum EditMode {Editable, ReadOnly};
-    BPMEditor(const QStyleOptionViewItem& option,EditMode mode, QWidget *parent =0);
+    BPMEditor(EditMode mode, QWidget *parent =NULL);
     ~BPMEditor();
 
     void setData(const QModelIndex &index, int lockColumn);
@@ -28,7 +28,6 @@ class BPMEditor : public QWidget {
     QDoubleSpinBox *m_pBPMSpinBox;
     QLabel *m_pBPMLabel;
     QHBoxLayout *m_pLayout;
-    bool m_isSelected;
 };
 
 #endif // BPMEDITOR_H

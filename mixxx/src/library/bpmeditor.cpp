@@ -1,14 +1,11 @@
 #include "bpmeditor.h"
 
-BPMEditor::BPMEditor(const QStyleOptionViewItem& option,
-                    EditMode mode, QWidget *parent)
+BPMEditor::BPMEditor(EditMode mode, QWidget *parent)
           :QWidget(parent),
            m_pLock(new QPushButton(this)),
            m_pBPMSpinBox(NULL),
            m_pBPMLabel(NULL),
-           m_pLayout(new QHBoxLayout(this)),
-           m_isSelected(option.state & QStyle::State_Selected) {
-    setPalette(option.palette);
+           m_pLayout(new QHBoxLayout(this)) {
     setObjectName("LibraryBPM");
     // configure Lock Button
     m_pLock->setMaximumWidth(20);

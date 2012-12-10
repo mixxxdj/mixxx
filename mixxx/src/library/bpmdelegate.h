@@ -5,6 +5,7 @@
 #include <QTableView>
 
 #include "trackinfoobject.h"
+#include "bpmeditor.h"
 
 class BPMDelegate : public QStyledItemDelegate {
   Q_OBJECT
@@ -30,11 +31,11 @@ class BPMDelegate : public QStyledItemDelegate {
   signals:
 
   public slots:
-    void cellEntered(const QModelIndex &index);
     void commitAndCloseEditor();
 
   private:
     QTableView *m_pTableView;
+    BPMEditor *m_pEditor;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;
