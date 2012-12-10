@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2011-06-20 10:39+0000\n"
-"Last-Translator: Nicolas KIK <Unknown>\n"
+"PO-Revision-Date: 2012-12-09 17:34+0000\n"
+"Last-Translator: goodman500 <goodman500@mohmal.com>\n"
 "Language-Team: Arabic <ar@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-30 04:35+0000\n"
-"X-Generator: Launchpad (build 16319)\n"
+"X-Launchpad-Export-Date: 2012-12-10 04:33+0000\n"
+"X-Generator: Launchpad (build 16341)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -45,11 +45,11 @@ msgstr ""
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "حدث خطأ غير معروف أثناء إنشاء قائمة التشغيل. "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "قائمة تشغيل جديدة"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
@@ -64,65 +64,65 @@ msgstr ""
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr ""
+msgstr "حذف"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr ""
+msgstr "إعادة تسمية"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr ""
+msgstr "أقفِل"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr ""
+msgstr "استيراد قائمة تشغيل"
 
 #: BasePlaylistFeature#8
 msgid "Export Playlist"
-msgstr ""
+msgstr "تصدير قائمة التشغيل"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr ""
+msgstr "إعادة تسمية قائمة التشغيل"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
-msgstr ""
+msgstr "الإسم الجديد لقائمة التشغيل:"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "فشلت إعادة تسمية قائمة التشغيل"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "توجد قائمة تشغيل بهذا الاسم"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "لا يمكن لقائمة التشغيل أن تحوي اسماً فارغاً."
 
 #: BasePlaylistFeature#14
 msgid "Playlist name:"
-msgstr ""
+msgstr "اسم قائمة التشغيل:"
 
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "فشل إنشاء قائمة التشغيل."
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "حدث خطأ غير معروف أثناء إنشاء قائمة التشغيل. "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "ملفات قائمة التشغيل (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -133,12 +133,12 @@ msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "تشغيل"
+msgstr "تم تشغيله"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "المغني"
+msgstr "الفنان"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
@@ -153,37 +153,37 @@ msgstr "الألبوم"
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "الفئة"
+msgstr "النوع"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Composer"
-msgstr ""
+msgstr "الملحن"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Year"
-msgstr ""
+msgstr "السنة"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr ""
+msgstr "النّوع"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr ""
+msgstr "الموقع"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Comment"
-msgstr ""
+msgstr "التعليق"
 
 #: BaseSqlTableModel#11
 msgctxt "BaseSqlTableModel#11"
 msgid "Duration"
-msgstr ""
+msgstr "المدة"
 
 #: BaseSqlTableModel#12
 msgid "Rating"
@@ -192,7 +192,7 @@ msgstr "التقييم"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "معدل البت"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -202,7 +202,7 @@ msgstr ""
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr ""
+msgstr "رقم المقطع"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -214,12 +214,12 @@ msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr ""
+msgstr "الطابع الزمني"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr ""
+msgstr "المفتاح"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
@@ -227,11 +227,11 @@ msgstr ""
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "معاينة"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "لا تستطيع تحميل المقطع"
+msgstr "لا يمكنك تحميل المقطع"
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
@@ -239,7 +239,7 @@ msgstr ""
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "حذف من الروابط السريعة"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -265,17 +265,17 @@ msgstr "إستعرض"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr "إسم الملف"
+msgstr "اسم الملف"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr "المغني"
+msgstr "الفنان"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr "عنوان"
+msgstr "العنوان"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
@@ -285,7 +285,7 @@ msgstr "الألبوم"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "رقم المقطوعة"
+msgstr "رقم المقطع"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
@@ -300,17 +300,17 @@ msgstr "الفئة"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Composer"
-msgstr ""
+msgstr "الملحن"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "التعليق"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "المدة"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
