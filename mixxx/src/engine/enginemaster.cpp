@@ -35,7 +35,7 @@
 #include "enginepfldelay.h"
 #include "engine/syncworker.h"
 #include "sampleutil.h"
-//#include "util/timer.h"
+#include "util/timer.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -216,7 +216,7 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
         }
     }
 
-    //ScopedTimer t(QString("EngineMaster::mixChannels_%1active").arg(totalActive));
+    ScopedTimer t(QString("EngineMaster::mixChannels_%1active").arg(totalActive));
 
     if (totalActive == 0) {
         SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
@@ -348,7 +348,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         QThread::currentThread()->setObjectName("Engine");
         haveSetName = true;
     }
-    //ScopedTimer t("EngineMaster::process");
+    ScopedTimer t("EngineMaster::process");
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);

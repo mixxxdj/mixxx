@@ -7,6 +7,9 @@
 const int kStatsPipeSize = 1 << 20;
 const int kProcessLength = kStatsPipeSize * 4 / 5;
 
+// static
+bool StatsManager::s_bStatsManagerEnabled = false;
+
 StatsPipe::StatsPipe(StatsManager* pManager)
         : FIFO<StatReport>(kStatsPipeSize),
           m_pManager(pManager) {
@@ -21,12 +24,14 @@ StatsPipe::~StatsPipe() {
 StatsManager::StatsManager()
     : QThread(),
       m_quit(0) {
+    s_bStatsManagerEnabled = true;
     setObjectName("StatsManager");
     moveToThread(this);
     start(QThread::LowPriority);
 }
 
 StatsManager::~StatsManager() {
+    s_bStatsManagerEnabled = false;
     m_quit = 1;
     m_statsPipeCondition.wakeAll();
     wait();

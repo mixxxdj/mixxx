@@ -6,7 +6,7 @@
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 #include "playerinfo.h"
-//#include "util/timer.h"
+#include "util/timer.h"
 
 #ifdef __TONAL__
 #include "tonal/tonalanalyser.h"
@@ -126,18 +126,18 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
     int progress; // progress in 0 ... 100
 
     do {
-        //ScopedTimer t("AnalyserQueue::doAnalysis block");
+        ScopedTimer t("AnalyserQueue::doAnalysis block");
         read = pSoundSource->read(ANALYSISBLOCKSIZE, data16);
 
         // To compare apples to apples, let's only look at blocks that are the
         // full block size.
-        //if (read != ANALYSISBLOCKSIZE) {
-        //    t.cancel();
-        //}
+        if (read != ANALYSISBLOCKSIZE) {
+            t.cancel();
+        }
 
         // Safety net in case something later barfs on 0 sample input
         if (read == 0) {
-            //t.cancel();
+            t.cancel();
             break;
         }
 
@@ -202,9 +202,9 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
         }
 
         // Ignore blocks in which we decided to bail for stats purposes.
-        //if (dieflag || cancelled) {
-        //    t.cancel();
-        //}
+        if (dieflag || cancelled) {
+            t.cancel();
+        }
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
 
     delete[] data16;

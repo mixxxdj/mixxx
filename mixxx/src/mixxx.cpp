@@ -55,7 +55,7 @@
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
 #include "sharedglcontext.h"
-//#include "util/statsmanager.h"
+#include "util/statsmanager.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
@@ -139,7 +139,10 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
-    //StatsManager::create();
+    // Only record stats in developer mode.
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::create();
+    }
 
     //Reset pointer to players
     m_pSoundManager = NULL;

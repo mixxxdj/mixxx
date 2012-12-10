@@ -288,15 +288,15 @@ void PlayerManager::slotLoadToPlayer(QString location, QString group) {
 }
 
 void PlayerManager::slotLoadToDeck(QString location, int deck) {
-    slotLoadToPlayer(location, groupForDeck(deck));
+    slotLoadToPlayer(location, groupForDeck(deck-1));
 }
 
 void PlayerManager::slotLoadToPreviewDeck(QString location, int previewDeck) {
-    slotLoadToPlayer(location, groupForPreviewDeck(previewDeck));
+    slotLoadToPlayer(location, groupForPreviewDeck(previewDeck-1));
 }
 
 void PlayerManager::slotLoadToSampler(QString location, int sampler) {
-    slotLoadToPlayer(location, groupForSampler(sampler));
+    slotLoadToPlayer(location, groupForSampler(sampler-1));
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
