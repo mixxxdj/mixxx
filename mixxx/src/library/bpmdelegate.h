@@ -2,9 +2,7 @@
 #define BPMDELEGATE_H
 
 #include <QStyledItemDelegate>
-#include <QTableView>
 
-#include "trackinfoobject.h"
 #include "bpmeditor.h"
 
 class BPMDelegate : public QStyledItemDelegate {
@@ -28,16 +26,12 @@ class BPMDelegate : public QStyledItemDelegate {
     void updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option,
                               const QModelIndex &index) const;
 
-  signals:
 
   public slots:
     void commitAndCloseEditor();
 
   private:
-    QTableView *m_pTableView;
     BPMEditor *m_pEditor;
-    bool m_isOneCellInEditMode;
-    QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;
     int m_columnLock;
 };

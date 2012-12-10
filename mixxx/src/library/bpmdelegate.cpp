@@ -1,10 +1,9 @@
 #include "bpmdelegate.h"
 
-
 BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
                      : QStyledItemDelegate(parent),
-                       m_pTableView(qobject_cast<QTableView *>(parent)),
-                       m_pEditor(new BPMEditor(BPMEditor::ReadOnly, m_pTableView)),
+                       m_pEditor(new BPMEditor(BPMEditor::ReadOnly,
+                                     qobject_cast<QWidget *>(parent))),
                        m_column(column),
                        m_columnLock(columnLock){
     m_pEditor->hide();
@@ -13,7 +12,7 @@ BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
 BPMDelegate::~BPMDelegate() {
 }
 
-QWidget * BPMDelegate::createEditor(QWidget *parent,
+QWidget* BPMDelegate::createEditor(QWidget *parent,
                                     const QStyleOptionViewItem &option,
                                     const QModelIndex &index) const {
     // Populate the correct colors based on the styling
@@ -43,9 +42,6 @@ void BPMDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 void BPMDelegate::paint(QPainter *painter,
                                   const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const {
-    // Let the editor paint in this case
-    if (index==m_currentEditedCellIndex)
-        return;
 
     m_pEditor->setData(index,m_columnLock);
     m_pEditor->setPalette(option.palette);
