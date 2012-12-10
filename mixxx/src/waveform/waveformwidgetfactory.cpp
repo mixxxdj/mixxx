@@ -67,7 +67,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         // Disable waiting for vertical Sync
         // This can be enabled when using a single Threads for each QGLContext
         // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-        glFormat.setSwapInterval(0);
+        glFormat.setSwapInterval(1);
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 

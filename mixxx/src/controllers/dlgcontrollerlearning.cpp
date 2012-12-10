@@ -132,6 +132,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     QMenu* loopMenu = addSubmenu(tr("Looping"));
     addDeckControl("loop_in", tr("Loop In button"), loopMenu);
     addDeckControl("loop_out", tr("Loop Out button"), loopMenu);
+    addDeckControl("loop_exit", tr("Loop Exit button"), loopMenu);
     addDeckControl("reloop_exit", tr("Reloop / Exit button"), loopMenu);
     addDeckControl("loop_halve", tr("Halve the current loop's length"), loopMenu);
     addDeckControl("loop_double", tr("Double the current loop's length"), loopMenu);

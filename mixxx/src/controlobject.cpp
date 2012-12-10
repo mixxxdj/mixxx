@@ -17,11 +17,13 @@
 
 #include <QtDebug>
 #include <QHash>
+#include <QSet>
 #include <QMutexLocker>
 
 #include "controlobject.h"
 #include "controlevent.h"
 #include "util/stat.h"
+#include "util/timer.h"
 
 // Static member variable definition
 QHash<ConfigKey,ControlObject*> ControlObject::m_sqCOHash;
@@ -309,7 +311,8 @@ double ControlObject::getValueToWidget(double v)
 
 void ControlObject::sync() {
     // Update control objects with values recieved from threads
-    if (m_sqQueueMutexThread.tryLock()) {
+    {
+        m_sqQueueMutexThread.lock();
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromThread can trigger
         // a slot which in turn could cause a lock of m_sqQueueMutexThread.
@@ -331,7 +334,8 @@ void ControlObject::sync() {
     }
 
     // Update control objects with values recieved from MIDI
-    if (m_sqQueueMutexMidi.tryLock()) {
+    {
+        m_sqQueueMutexMidi.lock();
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromMidi can trigger a
         // slot which in turn could cause a lock of m_sqQueueMutexMidi.
@@ -355,18 +359,26 @@ void ControlObject::sync() {
     // Update app threads (ControlObjectThread derived objects) with changes in
     // the corresponding ControlObjects. These updates should only occour if no
     // changes has been in the object from widgets, midi or application threads.
-    if (m_sqQueueMutexChanges.tryLock()) {
-        QQueue<ControlObject*> qQueueChanges = m_sqQueueChanges;
+    {
+        ScopedTimer t("ControlObject::sync qQueueChanges");
+        m_sqQueueMutexChanges.lock();
+        QSet<ControlObject*> setChanges = QSet<ControlObject*>::fromList(m_sqQueueChanges);
+        Stat::track("ControlObject::sync qQueueChanges dupes", Stat::UNSPECIFIED,
+                    Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::MIN | Stat::MAX,
+                    m_sqQueueChanges.size() - setChanges.size());
         m_sqQueueChanges.clear();
         m_sqQueueMutexChanges.unlock();
 
         QList<ControlObject*> failedUpdates;
-        while (!qQueueChanges.isEmpty()) {
-            ControlObject* obj = qQueueChanges.dequeue();
-
+        for (QSet<ControlObject*>::iterator it = setChanges.begin();
+             it != setChanges.end(); ++it) {
+            ControlObject* obj = *it;
             // If update is not successful, enqueue again
             if (!obj->updateProxies()) {
                 failedUpdates.push_back(obj);
+                Stat::track("ControlObject::sync qQueueChanges failed CO update",
+                            Stat::UNSPECIFIED, Stat::COUNT | Stat::SUM | Stat::AVERAGE, 1.0);
+
             }
         }
 

@@ -76,11 +76,11 @@ void ControlObjectThreadWidget::slotReset() {
     }
 }
 
-void ControlObjectThreadWidget::updateControlObject()
+void ControlObjectThreadWidget::updateControlObject(double v)
 {
     if (m_pControlObject != NULL) {
         m_pControlObject->queueFromThread(
-            m_pControlObject->getValueFromWidget(get()), this);
+            m_pControlObject->getValueFromWidget(v), this);
     }
 }
 
