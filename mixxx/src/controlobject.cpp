@@ -309,7 +309,8 @@ double ControlObject::getValueToWidget(double v)
 
 void ControlObject::sync() {
     // Update control objects with values recieved from threads
-    if (m_sqQueueMutexThread.tryLock()) {
+    {
+        m_sqQueueMutexThread.lock();
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromThread can trigger
         // a slot which in turn could cause a lock of m_sqQueueMutexThread.
@@ -331,7 +332,8 @@ void ControlObject::sync() {
     }
 
     // Update control objects with values recieved from MIDI
-    if (m_sqQueueMutexMidi.tryLock()) {
+    {
+        m_sqQueueMutexMidi.lock();
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromMidi can trigger a
         // slot which in turn could cause a lock of m_sqQueueMutexMidi.
@@ -355,7 +357,8 @@ void ControlObject::sync() {
     // Update app threads (ControlObjectThread derived objects) with changes in
     // the corresponding ControlObjects. These updates should only occour if no
     // changes has been in the object from widgets, midi or application threads.
-    if (m_sqQueueMutexChanges.tryLock()) {
+    {
+        m_sqQueueMutexChanges.lock();
         QQueue<ControlObject*> qQueueChanges = m_sqQueueChanges;
         m_sqQueueChanges.clear();
         m_sqQueueMutexChanges.unlock();
