@@ -31,7 +31,6 @@
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config)
         : QWidget(parent),
-          m_COMode(ControlObject::getControl(ConfigKey("[VinylControl]", "mode"))),
           m_COSpeed1(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_speed_type"))),
           m_COSpeed2(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_speed_type"))) {
     m_pVCManager = pVCMan;
@@ -181,20 +180,12 @@ void DlgPrefVinyl::slotApply()
     if (RelativeMode->isChecked())
         iMode = MIXXX_VCMODE_RELATIVE;
 
-    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode"))->set(iMode);
-    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode"))->set(iMode);
-    m_COMode.slotSet(iMode);
     config->set(ConfigKey("[VinylControl]","mode"), ConfigValue(iMode));
     config->set(ConfigKey("[VinylControl]","needle_skip_prevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
     config->set(ConfigKey("[VinylControl]","show_signal_quality" ), ConfigValue( (int)(SignalQualityEnable->isChecked( )) ) );
 
     m_pVCManager->reloadConfig();
     slotUpdate();
-}
-
-void DlgPrefVinyl::EnableRelativeModeSlotApply()
-{
-
 }
 
 void DlgPrefVinyl::VinylTypeSlotApply()
