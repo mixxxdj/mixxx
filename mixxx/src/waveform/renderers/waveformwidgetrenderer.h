@@ -49,7 +49,9 @@ public:
 
     //this "regulate" against visual sampling to make the position in widget
     //stable and deterministic
+    // Transform sample index to pixel in track.
     double transformSampleIndexInRendererWorld(int sampleIndex) const;
+    // Transform position (percentage of track) to pixel in track.
     double transformPositionInRendererWorld(double position) const;
 
     double getPlayPos() const { return m_playPos;}
