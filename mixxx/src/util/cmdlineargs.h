@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QString>
+#include <QDir>
 
 // A structure to store the parsed command-line arguments
 class CmdlineArgs {
