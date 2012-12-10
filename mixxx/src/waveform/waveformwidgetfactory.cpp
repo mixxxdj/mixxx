@@ -208,7 +208,8 @@ void WaveformWidgetFactory::destroyWidgets() {
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
     // Do not hold the pointer to of timer listeners since they may be deleted
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(update()));
+            pWidget, SLOT(repaint()),
+            Qt::DirectConnection);
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDomElement& node) {
