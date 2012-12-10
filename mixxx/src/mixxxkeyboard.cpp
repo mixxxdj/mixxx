@@ -15,12 +15,14 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "mixxxkeyboard.h"
-#include "controlobject.h"
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QEvent>
+
+#include "mixxxkeyboard.h"
+#include "controlobject.h"
+#include "util/cmdlineargs.h"
 
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent)
 {
@@ -132,7 +134,9 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e) {
     keyseq = QKeySequence(e->key()).toString();
     k = QKeySequence(modseq + keyseq);
 
-    //qDebug() << "keyboard press: " << k.toString();
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        qDebug() << "keyboard press: " << k.toString();
+    }
     return k;
 }
 

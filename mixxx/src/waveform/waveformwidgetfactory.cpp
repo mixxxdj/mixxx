@@ -67,7 +67,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         // Disable waiting for vertical Sync
         // This can be enabled when using a single Threads for each QGLContext
         // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-        glFormat.setSwapInterval(0);
+        glFormat.setSwapInterval(1);
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
@@ -208,7 +208,8 @@ void WaveformWidgetFactory::destroyWidgets() {
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
     // Do not hold the pointer to of timer listeners since they may be deleted
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(update()));
+            pWidget, SLOT(repaint()),
+            Qt::DirectConnection);
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDomElement& node) {

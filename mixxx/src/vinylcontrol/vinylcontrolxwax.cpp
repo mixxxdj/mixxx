@@ -56,7 +56,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
-    m_pSteadySubtle = new SteadyPitch(0.08);
+    m_pSteadySubtle = new SteadyPitch(0.12);
     m_pSteadyGross = new SteadyPitch(0.5);
 
     iQualPos = 0;
@@ -844,9 +844,9 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
     if (is && !was)
     {
         vinylStatus->slotSet(VINYL_STATUS_OK);
-    }
-    if (!is)
+    } else if (!is) {
         vinylStatus->slotSet(VINYL_STATUS_DISABLED);
+    }
 
     return is;
 }

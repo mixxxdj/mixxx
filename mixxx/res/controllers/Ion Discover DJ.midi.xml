@@ -3,7 +3,7 @@
 	<info>
 		<name>Ion Discover DJ</name>
 		<author>Rick Prokup</author>
-		<description>This preset provides functionality for the Ion Discover DJ controller for mixxx</description>
+		<description>This preset provides functionality for the Ion Discover DJ controller for Mixxx</description>
 	</info>
         <controller id="Ion Discover DJ" >
         	<scriptfiles>

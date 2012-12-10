@@ -24,23 +24,6 @@ VinylControlManager::VinylControlManager(QObject *pParent,
   , m_proxies(kNumberOfDecks, NULL)
   , m_pToggle(new ControlPushButton(ConfigKey("[VinylControl]", "Toggle")))
 {
-    // load a bunch of stuff
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
-        ->queueFromThread(0);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
-        ->queueFromThread(0);
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
     connect(m_pToggle, SIGNAL(valueChanged(double)), SLOT(toggleDeck(double)));
 }
 
@@ -62,12 +45,6 @@ VinylControlManager::~VinylControlManager() {
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     m_pConfig->set(ConfigKey("[Channel 1]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey("[Channel 2]","vinylcontrol_enabled"), false);
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel1]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel2]","vinylcontrol_mode"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch1"),
         ConfigValue((int)ControlObject::getControl(
             ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
@@ -75,6 +52,28 @@ VinylControlManager::~VinylControlManager() {
         ConfigValue((int)ControlObject::getControl(
             ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
     delete m_pToggle;
+}
+
+void VinylControlManager::init()
+{
+    // Load saved preferences now that the objects exist
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
+        ->queueFromThread(0);
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
+        ->queueFromThread(0);
+
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
 }
 
 void VinylControlManager::receiveBuffer(AudioInput input,

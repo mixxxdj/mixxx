@@ -210,8 +210,18 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetShortName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
-    QString support = presetForumLink(preset) + presetWikiLink(preset);
+    QStringList supportLinks;
+    QString forumLink = presetForumLink(preset);
+    if (forumLink.length() > 0) {
+        supportLinks << forumLink;
+    }
+    QString wikiLink = presetWikiLink(preset);
+    if (wikiLink.length() > 0) {
+        supportLinks << wikiLink;
+    }
+    QString support = supportLinks.join("&nbsp;");
     if (support.length() == 0) {
+        //: Shown when a MIDI controller has no links to support pages (e.g. Mixxx wiki or forums).
         support = tr("No support available.");
     }
     m_ui.labelLoadedPresetSupportLinks->setText(support);
