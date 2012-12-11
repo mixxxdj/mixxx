@@ -230,7 +230,7 @@ qint64 PerformanceTimer::difference(PerformanceTimer* timer)
 
 static qint64 getTimeFromTick(quint64 elapsed)
 {
-    static LARGE_INTEGER freq;
+    static LARGE_INTEGER freq = {{ 0, 0 }};
     if (!freq.QuadPart)
         QueryPerformanceFrequency(&freq);
     return 1000000000 * elapsed / freq.QuadPart;
