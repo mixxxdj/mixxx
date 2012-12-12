@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-12-05 15:24+0000\n"
+"PO-Revision-Date: 2012-12-11 15:06+0000\n"
 "Last-Translator: Tomasz Kowalkowski <coval_pl@op.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-12-06 04:37+0000\n"
-"X-Generator: Launchpad (build 16341)\n"
+"X-Launchpad-Export-Date: 2012-12-12 04:37+0000\n"
+"X-Generator: Launchpad (build 16361)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -836,7 +836,7 @@ msgstr "Głośność słuchawek"
 
 #: DlgControllerLearning#14
 msgid "Headphone mix (pre/main)"
-msgstr ""
+msgstr "Mix słuchawek (wstępny/główny)"
 
 #: DlgControllerLearning#15
 msgid "Transport"
@@ -924,7 +924,7 @@ msgstr "Synchronizacja uderzeń (tylko fraza)"
 
 #: DlgControllerLearning#36
 msgid "Pitch and Rate"
-msgstr ""
+msgstr "Wysokość i Szybkość"
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
@@ -944,7 +944,7 @@ msgstr "Dopasuj prędkośc w dół (dokładne)"
 
 #: DlgControllerLearning#41
 msgid "Pitch-bend rate up (fine)"
-msgstr ""
+msgstr "Strojenie wysości tonu w górę (dokładne)"
 
 #: DlgControllerLearning#42
 msgid "Adjust rate up (coarse)"
@@ -956,15 +956,15 @@ msgstr "Dopasuj prędkość w dół (zgrubnie)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (coarse)"
-msgstr ""
+msgstr "Strojenie wysości tonu w górę (zgrubne)"
 
 #: DlgControllerLearning#45
 msgid "Pitch-bend rate down (coarse)"
-msgstr ""
+msgstr "Strojenie wysości tonu w dół (zgrubne)"
 
 #: DlgControllerLearning#46
 msgid "Pitch-bend rate down (fine)"
-msgstr ""
+msgstr "Strojenie wysości tonu w dół (dokładne)"
 
 #: DlgControllerLearning#47
 msgctxt "DlgControllerLearning#47"
@@ -1080,11 +1080,11 @@ msgstr "Znaczniki (Cue)"
 
 #: DlgControllerLearning#74
 msgid "Hotcues"
-msgstr ""
+msgstr "Skróty"
 
 #: DlgControllerLearning#75
 msgid "Hotcue %1"
-msgstr ""
+msgstr "Skrót %1"
 
 #: DlgControllerLearning#76
 msgid "Beat-Looping"
@@ -1752,7 +1752,7 @@ msgstr "Czy jesteś pewien, że chcesz wyczyścić wszystkie dowiązania?"
 #: DlgPrefNoControllersDlg#1
 msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefNoControllersDlg#2
 msgid "No controllers available."
@@ -2587,7 +2587,7 @@ msgstr "Equalizery"
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
@@ -3443,7 +3443,7 @@ msgstr "& Wsparcie Mixxx"
 
 #: MixxxApp#42
 msgid "Get help with Mixxx"
-msgstr ""
+msgstr "Uzyskaj pomoc Mixxx"
 
 #: MixxxApp#43
 msgid "&User Manual"
@@ -4065,7 +4065,7 @@ msgstr "Reguluje głosność wybranego kanału."
 
 #: Tooltips#29
 msgid "Master Volume"
-msgstr ""
+msgstr "Główna głośność"
 
 #: Tooltips#30
 msgid "Adjusts the master output volume."
@@ -4074,7 +4074,7 @@ msgstr "Reguluje głośność na wyjściu głównym."
 #: Tooltips#31
 msgctxt "Tooltips#31"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Tooltips#32
 msgid ""
@@ -4119,7 +4119,7 @@ msgstr "Ustawia kierunek miksowania kanału."
 msgid ""
 "Either to the left side of crossfader, to the right side or to the center "
 "(default)."
-msgstr ""
+msgstr "Z lewej strony  crossfadera, z prawej strony lub środka (domyślnie)."
 
 #: Tooltips#42
 msgctxt "Tooltips#42"
@@ -4280,7 +4280,7 @@ msgstr "Prędkosc"
 
 #: Tooltips#80
 msgid "BPM Tap"
-msgstr ""
+msgstr "Wstukanie rytmu (BPM Tap)"
 
 #: Tooltips#81
 msgid "When tapped repeatedly, adjusts the BPM to match the tapped BPM."
@@ -4407,10 +4407,14 @@ msgid ""
 "Syncs to the first deck (in numerical order) that is playing a track and has "
 "a BPM."
 msgstr ""
+"Synchronizuje do pierwszego odtwarzacza (w porządku numerycznym) który gra i "
+"ma określony BPM."
 
 #: Tooltips#108
 msgid "If no deck is playing, syncs to the first deck that has a BPM."
 msgstr ""
+"Jeśli żaden odtwarzacz nie gra, synchronizuje do pierwszego odtwarzacza "
+"który ma podany BPM."
 
 #: Tooltips#109
 msgid "Decks can't sync to samplers and samplers can only sync to decks."
@@ -4424,13 +4428,15 @@ msgstr "Ustawia pętlę na określoną ilość uderzeń."
 
 #: Tooltips#111
 msgid "Temporarily setup a rolling loop over the set number of beats."
-msgstr ""
+msgstr "Tymczasowo ustawia pętlę przez określoną ilość uderzeń."
 
 #: Tooltips#112
 msgid ""
 "Playback will resume where the track would have been if it had not entered "
 "the loop."
 msgstr ""
+"Odtwarzanie zostanie wznowione tam, gdzie byłoby gdyby nie było ustawionej "
+"pętli."
 
 #: Tooltips#113
 msgid "Slip Mode"
@@ -4478,11 +4484,11 @@ msgstr "Aktywuj kontrolę vinylem z Menu -> Opcje"
 
 #: Tooltips#122
 msgid "Change the step-size in the Preferences -> Interface menu."
-msgstr ""
+msgstr "Zmień wielkość kroku w Ustawienia -> Menu interfejsu"
 
 #: Tooltips#123
 msgid "Change the default cue behavior in Preferences -> Interface."
-msgstr ""
+msgstr "Zmień domyślne zachowanie wskaźnika (Cue) w Ustawienia - Interfejs."
 
 #: Tooltips#124
 msgid "selected in Preferences -> Sound Hardware."
@@ -4498,7 +4504,7 @@ msgstr ""
 
 #: Tooltips#127
 msgid "Fast Forward"
-msgstr ""
+msgstr "Przewiń do przodu"
 
 #: Tooltips#128
 msgid "Fast forward through the track."
@@ -4515,7 +4521,7 @@ msgstr "Synchronizuj"
 
 #: Tooltips#131
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
-msgstr ""
+msgstr "Synchronizuje tempo (BPM) i fazę do przeciwnego odtwarzacza. "
 
 #: Tooltips#132
 msgid "if BPM is detected on both."
@@ -4531,15 +4537,15 @@ msgstr "Kontrola wysoości tonu"
 
 #: Tooltips#135
 msgid "Changes the track playback rate."
-msgstr ""
+msgstr "Zmienia prędkość odtwarzania utworu."
 
 #: Tooltips#136
 msgid "Pitch Rate"
-msgstr ""
+msgstr "Wysokość tonu."
 
 #: Tooltips#137
 msgid "Displays the current playback rate of the track."
-msgstr ""
+msgstr "Wyświetla aktualną prędkość utworu."
 
 #: Tooltips#138
 msgid "Repeat"
@@ -4715,11 +4721,11 @@ msgstr ""
 
 #: Tooltips#176
 msgid "Track Duration"
-msgstr ""
+msgstr "Czas trwania utworu"
 
 #: Tooltips#177
 msgid "Displays the duration of the loaded track."
-msgstr ""
+msgstr "Wyświetla czas trwania załadowanego utworu."
 
 #: Tooltips#178
 msgid "Information is loaded from the track's metadata tags."
@@ -4777,7 +4783,7 @@ msgstr "Reguluje opóźnienie fazy efektu Flager'a (kiedy efekt jest atywny)."
 
 #: Tooltips#191
 msgid "Flanger Depth"
-msgstr ""
+msgstr "Głębokość Flanger'a"
 
 #: Tooltips#192
 msgid "Adjusts the intensity of the flange effect (when active)."
@@ -4785,7 +4791,7 @@ msgstr "Reguluje intensywnośc efektu Flanger'a (kiedy efekt jest aktywny)."
 
 #: Tooltips#193
 msgid "Flanger LFO Period"
-msgstr ""
+msgstr "Okres LFO Flanger'a"
 
 #: Tooltips#194
 msgid "Adjusts the wavelength of the flange effect (when active)."
@@ -4896,7 +4902,7 @@ msgstr "Odkryj w bibliotece"
 
 #: WTrackTableView#7
 msgid "Purge from Library"
-msgstr ""
+msgstr "Usuń z biblioteki"
 
 #: WTrackTableView#8
 msgid "Properties"
@@ -4904,15 +4910,15 @@ msgstr "Właściwości"
 
 #: WTrackTableView#9
 msgid "Open in File Browser"
-msgstr ""
+msgstr "Otwórz plik w przeglądarce"
 
 #: WTrackTableView#10
 msgid "Add to Auto-DJ Queue (bottom)"
-msgstr ""
+msgstr "Dodaj do kolejki Auto DJ (na dole)"
 
 #: WTrackTableView#11
 msgid "Add to Auto-DJ Queue (top)"
-msgstr ""
+msgstr "Dodaj do kolejki Auto DJ (na górze)"
 
 #: WTrackTableView#12
 msgid "Reload Track Metadata"
@@ -4924,7 +4930,7 @@ msgstr ""
 
 #: WTrackTableView#14
 msgid "Reset Play Count"
-msgstr ""
+msgstr "Wyczyść licznik odtwarzania"
 
 #: WTrackTableView#15
 msgid "Lock BPM"
