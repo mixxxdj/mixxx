@@ -126,17 +126,6 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     menu.exec(globalPos);
 }
 
-bool SetlogFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
-    Q_UNUSED(urls);
-    Q_UNUSED(index);
-    return false;
-}
-
-bool SetlogFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(url);
-    Q_UNUSED(index);
-    return false;
-}
 
 void SetlogFeature::buildPlaylistList() {
     m_playlistList.clear();

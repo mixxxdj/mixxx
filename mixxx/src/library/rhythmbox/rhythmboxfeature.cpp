@@ -129,28 +129,6 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
-bool RhythmboxFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool RhythmboxFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool RhythmboxFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
 TreeItem* RhythmboxFeature::importMusicCollection()
 {
     qDebug() << "importMusicCollection Thread Id: " << QThread::currentThread();
@@ -465,9 +443,4 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
     m_title = tr("Rhythmbox");
     emit(featureLoadingFinished(this));
     activate();
-}
-
-void RhythmboxFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
-    Q_UNUSED(index);
 }
