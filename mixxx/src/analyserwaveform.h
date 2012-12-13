@@ -35,7 +35,7 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
 }
 
 class WaveformStride {
-    inline void init( int samples) {
+    inline void init(int samples) {
         m_length = samples*2;
         m_postScaleConversion = (float)std::numeric_limits<unsigned char>::max();
         m_conversionFactor = 1.0; //because we are taking a max, not an average any more
@@ -85,7 +85,7 @@ class AnalyserWaveform : public Analyser {
     virtual ~AnalyserWaveform();
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
-
+    bool loadStored(TrackPointer tio) const;
     void process(const CSAMPLE *buffer, const int bufferLength);
     void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
