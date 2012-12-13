@@ -162,28 +162,6 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-bool TraktorFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool TraktorFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool TraktorFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool TraktorFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
 TreeItem* TraktorFeature::importLibrary(QString file){
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
@@ -693,9 +671,4 @@ void TraktorFeature::onTrackCollectionLoaded() {
     m_title = tr("Traktor");
     emit(featureLoadingFinished(this));
     activate();
-}
-
-void TraktorFeature::onLazyChildExpandation(const QModelIndex &index) {
-    // Nothing to do because the childmodel is not of lazy nature.
-    Q_UNUSED(index);
 }

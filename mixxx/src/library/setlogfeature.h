@@ -24,9 +24,6 @@ public:
     QVariant title();
     QIcon getIcon();
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
-
     virtual void bindWidget(WLibrary* libraryWidget,
                             MixxxKeyboard* keyboard);
 
