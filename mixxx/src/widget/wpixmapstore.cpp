@@ -97,3 +97,7 @@ void WPixmapStore::deletePixmap(QPixmap * p)
         }
     }
 }
+
+void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
+    m_loader = ld;
+}
