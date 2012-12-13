@@ -116,7 +116,9 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             if (sidebarModel) {
                 QModelIndex destIndex = indexAt(event->pos());
-                if (sidebarModel->dropAccept(destIndex, urls)) {
+                // event->source() will return NULL if something is droped from
+                // a different application
+                if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
                     event->acceptProposedAction();
                 } else {
                     event->ignore();

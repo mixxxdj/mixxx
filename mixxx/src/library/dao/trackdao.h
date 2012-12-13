@@ -75,6 +75,7 @@ class TrackDAO : public QObject, public virtual DAO {
 
     void initialize();
     int getTrackId(QString absoluteFilePath);
+    QList<int> getTrackIds(QList<QFileInfo> files);
     bool trackExistsInDatabase(QString absoluteFilePath);
     QString getTrackLocation(int id);
     int addTrack(const QString& file, bool unremove);

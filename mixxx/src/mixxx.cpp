@@ -136,7 +136,10 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
-    StatsManager::create();
+    // Only record stats in developer mode.
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::create();
+    }
 
     //Reset pointer to players
     m_pSoundManager = NULL;
@@ -328,6 +331,10 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
+
+#ifdef __VINYLCONTROL__    
+    m_pVCManager->init();
+#endif
 
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,

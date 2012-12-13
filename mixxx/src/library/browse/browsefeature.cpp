@@ -150,28 +150,6 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-bool BrowseFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool BrowseFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool BrowseFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
 void BrowseFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     Q_UNUSED(keyboard);
@@ -195,10 +173,6 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
              << item->dataPath();
     m_browseModel.setPath(item->dataPath().toString());
     emit(showTrackModel(&m_proxyModel));
-}
-
-void BrowseFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
