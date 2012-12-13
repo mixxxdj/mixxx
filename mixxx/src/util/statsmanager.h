@@ -33,6 +33,7 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
     // Returns true if write succeeds.
     bool maybeWriteReport(const StatReport& report);
 
+    static bool s_bStatsManagerEnabled;
   protected:
     virtual void run();
 

@@ -21,11 +21,11 @@ class WaveformRenderBackground : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    void generatePixmap();
+    void generateImage();
 
     QString m_backgroundPixmapPath;
     QColor m_backgroundColor;
-    QPixmap m_backgroundPixmap;
+    QImage m_backgroundImage;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBackground);
 };

@@ -39,6 +39,8 @@ class LoopingControlTest : public MixxxTest {
                 ConfigKey(m_pGroup, "loop_in")));
         m_pButtonLoopOut.reset(getControlObjectThread(
                 ConfigKey(m_pGroup, "loop_out")));
+        m_pButtonLoopExit.reset(getControlObjectThread(
+                ConfigKey(m_pGroup, "loop_exit")));
         m_pButtonReloopExit.reset(getControlObjectThread(
                 ConfigKey(m_pGroup, "reloop_exit")));
         m_pButtonLoopDouble.reset(getControlObjectThread(
@@ -69,6 +71,7 @@ class LoopingControlTest : public MixxxTest {
     QScopedPointer<LoopingControl> m_pLoopingControl;
     QScopedPointer<ControlObjectThread> m_pButtonLoopIn;
     QScopedPointer<ControlObjectThread> m_pButtonLoopOut;
+    QScopedPointer<ControlObjectThread> m_pButtonLoopExit;
     QScopedPointer<ControlObjectThread> m_pButtonReloopExit;
     QScopedPointer<ControlObjectThread> m_pButtonLoopDouble;
     QScopedPointer<ControlObjectThread> m_pButtonLoopHalve;
@@ -257,6 +260,16 @@ TEST_F(LoopingControlTest, ReloopExitButton_TogglesLoop) {
     EXPECT_TRUE(isLoopEnabled());
     EXPECT_EQ(0, m_pLoopStartPoint->get());
     EXPECT_EQ(50, m_pLoopEndPoint->get());
+    // Ensure that the Loop Exit button works, and that it doesn't act as a
+    // toggle.
+    m_pButtonLoopExit->slotSet(1);
+    m_pButtonLoopExit->slotSet(0);
+    ControlObject::sync();
+    EXPECT_FALSE(isLoopEnabled());
+    m_pButtonLoopExit->slotSet(1);
+    m_pButtonLoopExit->slotSet(0);
+    ControlObject::sync();
+    EXPECT_FALSE(isLoopEnabled());
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesLoop) {

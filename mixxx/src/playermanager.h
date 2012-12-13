@@ -85,12 +85,14 @@ class PlayerManager : public QObject {
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
+    // Loads the location to the deck. deckNumber is 1-indexed
     void slotLoadToDeck(QString location, int deckNumber);
 
-    //slots to PreviewDeck
-    void slotLoadToPreviewDeck(QString location, int libPreviewPlayer);
+    // Loads the location to the preview deck. previewDeckNumber is 1-indexed
+    void slotLoadToPreviewDeck(QString location, int previewDeckNumber);
     // Slots for loading tracks to samplers
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
+    // Loads the location to the sampler. samplerNumber is 1-indexed
     void slotLoadToSampler(QString location, int samplerNumber);
 
     void slotNumDecksControlChanged(double v);

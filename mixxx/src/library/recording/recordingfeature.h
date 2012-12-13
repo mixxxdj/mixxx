@@ -28,10 +28,6 @@ class RecordingFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QList<QUrl> urls);
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
-    bool dragMoveAccept(QUrl url);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
@@ -39,10 +35,6 @@ class RecordingFeature : public LibraryFeature {
 
   public slots:
     void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-    void onLazyChildExpandation(const QModelIndex& index);
 
   signals:
     void setRootIndex(const QModelIndex&);
