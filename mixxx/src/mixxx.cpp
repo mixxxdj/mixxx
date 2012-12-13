@@ -1437,6 +1437,7 @@ void MixxxApp::slotHelpAbout() {
 "Neale Pickett<br>"
 "Aaron Mavrinac<br>"
 "Markus H&auml;rer<br>"
+"Andrey Smelov<br>" 
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
