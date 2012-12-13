@@ -132,40 +132,67 @@ EngineMaster::~EngineMaster()
 {
     qDebug() << "in ~EngineMaster()";
     delete crossfader;
+    qDebug() << "m_pBalance";
     delete m_pBalance;
+    qDebug() << "headmix";
     delete head_mix;
+    qDebug() << "master vol";
     delete m_pMasterVolume;
+    qDebug() << "head vol";
     delete m_pHeadVolume;
+    qDebug() << "head delay";
     delete m_pHeadDelay;
+    qDebug() << "bypass eq";
     delete m_pBypassEq;
+    qDebug() << "clipping";
     delete clipping;
+    qDebug() << "vumeter";
     delete vumeter;
+    qDebug() << "head clip";
     delete head_clipping;
+    qDebug() << "sidechain";
     delete sidechain;
 
+    qDebug() << "xfade reverse";
     delete xFaderReverse;
+    qDebug() << "xfade calib";
     delete xFaderCalibration;
+    qDebug() << "xfade curve";
     delete xFaderCurve;
+    qDebug() << "xfade mode";
     delete xFaderMode;
 
+    qDebug() << "master sample rate";
     delete m_pMasterSampleRate;
+    qDebug() << "latency";
     delete m_pMasterLatency;
+    qDebug() << "master rate";
     delete m_pMasterRate;
+    
+    qDebug() << "underflow";
     delete m_pMasterUnderflowCount;
 
+    qDebug() << "free head";
     SampleUtil::free(m_pHead);
+    qDebug() << "free master";
     SampleUtil::free(m_pMaster);
 
     QMutableListIterator<ChannelInfo*> channel_it(m_channels);
     while (channel_it.hasNext()) {
         ChannelInfo* pChannelInfo = channel_it.next();
+        qDebug() << "remove channel";
         channel_it.remove();
+        qDebug() << "free buf";
         SampleUtil::free(pChannelInfo->m_pBuffer);
+        qDebug() << "mpvol";
         delete pChannelInfo->m_pVolumeControl;
+        qDebug() << "channelinfo";
         delete pChannelInfo;
     }
 
+    qDebug() << "worker sched";
     delete m_pWorkerScheduler;
+    qDebug() << "syncowrk";
     delete m_pSyncWorker;
 }
 
