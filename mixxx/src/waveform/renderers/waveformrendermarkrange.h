@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QColor>
-#include <QPixmap>
 #include <QDomNode>
 #include <QPainter>
 #include <QPaintEvent>

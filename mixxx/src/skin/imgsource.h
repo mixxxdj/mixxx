@@ -23,7 +23,7 @@
 #include <QDebug>
 
 class ImgSource {
-public:
+  public:
     virtual ~ImgSource() {};
     virtual QImage* getImage(QString img) = 0;
     virtual inline QColor getCorrectColor(QColor c) { return c; }
@@ -31,7 +31,7 @@ public:
 
 class ImgProcessor : public ImgSource {
 
-public:
+  public:
     virtual ~ImgProcessor() {};
     inline ImgProcessor(ImgSource* parent) : m_parent(parent) {}
     virtual QColor doColorCorrection(QColor c) = 0;
@@ -39,7 +39,7 @@ public:
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
 
-protected:
+  protected:
 	ImgSource* m_parent;
 };
 
@@ -61,36 +61,38 @@ public:
         int bytesPerPixel = 4;
 
         switch(i->format()) {
-        case QImage::Format_Invalid:
-          bytesPerPixel = 0;
-          break;
+
         case QImage::Format_Mono:
         case QImage::Format_MonoLSB:
         case QImage::Format_Indexed8:
-          bytesPerPixel = 1;
-          break;
+            bytesPerPixel = 1;
+            break;
 
         case QImage::Format_RGB16:
         case QImage::Format_RGB555:
         case QImage::Format_RGB444:
         case QImage::Format_ARGB4444_Premultiplied:
-          bytesPerPixel = 2;
-          break;
+            bytesPerPixel = 2;
+            break;
 
         case QImage::Format_ARGB8565_Premultiplied:
         case QImage::Format_RGB666:
         case QImage::Format_ARGB6666_Premultiplied:
         case QImage::Format_ARGB8555_Premultiplied:
         case QImage::Format_RGB888:
-          bytesPerPixel = 3;
-          break;
+            bytesPerPixel = 3;
+            break;
 
         case QImage::Format_ARGB32:
         case QImage::Format_ARGB32_Premultiplied:
         case QImage::Format_RGB32:
+            bytesPerPixel = 4;
+            break;
+
+        case QImage::Format_Invalid:
         default:
-          bytesPerPixel = 4;
-          break;
+            bytesPerPixel = 0;
+            break;
         }
 
         //qDebug() << "ImgColorProcessor working on "
@@ -98,27 +100,26 @@ public:
         //         << bytesPerPixel << " format: " << i->format();
 
         if(bytesPerPixel < 4) {
-          // Handling Indexed color or mono colors requires different logic
-          qDebug() << "ImgColorProcessor aborting on unsupported color format:"
-                   << i->format();
-          return i;
+            // Handling Indexed color or mono colors requires different logic
+            qDebug() << "ImgColorProcessor aborting on unsupported color format:"
+                     << i->format();
+            return i;
         }
 
-        for(int y = 0; y < i->height(); y++) {
-          QRgb *line = (QRgb*)i->scanLine(y);
+        for (int y = 0; y < i->height(); y++) {
+            QRgb *line = (QRgb*)i->scanLine(y); // cast the returned pointer to QRgb*
 
-          if(line == NULL) {
-            // Image is invalid.
-            continue;
-          }
+            if (line == NULL) {
+                // Image is invalid.
+                continue;
+            }
 
-          for(int x = 0; x < i->width(); x++) {
-            col.setRgb(*line);
-            col = doColorCorrection(col);
-            *line = col.rgb();
-            line++;
-          }
-
+            for (int x = 0; x < i->width(); x++) {
+                col.setRgba(*line);
+                col = doColorCorrection(col);
+                *line = col.rgba();
+                line++;
+            }
         }
 
         return i;
