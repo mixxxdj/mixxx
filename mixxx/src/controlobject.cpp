@@ -323,9 +323,14 @@ double ControlObject::getValueToWidget(double v)
 }
 
 void ControlObject::sync() {
-    // Update control objects with values recieved from threads
-    {
-        m_sqQueueMutexThread.lock();
+    // Update control objects with values recieved from threads. We tryLock
+    // because ControlObject::sync() is re-entrant (even though we just run
+    // sync() in the main loop). A slot invoked by sync() can create a modal
+    // dialog which effectively blocks sync() but continues spinning the Qt
+    // event loop. When sync() runs again, it is re-entrant if the modal dialog
+    // is still up.
+    if (m_sqQueueMutexThread.tryLock()) {
+
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromThread can trigger
         // a slot which in turn could cause a lock of m_sqQueueMutexThread.
@@ -344,11 +349,15 @@ void ControlObject::sync() {
             }
             delete obj;
         }
+        m_sqQueueMutexThread.unlock();
     }
 
-    // Update control objects with values recieved from MIDI
-    {
-        m_sqQueueMutexMidi.lock();
+    // Update control objects with values recieved from MIDI. We tryLock because
+    // ControlObject::sync() is re-entrant (even though we just run sync() in
+    // the main loop). A slot invoked by sync() can create a modal dialog which
+    // effectively blocks sync() but continues spinning the Qt event loop. When
+    // sync() runs again, it is re-entrant if the modal dialog is still up.
+    if (m_sqQueueMutexMidi.tryLock()) {
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromMidi can trigger a
         // slot which in turn could cause a lock of m_sqQueueMutexMidi.
@@ -367,6 +376,7 @@ void ControlObject::sync() {
             }
             delete obj;
         }
+        m_sqQueueMutexMidi.unlock();
     }
 
     // Update app threads (ControlObjectThread derived objects) with changes in
