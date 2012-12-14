@@ -5,7 +5,6 @@
 #include <QDomNode>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QPixmap>
 
 #include "util.h"
 #include "waveformrendererabstract.h"
