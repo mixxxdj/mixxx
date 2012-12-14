@@ -53,7 +53,7 @@
 	<manifest>
 	<title>LateNight1280x800-WXGA</title>
 	<author>jus</author>
-	<version>1.11.0.12</version>
+	<version>1.11.0.13</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -2206,6 +2206,10 @@
 				QTableView::indicator { width: 12px; height: 12px;}
 				QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
 				QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
+				<!--Button in library "Preview" column -->
+				QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
+				QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
+				QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
 				QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 

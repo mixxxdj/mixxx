@@ -22,6 +22,9 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.13	(14/12/2012)
+* Feature: Add custom Preview button to library
+
 v1.11.0.12	(29/11/2012)
 * Feature: Toggles visibility of WidgetGroups at skin load in the <manifest>
 * Feature: Added [PreviewDeck1] which plays a track through headphones, lp:366091
