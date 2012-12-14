@@ -1369,10 +1369,8 @@ void MixxxApp::slotHelpAbout() {
 
     QString credits = QString("<p align=\"center\"><b>%1</b></p>"
 "<p align=\"center\">"
-"Adam Davison<br>"
 "Albert Santoni<br>"
 "RJ Ryan<br>"
-"Garth Dahlstrom<br>"
 "Sean Pappalardo<br>"
 "Phillip Whelan<br>"
 "Tobias Rafreider<br>"
@@ -1382,6 +1380,8 @@ void MixxxApp::slotHelpAbout() {
 "Vittorio Colao<br>"
 "Daniel Sch&uuml;rmann<br>"
 "Thomas Vincent<br>"
+"Ilkka Tuohela<br>"
+"Max Linke<br>"
 
 "</p>"
 "<p align=\"center\"><b>%2</b></p>"
@@ -1436,9 +1436,7 @@ void MixxxApp::slotHelpAbout() {
 "Pascal Bleser<br>"
 "Florian Mahlknecht<br>"
 "Ben Clark<br>"
-"Ilkka Tuohela<br>"
 "Tom Gascoigne<br>"
-"Max Linke<br>"
 "Neale Pickett<br>"
 "Aaron Mavrinac<br>"
 "Markus H&auml;rer<br>"
@@ -1479,8 +1477,8 @@ void MixxxApp::slotHelpAbout() {
 "Tom Care<br>"
 "Pawel Bartkiewicz<br>"
 "Nick Guenther<br>"
-"Bruno Buccolo<br>"
-"Ryan Baker<br>"
+"Adam Davison<br>"
+"Garth Dahlstrom<br>"
 "</p>"
 
 "<p align=\"center\"><b>%5</b></p>"
@@ -1517,6 +1515,8 @@ void MixxxApp::slotHelpAbout() {
 "Michael Pujos<br>"
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
+"Bruno Buccolo<br>"
+"Ryan Baker<br>"
     "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
 
     about->textBrowser->setHtml(credits);
