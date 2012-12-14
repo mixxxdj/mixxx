@@ -91,8 +91,10 @@ bool loadTranslations(const QLocale& systemLocale, QString userLocale,
 }
 
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
-        : m_cmdLineArgs(args) {
+        : m_runtime_timer("MixxxApp::runtime"),
+          m_cmdLineArgs(args) {
     ScopedTimer t("MixxxApp::MixxxApp");
+    m_runtime_timer.start();
 
     QString buildBranch, buildRevision, buildFlags;
 #ifdef BUILD_BRANCH
@@ -627,6 +629,8 @@ MixxxApp::~MixxxApp()
 
    WaveformWidgetFactory::destroy();
    t.elapsed(true);
+   // Report the total time we have been running.
+   m_runtime_timer.elapsed(true);
    StatsManager::destroy();
 }
 
