@@ -12,6 +12,7 @@
 #include "defs.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
@@ -67,7 +68,19 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         // Disable waiting for vertical Sync
         // This can be enabled when using a single Threads for each QGLContext
         // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
+#if defined(__APPLE__)
+        // On OS X, syncing to vsync has good performance FPS-wise and
+        // eliminates tearing.
+        glFormat.setSwapInterval(1);
+#else
+        // Otherwise, turn VSync off because it could cause horrible FPS on
+        // Linux.
+        // TODO(XXX): Make this configurable.
+        // TOOD(XXX): What should we do on Windows?
         glFormat.setSwapInterval(0);
+#endif
+
+
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
@@ -208,7 +221,8 @@ void WaveformWidgetFactory::destroyWidgets() {
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
     // Do not hold the pointer to of timer listeners since they may be deleted
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(update()));
+            pWidget, SLOT(repaint()),
+            Qt::DirectConnection);
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDomElement& node) {
@@ -435,6 +449,11 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = SoftwareWaveformWidget::useOpenGl();
             useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
             break;
+        case WaveformWidgetType::HSVWaveform:
+            widgetName = HSVWaveformWidget::getWaveformWidgetName();
+            useOpenGl = HSVWaveformWidget::useOpenGl();
+            useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
+            break;
         case WaveformWidgetType::QtSimpleWaveform:
             widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
@@ -491,6 +510,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         switch(type) {
         case WaveformWidgetType::SoftwareWaveform:
             widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::HSVWaveform:
+            widget = new HSVWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::QtSimpleWaveform:
             widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);

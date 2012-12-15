@@ -53,11 +53,7 @@ void PrepareFeature::bindWidget(WLibrary* libraryWidget,
 
     connect(this, SIGNAL(analysisActive(bool)),
             m_pPrepareView, SLOT(analysisActive(bool)));
-    connect(this, SIGNAL(trackAnalysisProgress(TrackPointer, int)),
-            m_pPrepareView, SLOT(trackAnalysisProgress(TrackPointer, int)));
-    connect(this, SIGNAL(trackAnalysisFinished(TrackPointer, int)),
-            m_pPrepareView, SLOT(trackAnalysisFinished(TrackPointer, int)));
-
+ 
     m_pPrepareView->installEventFilter(keyboard);
 
     // Let the DlgPrepare know whether or not analysis is active.
@@ -86,48 +82,6 @@ void PrepareFeature::activate() {
     }
 }
 
-void PrepareFeature::activateChild(const QModelIndex& index) {
-    Q_UNUSED(index);
-}
-
-void PrepareFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
-}
-
-void PrepareFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
-    Q_UNUSED(globalPos);
-    Q_UNUSED(index);
-}
-
-bool PrepareFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool PrepareFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool PrepareFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool PrepareFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
-void PrepareFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
-    Q_UNUSED(index);
-}
-
 void PrepareFeature::analyzeTracks(QList<int> trackIds) {
     if (m_pAnalyserQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
@@ -138,10 +92,11 @@ void PrepareFeature::analyzeTracks(QList<int> trackIds) {
 
         m_pAnalyserQueue = AnalyserQueue::createPrepareViewAnalyserQueue(m_pConfig);
 
-        connect(m_pAnalyserQueue, SIGNAL(trackProgress(TrackPointer, int)),
-                this, SLOT(slotTrackAnalysisProgress(TrackPointer, int)));
-        connect(m_pAnalyserQueue, SIGNAL(trackFinished(TrackPointer, int)),
-                this, SLOT(slotTrackAnalysisFinished(TrackPointer, int)));
+        connect(m_pAnalyserQueue, SIGNAL(trackProgress(int)),
+                m_pPrepareView, SLOT(trackAnalysisProgress(int)));
+        connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
+                m_pPrepareView, SLOT(trackAnalysisFinished(int)));
+
         connect(m_pAnalyserQueue, SIGNAL(queueEmpty()),
                 this, SLOT(cleanupAnalyser()));
         emit(analysisActive(true));
@@ -154,16 +109,6 @@ void PrepareFeature::analyzeTracks(QList<int> trackIds) {
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);
         }
     }
-}
-
-void PrepareFeature::slotTrackAnalysisProgress(TrackPointer pTrack, int progress) {
-    //qDebug() << this << "trackAnalysisProgress" << pTrack->getInfo() << progress;
-    emit(trackAnalysisProgress(pTrack, progress));
-}
-
-void PrepareFeature::slotTrackAnalysisFinished(TrackPointer pTrack, int size) {
-    //qDebug() << this << "trackAnalysisFinished" << pTrack->getInfo();
-    emit(trackAnalysisFinished(pTrack, size));
 }
 
 void PrepareFeature::stopAnalysis() {

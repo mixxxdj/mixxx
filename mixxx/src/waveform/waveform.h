@@ -27,6 +27,8 @@ class Waveform {
     Waveform(const QByteArray pData = QByteArray());
     virtual ~Waveform();
 
+    void readByteArray(const QByteArray data);
+
     int getId() const {
         return m_id;
     }
@@ -88,7 +90,6 @@ class Waveform {
     void dump() const;
 
   private:
-    void readByteArray(const QByteArray data);
     void resize(int size);
     void assign(int size, int value = 0);
 

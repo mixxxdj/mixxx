@@ -41,8 +41,9 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
 
     painter->setWorldMatrixEnabled(false);
 
-    if (isDirty())
-        generatePixmaps();
+    if (isDirty()) {
+        generateImages();
+    }
 
     for (unsigned int i = 0; i < m_markRanges.size(); i++) {
         WaveformMarkRange& markRange = m_markRanges[i];
@@ -67,22 +68,22 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         if (startPosition > m_waveformRenderer->getWidth() || endPosition < 0)
             continue;
 
-        QPixmap* selectedPixmap = NULL;
+        QImage* selectedImage = NULL;
 
-        selectedPixmap = markRange.enabled() ? &markRange.m_activePixmap : &markRange.m_disabledPixmap;
+        selectedImage = markRange.enabled() ? &markRange.m_activeImage : &markRange.m_disabledImage;
 
-        //draw the correcponding portion of the selected pixmap
-        //this shouldn't involve *any* scaling it should be fast even in software mode
+        // draw the corresponding portion of the selected image
+        // this shouldn't involve *any* scaling it should be fast even in software mode
         QRect rect(startPosition,0,endPosition-startPosition,m_waveformRenderer->getHeight());
-        painter->drawPixmap(rect, *selectedPixmap, rect);
+        painter->drawImage(rect, *selectedImage, rect);
     }
 
     painter->restore();
 }
 
-void WaveformRenderMarkRange::generatePixmaps() {
+void WaveformRenderMarkRange::generateImages() {
     for (unsigned int i = 0; i < m_markRanges.size(); i++) {
-        m_markRanges[i].generatePixmap(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+        m_markRanges[i].generateImage(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     }
     setDirty(false);
 }

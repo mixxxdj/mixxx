@@ -29,6 +29,7 @@
 #define DEFAULT_HOLDTIME 400
 #define DEFAULT_HOLDSIZE 5
 
+#include "util/timer.h"
 
 WVuMeter::WVuMeter(QWidget * parent) : WWidget(parent)
 {
@@ -151,6 +152,7 @@ void WVuMeter::updateState(int msecsElapsed)
 
 void WVuMeter::paintEvent(QPaintEvent *)
 {
+    ScopedTimer t("WVuMeter::paintEvent");
     if (m_pPixmapBack!=0)
     {
         int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
