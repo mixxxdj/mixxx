@@ -65,28 +65,28 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node) {
         ConfigKey(group, XmlParse::selectNodeQString(node, "EnabledControl"))));
 }
 
-void WaveformMarkRange::generatePixmap(int weidth, int height) {
-    m_activePixmap = QPixmap(weidth, height);
-    m_disabledPixmap = QPixmap(weidth, height);
+void WaveformMarkRange::generateImage(int weidth, int height) {
+    m_activeImage = QImage(weidth, height, QImage::Format_ARGB32_Premultiplied);
+    m_disabledImage = QImage(weidth, height, QImage::Format_ARGB32_Premultiplied);
 
-    //fill needed cause they remain transparent
-    m_activePixmap.fill(QColor(0,0,0,0));
-    m_disabledPixmap.fill(QColor(0,0,0,0));
+    // fill needed cause they remain transparent
+    m_activeImage.fill(QColor(0,0,0,0).rgba());
+    m_disabledImage.fill(QColor(0,0,0,0).rgba());
 
     QColor activeColor = m_activeColor;
     activeColor.setAlphaF(0.3);
     QBrush brush(activeColor);
 
     QPainter painter;
-    painter.begin(&m_activePixmap);
-    painter.fillRect(m_activePixmap.rect(), brush);
+    painter.begin(&m_activeImage);
+    painter.fillRect(m_activeImage.rect(), brush);
     painter.end();
 
     QColor disabledColor = m_disabledColor;
     disabledColor.setAlphaF(0.3);
     brush = QBrush(disabledColor);
 
-    painter.begin(&m_disabledPixmap);
-    painter.fillRect(m_disabledPixmap.rect(), brush);
+    painter.begin(&m_disabledImage);
+    painter.fillRect(m_disabledImage.rect(), brush);
     painter.end();
 }

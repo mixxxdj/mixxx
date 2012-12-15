@@ -1,7 +1,7 @@
 #ifndef WAVEFORMMARKRANGE_H
 #define WAVEFORMMARKRANGE_H
 
-#include <QPixmap>
+#include <QImage>
 
 class ControlObjectThreadMain;
 class QDomNode;
@@ -24,7 +24,7 @@ class WaveformMarkRange {
     void setup(const QString &group, const QDomNode& node);
 
   private:
-    void generatePixmap(int weidth, int height);
+    void generateImage(int weidth, int height);
 
     ControlObjectThreadMain* m_markStartPointControl;
     ControlObjectThreadMain* m_markEndPointControl;
@@ -33,8 +33,8 @@ class WaveformMarkRange {
     QColor m_activeColor;
     QColor m_disabledColor;
 
-    QPixmap m_activePixmap;
-    QPixmap m_disabledPixmap;
+    QImage m_activeImage;
+    QImage m_disabledImage;
 
     friend class WaveformRenderMarkRange;
     friend class WOverview;

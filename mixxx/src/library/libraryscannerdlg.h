@@ -27,7 +27,7 @@
 class LibraryScannerDlg : public QWidget {
     Q_OBJECT
   public:
-    LibraryScannerDlg(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    LibraryScannerDlg(QWidget * parent = 0, Qt::WindowFlags f = Qt::Dialog);
     ~LibraryScannerDlg();
 
   public slots:

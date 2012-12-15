@@ -27,7 +27,7 @@ LoopingControl::LoopingControl(const char * _group,
     m_iCurrentSample = 0.;
     m_pActiveBeatLoop = NULL;
 
-    //Create loop-in, loop-out, and reloop/exit ControlObjects
+    //Create loop-in, loop-out, loop-exit, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(_group, "loop_in"));
     connect(m_pLoopInButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopIn(double)),
@@ -40,12 +40,17 @@ LoopingControl::LoopingControl(const char * _group,
             Qt::DirectConnection);
     m_pLoopOutButton->set(0);
 
+    m_pLoopExitButton = new ControlPushButton(ConfigKey(_group, "loop_exit"));
+    connect(m_pLoopExitButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopExit(double)),
+            Qt::DirectConnection);
+    m_pLoopExitButton->set(0);
+
     m_pReloopExitButton = new ControlPushButton(ConfigKey(_group, "reloop_exit"));
     connect(m_pReloopExitButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotReloopExit(double)),
             Qt::DirectConnection);
     m_pReloopExitButton->set(0);
-
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(_group, "loop_enabled"));
     m_pCOLoopEnabled->set(0.0f);
@@ -111,6 +116,7 @@ LoopingControl::LoopingControl(const char * _group,
 LoopingControl::~LoopingControl() {
     delete m_pLoopOutButton;
     delete m_pLoopInButton;
+    delete m_pLoopExitButton;
     delete m_pReloopExitButton;
     delete m_pCOLoopEnabled;
     delete m_pCOLoopStartPosition;
@@ -394,6 +400,18 @@ void LoopingControl::slotLoopOut(double val) {
     }
 }
 
+void LoopingControl::slotLoopExit(double val) {
+    if (!m_pTrack) {
+        return;
+    }
+    if (val) {
+        // If we're looping, stop looping
+        if (m_bLoopingEnabled) {
+            setLoopingEnabled(false);
+        } 
+    }
+}
+
 void LoopingControl::slotReloopExit(double val) {
     if (!m_pTrack) {
         return;
@@ -546,12 +564,12 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
-    slotReloopExit(1);
+    setLoopingEnabled(false);
 }
 
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
-    slotReloopExit(1);
+    setLoopingEnabled(false);
     m_pSlipEnabled->set(0);
 }
 

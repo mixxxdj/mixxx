@@ -5,6 +5,7 @@ based on Numark MixTrack Mixxx Mapping v0.1 1/11/2010 by Matteo matteo@magm3.com
       <name>Numark DJ2Go</name>
       <author>Jeff Mission (beatfixstudios@gmail.com)</author>
       <description>MIDI mapping for Numark DJ2Go Controller</description>
+      <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3369</forums>
     </info>
     <controller id="Numark DJ2Go MIDI 1">
         <scriptfiles>

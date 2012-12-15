@@ -84,12 +84,8 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
-bool CrateFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls)
-    return false;
-}
-
-bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
+bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                                   QWidget *pSource) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;
@@ -99,8 +95,13 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
         files.append(url.toLocalFile());
     }
 
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    QList<int> trackIds;
+    if (pSource) {
+        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+    } else {
+        // Adds track, does not insert duplicates, handles unremoving logic.
+        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    }
     qDebug() << "CrateFeature::dropAcceptChild adding tracks"
             << trackIds.size() << " to crate "<< crateId;
     // remove tracks that could not be added
@@ -111,11 +112,6 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
     }
     m_crateDao.addTracksToCrate(trackIds, crateId);
     return true;
-}
-
-bool CrateFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url)
-    return false;
 }
 
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
@@ -429,11 +425,6 @@ void CrateFeature::slotImportPlaylist()
     //delete the parser object
     if(playlist_parser)
         delete playlist_parser;
-}
-
-void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
-    Q_UNUSED(index);
-    //Nothing to do because the childmodel is not of lazy nature.
 }
 
 void CrateFeature::slotExportPlaylist(){

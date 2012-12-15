@@ -17,11 +17,13 @@
 
 #include <QtDebug>
 #include <QHash>
+#include <QSet>
 #include <QMutexLocker>
 
 #include "controlobject.h"
 #include "controlevent.h"
 #include "util/stat.h"
+#include "util/timer.h"
 
 // Static member variable definition
 QHash<ConfigKey,ControlObject*> ControlObject::m_sqCOHash;
@@ -29,15 +31,15 @@ QMutex ControlObject::m_sqCOHashMutex;
 
 QMutex ControlObject::m_sqQueueMutexMidi;
 QMutex ControlObject::m_sqQueueMutexThread;
-QMutex ControlObject::m_sqQueueMutexChanges;
 QQueue<QueueObjectMidi*> ControlObject::m_sqQueueMidi;
 QQueue<QueueObjectThread*> ControlObject::m_sqQueueThread;
-QQueue<ControlObject*> ControlObject::m_sqQueueChanges;
+QAtomicPointer<ControlObject> ControlObject::s_changedControls;
 
 ControlObject::ControlObject()
         : m_dValue(0),
           m_dDefaultValue(0),
-          m_bIgnoreNops(true) {
+          m_bIgnoreNops(true),
+          m_changedControlsNext(NULL) {
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
@@ -49,7 +51,8 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
           m_trackKey("control " + m_key.group + "," + m_key.item),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_changedControlsNext(NULL) {
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
@@ -65,7 +68,8 @@ ControlObject::ControlObject(const QString& group, const QString& item, bool bIg
         : m_dValue(0),
           m_dDefaultValue(0),
           m_key(group, item),
-          m_bIgnoreNops(bIgnoreNops) {
+          m_bIgnoreNops(bIgnoreNops),
+          m_changedControlsNext(NULL) {
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
@@ -85,7 +89,6 @@ ControlObject::~ControlObject() {
         obj->slotParentDead();
     }
     m_qProxyListMutex.unlock();
-
 
     m_sqQueueMutexThread.lock();
     QMutableListIterator<QueueObjectThread*> tit(m_sqQueueThread);
@@ -111,10 +114,10 @@ ControlObject::~ControlObject() {
 
     // Remove this control object from the changes queue, since we're being
     // deleted.
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.removeAll(this);
-    m_sqQueueMutexChanges.unlock();
-
+    if (m_changedControlsNext || s_changedControls == this) {
+        qDebug() << "Deleting" << m_key.group << m_key.item << "still in queue. Syncing.";
+        ControlObject::sync();
+    }
 }
 
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
@@ -264,15 +267,31 @@ void ControlObject::setValueFromThread(double dValue)
     emit(valueChanged(m_dValue));
 }
 
+void ControlObject::addToChangedList() {
+    // Already in the list.
+    if (s_changedControls == this || m_changedControlsNext != NULL) {
+        return;
+    }
+
+    while (true) {
+        m_changedControlsNext = s_changedControls;
+        // Try to switch ourselves to be the new head as long as what we just
+        // read as the head is still the head.
+        if (s_changedControls.testAndSetOrdered(m_changedControlsNext, this)) {
+            // We are the new head.
+            return;
+        }
+    }
+}
+
+
 void ControlObject::set(double dValue)
 {
     if (m_bIgnoreNops && m_dValue == dValue)
         return;
 
     setValueFromEngine(dValue);
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.enqueue(this);
-    m_sqQueueMutexChanges.unlock();
+    addToChangedList();
 }
 
 void ControlObject::add(double dValue)
@@ -281,9 +300,7 @@ void ControlObject::add(double dValue)
         return;
 
     setValueFromEngine(m_dValue+dValue);
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.enqueue(this);
-    m_sqQueueMutexChanges.unlock();
+    addToChangedList();
 }
 
 void ControlObject::sub(double dValue)
@@ -292,9 +309,7 @@ void ControlObject::sub(double dValue)
         return;
 
     setValueFromEngine(m_dValue-dValue);
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.enqueue(this);
-    m_sqQueueMutexChanges.unlock();
+    addToChangedList();
 }
 
 double ControlObject::getValueFromWidget(double v)
@@ -308,8 +323,14 @@ double ControlObject::getValueToWidget(double v)
 }
 
 void ControlObject::sync() {
-    // Update control objects with values recieved from threads
+    // Update control objects with values recieved from threads. We tryLock
+    // because ControlObject::sync() is re-entrant (even though we just run
+    // sync() in the main loop). A slot invoked by sync() can create a modal
+    // dialog which effectively blocks sync() but continues spinning the Qt
+    // event loop. When sync() runs again, it is re-entrant if the modal dialog
+    // is still up.
     if (m_sqQueueMutexThread.tryLock()) {
+
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromThread can trigger
         // a slot which in turn could cause a lock of m_sqQueueMutexThread.
@@ -328,9 +349,14 @@ void ControlObject::sync() {
             }
             delete obj;
         }
+        m_sqQueueMutexThread.unlock();
     }
 
-    // Update control objects with values recieved from MIDI
+    // Update control objects with values recieved from MIDI. We tryLock because
+    // ControlObject::sync() is re-entrant (even though we just run sync() in
+    // the main loop). A slot invoked by sync() can create a modal dialog which
+    // effectively blocks sync() but continues spinning the Qt event loop. When
+    // sync() runs again, it is re-entrant if the modal dialog is still up.
     if (m_sqQueueMutexMidi.tryLock()) {
         // We have to make a copy of the queue otherwise we can get deadlocks
         // since responding to a queued event via setValueFromMidi can trigger a
@@ -350,30 +376,29 @@ void ControlObject::sync() {
             }
             delete obj;
         }
+        m_sqQueueMutexMidi.unlock();
     }
 
     // Update app threads (ControlObjectThread derived objects) with changes in
     // the corresponding ControlObjects. These updates should only occour if no
     // changes has been in the object from widgets, midi or application threads.
-    if (m_sqQueueMutexChanges.tryLock()) {
-        QQueue<ControlObject*> qQueueChanges = m_sqQueueChanges;
-        m_sqQueueChanges.clear();
-        m_sqQueueMutexChanges.unlock();
+    {
+        ScopedTimer t("ControlObject::sync qQueueChanges");
 
-        QList<ControlObject*> failedUpdates;
-        while (!qQueueChanges.isEmpty()) {
-            ControlObject* obj = qQueueChanges.dequeue();
-
-            // If update is not successful, enqueue again
-            if (!obj->updateProxies()) {
-                failedUpdates.push_back(obj);
+        while (true) {
+            ControlObject* obj = s_changedControls;
+            if (obj == NULL) {
+                break;
             }
-        }
-
-        if (failedUpdates.size() > 0) {
-            m_sqQueueMutexChanges.lock();
-            m_sqQueueChanges.append(failedUpdates);
-            m_sqQueueMutexChanges.unlock();
+            if (s_changedControls.testAndSetOrdered(obj, obj->m_changedControlsNext)) {
+                obj->m_changedControlsNext = NULL;
+                // If update is not successful, enqueue again
+                if (!obj->updateProxies()) {
+                    obj->addToChangedList();
+                    Stat::track("ControlObject::sync qQueueChanges failed CO update",
+                                Stat::UNSPECIFIED, Stat::COUNT | Stat::SUM | Stat::AVERAGE, 1.0);
+                }
+            }
         }
     }
 }

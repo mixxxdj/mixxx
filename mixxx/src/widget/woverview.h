@@ -52,8 +52,8 @@ protected:
 
 public slots:
     void setValue(double);
-
     void slotLoadNewTrack(TrackPointer pTrack);
+    void slotTrackLoaded(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
 
 signals:
@@ -64,7 +64,6 @@ protected:
     virtual void dropEvent(QDropEvent* event);
 
 private slots:
-    void onTotalGainChange(double v);
     void onEndOfTrackChange(double v);
 
     void onMarkChanged(double v);
@@ -85,8 +84,6 @@ private slots:
 
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObjectThreadMain* m_totalGainControl;
-    double m_totalGain;
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;
     ControlObjectThreadMain* m_trackSamplesControl;
@@ -103,15 +100,13 @@ private slots:
     double m_visualSamplesByPixel;
     int m_renderSampleLimit;
 
-    int m_timerPixmapRefresh;
-
     // Current active track
     TrackPointer m_pCurrentTrack;
 
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Internal storage of slider position in pixels */
-    int m_iPos, m_iStartMousePos;
+    int m_iPos;
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
@@ -128,6 +123,7 @@ private slots:
     float m_b;
 
     int m_analyserProgress; // in 0.1%
+    bool m_trackLoaded;
 };
 
 #endif
