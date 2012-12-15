@@ -62,6 +62,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                      << "bitrate";
     m_operatorMatcher = QRegExp("^(>|>=|=|<|<=)(.*)$");
     m_numericFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_numericFilters.join("|")));
+    m_stringFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_searchColumns.join("|")));
 }
 
 BaseTrackCache::~BaseTrackCache() {
@@ -474,6 +475,48 @@ bool BaseTrackCache::evaluateNumeric(const int value, const QString& expression)
     return false;
 }
 
+bool BaseTrackCache::trackMatchesNamedString(const TrackPointer& pTrack,
+                                     const QStringList& stringMatchers) const {
+    foreach(QString stringMatcher, stringMatchers)
+    {
+        QString field, expression;
+        if (m_stringFilterMatcher.indexIn(stringMatcher) == -1) {
+            continue;
+        }
+        field = m_stringFilterMatcher.cap(1);
+        expression = m_stringFilterMatcher.cap(2);
+        if (expression == "" ) {
+            return false;
+        }
+        if (field == "artist") {
+            if (! pTrack->getArtist().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        } else if (field == "album") {
+            if (! pTrack->getAlbum().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        } else if (field == "location") {
+            if (! pTrack->getLocation().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        } else if (field == "comment") {
+            if (! pTrack->getComment().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        } else if (field == "title") {
+            if (! pTrack->getTitle().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        } else if (field == "genre") {
+            if (! pTrack->getGenre().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
                                    QString searchQuery,
                                    QString extraFilter, int sortColumn,
@@ -556,13 +599,15 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 
     // Make a regular expression that matches the query terms.
     QStringList searchTokens = searchQuery.split(" ");
-    QStringList numericMatchers;
+    QStringList numericMatchers, stringMatchers;
     // Escape every token to stuff in a positive lookahead regular expression
     for (int i = 0; i < searchTokens.size(); ++i) {
         QString escaped = QRegExp::escape(searchTokens[i].trimmed());
-        if (escaped.contains(m_numericFilterMatcher))
-        {
+        if (escaped.contains(m_numericFilterMatcher)) {
             numericMatchers.append(escaped);
+            searchTokens[i] = "";
+        } else if (escaped.contains(m_stringFilterMatcher)) {
+            stringMatchers.append(escaped);
             searchTokens[i] = "";
         } else {
             searchTokens[i] = "(?=.*" + escaped +")";
@@ -585,8 +630,9 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         // and run all of the tracks through it instead of redoing that logic
         // for every dirty track
         bool shouldBeInResultSet = searchQuery.isEmpty() ||
-                (trackMatches(pTrack, searchMatcher) && 
-                trackMatchesNumeric(pTrack, numericMatchers));
+                (trackMatches(pTrack, searchMatcher) &&
+                trackMatchesNumeric(pTrack, numericMatchers) &&
+                trackMatchesNamedString(pTrack, stringMatchers));
 
         // If the track is in this result set.
         bool isInResultSet = trackToIndex->contains(trackId);
