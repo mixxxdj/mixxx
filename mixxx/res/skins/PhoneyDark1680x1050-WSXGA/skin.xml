@@ -6,6 +6,9 @@
 	"PhoneyDark" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
 
+	With every copy of the work, you are required to either provide a copy of the license it self
+	or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+
 	You are free:
 	to Share - to copy, distribute and transmit the work
 	to Remix - to adapt the work
@@ -13,6 +16,8 @@
 	Under the following conditions:
 	Attribution - You must attribute the work in the manner specified by the author or licensor
 	(but not in any way that suggests that they endorse you or your use of the work).
+	A attribution should include the following: The name of the author and/or licensor, 
+	the title of the work, the URL that is associated with the work.
 
 	Share Alike - If you alter, transform, or build upon this work, you may distribute
 	the resulting work only under the same or similar license to this one.
@@ -29,10 +34,10 @@
 	http://mixxx.org/wiki/doku.php/creating_skins
 
 	List of controls:
-	http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names
+	http://mixxx.org/wiki/doku.php/mixxxcontrols
 
 	Qt Style Sheets documentation:
-	http://doc.qt.nokia.com/latest/stylesheet.html
+	https://qt-project.org/doc/qt-4.8/stylesheet.html
 
 	Debugging:
 	To outline WidgetGroups change all occurrences (exept this one ;-) of
@@ -48,13 +53,21 @@
 	<manifest>
 	<title>PhoneyDark1680x1050-WSXGA</title>
 	<author>jus</author>
-	<version>1.11.0.06</version>
+	<version>1.11.0.07</version>
 	<description>A 2-deck parallel waveform skin.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 	<attributes>
 		<attribute config_key="[Master],num_decks">2</attribute>
 		<attribute config_key="[Master],num_samplers">0</attribute>
+		<attribute config_key="[Master],num_preview_decks">0</attribute>
+		<!--Optionally, make elements visible on skin load-->
+		<attribute config_key="[Spinny1],show_spinny">0</attribute>
+		<attribute config_key="[Spinny2],show_spinny">0</attribute>
+		<attribute config_key="[Samplers],show_samplers">0</attribute>
+		<attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+		<attribute config_key="[Microphone],show_microphone">0</attribute>
+		<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 	</attributes>
 	</manifest>
 
@@ -83,57 +96,94 @@
 
 	<!--
 	**********************************************
-	General- Search and Library display
+	Library / Preview Deck / Search / Tree view
 	**********************************************
 	-->
-	<TableView>
+	<WidgetGroup>
+		<Pos>0,431</Pos>
+		<Size>1651,507</Size>
+		<Layout>horizontal</Layout>
 		<Style>
-		QTableView, QTextBrowser, QTreeView { border: 1px solid #525252; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background: #333333; alternate-background-color: #333333; color: #F6F6F6; }
-		QTableView::indicator { width: 12px; height: 12px;}
-		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
-		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
+			QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
 
-		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-
-		<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
-		You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
-		In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
-		The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
-		-->
-		<!--transition time in Auto DJ tab-->
-		QSpinBox:editable { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #333333; color: #F6F6F6; }
-		QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
-
-		<!--library search bar-->
-		WSearchLineEdit { padding: 2px; border: 1px solid #525252; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #333333; color: #F6F6F6; }
-		WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #333333; color: #F6F6F6; }
-
-		<!--splitter between treeview and library-->
-		QSplitter::handle { image: url(skin:/style_handle_unchecked.png); background: none; }
-		QSplitter::handle:pressed { image: url(skin:/style_handle_checked.png); background: none; }
-		QSplitter::handle:horizontal { width: 6px; }
-		QSplitter::handle:vertical { height: 6px; }
-
-		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
-		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; }
-
-		<!--triangle for closed/opened branches in treeview-->
-		QTreeView {show-decoration-selected: 0;} <!-- Suppresses that selected sidebar item's branch indicator shows wrong color when out of focus ; lp:880588-->
-		QTreeView::branch:has-children:!has-siblings:closed,
-		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_closed.png);}
-		QTreeView::branch:open:has-children:!has-siblings,
-		QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_open.png);}
+			QTableView, QTextBrowser, QTreeView { border: 1px solid #525252; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+			background: #333333; alternate-background-color: #333333; color: #F6F6F6; }
+			QTableView::indicator { width: 12px; height: 12px;}
+			QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
+			QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
+			<!--Button in library "Preview" column -->
+			QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
+			QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
+			QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
+	
+			QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+	
+			<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
+			You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
+			In our case make sure that the "frame"-property in the corresponding dlgautodj.ui file is set to "false"
+			The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
+			-->
+			<!--transition time in Auto DJ tab-->
+			QSpinBox:editable { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #333333; color: #F6F6F6; }
+			QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+	
+			<!--library search bar-->
+			WSearchLineEdit { padding: 2px; border: 1px solid #525252; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #333333; color: #F6F6F6; }
+			WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,50); color: #F6F6F6; }
+	
+			<!--splitter between treeview and library-->
+			QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
+			QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
+			QSplitter::handle:horizontal { width: 6px; }
+			QSplitter::handle:vertical { height: 6px; }
+	
+			QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+			<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
+			QLabel, QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #F6F6F6;}
+	
+			<!--Spacing between treeview and searchbar-->
+			QTreeView { margin: 6px 0px 0px 0px; }
+			
+			<!--triangle for closed/opened branches in treeview-->
+			QTreeView { show-decoration-selected: 0;} <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
+			QTreeView::branch:has-children:!has-siblings:closed,
+			QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
+			QTreeView::branch:open:has-children:!has-siblings,
+			QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
+	
+			<BgColor>#333333</BgColor>
+			<FgColor>#F6F6F6</FgColor>
+			<BgColorRowEven>#333333</BgColorRowEven>
+			<BgColorRowUneven>#333333</BgColorRowUneven>
 		</Style>
-		<Pos>10,430</Pos>
-		<Size>1643,509</Size>
-		<BgColor>#333333</BgColor>
-		<FgColor>#F6F6F6</FgColor>
-		<BgColorRowEven>#333333</BgColorRowEven>
-		<BgColorRowUneven>#333333</BgColorRowUneven>
-	</TableView>
-
+		<Children>
+			<Splitter>
+				<Size>e,e</Size>
+				<Style></Style>
+				<SplitSizes>1,10</SplitSizes>
+				<Children>
+					<WidgetGroup>
+						<Style>QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 10px;}</Style>
+						<Layout>vertical</Layout>
+						<Children>
+							<!--Search Input Field-->
+							<SearchBox></SearchBox>
+							<!--Library Tree View-->
+							<LibrarySidebar></LibrarySidebar>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<!-- Library Table-->
+						<Style>QGroupBox {}</Style>
+						<Layout>vertical</Layout>
+						<Children>
+							<Library></Library>
+						</Children>
+					</WidgetGroup>
+				</Children>
+			</Splitter>
+		</Children>
+	</WidgetGroup>
 	<!--
 	############################################################################################
 	############################################################################################
@@ -154,12 +204,17 @@
 		<Pos>934,90</Pos>
 		<Size>721,118</Size>
 		<BgColor>#333333</BgColor>
+		<SignalHighColor></SignalHighColor>
+		<SignalMidColor></SignalMidColor>
+		<SignalLowColor></SignalLowColor>
 		<SignalColor>#0099FF</SignalColor>
 		<BeatColor>#CCCCCC</BeatColor>
 		<BeatHighlightColor>#FF0000</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<CueColor>#000000</CueColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
+		<AxesColor>#FFFFFF</AxesColor>
+		<Align></Align>
 		<DefaultMark>
 			<Align>top</Align>
 			<Color>#00FF00</Color>
@@ -207,12 +262,16 @@
 		<Pos>934,212</Pos>
 		<Size>721,116</Size>
 		<BgColor>#333333</BgColor>
+		<SignalHighColor></SignalHighColor>
+		<SignalMidColor></SignalMidColor>
+		<SignalLowColor></SignalLowColor>
 		<SignalColor>#CC6600</SignalColor>
 		<BeatColor>#CCCCCC</BeatColor>
 		<BeatHighlightColor>#FF0000</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
 		<CueColor>#000000</CueColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
+		<AxesColor>#FFFFFF</AxesColor>
 		<DefaultMark>
 			<Align>top</Align>
 			<Color>#00FF00</Color>
@@ -2074,7 +2133,7 @@
 		<TooltipId>master_volume</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>154,203</Pos>
 		<Connection>
 			<ConfigKey>[Master],volume</ConfigKey>
@@ -2084,7 +2143,7 @@
 		<TooltipId>balance</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>291,203</Pos>
 		<Connection>
 			<ConfigKey>[Master],balance</ConfigKey>
@@ -2100,7 +2159,7 @@
 		<TooltipId>lfoDelay</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>32,308</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDelay</ConfigKey>
@@ -2110,7 +2169,7 @@
 		<TooltipId>lfoDepth</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>32,203</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDepth</ConfigKey>
@@ -2120,7 +2179,7 @@
 		<TooltipId>lfoPeriod</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>32,79</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
@@ -2136,7 +2195,7 @@
 		<TooltipId>headphone_volume</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>409,141</Pos>
 		<Connection>
 			<ConfigKey>[Master],headVolume</ConfigKey>
@@ -2146,7 +2205,7 @@
 		<TooltipId>headMix</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>409,246</Pos>
 		<Connection>
 			<ConfigKey>[Master],headMix</ConfigKey>
@@ -2162,7 +2221,7 @@
 		<TooltipId>pregain</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>125,79</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pregain</ConfigKey>
@@ -2172,7 +2231,7 @@
 		<TooltipId>filterHigh</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>190,79</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHigh</ConfigKey>
@@ -2182,7 +2241,7 @@
 		<TooltipId>filterMid</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>255,79</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMid</ConfigKey>
@@ -2192,7 +2251,7 @@
 		<TooltipId>filterLow</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>320,79</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLow</ConfigKey>
@@ -2202,7 +2261,7 @@
 		<TooltipId>pregain</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>125,308</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pregain</ConfigKey>
@@ -2212,7 +2271,7 @@
 		<TooltipId>filterHigh</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>190,308</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHigh</ConfigKey>
@@ -2222,7 +2281,7 @@
 		<TooltipId>filterMid</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>255,308</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMid</ConfigKey>
@@ -2232,7 +2291,7 @@
 		<TooltipId>filterLow</TooltipId>
 		<Style></Style>
 		<NumberStates>41</NumberStates>
-		<Path>knob_rotary_s%1.png</Path>
+		<Path>knobs/knob_rotary_s%1.png</Path>
 		<Pos>320,308</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLow</ConfigKey>
