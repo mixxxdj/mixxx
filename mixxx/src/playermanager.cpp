@@ -1,4 +1,4 @@
-co// playermanager.cpp
+// playermanager.cpp
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 
 #include "playermanager.h"
