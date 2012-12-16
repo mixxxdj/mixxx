@@ -1,4 +1,4 @@
-// playermanager.cpp
+co// playermanager.cpp
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
 
 #include "playermanager.h"
@@ -227,7 +227,7 @@ PreviewDeck* PlayerManager::addPreviewDeck() {
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
     connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
+            m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);
