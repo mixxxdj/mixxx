@@ -42,6 +42,7 @@ class ControllerManager : public QObject {
     void requestSetUpDevices();
     void requestShutdown();
     void requestSave(bool onlyActive);
+    void syncControlSystem();
 
   public slots:
     void updateControllerList();

@@ -14,11 +14,7 @@ class BeatFactory {
     static BeatsPointer makeBeatGrid(TrackInfoObject* pTrack,
                                      double dBpm, double dFirstBeatSample);
 
-    static QString getPreferredVersion(
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iMinBpm, const int iMaxBpm,
-        const QHash<QString, QString> extraVersionInfo);
+    static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);
 
     static QString getPreferredSubVersion(
         const bool bEnableFixedTempoCorrection,

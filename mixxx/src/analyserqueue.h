@@ -20,13 +20,14 @@ class AnalyserQueue : public QThread {
     AnalyserQueue();
     virtual ~AnalyserQueue();
     void stop();
+    void queueAnalyseTrack(TrackPointer tio);
 
     static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createAnalyserQueue(QList<Analyser*> analysers);
 
   public slots:
-    void queueAnalyseTrack(TrackPointer tio);
+    void slotAnalyseTrack(TrackPointer tio);
     void slotUpdateProgress();
 
   signals:
@@ -52,7 +53,7 @@ class AnalyserQueue : public QThread {
 
     QList<Analyser*> m_aq;
 
-    bool isLoadedTrackWaiting();
+    bool isLoadedTrackWaiting(TrackPointer tio);
     TrackPointer dequeueNextBlocking();
     bool doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
     void emitUpdateProgress(TrackPointer tio, int progress);

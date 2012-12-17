@@ -15,7 +15,7 @@ class WaveformRenderMark : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
 private:
-    void generateMarkPixmap(WaveformMark& mark);
+    void generateMarkImage(WaveformMark& mark);
 
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);

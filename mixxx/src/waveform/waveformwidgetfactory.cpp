@@ -12,6 +12,7 @@
 #include "defs.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
@@ -448,6 +449,11 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = SoftwareWaveformWidget::useOpenGl();
             useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
             break;
+        case WaveformWidgetType::HSVWaveform:
+            widgetName = HSVWaveformWidget::getWaveformWidgetName();
+            useOpenGl = HSVWaveformWidget::useOpenGl();
+            useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
+            break;
         case WaveformWidgetType::QtSimpleWaveform:
             widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
@@ -504,6 +510,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         switch(type) {
         case WaveformWidgetType::SoftwareWaveform:
             widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::HSVWaveform:
+            widget = new HSVWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::QtSimpleWaveform:
             widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
