@@ -19,6 +19,7 @@ class AnalyserGain : public Analyser {
     virtual ~AnalyserGain();
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    bool loadStored(TrackPointer tio) const;
     void process(const CSAMPLE *pIn, const int iLen);
     void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);

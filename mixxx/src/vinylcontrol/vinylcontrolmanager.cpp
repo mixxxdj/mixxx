@@ -9,6 +9,7 @@
 #include "vinylcontrolxwax.h"
 #include "soundmanager.h"
 #include "controlpushbutton.h"
+#include "util/timer.h"
 
 const int kNumberOfDecks = 4; // set to 4 because it will ideally not be more
 // or less than the number of vinyl-controlled decks but will probably be
@@ -78,6 +79,7 @@ void VinylControlManager::init()
 
 void VinylControlManager::receiveBuffer(AudioInput input,
         const short *pBuffer, unsigned int nFrames) {
+    ScopedTimer t("VinylControlManager::receiveBuffer");
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
         return;

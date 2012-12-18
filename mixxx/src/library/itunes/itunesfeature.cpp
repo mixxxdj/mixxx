@@ -192,28 +192,6 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
     }
 }
 
-bool ITunesFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool ITunesFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool ITunesFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool ITunesFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
 QString ITunesFeature::getiTunesMusicPath() {
     QString musicFolder;
 #if defined(__APPLE__)
@@ -727,10 +705,5 @@ void ITunesFeature::onTrackCollectionLoaded(){
     m_title = tr("iTunes");
     emit(featureLoadingFinished(this));
     activate();
-}
-
-void ITunesFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
-    Q_UNUSED(index);
 }
 

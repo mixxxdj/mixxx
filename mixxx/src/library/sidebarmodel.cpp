@@ -247,16 +247,17 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     }
 }
 
-bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls) {
+bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
+                              QWidget* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            return m_sFeatures[index.row()]->dropAccept(urls);
+            return m_sFeatures[index.row()]->dropAccept(urls, pSource);
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                return feature->dropAcceptChild(index, urls);
+                return feature->dropAcceptChild(index, urls,pSource);
             }
         }
     }

@@ -67,49 +67,10 @@ void RecordingFeature::bindWidget(WLibrary *libraryWidget,
             this, SIGNAL(restoreSearch(QString)));
 }
 
-bool RecordingFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool RecordingFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool RecordingFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool RecordingFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
 
 void RecordingFeature::activate() {
     emit(refreshBrowseModel());
     emit(switchToView(m_sRecordingViewName));
     // Ask the view to emit a restoreSearch signal.
     emit(requestRestoreSearch());
-}
-
-void RecordingFeature::activateChild(const QModelIndex& index) {
-    Q_UNUSED(index);
-}
-
-void RecordingFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
-}
-
-void RecordingFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    Q_UNUSED(globalPos);
-    Q_UNUSED(index);
-}
-
-void RecordingFeature::onLazyChildExpandation(const QModelIndex &index){
-    Q_UNUSED(index);
-    // Nothing to do here since we have no child models
 }
