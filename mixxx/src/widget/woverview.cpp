@@ -269,8 +269,8 @@ bool WOverview::drawNextPixmapPart() {
     }
 
     const int dataSize = m_waveform->getDataSize();
-    const int analyserCompletion = (int)((float)dataSize * m_analyserProgress / 1000);
-    const int waveformCompletion = m_waveform->getCompletion();
+    const int analyserCompletion = (int)((float)(dataSize/2) * m_analyserProgress / 1000) * 2;
+    const int waveformCompletion = m_waveform->getCompletion(); // always multiple of 2
 
     // test if there is some new to draw (at least of pixel width)
     int completionIncrement;
@@ -293,8 +293,6 @@ bool WOverview::drawNextPixmapPart() {
     //         << "m_waveform->getCompletion()" << waveformCompletion
     //         << "nextCompletion" << completionIncrement;
 
-    // TODO(rryan) was this limit for a reason?
-    //completionIncrement = std::min(completionIncrement,m_renderSampleLimit);
     const int nextCompletion = m_actualCompletion + completionIncrement;
 
     QPainter painter(&m_waveformPixmap);
@@ -329,8 +327,8 @@ bool WOverview::drawNextPixmapPart() {
     float pixelPosition = pixelStartPosition;
     for(currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        unsigned char lowPos = m_waveform->getLow(currentCompletion);
-        unsigned char lowNeg = m_waveform->getLow(currentCompletion+1);
+        unsigned char lowNeg = m_waveform->getLow(currentCompletion);
+        unsigned char lowPos = m_waveform->getLow(currentCompletion+1);
         if (lowPos || lowNeg) {
             painter.setPen(lowColorPen);
             painter.drawLine(QPointF(pixelPosition, -lowNeg),
@@ -346,24 +344,24 @@ bool WOverview::drawNextPixmapPart() {
     pixelPosition = pixelStartPosition;
     for(currentCompletion = m_actualCompletion; currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(midColorPen);
-        painter.drawLine(QPointF(pixelPosition, - m_waveform->getMid(currentCompletion+1)),
-                         QPointF(pixelPosition, m_waveform->getMid(currentCompletion)));
+        painter.drawLine(QPointF(pixelPosition, - m_waveform->getMid(currentCompletion)),
+                         QPointF(pixelPosition, m_waveform->getMid(currentCompletion+1)));
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
     pixelPosition = pixelStartPosition;
     for(currentCompletion = m_actualCompletion; currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(highColorPen);
-        painter.drawLine(QPointF(pixelPosition, - m_waveform->getHigh(currentCompletion+1)),
-                         QPointF(pixelPosition, m_waveform->getHigh(currentCompletion)));
+        painter.drawLine(QPointF(pixelPosition, - m_waveform->getHigh(currentCompletion)),
+                         QPointF(pixelPosition, m_waveform->getHigh(currentCompletion+1)));
         pixelPosition += 2.0*pixelByVisualSamples;
     }
 
     //evaluate waveform ratio peak
 
     for(currentCompletion = m_actualCompletion; currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max(m_waveformPeak, (float)m_waveform->getAll(currentCompletion+1));
         m_waveformPeak = math_max(m_waveformPeak, (float)m_waveform->getAll(currentCompletion));
+        m_waveformPeak = math_max(m_waveformPeak, (float)m_waveform->getAll(currentCompletion+1));
     }
 
     m_actualCompletion = nextCompletion;
@@ -466,8 +464,7 @@ void WOverview::paintEvent(QPaintEvent *) {
             QRect sourceRect( 0, diffPeak,
                               m_waveformPixmap.width(), m_waveformPixmap.height()-2*diffPeak);
             painter.drawPixmap(rect(), m_waveformPixmap, sourceRect);
-        }
-        else {
+        } else {
             const double visualGain = widgetFactory->getVisualGain(WaveformWidgetFactory::All);
             const int diffGain = 255.0 - 255.0/visualGain;
             QRect sourceRect( 0, diffGain,
