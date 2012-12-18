@@ -436,13 +436,27 @@ void WOverview::paintEvent(QPaintEvent *) {
             lowColor.setAlphaF(0.5);
             QPen lowColorPen( QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
             painter.setPen(lowColorPen);
+            QString text;
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is cached from source                
-                painter.drawText(1, 12, tr("Ready to play, analyzing .."));
+                text = tr("Ready to play, analyzing ..");
             } else {
                 //: Text on waveform overview when file is playable but no waveform is visible
-                painter.drawText(1, 12, tr("Loading track .."));
+                text = tr("Loading track ..");
             }
+            QFont font = painter.font();
+            QFontMetrics fm(font);
+            int textWidth = fm.width(text);
+            if (textWidth > width()) {
+                qreal pointSize = font.pointSizeF();
+                pointSize = pointSize * (width() - 5) / textWidth;
+                if (pointSize < 6) {
+                    pointSize = 6;
+                }
+                font.setPointSizeF(pointSize);
+                painter.setFont(font);
+            }
+            painter.drawText(1, 12, text);
         }
         painter.setOpacity(1.0);
 
