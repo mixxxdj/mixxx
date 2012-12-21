@@ -75,11 +75,12 @@ private slots:
   private:
     /** append the waveform overview pixmap according to available data in waveform */
     bool drawNextPixmapPart();
-    inline int valueToPosition( float value) const {
-        return floor(m_a * value + m_b + 0.5);
+    inline int valueToPosition(float value) const {
+        return floor(m_a * value - m_b + 0.5);
     }
-    inline double positionToValue( int position) const {
-        return (float(position) - m_b) / m_a;
+    inline double positionToValue(int position) const {
+        return ((float)position + m_b) / m_a;
+
     }
 
     const char* m_pGroup;
