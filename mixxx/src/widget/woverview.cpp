@@ -378,7 +378,7 @@ bool WOverview::drawNextPixmapPart() {
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     m_iPos = e->x();
-    m_iPos = math_max(1,math_min(m_iPos,width()-1));
+    m_iPos = math_max(0,math_min(m_iPos,width()-1));
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
 }
@@ -584,9 +584,9 @@ void WOverview::paintEvent(QPaintEvent *) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    //Those coeficient map position from [1;width-1] to value [14;114]
-    m_a = float( (width()-1) - 1)/( 114.f - 14.f);
-    m_b = 1 - 14.f*m_a;
+    //Those coeficient map position from [0;width-1] to value [14;114]
+    m_a = (float)((width()-1))/( 114.f - 14.f);
+    m_b = 14.f * m_a;
 }
 
 QColor WOverview::getMarkerColor() {
