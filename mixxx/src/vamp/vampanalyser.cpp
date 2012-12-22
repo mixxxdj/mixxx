@@ -180,11 +180,9 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
         qDebug() << "VampAnalyser: Cannot initialise plugin";
         return false;
     }
-
     // Here we are using m_iBlockSize: it cannot be 0
     m_pluginbuf[0] = new CSAMPLE[m_iBlockSize];
     m_pluginbuf[1] = new CSAMPLE[m_iBlockSize];
-
     m_FastAnalysisEnabled = bFastAnalysis;
     if (m_FastAnalysisEnabled) {
         qDebug() << "Using fast analysis methods for BPM and Replay Gain.";
@@ -194,7 +192,6 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
         // care. It might be some recorded mix.
         m_iMaxSamplesToAnalyse = 1200 * m_rate;
     }
-
     return true;
 }
 
