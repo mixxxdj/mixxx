@@ -25,6 +25,7 @@
 #include "controlpushbutton.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
+#include "controllinpotmeter.h"
 #include "engine/enginebufferscalest.h"
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
@@ -163,7 +164,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
-    m_playposSlider = new ControlPotmeter(
+    m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
