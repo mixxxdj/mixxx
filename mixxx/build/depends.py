@@ -353,17 +353,19 @@ class SoundTouch(Dependence):
                  '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,])
         return sources
 
-    def configure(self, build, conf):
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
         if build.platform_is_windows:
             # Regardless of the bitwidth, ST checks for WIN32
-            build.env.Append(CPPDEFINES = 'WIN32')
-        build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
+            env.Append(CPPDEFINES = 'WIN32')
+        env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
         # Check if the compiler has SSE extention enabled
         # Allways the case on x64 (core instructions)
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        optimize = int(util.get_flags(env, 'optimize', 1))
         if self.sse_enabled(build):
-            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
+            env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
