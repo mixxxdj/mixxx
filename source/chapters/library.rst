@@ -45,6 +45,21 @@ not automatically delete records of missing tracks so that extra metadata Mixxx
 might have (such as hot cues and the BPM) will not be lost if the file is
 replaced.
 
+Hidden Tracks
+=============
+
+The Hidden Tracks view is accessible by expanding Library tree item in the
+sidebar. Tracks can be hidden from the complete Library including playlists
+and crates by the context menu in any view. Once they are hidden they will
+appear in the Hidden Tracks view and con be deleted or restored from there.
+
+Deleting Tracks
+===============
+
+Tracks that appear in the Missing Tracks or Hidden Tracks view can be
+deleted from the context menu there. 'Warning' This will delete all
+metadata Mixxx has for a track.
+
 Auto DJ
 =======
 
