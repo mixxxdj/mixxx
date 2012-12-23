@@ -84,13 +84,6 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     QString pluginID = m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
 
-    // At first start config for QM and Vamp does not exist --> set default
-    if (library.isEmpty() || library.isNull()) {
-        library = "libmixxxminimal";
-    }
-    if (pluginID.isEmpty() || pluginID.isNull()) {
-        pluginID="qm-tempotracker:0";
-    }
     m_pluginId = pluginID;
 
     m_iSampleRate = sampleRate;
