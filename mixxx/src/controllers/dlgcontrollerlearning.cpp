@@ -168,6 +168,8 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     // Library Controls
     QMenu* libraryMenu = addSubmenu(tr("Library"));
+    addControl("[Playlist]", "ToggleSelectedSidebarItem", tr("Expand/collapse the selected view (library, playlist..)"),
+               libraryMenu);
     addControl("[Playlist]", "SelectNextPlaylist", tr("Switch to the next view (library, playlist..)"),
                libraryMenu);
     addControl("[Playlist]", "SelectPrevPlaylist", tr("Switch to the previous view (library, playlist..)"),
