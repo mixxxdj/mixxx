@@ -1100,6 +1100,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SHOUTCAST__
     m_pOptionsMenu->addAction(m_pOptionsShoutcast);
 #endif
+    m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsKeyboard);
     m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsPreferences);
