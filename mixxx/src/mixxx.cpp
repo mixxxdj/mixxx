@@ -1066,7 +1066,7 @@ void MixxxApp::initActions()
     " " + mayNotBeSupported;
     m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
     m_pViewShowPreviewDeck->setCheckable(true);
-    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+P" , "Menu|View|Show Preview Deck"));
+    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+W" , "Menu|View|Show Preview Deck"));
     m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
