@@ -1657,14 +1657,14 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
-        if (m_tooltips == 1) {
+        if (m_tooltips == 2) {
             // ON (only in Library)
             WWidget* pWidget = dynamic_cast<WWidget*>(obj);
             WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
             WSpinny* pSpinny = dynamic_cast<WSpinny*>(obj);
             QLabel* pLabel = dynamic_cast<QLabel*>(obj);
             return (pWidget || pWfViewer || pSpinny || pLabel);
-        } else if (m_tooltips == 0) {
+        } else if (m_tooltips == 1) {
             // ON
             return false;
         } else {
