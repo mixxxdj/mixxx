@@ -625,6 +625,7 @@ MixxxApp::~MixxxApp()
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
    delete m_pKeyboard;
+   delete m_pKbdConfig;
    delete m_pKbdConfigEmpty;
 
    WaveformWidgetFactory::destroy();
