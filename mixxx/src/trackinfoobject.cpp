@@ -35,24 +35,28 @@
 
 TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
         : m_qMutex(QMutex::Recursive),
+          m_waveform(new Waveform()),
+          m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
     QFileInfo fileInfo(sLocation);
     populateLocation(fileInfo);
     initialize(parseHeader);
-    m_waveform = new Waveform(QByteArray());
-    m_waveformSummary = new Waveform(QByteArray());
 }
 
 TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader)
-        : m_qMutex(QMutex::Recursive) {
+        : m_qMutex(QMutex::Recursive),
+          m_waveform(new Waveform()),
+          m_waveformSummary(new Waveform()),
+          m_analyserProgress(-1) {
     populateLocation(fileInfo);
     initialize(parseHeader);
-    m_waveform = new Waveform(QByteArray());
-    m_waveformSummary = new Waveform(QByteArray());
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_qMutex(QMutex::Recursive) {
+        : m_qMutex(QMutex::Recursive), 
+          m_waveform(new Waveform()),
+          m_waveformSummary(new Waveform()),
+          m_analyserProgress(-1) {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
     QString create_date;
@@ -98,9 +102,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_bDirty = false;
     m_bLocationChanged = false;
-
-    m_waveform = new Waveform(QByteArray());
-    m_waveformSummary = new Waveform(QByteArray());
 }
 
 void TrackInfoObject::populateLocation(const QFileInfo& fileInfo) {
@@ -764,42 +765,15 @@ QString TrackInfoObject::getURL()
 }
 
 Waveform* TrackInfoObject::getWaveform() {
-    QMutexLocker lock(&m_qMutex);
     return m_waveform;
-}
-
-const Waveform* TrackInfoObject::getWaveform() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_waveform;
-}
-
-void TrackInfoObject::setWaveform(Waveform* pWaveform) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_waveform) {
-        delete m_waveform;
-    }
-    m_waveform = pWaveform;
-    lock.unlock();
-    emit(waveformUpdated());
 }
 
 Waveform* TrackInfoObject::getWaveformSummary() {
-    QMutexLocker lock(&m_qMutex);
     return m_waveformSummary;
 }
 
-const Waveform* TrackInfoObject::getWaveformSummary() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_waveformSummary;
-}
-
-void TrackInfoObject::setWaveformSummary(Waveform* pWaveformSummary) {
-    QMutexLocker lock(&m_qMutex);
-    if (m_waveformSummary) {
-        delete m_waveformSummary;
-    }
-    m_waveformSummary = pWaveformSummary;
-    lock.unlock();
+// called from the AnalyserQueue Thread
+void TrackInfoObject::waveformSummaryNew() {
     emit(waveformSummaryUpdated());
 }
 

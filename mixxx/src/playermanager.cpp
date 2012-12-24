@@ -174,7 +174,7 @@ Deck* PlayerManager::addDeck() {
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
     connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
+            m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
 
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pDeck;
@@ -206,7 +206,7 @@ Sampler* PlayerManager::addSampler() {
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
     connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
+            m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
 
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pSampler;
@@ -227,7 +227,7 @@ PreviewDeck* PlayerManager::addPreviewDeck() {
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
     connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pAnalyserQueue, SLOT(queueAnalyseTrack(TrackPointer)));
+            m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);

@@ -210,12 +210,11 @@ public:
     void setURL(QString url);
 
     Waveform* getWaveform();
-    const Waveform* getWaveform() const;
-    void setWaveform(Waveform* pWaveform);
+    void waveformNew();
 
     Waveform* getWaveformSummary();
     const Waveform* getWaveformSummary() const;
-    void setWaveformSummary(Waveform* pWaveformSummary);
+    void waveformSummaryNew();
 
     void setAnalyserProgress(int progress);
     int getAnalyserProgress() const;
@@ -383,8 +382,8 @@ private:
     BeatsPointer m_pBeats;
 
     //Visual waveform data
-    Waveform* m_waveform;
-    Waveform* m_waveformSummary;
+    Waveform* const m_waveform;
+    Waveform* const m_waveformSummary;
 
     QAtomicInt m_analyserProgress; // in 0.1%
 

@@ -347,7 +347,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
         m_st.enable(p);
     }
 
-    ControlObject::sync();
     if (opCode == MIDI_PITCH_BEND) {
         // Absolute value is calculated above on Pitch messages (-1..1)
         if (options.soft_takeover) {
@@ -365,6 +364,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
         }
         p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
+
+    // If we got here then we queued a message for the control system. In the
+    // interest of quickly processing this, we request a sync. Since we are
+    // running in the controller thread, we broadcast the signal which is
+    // proxied to the main thread and handled there.
+    emit(syncControlSystem());
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
