@@ -204,7 +204,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
     }
 
 	if (key.group != "" || key.item != "")
-    	qDebug() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
+    	qWarning() << "ControlObject::getControl returning NULL for (" << key.group << "," << key.item << ")";
     return NULL;
 }
 

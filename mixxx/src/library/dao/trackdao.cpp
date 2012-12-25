@@ -179,7 +179,7 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack, bool override_dirty) {
     // If track's id is not -1, then update, otherwise add.
     int trackId = pTrack->getId();
     if (trackId != -1) {
-        if (pTrack->isDirty()) {
+        if (pTrack->isDirty() || override_dirty) {
             //qDebug() << this << "Dirty tracks before clean save:" << m_dirtyTracks.size();
             //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
             updateTrack(pTrack);

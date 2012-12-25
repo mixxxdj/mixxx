@@ -304,37 +304,36 @@ void VinylControlXwax::run()
         reportedMode = mode->get();
         reportedPlayButton = playButton->get();
         m_dKnobTweak = m_pVinylPitchTweakKnob->get();
-        
-		if (iVCMode != reportedMode)
-	    {
-	    	//if we are playing, don't allow change 
-	    	//to absolute mode (would cause sudden track skip)
-	    	if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE)
-	    	{
-	    		iVCMode = MIXXX_VCMODE_RELATIVE;
-	    		mode->slotSet((double)iVCMode);
-		    }
-		    else //go ahead and switch
-		    {
-		    	iVCMode = reportedMode;
-		    	if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
-		    		bForceResync = true;
-	   		}
 
-			//if we are out of error mode...		   		
-	   		if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
-	    	{
-        		vinylStatus->slotSet(VINYL_STATUS_OK);
-        	}
-	    }
+        if (iVCMode != reportedMode)
+        {
+            //if we are playing, don't allow change
+            //to absolute mode (would cause sudden track skip)
+            if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE)
+            {
+                iVCMode = MIXXX_VCMODE_RELATIVE;
+                mode->slotSet((double)iVCMode);
+            }
+            else //go ahead and switch
+            {
+                iVCMode = reportedMode;
+                if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
+                    bForceResync = true;
+            }
 
-		//if looping has been enabled, don't allow absolute mode		    
-	    if (loopEnabled->get() && iVCMode == MIXXX_VCMODE_ABSOLUTE)
-	    {
-	    	iVCMode = MIXXX_VCMODE_RELATIVE;
-	    	mode->slotSet((double)iVCMode);
-	    }
-	    
+            //if we are out of error mode...
+            if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
+            {
+                vinylStatus->slotSet(VINYL_STATUS_OK);
+            }
+        }
+
+        //if looping has been enabled, don't allow absolute mode
+        if (loopEnabled->get() && iVCMode == MIXXX_VCMODE_ABSOLUTE)
+        {
+            iVCMode = MIXXX_VCMODE_RELATIVE;
+            mode->slotSet((double)iVCMode);
+        }
         //are we newly playing near the end of the record?  (in absolute mode, this happens
         //when the filepos is past safe (more accurate),
         //but it can also happen in relative mode if the vinylpos is nearing the end
@@ -648,9 +647,9 @@ void VinylControlXwax::run()
             {
                 controlScratch->slotSet(averagePitch + m_dKnobTweak);
                 if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
-            	{
-                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch + m_dKnobTweak) - 1.0f) / fRateRange);
-                	dUiUpdateTime = filePosition;
+                {
+                    rateSlider->slotSet(rateDir->get() * (fabs(averagePitch + m_dKnobTweak) - 1.0f) / fRateRange);
+                    dUiUpdateTime = filePosition;
                 }
             }
 
@@ -705,13 +704,13 @@ void VinylControlXwax::enableRecordEndMode()
 
 void VinylControlXwax::enableConstantMode()
 {
-	iOldMode = iVCMode;
-	iVCMode = MIXXX_VCMODE_CONSTANT;
-	mode->slotSet((double)iVCMode);
-	togglePlayButton(true);
-	double rate = controlScratch->get();
-	rateSlider->slotSet(rateDir->get() * (fabs(rate + m_dKnobTweak) - 1.0f) / fRateRange);
-	controlScratch->slotSet(rate + m_dKnobTweak);
+    iOldMode = iVCMode;
+    iVCMode = MIXXX_VCMODE_CONSTANT;
+    mode->slotSet((double)iVCMode);
+    togglePlayButton(true);
+    double rate = controlScratch->get();
+    rateSlider->slotSet(rateDir->get() * (fabs(rate + m_dKnobTweak) - 1.0f) / fRateRange);
+    controlScratch->slotSet(rate + m_dKnobTweak);
 }
 
 void VinylControlXwax::enableConstantMode(double rate)
@@ -830,22 +829,22 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
         wantenabled->slotSet(false); //don't try to do this over and over
         return true; //optimism!
     }
-	if (was != is)
-	{
-		//we reset the scratch value, but we don't reset the rate slider.
-		//This means if we are playing, and we disable vinyl control,
-		//the track will keep playing at the previous rate.
-		//This allows for single-deck control, dj handoffs, etc.
+    if (was != is)
+    {
+        //we reset the scratch value, but we don't reset the rate slider.
+        //This means if we are playing, and we disable vinyl control,
+        //the track will keep playing at the previous rate.
+        //This allows for single-deck control, dj handoffs, etc.
 
-		togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
-		controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f + m_dKnobTweak);
-		resetSteadyPitch(0.0f, 0.0f);
-		bForceResync = true;
-		if (!was)
-			dOldFilePos = 0.0f;
-		iVCMode = mode->get();
-		atRecordEnd = false;
-	}
+        togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
+        controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f + m_dKnobTweak);
+        resetSteadyPitch(0.0f, 0.0f);
+        bForceResync = true;
+        if (!was)
+            dOldFilePos = 0.0f;
+        iVCMode = mode->get();
+        atRecordEnd = false;
+    }
     if (is && !was)
     {
         vinylStatus->slotSet(VINYL_STATUS_OK);
