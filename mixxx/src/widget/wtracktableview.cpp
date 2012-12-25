@@ -338,9 +338,8 @@ void WTrackTableView::loadSelectionToGroup(QString group) {
         // If the track load override is disabled, check to see if a track is
         // playing before trying to load it
         if ( !(m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) ) {
-            bool groupPlaying = ControlObject::getControl(
-                ConfigKey(group, "play"))->get() == 1.0f;
-
+            bool groupPlaying = !(group=="[PreviewDeck1]") && (ControlObject::getControl(
+                ConfigKey(group, "play"))->get() == 1.0f);
             if (groupPlaying){
                 return;
             }

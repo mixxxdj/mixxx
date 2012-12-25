@@ -169,7 +169,10 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
     bool bUpdateSuccess = true;
     // qDebug() << "updateProxies: Group" << m_key.group << "/ Item" << m_key.item;
     m_qProxyListMutex.lock();
-    QListIterator<ControlObjectThread*> it(m_qProxyList);
+    QList<ControlObjectThread*> proxyList = m_qProxyList;
+    m_qProxyListMutex.unlock();
+
+    QListIterator<ControlObjectThread*> it(proxyList);
     while (it.hasNext())
     {
         obj = it.next();
@@ -179,7 +182,6 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
             bUpdateSuccess = bUpdateSuccess && obj->setExtern(m_dValue);
         }
     }
-    m_qProxyListMutex.unlock();
     return bUpdateSuccess;
 }
 
