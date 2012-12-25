@@ -353,7 +353,6 @@ void ControlObject::sync() {
             }
             delete obj;
         }
-        m_sqQueueMutexThread.unlock();
     }
 
     // Update control objects with values recieved from MIDI. We tryLock because
@@ -380,7 +379,6 @@ void ControlObject::sync() {
             }
             delete obj;
         }
-        m_sqQueueMutexMidi.unlock();
     }
 
     // Update app threads (ControlObjectThread derived objects) with changes in
