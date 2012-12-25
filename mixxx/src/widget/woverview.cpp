@@ -264,7 +264,7 @@ bool WOverview::drawNextPixmapPart() {
         //waveform pixmap twice the height of the viewport to be scalable by total_gain
         //we keep full range waveform data to scale it on paint
         m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255, QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0));
+        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
     }
 
     const int analyserCompletion = (int)((float)(dataSize/2) * m_analyserProgress / 1000) * 2;
