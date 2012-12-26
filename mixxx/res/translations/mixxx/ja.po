@@ -8,64 +8,64 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-11-06 13:44+0000\n"
-"Last-Translator: Jerry Alan Carroll <jerry.alan.carroll@gmail.com>\n"
+"PO-Revision-Date: 2012-12-25 16:24+0000\n"
+"Last-Translator: MCtek <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-30 04:38+0000\n"
-"X-Generator: Launchpad (build 16319)\n"
+"X-Launchpad-Export-Date: 2012-12-26 04:36+0000\n"
+"X-Generator: Launchpad (build 16378)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "オートDJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "オートDJの最後に追加"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "オートDJの先頭に追加"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "プレイリストのインポート"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "プレイリストの作成に失敗"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "プレイリストの作成中に不明なエラーが発生しました "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "新しいプレイリスト"
+msgstr "プレイリストの新規作成"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "オートDJの最後に追加"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "オートDJの先頭に追加"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "削除"
+msgstr "リストから削除"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
@@ -88,7 +88,7 @@ msgstr "プレイリストをエクスポート"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "プレイリストの名前を変更"
+msgstr "プレイリストの名前の変更"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
@@ -96,11 +96,11 @@ msgstr "新しいプレイリストの名前："
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "プレイリストの名前変更に失敗"
+msgstr "プレイリストの名前の変更に失敗"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
-msgstr "この名前のプレイリストはすでに存在しています。"
+msgstr "同じ名前のプレイリストが既にあります。"
 
 #: BasePlaylistFeature#13
 msgid "A playlist cannot have a blank name."
@@ -113,12 +113,12 @@ msgstr "プレイリスト名:"
 #: BasePlaylistFeature#15
 msgctxt "BasePlaylistFeature#15"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "プレイリストの作成に失敗"
 
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "プレイリストの作成中に不明なエラーが発生しました "
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
@@ -132,11 +132,11 @@ msgid ""
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
 "M3Uプレイリスト (*.m3u);;M3U8プレイリスト (*.m3u8);;PLSプレイリスト "
-"(*.pls);;CSVテキスト(*.csv);;普通のテキスト(*.csv);;"
+"(*.pls);;CSVファイル(*.csv);;テキストファイル(*.txt);;"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "再生済"
+msgstr "再生回数"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -171,12 +171,12 @@ msgstr "発売年"
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Type"
-msgstr "タイプ"
+msgstr "ファイル形式"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Location"
-msgstr "場所"
+msgstr "ファイルの場所"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
@@ -205,7 +205,7 @@ msgstr "BPM"
 #: BaseSqlTableModel#15
 msgctxt "BaseSqlTableModel#15"
 msgid "Track #"
-msgstr "トラック#"
+msgstr "トラック番号"
 
 #: BaseSqlTableModel#16
 msgid "Date Added"
@@ -230,7 +230,7 @@ msgstr "BPMロック"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "プレビュー"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -238,11 +238,11 @@ msgstr "トラックを読み込めませんでした"
 
 #: BrowseFeature#1
 msgid "Add to Quick Links"
-msgstr ""
+msgstr "クイックリンクに追加"
 
 #: BrowseFeature#2
 msgid "Remove from Quick Links"
-msgstr ""
+msgstr "クイックリンクから削除"
 
 #: BrowseFeature#3
 msgid "Quick Links"
@@ -260,7 +260,7 @@ msgstr "リムーバブルデバイス"
 msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
-msgstr ""
+msgstr "ハードディスクや外部機器のフォルダを参照してトラックを読み込みます。"
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -288,12 +288,12 @@ msgstr "アルバム"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "トラック#"
+msgstr "トラック番号"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr "年"
+msgstr "発売年"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
@@ -328,7 +328,7 @@ msgstr "キー"
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Type"
-msgstr "タイプ"
+msgstr "ファイル形式"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
@@ -338,7 +338,7 @@ msgstr "ビットレート"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Location"
-msgstr "場所"
+msgstr "ファイルの場所"
 
 #: BrowseTableModel#16
 msgid "Mixxx Library"
@@ -356,37 +356,37 @@ msgstr "警告：以下のファイルを完全に削除します"
 
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "本当にこれらのファイルをコンピュータから削除しますか？"
+msgstr "本当に以下のファイルを削除しますか？"
 
 #: BrowseTableModel#20
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
-msgstr "以下のファイルはMixxか、別のアプリケーションで使用中のため削除できませんでした"
+msgstr "Mixxxもしくは他のアプリケーションで使用中のため、以下のファイルを削除できませんでした"
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
-msgstr "メタデータのアップデートができません"
+msgstr "メタデータを更新できませんでした"
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr "USB コントローラー"
+msgstr "USB コントローラ"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr "キャッチできない例外 ファイル: %2 の行: %1 : %3"
+msgstr "予期せぬ例外 ファイル: %2 行番号: %1 : %3"
 
 #: ControllerEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr "キャッチできない例外 渡されたコード: %2 の行: %1"
+msgstr "予期せぬ例外 渡されたコード: %2 行番号: %1"
 
 #: ControllerEngine#3
 msgid "Controller script error"
-msgstr "コントローラースクリプトエラー"
+msgstr "コントローラ スクリプトエラー"
 
 #: ControllerEngine#4
 msgid "A control you just used is not working properly."
-msgstr "使用されたコントローラが正常に動作していない"
+msgstr "直前に操作したコントロールは正常に動作していません。"
 
 #: ControllerEngine#5
 msgid ""
@@ -395,8 +395,8 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
-"<html>（スクリプトのコードは修正する必要があります。）<br>ここでは、次のことができます：<ul><li>このセッションのためにこのエラーを無視し"
-"ていますが、不安定な動作が発生する可能性があります</li><li>コントローラをリセットして回復しませんか？</li></ul></html>"
+"<html>（スクリプトのコードは修正する必要があります。）<br>現時点では、以下の選択が可能です。：<ul><li>このセッションの間はエラーを無視し"
+"ます。（動作が不安定になる可能性があります。）</li><li>コントローラをリセットすることで復旧するか試します。</li></ul></html>"
 
 #: ControllerMappingDlg#1
 msgctxt "ControllerMappingDlg#1"
@@ -412,7 +412,7 @@ msgstr "入力"
 msgid ""
 "The below box is under construction and will remain empty in this version of "
 "Mixxx."
-msgstr "下のボックスには現在建設中であり、それはMIXXXのこのバージョンでは空のままになります"
+msgstr "下のボックスは現在開発中です。このバージョンのMIXXXでは空欄になります。"
 
 #: ControllerMappingDlg#4
 msgid "Controls"
@@ -434,12 +434,12 @@ msgstr "学習ウィザード"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
-msgstr "全てクリア"
+msgstr "全て削除"
 
 #: ControllerMappingDlg#9
 msgctxt "ControllerMappingDlg#9"
 msgid "Output"
-msgstr "アウトプット"
+msgstr "出力"
 
 #: ControllerMappingDlg#10
 msgid "Outputs"
@@ -2109,7 +2109,7 @@ msgstr "フォーム3"
 
 #: DlgPrefShoutcastDlg#2
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "ライブ放送を有効にする"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -3396,15 +3396,15 @@ msgstr "新しいレコードボックスを作成"
 
 #: MixxxApp#52
 msgid "Ctrl+Shift+F"
-msgstr ""
+msgstr "Ctrl+Shift+F"
 
 #: MixxxApp#53
 msgid "Enable Vinyl Control &1"
-msgstr ""
+msgstr "Vinylコントロールを有効にする &1"
 
 #: MixxxApp#54
 msgid "Enable Vinyl Control &2"
-msgstr ""
+msgstr "Vinylコントロールを有効にする &2"
 
 #: MixxxApp#55
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
@@ -3440,7 +3440,7 @@ msgstr "このアプリケーションについて"
 
 #: MixxxApp#63
 msgid "A sampler is currently playing. Exit Mixxx?"
-msgstr ""
+msgstr "サンプラーは現在再生中です。MIXXXを終了しますか？"
 
 #: MixxxApp#64
 msgid "&File"
@@ -3632,11 +3632,11 @@ msgstr "プレイリストのエクスポート失敗"
 
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
-msgstr ""
+msgstr "ファイルパスにm3uプレイリストで使用できない文字が含まれています。\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "代わりにm3u8プレイリストをエクスポートしました。\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
@@ -6267,3 +6267,9 @@ msgstr ""
 #~ "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 #~ "Are you sure?"
 #~ msgstr "読み込まれたトラックのメタデータをリロードすると、急激な音量の変化を引き起こす可能性があります。本当にやりますか？"
+
+#~ msgid "Load Song (Player &1)..."
+#~ msgstr "トラックを読み込む (Player &1)..."
+
+#~ msgid "Load Song (Player &2)..."
+#~ msgstr "トラックを読み込む (Player &2)..."
