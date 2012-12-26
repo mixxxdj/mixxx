@@ -334,7 +334,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
                                          m_pVCManager);
     // Set up four decks for with the player manager
     for (unsigned int deck = 0; deck < 2; ++deck) {
-        //qDebug() << "Adding deck " << deck;
+        qDebug() << "Adding deck " << deck;
         // Add deck to the player manager
         Deck* pDeck = m_pPlayerManager->addDeck();
 #ifdef __VINYLCONTROL__
@@ -344,13 +344,13 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
     }
 
-    //qDebug() << "Adding Samplers";
+    qDebug() << "Adding Samplers";
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
-    //qDebug() << "All samplers and decks added";
+    qDebug() << "All samplers and decks added";
     ControlObject::sync();
 
 #ifdef __VINYLCONTROL__
