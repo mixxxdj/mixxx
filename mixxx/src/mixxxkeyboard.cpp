@@ -24,16 +24,12 @@
 #include "controlobject.h"
 #include "util/cmdlineargs.h"
 
-MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent)
-{
+MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent) {
     m_pKbdConfigObject = pKbdConfigObject;
     setObjectName(name);
 }
 
-MixxxKeyboard::~MixxxKeyboard()
-{
-   // TODO(XXX) ugly workaround to get no leak
-   delete m_pKbdConfigObject;
+MixxxKeyboard::~MixxxKeyboard() {
 }
 
 bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
