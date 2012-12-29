@@ -21,7 +21,6 @@
 #include <QObject>
 #include <QEvent>
 #include <QMutex>
-#include <QAtomicPointer>
 
 #include "configobject.h"
 #include "controlobjectthread.h"
@@ -137,8 +136,6 @@ protected:
     ConfigKey m_key;
 
 private:
-    void addToChangedList();
-
     // Whether to ignore set/add/sub()'s which would have no effect
     bool m_bIgnoreNops;
     // Whether to track value changes with the stats framework.
@@ -158,14 +155,15 @@ private:
     /** Mutex guarding access to the ControlObject hash **/
     static QMutex m_sqCOHashMutex;
     /** Mutex protecting access to the queues */
-    static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread;
+    static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread, m_sqQueueMutexChanges;
     /** Queue holding control changes from MIDI */
     static QQueue<QueueObjectMidi*> m_sqQueueMidi;
     /** Queues holding control changes from other application threads and from widgets */
     static QQueue<QueueObjectThread*> m_sqQueueThread;
 
-    ControlObject* m_changedControlsNext;
-    static QAtomicPointer<ControlObject> s_changedControls;
+    /** Queue holding ControlObjects that has changed, but not been syncronized with it's
+    * associated ControlObjectProxy objects. */
+    static QQueue<ControlObject*> m_sqQueueChanges;
 };
 
 
