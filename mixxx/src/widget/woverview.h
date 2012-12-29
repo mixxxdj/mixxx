@@ -84,7 +84,7 @@ private slots:
 
     }
 
-    const char* m_pGroup;
+    const QString m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;
