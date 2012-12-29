@@ -317,10 +317,10 @@ void VinylControlXwax::run()
                 iVCMode = reportedMode;
                 if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
                     bForceResync = true;
-               }
+            }
 
             //if we are out of error mode...
-               if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
+            if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
             {
                 vinylStatus->slotSet(VINYL_STATUS_OK);
             }
@@ -404,7 +404,7 @@ void VinylControlXwax::run()
                             qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
                             bTrackSelectMode = true;
                             togglePlayButton(FALSE);
-                               resetSteadyPitch(0.0f, 0.0f);
+                            resetSteadyPitch(0.0f, 0.0f);
                             controlScratch->slotSet(0.0f);
                         }
                         doTrackSelection(true, dVinylPitch, iPosition);

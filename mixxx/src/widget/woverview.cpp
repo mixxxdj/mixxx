@@ -264,7 +264,7 @@ bool WOverview::drawNextPixmapPart() {
         //waveform pixmap twice the height of the viewport to be scalable by total_gain
         //we keep full range waveform data to scale it on paint
         m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255, QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0));
+        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
     }
 
     const int analyserCompletion = (int)((float)(dataSize/2) * m_analyserProgress / 1000) * 2;
@@ -589,8 +589,8 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // Accept the enter event if the thing is a filepath and nothing's playing
     // in this deck or the settings allow to interrupt the playing deck.
     if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-        if (m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) {
+        if ((m_playControl->get() == 0.0 ||
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || !(m_pGroup=="[PreviewDeck1]")) {
             event->acceptProposedAction();
         } else {
             event->ignore();
