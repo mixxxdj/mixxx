@@ -256,11 +256,13 @@ int main(int argc, char * argv[])
     //LADSPALoader ladspaloader;
 #endif
 
-    // Check if one of the command line arguments is "--no-visuals"
-//    bool bVisuals = true;
-//    for (int i=0; i<argc; ++i)
-//        if(QString("--no-visuals")==argv[i])
-//            bVisuals = false;
+    // This is just a stupid test to make sure corefiles are being created
+    for (int i=0; i<argc; ++i) {
+        if(QString("--crash")==argv[i]) {
+            QString *crasher = NULL;
+            crasher->append("crashnow");
+        }
+    }
 
 
     // set up the plugin paths...
