@@ -85,7 +85,7 @@ void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
     // Clear out buffer and saved sample data
-    buffer_int_size = 0; 
+    buffer_int_size = 0;
     m_dNextSampleIndex = 0;
     m_fPrevSample[0] = 0;
     m_fPrevSample[1] = 0;
@@ -108,6 +108,7 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
                                          CSAMPLE* pBase, unsigned long iBaseLength)
 {
+    Q_UNUSED(playpos);
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
     int samples_read = 0;
@@ -172,6 +173,8 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
                                             CSAMPLE* pBase, unsigned long iBaseLength,
                                             int* samples_read)
 {
+    Q_UNUSED(pBase);
+    Q_UNUSED(iBaseLength);
 
     long unscaled_samples_needed;
     float rate_add_new = m_dBaseRate;
@@ -195,7 +198,9 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
 
     // We check for scratch condition in the public function, so this shouldn't
     // happen
-    Q_ASSERT(rate_add_new * rate_add_old >= 0);
+    if (rate_add_new * rate_add_old < 0) {
+        qDebug() << "ERROR: EBSL did not detect scratching correctly.";
+    }
 
     //special case -- no scaling needed!
     if (rate_add_old == 1.0 && rate_add_new == 1.0) {

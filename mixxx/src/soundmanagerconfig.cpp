@@ -191,7 +191,8 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     unsigned int framesPerBuffer = 1;
     double sampleRate = m_sampleRate; // need this to avoid int division
     // first, get to the framesPerBuffer value corresponding to latency index 1
-    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
+    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
+    }
     // then, keep going until we get to our desired latency index (if not 1)
     for (unsigned int latencyIndex = 1; latencyIndex < m_latency; ++latencyIndex) {
         framesPerBuffer <<= 1; // *= 2
@@ -335,7 +336,7 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
             m_sampleRate = sampleRates.first();
         } else {
             qWarning() << "got empty sample rate list from SoundManager, this is a bug";
-            Q_ASSERT(false);
+            m_sampleRate = kDefaultSampleRate;
         }
         m_latency = kDefaultLatency;
     }

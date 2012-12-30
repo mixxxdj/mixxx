@@ -35,8 +35,8 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
                                const QItemSelection& deselected);
     void selectAll();
     void analyze();
-    void trackAnalysisFinished(TrackPointer tio);
-    void trackAnalysisProgress(TrackPointer tio, int progress);
+    void trackAnalysisFinished(int size);
+    void trackAnalysisProgress(int progress);
     void showRecentSongs();
     void showAllSongs();
     void installEventFilter(QObject* pFilter);
@@ -57,6 +57,8 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
     WPrepareLibraryTableView* m_pPrepareLibraryTableView;
     PrepareLibraryTableModel* m_pPrepareLibraryTableModel;
     WPrepareCratesTableView* m_pPrepareCratesTableView;
+    int m_tracksInQueue;
+    int m_currentTrack;
 };
 
 #endif //DLGTRIAGE_H

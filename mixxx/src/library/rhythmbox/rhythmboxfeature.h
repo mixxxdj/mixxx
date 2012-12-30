@@ -13,9 +13,10 @@
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/treeitemmodel.h"
-#include "library/rhythmbox/rhythmboxtrackmodel.h"
-#include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/trackcollection.h"
+
+class BaseExternalTrackModel;
+class BaseExternalPlaylistModel;
 
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -27,11 +28,6 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QList<QUrl> urls);
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
-    bool dragMoveAccept(QUrl url);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
-
     TreeItemModel* getChildModel();
     /** processes the music collection **/
     TreeItem* importMusicCollection();
@@ -41,15 +37,14 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
-
-    void onLazyChildExpandation(const QModelIndex& index);
     void onTrackCollectionLoaded();
 
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
 
-    RhythmboxTrackModel* m_pRhythmboxTrackModel;
-    RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
+    BaseExternalTrackModel* m_pRhythmboxTrackModel;
+    BaseExternalPlaylistModel* m_pRhythmboxPlaylistModel;
+
     TrackCollection* m_pTrackCollection;
     //new DB object because of threads
     QSqlDatabase m_database;

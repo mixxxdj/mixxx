@@ -12,6 +12,7 @@
 #include "defs.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
@@ -19,6 +20,7 @@
 #include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
+#include "util/timer.h"
 
 ///////////////////////////////////////////
 
@@ -50,7 +52,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
         m_time(new QTime()),
-        m_lastFrameTime(0), 
+        m_lastFrameTime(0),
         m_actualFrameRate(0) {
 
     m_visualGain[All] = 1.5;
@@ -66,7 +68,19 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         // Disable waiting for vertical Sync
         // This can be enabled when using a single Threads for each QGLContext
         // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
+#if defined(__APPLE__)
+        // On OS X, syncing to vsync has good performance FPS-wise and
+        // eliminates tearing.
+        glFormat.setSwapInterval(1);
+#else
+        // Otherwise, turn VSync off because it could cause horrible FPS on
+        // Linux.
+        // TODO(XXX): Make this configurable.
+        // TOOD(XXX): What should we do on Windows?
         glFormat.setSwapInterval(0);
+#endif
+
+
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
@@ -207,7 +221,8 @@ void WaveformWidgetFactory::destroyWidgets() {
 void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
     // Do not hold the pointer to of timer listeners since they may be deleted
     connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(update()));
+            pWidget, SLOT(repaint()),
+            Qt::DirectConnection);
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDomElement& node) {
@@ -220,7 +235,6 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDo
 
     //Cast to widget done just after creation because it can't be perform in constructor (pure virtual)
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, viewer);
-    waveformWidget->castToQWidget();
     viewer->setWaveformWidget(waveformWidget);
     viewer->setup(node);
 
@@ -303,8 +317,6 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
         holder.m_waveformWidget = widget;
-        widget->castToQWidget();
-        //widget->hold();
         viewer->setWaveformWidget(widget);
         viewer->setup(holder.m_visualNodeCache);
         viewer->setZoom(previousZoom);
@@ -381,6 +393,9 @@ void WaveformWidgetFactory::refresh() {
     if (m_skipRender)
         return;
 
+    ScopedTimer t(QString("WaveformWidgetFactory::refresh() %1waveforms")
+                  .arg(m_waveformWidgetHolders.size()));
+
     for (unsigned int i = 0; i < m_waveformWidgetHolders.size(); i++)
         m_waveformWidgetHolders[i].m_waveformWidget->preRender();
 
@@ -417,60 +432,123 @@ WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
 void WaveformWidgetFactory::evaluateWidgets() {
     m_waveformWidgetHandles.clear();
     for (int type = 0; type < WaveformWidgetType::Count_WaveformwidgetType; type++) {
-        WaveformWidgetAbstract* widget = 0;
+        QString widgetName;
+        bool useOpenGl;
+        bool useOpenGLShaders;
+
         switch(type) {
-        case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveformWidget(); break;
-        case WaveformWidgetType::SoftwareSimpleWaveform : break; //TODO: (vrince)
-        case WaveformWidgetType::SoftwareWaveform : widget = new SoftwareWaveformWidget(); break;
-        case WaveformWidgetType::QtSimpleWaveform : widget = new QtSimpleWaveformWidget(); break;
-        case WaveformWidgetType::QtWaveform : widget = new QtWaveformWidget(); break;
-        case WaveformWidgetType::GLSimpleWaveform : widget = new GLSimpleWaveformWidget(); break;
-        case WaveformWidgetType::GLWaveform : widget = new GLWaveformWidget(); break;
-        case WaveformWidgetType::GLSLWaveform : widget = new GLSLWaveformWidget(); break;
+        case WaveformWidgetType::EmptyWaveform:
+            widgetName = EmptyWaveformWidget::getWaveformWidgetName();
+            useOpenGl = EmptyWaveformWidget::useOpenGl();
+            useOpenGLShaders = EmptyWaveformWidget::useOpenGLShaders();
+            break;
+        case WaveformWidgetType::SoftwareSimpleWaveform:
+            continue; // //TODO(vrince):
+        case WaveformWidgetType::SoftwareWaveform:
+            widgetName = SoftwareWaveformWidget::getWaveformWidgetName();
+            useOpenGl = SoftwareWaveformWidget::useOpenGl();
+            useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
+            break;
+        case WaveformWidgetType::HSVWaveform:
+            widgetName = HSVWaveformWidget::getWaveformWidgetName();
+            useOpenGl = HSVWaveformWidget::useOpenGl();
+            useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
+            break;
+        case WaveformWidgetType::QtSimpleWaveform:
+            widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtSimpleWaveformWidget::useOpenGl();
+            useOpenGLShaders = QtSimpleWaveformWidget::useOpenGLShaders();
+            break;
+        case WaveformWidgetType::QtWaveform:
+            widgetName = QtWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtWaveformWidget::useOpenGl();
+            useOpenGLShaders = QtWaveformWidget::useOpenGLShaders();
+            break;
+        case WaveformWidgetType::GLSimpleWaveform:
+            widgetName = GLSimpleWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLSimpleWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLSimpleWaveformWidget::useOpenGLShaders();
+            break;
+        case WaveformWidgetType::GLWaveform:
+            widgetName = GLWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLWaveformWidget::useOpenGLShaders();
+            break;
+        case WaveformWidgetType::GLSLWaveform:
+            widgetName = GLSLWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLSLWaveformWidget::useOpenGl();
+            useOpenGLShaders = GLSLWaveformWidget::useOpenGLShaders();
+            break;
         }
 
-        if (widget) {
-            QString widgetName = widget->getWaveformWidgetName();
-            if (widget->useOpenGLShaders()) {
-                widgetName += " " + tr("(GLSL)");
-            } else if (widget->useOpenGl()) {
-                widgetName += " " + tr("(GL)");
-            }
-
-            // add new handle for each available widget type
-            WaveformWidgetAbstractHandle handle;
-            handle.m_displayString = widgetName;
-            handle.m_type = (WaveformWidgetType::Type)type;
-
-            // NOTE: For the moment non active widget are not added to available handle
-            // but it could be useful to have them anyway but not selectable in the combo box
-            if ((widget->useOpenGl() && !isOpenGLAvailable()) ||
-                    (widget->useOpenGLShaders() && !isOpenGlShaderAvailable())) {
-                handle.m_active = false;
-                continue;
-            }
-            m_waveformWidgetHandles.push_back(handle);
+        if (useOpenGLShaders) {
+            widgetName += " " + tr("(GLSL)");
+        } else if (useOpenGl) {
+            widgetName += " " + tr("(GL)");
         }
-        delete widget;
+
+        // add new handle for each available widget type
+        WaveformWidgetAbstractHandle handle;
+        handle.m_displayString = widgetName;
+        handle.m_type = (WaveformWidgetType::Type)type;
+
+        // NOTE: For the moment non active widget are not added to available handle
+        // but it could be useful to have them anyway but not selectable in the combo box
+        if ((useOpenGl && !isOpenGLAvailable()) ||
+                (useOpenGLShaders && !isOpenGlShaderAvailable())) {
+            handle.m_active = false;
+            continue;
+        }
+        m_waveformWidgetHandles.push_back(handle);
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidgetType::Type type,
-                                                                    WWaveformViewer* viewer) {
+WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
+        WaveformWidgetType::Type type, WWaveformViewer* viewer) {
+    WaveformWidgetAbstract* widget = NULL;
     if (viewer) {
         switch(type) {
-        case WaveformWidgetType::EmptyWaveform : return new EmptyWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::SoftwareSimpleWaveform : return 0; //TODO: (vrince)
-        case WaveformWidgetType::SoftwareWaveform : return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::QtSimpleWaveform : return new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::QtWaveform : return new QtWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::GLSimpleWaveform : return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::GLWaveform : return new GLWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::GLSLWaveform : return new GLSLWaveformWidget(viewer->getGroup(), viewer);
-        default : return 0;
+        case WaveformWidgetType::SoftwareWaveform:
+            widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::HSVWaveform:
+            widget = new HSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtSimpleWaveform:
+            widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtWaveform:
+            widget = new QtWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLSimpleWaveform:
+            widget = new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLWaveform:
+            widget = new GLWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::GLSLWaveform:
+            widget = new GLSLWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        default:
+        //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
+        //case WaveformWidgetType::EmptyWaveform:
+            widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        }
+        widget->castToQWidget();
+        if (!widget->isValid()) {
+            qWarning() << "failed to init WafeformWidget" << type << "fall back to \"Empty\"";
+            delete widget;
+            widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
+            widget->castToQWidget();
+            if (!widget->isValid()) {
+                qWarning() << "failed to init EmptyWaveformWidget";
+                delete widget;
+                widget = NULL;
+            }
         }
     }
-    return 0;
+    return widget;
 }
 
 int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {

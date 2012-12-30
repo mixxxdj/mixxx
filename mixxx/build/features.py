@@ -21,26 +21,22 @@ class HSS1394(Feature):
     def add_options(self, build, vars):
         if build.platform_is_windows or build.platform_is_osx:
             vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 1)
-        else:
-            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        if build.platform_is_linux:
-            # TODO(XXX) Enable this when when FFADO back-end support is written into Mixxx
-            return
-            #have_ffado = conf.CheckLib('ffado', autoadd=False)
-            #if not have_ffado:
-            #    raise Exception('Could not find libffado.')
-        else:
+        if build.platform_is_windows or build.platform_is_osx:
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
-            if not build.msvcdebug or not conf.CheckLib(['libhss1394-debug', 'hss1394-debug', 'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']):
-                if not conf.CheckLib(['libhss1394', 'hss1394', 'libHSS1394_x64_Release', 'libHSS1394_x86_Release']):
-                    raise Exception('Did not find HSS1394 development library')
-                    return
+            libs = ['libhss1394', 'hss1394']
+            if build.platform_is_windows:
+                if build.msvcdebug:
+                    libs = ['libhss1394-debug', 'hss1394-debug', 'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']
+                else:
+                    libs = ['libhss1394', 'hss1394', 'libHSS1394_x64_Release', 'libHSS1394_x86_Release']
+            if not conf.CheckLib(libs):
+                raise Exception('Did not find HSS1394 development library')
 
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
@@ -52,7 +48,7 @@ class HSS1394(Feature):
                 'controllers/midi/hss1394enumerator.cpp']
 
 class HID(Feature):
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.7.0'
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-pre'
     def description(self):
         return "HID controller support"
 
@@ -98,8 +94,7 @@ class HID(Feature):
         if build.platform_is_windows:
             # Requires setupapi.lib which is included by the above check for
             # setupapi.
-            sources.append("#lib/hidapi-0.7.0/windows/hid.c")
-            return sources
+            sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
         elif build.platform_is_linux:
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
         elif build.platform_is_osx:
@@ -120,7 +115,8 @@ class Bulk(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('bulk', 'Set to 1 to enable USB Bulk controller support.', 1)
+        is_default = 1 if build.platform_is_linux else 0
+        vars.Add('bulk', 'Set to 1 to enable USB Bulk controller support.', is_default)
 
     def configure(self, build, conf):
         if not self.enabled(build):

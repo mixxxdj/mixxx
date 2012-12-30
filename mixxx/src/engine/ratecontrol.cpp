@@ -33,6 +33,8 @@ RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
     m_sGroup(_group),
+    m_bVinylControlEnabled(false),
+    m_bVinylControlScratching(false),
     m_ePbCurrent(0),
     m_ePbPressed(0),
     m_bTempStarted(false),
@@ -147,11 +149,11 @@ RateControl::RateControl(const char* _group,
     // Update Internal Settings
     // Set Pitchbend Mode
     m_eRateRampMode = (RateControl::RATERAMP_MODE)
-        m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt();
+            getConfig()->getValueString(ConfigKey("[Controls]","RateRamp")).toInt();
 
     // Set the Sensitivity
     m_iRateRampSensitivity =
-        m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+        getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
      
     // the actual rate of playback as a multiple.  (ie 1.0 for native speed of file)
     m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
@@ -657,6 +659,9 @@ double RateControl::process(const double rate,
                             const double totalSamples,
                             const int bufferSamples)
 {
+    Q_UNUSED(rate);
+    Q_UNUSED(currentSample);
+    Q_UNUSED(totalSamples);
     /*
      * Code to handle temporary rate change buttons.
      *
@@ -800,13 +805,11 @@ void RateControl::resetRateTemp(void)
     setRateTemp(0.0);
 }
 
-void RateControl::slotControlVinyl(double toggle)
-{
+void RateControl::slotControlVinyl(double toggle) {
     m_bVinylControlEnabled = (bool)toggle;
 }
 
-void RateControl::slotControlVinylScratching(double toggle)
-{
+void RateControl::slotControlVinylScratching(double toggle) {
     m_bVinylControlScratching = (bool)toggle;
 }
 

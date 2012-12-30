@@ -36,6 +36,7 @@ signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
+    void valueReset();
 
 public slots:
     void onTrackLoaded( TrackPointer track);
@@ -66,7 +67,6 @@ private:
     ControlObjectThreadMain* m_pZoom;
     ControlObjectThreadMain* m_pScratchEnable;
     ControlObjectThreadMain* m_pScratch;
-    ControlObjectThreadMain* m_pTrackSamples;
     ControlObjectThreadMain* m_pTrackSampleRate;
     ControlObjectThreadMain* m_pRate;
     ControlObjectThreadMain* m_pRateRange;

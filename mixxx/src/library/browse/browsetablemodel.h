@@ -50,11 +50,11 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     virtual const QString currentSearch() const;
     virtual bool isColumnInternal(int);
     virtual void moveTrack(const QModelIndex&, const QModelIndex&);
-    virtual QItemDelegate* delegateForColumn(const int);
     virtual bool isColumnHiddenByDefault(int column);
     virtual const QList<int>& searchColumns() const;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
   public slots:
     void slotClear(BrowseTableModel*);

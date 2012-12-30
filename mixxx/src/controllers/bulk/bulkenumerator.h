@@ -10,6 +10,8 @@
 
 #include "controllers/controllerenumerator.h"
 
+struct libusb_context;
+
 class BulkEnumerator : public ControllerEnumerator {
   public:
     BulkEnumerator();
@@ -19,6 +21,7 @@ class BulkEnumerator : public ControllerEnumerator {
 
   private:
     QList<Controller*> m_devices;
+    libusb_context* m_context;
 };
 
 #endif

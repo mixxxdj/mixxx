@@ -17,9 +17,7 @@ Waveform::Waveform(const QByteArray data)
           m_textureStride(1024),
           m_completion(-1),
           m_mutex(new QMutex()) {
-    if (!data.isNull()) {
-        readByteArray(data);
-    }
+    readByteArray(data);
 }
 
 Waveform::~Waveform() {
@@ -84,6 +82,10 @@ QByteArray Waveform::toByteArray() const {
 }
 
 void Waveform::readByteArray(const QByteArray data) {
+    if (data.isNull()) {
+        return;
+    }
+
     io::Waveform waveform;
 
     if (!waveform.ParseFromArray(data.constData(), data.size())) {
@@ -159,16 +161,17 @@ void Waveform::reset() {
     m_bDirty = true;
 }
 
-void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
+void Waveform::computeBestVisualSampleRate(int audioSampleRate, double desiredVisualSampleRate) {
     m_audioSamplesPerVisualSample = std::floor((double)audioSampleRate / desiredVisualSampleRate);
-    const double actualVisualSamplingRate = (double)audioSampleRate / (double)(m_audioSamplesPerVisualSample);
-
+    const double actualVisualSamplingRate = (double)audioSampleRate /
+            (double)(m_audioSamplesPerVisualSample);
     m_visualSampleRate = actualVisualSamplingRate;
     m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
 }
 
 void Waveform::allocateForAudioSamples(int audioSamples) {
-    double actualSize = audioSamples / m_audioSamplesPerVisualSample;
+    double actualSize = m_audioSamplesPerVisualSample > 0 ?
+            audioSamples / m_audioSamplesPerVisualSample : 0;
     int numberOfVisualSamples = static_cast<int>(actualSize) + 1;
     numberOfVisualSamples += numberOfVisualSamples%2;
     assign(numberOfVisualSamples, 0);

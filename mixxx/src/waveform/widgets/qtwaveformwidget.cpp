@@ -1,3 +1,7 @@
+#include <QPainter>
+#include <QGLContext>
+#include <QtDebug>
+
 #include "qtwaveformwidget.h"
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -10,11 +14,8 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "sharedglcontext.h"
 
-#include <QPainter>
-#include <QGLContext>
-
 QtWaveformWidget::QtWaveformWidget( const char* group, QWidget* parent)
-        : QGLWidget(SharedGLContext::getContext(), parent),
+        : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -29,10 +30,13 @@ QtWaveformWidget::QtWaveformWidget( const char* group, QWidget* parent)
 
     setAutoBufferSwap(false);
 
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
-    init();
+    m_initSuccess = init();
 }
 
 QtWaveformWidget::~QtWaveformWidget() {

@@ -49,6 +49,9 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
                                        CSAMPLE* pBase,
                                        unsigned long iBaseLength)
 {
+    Q_UNUSED(playpos);
+    Q_UNUSED(pBase);
+    Q_UNUSED(iBaseLength);
     new_playpos = 0.0;
     if (m_dBaseRate * m_dTempo == 0.0f) {
         memset(buffer, 0, sizeof(CSAMPLE) * buf_size);

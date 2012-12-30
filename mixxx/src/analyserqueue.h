@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QQueue>
 #include <QWaitCondition>
+#include <QSemaphore>
 
 #include "configobject.h"
 #include "analyser.h"
@@ -19,31 +20,43 @@ class AnalyserQueue : public QThread {
     AnalyserQueue();
     virtual ~AnalyserQueue();
     void stop();
-    int numQueuedTracks();
+    void queueAnalyseTrack(TrackPointer tio);
 
     static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createAnalyserQueue(QList<Analyser*> analysers);
 
   public slots:
-    void queueAnalyseTrack(TrackPointer tio);
+    void slotAnalyseTrack(TrackPointer tio);
+    void slotUpdateProgress();
 
   signals:
-    void trackProgress(TrackPointer pTrack,int progress);
-    void trackFinished(TrackPointer pTrack);
+    void trackProgress(int progress);
+    void trackFinished(int size);
+    // Signals from AnalyserQueue Thread:
     void queueEmpty();
+    void updateProgress();
 
   protected:
     void run();
 
   private:
+
+    struct progress_info {
+        TrackPointer current_track;
+        int track_progress; // in 0.1 %
+        int queue_size;
+        QSemaphore sema;
+    };
+
     void addAnalyser(Analyser* an);
 
     QList<Analyser*> m_aq;
 
-    bool isLoadedTrackWaiting();
+    bool isLoadedTrackWaiting(TrackPointer tio);
     TrackPointer dequeueNextBlocking();
     bool doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
+    void emitUpdateProgress(TrackPointer tio, int progress);
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
@@ -52,6 +65,8 @@ class AnalyserQueue : public QThread {
     QQueue<TrackPointer> m_tioq;
     QMutex m_qm;
     QWaitCondition m_qwait;
+    struct progress_info m_progressInfo;
+    int m_queue_size;
 };
 
 #endif

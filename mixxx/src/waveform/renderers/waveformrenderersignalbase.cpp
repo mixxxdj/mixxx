@@ -41,7 +41,7 @@ void WaveformRendererSignalBase::deleteControls() {
         delete m_highKillControlObject;
 }
 
-void WaveformRendererSignalBase::init() {
+bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
@@ -58,7 +58,7 @@ void WaveformRendererSignalBase::init() {
     m_highKillControlObject = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHighKill")));
 
-    onInit();
+    return onInit();
 }
 
 void WaveformRendererSignalBase::setup(const QDomNode &node) {
@@ -71,13 +71,9 @@ void WaveformRendererSignalBase::setup(const QDomNode &node) {
         m_alignment = Qt::AlignCenter;
     }
 
-    m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
-    m_axesColor = WSkinColor::getCorrectColor(m_axesColor);
-
-    if( !m_axesColor.isValid())
-        m_axesColor = QColor(245,245,245,128);
-
     m_colors.setup(node);
+    m_axesColor = m_colors.getAxesColor();
+
 
     onSetup(node);
 }

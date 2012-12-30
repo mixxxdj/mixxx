@@ -24,8 +24,8 @@ public:
     explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
-    void init();
-    virtual void onInit() {}
+    bool init();
+    virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node);
     void onPreRender();
@@ -39,9 +39,6 @@ public:
 
     void setZoom(int zoom);
 
-    virtual void updateVisualSamplingPerPixel();
-    virtual void updateAudioSamplingPerPixel();
-
     double getVisualSamplePerPixel() const;
     double getAudioSamplePerPixel() const;
 
@@ -49,11 +46,12 @@ public:
     //sample position according to the current visual resampling
     //this make mark and signal deterministic
     void regulateVisualSample(int& sampleIndex) const;
-    void regulateAudioSample(int& sampleIndex) const;
 
     //this "regulate" against visual sampling to make the position in widget
     //stable and deterministic
+    // Transform sample index to pixel in track.
     double transformSampleIndexInRendererWorld(int sampleIndex) const;
+    // Transform position (percentage of track) to pixel in track.
     double transformPositionInRendererWorld(double position) const;
 
     double getPlayPos() const { return m_playPos;}

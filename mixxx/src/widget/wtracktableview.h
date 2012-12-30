@@ -23,7 +23,7 @@ class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
     WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-                    TrackCollection* pTrackCollection);
+                    TrackCollection* pTrackCollection, bool sorting = true);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
     void onSearchStarting();
@@ -33,7 +33,6 @@ class WTrackTableView : public WLibraryTableView {
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
-    void disableSorting();
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -89,6 +88,7 @@ class WTrackTableView : public WLibraryTableView {
 
     ControlObjectThreadMain* m_pNumSamplers;
     ControlObjectThreadMain* m_pNumDecks;
+    ControlObjectThreadMain* m_pNumPreviewDecks;
 
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
@@ -96,6 +96,9 @@ class WTrackTableView : public WLibraryTableView {
 
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
+
+    // Load Track to PreviewDeck
+    QAction* m_pAddToPreviewDeck;
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;
@@ -120,6 +123,8 @@ class WTrackTableView : public WLibraryTableView {
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
+
+    bool m_sorting;
 };
 
 #endif

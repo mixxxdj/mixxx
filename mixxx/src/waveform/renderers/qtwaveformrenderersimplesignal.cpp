@@ -17,10 +17,8 @@ QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal( WaveformWidgetRe
 QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal(){
 }
 
-void QtWaveformRendererSimpleSignal::onInit(){
-}
-
 void QtWaveformRendererSimpleSignal::onSetup(const QDomNode &node){
+    Q_UNUSED(node);
     QColor signalColor = m_colors.getSignalColor();
     signalColor.setAlphaF(0.8);
 
@@ -221,4 +219,3 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 void QtWaveformRendererSimpleSignal::onResize() {
     m_polygon.resize(2*m_waveformRenderer->getWidth()+2);
 }
-

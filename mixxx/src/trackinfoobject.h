@@ -18,6 +18,7 @@
 #ifndef TRACKINFOOBJECT_H
 #define TRACKINFOOBJECT_H
 
+#include <QAtomicInt>
 #include <QList>
 #include <QDateTime>
 #include <QObject>
@@ -55,7 +56,7 @@ public:
     TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
     TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
-    // Creates a new track given information from the xml file. 
+    // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
@@ -209,12 +210,14 @@ public:
     void setURL(QString url);
 
     Waveform* getWaveform();
-    const Waveform* getWaveform() const;
-    void setWaveform(Waveform* pWaveform);
+    void waveformNew();
 
     Waveform* getWaveformSummary();
     const Waveform* getWaveformSummary() const;
-    void setWaveformSummary(Waveform* pWaveformSummary);
+    void waveformSummaryNew();
+
+    void setAnalyserProgress(int progress);
+    int getAnalyserProgress() const;
 
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
@@ -254,6 +257,7 @@ public:
 signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
+    void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
@@ -372,8 +376,10 @@ private:
     BeatsPointer m_pBeats;
 
     //Visual waveform data
-    Waveform* m_waveform;
-    Waveform* m_waveformSummary;
+    Waveform* const m_waveform;
+    Waveform* const m_waveformSummary;
+
+    QAtomicInt m_analyserProgress; // in 0.1%
 
     friend class TrackDAO;
 };

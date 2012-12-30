@@ -35,26 +35,26 @@
 #include "enginesync.h"
 #include "engine/syncworker.h"
 #include "sampleutil.h"
+#include "util/timer.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
 
-
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
                            bool bEnableSidechain) {
-
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
     m_pSyncWorker = new SyncWorker(m_pWorkerScheduler);
 
     // Master sample rate
-    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"));
+    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
     m_pMasterSampleRate->set(44100.);
 
     // Latency control
-    m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"));
+    m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"), true, true);
+    m_pMasterUnderflowCount = new ControlObject(ConfigKey(group, "underflow_count"), true, true);
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
@@ -114,13 +114,15 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                 this, SIGNAL(bytesRecorded(int)));
     }
 
-    //X-Fader Setup
+    // X-Fader Setup
     xFaderMode = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
     xFaderCurve = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
     xFaderCalibration = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
+    xFaderReverse = new ControlPotmeter(
+        ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
 }
 
 EngineMaster::~EngineMaster()
@@ -136,6 +138,7 @@ EngineMaster::~EngineMaster()
     delete head_clipping;
     delete sidechain;
 
+    delete xFaderReverse;
     delete xFaderCalibration;
     delete xFaderCurve;
     delete xFaderMode;
@@ -143,6 +146,7 @@ EngineMaster::~EngineMaster()
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterRate;
+    delete m_pMasterUnderflowCount;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
@@ -217,6 +221,8 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
             pChannel7 = m_channels[i];
         }
     }
+
+    ScopedTimer t(QString("EngineMaster::mixChannels_%1active").arg(totalActive));
 
     if (totalActive == 0) {
         SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
@@ -342,8 +348,14 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
     }
 }
 
-void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
-{
+void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
+    static bool haveSetName = false;
+    if (!haveSetName) {
+        QThread::currentThread()->setObjectName("Engine");
+        haveSetName = true;
+    }
+    ScopedTimer t("EngineMaster::process");
+
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
 
@@ -369,7 +381,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     
     //find the Sync Master and process it first
     //then process all the slaves (and skip the master)
-    
+
+    Timer timer("EngineMaster::process channels");
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
     for (unsigned int channel_number = 0;
@@ -439,6 +452,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
         }
     }
+    timer.elapsed(true);
 
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
@@ -449,7 +463,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     EngineXfader::getXfadeGains(c1_gain, c2_gain,
                                 crossfader->get(), xFaderCurve->get(),
                                 xFaderCalibration->get(),
-                                xFaderMode->get()==MIXXX_XFADER_CONSTPWR);
+                                xFaderMode->get()==MIXXX_XFADER_CONSTPWR,
+                                xFaderReverse->get()==1.0);
 
     // Now set the gains for overall volume and the left, center, right gains.
     m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);

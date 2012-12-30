@@ -18,6 +18,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 #include <stdio.h> // currently used for writing to stdout
+#include <signal.h>
 
 #ifdef __WINDOWS__
     #include <windows.h>
@@ -40,7 +41,8 @@
 #define TIMEOUT 10
 
 EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
-        : m_pMetaData(),
+        : m_pTextCodec(NULL),
+          m_pMetaData(),
           m_pShout(NULL),
           m_pShoutMetaData(NULL),
           m_iMetaDataLife(0),
@@ -62,6 +64,13 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false) {
+
+#ifndef __WINDOWS__
+    // Ignore SIGPIPE signals that we get when the remote streaming server
+    // disconnects.
+    signal(SIGPIPE, SIG_IGN);
+#endif
+
     m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
         ConfigKey("[Shoutcast]","update_from_prefs"));
@@ -137,6 +146,13 @@ bool EngineShoutcast::isConnected() {
     return false;
 }
 
+QByteArray EngineShoutcast::encodeString(const QString& string) {
+    if (m_pTextCodec) {
+        return m_pTextCodec->fromUnicode(string);
+    }
+    return string.toLatin1();
+}
+
 void EngineShoutcast::updateFromPreferences()
 {
     QMutexLocker locker(&m_shoutMutex);
@@ -150,25 +166,58 @@ void EngineShoutcast::updateFromPreferences()
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
 
-    //Convert a bunch of QStrings to QByteArrays so we can get regular C char* strings to pass to libshout.
-    QByteArray baHost       = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"host")).toLatin1();
-    QByteArray baServerType = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"servertype")).toLatin1();
-    QByteArray baPort       = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"port")).toLatin1();
-    QByteArray baMountPoint = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"mountpoint")).toLatin1();
-    QByteArray baLogin      = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"login")).toLatin1();
-    QByteArray baPassword   = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"password")).toLatin1();
-    QByteArray baStreamName = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_name")).toLatin1();
-    QByteArray baStreamWebsite = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_website")).toLatin1();
-    QByteArray baStreamDesc = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_desc")).toLatin1();
-    QByteArray baStreamGenre = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre")).toLatin1();
-    QByteArray baStreamPublic = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toLatin1();
-    QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
+    // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
+    // strings to pass to libshout.
 
-    QByteArray baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
+    QString codec = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
+    QByteArray baCodec = codec.toLatin1();
+    m_pTextCodec = QTextCodec::codecForName(baCodec);
+    if (!m_pTextCodec) {
+        qDebug() << "Couldn't find shoutcast metadata codec for codec:" << codec
+                 << " defaulting to ISO-8859-1.";
+    }
 
-    m_custom_metadata = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt();
-    m_baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title")).toLatin1();
-    m_baCustom_artist = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist")).toLatin1();
+    // Indicates our metadata is in the provided charset.
+    shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
+
+    // Host, server type, port, mountpoint, login, password should be latin1.
+    QByteArray baHost = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "host")).toLatin1();
+    QByteArray baServerType = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "servertype")).toLatin1();
+    QByteArray baPort = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "port")).toLatin1();
+    QByteArray baMountPoint = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint")).toLatin1();
+    QByteArray baLogin = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "login")).toLatin1();
+    QByteArray baPassword = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "password")).toLatin1();
+    QByteArray baFormat = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "format")).toLatin1();
+    QByteArray baBitrate = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "bitrate")).toLatin1();
+
+    // Encode metadata like stream name, website, desc, genre, title/author with
+    // the chosen TextCodec.
+    QByteArray baStreamName = encodeString(m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "stream_name")));
+    QByteArray baStreamWebsite = encodeString(m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "stream_website")));
+    QByteArray baStreamDesc = encodeString(m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
+    QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
+    QByteArray baStreamPublic = encodeString(m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
+
+    m_custom_metadata = (bool)m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
+    QString title = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
+    QString artist = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
+    m_baCustomSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
 
     int format;
     int protocol;
@@ -178,6 +227,7 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
+    // WTF? Why SHOUT_PROTOCOL_HTTP and not.. the chosen protocol?
     if (shout_set_protocol(m_pShout, SHOUT_PROTOCOL_HTTP) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
         return;
@@ -537,26 +587,17 @@ void EngineShoutcast::updateMetaData() {
     //If we use MP3 streaming and want dynamic metadata changes
     if (!m_custom_metadata && m_format_is_mp3) {
         if (m_pMetaData != NULL) {
-            // convert QStrings to char*s
-            QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
-            QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
-
-            if (baArtist.isEmpty())
-                baSong = baTitle;
-            else
-                baSong = baArtist + " - " + baTitle;
-
-            /** Update metadata */
+            QString artist = m_pMetaData->getArtist();
+            QString title = m_pMetaData->getTitle();
+            QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
             shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             shout_set_metadata(m_pShout, m_pShoutMetaData);
         }
     } else {
         //Otherwise we might use static metadata
         /** If we use static metadata, we only need to call the following line once **/
-        if(m_custom_metadata && !m_firstCall){
-            baSong = m_baCustom_artist + " - " + m_baCustom_title;
-            /** Update metadata */
-            shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+        if (m_custom_metadata && !m_firstCall) {
+            shout_metadata_add(m_pShoutMetaData, "song",  m_baCustomSong.constData());
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }

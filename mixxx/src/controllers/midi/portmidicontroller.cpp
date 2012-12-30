@@ -113,28 +113,32 @@ int PortMidiController::close() {
     stopEngine();
     MidiController::close();
 
+    int result = 0;
+
     if (m_pInputStream) {
         PmError err = Pm_Close(m_pInputStream);
+        m_pInputStream = NULL;
         if (err != pmNoError) {
             qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
-            return -1;
+            result = -1;
         }
     }
 
     if (m_pOutputStream) {
         PmError err = Pm_Close(m_pOutputStream);
+        m_pOutputStream = NULL;
         if (err != pmNoError) {
             qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
-            return -1;
+            result = -1;
         }
     }
 
     setOpen(false);
-    return 0;
+    return result;
 }
 
 bool PortMidiController::poll() {
-    // Poll the controller for new data, if it's an input device
+    // Poll the controller for new data if it's an input device
     if (!m_pInputStream)
         return false;
 

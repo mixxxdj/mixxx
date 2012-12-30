@@ -17,7 +17,6 @@
 #include "library/dao/trackdao.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 const QString kQuickLinksSeparator = "-+-";
@@ -151,32 +150,8 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-bool BrowseFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool BrowseFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool BrowseFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
-void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget,
+void BrowseFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
@@ -198,10 +173,6 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
              << item->dataPath();
     m_browseModel.setPath(item->dataPath().toString());
     emit(showTrackModel(&m_proxyModel));
-}
-
-void BrowseFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -276,7 +247,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
                 item);
             folders << driveLetter;
         }
-    } else {  // we assume that the path refers to a folder in the file system
+    } else {
+        // we assume that the path refers to a folder in the file system
         // populate childs
         QDir dir(path);
         QFileInfoList all = dir.entryInfoList(
@@ -294,7 +266,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
             // the models takes ownership of them and ensures their deletion
             TreeItem* folder = new TreeItem(
                 one.fileName(),
-                one.absoluteFilePath() +"/",
+                one.absoluteFilePath() + "/",
                 this, item);
             folders << folder;
         }
@@ -303,7 +275,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
     // has no subfolders
     if (!folders.isEmpty()) {
-        m_childModel.insertRows(folders, 0, folders.size() , index);
+        m_childModel.insertRows(folders, 0, folders.size(), index);
     }
 }
 
@@ -356,7 +328,7 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     result << mixxx_music_dir+"/";
 
     if (mixxx_music_dir != os_music_folder_dir) {
-        result << os_music_folder_dir;
+        result << os_music_folder_dir + "/";
     }
 
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it

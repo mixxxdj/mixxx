@@ -48,7 +48,7 @@ public:
     void slotReset();
 
   private:
-    void updateControlObject();
+    virtual void updateControlObject(double v);
 };
 
 #endif

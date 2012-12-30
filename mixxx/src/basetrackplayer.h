@@ -4,13 +4,13 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "baseplayer.h"
-#include "analyserqueue.h"
 #include "engine/enginechannel.h"
 
 class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlObjectThreadMain;
+class AnalyserQueue;
 
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
@@ -20,7 +20,9 @@ class BaseTrackPlayer : public BasePlayer {
                     EngineMaster* pMixingEngine,
                     EngineChannel::ChannelOrientation defaultOrientation,
                     AnalyserQueue* pAnalyserQueue,
-                    QString group);
+                    QString group,
+                    bool defaultMaster,
+                    bool defaultHeadphones);
     virtual ~BaseTrackPlayer();
 
     AnalyserQueue* getAnalyserQueue() const;
@@ -31,15 +33,18 @@ class BaseTrackPlayer : public BasePlayer {
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
+    void slotSetReplayGain(double replayGain);
 
   signals:
     void loadTrack(TrackPointer pTrack);
+    void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
+    // TODO(XXX) remove, unused.
     AnalyserQueue* m_pAnalyserQueue;
 
     // Waveform display related controls
@@ -53,6 +58,7 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
+    ControlObjectThreadMain* m_pPlay;
 };
 
 

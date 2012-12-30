@@ -53,6 +53,9 @@ class BpmControl : public EngineControl {
     bool syncTempo();
     bool syncPhase();
 
+    // ControlObjects that come from PlayerManager
+    ControlObject* m_pNumDecks;
+
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
     ControlObject* m_pQuantize;
@@ -66,6 +69,11 @@ class BpmControl : public EngineControl {
     double m_dSyncAdjustment;
     bool m_bUserTweakingSync;
     double m_dUserOffset;
+
+    // ControlObjects that come from LoopingControl
+    ControlObject* m_pLoopEnabled;
+    ControlObject* m_pLoopStartPosition;
+    ControlObject* m_pLoopEndPosition;
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;

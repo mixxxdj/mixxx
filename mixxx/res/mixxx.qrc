@@ -34,6 +34,11 @@
         <file>images/library/ic_library_recordings.png</file>
         <file>images/library/ic_library_rhythmbox.png</file>
         <file>images/library/ic_library_traktor.png</file>
+        <file>images/library/ic_library_preview_play.png</file>
+        <file>images/library/ic_library_preview_pause.png</file>
+        <file>shaders/computemaxsignal.frag</file>
+        <file>shaders/filteredsignal.frag</file>
+        <file>shaders/passthrough.vert</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_ast.qm</file>
         <file>translations/mixxx_bg.qm</file>
