@@ -148,8 +148,6 @@ private:
     /** Mutex for the proxy list */
     QMutex m_qProxyListMutex;
 
-
-
     /** Hash of ControlObject instantiations */
     static QHash<ConfigKey,ControlObject*> m_sqCOHash;
     /** Mutex guarding access to the ControlObject hash **/
@@ -160,9 +158,8 @@ private:
     static QQueue<QueueObjectMidi*> m_sqQueueMidi;
     /** Queues holding control changes from other application threads and from widgets */
     static QQueue<QueueObjectThread*> m_sqQueueThread;
-
     /** Queue holding ControlObjects that has changed, but not been syncronized with it's
-    * associated ControlObjectProxy objects. */
+     * associated ControlObjectProxy objects. */
     static QQueue<ControlObject*> m_sqQueueChanges;
 };
 

@@ -88,6 +88,7 @@ ControlObject::~ControlObject() {
     }
     m_qProxyListMutex.unlock();
 
+
     m_sqQueueMutexThread.lock();
     QMutableListIterator<QueueObjectThread*> tit(m_sqQueueThread);
     while (tit.hasNext()) {
