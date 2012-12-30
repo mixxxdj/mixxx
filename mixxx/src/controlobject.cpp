@@ -369,9 +369,8 @@ void ControlObject::sync() {
     // Update app threads (ControlObjectThread derived objects) with changes in
     // the corresponding ControlObjects. These updates should only occour if no
     // changes has been in the object from widgets, midi or application threads.
-    {
+    if (m_sqQueueMutexChanges.tryLock()) {
         ScopedTimer t("ControlObject::sync qQueueChanges");
-        m_sqQueueMutexChanges.lock();
         QSet<ControlObject*> setChanges = QSet<ControlObject*>::fromList(m_sqQueueChanges);
         Stat::track("ControlObject::sync qQueueChanges dupes", Stat::UNSPECIFIED,
                     Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::MIN | Stat::MAX,
