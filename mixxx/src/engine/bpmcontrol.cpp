@@ -24,8 +24,8 @@ BpmControl::BpmControl(const char* _group,
         m_dSyncAdjustment(0.0),
         m_bUserTweakingSync(false),
         m_dUserOffset(0.0),
-        m_sGroup(_group),
-        m_tapFilter(this, filterLength, maxInterval) {
+        m_tapFilter(this, filterLength, maxInterval),
+        m_sGroup(_group) {
     m_pNumDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
 
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
@@ -205,15 +205,13 @@ void BpmControl::slotControlPlay(double v)
 void BpmControl::slotControlBeatSyncPhase(double v) {
     if (!v)
         return;
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-    syncPhase(pOtherEngineBuffer);
+    syncPhase();
 }
 
 void BpmControl::slotControlBeatSyncTempo(double v) {
     if (!v)
         return;
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-    syncTempo(pOtherEngineBuffer);
+    syncTempo();
 }
 
 void BpmControl::slotControlBeatSync(double v) {
@@ -222,9 +220,8 @@ void BpmControl::slotControlBeatSync(double v) {
 
     // If the player is playing, and adjusting its tempo succeeded, adjust its
     // phase so that it plays in sync.
-    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-    if (syncTempo(pOtherEngineBuffer) && m_pPlayButton->get() > 0) {
-        syncPhase(pOtherEngineBuffer);
+    if (syncTempo() && m_pPlayButton->get() > 0) {
+        syncPhase();
     }
 }
 
@@ -248,15 +245,14 @@ void BpmControl::slotSyncSlaveChanged(double state)
     }
 }
 
-
 bool BpmControl::syncTempo() {
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
 
-    if(!pOtherEngineBuffer)
+    if(!pOtherEngineBuffer) {
         return false;
     }
 
-    double fThisBpm  = m_pEngineBpm->get();
+    double fThisBpm = m_pEngineBpm->get();
     double fThisFileBpm = m_pFileBpm->get();
 
     double fOtherBpm = pOtherEngineBuffer->getBpm();
@@ -371,10 +367,7 @@ EngineBuffer* BpmControl::pickSyncTarget() {
     }
     // No playing decks have a BPM. Go with the first deck that was stopped but
     // had a BPM.
-    if (decks.length() > 0) {
-        return decks.first();
-    }
-    return NULL;
+    return pFirstNonplayingDeck;
 }
 
 void BpmControl::userTweakingSync(bool tweakActive)

@@ -593,7 +593,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         
         if (!paused) {
             rate += m_pBpmControl->getSyncAdjustment();
-
+        }
         //qDebug() << "rate" << rate << " paused" << paused;
 
         // Update the slipped position
