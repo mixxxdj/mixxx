@@ -371,36 +371,32 @@ void ControlObject::sync() {
     // Update app threads (ControlObjectThread derived objects) with changes in
     // the corresponding ControlObjects. These updates should only occour if no
     // changes has been in the object from widgets, midi or application threads.
-    {
+    if (m_sqQueueMutexChanges.tryLock()) {
         ScopedTimer t("ControlObject::sync qQueueChanges");
-        
-        if (m_sqQueueMutexChanges.tryLock())
-        {
-            QSet<ControlObject*> setChanges = QSet<ControlObject*>::fromList(m_sqQueueChanges);
-            Stat::track("ControlObject::sync qQueueChanges dupes", Stat::UNSPECIFIED,
-                        Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::MIN | Stat::MAX,
-                        m_sqQueueChanges.size() - setChanges.size());
-            m_sqQueueChanges.clear();
+        QSet<ControlObject*> setChanges = QSet<ControlObject*>::fromList(m_sqQueueChanges);
+        Stat::track("ControlObject::sync qQueueChanges dupes", Stat::UNSPECIFIED,
+                    Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::MIN | Stat::MAX,
+                    m_sqQueueChanges.size() - setChanges.size());
+        m_sqQueueChanges.clear();
+        m_sqQueueMutexChanges.unlock();
+
+        QList<ControlObject*> failedUpdates;
+        for (QSet<ControlObject*>::iterator it = setChanges.begin();
+             it != setChanges.end(); ++it) {
+            ControlObject* obj = *it;
+            // If update is not successful, enqueue again
+            if (!obj->updateProxies()) {
+                failedUpdates.push_back(obj);
+                Stat::track("ControlObject::sync qQueueChanges failed CO update",
+                            Stat::UNSPECIFIED, Stat::COUNT | Stat::SUM | Stat::AVERAGE, 1.0);
+
+            }
+        }
+
+        if (failedUpdates.size() > 0) {
+            m_sqQueueMutexChanges.lock();
+            m_sqQueueChanges.append(failedUpdates);
             m_sqQueueMutexChanges.unlock();
-
-            QList<ControlObject*> failedUpdates;
-            for (QSet<ControlObject*>::iterator it = setChanges.begin();
-                 it != setChanges.end(); ++it) {
-                ControlObject* obj = *it;
-                // If update is not successful, enqueue again
-                if (!obj->updateProxies()) {
-                    failedUpdates.push_back(obj);
-                    Stat::track("ControlObject::sync qQueueChanges failed CO update",
-                                Stat::UNSPECIFIED, Stat::COUNT | Stat::SUM | Stat::AVERAGE, 1.0);
-
-                }
-            }
-
-            if (failedUpdates.size() > 0) {
-                m_sqQueueMutexChanges.lock();
-                m_sqQueueChanges.append(failedUpdates);
-                m_sqQueueMutexChanges.unlock();
-            }
         }
     }
 }
