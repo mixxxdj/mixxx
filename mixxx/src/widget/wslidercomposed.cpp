@@ -26,17 +26,15 @@
 #include "defs.h"
 #include "wpixmapstore.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent)
-    : WAbstractControl(parent) {
-    m_pSlider = 0;
-    m_pHandle = 0;
-    m_bHorizontal = false;
-    m_bEventWhileDrag = true;
-    m_bDrag = false;
-
-    // Set default values
-    m_iSliderLength=0;
-    m_iHandleLength=0;
+WSliderComposed::WSliderComposed(QWidget * parent) :
+        WAbstractControl(parent),
+        m_pSlider(NULL),
+        m_pHandle(NULL),
+        m_bHorizontal(false),
+        m_bEventWhileDrag(true),
+        m_bDrag(false),
+        m_iSliderLength(0),
+        m_iHandleLength(0) {
 }
 
 WSliderComposed::~WSliderComposed()
@@ -65,40 +63,44 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
     m_bHorizontal = bHorizontal;
     unsetPixmaps();
     m_pSlider = WPixmapStore::getPixmap(filenameSlider);
-    if (!m_pSlider)
+    if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << filenameSlider;
+    }
     m_pHandle = WPixmapStore::getPixmap(filenameHandle);
-    if (!m_pHandle)
+    if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << filenameHandle;
-
-    if (m_bHorizontal)
-    {
-        m_iSliderLength = m_pSlider->width();
-        m_iHandleLength = m_pHandle->width();
-    }
-    else
-    {
-        m_iSliderLength = m_pSlider->height();
-        m_iHandleLength = m_pHandle->height();
     }
 
-    // Set size of widget, using size of slider pixmap
-    if (m_pSlider)
-        setFixedSize(m_pSlider->size());
+    if (m_pSlider && m_pHandle) {
+        if (m_bHorizontal) {
+            m_iSliderLength = m_pSlider->width();
+            m_iHandleLength = m_pHandle->width();
+        } else {
+            m_iSliderLength = m_pSlider->height();
+            m_iHandleLength = m_pHandle->height();
+        }
 
-    setValue(m_fValue);
+        // Set size of widget, using size of slider pixmap
+        if (m_pSlider) {
+            setFixedSize(m_pSlider->size());
+        }
 
-    repaint();
+        setValue(m_fValue);
+
+        repaint();
+    }
 }
 
 void WSliderComposed::unsetPixmaps()
 {
-    if (m_pSlider)
+    if (m_pSlider) {
         WPixmapStore::deletePixmap(m_pSlider);
-    if (m_pHandle)
+        m_pSlider = NULL;
+    }
+    if (m_pHandle) {
         WPixmapStore::deletePixmap(m_pHandle);
-    m_pSlider = 0;
-    m_pHandle = 0;
+        m_pHandle = NULL;
+    }
 }
 
 void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
