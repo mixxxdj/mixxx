@@ -391,8 +391,11 @@ void ControlObject::sync() {
             }
         }
 
-        if (failedUpdates.size() > 0) {
-            m_sqQueueMutexChanges.lock();
+        // If we cannot lock the change mutex then we will just drop these
+        // updates on the floor. We can't lock() since sync() is re-entrant
+        // (potentially across multiple threads, though that should change going
+        // forward).
+        if (failedUpdates.size() > 0 && m_sqQueueMutexChanges.tryLock()) {
             m_sqQueueChanges.append(failedUpdates);
             m_sqQueueMutexChanges.unlock();
         }
