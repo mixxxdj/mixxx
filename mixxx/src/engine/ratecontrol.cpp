@@ -153,7 +153,7 @@ RateControl::RateControl(const char* _group,
 
     // Set the Sensitivity
     m_iRateRampSensitivity =
-        getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+            getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
      
     // the actual rate of playback as a multiple.  (ie 1.0 for native speed of file)
     m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
@@ -216,7 +216,7 @@ RateControl::~RateControl() {
     delete m_pRateDir;
 
     delete m_pRateSearch;
-    
+
     delete m_pReverseButton;
     delete m_pForwardButton;
     delete m_pBackButton;
@@ -260,7 +260,6 @@ void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
             Qt::DirectConnection);
 
 }
-
 
 void RateControl::setRateRamp(bool linearMode)
 {
@@ -501,8 +500,6 @@ void RateControl::slotSyncInternalChanged(double state)
     }
 }
 
-
-
 double RateControl::getRawRate() {
     return m_pRateSlider->get() *
         m_pRateRange->get() *
@@ -545,7 +542,6 @@ bool RateControl::getUserTweakingSync()
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
                                   bool* isScratching) {
     double rate = 0.0;
-    
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
@@ -651,6 +647,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
 
     // Scale the rate by the engine samplerate
     rate *= baserate;
+
     return rate;
 }
 

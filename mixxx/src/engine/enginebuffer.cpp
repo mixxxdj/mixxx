@@ -212,11 +212,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
-    
+
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
     m_pReadAheadManager->addEngineControl(m_pRateControl);
-    
+
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
 
@@ -328,8 +328,7 @@ double EngineBuffer::getBpm()
     return m_pBpmControl->getBpm();
 }
 
-double EngineBuffer::getFileBpm() 
-{
+double EngineBuffer::getFileBpm() {
     return m_pBpmControl->getFileBpm();
 }
 

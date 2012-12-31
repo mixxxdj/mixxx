@@ -152,7 +152,6 @@ public:
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
 
-
 private:
     void setPitchIndpTimeStretch(bool b);
 
@@ -219,7 +218,6 @@ private:
     ControlObject* m_pTrackSampleRate;
 
     ControlPushButton* m_playButton;
-    ControlPushButton* buttonBeatSync;
     ControlPushButton* m_playStartButton;
     ControlPushButton* m_stopStartButton;
     ControlPushButton* m_stopButton;
@@ -231,7 +229,7 @@ private:
 
     ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
-    ControlObject *m_beatDistance;
+    ControlObject* m_beatDistance;
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
@@ -261,7 +259,7 @@ private:
     EngineBufferScaleST* m_pScaleST;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
-    
+
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
     float m_fLastSampleValue[2];

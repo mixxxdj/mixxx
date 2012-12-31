@@ -525,20 +525,6 @@ bool BpmControl::syncPhase()
     if (offset == 0.0)
     {
         qDebug() << m_sGroup << "got offset of zero so no sync";
-=======
-    return pFirstNonplayingDeck;
-}
-
-bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
-    if (!pOtherEngineBuffer) {
-        return false;
-    }
-    TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
-    BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
-
-    // If either track does not have beats, then we can't adjust the phase.
-    if (!m_pBeats || !otherBeats) {
->>>>>>> MERGE-SOURCE
         return false;
     }
         
