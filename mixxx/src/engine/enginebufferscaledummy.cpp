@@ -10,7 +10,7 @@ EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManag
     : EngineBufferScale(),
       m_pReadAheadManager(pReadAheadManager)
 {
-	new_playpos = 0.0f;
+	m_samplesRead = 0.0f;
 }
 
 EngineBufferScaleDummy::~EngineBufferScaleDummy()
@@ -31,34 +31,22 @@ double EngineBufferScaleDummy::setTempo(double tempo)
 
 double EngineBufferScaleDummy::getNewPlaypos()
 {
-	return new_playpos;
+	return m_samplesRead;
 }
 
 void EngineBufferScaleDummy::clear()
 {
 }
 
-/**
- * @param playpos The play position in the EngineBuffer (in samples)
- * @param buf_size The size of the audio buffer to scale (in samples)
- * @param pBase
- * @param iBaseLength (same units as playpos)
- */
-CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
-                                       unsigned long buf_size,
-                                       CSAMPLE* pBase,
-                                       unsigned long iBaseLength)
-{
-    Q_UNUSED(playpos);
-    Q_UNUSED(pBase);
-    Q_UNUSED(iBaseLength);
-    new_playpos = 0.0;
+
+CSAMPLE *EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
+    m_samplesRead = 0.0;
     if (m_dBaseRate * m_dTempo == 0.0f) {
-        memset(buffer, 0, sizeof(CSAMPLE) * buf_size);
-        return buffer;
+        memset(m_buffer, 0, sizeof(CSAMPLE) * buf_size);
+        return m_buffer;
     }
     int samples_remaining = buf_size;
-    CSAMPLE* buffer_back = buffer;
+    CSAMPLE* buffer_back = m_buffer;
     while (samples_remaining > 0) {
         int read_samples = m_pReadAheadManager->getNextSamples(m_dBaseRate*m_dTempo,
                                                                buffer_back,
@@ -68,7 +56,7 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
     }
 
     // Interpreted as number of virtual song samples consumed.
-    new_playpos = buf_size;
+    m_samplesRead = buf_size;
 
 /*
         //START OF BASIC/ROCKSOLID LINEAR INTERPOLATION CODE
@@ -98,5 +86,5 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
 
 	//qDebug() << iBaseLength << playpos << new_playpos << buf_size << numSamplesToCopy;
 
-	return buffer;
+	return m_buffer;
 }
