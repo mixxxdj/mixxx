@@ -42,8 +42,8 @@ bool even(long n);
 double qip(CSAMPLE x, unsigned int n);
 float sigmoid_zero(double t, double max_t);
 
-static CSAMPLE pi     = acos(-1.0f);
-static CSAMPLE two_pi = (2.f*acos(-1.f));
+static const CSAMPLE pi     = acos(-1.0f);
+static const CSAMPLE two_pi = (2.f*acos(-1.f));
 
 int nearestSuperiorPowerOfTwo(int v);
 
