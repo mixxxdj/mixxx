@@ -65,4 +65,4 @@ class BrowseFeature : public LibraryFeature {
     QStringList m_quickLinkList;
 };
 
-#endif /* BROWSEFEATURE_H */
+#endif // BROWSEFEATURE_H

@@ -79,19 +79,17 @@ BrowseFeature::BrowseFeature(QObject* parent,
     rootItem->appendChild(root_folder_item);
 #endif
 
-    /*
-     * Just a word about how the TreeItem objects are used for the BrowseFeature:
-     * The constructor has 4 arguments:
-     * 1. argument represents the folder name shown in the sidebar later on
-     * 2. argument represents the folder path which MUST end with '/'
-     * 3. argument is the library feature itself
-     * 4. the parent TreeItem object
-     *
-     * Except the invisible root item, you must always state all 4 arguments.
-     *
-     * Once the TreeItem objects are inserted to models, the models take care of their
-     * deletion.
-     */
+    // Just a word about how the TreeItem objects are used for the BrowseFeature:
+    // The constructor has 4 arguments:
+    // 1. argument represents the folder name shown in the sidebar later on
+    // 2. argument represents the folder path which MUST end with '/'
+    // 3. argument is the library feature itself
+    // 4. the parent TreeItem object
+    //
+    // Except the invisible root item, you must always state all 4 arguments.
+    //
+    // Once the TreeItem objects are inserted to models, the models take care of their
+    // deletion.
 
     loadQuickLinks();
 
@@ -163,10 +161,8 @@ void BrowseFeature::activate() {
     emit(restoreSearch(QString()));
 }
 
-/*
- * Note: This is executed whenever you single click on an child item
- * Single clicks will not populate sub folders
- */
+// Note: This is executed whenever you single click on an child item
+// Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " "
@@ -208,10 +204,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      onLazyChildExpandation(index);
 }
 
-/*
- * This is called whenever you double click or use the triangle symbol to expand
- * the subtree. The method will read the subfolders.
- */
+// This is called whenever you double click or use the triangle symbol to expand
+// the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     if (!item) {
@@ -281,7 +275,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
 
 QString BrowseFeature::getRootViewHtml() const {
     QString browseTitle = tr("Browse");
-    QString browseSummary = tr("Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.");
+    QString browseSummary = tr("Browse lets you navigate, view, and load tracks"
+                        " from folders on your hard disk and external devices.");
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(browseTitle));
