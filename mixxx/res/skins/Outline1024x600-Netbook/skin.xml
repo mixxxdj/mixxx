@@ -853,41 +853,9 @@
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>203,100</Size>
-						<!--
-						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
-						( like on all the other stuff declared by CSS).
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
-						-->
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+                        <BackPath>style/style_bg_sampler.png</BackPath>	
 						<Children>
-							<!--
-							**********************************************
-							HACK ALERT - The following button is a dummy
-							and serves no other function than to provive 
-							the background image for the sampler which can 
-							than be styled using the Mixxx color scheme support,
-							which wont work if we`d load the image via QStyle
-							(see above note).
-							https://bugs.launchpad.net/mixxx/+bug/921174
-							https://bugs.launchpad.net/mixxx/+bug/1021031
-							**********************************************
-							-->
-							<PushButton>
-								<TooltipId></TooltipId>
-								<Style></Style>
-								<NumberStates>1</NumberStates>
-								<State>
-									<Number>0</Number>
-									<Pressed>style/style_bg_sampler.png</Pressed>
-									<Unpressed>style/style_bg_sampler.png</Unpressed>
-								</State>
-								<Pos>0,0</Pos>
-								<Connection>
-									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
-									<!-- You can make up your own ConfigKey -->
-								</Connection>
-							</PushButton>
-
 							<!--
 							**********************************************
 							Text- Track Title
@@ -1423,41 +1391,9 @@
 					<WidgetGroup>
 						<Pos>100,0</Pos>
 						<Size>203,100</Size>
-						<!--
-						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
-						( like on all the other stuff declared by CSS).
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
-						-->
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<BackPath>style/style_bg_sampler.png</BackPath>	
 						<Children>
-							<!--
-							**********************************************
-							HACK ALERT - The following button is a dummy
-							and serves no other function than to provive 
-							the background image for the sampler which can 
-							than be styled using the Mixxx color scheme support,
-							which wont work if we`d load the image via QStyle
-							(see above note).
-							https://bugs.launchpad.net/mixxx/+bug/921174
-							https://bugs.launchpad.net/mixxx/+bug/1021031
-							**********************************************
-							-->
-							<PushButton>
-								<TooltipId></TooltipId>
-								<Style></Style>
-								<NumberStates>1</NumberStates>
-								<State>
-									<Number>0</Number>
-									<Pressed>style/style_bg_sampler.png</Pressed>
-									<Unpressed>style/style_bg_sampler.png</Unpressed>
-								</State>
-								<Pos>0,0</Pos>
-								<Connection>
-									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
-									<!-- You can make up your own ConfigKey -->
-								</Connection>
-							</PushButton>
-
 							<!--
 							**********************************************
 							Text- Track Title
@@ -1993,41 +1929,9 @@
 					<WidgetGroup>
 						<Pos>100,0</Pos>
 						<Size>203,100</Size>
-						<!--
-						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
-						( like on all the other stuff declared by CSS).
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
-						-->
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<BackPath>style/style_bg_sampler.png</BackPath>	
 						<Children>
-							<!--
-							**********************************************
-							HACK ALERT - The following button is a dummy
-							and serves no other function than to provive 
-							the background image for the sampler which can 
-							than be styled using the Mixxx color scheme support,
-							which wont work if we`d load the image via QStyle
-							(see above note).
-							https://bugs.launchpad.net/mixxx/+bug/921174
-							https://bugs.launchpad.net/mixxx/+bug/1021031
-							**********************************************
-							-->
-							<PushButton>
-								<TooltipId></TooltipId>
-								<Style></Style>
-								<NumberStates>1</NumberStates>
-								<State>
-									<Number>0</Number>
-									<Pressed>style/style_bg_sampler.png</Pressed>
-									<Unpressed>style/style_bg_sampler.png</Unpressed>
-								</State>
-								<Pos>0,0</Pos>
-								<Connection>
-									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
-									<!-- You can make up your own ConfigKey -->
-								</Connection>
-							</PushButton>
-
 							<!--
 							**********************************************
 							Text- Track Title
@@ -2563,41 +2467,9 @@
 					<WidgetGroup>
 						<Pos>100,0</Pos>
 						<Size>194,100</Size>
-						<!--
-						We can`t use the standard CSS declaration for the samplers background image like we did in other skins - the color scheme support does not work on these
-						( like on all the other stuff declared by CSS).
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
-						-->
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<BackPath>style/style_bg_sampler.png</BackPath>	
 						<Children>
-							<!--
-							**********************************************
-							HACK ALERT - The following button is a dummy
-							and serves no other function than to provive 
-							the background image for the sampler which can 
-							than be styled using the Mixxx color scheme support,
-							which wont work if we`d load the image via QStyle
-							(see above note).
-							https://bugs.launchpad.net/mixxx/+bug/921174
-							https://bugs.launchpad.net/mixxx/+bug/1021031
-							**********************************************
-							-->
-							<PushButton>
-								<TooltipId></TooltipId>
-								<Style></Style>
-								<NumberStates>1</NumberStates>
-								<State>
-									<Number>0</Number>
-									<Pressed>style/style_bg_sampler.png</Pressed>
-									<Unpressed>style/style_bg_sampler.png</Unpressed>
-								</State>
-								<Pos>0,0</Pos>
-								<Connection>
-									<ConfigKey>[Dummmy],sampler_background</ConfigKey>
-									<!-- You can make up your own ConfigKey -->
-								</Connection>
-							</PushButton>
-
 							<!--
 							**********************************************
 							Text- Track Title

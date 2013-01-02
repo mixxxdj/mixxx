@@ -40,7 +40,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     static QString getiTunesMusicPath();
-    //returns the invisible rootItem for the sidebar model
+    // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
     void guessMusicLibraryMountpoint(QXmlStreamReader &xml);
     void parseTracks(QXmlStreamReader &xml);
@@ -56,7 +56,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     TreeItemModel m_childModel;
     QStringList m_playlists;
     TrackCollection* m_pTrackCollection;
-    //a new DB connection for the worker thread
+    // a new DB connection for the worker thread
     QSqlDatabase m_database;
     bool m_cancelImport;
     bool m_isActivated;
@@ -72,4 +72,4 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     static const QString ITDB_PATH_KEY;
 };
 
-#endif /* ITUNESFEATURE_H */
+#endif // ITUNESFEATURE_H

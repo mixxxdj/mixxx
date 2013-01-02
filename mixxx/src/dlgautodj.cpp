@@ -623,6 +623,10 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     // remove the top track
     m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
+    // Re-queue if configured
+    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
+        m_pAutoDJTableModel->appendTrack(loadedId);
+    }
     return true;
 }
 
