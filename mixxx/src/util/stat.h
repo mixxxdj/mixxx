@@ -11,6 +11,7 @@ class Stat {
   public:
     enum StatType {
         UNSPECIFIED = 0,
+        COUNTER,
         DURATION_MSEC,
         DURATION_NANOSEC,
         DURATION_SEC,

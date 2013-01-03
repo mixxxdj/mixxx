@@ -625,6 +625,7 @@ MixxxApp::~MixxxApp()
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
    delete m_pKeyboard;
+   delete m_pKbdConfig;
    delete m_pKbdConfigEmpty;
 
    WaveformWidgetFactory::destroy();
@@ -999,34 +1000,34 @@ void MixxxApp::initActions()
 #endif
 
     QString mayNotBeSupported = tr("May not be supported on all skins.");
-    QString showSamplersTitle = tr("Show Sample Deck Widgets");
+    QString showSamplersTitle = tr("Show Samplers");
     QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
             " " + mayNotBeSupported;
     m_pViewShowSamplers = new QAction(showSamplersTitle, this);
     m_pViewShowSamplers->setCheckable(true);
-    m_pViewShowSamplers->setShortcut(tr("Ctrl+S"));
+    m_pViewShowSamplers->setShortcut(tr("Ctrl+1", "Menubar|View|Show Samplers"));
     m_pViewShowSamplers->setStatusTip(showSamplersText);
     m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowSamplers(bool)));
 
-    QString showVinylControlTitle = tr("Show Vinyl Control Widgets");
+    QString showVinylControlTitle = tr("Show Vinyl Control Section");
     QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
             " " + mayNotBeSupported;
     m_pViewVinylControl = new QAction(showVinylControlTitle, this);
     m_pViewVinylControl->setCheckable(true);
-    m_pViewVinylControl->setShortcut(tr("Ctrl+V"));
+    m_pViewVinylControl->setShortcut(tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"));
     m_pViewVinylControl->setStatusTip(showVinylControlText);
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowVinylControl(bool)));
 
-    QString showMicrophoneTitle = tr("Show Microphone Widgets");
+    QString showMicrophoneTitle = tr("Show Microphone Section");
     QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
             " " + mayNotBeSupported;
     m_pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
     m_pViewShowMicrophone->setCheckable(true);
-    m_pViewShowMicrophone->setShortcut(tr("Ctrl+M"));
+    m_pViewShowMicrophone->setShortcut(tr("Ctrl+2", "Menubar|View|Show Microphone Section"));
     m_pViewShowMicrophone->setStatusTip(showMicrophoneText);
     m_pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
     connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
@@ -1037,7 +1038,7 @@ void MixxxApp::initActions()
     " " + mayNotBeSupported;
     m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
     m_pViewShowPreviewDeck->setCheckable(true);
-    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+P" , "Menu|View|Show Preview Deck"));
+    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+4", "Menubar|View|Show Preview Deck"));
     m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
@@ -1100,6 +1101,7 @@ void MixxxApp::initMenuBar()
 #ifdef __SHOUTCAST__
     m_pOptionsMenu->addAction(m_pOptionsShoutcast);
 #endif
+    m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsKeyboard);
     m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsPreferences);
@@ -1441,6 +1443,7 @@ void MixxxApp::slotHelpAbout() {
 "Aaron Mavrinac<br>"
 "Markus H&auml;rer<br>"
 "Andrey Smelov<br>"
+"Scott Stewart<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1656,14 +1659,14 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
-        if (m_tooltips == 1) {
+        if (m_tooltips == 2) {
             // ON (only in Library)
             WWidget* pWidget = dynamic_cast<WWidget*>(obj);
             WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
             WSpinny* pSpinny = dynamic_cast<WSpinny*>(obj);
             QLabel* pLabel = dynamic_cast<QLabel*>(obj);
             return (pWidget || pWfViewer || pSpinny || pLabel);
-        } else if (m_tooltips == 0) {
+        } else if (m_tooltips == 1) {
             // ON
             return false;
         } else {

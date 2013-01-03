@@ -5,6 +5,9 @@ This file is part of the "Phoney" Skin for Mixxx
 "Phoney" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 http://creativecommons.org/licenses/by-sa/3.0/
 
+With every copy of the work, you are required to either provide a copy of the license it self
+or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+
 You are free:
 to Share - to copy, distribute and transmit the work
 to Remix - to adapt the work
@@ -12,11 +15,26 @@ to Remix - to adapt the work
 Under the following conditions:
 Attribution - You must attribute the work in the manner specified by the author or licensor
 (but not in any way that suggests that they endorse you or your use of the work).
+A attribution should include the following: The name of the author and/or licensor, 
+the title of the work, the URL that is associated with the work.
 
 Share Alike - If you alter, transform, or build upon this work, you may distribute
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.07	(16/12/2012)
+* Feature: Add custom Preview button to library
+* Feature: Construct the library from individual widgets <SearchBox>, <LibrarySidebar>, <Library>, fixes lp:1090905
+* Remove: <TableView> replaced by the above library wdgets. Makes future layouts more flexible  
+* Update: Clarify the text of the license terms
+* Update: Links to MixxxControls and QT documentation updated
+* Feature: Added <SignalHighColor>,<SignalMidColor>,<SignalLowColor> to color waveforms based on features of the audio.
+* Feature: Added <Align> to the main waveforms that allows to display only those portions of the waveform which would 
+  have been above or below the center
+* Feature: Added <AxesColor> to define the color for horizontal/vertical line in in the waveform
+  Note: Only empty <Signal$Color>,<Align> keys were added for now
+* Update: Moved knobs and style elements to subfolders
+
 v1.11.0.06	(25/10/2012)
 * Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
   and set Mixxx controls on skin load , lp:1017399

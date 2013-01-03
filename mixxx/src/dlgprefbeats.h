@@ -1,7 +1,6 @@
-/*
- *  Created on: 28/apr/2011
- *      Author: vittorio
- */
+//  Created on: 28/apr/2011
+//      Author: vittorio
+
 
 #ifndef DLGPREFBEATS_H_
 #define DLGPREFBEATS_H_
@@ -21,7 +20,7 @@ class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {
     virtual ~DlgPrefBeats();
 
   public slots:
-    /** Apply changes to widget */
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
 
@@ -42,7 +41,7 @@ class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {
   private:
     void populate();
     void loadSettings();
-    /** Pointer to config object */
+    // Pointer to config object
     ConfigObject<ConfigValue>* m_pconfig;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
@@ -52,4 +51,4 @@ class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {
     bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
 };
 
-#endif /* DLGPREFBEATS_H_ */
+#endif // DLGPREFBEATS_H_

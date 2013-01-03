@@ -31,13 +31,14 @@
 
 #include "util/timer.h"
 
-WVuMeter::WVuMeter(QWidget * parent) : WWidget(parent)
-{
-    m_pPixmapBack = 0;
-    m_pPixmapVu = 0;
-    m_iPeakHoldSize = m_iPeakPos = 0;
-    m_iPeakHoldCountdown = 0;
-    m_iNoPos = 0;
+WVuMeter::WVuMeter(QWidget * parent) :
+        WWidget(parent),
+        m_pPixmapBack(NULL),
+        m_pPixmapVu(NULL),
+        m_iPeakHoldSize(0),
+        m_iPeakPos(0),
+        m_iPeakHoldCountdown(0),
+        m_iNoPos(0) {
 }
 
 WVuMeter::~WVuMeter()
@@ -75,30 +76,32 @@ void WVuMeter::setup(QDomNode node)
 
 void WVuMeter::resetPositions()
 {
-    if (m_pPixmapBack)
-    {
-        WPixmapStore::deletePixmap(m_pPixmapBack);
-        m_pPixmapBack = 0;
-        WPixmapStore::deletePixmap(m_pPixmapVu);
-        m_pPixmapVu = 0;
-    }
+    WPixmapStore::deletePixmap(m_pPixmapBack);
+    m_pPixmapBack = NULL;
+    WPixmapStore::deletePixmap(m_pPixmapVu);
+    m_pPixmapVu = NULL;
 }
 
 void WVuMeter::setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal)
 {
     m_pPixmapBack = WPixmapStore::getPixmap(backFilename);
-    if (!m_pPixmapBack || m_pPixmapBack->size()==QSize(0,0))
+    if (!m_pPixmapBack || m_pPixmapBack->size() == QSize(0,0)) {
         qDebug() << "WVuMeter: Error loading back pixmap" << backFilename;
-    m_pPixmapVu = WPixmapStore::getPixmap(vuFilename);
-    if (!m_pPixmapVu || m_pPixmapVu->size()==QSize(0,0))
-        qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
+    } else {
+        setFixedSize(m_pPixmapBack->size());
+    }
 
-    setFixedSize(m_pPixmapBack->size());
-    m_bHorizontal = bHorizontal;
-    if (m_bHorizontal)
-        m_iNoPos = m_pPixmapVu->width();
-    else
-        m_iNoPos = m_pPixmapVu->height();
+    m_pPixmapVu = WPixmapStore::getPixmap(vuFilename);
+    if (!m_pPixmapVu || m_pPixmapVu->size() == QSize(0,0)) {
+        qDebug() << "WVuMeter: Error loading vu pixmap" << vuFilename;
+    } else {
+        m_bHorizontal = bHorizontal;
+        if (m_bHorizontal) {
+            m_iNoPos = m_pPixmapVu->width();
+        } else {
+            m_iNoPos = m_pPixmapVu->height();
+        }
+    }
 }
 
 void WVuMeter::setValue(double fValue)
@@ -153,8 +156,7 @@ void WVuMeter::updateState(int msecsElapsed)
 void WVuMeter::paintEvent(QPaintEvent *)
 {
     ScopedTimer t("WVuMeter::paintEvent");
-    if (m_pPixmapBack!=0)
-    {
+    if (m_pPixmapBack && m_pPixmapVu) {
         int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
 
         // Range check
