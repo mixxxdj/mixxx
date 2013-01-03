@@ -75,30 +75,30 @@ private slots:
   private:
     /** append the waveform overview pixmap according to available data in waveform */
     bool drawNextPixmapPart();
-    inline int valueToPosition( float value) const {
-        return floor(m_a * value + m_b + 0.5);
+    inline int valueToPosition(float value) const {
+        return (int)(m_a * value - m_b + 0.5);
     }
-    inline double positionToValue( int position) const {
-        return (float(position) - m_b) / m_a;
+    inline double positionToValue(int position) const {
+        return ((float)position + m_b) / m_a;
+
     }
 
-    const char* m_pGroup;
+    const QString m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;
     ControlObjectThreadMain* m_trackSamplesControl;
     ControlObjectThreadMain* m_playControl;
 
-    Waveform* m_waveform;
-    QPixmap m_waveformPixmap;
+    Waveform* m_pWaveform;
+    QImage* m_pWaveformSourceImage;
+    QImage m_waveformImageScaled;
 
     bool m_pixmapDone;
     float m_waveformPeak;
 
     /** Hold the last visual sample processed to generate the pixmap*/
     int m_actualCompletion;
-    double m_visualSamplesByPixel;
-    int m_renderSampleLimit;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -124,6 +124,7 @@ private slots:
 
     int m_analyserProgress; // in 0.1%
     bool m_trackLoaded;
+    int m_diffGain;
 };
 
 #endif
