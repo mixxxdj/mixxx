@@ -350,6 +350,7 @@ bool WOverview::drawNextPixmapPart() {
 
     m_actualCompletion = nextCompletion;
     m_waveformImageScaled = QImage();
+    m_diffGain = 0;
 
     //test if the complete waveform is done
     if (m_actualCompletion >= dataSize - 2) {
@@ -458,6 +459,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                     m_pWaveformSourceImage->height() - 2 * diffGain);
                 m_waveformImageScaled = m_pWaveformSourceImage->copy(
                     sourceRect).scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                m_diffGain = diffGain;
             }
 
             painter.drawImage(rect(), m_waveformImageScaled);
@@ -579,6 +581,7 @@ void WOverview::resizeEvent(QResizeEvent *) {
     m_a = (float)((width()-1))/( 114.f - 14.f);
     m_b = 14.f * m_a;
     m_waveformImageScaled = QImage();
+    m_diffGain = 0;
 }
 
 QColor WOverview::getMarkerColor() {
