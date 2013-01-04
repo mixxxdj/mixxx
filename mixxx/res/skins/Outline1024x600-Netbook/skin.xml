@@ -47,7 +47,7 @@
 	<manifest>
 	<title>Outline1024x600-Netbook</title>
 	<author>jus</author>
-	<version>1.11.0.10</version>
+	<version>1.11.0.11</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
@@ -854,7 +854,7 @@
 						<Pos>0,0</Pos>
 						<Size>203,100</Size>
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-                        <BackPath>style/style_bg_sampler.png</BackPath>	
+						<BackPath>style/style_bg_sampler.png</BackPath>	
 						<Children>
 							<!--
 							**********************************************
