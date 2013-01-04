@@ -1282,7 +1282,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // Bind this control to a property. Not leaked because it is
             // parented to the widget and so it dies with it.
             PropertyBinder* pBinder = new PropertyBinder(
-                pWidget, property, control);
+                pWidget, property, control, m_pConfig);
             // If we created this control, bind it to the PropertyBinder so that
             // it is deleted when the binder is deleted.
             if (created) {
