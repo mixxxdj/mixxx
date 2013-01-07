@@ -8,19 +8,19 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-08-21 16:43+0000\n"
-"Last-Translator: Ture <ture393@gmail.com>\n"
+"PO-Revision-Date: 2013-01-06 13:09+0000\n"
+"Last-Translator: Jack Billström <jack@codele.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-30 04:39+0000\n"
-"X-Generator: Launchpad (build 16319)\n"
+"X-Launchpad-Export-Date: 2013-01-07 04:40+0000\n"
+"X-Generator: Launchpad (build 16402)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -64,12 +64,12 @@ msgstr "Lägg till Auto DJ kö (överst)"
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Ta bort"
+msgstr "Radera"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "Byt namn"
+msgstr "Byt Namn"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
@@ -87,7 +87,7 @@ msgstr "Exportera spellista"
 
 #: BasePlaylistFeature#9
 msgid "Rename Playlist"
-msgstr "Döp om spellista"
+msgstr "Byt namn på spellista"
 
 #: BasePlaylistFeature#10
 msgid "New playlist name:"
@@ -95,7 +95,7 @@ msgstr "Nytt namn på spellista:"
 
 #: BasePlaylistFeature#11
 msgid "Renaming Playlist Failed"
-msgstr "Döpa om spellista misslyckades"
+msgstr "Namnbyte misslyckades"
 
 #: BasePlaylistFeature#12
 msgid "A playlist by that name already exists."
@@ -122,7 +122,7 @@ msgstr "Ett okänt fel uppstod när spellistan skapades "
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Spellista (*. M3u *. M3U8 *. Pls *. CSV)"
+msgstr "Spellista (*.m3u *.m3u8 *.pls *.csv"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
@@ -130,7 +130,7 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"M3U spellista (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text "
+"M3U Spellista (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text "
 "CSV (*.csv);;Readable Text (*.txt)"
 
 #: BaseSqlTableModel#1
