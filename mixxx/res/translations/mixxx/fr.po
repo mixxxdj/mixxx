@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2012-11-24 07:41+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2013-01-07 20:46+0000\n"
+"Last-Translator: Olivier Beerens <olivier.beerens@carou.be>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-11-30 04:37+0000\n"
-"X-Generator: Launchpad (build 16319)\n"
+"X-Launchpad-Export-Date: 2013-01-08 04:41+0000\n"
+"X-Generator: Launchpad (build 16402)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -230,7 +230,7 @@ msgstr "Verrouillage du tempo"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "Aperçu"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -1212,7 +1212,7 @@ msgstr ""
 
 #: DlgControllerLearning#102
 msgid "Trigger the transition to the next track"
-msgstr ""
+msgstr "Activer la transition vers le morceau suivant"
 
 #: DlgControllerLearning#103
 msgid "Toggle Auto DJ (ON/OFF)"
