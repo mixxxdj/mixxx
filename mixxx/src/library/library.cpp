@@ -191,13 +191,19 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
-    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-    // Try to get TrackPointer from library, identified by location.
-    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(location, true);
+    }
 
-    // If not, create a new TrackPointer
-    if (!pTrack) {
-        pTrack = TrackPointer(new TrackInfoObject(location));
+    TrackPointer pTrack;
+    if (track_id < 0) {
+        // Add Track to library failed, create a transient TrackInfoObject
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    } else {
+        pTrack = track_dao.getTrack(track_id);
     }
     emit(loadTrackToPlayer(pTrack, group));
 }
