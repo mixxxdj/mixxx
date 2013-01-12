@@ -21,19 +21,11 @@ class HSS1394(Feature):
     def add_options(self, build, vars):
         if build.platform_is_windows or build.platform_is_osx:
             vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 1)
-        else:
-            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        if build.platform_is_linux:
-            # TODO(XXX) Enable this when when FFADO back-end support is written into Mixxx
-            return
-            #have_ffado = conf.CheckLib('ffado', autoadd=False)
-            #if not have_ffado:
-            #    raise Exception('Could not find libffado.')
-        else:
+        if build.platform_is_windows or build.platform_is_osx:
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):

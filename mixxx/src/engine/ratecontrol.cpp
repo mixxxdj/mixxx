@@ -460,6 +460,9 @@ double RateControl::process(const double rate,
                             const double totalSamples,
                             const int bufferSamples)
 {
+    Q_UNUSED(rate);
+    Q_UNUSED(currentSample);
+    Q_UNUSED(totalSamples);
     /*
      * Code to handle temporary rate change buttons.
      *

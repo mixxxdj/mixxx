@@ -72,11 +72,9 @@ QIcon SetlogFeature::getIcon() {
     return QIcon(":/images/library/ic_library_history.png");
 }
 
-void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget,
+void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
-    BasePlaylistFeature::bindWidget(sidebarWidget,
-                                    libraryWidget,
+    BasePlaylistFeature::bindWidget(libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotPlayingDeckChanged(int)));
@@ -128,17 +126,6 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     menu.exec(globalPos);
 }
 
-bool SetlogFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
-    Q_UNUSED(urls);
-    Q_UNUSED(index);
-    return false;
-}
-
-bool SetlogFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(url);
-    Q_UNUSED(index);
-    return false;
-}
 
 void SetlogFeature::buildPlaylistList() {
     m_playlistList.clear();

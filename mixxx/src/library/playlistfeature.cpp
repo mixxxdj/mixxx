@@ -82,7 +82,8 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
-bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
+bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                                      QWidget *pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
@@ -97,11 +98,16 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         files.append(url.toLocalFile());
     }
 
-    // If a track is dropped onto a playlist's name, but the track isn't in the
-    // library, then add the track to the library before adding it to the
-    // playlist.
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<int> trackIds = m_trackDao.addTracks(files, true);
+    QList<int> trackIds;
+    if (pSource) {
+        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+    } else {
+        // If a track is dropped onto a playlist's name, but the track isn't in the
+        // library, then add the track to the library before adding it to the
+        // playlist.
+        // Adds track, does not insert duplicates, handles unremoving logic.
+        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    }
 
     // remove tracks that could not be added
     for (int trackId =0; trackId<trackIds.size() ; trackId++) {

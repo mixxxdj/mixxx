@@ -117,8 +117,24 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
-void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
-                         WLibrary* pLibraryWidget,
+void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
+
+    // Setup the sources view
+    pSidebarWidget->setModel(m_pSidebarModel);
+    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
+            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
+    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
+            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+    // Lazy model: Let triangle symbol increment the model
+    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
+            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
+
+    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
+            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+}
+
+void Library::bindWidget(WLibrary* pLibraryWidget,
                          MixxxKeyboard* pKeyboard) {
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
@@ -134,32 +150,13 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    m_pLibraryControl->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
-
-    // Setup the sources view
-    pSidebarWidget->setModel(m_pSidebarModel);
-    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
-            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
-    connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
-    // Lazy model: Let triange symbol increment the model
-    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
-            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
-
-    connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
-            m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+    m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
     while(feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
-        feature->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
+        feature->bindWidget(pLibraryWidget, pKeyboard);
     }
-
-    // Enable the default selection
-    pSidebarWidget->selectionModel()
-        ->select(m_pSidebarModel->getDefaultSelection(),
-                 QItemSelectionModel::SelectCurrent);
-    m_pSidebarModel->activateDefaultSelection();
 }
 
 void Library::addFeature(LibraryFeature* feature) {
@@ -196,6 +193,18 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
+void Library::slotLoadLocationToPlayer(QString location, QString group) {
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+    // Try to get TrackPointer from library, identified by location.
+    TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+
+    // If not, create a new TrackPointer
+    if (!pTrack) {
+        pTrack = TrackPointer(new TrackInfoObject(location));
+    }
+    emit(loadTrackToPlayer(pTrack, group));
+}
+
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
     emit(loadTrackToPlayer(pTrack, group));
 }
@@ -220,6 +229,10 @@ void Library::slotCreateCrate()
     m_pCrateFeature->slotCreateCrate();
 }
 
+void Library::onSkinLoadFinished() {
+    // Enable the default selection when a new skin is loaded.
+    m_pSidebarModel->activateDefaultSelection();
+}
 
 QList<TrackPointer> Library::getTracksToAutoLoad()
 {

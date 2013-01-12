@@ -16,6 +16,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.06	(25/10/2012)
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+  and set Mixxx controls on skin load , lp:1017399
+* Feature: Added <SignalHighColor>,<SignalMidColor>,<SignalLowColor> to color waveforms based on features of the audio.
+* Feature: Added <Align> to the main waveforms that allows to display only those portions of the waveform which would 
+  have been above or below the center
+* Feature: Added <AxesColor> to define the color for horizontal/vertical line in in the waveform
+* Feature: Added spinning vinyl widget, vinyl control widget & tabs to show/hide these widgets
+* Feature: Added extended beatloop, beatgrid, quantize & eject buttons
+* Feature: Skin uses WidgetGroups positioning for some elements now
+  WidgetGroups allow to make a group of relatively positioned widgets, useful for easy resizing
+  http://mixxx.org/wiki/doku.php/creating_skins#widgetgroup
+* Update: Moved knobs and style elements to subfolders
+
 v1.11.0.05	(04/07/2012)
 * Fix: Deactivate stylesheets for tooltips in skins which use color scheme support, workaround for lp:1021031
 

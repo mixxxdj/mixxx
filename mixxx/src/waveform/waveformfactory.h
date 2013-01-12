@@ -17,8 +17,8 @@ class Waveform;
 
 class WaveformFactory {
   public:
-    static Waveform* loadWaveformFromAnalysis(
-        TrackPointer pTrack, const AnalysisDao::AnalysisInfo& analysis);
+    static bool updateWaveformFromAnalysis(
+            Waveform* pWaveform, const AnalysisDao::AnalysisInfo& analysis);
     static QString getPreferredWaveformVersion();
     static QString getPreferredWaveformDescription();
     static QString getPreferredWaveformSummaryVersion();

@@ -1,5 +1,7 @@
 #include <QtDebug>
 
+#undef TRUE
+#undef FALSE
 #include "BPMDetect.h"
 
 #include "trackinfoobject.h"
@@ -8,31 +10,40 @@
 #include "track/beatutils.h"
 #include "analyserbpm.h"
 
-AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) {
-    m_pConfig = _config;
-    m_pDetector = NULL;
+AnalyserBPM::AnalyserBPM(ConfigObject<ConfigValue> *_config) :
+    m_pConfig(_config),
+    m_pDetector(NULL),
+    m_iMinBpm(0),
+    m_iMaxBpm(0),
+    m_bProcessEntireSong(true) {
 }
 
 bool AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     Q_UNUSED(totalSamples);
+    if (loadStored(tio)) {
+        return false;
+    }
+
     m_iMinBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
     m_bProcessEntireSong = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","AnalyzeEntireSong")).toInt();
-    // var not used, remove? TODO(bkgood)
-    // int defaultrange = m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
-    bool bpmEnabled = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
 
+    // All SoundSource's return stereo data, no matter the real file's type
+    m_pDetector = new soundtouch::BPMDetect(2, sampleRate);
+    //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
+    //                                    defaultrange ? MIN_BPM : m_iMinBpm,
+    //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
+    return true;
+}
+
+bool AnalyserBPM::loadStored(TrackPointer tio) const {
+    bool bpmEnabled = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
     // If BPM detection is enabled and the track does not have a BPM already,
     // create a detector.
     if(bpmEnabled && tio->getBpm() <= 0.0) {
-        // All SoundSource's return stereo data, no matter the real file's type
-        m_pDetector = new soundtouch::BPMDetect(2, sampleRate);
-        //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
-        //                                    defaultrange ? MIN_BPM : m_iMinBpm,
-        //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {

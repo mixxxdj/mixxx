@@ -227,6 +227,7 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
+    // WTF? Why SHOUT_PROTOCOL_HTTP and not.. the chosen protocol?
     if (shout_set_protocol(m_pShout, SHOUT_PROTOCOL_HTTP) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting protocol!"), shout_get_error(m_pShout));
         return;

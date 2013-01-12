@@ -6,6 +6,7 @@ import SCons
 import shutil
 
 Import('build')
+Import('mixxxminimal_depends')
 
 mixxxminimal_sources = [
 	"dsp/ChangeDetectionFunction.cpp",
@@ -35,6 +36,7 @@ mixxxminimal_sources = [
 	"plugins/KeyDetect.cpp",
 	"plugins/BeatTrack.cpp",
 	"plugins/TonalChangeDetect.cpp",
+	"plugins/MixxxBpmDetection.cpp",
 	"libmain.cpp",
 ]
 
@@ -54,6 +56,13 @@ if int(build.flags['vamp']):
         mixxxminimal_sources.extend(path % sdk_src_path for path in
                                     ['%s/PluginAdapter.cpp',
                                      '%s/RealTime.cpp'])
+
+    for depend in mixxxminimal_depends:
+        depend = depend()
+        # Hack to get rid of EngineBufferScaleST since the SoundTouch dependence
+        # includes this.
+        depend_source = [x for x in depend.sources(build) if 'enginebufferscalest' not in x]
+        mixxxminimal_sources.extend(depend_source)
 
     env = conf.Finish()
     if build.platform_is_linux:

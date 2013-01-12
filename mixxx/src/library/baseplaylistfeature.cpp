@@ -9,7 +9,6 @@
 #include "library/treeitem.h"
 #include "mixxxkeyboard.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 BasePlaylistFeature::BasePlaylistFeature(
@@ -221,15 +220,6 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 }
 
-bool BasePlaylistFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool BasePlaylistFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
 
 void BasePlaylistFeature::slotImportPlaylist() {
     qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
@@ -365,19 +355,13 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     }
 }
 
-void BasePlaylistFeature::onLazyChildExpandation(const QModelIndex &index){
-    Q_UNUSED(index);
-    //Nothing to do because the childmodel is not of lazy nature.
-}
 
 TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                 WLibrary* libraryWidget,
-                                 MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
+void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
+                                     MixxxKeyboard* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());

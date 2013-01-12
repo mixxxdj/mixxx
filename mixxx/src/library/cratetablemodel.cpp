@@ -10,6 +10,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "mixxxutils.cpp"
+#include "playermanager.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
@@ -32,7 +33,8 @@ void CrateTableModel::setCrate(int crateId) {
     QSqlQuery query(m_pTrackCollection->getDatabase());
     FieldEscaper escaper(m_pTrackCollection->getDatabase());
     QStringList columns;
-    columns << CRATETRACKSTABLE_TRACKID;
+    columns << CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+            << "'' as preview";
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -54,6 +56,8 @@ void CrateTableModel::setCrate(int crateId) {
         LOG_FAILED_QUERY(query);
     }
 
+    columns[0] = LIBRARYTABLE_ID;
+    columns[1] = "preview";
     setTable(tableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
     // BaseSqlTableModel sets up the header names
@@ -63,6 +67,7 @@ void CrateTableModel::setCrate(int crateId) {
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
+    Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
@@ -89,6 +94,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 }
 
 int CrateTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QList<QFileInfo> fileInfoList;
@@ -149,6 +155,8 @@ void CrateTableModel::removeTrack(const QModelIndex& index) {
 
 void CrateTableModel::moveTrack(const QModelIndex& sourceIndex,
                                 const QModelIndex& destIndex) {
+    Q_UNUSED(sourceIndex);
+    Q_UNUSED(destIndex);
     return;
 }
 
@@ -164,15 +172,18 @@ void CrateTableModel::slotSearch(const QString& searchText) {
 }
 
 bool CrateTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(CRATETRACKSTABLE_TRACKID) ||
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(CRATETRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
+        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
     return false;
 }
+
 bool CrateTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
@@ -188,6 +199,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS

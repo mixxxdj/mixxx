@@ -39,6 +39,7 @@ ControlBeat::~ControlBeat()
 void ControlBeat::setValueFromMidi(MidiOpCode o, double v)
 {
     Q_UNUSED(o);
+    Q_UNUSED(v);
     if (!m_bPressed || !m_bMidiSimulateLatching)
     {
         beatTap();

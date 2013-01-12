@@ -135,6 +135,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Show/hide the Vinyl Control section.")
             << tr("Activate Vinyl Control from the Menu -> Options.");
 
+    add("show_previewdeck")
+            << tr("Preview Deck")
+            << tr("Show/hide the Preview deck.");
+
     add("microphone_volume")
             << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")
@@ -278,12 +282,16 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("Fast forward through the track."))
             << QString("%1: %2").arg(rightClick, tr("Jumps to the end of the track."));
 
+    // Ghetto-Sync (TM)
     add("beatsync_beatsync_tempo")
             << tr("Synchronize")
             << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "))
             << tr("if BPM is detected on both.")
             << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track,"))
-            << tr("if BPM is detected on both.");
+            << tr("if BPM is detected on both.")
+            << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
+            << tr("If no deck is playing, syncs to the first deck that has a BPM.")
+            << tr("Decks can't sync to samplers and samplers can only sync to decks.");
 
     add("rate")
             << tr("Pitch Control")
@@ -348,6 +356,11 @@ void Tooltips::addStandardTooltips() {
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Temporarily setup a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
+
+    add("loop_exit")
+            << tr("Loop Exit")
+            << tr("Turns the current loop off.")
+            << tr("Works only if Loop-In and Loop-Out marker are set.");
 
     add("reloop_exit")
             << tr("Reloop/Exit")

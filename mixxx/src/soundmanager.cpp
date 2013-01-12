@@ -56,8 +56,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
         ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     m_pControlObjectSoundStatus = new ControlObject(ConfigKey("[SoundManager]", "status"));
     m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
-    m_pControlObjectVinylControlMode = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[VinylControl]", "mode")));
     m_pControlObjectVinylControlMode1 = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
     m_pControlObjectVinylControlMode2 = new ControlObjectThreadMain(
@@ -102,7 +100,6 @@ SoundManager::~SoundManager() {
     delete m_pControlObjectLatency;
     delete m_pControlObjectSampleRate;
     delete m_pControlObjectSoundStatus;
-    delete m_pControlObjectVinylControlMode;
     delete m_pControlObjectVinylControlMode1;
     delete m_pControlObjectVinylControlMode2;
     delete m_pControlObjectVinylControlGain;
@@ -442,6 +439,7 @@ void SoundManager::checkConfig() {
 QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
     QList<AudioOutput> outputs, unsigned long iFramesPerBuffer,
     SoundDevice* device, double streamTime /* = 0 */) {
+    Q_UNUSED(streamTime);
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
 

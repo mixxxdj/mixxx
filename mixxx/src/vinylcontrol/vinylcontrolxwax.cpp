@@ -23,6 +23,7 @@
 #include <limits.h>
 #include "vinylcontrolxwax.h"
 #include "controlobjectthreadmain.h"
+#include "util/timer.h"
 #include <math.h>
 
 
@@ -56,7 +57,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
-    m_pSteadySubtle = new SteadyPitch(0.08);
+    m_pSteadySubtle = new SteadyPitch(0.12);
     m_pSteadyGross = new SteadyPitch(0.5);
 
     iQualPos = 0;
@@ -90,7 +91,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";
     }
-    
+
     timecode_def *tc_def = timecoder_find_definition(timecode);
     if (tc_def == NULL)
     {
@@ -130,7 +131,7 @@ VinylControlXwax::~VinylControlXwax()
     // Remove existing samples
     if (m_samples)
         free(m_samples);
-        
+
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
 
@@ -163,6 +164,7 @@ void VinylControlXwax::freeLUTs()
 
 void VinylControlXwax::AnalyseSamples(const short *samples, size_t size)
 {
+    ScopedTimer t("VinylControlXwax::AnalyseSamples");
     if (lockSamples.tryLock())
     {
         //Submit the samples to the xwax timecode processor
@@ -315,10 +317,10 @@ void VinylControlXwax::run()
                 iVCMode = reportedMode;
                 if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
                     bForceResync = true;
-               }
+            }
 
             //if we are out of error mode...
-               if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
+            if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
             {
                 vinylStatus->slotSet(VINYL_STATUS_OK);
             }
@@ -334,7 +336,7 @@ void VinylControlXwax::run()
         //when the filepos is past safe (more accurate),
         //but it can also happen in relative mode if the vinylpos is nearing the end
         //If so, change to constant mode so DJ can move the needle safely
-        
+
         if (!atRecordEnd && reportedPlayButton)
         {
             if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
@@ -384,7 +386,7 @@ void VinylControlXwax::run()
         //check here for position > safe, and if no record end mode,
         //then trigger track selection mode.  just pass position to it
         //and ignore pitch
-        
+
         if (!atRecordEnd)
         {
             if (iPosition != -1 && iPosition > m_uiSafeZone)
@@ -402,7 +404,7 @@ void VinylControlXwax::run()
                             qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
                             bTrackSelectMode = true;
                             togglePlayButton(FALSE);
-                               resetSteadyPitch(0.0f, 0.0f);
+                            resetSteadyPitch(0.0f, 0.0f);
                             controlScratch->slotSet(0.0f);
                         }
                         doTrackSelection(true, dVinylPitch, iPosition);
@@ -844,9 +846,9 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
     if (is && !was)
     {
         vinylStatus->slotSet(VINYL_STATUS_OK);
-    }
-    if (!is)
+    } else if (!is) {
         vinylStatus->slotSet(VINYL_STATUS_DISABLED);
+    }
 
     return is;
 }

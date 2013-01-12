@@ -17,13 +17,16 @@
 #include "mathstuff.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "analyserqueue.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  AnalyserQueue* pAnalyserQueue,
-                                 QString group)
+                                 QString group,
+                                 bool defaultMaster,
+                                 bool defaultHeadphones)
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
           m_pLoadedTrack(),
@@ -39,14 +42,23 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
 
+    // Set the routing option defaults for the master and headphone mixes.
+    {
+        ControlObjectThreadMain* pMaster = new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(getGroup(), "master")));
+        pMaster->slotSet(defaultMaster);
+        delete pMaster;
+
+        ControlObjectThreadMain* pHeadphones = new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(getGroup(), "pfl")));
+        pHeadphones->slotSet(defaultHeadphones);
+        delete pHeadphones;
+    }
+
     ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);
 
     CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
-    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
-            pCueControl, SLOT(loadTrack(TrackPointer)));
-    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
-            pCueControl, SLOT(unloadTrack(TrackPointer)));
     pEngineBuffer->addControl(pCueControl);
 
     // Connect our signals and slots with the EngineBuffer's signals and
@@ -174,6 +186,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos) {
 void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
     if (track != NULL) {
         qDebug() << "Failed to load track" << track->getLocation() << reason;
+        emit(loadTrackFailed(track));
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }

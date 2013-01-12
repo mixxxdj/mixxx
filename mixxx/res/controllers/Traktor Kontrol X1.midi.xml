@@ -1,9 +1,9 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.10.0+">
   <info>
-    <name>Traktor Kontrol X1</name>
+    <name>Native Instruments Traktor Kontrol X1</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
     <description>MIDI mapping for Native Instruments Traktor Kontrol X1.</description>
-    <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3809&amp;sid=c1bfe107f8ea6c65bf2294ff51a0920d</forums>
+    <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3809</forums>
   </info>
   <controller id="KontrolX1" port="">
     <scriptfiles>

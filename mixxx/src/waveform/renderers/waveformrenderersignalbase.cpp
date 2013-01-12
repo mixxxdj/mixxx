@@ -71,13 +71,9 @@ void WaveformRendererSignalBase::setup(const QDomNode &node) {
         m_alignment = Qt::AlignCenter;
     }
 
-    m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
-    m_axesColor = WSkinColor::getCorrectColor(m_axesColor);
-
-    if( !m_axesColor.isValid())
-        m_axesColor = QColor(245,245,245,128);
-
     m_colors.setup(node);
+    m_axesColor = m_colors.getAxesColor();
+
 
     onSetup(node);
 }

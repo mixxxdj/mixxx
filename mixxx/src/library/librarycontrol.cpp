@@ -38,36 +38,53 @@ LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
     // Make controls for library navigation and track loading. Leaking all these CO's, but oh well?
 
     // We don't know how many decks or samplers there will be, so create 100 of them.
-    for (int i = 0; i < 100; ++i) {
-        LoadToGroupController* pLoadController = new LoadToGroupController(this, PlayerManager::groupForDeck(i));
+    for (int i = 0; i < 10; ++i) {
+        LoadToGroupController* pLoadController = new LoadToGroupController(
+            this, PlayerManager::groupForDeck(i));
         connect(pLoadController, SIGNAL(loadToGroup(QString)),
                 this, SLOT(slotLoadSelectedTrackToGroup(QString)));
-        pLoadController = new LoadToGroupController(this, PlayerManager::groupForSampler(i));
+        pLoadController = new LoadToGroupController(
+            this, PlayerManager::groupForSampler(i));
+        connect(pLoadController, SIGNAL(loadToGroup(QString)),
+                this, SLOT(slotLoadSelectedTrackToGroup(QString)));
+        pLoadController = new LoadToGroupController(
+            this, PlayerManager::groupForPreviewDeck(i));
         connect(pLoadController, SIGNAL(loadToGroup(QString)),
                 this, SLOT(slotLoadSelectedTrackToGroup(QString)));
     }
 
-    m_pSelectNextTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextTrack")));
+    m_pSelectNextTrack = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[Playlist]", "SelectNextTrack")));
     connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextTrack(double)));
 
-    m_pSelectPrevTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectPrevTrack")));
+    m_pSelectPrevTrack = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[Playlist]", "SelectPrevTrack")));
     connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevTrack(double)));
 
-    m_pSelectNextPlaylist = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextPlaylist")));
+    m_pSelectNextPlaylist = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[Playlist]", "SelectNextPlaylist")));
     connect(m_pSelectNextPlaylist, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectNextPlaylist(double)));
+            this, SLOT(slotSelectNextSidebarItem(double)));
 
-    m_pSelectPrevPlaylist = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectPrevPlaylist")));
+    m_pSelectPrevPlaylist = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[Playlist]", "SelectPrevPlaylist")));
     connect(m_pSelectPrevPlaylist, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectPrevPlaylist(double)));
+            this, SLOT(slotSelectPrevSidebarItem(double)));
 
-    m_pLoadSelectedIntoFirstStopped = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped")));
+    m_pToggleSidebarItem = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem")));
+    connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
+            this, SLOT(slotToggleSelectedSidebarItem(double)));
+
+    m_pLoadSelectedIntoFirstStopped = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped")));
     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
-    m_pSelectTrackKnob = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob")));
+    m_pSelectTrackKnob = new ControlObjectThreadMain(
+        new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob")));
     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrackKnob(double)));
 }
@@ -77,18 +94,21 @@ LibraryControl::~LibraryControl() {
    delete m_pSelectPrevTrack;
    delete m_pSelectNextPlaylist;
    delete m_pSelectPrevPlaylist;
+   delete m_pToggleSidebarItem;
    delete m_pLoadSelectedIntoFirstStopped;
    delete m_pSelectTrackKnob;
 }
 
-void LibraryControl::bindWidget(WLibrarySidebar* pSidebarWidget, WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
+void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     if (m_pSidebarWidget != NULL) {
         disconnect(m_pSidebarWidget, 0, this, 0);
     }
     m_pSidebarWidget = pSidebarWidget;
     connect(m_pSidebarWidget, SIGNAL(destroyed()),
             this, SLOT(sidebarWidgetDeleted()));
+}
 
+void LibraryControl::bindWidget(WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
     if (m_pLibraryWidget != NULL) {
         disconnect(m_pLibraryWidget, 0, this, 0);
     }
@@ -168,44 +188,30 @@ void LibraryControl::slotSelectTrackKnob(double v)
     activeView->moveSelection(i);
 }
 
-
-void LibraryControl::slotSelectNextPlaylist(double v) {
-    if (m_pSidebarWidget == NULL)
-        return;
-
-    QWidget* destWidget = m_pSidebarWidget;
-    if (!destWidget) {
-
+void LibraryControl::slotSelectNextSidebarItem(double v) {
+    if (m_pSidebarWidget == NULL) {
         return;
     }
-
-    if (v > 0)
-        QApplication::postEvent(destWidget,
-                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Down,
-                                              Qt::NoModifier, QString(), true));
-    else
-        QApplication::postEvent(destWidget,
-                                new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Down,
-                                              Qt::NoModifier, QString(), true));
-
+    QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+        v > 0 ? QEvent::KeyPress : QEvent::KeyRelease,
+        (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
 }
 
-void LibraryControl::slotSelectPrevPlaylist(double v) {
-    if (m_pSidebarWidget == NULL)
-        return;
-
-    QWidget* destWidget = m_pSidebarWidget;
-    if (!destWidget) {
+void LibraryControl::slotSelectPrevSidebarItem(double v) {
+    if (m_pSidebarWidget == NULL) {
         return;
     }
+    QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+        v > 0 ? QEvent::KeyPress : QEvent::KeyRelease,
+        (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
+}
 
-    if (v)
-        QApplication::postEvent(destWidget,
-                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Up,
-                                              Qt::NoModifier, QString(), true));
-    else
-        QApplication::postEvent(destWidget,
-                                new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Up,
-                                              Qt::NoModifier, QString(), true));
+void LibraryControl::slotToggleSelectedSidebarItem(double v) {
+    if (m_pSidebarWidget == NULL) {
+        return;
+    }
+    QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
+        v > 0 ? QEvent::KeyPress : QEvent::KeyRelease,
+        (int)Qt::Key_Return, Qt::NoModifier, QString(), true));
 }
 

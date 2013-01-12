@@ -187,7 +187,7 @@ playback and outbound link statistics</string>
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>Other Librarys</string>
+      <string>Other Libraries</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="0" column="0">

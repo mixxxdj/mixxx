@@ -25,6 +25,7 @@
 #include "sounddeviceportaudio.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
+#include "util/timer.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -303,6 +304,8 @@ QString SoundDevicePortAudio::getError() const {
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         float *output, short *in, const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags) {
+    Q_UNUSED(timeInfo);
+    ScopedTimer t("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
 
@@ -334,6 +337,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     //Send audio from the soundcard's input off to the SoundManager...
     if (in && framesPerBuffer > 0)
     {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
         //Note: Input is processed first so that any ControlObject changes made in response to input
         //      is processed as soon as possible (that is, when m_pSoundManager->requestBuffer() is
         //      called below.)
@@ -359,6 +363,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
 
     if (output && framesPerBuffer > 0)
     {
+        ScopedTimer t("SoundDevicePortAudio::callbackProcess output " + getInternalName());
         assert(iFrameSize > 0);
         QHash<AudioOutput, const CSAMPLE*> outputAudio
             = m_pSoundManager->requestBuffer(m_audioOutputs,
@@ -423,4 +428,3 @@ int paV19Callback(const void *inputBuffer, void *outputBuffer,
     return ((SoundDevicePortAudio*) soundDevice)->callbackProcess(framesPerBuffer,
             (float*) outputBuffer, (short*) inputBuffer, timeInfo, statusFlags);
 }
-

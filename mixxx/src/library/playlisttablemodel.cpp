@@ -6,6 +6,7 @@
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "mixxxutils.cpp"
+#include "playermanager.h"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
@@ -40,9 +41,10 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
     QStringList columns;
-    columns << PLAYLISTTRACKSTABLE_TRACKID
+    columns << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
             << PLAYLISTTRACKSTABLE_POSITION
-            << PLAYLISTTRACKSTABLE_DATETIMEADDED;
+            << PLAYLISTTRACKSTABLE_DATETIMEADDED
+            << "'' as preview";
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
@@ -64,6 +66,8 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
         LOG_FAILED_QUERY(query);
     }
 
+    columns[0] = LIBRARYTABLE_ID;
+    columns[3] = "preview";
     setTable(playlistTableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
@@ -344,11 +348,13 @@ void PlaylistTableModel::slotSearch(const QString& searchText) {
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
+        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
     return false;
@@ -372,6 +378,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_REMOVE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS
