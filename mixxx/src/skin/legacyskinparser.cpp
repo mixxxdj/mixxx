@@ -1026,13 +1026,9 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
         "}");
     // Style the library BPM Button with a default image
     styleHack.append(QString(
-        "#LibraryBPMButton { background: transparent; border: 0; }"
-        "#LibraryBPMButton:checked {"
-        "  image: url(:/images/library/checked.png);"
-        "}"
-        "#LibraryBPMButton:!checked {"
-        "  image: url(:/images/library/unchecked.png);"
-        "}"));
+        "QPushButton#LibraryBPMButton { background: transparent; border: 0; }"
+        "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/checked.png);}"
+        "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/unchecked.png);}"));
         
     if (!XmlParse::selectNode(node, "FgColor").isNull()) {
         color.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
