@@ -21,8 +21,8 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* pare
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<GLWaveformRendererSimpleSignal>();
-    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
+    addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);

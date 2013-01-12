@@ -46,10 +46,13 @@ void BPMDelegate::paint(QPainter *painter,
     m_pEditor->setData(index,m_columnLock);
     m_pEditor->setPalette(option.palette);
     m_pEditor->setGeometry(option.rect);
-    if (option.state == QStyle::State_Selected)
+    if (option.state == QStyle::State_Selected) {
         painter->fillRect(option.rect, option.palette.base());
-    QPixmap map = QPixmap::grabWidget(m_pEditor);
-    painter->drawPixmap(option.rect.x(),option.rect.y(),map);
+    }
+    painter->save();
+    painter->translate(option.rect.topLeft());
+    m_pEditor->render(painter);
+    painter->restore();
 }
 
 void BPMDelegate::updateEditorGeometry(QWidget *editor,
