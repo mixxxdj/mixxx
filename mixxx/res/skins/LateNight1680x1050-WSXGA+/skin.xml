@@ -3310,7 +3310,7 @@
 	############################################################################################
 	-->
 	<WidgetGroup>
-		<Pos>0,149</Pos>
+		<Pos>160,149</Pos>
 		<Size>521,45</Size>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
