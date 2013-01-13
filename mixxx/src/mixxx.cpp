@@ -479,16 +479,15 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         //TODO (XXX) add dialog to warn user and launch skin choice page
         resize(640,480);
     } else {
-        // this has to be after the OpenGL widgets are created or depending on a
-        // million different variables the first waveform may be horribly
-        // corrupted. See bug 521509 -- bkgood ?? -- vrince
-        setCentralWidget(m_pView);
-
         // keep gui centered (esp for fullscreen)
         m_pView->setLayout( new QHBoxLayout(m_pView));
         m_pView->layout()->setContentsMargins(0,0,0,0);
         m_pView->layout()->addWidget(m_pWidgetParent);
-        resize(m_pView->size());
+
+        // this has to be after the OpenGL widgets are created or depending on a
+        // million different variables the first waveform may be horribly
+        // corrupted. See bug 521509 -- bkgood ?? -- vrince
+        setCentralWidget(m_pView);
     }
 
     //move the app in the center of the primary screen
@@ -1678,26 +1677,24 @@ void MixxxApp::rebootMixxxView() {
                               tr("The selected skin cannot be loaded."));
     }
     else {
-        // don't move this before loadDefaultSkin above. bug 521509 --bkgood
-        // NOTE: (vrince) I don't know this comment is relevant now ...
-        setCentralWidget(m_pView);
-
         // keep gui centered (esp for fullscreen)
         m_pView->setLayout( new QHBoxLayout(m_pView));
         m_pView->layout()->setContentsMargins(0,0,0,0);
         m_pView->layout()->addWidget(m_pWidgetParent);
 
-         //qDebug() << "view size" << m_pView->size();
-
-        //TODO: (vrince) size is good but resize do not append !!
-        resize(m_pView->size());
+        // don't move this before loadDefaultSkin above. bug 521509 --bkgood
+        // NOTE: (vrince) I don't know this comment is relevant now ...
+        setCentralWidget(m_pView);
+        update();
+        adjustSize();
+        //qDebug() << "view size" << m_pView->size() << size();
     }
 
     if( wasFullScreen) {
         slotViewFullScreen(true);
     } else {
-        move(initPosition.x() + (initSize.width() - width()) / 2,
-             initPosition.y() + (initSize.height() - height()) / 2);
+        move(initPosition.x() + (initSize.width() - m_pView->width()) / 2,
+             initPosition.y() + (initSize.height() - m_pView->height()) / 2);
     }
 
     WaveformWidgetFactory::instance()->start();

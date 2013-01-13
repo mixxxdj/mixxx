@@ -86,11 +86,15 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     // it's playing.
     m_pButton->setChecked(index.data().toBool() && playing);
 
-    if (option.state == QStyle::State_Selected)
+    if (option.state == QStyle::State_Selected) {
         painter->fillRect(option.rect, option.palette.base());
+    }
 
-    QPixmap map = QPixmap::grabWidget(m_pButton);
-    painter->drawPixmap(option.rect.x(), option.rect.y(), map);
+    painter->save();
+    // Render button at the desired position
+    painter->translate(option.rect.topLeft());
+    m_pButton->render(painter);
+    painter->restore();
 }
 
 void PreviewButtonDelegate::updateEditorGeometry(QWidget *editor,
