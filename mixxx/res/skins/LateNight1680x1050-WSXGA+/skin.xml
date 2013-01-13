@@ -3633,7 +3633,7 @@
 	<WidgetGroup>
 		<Pos>678,150</Pos>
 		<Size>324,214</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 
 			<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
@@ -4402,7 +4402,7 @@
 	<WidgetGroup>
 		<Pos>0,194</Pos>
 		<Size>677,170</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<!--
 			**********************************************
@@ -4850,7 +4850,7 @@
 			<WidgetGroup>
 				<Pos>320,115</Pos>
 				<Size>e,54</Size>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 
 					<!--
