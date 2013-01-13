@@ -4568,7 +4568,7 @@
 					<Pressed>btn_play1_overdown.png</Pressed>
 					<Unpressed>btn_play1_over.png</Unpressed>
 				</State>
-				<Pos>251,141</Pos>
+				<Pos>250,141</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],play</ConfigKey>
 					<EmitOnDownPress>true</EmitOnDownPress>
@@ -4596,7 +4596,7 @@
 					<Pressed>btn_cue1_overdown.png</Pressed>
 					<Unpressed>btn_cue1.png</Unpressed>
 				</State>
-				<Pos>251,115</Pos>
+				<Pos>250,115</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],cue_default</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -5619,7 +5619,7 @@
 					<Pressed>btn_play2_overdown.png</Pressed>
 					<Unpressed>btn_play1_over.png</Unpressed>
 				</State>
-				<Pos>251,141</Pos>
+				<Pos>250,141</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],play</ConfigKey>
 					<EmitOnDownPress>true</EmitOnDownPress>
@@ -5647,7 +5647,7 @@
 					<Pressed>btn_cue2_overdown.png</Pressed>
 					<Unpressed>btn_cue2.png</Unpressed>
 				</State>
-				<Pos>251,115</Pos>
+				<Pos>250,115</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],cue_default</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
