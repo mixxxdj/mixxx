@@ -3686,116 +3686,6 @@
 					</SliderComposed>
 
 					<!--
-					****************************************
-					 Button- Play
-					****************************************
-					-->
-					<PushButton>
-						<TooltipId>play_cue_set</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<RightClickIsPushButton>true</RightClickIsPushButton>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_play1_down.png</Pressed>
-							<Unpressed>btn_play1.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_play1_overdown.png</Pressed>
-							<Unpressed>btn_play1_over.png</Unpressed>
-						</State>
-						<Pos>16,185</Pos>
-						<Connection>
-							<ConfigKey>[Channel1],play</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel1],cue_set</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
-							<ButtonState>RightButton</ButtonState>
-							<ConnectValueToWidget>false</ConnectValueToWidget>
-						</Connection>
-					</PushButton>
-					<PushButton>
-						<TooltipId>play_cue_set</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<RightClickIsPushButton>true</RightClickIsPushButton>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_play2_down.png</Pressed>
-							<Unpressed>btn_play2.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_play2_overdown.png</Pressed>
-							<Unpressed>btn_play2_over.png</Unpressed>
-						</State>
-						<Pos>258,185</Pos>
-						<Connection>
-							<ConfigKey>[Channel2],play</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel2],cue_set</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
-							<ButtonState>RightButton</ButtonState>
-							<ConnectValueToWidget>false</ConnectValueToWidget>
-						</Connection>
-					</PushButton>
-
-					<!--
-					**********************************************
-					Button- Cue
-					**********************************************
-					-->
-					<PushButton>
-						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
-						<Style></Style>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_cue1_overdown.png</Pressed>
-							<Unpressed>btn_cue1.png</Unpressed>
-						</State>
-						<Pos>16,159</Pos>
-						<Connection>
-							<ConfigKey>[Channel1],cue_default</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
-					<PushButton>
-						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
-						<Style></Style>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_cue2_overdown.png</Pressed>
-							<Unpressed>btn_cue2.png</Unpressed>
-						</State>
-						<Pos>258,159</Pos>
-						<Connection>
-							<ConfigKey>[Channel2],cue_default</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
-
-					<!--
 					**********************************************
 					Button- Prelisten / Monitoring
 					**********************************************
@@ -5699,6 +5589,74 @@
 				<Pos>652,89</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],keylock</ConfigKey>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
+			TODO: Jus
+			Move Play & Cue control into Playback control sub-widget
+			**********************************************
+			-->
+
+			<!--
+			****************************************
+			 Button- Play
+			****************************************
+			-->
+			<PushButton>
+				<TooltipId>play_cue_set</TooltipId>
+				<Style></Style>
+				<NumberStates>2</NumberStates>
+				<RightClickIsPushButton>true</RightClickIsPushButton>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_play2_down.png</Pressed>
+					<Unpressed>btn_play2.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_play2_overdown.png</Pressed>
+					<Unpressed>btn_play1_over.png</Unpressed>
+				</State>
+				<Pos>251,141</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],play</ConfigKey>
+					<EmitOnDownPress>true</EmitOnDownPress>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+				<Connection>
+					<ConfigKey>[Channel2],cue_set</ConfigKey>
+					<EmitOnDownPress>true</EmitOnDownPress>
+					<ButtonState>RightButton</ButtonState>
+					<ConnectValueToWidget>false</ConnectValueToWidget>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
+			Button- Cue
+			**********************************************
+			-->
+			<PushButton>
+				<TooltipId>cue_default_cue_gotoandstop</TooltipId>
+				<Style></Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_cue2_overdown.png</Pressed>
+					<Unpressed>btn_cue2.png</Unpressed>
+				</State>
+				<Pos>251,115</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],cue_default</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+				<Connection>
+					<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>RightButton</ButtonState>
 				</Connection>
 			</PushButton>
 
