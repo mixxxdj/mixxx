@@ -100,6 +100,9 @@
  *             to keep track synchronized
  * 2012-09-24  Use Auto Tempo LED as a beat indicator
  *             Reduce sensitivity of playlist scrolling (Scroll + Jog)
+ * 2013-01-13  Map TAB button to ToggleSelectedSidebarItem
+ *             Rework playlist scrolling (Scroll + Jog) completely to solve
+ *             sensitivity issues
  * ...to be continued...
  *****************************************************************************/
 
@@ -121,8 +124,8 @@ VestaxVCI300.disableScratchingPlayNegJogDeltaThreshold = 4; /*TUNABLE PARAM*/
 VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold = 7; /*TUNABLE PARAM*/
 VestaxVCI300.disableScratchingTimeoutMillisec = 20; // Mixxx minimum timeout = 20 ms
 
-VestaxVCI300.jogScrollDeltaStepsPerTrack = 26; // 1664 / 26 = 64 tracks per revolution /*TUNABLE PARAM*/
-VestaxVCI300.jogScrollDeltaAdjustment = VestaxVCI300.jogScrollDeltaStepsPerTrack / 2;
+VestaxVCI300.jogScrollBias = 0.0; // Initialize jog scroll
+VestaxVCI300.jogScrollDeltaStepsPerTrack = 13; // 1664 / 13 = 128 tracks per revolution /*TUNABLE PARAM*/
 
 VestaxVCI300.pitchFineTuneStepPercent100 = 1; // 1/100 %
 
@@ -328,6 +331,9 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 			this.jogDelta += 0x4000;
 		}
 		this.jogMoveLED.trigger(0 != this.jogDelta);
+		// Reset jog scrolling
+		jogScrollBias = VestaxVCI300.jogScrollBias;
+		VestaxVCI300.jogScrollBias = 0.0;
 		if (this.shiftState && !engine.getValue(this.group,"play")) {
 			// fast track search
 			var playposition = engine.getValue(this.group, "playposition");
@@ -337,16 +343,15 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 			}
 		} else if (VestaxVCI300.scrollState && !engine.getValue(this.group,"play")) {
 			// scroll playlist
-			var adjustedJogDelta;
-			if (this.jogDelta < 0) {
-				adjustedJogDelta = this.jogDelta - VestaxVCI300.jogScrollDeltaAdjustment;
-			} else {
-				adjustedJogDelta = this.jogDelta + VestaxVCI300.jogScrollDeltaAdjustment;
-			}
+			var jogScrollDelta;
+			jogScrollDelta = jogScrollBias + (this.jogDelta / VestaxVCI300.jogScrollDeltaStepsPerTrack);
+			var jogScrollDeltaRound;
+			jogScrollDeltaRound = Math.round(jogScrollDelta);
 			engine.setValue(
 				"[Playlist]",
 				"SelectTrackKnob",
-				Math.round(adjustedJogDelta / VestaxVCI300.jogScrollDeltaStepsPerTrack));
+				jogScrollDeltaRound);
+			VestaxVCI300.jogScrollBias = jogScrollDelta - jogScrollDeltaRound;
 		} else {
 			if (engine.isScratching(this.number)) {
 				// scratching
@@ -422,7 +427,7 @@ VestaxVCI300.Deck.prototype.updateBeatSyncState = function () {
 		engine.getValue(this.group, "beatsync")
 		|| (engine.getValue(this.group, "play")
 		&& engine.getValue(this.group, "beat_active")));
-}
+};
 
 VestaxVCI300.Deck.prototype.initValues = function () {
 	this.shiftState = false;
@@ -1073,9 +1078,7 @@ VestaxVCI300.onNavigationFwdButton = function (channel, control, value, status, 
 };
 
 VestaxVCI300.onNavigationTabButton = function (channel, control, value, status, group) {
-	if (VestaxVCI300.getButtonPressed(value)) {
-		// TODO
-	}
+	engine.setValue("[Playlist]", "ToggleSelectedSidebarItem", VestaxVCI300.getButtonPressed(value));
 };
 
 
