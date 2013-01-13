@@ -25,6 +25,12 @@
 	See CHANGELOG.txt for the list of changes.
 	-->
 
+	<!--
+	TODO: Jus
+	* Move Play & Cue controls into Playback control sub-widget
+	* Add Kill switches for Deck 3 & 4, make them visible for Deck 1 & 2
+	-->
+
 <!DOCTYPE skin>
 <skin>
 	<!--
@@ -3911,12 +3917,13 @@
 					RotaryFader- Channel filter and gain
 					**********************************************
 					-->
+					<!--Channel 1-->
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>36,1</Pos>
+						<Pos>45,7</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],pregain</ConfigKey>
 						</Connection>
@@ -3926,7 +3933,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>36,39</Pos>
+						<Pos>45,46</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterHigh</ConfigKey>
 						</Connection>
@@ -3936,7 +3943,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>36,78</Pos>
+						<Pos>45,85</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterMid</ConfigKey>
 						</Connection>
@@ -3946,18 +3953,18 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>36,115</Pos>
+						<Pos>45,122</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterLow</ConfigKey>
 						</Connection>
 					</Knob>
-
+					<!--Channel 2-->
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>248,1</Pos>
+						<Pos>239,7</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],pregain</ConfigKey>
 						</Connection>
@@ -3967,7 +3974,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>248,39</Pos>
+						<Pos>239,46</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterHigh</ConfigKey>
 						</Connection>
@@ -3977,7 +3984,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>248,78</Pos>
+						<Pos>239,85</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterMid</ConfigKey>
 						</Connection>
@@ -3987,9 +3994,91 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>248,115</Pos>
+						<Pos>239,122</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterLow</ConfigKey>
+						</Connection>
+					</Knob>
+					<!--Channel 3-->
+					<Knob>
+						<TooltipId>pregain</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>5,7</Pos>
+						<Connection>
+							<ConfigKey>[Channel3],pregain</ConfigKey>
+						</Connection>
+					</Knob>
+					<Knob>
+						<TooltipId>filterHigh</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>5,46</Pos>
+						<Connection>
+							<ConfigKey>[Channel3],filterHigh</ConfigKey>
+						</Connection>
+					</Knob>
+					<Knob>
+						<TooltipId>filterMid</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>5,85</Pos>
+						<Connection>
+							<ConfigKey>[Channel3],filterMid</ConfigKey>
+						</Connection>
+					</Knob>
+					<Knob>
+						<TooltipId>filterLow</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>5,122</Pos>
+						<Connection>
+							<ConfigKey>[Channel3],filterLow</ConfigKey>
+						</Connection>
+					</Knob>
+					<!--Channel 4-->
+					<Knob>
+						<TooltipId>pregain</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>279,7</Pos>
+						<Connection>
+							<ConfigKey>[Channel4],pregain</ConfigKey>
+						</Connection>
+					</Knob>
+					<Knob>
+						<TooltipId>filterHigh</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>279,46</Pos>
+						<Connection>
+							<ConfigKey>[Channel4],filterHigh</ConfigKey>
+						</Connection>
+					</Knob>
+					<Knob>
+						<TooltipId>filterMid</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>279,85</Pos>
+						<Connection>
+							<ConfigKey>[Channel4],filterMid</ConfigKey>
+						</Connection>
+					</Knob>
+					<Knob>
+						<TooltipId>filterLow</TooltipId>
+						<Style></Style>
+						<NumberStates>64</NumberStates>
+						<Path>knobs/knob_rotary_s%1.png</Path>
+						<Pos>279,122</Pos>
+						<Connection>
+							<ConfigKey>[Channel4],filterLow</ConfigKey>
 						</Connection>
 					</Knob>
 
@@ -4540,13 +4629,6 @@
 					<ConfigKey>[Channel1],keylock</ConfigKey>
 				</Connection>
 			</PushButton>
-
-			<!--
-			**********************************************
-			TODO: Jus
-			Move Play & Cue control into Playback control sub-widget
-			**********************************************
-			-->
 
 			<!--
 			****************************************
@@ -5591,13 +5673,6 @@
 					<ConfigKey>[Channel2],keylock</ConfigKey>
 				</Connection>
 			</PushButton>
-
-			<!--
-			**********************************************
-			TODO: Jus
-			Move Play & Cue control into Playback control sub-widget
-			**********************************************
-			-->
 
 			<!--
 			****************************************
