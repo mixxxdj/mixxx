@@ -62,8 +62,6 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
-    const double offset = firstVisualIndex;
-
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
             (double)m_waveformRenderer->getWidth();
@@ -106,7 +104,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         const double xSampleWidth = gain * x;
 
         // Effective visual index of x
-        const double xVisualSampleIndex = xSampleWidth + offset;
+        const double xVisualSampleIndex = xSampleWidth + firstVisualIndex;
 
         // Our current pixel (x) corresponds to a number of visual samples
         // (visualSamplerPerPixel) in our waveform object. We take the max of
@@ -126,9 +124,6 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         // point for this pixel.
         const int lastVisualFrame = dataSize / 2 - 1;
         if (visualFrameStop < 0 || visualFrameStart > lastVisualFrame) {
-            m_lowLines[actualLowLineNumber++].setLine(x, 0.0, x, 0.0);
-            m_midLines[actualMidLineNumber++].setLine(x, 0.0, x, 0.0);
-            m_highLines[actualHighLineNumber++].setLine(x, 0.0, x, 0.0);
             continue;
         }
 

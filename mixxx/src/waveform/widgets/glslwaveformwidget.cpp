@@ -22,8 +22,8 @@ GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent)
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     signalRenderer_ = addRenderer<GLSLWaveformRendererSignal>();
-    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
+    addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
