@@ -3566,6 +3566,60 @@
 				</Connection>
 			</Knob>
 
+			<!--
+			**********************************************
+			Visual - Volume level display
+			**********************************************
+			-->
+
+			<VuMeter>
+				<TooltipId>master_VuMeterL</TooltipId>
+				<Style></Style>
+				<PathVu>btn_volume_display_master1_over.png</PathVu>
+				<PathBack>btn_volume_display_master1.png</PathBack>
+				<Pos>420,15</Pos>
+				<Horizontal>true</Horizontal>
+				<PeakHoldSize>5</PeakHoldSize>
+				<PeakHoldTime>500</PeakHoldTime>
+				<PeakFallTime>50</PeakFallTime>
+				<PeakFallStep>2</PeakFallStep>
+				<Connection>
+					<ConfigKey>[Master],VuMeterL</ConfigKey>
+				</Connection>
+			</VuMeter>
+			<VuMeter>
+				<TooltipId>master_VuMeterR</TooltipId>
+				<Style></Style>
+				<PathVu>btn_volume_display_master2_over.png</PathVu>
+				<PathBack>btn_volume_display_master2.png</PathBack>
+				<Pos>420,26</Pos>
+				<Horizontal>true</Horizontal>
+				<PeakHoldSize>5</PeakHoldSize>
+				<PeakHoldTime>500</PeakHoldTime>
+				<PeakFallTime>50</PeakFallTime>
+				<PeakFallStep>2</PeakFallStep>
+				<Connection>
+					<ConfigKey>[Master],VuMeterR</ConfigKey>
+				</Connection>
+			</VuMeter>
+
+			<!--
+			**********************************************
+			Visual- Volume peak indicator
+			**********************************************
+			-->
+			<StatusLight>
+				<TooltipId>master_PeakIndicator</TooltipId>
+				<Style></Style>
+				<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
+				<PathBack>btn_clipping_master.png</PathBack>
+				<Pos>504,15</Pos>
+				<Horizontal>true</Horizontal>
+				<Connection>
+					<ConfigKey>[Master],PeakIndicator</ConfigKey>
+				</Connection>
+			</StatusLight>
+
 		</Children>
 	</WidgetGroup>
 
@@ -3579,7 +3633,7 @@
 	<WidgetGroup>
 		<Pos>678,150</Pos>
 		<Size>324,214</Size>
-		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 
 			<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
@@ -3653,7 +3707,7 @@
 						<Style></Style>
 						<Handle>knob_volume1.png</Handle>
 						<Slider>slider_volume1.png</Slider>
-						<Pos>83,17</Pos>
+						<Pos>121,17</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel1],volume</ConfigKey>
@@ -3665,14 +3719,37 @@
 						<Style></Style>
 						<Handle>knob_volume2.png</Handle>
 						<Slider>slider_volume2.png</Slider>
-						<Pos>195,17</Pos>
+						<Pos>161,17</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel2],volume</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</SliderComposed>
-
+					<SliderComposed>
+						<TooltipId>channel_volume</TooltipId>
+						<Style></Style>
+						<Handle>knob_volume1.png</Handle>
+						<Slider>slider_volume1.png</Slider>
+						<Pos>82,17</Pos>
+						<Horizontal>false</Horizontal>
+						<Connection>
+							<ConfigKey>[Channel3],volume</ConfigKey>
+							<EmitOnDownPress>false</EmitOnDownPress>
+						</Connection>
+					</SliderComposed>
+					<SliderComposed>
+						<TooltipId>channel_volume</TooltipId>
+						<Style></Style>
+						<Handle>knob_volume2.png</Handle>
+						<Slider>slider_volume2.png</Slider>
+						<Pos>200,17</Pos>
+						<Horizontal>false</Horizontal>
+						<Connection>
+							<ConfigKey>[Channel4],volume</ConfigKey>
+							<EmitOnDownPress>false</EmitOnDownPress>
+						</Connection>
+					</SliderComposed>
 					<!--
 					**********************************************
 					Slider- Crossfader
@@ -3710,7 +3787,7 @@
 							<Pressed>btn_pfl1_overdown.png</Pressed>
 							<Unpressed>btn_pfl1_over.png</Unpressed>
 						</State>
-						<Pos>94,124</Pos>
+						<Pos>130,124</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],pfl</ConfigKey>
 						</Connection>
@@ -3729,12 +3806,49 @@
 							<Pressed>btn_pfl2_overdown.png</Pressed>
 							<Unpressed>btn_pfl2_over.png</Unpressed>
 						</State>
-						<Pos>206,124</Pos>
+						<Pos>170,124</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],pfl</ConfigKey>
 						</Connection>
 					</PushButton>
-
+					<PushButton>
+						<TooltipId>pfl</TooltipId>
+						<Style></Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_pfl1_down.png</Pressed>
+							<Unpressed>btn_pfl1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_pfl1_overdown.png</Pressed>
+							<Unpressed>btn_pfl1_over.png</Unpressed>
+						</State>
+						<Pos>92,124</Pos>
+						<Connection>
+							<ConfigKey>[Channel3],pfl</ConfigKey>
+						</Connection>
+					</PushButton>
+					<PushButton>
+						<TooltipId>pfl</TooltipId>
+						<Style></Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_pfl2_down.png</Pressed>
+							<Unpressed>btn_pfl2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_pfl2_overdown.png</Pressed>
+							<Unpressed>btn_pfl2_over.png</Unpressed>
+						</State>
+						<Pos>209,124</Pos>
+						<Connection>
+							<ConfigKey>[Channel4],pfl</ConfigKey>
+						</Connection>
+					</PushButton>
 					<!--
 					**********************************************
 					Button- FX (Flanger)
@@ -3754,7 +3868,7 @@
 							<Pressed>btn_fx1_overdown.png</Pressed>
 							<Unpressed>btn_fx1_over.png</Unpressed>
 						</State>
-						<Pos>137,124</Pos>
+						<Pos>53,159</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],flanger</ConfigKey>
 						</Connection>
@@ -3773,12 +3887,49 @@
 							<Pressed>btn_fx2_overdown.png</Pressed>
 							<Unpressed>btn_fx2_over.png</Unpressed>
 						</State>
-						<Pos>163,124</Pos>
+						<Pos>247,159</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],flanger</ConfigKey>
 						</Connection>
 					</PushButton>
-
+					<PushButton>
+						<TooltipId>flanger</TooltipId>
+						<Style></Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_fx1_down.png</Pressed>
+							<Unpressed>btn_fx1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_fx1_overdown.png</Pressed>
+							<Unpressed>btn_fx1_over.png</Unpressed>
+						</State>
+						<Pos>12,159</Pos>
+						<Connection>
+							<ConfigKey>[Channel3],flanger</ConfigKey>
+						</Connection>
+					</PushButton>
+					<PushButton>
+						<TooltipId>flanger</TooltipId>
+						<Style></Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_fx2_down.png</Pressed>
+							<Unpressed>btn_fx1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_fx2_overdown.png</Pressed>
+							<Unpressed>btn_fx2_over.png</Unpressed>
+						</State>
+						<Pos>287,159</Pos>
+						<Connection>
+							<ConfigKey>[Channel4],flanger</ConfigKey>
+						</Connection>
+					</PushButton>
 					<!--
 					**********************************************
 					Button- Frequency Kill
@@ -3917,7 +4068,7 @@
 					RotaryFader- Channel filter and gain
 					**********************************************
 					-->
-					<!--Channel 1-->
+					<!--Deck 1-->
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
@@ -3958,7 +4109,7 @@
 							<ConfigKey>[Channel1],filterLow</ConfigKey>
 						</Connection>
 					</Knob>
-					<!--Channel 2-->
+					<!--Deck 2-->
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
@@ -3999,7 +4150,7 @@
 							<ConfigKey>[Channel2],filterLow</ConfigKey>
 						</Connection>
 					</Knob>
-					<!--Channel 3-->
+					<!--Deck 3-->
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
@@ -4040,7 +4191,7 @@
 							<ConfigKey>[Channel3],filterLow</ConfigKey>
 						</Connection>
 					</Knob>
-					<!--Channel 4-->
+					<!--Deck 4-->
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
@@ -4092,7 +4243,7 @@
 						<Style></Style>
 						<PathVu>btn_volume_display1_over.png</PathVu>
 						<PathBack>btn_volume_display1.png</PathBack>
-						<Pos>138,33</Pos>
+						<Pos>137,33</Pos>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
@@ -4122,7 +4273,7 @@
 						<Style></Style>
 						<PathVu>btn_volume_display1_over.png</PathVu>
 						<PathBack>btn_volume_display1.png</PathBack>
-						<Pos>127,33</Pos>
+						<Pos>99,33</Pos>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
@@ -4137,7 +4288,7 @@
 						<Style></Style>
 						<PathVu>btn_volume_display2_over.png</PathVu>
 						<PathBack>btn_volume_display2.png</PathBack>
-						<Pos>188,33</Pos>
+						<Pos>216,33</Pos>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
@@ -4147,6 +4298,7 @@
 							<ConfigKey>[Channel4],VuMeter</ConfigKey>
 						</Connection>
 					</VuMeter>
+					<!-- Moved to WidgetGroup : Volume, Balance & Headphones control
 					<VuMeter>
 						<TooltipId>master_VuMeterL</TooltipId>
 						<Style></Style>
@@ -4175,6 +4327,7 @@
 							<ConfigKey>[Master],VuMeterR</ConfigKey>
 						</Connection>
 					</VuMeter>
+					-->
 
 					<!--
 					**********************************************
@@ -4186,7 +4339,7 @@
 						<Style></Style>
 						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 						<PathBack>btn_clipping1.png</PathBack>
-						<Pos>138,19</Pos>
+						<Pos>137,19</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 						</Connection>
@@ -4206,7 +4359,7 @@
 						<Style></Style>
 						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 						<PathBack>btn_clipping1.png</PathBack>
-						<Pos>127,19</Pos>
+						<Pos>99,19</Pos>
 						<Connection>
 							<ConfigKey>[Channel3],PeakIndicator</ConfigKey>
 						</Connection>
@@ -4216,11 +4369,12 @@
 						<Style></Style>
 						<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 						<PathBack>btn_clipping2.png</PathBack>
-						<Pos>188,19</Pos>
+						<Pos>216,19</Pos>
 						<Connection>
 							<ConfigKey>[Channel4],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
+					<!-- Moved to WidgetGroup : Volume, Balance & Headphones control
 					<StatusLight>
 						<TooltipId>master_PeakIndicator</TooltipId>
 						<Style></Style>
@@ -4231,6 +4385,7 @@
 							<ConfigKey>[Master],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
+					-->
 				</Children>
 			</WidgetGroup>
 
