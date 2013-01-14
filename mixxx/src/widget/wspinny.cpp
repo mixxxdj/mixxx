@@ -235,14 +235,16 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     if (m_pFgImage && !m_pFgImage->isNull()) {
         // Now rotate the image and draw it on the screen.
         p.rotate(m_fAngle);
-        p.drawImage(-(width() / 2), -(height() / 2), *m_pFgImage);
+        p.drawImage(-(m_pFgImage->width() / 2),
+                -(m_pFgImage->height() / 2), *m_pFgImage);
     }
 
     if (bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull()) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);
-        p.drawImage(-(width() / 2), -(height() / 2), *m_pGhostImage);
+        p.drawImage(-(m_pGhostImage->width() / 2),
+                -(m_pGhostImage->height() / 2), *m_pGhostImage);
 
         //Rotate back to the playback position (not the ghost positon),
         //and draw the beat marks from there.
