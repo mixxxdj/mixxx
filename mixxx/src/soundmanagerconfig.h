@@ -37,7 +37,7 @@ public:
     };
     static const unsigned int kMaxLatency;
     static const QString kDefaultAPI;
-    static const unsigned int kDefaultSampleRate;
+    static const unsigned int kFallbackSampleRate;
     static const int kDefaultLatency;
 
     SoundManagerConfig();
