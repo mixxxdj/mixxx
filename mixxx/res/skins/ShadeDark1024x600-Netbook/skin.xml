@@ -212,7 +212,7 @@
 								<Group>[Sampler1]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
@@ -726,7 +726,7 @@
 								<Group>[Sampler2]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
@@ -1240,7 +1240,7 @@
 								<Group>[Sampler3]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
@@ -1754,7 +1754,7 @@
 								<Group>[Sampler4]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
@@ -2375,8 +2375,7 @@
 														<Style></Style>
 														<Group>[PreviewDeck1]</Group>
 														<Size>me,30f</Size>
-														<BgColor></BgColor>
-														<BgColor>#FFFFFF</BgColor>
+														<BgColor>#3F4249</BgColor>
 														<SignalHighColor>#FFE300</SignalHighColor>
 														<SignalMidColor>#0099FF</SignalMidColor>
 														<SignalLowColor>#FF0035</SignalLowColor>
@@ -3589,7 +3588,7 @@
 						<Channel>1</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
-						<BgColor></BgColor>
+						<BgColor>#3F4249</BgColor>
 						<!--<BgPixmap>style/style_bg_woverview.png</BgPixmap>-->
 						<SignalHighColor>#FFE300</SignalHighColor>
 						<SignalMidColor>#0099FF</SignalMidColor>
@@ -4934,7 +4933,7 @@
 						<Channel>2</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
-						<BgColor></BgColor>
+						<BgColor>#3F4249</BgColor>
 						<!--<BgPixmap>style/style_bg_woverview.png</BgPixmap>-->
 						<SignalHighColor></SignalHighColor>
 						<SignalHighColor>#FFE300</SignalHighColor>
