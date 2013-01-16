@@ -71,19 +71,19 @@ WOverview::~WOverview() {
 }
 
 void WOverview::setup(QDomNode node) {
-    // Background color and pixmap, default background color to transparent
-    m_qColorBackground = QColor(0, 0, 0, 0);
-    const QString bgColorName = WWidget::selectNodeQString(node, "BgColor");
-    if (!bgColorName.isNull()) {
-        m_qColorBackground.setNamedColor(bgColorName);
-        m_qColorBackground = WSkinColor::getCorrectColor(m_qColorBackground);
-    }
+    m_signalColors.setup(node);
+
+    m_qColorBackground = m_signalColors.getBgColor();
 
     // Clear the background pixmap, if it exists.
     m_backgroundPixmap = QPixmap();
     m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
     if (m_backgroundPixmapPath != "") {
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
+        if (m_backgroundPixmap.size() != size()) {
+            qDebug() << "WOverview: BgPixmap does not fit. Widget size:" << size()
+                     << "BgPixmap size: << m_backgroundPixmap.size()";
+        }
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
@@ -96,8 +96,6 @@ void WOverview::setup(QDomNode node) {
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
-
-    m_signalColors.setup(node);
 
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
@@ -527,8 +525,8 @@ void WOverview::paintEvent(QPaintEvent *) {
                 const float markPosition = offset + currentMark.m_pointControl->get() * gain;
 
                 const QLineF line(markPosition, 0.0, markPosition, (float)height());
-                painter.setPen( shadowPen);
-                painter.drawLine( line);
+                painter.setPen(shadowPen);
+                painter.drawLine(line);
 
                 painter.setPen(currentMark.m_color);
                 painter.drawLine(line);
@@ -556,7 +554,7 @@ void WOverview::paintEvent(QPaintEvent *) {
         }
 
         //draw current position
-        painter.setPen(m_qColorMarker);
+        painter.setPen(m_signalColors.getPlayPosColor());
         painter.setOpacity(0.9);
         painter.drawLine(m_iPos, 0, m_iPos, height());
 
