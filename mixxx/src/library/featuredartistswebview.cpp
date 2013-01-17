@@ -22,8 +22,12 @@
 
 #define LOAD_TIMEOUT 10000
 
-FeaturedArtistsWebView::FeaturedArtistsWebView(QWidget* parent, QString libraryPath, QString remoteURL, SongDownloader* downloader) : QWebView(parent), LibraryView()
-{
+FeaturedArtistsWebView::FeaturedArtistsWebView(QWidget* parent,
+                                               QString libraryPath,
+                                               QString remoteURL,
+                                               SongDownloader* downloader)
+                       : QWebView(parent),
+                         LibraryView() {
     m_sLibraryPath = libraryPath;
     m_sRemoteURL = remoteURL;
     m_sLocalErrorURL = "about:qt";
@@ -62,8 +66,7 @@ QString FeaturedArtistsWebView::userAgentForUrl (const QUrl & url) const
     return QCoreApplication::applicationName() + " " + QCoreApplication::applicationVersion();
 } */
 
-void FeaturedArtistsWebView::handleLoadFinished(bool ok)
-{
+void FeaturedArtistsWebView::handleLoadFinished(bool ok) {
     //If the remote webpage failed to load, show the
     //local copy of it.
     if (!ok)
@@ -77,8 +80,7 @@ void FeaturedArtistsWebView::handleLoadFinished(bool ok)
     }
 }
 
-void FeaturedArtistsWebView::checkWebpageLoadingProgress()
-{
+void FeaturedArtistsWebView::checkWebpageLoadingProgress() {
     if (QWebView::page()->bytesReceived() == 0) {
         qDebug() << "PROMO: Load timed out, loading local page";
         QWebView::stop();
@@ -87,18 +89,10 @@ void FeaturedArtistsWebView::checkWebpageLoadingProgress()
     }
 }
 
-FeaturedArtistsWebView::~FeaturedArtistsWebView()
-{
-
+FeaturedArtistsWebView::~FeaturedArtistsWebView() {
 }
 
-void FeaturedArtistsWebView::setup(QDomNode node)
-{
-	Q_UNUSED(node);
-}
-
-void FeaturedArtistsWebView::handleClickedLink(const QUrl& url)
-{
+void FeaturedArtistsWebView::handleClickedLink(const QUrl& url) {
     qDebug() << "link clicked!" << url;
 
     /*
@@ -124,8 +118,7 @@ void FeaturedArtistsWebView::handleClickedLink(const QUrl& url)
 }
 
 //TODO: Implement this for MIDI control
-void FeaturedArtistsWebView::keyPressEvent(QKeyEvent* event)
-{
+void FeaturedArtistsWebView::keyPressEvent(QKeyEvent* event) {
     Q_UNUSED(event);
     //Look at WTrackTableView::keyPressEvent(...) for some
     //code to start with...

@@ -54,7 +54,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     virtual void hideTracks(const QModelIndexList& indices);
-
     // Returns true if the BaseSqlTableModel has been initialized. Calling data
     // access methods on a BaseSqlTableModel which is not initialized is likely
     // to cause instability / crashes.
