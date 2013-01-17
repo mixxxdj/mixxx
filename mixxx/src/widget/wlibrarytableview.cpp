@@ -51,9 +51,6 @@ WLibraryTableView::~WLibraryTableView() {
     saveVScrollBarPosState();
 }
 
-void WLibraryTableView::setup(QDomNode node) {
-}
-
 void WLibraryTableView::loadVScrollBarPosState() {
     // TODO(rryan) I'm not sure I understand the value in saving the v-scrollbar
     // position across restarts of Mixxx. Now that we have different views for
