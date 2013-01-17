@@ -21,8 +21,8 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()) {
-    m_pAutoDJView = NULL;
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_pAutoDJView(NULL) {
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -42,7 +42,6 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                   m_pConfig,
                                   m_pTrackCollection,
                                   keyboard);
-    m_pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));

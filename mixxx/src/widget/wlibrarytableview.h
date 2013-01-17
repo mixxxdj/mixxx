@@ -20,7 +20,6 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
                       ConfigObject<ConfigValue>* pConfig,
                       ConfigKey vScrollBarPosKey);
     virtual ~WLibraryTableView();
-    virtual void setup(QDomNode node);
     virtual void moveSelection(int delta);
 
   signals:

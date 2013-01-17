@@ -23,32 +23,28 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
+
 class TrackCollection;
 
 #define MIXXX_PROMO_HTML_LOCATION "promo/promotracks.html"
 
 class BundledSongsWebView : public QWebView, public LibraryView
 {
-    Q_OBJECT
-    Q_PROPERTY(bool m_statTracking READ statTracking WRITE setStatTracking)
-            Q_PROPERTY(bool m_bFirstRun READ firstRun WRITE setFirstRun)
-
-            public:
-            BundledSongsWebView(QWidget* parent, TrackCollection* trackCollection,
-                                QString promoBundlePath,
-                                QString localURL, bool firstRun,
-                                ConfigObject<ConfigValue>* config);
+  Q_OBJECT
+  Q_PROPERTY(bool m_statTracking READ statTracking WRITE setStatTracking)
+  Q_PROPERTY(bool m_bFirstRun READ firstRun WRITE setFirstRun)
+  public:
+    BundledSongsWebView(QWidget* parent, TrackCollection* trackCollection,
+                        QString promoBundlePath,
+                        QString localURL, bool firstRun,
+                        ConfigObject<ConfigValue>* config);
     virtual ~BundledSongsWebView();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting() {};
-    virtual void onSearchCleared()  {};
-    virtual void onSearch(const QString&) {};
-    virtual void onShow();
-    virtual void keyPressEvent(QKeyEvent* event);
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
-    virtual void moveSelection(int delta);
+    void onShow();
+    void keyPressEvent(QKeyEvent* event);
+    void loadSelectedTrack();
+    void loadSelectedTrackToGroup(QString group);
+    void moveSelection(int delta);
     bool firstRun() const;
 
   public slots:
