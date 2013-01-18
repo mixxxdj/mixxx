@@ -5893,7 +5893,7 @@
 			<!-- Playback control sub-widget -->
 			<WidgetGroup>
 				<Pos>319,115</Pos>
-				<Size>357,54</Size>
+				<Size>e,54</Size>
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 
