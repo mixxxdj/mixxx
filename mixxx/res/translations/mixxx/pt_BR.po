@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2012-11-25 16:06+0200\n"
-"PO-Revision-Date: 2013-01-08 00:50+0000\n"
-"Last-Translator: pedferreira <pedferreira@ig.com.br>\n"
+"PO-Revision-Date: 2013-01-18 20:16+0000\n"
+"Last-Translator: Paulo Márcio da Hora <paulohora@ufba.br>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-09 04:39+0000\n"
-"X-Generator: Launchpad (build 16412)\n"
+"X-Launchpad-Export-Date: 2013-01-19 04:39+0000\n"
+"X-Generator: Launchpad (build 16430)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -379,7 +379,7 @@ msgstr "Não foi possível atualizar o arquivo metadados"
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "Controlador USB"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
