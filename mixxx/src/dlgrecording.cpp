@@ -54,71 +54,20 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     label->setText(tr("Start recording here ..."));
 }
 
-DlgRecording::~DlgRecording()
-{
+DlgRecording::~DlgRecording() {
 
 }
 
-void DlgRecording::onShow()
-{
+void DlgRecording::onShow() {
     m_recordingDir = m_pRecordingManager->getRecordingDir();
     m_browseModel.setPath(m_recordingDir);
 }
 
-void DlgRecording::setup(QDomNode node)
-{
-
-    QPalette pal = palette();
-
-    // Row colors
-    if (!WWidget::selectNode(node, "BgColorRowEven").isNull() &&
-        !WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
-        QColor r1;
-        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-        r1 = WSkinColor::getCorrectColor(r1);
-        QColor r2;
-        r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-        r2 = WSkinColor::getCorrectColor(r2);
-
-        // For now make text the inverse of the background so it's readable In
-        // the future this should be configurable from the skin with this as the
-        // fallback option
-        QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-
-        //setAlternatingRowColors ( true );
-
-        QColor fgColor;
-        fgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-        fgColor = WSkinColor::getCorrectColor(fgColor);
-
-        pal.setColor(QPalette::Base, r1);
-        pal.setColor(QPalette::AlternateBase, r2);
-        pal.setColor(QPalette::Text, text);
-        pal.setColor(QPalette::WindowText, fgColor);
-
-    }
-
-    setPalette(pal);
-
-    pushButtonRecording->setPalette(pal);
-    //m_pTrackTableView->setPalette(pal); //Since we're getting this passed into us already created,
-                                          //shouldn't need to set the palette.
-}
-
-void DlgRecording::onSearchStarting()
-{
-}
-
-void DlgRecording::onSearchCleared()
-{
-}
-
-void DlgRecording::refreshBrowseModel(){
+void DlgRecording::refreshBrowseModel() {
      m_browseModel.setPath(m_recordingDir);
 }
 
-void DlgRecording::onSearch(const QString& text)
-{
+void DlgRecording::onSearch(const QString& text) {
     m_proxyModel.search(text);
 }
 
@@ -138,8 +87,7 @@ void DlgRecording::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
 }
 
-void DlgRecording::toggleRecording(bool toggle)
-{
+void DlgRecording::toggleRecording(bool toggle) {
     Q_UNUSED(toggle);
     if (!m_pRecordingManager->isRecordingActive()) //If recording is enabled
     {
@@ -152,8 +100,7 @@ void DlgRecording::toggleRecording(bool toggle)
         m_pRecordingManager->stopRecording();
     }
 }
-void DlgRecording::slotRecordingEnabled(bool isRecording)
-{
+void DlgRecording::slotRecordingEnabled(bool isRecording) {
     if(isRecording){
         pushButtonRecording->setText((tr("Stop Recording")));
         //This will update the recorded track table view
@@ -166,8 +113,7 @@ void DlgRecording::slotRecordingEnabled(bool isRecording)
 
 }
 /** int bytes: the number of recorded bytes within a session **/
-void DlgRecording::slotBytesRecorded(long bytes)
-{
+void DlgRecording::slotBytesRecorded(long bytes) {
     double megabytes = bytes / 1048575.0f;
     QString byteStr = QString::number(megabytes,'f',2);
     QString text = (tr("Recording to file: ")) +m_pRecordingManager->getRecordingFile();

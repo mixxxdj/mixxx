@@ -48,6 +48,9 @@ class SoundDevicePortAudio : public SoundDevice
                 float *output, short *in,
                 const PaStreamCallbackTimeInfo *timeInfo,
                 PaStreamCallbackFlags statusFlags);
+        virtual unsigned int getDefaultSampleRate() const {
+            return (unsigned int)m_deviceInfo->defaultSampleRate;
+        }
     private:
         /** PortAudio stream for this device. */
         PaStream *m_pStream;
