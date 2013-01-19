@@ -26,9 +26,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
                  RecordingManager* pRecManager, MixxxKeyboard* pKeyboard);
     virtual ~DlgRecording();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting();
-    virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
     virtual void loadSelectedTrack();
