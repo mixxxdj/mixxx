@@ -37,12 +37,12 @@ class WTrackTableView : public WLibraryTableView {
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
+    void slotUnhide();
+    void slotPurge();
 
   private slots:
     void slotRemove();
     void slotHide();
-    void slotUnhide();
-    void slotPurge();
     void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotNextTrackInfo();

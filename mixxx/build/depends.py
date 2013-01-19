@@ -436,6 +436,8 @@ class MixxxCore(Feature):
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
+                   "dlghidden.cpp",
+                   "dlgmissing.cpp",
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
@@ -749,6 +751,8 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
         build.env.Uic4('dlgrecording.ui')
+        build.env.Uic4('dlghidden.ui')
+        build.env.Uic4('dlgmissing.ui')
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
