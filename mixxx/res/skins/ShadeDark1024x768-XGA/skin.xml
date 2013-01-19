@@ -138,7 +138,7 @@
 								</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -652,7 +652,7 @@
 								</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1166,7 +1166,7 @@
 								</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1680,7 +1680,7 @@
 								</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>

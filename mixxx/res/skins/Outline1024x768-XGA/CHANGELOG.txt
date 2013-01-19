@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.12  (19/01/2013)
+* Fix: Add fixed size width to <Size> attribute in Sampler's <Text> key , workaround for lp:1100071
+
 v1.11.0.11	(02/01/2013)
 * Feature: Use the new WidgetGroup <BackPath> property that support color schemes, lp:1094785
   Nullify the necessity for dummy background buttons on samplers
