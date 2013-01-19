@@ -15,8 +15,9 @@
  * -          Out 1/Loop   = loop in (Shift = clear)
  * -          Out 2/Loop   = loop out (Shift = clear)
  * -          Out 3/Loop   = enable/disable loop
- * -          Auto Loop    = beatloop (default: 4 beats)
- * - Shift  + Auto Loop    = reset number of beats to 4 if beatloop not active
+ * -          Auto Loop    = enter/exit beatloop (default: 4 beats)
+ * - Shift  + Auto Loop    = enter/exit beatlooproll (default: 4 beats)
+ * - Scroll + Auto Loop    = reset number of beats to 4 if beatloop not active
  * -          Pitch Shift  = fine tune the pitch +/-0.01
  * -          Half         = halve loop length
  * - Shift  + Half         = jump to start of track (while not playing)
@@ -40,6 +41,9 @@
  * -          PFL          = toggle PFL
  * - Shift  + PFL          = Load selected track into deck (while not playing)
  *                           and switch PFL to this deck
+ *   Back/Fwd              = sidebar navigation
+ *   Up/Down               = playlist navigation
+ *   Tab                   = expand/collapse selected sidebar item
  *
  * Open issues / TODOs
  * -------------------
@@ -51,7 +55,6 @@
  * - TODO: Blinking LEDs during reverse playback, ...
  * - TODO: Implement soft-takeover for "rate"
  * - TODO: Crates/Files/Browse buttons are connected but currently unused
- * - TODO: Navigation tab button is connected but currently unused
  * - TODO: Line fader curve knob is connected but currently unused
  * - TODO: Use Shift + Pitch Shift to change pitch range (rateRange)?
  *
@@ -64,45 +67,49 @@
  *
  * Revision history
  * ----------------
- * 2012-08-12: Initial revision for Mixxx 1.11.0
- * 2012-08-13: Show spinning wheels in scratch mode
- *             Fast track search while not playing: Shift + Jog
- * 2012-08-14: Fix typo to avoid crash when pressing Crates button
- *             Fix typo to correctly disconnect controls upon shutdown
- *             Fix array of auto loop beat lengths
- *             Connect and synchronize rateRange with preference settings
- *             Adjust behavior of Auto Tempo button:
- *               -         Auto Tempo = trigger "beatsync"
- *               - Shift + Auto Tempo = toggle "quantize"
- *             Manipulate crossfader curve via C.F.CURVE control
- *             Use Scroll + Jog to scroll the playlist
- *             Shift + Play = toggle "repeat"
- * 2012-08-15: Bugfixing, bugfixing, bugfixing
- *             Fix shutdown() function
- *             Shift + Cue sets a cue point while playing
- *             Scroll + Auto Tempo = BPM tap
- *             Switch hotcue behavior to default
- * 2012-08-24  Fix pitch shift buttons & LEDs
- *             Use fixed-point calculations for pitch shift up/down
- *             Re-organize hotcues
- *             Minor fixes
- * 2012-08-26  Fine-tuning of Cue button behavior and lighting
- *             Fine-tuning of Half/Double button behavior
- *             3 hotcues + looping
- *             Smart PFL switching
- * 2012-08-27  Code cleanup and minor fixes
- *             Take into account if deck is playing when disabling scratching
- *             Restore non-linear jog response
- * 2012-08-28  Soft-takeover moved to XML mapping file
- *             Fix smart PFL switching
- * 2012-09-17  Reduce "smartness" of PFL switching
- *             Censor: Use slip_enabled in conjunction with reverse playback
- *             to keep track synchronized
- * 2012-09-24  Use Auto Tempo LED as a beat indicator
- *             Reduce sensitivity of playlist scrolling (Scroll + Jog)
- * 2013-01-13  Map TAB button to ToggleSelectedSidebarItem
- *             Rework playlist scrolling (Scroll + Jog) completely to solve
- *             sensitivity issues
+ * 2012-08-12 - Initial revision for Mixxx 1.11.0
+ * 2012-08-13 - Show spinning wheels in scratch mode
+ *            - Fast track search while not playing: Shift + Jog
+ * 2012-08-14 - Fix typo to avoid crash when pressing Crates button
+ *            - Fix typo to correctly disconnect controls upon shutdown
+ *            - Fix array of auto loop beat lengths
+ *            - Connect and synchronize rateRange with preference settings
+ *            - Adjust behavior of Auto Tempo button:
+ *              -         Auto Tempo = trigger "beatsync"
+ *              - Shift + Auto Tempo = toggle "quantize"
+ *            - Manipulate crossfader curve via C.F.CURVE control
+ *            - Use Scroll + Jog to scroll the playlist
+ *            - Shift + Play = toggle "repeat"
+ * 2012-08-15 - Bugfixing, bugfixing, bugfixing
+ *            - Fix shutdown() function
+ *            - Shift + Cue sets a cue point while playing
+ *            - Scroll + Auto Tempo = BPM tap
+ *            - Switch hotcue behavior to default
+ * 2012-08-24 - Fix pitch shift buttons & LEDs
+ *            - Use fixed-point calculations for pitch shift up/down
+ *            - Re-organize hotcues
+ *            - Minor fixes
+ * 2012-08-26 - Fine-tuning of Cue button behavior and lighting
+ *            - Fine-tuning of Half/Double button behavior
+ *              3 hotcues + looping
+ *            - Smart PFL switching
+ * 2012-08-27 - Code cleanup and minor fixes
+ *            - Take into account if deck is playing when disabling scratching
+ *            - Restore non-linear jog response
+ * 2012-08-28 - Soft-takeover moved to XML mapping file
+ *            - Fix smart PFL switching
+ * 2012-09-17 - Reduce "smartness" of PFL switching
+ *            - Censor: Use slip_enabled in conjunction with reverse playback
+ *              to keep track synchronized
+ * 2012-09-24 - Use Auto Tempo LED as a beat indicator
+ *            - Reduce sensitivity of playlist scrolling (Scroll + Jog)
+ * 2013-01-13 - Map TAB button to ToggleSelectedSidebarItem
+ *            - Rework playlist scrolling (Scroll + Jog) completely to solve
+ *              sensitivity issues
+ * 2013-01-19 - Shift + Auto Loop: enter/exit beatlooproll
+ *            - Scroll + Auto Loop: reset number of beats to 4 if beatloop not
+ *              active (re-mapped from Shift + Auto Loop)
+ *            - Documentation updates
  * ...to be continued...
  *****************************************************************************/
 
@@ -1024,12 +1031,20 @@ VestaxVCI300.onOut3LoopButton = function (channel, control, value, status, group
 VestaxVCI300.onAutoLoopButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	var beatloopPrefix = "beatloop_" + VestaxVCI300.autoLoopBeatsArray[deck.autoLoopBeatsIndex];
-	if (deck.shiftState) {
+	if (VestaxVCI300.scrollState) {
 		if (VestaxVCI300.getButtonPressed(value) &&
 			!engine.getValue(group, beatloopPrefix + "_enabled")) {
 			// reset length to default for new loop
 			deck.autoLoopBeatsIndex = VestaxVCI300.defaultAutoLoopBeatsIndex;
 			deck.autoLoopLED.trigger(true);
+		} else {
+			engine.trigger(group, beatloopPrefix + "_enabled");
+		}
+	} else if (deck.shiftState) {
+		// toggle beatlooproll
+		var beatlooprollPrefix = "beatlooproll_" + VestaxVCI300.autoLoopBeatsArray[deck.autoLoopBeatsIndex];
+		if (VestaxVCI300.getButtonPressed(value)) {
+			engine.setValue(group, beatlooprollPrefix + "_activate", !engine.getValue(group, beatloopPrefix + "_enabled"));
 		} else {
 			engine.trigger(group, beatloopPrefix + "_enabled");
 		}
