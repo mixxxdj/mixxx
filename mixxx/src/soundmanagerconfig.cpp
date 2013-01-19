@@ -23,14 +23,15 @@
 const unsigned int SoundManagerConfig::kMaxLatency = 7;
 
 const QString SoundManagerConfig::kDefaultAPI = QString("None");
-const unsigned int SoundManagerConfig::kDefaultSampleRate = 48000;
+// Sample Rate even the cheap sound Devices will support most likely
+const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 // latency=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
 const int SoundManagerConfig::kDefaultLatency = 5;
 
-SoundManagerConfig::SoundManagerConfig()
-    : m_api("None")
-    , m_sampleRate(kDefaultSampleRate)
-    , m_latency(kDefaultLatency) {
+SoundManagerConfig::SoundManagerConfig() : 
+        m_api("None"),
+        m_sampleRate(kFallbackSampleRate),
+        m_latency(kDefaultLatency) {
     m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() + SOUNDMANAGERCONFIG_FILENAME);
 }
 
@@ -166,7 +167,7 @@ unsigned int SoundManagerConfig::getSampleRate() const {
 
 void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
     // making sure we don't divide by zero elsewhere
-    m_sampleRate = sampleRate != 0 ? sampleRate : kDefaultSampleRate;
+    m_sampleRate = sampleRate != 0 ? sampleRate : kFallbackSampleRate;
 }
 
 /**
@@ -315,28 +316,35 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
 #endif
         }
     }
+
+    unsigned int defaultSampleRate = kFallbackSampleRate;
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
         QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty()) {
             foreach (SoundDevice *device, outputDevices) {
-                if (device->getNumOutputChannels() < 2) continue;
+                if (device->getNumOutputChannels() < 2) {
+                    continue;
+                }
                 AudioOutput masterOut(AudioPath::MASTER, 0);
                 addOutput(device->getInternalName(), masterOut);
+                defaultSampleRate = device->getDefaultSampleRate();
                 break;
             }
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
         QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
-        if (sampleRates.contains(kDefaultSampleRate)) {
-            m_sampleRate = kDefaultSampleRate;
+        if (sampleRates.contains(defaultSampleRate)) {
+            m_sampleRate = defaultSampleRate;
+        } else if (sampleRates.contains(kFallbackSampleRate)) {
+            m_sampleRate = kFallbackSampleRate;
         } else if (!sampleRates.isEmpty()) {
             m_sampleRate = sampleRates.first();
         } else {
             qWarning() << "got empty sample rate list from SoundManager, this is a bug";
-            m_sampleRate = kDefaultSampleRate;
+            m_sampleRate = kFallbackSampleRate;
         }
         m_latency = kDefaultLatency;
     }
