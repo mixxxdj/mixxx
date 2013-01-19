@@ -149,7 +149,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -664,7 +664,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1179,7 +1179,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1694,7 +1694,7 @@
 								<Property>title</Property>
 								<Group>[Sampler4]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -4128,7 +4128,7 @@
 				<Property>title</Property>
 				<Channel>1</Channel>
 				<Pos>0,1</Pos>
-				<Size>315,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -4144,7 +4144,7 @@
 				<Property>artist</Property>
 				<Channel>1</Channel>
 				<Pos>0,26</Pos>
-				<Size>290,23</Size>
+				<Size>290f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5227,7 +5227,7 @@
 				<Property>title</Property>
 				<Channel>2</Channel>
 				<Pos>0,1</Pos>
-				<Size>315,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5243,7 +5243,7 @@
 				<Property>artist</Property>
 				<Channel>2</Channel>
 				<Pos>0,26</Pos>
-				<Size>290,23</Size>
+				<Size>290f,23</Size>
 			</TrackProperty>
 
 			<!--

@@ -890,7 +890,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1423,7 +1423,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1956,7 +1956,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -2630,7 +2630,7 @@
 		<Property>title</Property>
 		<Channel>1</Channel>
 		<Pos>78,80</Pos>
-		<Size>220,18</Size>
+		<Size>220f,18</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_title</TooltipId>
@@ -2640,7 +2640,7 @@
 		<Property>title</Property>
 		<Channel>2</Channel>
 		<Pos>432,80</Pos>
-		<Size>220,18</Size>
+		<Size>220f,18</Size>
 	</TrackProperty>
 
 	<!--
@@ -2656,7 +2656,7 @@
 		<Property>artist</Property>
 		<Channel>1</Channel>
 		<Pos>78,96</Pos>
-		<Size>190,16</Size>
+		<Size>190f,16</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_artist</TooltipId>
@@ -2666,7 +2666,7 @@
 		<Property>artist</Property>
 		<Channel>2</Channel>
 		<Pos>432,96</Pos>
-		<Size>190,16</Size>
+		<Size>190f,16</Size>
 	</TrackProperty>
 
 	<!--

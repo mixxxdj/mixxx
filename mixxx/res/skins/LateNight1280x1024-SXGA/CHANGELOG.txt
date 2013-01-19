@@ -23,7 +23,8 @@ the resulting work only under the same or similar license to this one.
 
 CHANGELOG
 v1.11.0.14  (19/01/2013)
-* Fix: Add fixed size width to <Size> attribute in Sampler's <Text> key , workaround for lp:1100071
+* Fix: Add fixed size width to <Size> attribute in <Text> and track_title, track_artist, track_album <TrackProperty> keys,
+  workaround for lp:1100071
 
 v1.11.0.13	(14/12/2012)
 * Feature: Add custom Preview button to library
