@@ -25,6 +25,7 @@ void WTrackProperty::slotTrackLoaded(TrackPointer track) {
 }
 
 void WTrackProperty::slotTrackUnloaded(TrackPointer track) {
+    Q_UNUSED(track);
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), 0, this, 0);
     }

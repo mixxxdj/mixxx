@@ -58,6 +58,7 @@ void MidiController::visit(const HidControllerPreset* preset) {
 
 bool MidiController::matchPreset(const PresetInfo& preset) {
     // Product info mapping not implemented for MIDI devices yet
+    Q_UNUSED(preset);
     return false;
 }
 

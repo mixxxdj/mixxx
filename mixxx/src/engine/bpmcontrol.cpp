@@ -455,6 +455,7 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
 }
 
 void BpmControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));

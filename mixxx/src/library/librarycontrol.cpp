@@ -109,6 +109,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 }
 
 void LibraryControl::bindWidget(WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
+    Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget != NULL) {
         disconnect(m_pLibraryWidget, 0, this, 0);
     }

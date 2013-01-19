@@ -66,7 +66,7 @@
      <item>
       <widget class="QPushButton" name="btnPurge">
        <property name="toolTip">
-        <string>purge selected tracks from Library</string>
+        <string>Purge selected tracks from the library.</string>
        </property>
        <property name="text">
         <string>Purge</string>
@@ -79,7 +79,7 @@
      <item>
       <widget class="QPushButton" name="btnUnhide">
        <property name="toolTip">
-        <string>Unhide selected tracks from library</string>
+        <string>Unhide selected tracks from the library.</string>
        </property>
        <property name="text">
         <string>Unhide</string>

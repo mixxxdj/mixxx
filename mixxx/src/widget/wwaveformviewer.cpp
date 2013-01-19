@@ -15,7 +15,7 @@
 #include "controlpotmeter.h"
 
 
-WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent, Qt::WFlags f)
+WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
         : QWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig) {
