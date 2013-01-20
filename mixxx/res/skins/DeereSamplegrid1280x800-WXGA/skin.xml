@@ -53,7 +53,7 @@
 	<manifest>
 	<title>DeereSamplegrid-1280x800-WXGA</title>
 	<author>jus</author>
-	<version>1.11.0.13</version>
+	<version>1.11.0.14</version>
 	<description>A 2-deck split-waveform skin with a basic 2x8 sample-grid.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -116,7 +116,7 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>i,me</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
 				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 4px 0px;} </Style>
 				<Children>
@@ -5761,7 +5761,7 @@
 				<Property>title</Property>
 				<Channel>1</Channel>
 				<Pos>0,1</Pos>
-				<Size>315,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5777,7 +5777,7 @@
 				<Property>artist</Property>
 				<Channel>1</Channel>
 				<Pos>0,26</Pos>
-				<Size>290,23</Size>
+				<Size>290f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -6861,7 +6861,7 @@
 				<Property>title</Property>
 				<Channel>2</Channel>
 				<Pos>0,1</Pos>
-				<Size>315,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -6877,7 +6877,7 @@
 				<Property>artist</Property>
 				<Channel>2</Channel>
 				<Pos>0,26</Pos>
-				<Size>290,23</Size>
+				<Size>290f,23</Size>
 			</TrackProperty>
 
 			<!--
