@@ -212,7 +212,6 @@
 		<BeatColor>#454C53</BeatColor>
 		<BeatHighlightColor>#454C53</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
-		<CueColor>#000000</CueColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#000000</AxesColor>
 		<Align></Align>
@@ -270,7 +269,6 @@
 		<BeatColor>#454C53</BeatColor>
 		<BeatHighlightColor>#454C53</BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
-		<CueColor>#000000</CueColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#000000</AxesColor>
 		<DefaultMark>

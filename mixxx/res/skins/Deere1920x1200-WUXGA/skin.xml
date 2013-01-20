@@ -4988,7 +4988,6 @@
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
 						<Align></Align>
@@ -6087,7 +6086,6 @@
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
 						<Align></Align>
