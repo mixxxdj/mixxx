@@ -102,12 +102,12 @@
 	############################################################################################
 	-->
 	<WidgetGroup>
-		<Pos>0,364</Pos>
+		<Pos>0,360</Pos>
 		<!--
 		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
 		<Size>w,h</Size>
 		-->
-		<Size>1440,436</Size>
+		<Size>1440,440f</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -116,9 +116,9 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>i,110</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 8px 0px;} </Style>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 4px 0px;} </Style>
 				<Children>
 					<!-- all sub-widgets for the sampler decks -->
 					<WidgetGroup>
