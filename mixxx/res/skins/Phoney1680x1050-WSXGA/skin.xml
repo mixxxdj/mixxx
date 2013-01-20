@@ -212,6 +212,7 @@
 		<BeatColor>#454C53</BeatColor>
 		<BeatHighlightColor></BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#000000</AxesColor>
 		<Align></Align>
@@ -269,8 +270,10 @@
 		<BeatColor>#454C53</BeatColor>
 		<BeatHighlightColor></BeatHighlightColor>
 		<MarkerColor>#FD0564</MarkerColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#000000</AxesColor>
+		<Align></Align>
 		<DefaultMark>
 			<Align>top</Align>
 			<Color>#333333</Color>
@@ -326,6 +329,7 @@
 		<BgColor>#F7F7F7</BgColor>
 		<SignalColor>#0080FF</SignalColor>
 		<MarkerColor>#191919</MarkerColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -361,6 +365,7 @@
 		<BgColor>#F7F7F7</BgColor>
 		<SignalColor>#E17000</SignalColor>
 		<MarkerColor>#191919</MarkerColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
