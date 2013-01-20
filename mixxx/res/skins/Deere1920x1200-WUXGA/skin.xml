@@ -4986,7 +4986,7 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor>#00FF00</BeatHighlightColor>
+						<BeatHighlightColor></BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
@@ -6084,7 +6084,7 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor>#00FF00</BeatHighlightColor>
+						<BeatHighlightColor></BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
