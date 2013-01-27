@@ -97,9 +97,6 @@ void WOverview::setup(QDomNode node) {
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
 
-    m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
-    m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
-
     //setup hotcues and cue and loop(s)
     m_marks.setup(m_pGroup,node);
 
@@ -580,10 +577,6 @@ void WOverview::resizeEvent(QResizeEvent *) {
     m_b = 14.f * m_a;
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
-}
-
-QColor WOverview::getMarkerColor() {
-    return m_qColorMarker;
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
