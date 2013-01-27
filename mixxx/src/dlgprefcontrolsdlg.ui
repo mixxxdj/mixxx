@@ -222,7 +222,7 @@
       <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
      </item>
      <item row="8" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="labelCueBehaviour">
        <property name="text">
         <string>Cue behaviour</string>
        </property>
@@ -246,6 +246,19 @@
      </item>
      <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueRecall"/>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="textAutoDjRequeue">
+       <property name="text">
+        <string>Re-queue tracks in Auto DJ</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxAutoDjRequeue</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxAutoDjRequeue"/>
      </item>
      <item row="13" column="0">
       <widget class="QLabel" name="textLabelLocale">
@@ -830,6 +843,7 @@
   <tabstop>ComboBoxCueRecall</tabstop>
   <tabstop>ComboBoxCueDefault</tabstop>
   <tabstop>ComboBoxAllowTrackLoadToPlayingDeck</tabstop>
+  <tabstop>ComboBoxAutoDjRequeue</tabstop>
   <tabstop>ComboBoxLocale</tabstop>
   <tabstop>waveformTypeComboBox</tabstop>
   <tabstop>frameRateSlider</tabstop>
