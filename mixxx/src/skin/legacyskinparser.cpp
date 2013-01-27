@@ -918,7 +918,6 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
     setupWidget(node, pLibraryWidget);
-    pLibraryWidget->setup(node);
 
     return pLibraryWidget;
 }
