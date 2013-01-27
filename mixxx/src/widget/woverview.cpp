@@ -389,7 +389,6 @@ void WOverview::paintEvent(QPaintEvent *) {
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
     // Fill with transparent pixels
     if (!m_backgroundPixmap.isNull()) {
         painter.drawPixmap(rect(), m_backgroundPixmap);
@@ -551,8 +550,13 @@ void WOverview::paintEvent(QPaintEvent *) {
         }
 
         //draw current position
-        painter.setPen(m_signalColors.getPlayPosColor());
-        painter.setOpacity(0.9);
+        painter.setPen(QPen(QBrush(m_qColorBackground),1));
+        painter.setOpacity(0.5);
+        painter.drawLine(m_iPos + 1, 0, m_iPos + 1, height());
+        painter.drawLine(m_iPos - 1, 0, m_iPos - 1, height());
+
+        painter.setPen(QPen(m_signalColors.getPlayPosColor(),1));
+        painter.setOpacity(1.0);
         painter.drawLine(m_iPos, 0, m_iPos, height());
 
         painter.drawLine(m_iPos - 2, 0, m_iPos, 2);
@@ -562,11 +566,6 @@ void WOverview::paintEvent(QPaintEvent *) {
         painter.drawLine(m_iPos - 2, height() - 1, m_iPos, height() - 3);
         painter.drawLine(m_iPos, height() - 3, m_iPos + 2, height() - 1);
         painter.drawLine(m_iPos - 2, height() - 1, m_iPos + 2, height() - 1);
-
-        painter.setPen(m_qColorBackground);
-        painter.setOpacity(0.5);
-        painter.drawLine(m_iPos + 1, 0, m_iPos + 1, height());
-        painter.drawLine(m_iPos - 1, 0, m_iPos - 1, height());
     }
     painter.end();
 }

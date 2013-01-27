@@ -196,6 +196,10 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
 
         painter->setPen(m_colors.getPlayPosColor());
         painter->drawLine(m_width/2,0,m_width/2,m_height);
+        painter->setOpacity(0.5);
+        painter->setPen(m_colors.getBgColor());
+        painter->drawLine(m_width/2 + 1,0,m_width/2 + 1,m_height);
+        painter->drawLine(m_width/2 - 1,0,m_width/2 - 1,m_height);
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
