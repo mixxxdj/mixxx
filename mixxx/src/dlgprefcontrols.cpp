@@ -206,6 +206,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //NOTE: for CueRecall, 0 means ON....
     connect(ComboBoxCueRecall, SIGNAL(activated(int)), this, SLOT(slotSetCueRecall(int)));
 
+    // Re-queue tracks in Auto DJ
+    ComboBoxAutoDjRequeue->addItem(tr("Off"));
+    ComboBoxAutoDjRequeue->addItem(tr("On"));
+    ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
+    connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
+
     //
     // Skin configurations
     //
@@ -416,6 +422,11 @@ void DlgPrefControls::slotSetCueDefault(int)
 void DlgPrefControls::slotSetCueRecall(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","CueRecall"), ConfigValue(ComboBoxCueRecall->currentIndex()));
+}
+
+void DlgPrefControls::slotSetAutoDjRequeue(int)
+{
+    m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
 }
 
 void DlgPrefControls::slotSetTooltips(int)

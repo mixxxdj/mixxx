@@ -58,6 +58,7 @@ public slots:
     void slotSetAllowTrackLoadToPlayingDeck(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
+    void slotSetAutoDjRequeue(int);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
