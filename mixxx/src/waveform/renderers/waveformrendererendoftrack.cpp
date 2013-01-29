@@ -57,13 +57,13 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node) {
         m_color.setNamedColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
     }
-    m_pen = QPen( QBrush( m_color), 2.5);
+    m_pen = QPen(QBrush(m_color), 2.5);
 }
 
 void WaveformRendererEndOfTrack::onResize() {
     m_rect = QRect( 0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     m_backRects.resize(4);
-    for( int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         m_backRects[i].setTop(0);
         m_backRects[i].setBottom(m_waveformRenderer->getHeight());
         m_backRects[i].setLeft(m_waveformRenderer->getWidth()/2+i*m_waveformRenderer->getWidth()/8);
@@ -123,20 +123,20 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     const int elapsed = m_timer.elapsed() % m_blinkingPeriodMillis;
 
-    const double blickIntensity = (double)(2*abs(elapsed - m_blinkingPeriodMillis/2)) /
+    const double blickIntensity = (double)(2 * abs(elapsed - m_blinkingPeriodMillis/2)) /
             m_blinkingPeriodMillis;
     const double criticalIntensity = (m_remainingTimeTriggerSeconds - remainingTime) /
             m_remainingTimeTriggerSeconds;
 
     painter->save();
     painter->resetTransform();
-    painter->setOpacity(0.5*blickIntensity);
+    painter->setOpacity(0.5 * blickIntensity);
     painter->setPen(m_pen);
-    painter->drawRect(1,1,
-                      m_waveformRenderer->getWidth()-2,m_waveformRenderer->getHeight()-2);
+    painter->drawRect(1, 1,
+            m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2);
 
-    painter->setOpacity(0.5*0.25*criticalIntensity*blickIntensity);
-    painter->setPen(QPen());
+    painter->setOpacity(0.5 * 0.25 * criticalIntensity * blickIntensity);
+    painter->setPen(QPen(Qt::transparent));
     painter->setBrush(m_color);
     painter->drawRects(m_backRects);
     painter->restore();
