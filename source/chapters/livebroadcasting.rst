@@ -26,10 +26,14 @@ Icecast
 =======
 
 For an Icecast server, you'll need to provide the mount point (of the form
-”/mount”).  You can enter the host name either as an IP address or an URL. In
+”/mount”).  You can enter the host as either a host name or an IP address. In
 the “login” field, the default is to enter “source” – without this, you will not
 connect successfully to the server. The password will be provided by your
 streaming server provider, unless you run your own radio server.
+
+.. note:: Do not enter a URL as the host! "http://example.com:8000" does not
+          work. Use "example.com" in the host field and "8000" in the port field
+          instead.
 
 An Icecast server can stream either MP3 or Ogg. However, although Ogg is more
 efficient and effective - you get a better sound than mp3 at a lower data rate -
