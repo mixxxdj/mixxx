@@ -47,7 +47,7 @@
 	<manifest>
 	<title>Outline1024x600-Netbook</title>
 	<author>jus</author>
-	<version>1.11.0.10</version>
+	<version>1.11.0.13</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
@@ -394,6 +394,7 @@
 		<SignalLowColor>#FF0035</SignalLowColor>
 		<SignalColor>#FF8000</SignalColor>
 		<MarkerColor>#00FF00</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -432,6 +433,7 @@
 		<SignalLowColor>#FF0035</SignalLowColor>
 		<SignalColor>#FF8000</SignalColor>
 		<MarkerColor>#00FF00</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -608,9 +610,9 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#19ABFB</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor>#000000</BeatHighlightColor>
+						<BeatHighlightColor></BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#00FF00</CueColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -667,9 +669,9 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#FF0000</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor>#000000</BeatHighlightColor>
+						<BeatHighlightColor></BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#00FF00</CueColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -836,7 +838,7 @@
 		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
 		<Size>w,h</Size>
 		-->
-		<Size>810,336</Size>
+		<Size>810,336f</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -845,7 +847,7 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>i,100</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
 				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 0px 0px;} </Style>
 				<Children>
@@ -854,7 +856,7 @@
 						<Pos>0,0</Pos>
 						<Size>203,100</Size>
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-                        <BackPath>style/style_bg_sampler.png</BackPath>	
+						<BackPath>style/style_bg_sampler.png</BackPath>	
 						<Children>
 							<!--
 							**********************************************
@@ -874,7 +876,7 @@
 								-->
 								<Group>[Sampler1]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -885,7 +887,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -956,6 +958,7 @@
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1412,7 +1415,7 @@
 								-->
 								<Group>[Sampler2]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1423,7 +1426,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1494,6 +1497,7 @@
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1950,7 +1954,7 @@
 								-->
 								<Group>[Sampler3]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1961,7 +1965,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -2032,6 +2036,7 @@
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -2488,7 +2493,7 @@
 								-->
 								<Group>[Sampler4]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -2499,7 +2504,7 @@
 								<Property>title</Property>
 								<Group>[Sampler4]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -2572,6 +2577,7 @@
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -3148,7 +3154,7 @@
 		<Property>title</Property>
 		<Channel>1</Channel>
 		<Pos>108,121</Pos>
-		<Size>270,20</Size>
+		<Size>270f,20</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_title</TooltipId>
@@ -3158,7 +3164,7 @@
 		<Property>title</Property>
 		<Channel>2</Channel>
 		<Pos>550,121</Pos>
-		<Size>270,20</Size>
+		<Size>270f,20</Size>
 	</TrackProperty>
 
 	<!--
@@ -3174,7 +3180,7 @@
 		<Property>artist</Property>
 		<Channel>1</Channel>
 		<Pos>108,141</Pos>
-		<Size>240,20</Size>
+		<Size>240f,20</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_artist</TooltipId>
@@ -3184,7 +3190,7 @@
 		<Property>artist</Property>
 		<Channel>2</Channel>
 		<Pos>550,141</Pos>
-		<Size>240,20</Size>
+		<Size>240f,20</Size>
 	</TrackProperty>
 
 	<!--
