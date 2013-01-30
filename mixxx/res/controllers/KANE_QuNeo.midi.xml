@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset mixxxVersion="1.11.0+" schemaVersion="1">
   <info>
-    <name>Keith McMillen Instruments QuNeo</name>
+    <name>KANE QuNeo Mixxx Preset</name>
     <author>Daniel Leja</author>
     <description>This is a fully customized DJ mapping for the QuNeo, complete with beat-jumping and pulsing LED sequencers.</description>
-    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=4130</forums>
+    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;amp;t=4130&amp;amp;sid=bc90140a4dc6e650e06dae0df8562604</forums>-->
     <wiki>https://github.com/wolfbiter/kane-quneo-mixxx</wiki>
   </info>
   <controller id="QUNEO">
@@ -1716,10 +1715,28 @@
 	</options>
       </control>
       <control>
+	<status>0x86</status>
+	<midino>0x08</midino>
+	<group>[Channel1]</group>
+	<key>KANE_QuNeo.quantize1CuesOff</key>
+	<options>
+	  <Script-Binding/>
+	</options>
+      </control>
+      <control>
 	<status>0x96</status>
 	<midino>0x09</midino>
 	<group>[Channel2]</group>
 	<key>KANE_QuNeo.quantize2Cues</key>
+	<options>
+	  <Script-Binding/>
+	</options>
+      </control>
+      <control>
+	<status>0x86</status>
+	<midino>0x09</midino>
+	<group>[Channel2]</group>
+	<key>KANE_QuNeo.quantize2CuesOff</key>
 	<options>
 	  <Script-Binding/>
 	</options>
@@ -1920,7 +1937,7 @@
       <control>
 	<status>0x94</status>
 	<midino>0x00</midino>
-	<group>[Channel1]</group>
+	<group>[Master]</group>
 	<key>KANE_QuNeo.sliderCycle</key>
 	<options>
 	  <Script-Binding/>
@@ -1929,6 +1946,15 @@
       <control>
 	<status>0xb4</status>
 	<midino>0x00</midino>
+	<group>[Master]</group>
+	<key>KANE_QuNeo.verticalSlider1Move</key>
+	<options>
+	  <Script-Binding/>
+	</options>
+      </control>
+      <control>
+	<status>0x84</status>
+	<midino>0x01</midino>
 	<group>[Master]</group>
 	<key>KANE_QuNeo.verticalSlider1Touch</key>
 	<options>
@@ -1939,6 +1965,15 @@
 	<status>0xb4</status>
 	<midino>0x01</midino>
 	<group>[Master]</group>
+	<key>KANE_QuNeo.verticalSlider2Move</key>
+	<options>
+	  <Script-Binding/>
+	</options>
+      </control>
+      <control>
+	<status>0x84</status>
+	<midino>0x02</midino>
+	<group>[Master]</group>
 	<key>KANE_QuNeo.verticalSlider2Touch</key>
 	<options>
 	  <Script-Binding/>
@@ -1948,6 +1983,15 @@
 	<status>0xb4</status>
 	<midino>0x02</midino>
 	<group>[Master]</group>
+	<key>KANE_QuNeo.verticalSlider3Move</key>
+	<options>
+	  <Script-Binding/>
+	</options>
+      </control>
+      <control>
+	<status>0x84</status>
+	<midino>0x03</midino>
+	<group>[Master]</group>
 	<key>KANE_QuNeo.verticalSlider3Touch</key>
 	<options>
 	  <Script-Binding/>
@@ -1956,6 +2000,15 @@
       <control>
 	<status>0xb4</status>
 	<midino>0x03</midino>
+	<group>[Master]</group>
+	<key>KANE_QuNeo.verticalSlider4Move</key>
+	<options>
+	  <Script-Binding/>
+	</options>
+      </control>
+      <control>
+	<status>0x84</status>
+	<midino>0x04</midino>
 	<group>[Master]</group>
 	<key>KANE_QuNeo.verticalSlider4Touch</key>
 	<options>
@@ -3396,16 +3449,6 @@
 	<group>[Channel1]</group>
 	<key>cue_default</key>
 	<status>0x91</status>
-	<midino>0x06</midino>
-	<on>0x7F</on>
-	<off>0x7F</off>
-	<maximum>127</maximum>
-	<minimum>1</minimum>
-      </output>
-      <output>
-	<group>[Channel1]</group>
-	<key>cue_default</key>
-	<status>0x91</status>
 	<midino>0x07</midino>
 	<on>0x7F</on>
 	<off>0x00</off>
@@ -3419,16 +3462,6 @@
 	<midino>0x0a</midino>
 	<on>0x7F</on>
 	<off>0x00</off>
-	<maximum>127</maximum>
-	<minimum>1</minimum>
-      </output>
-      <output>
-	<group>[Channel2]</group>
-	<key>cue_default</key>
-	<status>0x91</status>
-	<midino>0x08</midino>
-	<on>0x7F</on>
-	<off>0x7F</off>
 	<maximum>127</maximum>
 	<minimum>1</minimum>
       </output>
