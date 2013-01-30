@@ -4,6 +4,7 @@
 			<name>Numark DJ2Go</name>
 			<author>Alimantado, mod by Coval</author>
 			<description>11-Sep-2012. Made to be close as possible to how DJ2Go works with VDJ.</description>
+                        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=2732&amp;start=140&amp;sid=da4226f3f9a11932881d0e609ee7f2cc</forums>
 		</info>
 		<controller id="Numark DJ2Go MIDI 1" port="">
 		<scriptfiles>
@@ -65,7 +66,7 @@
                 			<options>
 						<script-binding/>
 					</options>
-				</control>				
+				</control>
 				<control>
 					<group>[Playlist]</group>
 					<key>NumarkDJ2Go.shiftEnt</key>
@@ -74,7 +75,7 @@
                 			<options>
 						<script-binding/>
 					</options>
-				</control>				
+				</control>
 				<control>
 					<group>[Playlist]</group>
 					<key>NumarkDJ2Go.selectKnob</key>
@@ -102,7 +103,7 @@
                 			<options>
 						<script-binding/>
 					</options>
-				</control>				
+				</control>
 				<control>
 					<group>[Channel1]</group>
 					<key>volume</key>
@@ -112,7 +113,7 @@
 						<soft-takeover/>
 					</options>
 				</control>
-				
+
 <!-- Original pich bend control
 				<control>
 					<group>[Channel1]</group>
@@ -171,7 +172,7 @@
 					</options>
 				</control>
 <!-- End Loop -->
-				
+
 				<control>
 					<group>[Channel1]</group>
 					<key>rate</key>
