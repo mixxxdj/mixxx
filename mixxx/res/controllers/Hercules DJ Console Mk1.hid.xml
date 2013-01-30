@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1">
+    <info>
+        <name>Hercules DJ Console Mk1 HID</name>
+        <author>zestoi changes for mk1 by ewanuno</author>
+        <description>Native high-resolution HID script for the Hercules DJ Console Mk1 controller.</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4081</forums>
+    </info>
+    <controller id="Hercules DJ Console Mk1 HID">
+        <scriptfiles>
+            <file filename="Hercules-DJ-Console-Mk1-hid-scripts.js" functionprefix="HerculesMk1Hid"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
