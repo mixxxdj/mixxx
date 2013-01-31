@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-01-18 11:01+0200\n"
-"PO-Revision-Date: 2013-01-01 22:03+0000\n"
+"PO-Revision-Date: 2013-01-30 22:49+0000\n"
 "Last-Translator: Osoitz <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-21 04:34+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-01-31 04:36+0000\n"
+"X-Generator: Launchpad (build 16455)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -1082,15 +1082,15 @@ msgstr ""
 
 #: DlgControllerLearning#78
 msgid "Beat-Looping"
-msgstr "Taupada-zikloa"
+msgstr "Taupada-begizta"
 
 #: DlgControllerLearning#79
 msgid "Create %1-beat loop"
-msgstr "sortu %1-taupada zikloa"
+msgstr "Sortu %1-taupada begizta"
 
 #: DlgControllerLearning#80
 msgid "Create temporary %1-beat loop roll"
-msgstr "Sortu behin behineko %1-taupada ziklo erroilua"
+msgstr "Sortu behin behineko %1-taupada begizta erroilua"
 
 #: DlgControllerLearning#81
 msgid "1/32th"
@@ -4411,11 +4411,11 @@ msgstr ""
 
 #: Tooltips#114
 msgid "Setup a loop over the set number of beats."
-msgstr "Ziklo bat ezarritako taupada kopuruan sortu"
+msgstr "Begizta bat ezarritako taupada kopuruan sortu."
 
 #: Tooltips#115
 msgid "Temporarily setup a rolling loop over the set number of beats."
-msgstr "Behin behineko ziklo erroilu bat ezarritako taupada kopuruan sortu"
+msgstr "Behin behineko begizta erroilu bat ezarritako taupada kopuruan sortu"
 
 #: Tooltips#116
 msgid ""
@@ -4628,42 +4628,45 @@ msgstr ""
 #: Tooltips#164
 msgid "Sets the deck loop-out position to the current play position."
 msgstr ""
+"Erreproduzigailuaren begizta irteera posizioa uneko jo posizioan ezartzen du."
 
 #: Tooltips#165
 msgid "Loop Halve"
-msgstr ""
+msgstr "Begizta erdibitu"
 
 #: Tooltips#166
 msgid "Halves the current loop's length by moving the end marker."
-msgstr ""
+msgstr "Uneko begiztaren luzera erdibitzen du bukaera marka mugituz."
 
 #: Tooltips#167
 msgid "Deck immediately loops if past the new endpoint."
 msgstr ""
+"Erreproduzigailua berehala begiztatzen du bukaera puntua igarotakoan."
 
 #: Tooltips#168
 msgid "Loop Double"
-msgstr ""
+msgstr "Begizta bikoiztu"
 
 #: Tooltips#169
 msgid "Doubles the current loop's length by moving the end marker."
-msgstr ""
+msgstr "Uneko begiztaren luzera bikoizten du bukaera marka mugituz."
 
 #: Tooltips#170
 msgid "Beatloop"
-msgstr "Taupada zikloa"
+msgstr "Taupada begizta"
 
 #: Tooltips#171
 msgid "Reloop/Exit"
-msgstr ""
+msgstr "Berbegizta / Irteera"
 
 #: Tooltips#172
 msgid "Toggles the current loop on or off."
-msgstr ""
+msgstr "Uneko begizta gaitu ala desgaitzen du"
 
 #: Tooltips#173
 msgid "Works only if Loop-In and Loop-Out marker are set."
 msgstr ""
+"Begizta sarrera eta begizta irteera markak ezarrita badaude dabil soilik."
 
 #: Tooltips#174
 msgid "Vinyl Cueing Mode"
