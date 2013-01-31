@@ -20,11 +20,12 @@ class EngineMaster;
 class AnalyserQueue;
 class SoundManager;
 class VinylControlManager;
+class TrackCollection;
 
 class PlayerManager : public QObject {
     Q_OBJECT
   public:
-    PlayerManager(ConfigObject<ConfigValue> *pConfig,
+    PlayerManager(ConfigObject<ConfigValue>* pConfig,
                   SoundManager* pSoundManager,
                   EngineMaster* pEngine,
                   VinylControlManager* pVCManager);
@@ -119,4 +120,4 @@ class PlayerManager : public QObject {
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 
-#endif /* PLAYERMANAGER_H */
+#endif // PLAYERMANAGER_H

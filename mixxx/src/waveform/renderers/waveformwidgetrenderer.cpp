@@ -91,17 +91,17 @@ bool WaveformWidgetRenderer::init() {
     //qDebug() << "WaveformWidgetRenderer::init";
 
     m_playPosControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"visual_playposition")));
+                ControlObject::getControl( ConfigKey(m_group, "visual_playposition")));
     m_rateControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"rate")));
+                ControlObject::getControl( ConfigKey(m_group, "rate")));
     m_rateRangeControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"rateRange")));
+                ControlObject::getControl( ConfigKey(m_group, "rateRange")));
     m_rateDirControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"rate_dir")));
+                ControlObject::getControl( ConfigKey(m_group, "rate_dir")));
     m_gainControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"total_gain")));
+                ControlObject::getControl( ConfigKey(m_group, "total_gain")));
     m_trackSamplesControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"track_samples")));
+                ControlObject::getControl( ConfigKey(m_group, "track_samples")));
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
@@ -246,7 +246,6 @@ void WaveformWidgetRenderer::resize( int width, int height) {
 }
 
 void WaveformWidgetRenderer::setup( const QDomNode& node) {
-
     m_colors.setup(node);
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->setup(node);
@@ -257,10 +256,6 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = zoom;
     m_zoomFactor = math_max( s_waveformMinZoom, math_min( m_zoomFactor, s_waveformMaxZoom));
-}
-
-double WaveformWidgetRenderer::getVisualSamplePerPixel() const {
-    return m_visualSamplePerPixel;
 }
 
 void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {

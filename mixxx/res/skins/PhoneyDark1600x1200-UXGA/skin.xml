@@ -53,7 +53,7 @@
 	<manifest>
 	<title>PhoneyDark1600x1200-UXGA</title>
 	<author>jus</author>
-	<version>1.11.0.07</version>
+	<version>1.11.0.08</version>
 	<description>A 2-deck parallel waveform skin.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -209,9 +209,8 @@
 		<SignalLowColor></SignalLowColor>
 		<SignalColor>#0099FF</SignalColor>
 		<BeatColor>#CCCCCC</BeatColor>
-		<BeatHighlightColor>#FF0000</BeatHighlightColor>
-		<MarkerColor>#FD0564</MarkerColor>
-		<CueColor>#000000</CueColor>
+		<BeatHighlightColor></BeatHighlightColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#FFFFFF</AxesColor>
 		<Align></Align>
@@ -267,11 +266,11 @@
 		<SignalLowColor></SignalLowColor>
 		<SignalColor>#CC6600</SignalColor>
 		<BeatColor>#CCCCCC</BeatColor>
-		<BeatHighlightColor>#FF0000</BeatHighlightColor>
-		<MarkerColor>#FD0564</MarkerColor>
-		<CueColor>#000000</CueColor>
+		<BeatHighlightColor></BeatHighlightColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#FFFFFF</AxesColor>
+		<Align></Align>
 		<DefaultMark>
 			<Align>top</Align>
 			<Color>#00FF00</Color>
@@ -326,7 +325,7 @@
 		<Size>320,35</Size>
 		<BgColor>#333333</BgColor>
 		<SignalColor>#0099FF</SignalColor>
-		<MarkerColor>#FD0564</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -361,7 +360,7 @@
 		<Size>320,35</Size>
 		<BgColor>#333333</BgColor>
 		<SignalColor>#CC6600</SignalColor>
-		<MarkerColor>#FD0564</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
