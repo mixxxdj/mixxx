@@ -20,17 +20,15 @@
 #include "analyserqueue.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
-                                 ConfigObject<ConfigValue> *pConfig,
+                                 ConfigObject<ConfigValue>* pConfig,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
-                                 AnalyserQueue* pAnalyserQueue,
                                  QString group,
                                  bool defaultMaster,
-                                 bool defaultHeadphones)
-        : BasePlayer(pParent, group),
-          m_pConfig(pConfig),
-          m_pLoadedTrack(),
-          m_pAnalyserQueue(pAnalyserQueue) {
+                                 bool defaultHeadphones) :
+        BasePlayer(pParent, group),
+        m_pConfig(pConfig),
+        m_pLoadedTrack() {
 
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
@@ -256,10 +254,6 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     }
 
     emit(newTrackLoaded(m_pLoadedTrack));
-}
-
-AnalyserQueue* BaseTrackPlayer::getAnalyserQueue() const {
-    return m_pAnalyserQueue;
 }
 
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {
