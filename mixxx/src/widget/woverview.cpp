@@ -303,9 +303,6 @@ bool WOverview::drawNextPixmapPart() {
     QColor highColor = m_signalColors.getHighColor();
     QPen highColorPen(QBrush(highColor), 1);
 
-    QColor axesColor = m_signalColors.getAxesColor();
-    QPen axesColorPen(QBrush(axesColor), 1);
-
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
         unsigned char lowNeg = m_pWaveform->getLow(currentCompletion);
@@ -314,10 +311,6 @@ bool WOverview::drawNextPixmapPart() {
             painter.setPen(lowColorPen);
             painter.drawLine(QPoint(currentCompletion / 2, -lowNeg),
                              QPoint(currentCompletion / 2, lowPos));
-        } else {
-            // Draw flat axes for progress when silence
-            painter.setPen(axesColorPen);
-            painter.drawPoint(QPoint(currentCompletion / 2, 0));
         }
     }
 
@@ -409,7 +402,11 @@ void WOverview::paintEvent(QPaintEvent *) {
     //Draw waveform pixmap
     WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
     if (m_pWaveform) {
-        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable (5%)
+        // Draw Axis
+        painter.setPen(QPen(m_signalColors.getAxesColor(), 1));
+        painter.drawLine(0, height()/2, width(), height()/2);
+
+        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable (10 pixel)
             // We have a valid m_waveform, so here we have a track in analysis queue
             QColor lowColor = m_signalColors.getLowColor();
             lowColor.setAlphaF(0.5);
