@@ -40,8 +40,8 @@ public:
 
     void setZoom(int zoom);
 
-    double getVisualSamplePerPixel() const;
-    double getAudioSamplePerPixel() const;
+    double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
+    double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
 
     //those function replace at its best sample position to an admissible
     //sample position according to the current visual resampling
