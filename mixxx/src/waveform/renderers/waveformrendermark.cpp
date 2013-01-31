@@ -18,7 +18,7 @@ WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRe
 }
 
 void WaveformRenderMark::setup( const QDomNode& node) {
-    m_marks.setup(m_waveformRenderer->getGroup(),node);
+    m_marks.setup(m_waveformRenderer->getGroup(), node, *m_waveformRenderer->getWaveformSignalColors());
 }
 
 void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {

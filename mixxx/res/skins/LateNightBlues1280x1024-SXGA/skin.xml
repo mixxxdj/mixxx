@@ -216,7 +216,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#FDC772</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -732,7 +731,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#FDC772</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1248,7 +1246,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#FDC772</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1764,7 +1761,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#FDC772</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -2387,7 +2383,6 @@
 														<SignalMidColor>#0099FF</SignalMidColor>
 														<SignalLowColor>#FF0035</SignalLowColor>
 														<SignalColor>#FF8000</SignalColor>
-														<MarkerColor>#00FF00</MarkerColor>
 														<PlayPosColor>#00FF00</PlayPosColor>
 														<DefaultMark>
 															<Align>bottom</Align>
@@ -2823,7 +2818,6 @@
 						<SignalColor>#FBC400</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor></BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
@@ -2878,7 +2872,6 @@
 						<SignalColor>#FB9A00</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor></BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
@@ -4186,7 +4179,6 @@
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#FBC400</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
@@ -5170,7 +5162,6 @@
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#FB9A00</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
