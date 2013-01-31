@@ -22,7 +22,7 @@
 
 #include <typeinfo>
 
-#define FINALISE_PERCENT 0 // in 0.1%,
+#define FINALISE_PERCENT 100 // in 0.1%,
                            // 0 for no progress during finalize
                            // 100 for 10% step after finalise
 

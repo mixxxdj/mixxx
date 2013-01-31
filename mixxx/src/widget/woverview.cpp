@@ -43,7 +43,7 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
-        m_analyserProgress(-1),
+        m_analyserProgress(0),
         m_trackLoaded(false),
         m_diffGain(0) {
 
@@ -158,9 +158,11 @@ void WOverview::slotAnalyserProgress(int progress) {
     if (!m_pCurrentTrack) {
         return;
     }
-    m_analyserProgress = progress;
+    const int analyserProgress = width() * progress / 1000;
+    bool updateNeeded = drawNextPixmapPart();
     // progress 0 .. 1000
-    if (drawNextPixmapPart()) {
+    if (updateNeeded || (m_analyserProgress != analyserProgress)) {
+        m_analyserProgress = analyserProgress;
         update();
     }
 }
@@ -179,6 +181,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         m_pWaveformSourceImage = NULL;
     }
 
+    m_analyserProgress = 0;
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -186,7 +189,6 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
 
     if (pTrack) {
         m_pCurrentTrack = pTrack;
-        m_analyserProgress = pTrack->getAnalyserProgress();
         m_pWaveform = pTrack->getWaveformSummary();
 
         connect(pTrack.data(), SIGNAL(waveformSummaryUpdated()),
@@ -194,9 +196,8 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         connect(pTrack.data(), SIGNAL(analyserProgress(int)),
                 this, SLOT(slotAnalyserProgress(int)));
 
-        drawNextPixmapPart();
+        slotAnalyserProgress(pTrack->getAnalyserProgress());
     }
-    update();
 }
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
@@ -262,17 +263,9 @@ bool WOverview::drawNextPixmapPart() {
         m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
     }
 
-    const int analyserCompletion = (int)((float)(dataSize/2) * m_analyserProgress / 1000) * 2;
     const int waveformCompletion = m_pWaveform->getCompletion(); // always multiple of 2
-
     // test if there is some new to draw (at least of pixel width)
-    int completionIncrement;
-    if (analyserCompletion < waveformCompletion) {
-        // over all analyzer progress is slower than the pure waveform analysis
-        completionIncrement = analyserCompletion - m_actualCompletion;
-    } else {
-        completionIncrement = waveformCompletion - m_actualCompletion;
-    }
+    const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * width() / dataSize; 
     if (completionIncrement < 2 || visiblePixelIncrement == 0) {
@@ -454,6 +447,12 @@ void WOverview::paintEvent(QPaintEvent *) {
             }
 
             painter.drawImage(rect(), m_waveformImageScaled);
+
+            // Paint analyzer Progress
+            if (m_analyserProgress < width()) {
+                painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
+                painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
+            }
         }
     }
 
