@@ -5,6 +5,7 @@
 
 class ControlObjectThreadMain;
 class QDomNode;
+class WaveformSignalColors;
 
 class WaveformMarkRange {
   public:
@@ -21,7 +22,8 @@ class WaveformMarkRange {
     // Returns end value or -1 if the end control doesn't exist.
     double end();
 
-    void setup(const QString &group, const QDomNode& node);
+    void setup(const QString &group, const QDomNode& node,
+            const WaveformSignalColors& signalColors);
 
   private:
     void generateImage(int weidth, int height);
