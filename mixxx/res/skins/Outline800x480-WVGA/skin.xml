@@ -2691,7 +2691,7 @@
 		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: left; padding-left: 1px; }
 		</Style>
-		<Channel>1</Channel>
+		<Channel>2</Channel>
 		<Pos>662,80</Pos>
 		<Size>60,18</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
