@@ -1,6 +1,6 @@
 Outline, Skin for Mixxx 1.11.x
 www.mixxx.org
-Copyright (C) 2010-2012 Mixxx
+Copyright (C) 2010-2012 jus <s.brandt@mixxx.org>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,6 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.14  (20/01/2013)
+* Feature: Toggles visibility of WidgetGroups at skin load in the <manifest>
+* Update: Mixxx now supports image transparency in color schemes. Tap directly on BPM display to
+  set the tracks BPM, just like in the other official skins.
+
 v1.11.0.13  (20/01/2013)
 * Feature: Add <PlayPosColor> to improve visibility of play position marker. Part of lp:1099182 & lp:1094791
 * Fix: Correct <Size> attributes and margins in sampler decks so they don't break the layout on skin change
