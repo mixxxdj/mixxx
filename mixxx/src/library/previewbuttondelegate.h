@@ -32,15 +32,17 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
 
   signals:
     void loadTrackToPlayer(TrackPointer Track, QString group);
+    void buttonSetChecked(bool);
 
   public slots:
     void cellEntered(const QModelIndex &index);
     void buttonClicked();
+    void previewDeckPlayChanged(double v);
 
   private:
-    QTableView *m_pTableView;
+    QTableView* m_pTableView;
     ControlObjectThreadMain* m_pPreviewDeckPlay;
-    QPushButton *m_pButton;
+    QPushButton* m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;
