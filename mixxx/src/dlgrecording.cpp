@@ -79,8 +79,8 @@ void DlgRecording::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgRecording::loadSelectedTrackToGroup(QString group) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group);
+void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgRecording::moveSelection(int delta) {
