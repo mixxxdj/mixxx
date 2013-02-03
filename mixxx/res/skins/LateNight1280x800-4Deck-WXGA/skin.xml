@@ -655,7 +655,7 @@
 							<Text>
 								<TooltipId>text</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
 								</Style>
 								<Group>[Channel3]</Group>
 								<Pos>5,3</Pos>
@@ -665,7 +665,7 @@
 							<TrackProperty>
 								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
 								</Style>
 								<Property>title</Property>
 								<Group>[Channel3]</Group>
@@ -682,7 +682,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								background-color: transparent; color: #E17800; text-align: left;padding-left: 1px; }
 								</Style>
 								<Group>[Channel3]</Group>
 								<Pos>211,3</Pos>
@@ -737,16 +737,31 @@
 								<SignalHighColor></SignalHighColor>
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
-								<SignalColor>#3087BF</SignalColor>
+								<SignalColor>#E17800</SignalColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
 									<TextColor>#FFFFFF</TextColor>
 									<Text> %1 </Text>
 								</DefaultMark>
+								<MarkRange>
+									<StartControl>loop_start_position</StartControl>
+									<EndControl>loop_end_position</EndControl>
+									<EnabledControl>loop_enabled</EnabledControl>
+									<Color>#00FF00</Color>
+									<DisabledColor>#FFFFFF</DisabledColor>
+								</MarkRange>
+								<Mark>
+									<Control>cue_point</Control>
+									<Text>C</Text>
+									<Align>top</Align>
+									<Color>#FF001C</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 								<Connection>
-									<ConfigKey>[Channel3],playposition</ConfigKey>
+									<ConfigKey>[Channel4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
 								</Connection>
 							</Overview>
@@ -1169,7 +1184,7 @@
 							<Text>
 								<TooltipId>text</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
 								</Style>
 								<Group>[Channel4]</Group>
 								<Pos>5,3</Pos>
@@ -1179,7 +1194,7 @@
 							<TrackProperty>
 								<TooltipId>track_title</TooltipId>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
 								</Style>
 								<Property>title</Property>
 								<Group>[Channel4]</Group>
@@ -1196,7 +1211,7 @@
 							<NumberBpm>
 								<TooltipId>visual_bpm</TooltipId>
 								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								background-color: transparent; color: #0099FF; text-align: left;padding-left: 1px; }
 								</Style>
 								<Group>[Channel4]</Group>
 								<Pos>211,3</Pos>
@@ -1251,14 +1266,29 @@
 								<SignalHighColor></SignalHighColor>
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
-								<SignalColor>#3087BF</SignalColor>
+								<SignalColor>#0099FF</SignalColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
+								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
 									<TextColor>#FFFFFF</TextColor>
 									<Text> %1 </Text>
 								</DefaultMark>
+								<MarkRange>
+									<StartControl>loop_start_position</StartControl>
+									<EndControl>loop_end_position</EndControl>
+									<EnabledControl>loop_enabled</EnabledControl>
+									<Color>#00FF00</Color>
+									<DisabledColor>#FFFFFF</DisabledColor>
+								</MarkRange>
+								<Mark>
+									<Control>cue_point</Control>
+									<Text>C</Text>
+									<Align>top</Align>
+									<Color>#FF001C</Color>
+									<TextColor>#FFFFFF</TextColor>
+								</Mark>
 								<Connection>
 									<ConfigKey>[Channel4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
