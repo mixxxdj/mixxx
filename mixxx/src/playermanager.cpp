@@ -72,8 +72,8 @@ PlayerManager::~PlayerManager() {
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
-    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
+    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(pLibrary, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
@@ -283,7 +283,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     return m_samplers[sampler - 1];
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
@@ -291,7 +291,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
         return;
     }
 
-    pPlayer->slotLoadTrack(pTrack);
+    pPlayer->slotLoadTrack(pTrack, play);
 }
 
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
