@@ -181,6 +181,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped deck"),
                libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack", tr("Load selected track"), libraryMenu);
+    addDeckAndSamplerControl("LoadSelectedTrackAndPlay", tr("Load selected track and play"), libraryMenu);
 
     // Flanger Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));

@@ -43,7 +43,6 @@ class BundledSongsWebView : public QWebView, public LibraryView
     void onShow();
     void keyPressEvent(QKeyEvent* event);
     void loadSelectedTrack();
-    void loadSelectedTrackToGroup(QString group);
     void moveSelection(int delta);
     bool firstRun() const;
 

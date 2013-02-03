@@ -182,8 +182,8 @@ void DlgAutoDJ::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group);
+void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgAutoDJ::moveSelection(int delta) {
