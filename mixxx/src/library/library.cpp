@@ -34,12 +34,12 @@
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
-                 RecordingManager* pRecordingManager)
-    : m_pConfig(pConfig),
-      m_pSidebarModel(new SidebarModel(parent)),
-      m_pTrackCollection(new TrackCollection(pConfig)),
-      m_pLibraryControl(new LibraryControl),
-      m_pRecordingManager(pRecordingManager) {
+                 RecordingManager* pRecordingManager) :
+        m_pConfig(pConfig),
+        m_pSidebarModel(new SidebarModel(parent)),
+        m_pTrackCollection(new TrackCollection(pConfig)),
+        m_pLibraryControl(new LibraryControl),
+        m_pRecordingManager(pRecordingManager) {
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -106,6 +106,7 @@ Library::~Library() {
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
     // we never see the TrackCollection's destructor being called... - Albert
+    // Has to be deleted at last because the features holds references of it.
     delete m_pTrackCollection;
 }
 
@@ -135,8 +136,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -161,8 +162,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotSwitchToView(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
+    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
 }
@@ -203,8 +204,8 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
     emit(loadTrackToPlayer(pTrack, group));
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
-    emit(loadTrackToPlayer(pTrack, group));
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+    emit(loadTrackToPlayer(pTrack, group, play));
 }
 
 void Library::slotRestoreSearch(const QString& text) {

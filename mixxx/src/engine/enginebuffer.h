@@ -136,7 +136,7 @@ public:
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
-    void slotLoadTrack(TrackPointer pTrack);
+    void slotLoadTrack(TrackPointer pTrack, bool play = false);
 
     void slotEjectTrack(double);
 
@@ -262,6 +262,7 @@ private:
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
     QAtomicInt m_iTrackLoading;
+    bool m_bPlayAfterLoading;
     float m_fRampValue;
     int m_iRampState;
     //int m_iRampIter;
