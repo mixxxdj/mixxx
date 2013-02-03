@@ -90,28 +90,13 @@ DlgPrepare::DlgPrepare(QWidget* parent,
 DlgPrepare::~DlgPrepare() {
 }
 
-void DlgPrepare::onShow()
-{
+void DlgPrepare::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
     m_pPrepareLibraryTableModel->select();
 }
 
-void DlgPrepare::setup(QDomNode node)
-{
-    Q_UNUSED(node);
-}
-
-void DlgPrepare::onSearchStarting()
-{
-}
-
-void DlgPrepare::onSearchCleared()
-{
-}
-
-void DlgPrepare::onSearch(const QString& text)
-{
+void DlgPrepare::onSearch(const QString& text) {
     m_pPrepareLibraryTableModel->search(text);
 }
 
@@ -127,7 +112,8 @@ void DlgPrepare::moveSelection(int delta) {
     m_pPrepareLibraryTableView->moveSelection(delta);
 }
 
-void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected) {
+void DlgPrepare::tableSelectionChanged(const QItemSelection& selected,
+                                       const QItemSelection& deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
     bool tracksSelected = m_pPrepareLibraryTableView->selectionModel()->hasSelection();
@@ -192,13 +178,11 @@ void DlgPrepare::trackAnalysisProgress(int progress) {
     }
 }
 
-void DlgPrepare::showRecentSongs()
-{
+void DlgPrepare::showRecentSongs() {
     m_pPrepareLibraryTableModel->showRecentSongs();
 }
 
-void DlgPrepare::showAllSongs()
-{
+void DlgPrepare::showAllSongs() {
     m_pPrepareLibraryTableModel->showAllSongs();
 }
 

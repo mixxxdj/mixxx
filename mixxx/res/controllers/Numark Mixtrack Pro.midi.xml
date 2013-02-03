@@ -1,15 +1,20 @@
 <!--Numark MixTrack Mixxx Mapping v0.1 1/11/2010 Matteo matteo@magm3.com
-Modify by Darío José Freije 6/2/2012-->
-<MixxxMIDIPreset mixxxVersion="1.8.1+" schemaVersion="1">
+Modify by Darío José Freije 06/27/2012-->
+<MixxxMIDIPreset mixxxVersion="1.11.0+" schemaVersion="1">
     <info>
       <name>Numark MixTrack Pro</name>
-      <author>Matteo (matteo@magm3.com), James Ralston, and Darío José Freije</author>
-      <description>MIDI Mapping for Numark MixTrack Pro</description>
+      <author>Matteo (matteo@magm3.com), James Ralston, and D. J. Freije (dario2004@gmail.com)</author>
+      <description>version v1.2 w/brake, backspin, blink beat Leds.</description>
+      <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=3828</forums>
+      <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro</wiki>
     </info>
     <controller id="Numark Mix Track Pro MIDI 1">
         <scriptfiles>
             <file functionprefix="NumarkMixTrackPro" filename="Numark-Mixtrack-Pro-scripts.js"/>
         </scriptfiles>
+
+<!-- GENERAL -->
+
         <controls>
         	<control>
                 <status>0xb0</status>
@@ -69,16 +74,28 @@ Modify by Darío José Freije 6/2/2012-->
                 <status>0x90</status>
                 <midino>0x4f</midino>
                 <group>[Playlist]</group>
-                <key>NumarkMixTrackPro.toggleDirectoryMode</key>
+                <key>LoadSelectedIntoFirstStopped</key>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
+
+<!-- CHANNEL 1 -->
+
            <control>
                 <status>0xb0</status>
                 <midino>0x1b</midino>
                 <group>[Flanger]</group>
                 <key>lfoDepth</key>
+                <options>
+                    <diff/>
+                </options>
+            </control>
+            <control>
+                <status>0xb0</status>
+                <midino>0x1c</midino>
+                <group>[Flanger]</group>
+                <key>lfoDelay</key>
                 <options>
                     <diff/>
                 </options>
@@ -93,50 +110,12 @@ Modify by Darío José Freije 6/2/2012-->
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x1c</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-
-           <control>
-                <status>0xb0</status>
-                <midino>0x1e</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x20</midino>
-                <group>[Channel2]</group>
-                <key>pregain</key>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x1f</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-
-            <control>
                 <status>0x90</status>
                 <midino>0x3b</midino>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>NumarkMixTrackPro.playbutton</key>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -145,16 +124,16 @@ Modify by Darío José Freije 6/2/2012-->
                 <group>[Channel1]</group>
                 <key>NumarkMixTrackPro.cuebutton</key>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <status>0x90</status>
                 <midino>0x40</midino>
                 <group>[Channel1]</group>
-                <key>beatsync</key>
+                <key>NumarkMixTrackPro.beatsync</key>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -281,9 +260,9 @@ Modify by Darío José Freije 6/2/2012-->
                 <status>0x90</status>
                 <midino>0x4b</midino>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>NumarkMixTrackPro.LoadTrack</key>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -364,21 +343,48 @@ Modify by Darío José Freije 6/2/2012-->
                 <status>0x90</status>
                 <midino>0x63</midino>
                 <group>[Channel1]</group>
-                <key>flanger</key>
+                <key>NumarkMixTrackPro.flanger</key>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
 
 
 <!-- CHANNEL 2 -->
+           <control>
+                <status>0xb0</status>
+                <midino>0x1e</midino>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
+                <options>
+                    <diff/>
+                </options>
+            </control>
+            <control>
+                <status>0xb0</status>
+                <midino>0x1f</midino>
+                <group>[Flanger]</group>
+                <key>lfoDelay</key>
+                <options>
+                    <diff/>
+                </options>
+            </control>
+            <control>
+                <status>0xb0</status>
+                <midino>0x20</midino>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <options>
+                    <diff/>
+                </options>
+            </control>
             <control>
                 <status>0x90</status>
                 <midino>0x42</midino>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>NumarkMixTrackPro.playbutton</key>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -387,16 +393,16 @@ Modify by Darío José Freije 6/2/2012-->
                 <group>[Channel2]</group>
                 <key>NumarkMixTrackPro.cuebutton</key>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <group>[Channel2]</group>
-                <key>beatsync</key>
+                <key>NumarkMixTrackPro.beatsync</key>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
 
@@ -522,9 +528,9 @@ Modify by Darío José Freije 6/2/2012-->
                 <status>0x90</status>
                 <midino>0x34</midino>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>NumarkMixTrackPro.LoadTrack</key>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -582,7 +588,7 @@ Modify by Darío José Freije 6/2/2012-->
                 <options>
                     <script-binding/>
                 </options>
-            </control>
+            </control>-
             <control>
                 <status>0x90</status>
                 <midino>0x4D</midino>
@@ -592,7 +598,7 @@ Modify by Darío José Freije 6/2/2012-->
                     <script-binding/>
                 </options>
             </control>
-			<control>
+	    <control>
                 <status>0x90</status>
                 <midino>0x52</midino>
                 <group>[Channel2]</group>
@@ -605,20 +611,23 @@ Modify by Darío José Freije 6/2/2012-->
                 <status>0x90</status>
                 <midino>0x64</midino>
                 <group>[Channel2]</group>
-                <key>flanger</key>
+                <key>NumarkMixTrackPro.flanger</key>
                 <options>
-                    <normal/>
-                </options> 
+                    <script-binding/>
+                </options>
             </control>
         </controls>
 
 
-
+<!-- OUTPUTS Channel1 -->
 
         <outputs>
             <output>
                 <group>[Channel1]</group>
                 <key>play</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -629,18 +638,24 @@ Modify by Darío José Freije 6/2/2012-->
 
             <output>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>play</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
-                <midino>0x54</midino>
-                <on>0x0</on>
-                <off>0x64</off>
+                <midino>0x33</midino>
+                <on>0x64</on>
+                <off>0x00</off>
             </output>
 
             <output>
                 <group>[Channel1]</group>
                 <key>beatsync</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -648,9 +663,27 @@ Modify by Darío José Freije 6/2/2012-->
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
+
+            <output>
+                <group>[Channel1]</group>
+                <key>beatsync_tempo</key>
+                <options>
+                    <normal/>
+                </options>
+                <minimum>0</minimum>
+                <maximum>0.1</maximum>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <on>0x0</on>
+                <off>0x64</off>
+            </output>
+
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -661,6 +694,9 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>keylock</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -671,6 +707,9 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>flanger</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -681,6 +720,9 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>-0.1</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -688,10 +730,15 @@ Modify by Darío José Freije 6/2/2012-->
                 <on>0x64</on>
                 <off>0x0</off>
             </output>
-<!-- CHANNEL 2 -->
+
+<!-- OUTPUTS Channel2  -->
+
             <output>
                 <group>[Channel2]</group>
                 <key>play</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -702,18 +749,38 @@ Modify by Darío José Freije 6/2/2012-->
 
             <output>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>play</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
-                <midino>0x57</midino>
+                <midino>0x3c</midino>
+                <on>0x64</on>
+                <off>0x00</off>
+            </output>
+
+            <output>
+                <group>[Channel2]</group>
+                <key>beatsync</key>
+                <options>
+                    <normal/>
+                </options>
+                <minimum>0</minimum>
+                <maximum>0.1</maximum>
+                <status>0x90</status>
+                <midino>0x47</midino>
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
 
             <output>
                 <group>[Channel2]</group>
-                <key>beatsync</key>
+                <key>beatsync_tempo</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -725,6 +792,9 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -735,6 +805,9 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>keylock</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -745,6 +818,9 @@ Modify by Darío José Freije 6/2/2012-->
             <output>
                 <group>[Channel2]</group>
                 <key>flanger</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>
@@ -755,6 +831,9 @@ Modify by Darío José Freije 6/2/2012-->
 	    <output>
                 <group>[Channel2]</group>
                 <key>rate</key>
+                <options>
+                    <normal/>
+                </options>
                 <minimum>-0.1</minimum>
                 <maximum>0.1</maximum>
                 <status>0x90</status>

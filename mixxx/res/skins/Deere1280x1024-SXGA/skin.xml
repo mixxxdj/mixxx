@@ -53,7 +53,7 @@
 	<manifest>
 	<title>Deere1280x1024-SXGA</title>
 	<author>jus</author>
-	<version>1.11.0.12</version>
+	<version>1.11.0.14</version>
 	<description>A 2-deck split-waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -102,12 +102,12 @@
 	############################################################################################
 	-->
 	<WidgetGroup>
-		<Pos>0,364</Pos>
+		<Pos>0,360</Pos>
 		<!--
 		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
 		<Size>w,h</Size>
 		-->
-		<Size>1280,336</Size>
+		<Size>1280,564f</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -116,9 +116,9 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>i,110</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 8px 0px;} </Style>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 4px 0px;} </Style>
 				<Children>
 					<!-- all sub-widgets for the sampler decks -->
 					<WidgetGroup>
@@ -138,7 +138,7 @@
 								</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -149,7 +149,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -217,7 +217,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -653,7 +653,7 @@
 								</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -664,7 +664,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -732,7 +732,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -1168,7 +1168,7 @@
 								</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1179,7 +1179,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1247,7 +1247,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -1683,7 +1683,7 @@
 								</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1694,7 +1694,7 @@
 								<Property>title</Property>
 								<Group>[Sampler4]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1762,7 +1762,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -2384,7 +2384,7 @@
 														<SignalMidColor>#0099FF</SignalMidColor>
 														<SignalLowColor>#FF0035</SignalLowColor>
 														<SignalColor>#FF8000</SignalColor>
-														<MarkerColor>#00FF00</MarkerColor>
+														<PlayPosColor>#00FF00</PlayPosColor>
 														<DefaultMark>
 															<Align>bottom</Align>
 															<Color>#FFFFFF</Color>
@@ -3958,9 +3958,8 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor>#00FF00</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
+						<BeatHighlightColor></BeatHighlightColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
 						<Align></Align>
@@ -4087,7 +4086,7 @@
 				<SignalMidColor></SignalMidColor>
 				<SignalLowColor></SignalLowColor>
 				<SignalColor>#0099FF</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
+				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
 					<Align>bottom</Align>
@@ -4128,7 +4127,7 @@
 				<Property>title</Property>
 				<Channel>1</Channel>
 				<Pos>0,1</Pos>
-				<Size>315,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -4144,7 +4143,7 @@
 				<Property>artist</Property>
 				<Channel>1</Channel>
 				<Pos>0,26</Pos>
-				<Size>290,23</Size>
+				<Size>290f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5057,9 +5056,8 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor>#00FF00</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
+						<BeatHighlightColor></BeatHighlightColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
 						<Align></Align>
@@ -5186,7 +5184,7 @@
 				<SignalMidColor></SignalMidColor>
 				<SignalLowColor></SignalLowColor>
 				<SignalColor>#E17800</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
+				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
 					<Align>bottom</Align>
@@ -5227,7 +5225,7 @@
 				<Property>title</Property>
 				<Channel>2</Channel>
 				<Pos>0,1</Pos>
-				<Size>315,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5243,7 +5241,7 @@
 				<Property>artist</Property>
 				<Channel>2</Channel>
 				<Pos>0,26</Pos>
-				<Size>290,23</Size>
+				<Size>290f,23</Size>
 			</TrackProperty>
 
 			<!--

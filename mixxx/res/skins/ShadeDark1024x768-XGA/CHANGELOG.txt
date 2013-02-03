@@ -22,6 +22,16 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.12  (20/01/2013)
+* Feature: Add <PlayPosColor> to improve visibility of play position marker. Part of lp:1099182 & lp:1094791
+* Fix: Correct <Size> attributes and margins in sampler decks so they don't break the layout on skin change
+  anymore and the library's scrollbar stay visible at the buttom.
+* Fix: Remove deprecated <CueColor> key, Set empty <BeatHighlightColor> to reduce "on-beat" flicker in waveform
+
+v1.11.0.11  (19/01/2013)
+* Fix: Add fixed size width to <Size> attribute in <Text> and track_title, track_artist, track_album <TrackProperty> keys,
+  workaround for lp:1100071
+
 v1.11.0.10	(16/12/2012)
 * Feature: Add custom Preview button to library
 * Feature: Toggles visibility of WidgetGroups at skin load in the <manifest>

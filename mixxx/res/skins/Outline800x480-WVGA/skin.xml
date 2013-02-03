@@ -47,7 +47,7 @@
 	<manifest>
 	<title>Outline800x480-WVGA</title>
 	<author>jus</author>
-	<version>1.11.0.8</version>
+	<version>1.11.0.10</version>
 	<description>A 2-deck parallel waveform skin with 3 samplers.</description>
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
@@ -401,7 +401,7 @@
 		<SignalMidColor>#0099FF</SignalMidColor>
 		<SignalLowColor>#FF0035</SignalLowColor>
 		<SignalColor>#FF8000</SignalColor>
-		<MarkerColor>#00FF00</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -439,7 +439,7 @@
 		<SignalMidColor>#0099FF</SignalMidColor>
 		<SignalLowColor>#FF0035</SignalLowColor>
 		<SignalColor>#FF8000</SignalColor>
-		<MarkerColor>#00FF00</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -616,9 +616,8 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#19ABFB</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor>#000000</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#00FF00</CueColor>
+						<BeatHighlightColor></BeatHighlightColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -675,9 +674,8 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#FF0000</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor>#000000</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#00FF00</CueColor>
+						<BeatHighlightColor></BeatHighlightColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -844,7 +842,7 @@
 		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
 		<Size>w,h</Size>
 		-->
-		<Size>641,274</Size>
+		<Size>641,274f</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -853,7 +851,7 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>i,94</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
 				<Style>QGroupBox { border: 0px solid yellow; margin: 2px 0px 0px 0px; } </Style>
 				<Children>
@@ -890,7 +888,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -958,7 +956,7 @@
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1423,7 +1421,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1491,7 +1489,7 @@
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1956,7 +1954,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -2024,7 +2022,7 @@
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -2630,7 +2628,7 @@
 		<Property>title</Property>
 		<Channel>1</Channel>
 		<Pos>78,80</Pos>
-		<Size>220,18</Size>
+		<Size>220f,18</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_title</TooltipId>
@@ -2640,7 +2638,7 @@
 		<Property>title</Property>
 		<Channel>2</Channel>
 		<Pos>432,80</Pos>
-		<Size>220,18</Size>
+		<Size>220f,18</Size>
 	</TrackProperty>
 
 	<!--
@@ -2656,7 +2654,7 @@
 		<Property>artist</Property>
 		<Channel>1</Channel>
 		<Pos>78,96</Pos>
-		<Size>190,16</Size>
+		<Size>190f,16</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_artist</TooltipId>
@@ -2666,7 +2664,7 @@
 		<Property>artist</Property>
 		<Channel>2</Channel>
 		<Pos>432,96</Pos>
-		<Size>190,16</Size>
+		<Size>190f,16</Size>
 	</TrackProperty>
 
 	<!--
@@ -2693,7 +2691,7 @@
 		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: left; padding-left: 1px; }
 		</Style>
-		<Channel>1</Channel>
+		<Channel>2</Channel>
 		<Pos>662,80</Pos>
 		<Size>60,18</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->

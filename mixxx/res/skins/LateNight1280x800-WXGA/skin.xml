@@ -25,12 +25,6 @@
 	See CHANGELOG.txt for the list of changes.
 	-->
 
-	<!--
-	TODO: Jus
-	* Move Play & Cue controls into Playback control sub-widget
-	* Add Kill switches for Deck 3 & 4, make them visible for Deck 1 & 2
-	-->
-
 <!DOCTYPE skin>
 <skin>
 	<!--
@@ -59,12 +53,12 @@
 	<manifest>
 	<title>LateNight1280x800-WXGA</title>
 	<author>jus</author>
-	<version>1.11.0.13</version>
-	<description>A 4-deck parallel waveform skin with 4 samplers.</description>
+	<version>1.11.0.15</version>
+	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 	<attributes>
-		<attribute config_key="[Master],num_decks">4</attribute>
+		<attribute config_key="[Master],num_decks">2</attribute>
 		<attribute config_key="[Master],num_samplers">4</attribute>
 		<attribute config_key="[Master],num_preview_decks">1</attribute>
 		<!--Optionally, make elements visible on skin load-->
@@ -222,7 +216,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -738,7 +731,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1254,7 +1246,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1770,7 +1761,6 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -2393,7 +2383,6 @@
 														<SignalMidColor>#0099FF</SignalMidColor>
 														<SignalLowColor>#FF0035</SignalLowColor>
 														<SignalColor>#FF8000</SignalColor>
-														<MarkerColor>#00FF00</MarkerColor>
 														<PlayPosColor>#00FF00</PlayPosColor>
 														<DefaultMark>
 															<Align>bottom</Align>
@@ -2820,71 +2809,15 @@
 					<Visual>
 						<TooltipId>waveform_display</TooltipId>
 						<Style></Style>
-						<Channel>3</Channel>
+						<Channel>1</Channel>
 						<Pos>0,0</Pos>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
-						<SignalColor>#E17800</SignalColor>
-						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<PlayPosColor>#00FF00</PlayPosColor>
-						<EndOfTrackColor>#EA0000</EndOfTrackColor>
-						<DefaultMark>
-							<Align>top</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-							<Text> %1 </Text>
-						</DefaultMark>
-						<MarkRange>
-							<StartControl>loop_start_position</StartControl>
-							<EndControl>loop_end_position</EndControl>
-							<EnabledControl>loop_enabled</EnabledControl>
-							<Color>#00FF00</Color>
-							<DisabledColor>#FFFFFF</DisabledColor>
-						</MarkRange>
-						<Mark>
-							<Control>loop_start_position</Control>
-							<Text>IN</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>loop_end_position</Control>
-							<Text>OUT</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<!--
-						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-						-->
-						<Mark>
-							<Control>cue_point</Control>
-							<Text>CUE</Text>
-							<Align>top</Align>
-							<Color>#FF001C</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-					</Visual>
-					<Visual>
-						<TooltipId>waveform_display</TooltipId>
-						<Style></Style>
-						<Channel>1</Channel>
-						<Pos>0,35</Pos>
-						<!--See comment about <Size> above-->
-						<!--<Size>i,73</Size>-->
-						<BgColor>#1C1C1C</BgColor>
-						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor></BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
@@ -2935,66 +2868,10 @@
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
-						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
+						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor></BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<PlayPosColor>#00FF00</PlayPosColor>
-						<EndOfTrackColor>#EA0000</EndOfTrackColor>
-						<DefaultMark>
-							<Align>top</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-							<Text> %1 </Text>
-						</DefaultMark>
-						<MarkRange>
-							<StartControl>loop_start_position</StartControl>
-							<EndControl>loop_end_position</EndControl>
-							<EnabledControl>loop_enabled</EnabledControl>
-							<Color>#00FF00</Color>
-							<DisabledColor>#FFFFFF</DisabledColor>
-						</MarkRange>
-						<Mark>
-							<Control>loop_start_position</Control>
-							<Text>IN</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<Mark>
-							<Control>loop_end_position</Control>
-							<Text>OUT</Text>
-							<Align>bottom</Align>
-							<Color>#00FF00</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-						<!--
-						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-						-->
-						<Mark>
-							<Control>cue_point</Control>
-							<Text>CUE</Text>
-							<Align>top</Align>
-							<Color>#FF001C</Color>
-							<TextColor>#FFFFFF</TextColor>
-						</Mark>
-					</Visual>
-					<Visual>
-						<TooltipId>waveform_display</TooltipId>
-						<Style></Style>
-						<Channel>4</Channel>
-						<Pos>0,109</Pos>
-						<!--See comment about <Size> above-->
-						<!--<Size>i,73</Size>-->
-						<BgColor>#1C1C1C</BgColor>
-						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
-						<SignalColor>#0099FF</SignalColor>
-						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
@@ -3571,60 +3448,6 @@
 				</Connection>
 			</Knob>
 
-			<!--
-			**********************************************
-			Visual - Volume level display
-			**********************************************
-			-->
-
-			<VuMeter>
-				<TooltipId>master_VuMeterL</TooltipId>
-				<Style></Style>
-				<PathVu>btn_volume_display_master1_over.png</PathVu>
-				<PathBack>btn_volume_display_master1.png</PathBack>
-				<Pos>365,14</Pos>
-				<Horizontal>true</Horizontal>
-				<PeakHoldSize>5</PeakHoldSize>
-				<PeakHoldTime>500</PeakHoldTime>
-				<PeakFallTime>50</PeakFallTime>
-				<PeakFallStep>2</PeakFallStep>
-				<Connection>
-					<ConfigKey>[Master],VuMeterL</ConfigKey>
-				</Connection>
-			</VuMeter>
-			<VuMeter>
-				<TooltipId>master_VuMeterR</TooltipId>
-				<Style></Style>
-				<PathVu>btn_volume_display_master2_over.png</PathVu>
-				<PathBack>btn_volume_display_master2.png</PathBack>
-				<Pos>365,25</Pos>
-				<Horizontal>true</Horizontal>
-				<PeakHoldSize>5</PeakHoldSize>
-				<PeakHoldTime>500</PeakHoldTime>
-				<PeakFallTime>50</PeakFallTime>
-				<PeakFallStep>2</PeakFallStep>
-				<Connection>
-					<ConfigKey>[Master],VuMeterR</ConfigKey>
-				</Connection>
-			</VuMeter>
-
-			<!--
-			**********************************************
-			Visual- Volume peak indicator
-			**********************************************
-			-->
-			<StatusLight>
-				<TooltipId>master_PeakIndicator</TooltipId>
-				<Style></Style>
-				<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
-				<PathBack>btn_clipping_master.png</PathBack>
-				<Pos>449,14</Pos>
-				<Horizontal>true</Horizontal>
-				<Connection>
-					<ConfigKey>[Master],PeakIndicator</ConfigKey>
-				</Connection>
-			</StatusLight>
-
 		</Children>
 	</WidgetGroup>
 
@@ -3712,7 +3535,7 @@
 						<Style></Style>
 						<Handle>knob_volume1.png</Handle>
 						<Slider>slider_volume1.png</Slider>
-						<Pos>121,17</Pos>
+						<Pos>83,17</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel1],volume</ConfigKey>
@@ -3724,37 +3547,14 @@
 						<Style></Style>
 						<Handle>knob_volume2.png</Handle>
 						<Slider>slider_volume2.png</Slider>
-						<Pos>161,17</Pos>
+						<Pos>195,17</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel2],volume</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</SliderComposed>
-					<SliderComposed>
-						<TooltipId>channel_volume</TooltipId>
-						<Style></Style>
-						<Handle>knob_volume1.png</Handle>
-						<Slider>slider_volume1.png</Slider>
-						<Pos>82,17</Pos>
-						<Horizontal>false</Horizontal>
-						<Connection>
-							<ConfigKey>[Channel3],volume</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
-						</Connection>
-					</SliderComposed>
-					<SliderComposed>
-						<TooltipId>channel_volume</TooltipId>
-						<Style></Style>
-						<Handle>knob_volume2.png</Handle>
-						<Slider>slider_volume2.png</Slider>
-						<Pos>200,17</Pos>
-						<Horizontal>false</Horizontal>
-						<Connection>
-							<ConfigKey>[Channel4],volume</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
-						</Connection>
-					</SliderComposed>
+
 					<!--
 					**********************************************
 					Slider- Crossfader
@@ -3772,6 +3572,116 @@
 							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</SliderComposed>
+
+					<!--
+					****************************************
+					 Button- Play
+					****************************************
+					-->
+					<PushButton>
+						<TooltipId>play_cue_set</TooltipId>
+						<Style></Style>
+						<NumberStates>2</NumberStates>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_play1_down.png</Pressed>
+							<Unpressed>btn_play1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_play1_overdown.png</Pressed>
+							<Unpressed>btn_play1_over.png</Unpressed>
+						</State>
+						<Pos>16,185</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],play</ConfigKey>
+							<EmitOnDownPress>true</EmitOnDownPress>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],cue_set</ConfigKey>
+							<EmitOnDownPress>true</EmitOnDownPress>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+					</PushButton>
+					<PushButton>
+						<TooltipId>play_cue_set</TooltipId>
+						<Style></Style>
+						<NumberStates>2</NumberStates>
+						<RightClickIsPushButton>true</RightClickIsPushButton>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_play2_down.png</Pressed>
+							<Unpressed>btn_play2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_play2_overdown.png</Pressed>
+							<Unpressed>btn_play2_over.png</Unpressed>
+						</State>
+						<Pos>258,185</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],play</ConfigKey>
+							<EmitOnDownPress>true</EmitOnDownPress>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],cue_set</ConfigKey>
+							<EmitOnDownPress>true</EmitOnDownPress>
+							<ButtonState>RightButton</ButtonState>
+							<ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Button- Cue
+					**********************************************
+					-->
+					<PushButton>
+						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
+						<Style></Style>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_cue1_overdown.png</Pressed>
+							<Unpressed>btn_cue1.png</Unpressed>
+						</State>
+						<Pos>16,159</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],cue_default</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+					</PushButton>
+					<PushButton>
+						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
+						<Style></Style>
+						<NumberStates>1</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_cue2_overdown.png</Pressed>
+							<Unpressed>btn_cue2.png</Unpressed>
+						</State>
+						<Pos>258,159</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],cue_default</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
+						</Connection>
+					</PushButton>
 
 					<!--
 					**********************************************
@@ -3792,7 +3702,7 @@
 							<Pressed>btn_pfl1_overdown.png</Pressed>
 							<Unpressed>btn_pfl1_over.png</Unpressed>
 						</State>
-						<Pos>130,124</Pos>
+						<Pos>94,124</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],pfl</ConfigKey>
 						</Connection>
@@ -3811,47 +3721,9 @@
 							<Pressed>btn_pfl2_overdown.png</Pressed>
 							<Unpressed>btn_pfl2_over.png</Unpressed>
 						</State>
-						<Pos>170,124</Pos>
+						<Pos>206,124</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],pfl</ConfigKey>
-						</Connection>
-					</PushButton>
-					<PushButton>
-						<TooltipId>pfl</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_pfl1_down.png</Pressed>
-							<Unpressed>btn_pfl1.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_pfl1_overdown.png</Pressed>
-							<Unpressed>btn_pfl1_over.png</Unpressed>
-						</State>
-						<Pos>92,124</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],pfl</ConfigKey>
-						</Connection>
-					</PushButton>
-					<PushButton>
-						<TooltipId>pfl</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_pfl2_down.png</Pressed>
-							<Unpressed>btn_pfl2.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_pfl2_overdown.png</Pressed>
-							<Unpressed>btn_pfl2_over.png</Unpressed>
-						</State>
-						<Pos>209,124</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],pfl</ConfigKey>
 						</Connection>
 					</PushButton>
 
@@ -3874,7 +3746,7 @@
 							<Pressed>btn_fx1_overdown.png</Pressed>
 							<Unpressed>btn_fx1_over.png</Unpressed>
 						</State>
-						<Pos>53,159</Pos>
+						<Pos>137,124</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],flanger</ConfigKey>
 						</Connection>
@@ -3893,47 +3765,9 @@
 							<Pressed>btn_fx2_overdown.png</Pressed>
 							<Unpressed>btn_fx2_over.png</Unpressed>
 						</State>
-						<Pos>247,159</Pos>
+						<Pos>163,124</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],flanger</ConfigKey>
-						</Connection>
-					</PushButton>
-					<PushButton>
-						<TooltipId>flanger</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_fx1_down.png</Pressed>
-							<Unpressed>btn_fx1.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_fx1_overdown.png</Pressed>
-							<Unpressed>btn_fx1_over.png</Unpressed>
-						</State>
-						<Pos>12,159</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],flanger</ConfigKey>
-						</Connection>
-					</PushButton>
-					<PushButton>
-						<TooltipId>flanger</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_fx2_down.png</Pressed>
-							<Unpressed>btn_fx1.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_fx2_overdown.png</Pressed>
-							<Unpressed>btn_fx2_over.png</Unpressed>
-						</State>
-						<Pos>287,159</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],flanger</ConfigKey>
 						</Connection>
 					</PushButton>
 
@@ -4075,13 +3909,12 @@
 					RotaryFader- Channel filter and gain
 					**********************************************
 					-->
-					<!--Deck 1-->
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>45,7</Pos>
+						<Pos>36,1</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],pregain</ConfigKey>
 						</Connection>
@@ -4091,7 +3924,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>45,46</Pos>
+						<Pos>36,39</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterHigh</ConfigKey>
 						</Connection>
@@ -4101,7 +3934,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>45,85</Pos>
+						<Pos>36,78</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterMid</ConfigKey>
 						</Connection>
@@ -4111,18 +3944,18 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>45,122</Pos>
+						<Pos>36,115</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterLow</ConfigKey>
 						</Connection>
 					</Knob>
-					<!--Deck 2-->
+
 					<Knob>
 						<TooltipId>pregain</TooltipId>
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>239,7</Pos>
+						<Pos>248,1</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],pregain</ConfigKey>
 						</Connection>
@@ -4132,7 +3965,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>239,46</Pos>
+						<Pos>248,39</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterHigh</ConfigKey>
 						</Connection>
@@ -4142,7 +3975,7 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>239,85</Pos>
+						<Pos>248,78</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterMid</ConfigKey>
 						</Connection>
@@ -4152,91 +3985,9 @@
 						<Style></Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>239,122</Pos>
+						<Pos>248,115</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterLow</ConfigKey>
-						</Connection>
-					</Knob>
-					<!--Deck 3-->
-					<Knob>
-						<TooltipId>pregain</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>5,7</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],pregain</ConfigKey>
-						</Connection>
-					</Knob>
-					<Knob>
-						<TooltipId>filterHigh</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>5,46</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],filterHigh</ConfigKey>
-						</Connection>
-					</Knob>
-					<Knob>
-						<TooltipId>filterMid</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>5,85</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],filterMid</ConfigKey>
-						</Connection>
-					</Knob>
-					<Knob>
-						<TooltipId>filterLow</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>5,122</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],filterLow</ConfigKey>
-						</Connection>
-					</Knob>
-					<!--Deck 4-->
-					<Knob>
-						<TooltipId>pregain</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>279,7</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],pregain</ConfigKey>
-						</Connection>
-					</Knob>
-					<Knob>
-						<TooltipId>filterHigh</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>279,46</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],filterHigh</ConfigKey>
-						</Connection>
-					</Knob>
-					<Knob>
-						<TooltipId>filterMid</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>279,85</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],filterMid</ConfigKey>
-						</Connection>
-					</Knob>
-					<Knob>
-						<TooltipId>filterLow</TooltipId>
-						<Style></Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>279,122</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],filterLow</ConfigKey>
 						</Connection>
 					</Knob>
 
@@ -4250,7 +4001,7 @@
 						<Style></Style>
 						<PathVu>btn_volume_display1_over.png</PathVu>
 						<PathBack>btn_volume_display1.png</PathBack>
-						<Pos>137,33</Pos>
+						<Pos>138,33</Pos>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
@@ -4275,37 +4026,7 @@
 							<ConfigKey>[Channel2],VuMeter</ConfigKey>
 						</Connection>
 					</VuMeter>
-					<VuMeter>
-						<TooltipId>channel_VuMeter</TooltipId>
-						<Style></Style>
-						<PathVu>btn_volume_display1_over.png</PathVu>
-						<PathBack>btn_volume_display1.png</PathBack>
-						<Pos>99,33</Pos>
-						<Horizontal>false</Horizontal>
-						<PeakHoldSize>5</PeakHoldSize>
-						<PeakHoldTime>500</PeakHoldTime>
-						<PeakFallTime>50</PeakFallTime>
-						<PeakFallStep>2</PeakFallStep>
-						<Connection>
-							<ConfigKey>[Channel3],VuMeter</ConfigKey>
-						</Connection>
-					</VuMeter>
-					<VuMeter>
-						<TooltipId>channel_VuMeter</TooltipId>
-						<Style></Style>
-						<PathVu>btn_volume_display2_over.png</PathVu>
-						<PathBack>btn_volume_display2.png</PathBack>
-						<Pos>216,33</Pos>
-						<Horizontal>false</Horizontal>
-						<PeakHoldSize>5</PeakHoldSize>
-						<PeakHoldTime>500</PeakHoldTime>
-						<PeakFallTime>50</PeakFallTime>
-						<PeakFallStep>2</PeakFallStep>
-						<Connection>
-							<ConfigKey>[Channel4],VuMeter</ConfigKey>
-						</Connection>
-					</VuMeter>
-					<!-- Moved to WidgetGroup : Volume, Balance & Headphones control
+
 					<VuMeter>
 						<TooltipId>master_VuMeterL</TooltipId>
 						<Style></Style>
@@ -4334,7 +4055,6 @@
 							<ConfigKey>[Master],VuMeterR</ConfigKey>
 						</Connection>
 					</VuMeter>
-					-->
 
 					<!--
 					**********************************************
@@ -4346,7 +4066,7 @@
 						<Style></Style>
 						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 						<PathBack>btn_clipping1.png</PathBack>
-						<Pos>137,19</Pos>
+						<Pos>138,19</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 						</Connection>
@@ -4362,27 +4082,6 @@
 						</Connection>
 					</StatusLight>
 					<StatusLight>
-						<TooltipId>PeakIndicator</TooltipId>
-						<Style></Style>
-						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-						<PathBack>btn_clipping1.png</PathBack>
-						<Pos>99,19</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],PeakIndicator</ConfigKey>
-						</Connection>
-					</StatusLight>
-					<StatusLight>
-						<TooltipId>PeakIndicator</TooltipId>
-						<Style></Style>
-						<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
-						<PathBack>btn_clipping2.png</PathBack>
-						<Pos>216,19</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],PeakIndicator</ConfigKey>
-						</Connection>
-					</StatusLight>
-					<!-- Moved to WidgetGroup : Volume, Balance & Headphones control
-					<StatusLight>
 						<TooltipId>master_PeakIndicator</TooltipId>
 						<Style></Style>
 						<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
@@ -4392,7 +4091,6 @@
 							<ConfigKey>[Master],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
-					-->
 				</Children>
 			</WidgetGroup>
 
@@ -4481,7 +4179,6 @@
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#0099FF</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
@@ -4793,71 +4490,10 @@
 				</Connection>
 			</PushButton>
 
-			<!--
-			****************************************
-			 Button- Play
-			****************************************
-			-->
-			<PushButton>
-				<TooltipId>play_cue_set</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_play1_down.png</Pressed>
-					<Unpressed>btn_play1.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_play1_overdown.png</Pressed>
-					<Unpressed>btn_play1_over.png</Unpressed>
-				</State>
-				<Pos>50,141</Pos>
-				<Connection>
-					<ConfigKey>[Channel1],play</ConfigKey>
-					<EmitOnDownPress>true</EmitOnDownPress>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel1],cue_set</ConfigKey>
-					<EmitOnDownPress>true</EmitOnDownPress>
-					<ButtonState>RightButton</ButtonState>
-					<ConnectValueToWidget>false</ConnectValueToWidget>
-				</Connection>
-			</PushButton>
-
-			<!--
-			**********************************************
-			Button- Cue
-			**********************************************
-			-->
-			<PushButton>
-				<TooltipId>cue_default_cue_gotoandstop</TooltipId>
-				<Style></Style>
-				<NumberStates>1</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_cue1_overdown.png</Pressed>
-					<Unpressed>btn_cue1.png</Unpressed>
-				</State>
-				<Pos>50,115</Pos>
-				<Connection>
-					<ConfigKey>[Channel1],cue_default</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-			</PushButton>
-
 			<!-- Playback control sub-widget -->
 			<WidgetGroup>
 				<Pos>120,115</Pos>
-				<Size>e,54</Size>
+				<Size>357,54</Size>
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 
@@ -5526,7 +5162,6 @@
 				<BgPixmap></BgPixmap>
 				-->
 				<SignalColor>#E17800</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
@@ -5838,71 +5473,10 @@
 				</Connection>
 			</PushButton>
 
-			<!--
-			****************************************
-			 Button- Play
-			****************************************
-			-->
-			<PushButton>
-				<TooltipId>play_cue_set</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_play2_down.png</Pressed>
-					<Unpressed>btn_play2.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_play2_overdown.png</Pressed>
-					<Unpressed>btn_play1_over.png</Unpressed>
-				</State>
-				<Pos>50,141</Pos>
-				<Connection>
-					<ConfigKey>[Channel2],play</ConfigKey>
-					<EmitOnDownPress>true</EmitOnDownPress>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel2],cue_set</ConfigKey>
-					<EmitOnDownPress>true</EmitOnDownPress>
-					<ButtonState>RightButton</ButtonState>
-					<ConnectValueToWidget>false</ConnectValueToWidget>
-				</Connection>
-			</PushButton>
-
-			<!--
-			**********************************************
-			Button- Cue
-			**********************************************
-			-->
-			<PushButton>
-				<TooltipId>cue_default_cue_gotoandstop</TooltipId>
-				<Style></Style>
-				<NumberStates>1</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_cue2_overdown.png</Pressed>
-					<Unpressed>btn_cue2.png</Unpressed>
-				</State>
-				<Pos>50,115</Pos>
-				<Connection>
-					<ConfigKey>[Channel2],cue_default</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-				<Connection>
-					<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
-					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-					<ButtonState>RightButton</ButtonState>
-				</Connection>
-			</PushButton>
-
 			<!-- Playback control sub-widget -->
 			<WidgetGroup>
 				<Pos>119,115</Pos>
-				<Size>e,54</Size>
+				<Size>357,54</Size>
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 

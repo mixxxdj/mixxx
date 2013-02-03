@@ -692,7 +692,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
         // QVariant::toFloat needs >= QT 4.6.x
-        pTrack->setBpm(static_cast<float>(value.toDouble()));
+        pTrack->setBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         pTrack->setPlayedAndUpdatePlaycount(value.toBool());
     } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
@@ -814,5 +814,3 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // there.
     select(); //Repopulate the data model.
 }
-
-

@@ -84,7 +84,7 @@ public:
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
-    Q_PROPERTY(float bpm READ getBpm WRITE setBpm)
+    Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
@@ -111,9 +111,9 @@ public:
     /** Set ReplayGain*/
     void setReplayGain(float);
     /** Returns BPM */
-    float getBpm() const;
+    double getBpm() const;
     /** Set BPM */
-    void setBpm(float);
+    void setBpm(double);
     /** Returns BPM as a string */
     QString getBpmStr() const;
     // A track with a locked BPM will not be re-analyzed by the beats or bpm

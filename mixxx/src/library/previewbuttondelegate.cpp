@@ -17,6 +17,8 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
           m_column(column) {
     m_pPreviewDeckPlay = new ControlObjectThreadMain(
         ControlObject::getControl(PlayerManager::groupForPreviewDeck(0), "play"));
+    connect(m_pPreviewDeckPlay, SIGNAL(valueChanged(double)),
+            this, SLOT(previewDeckPlayChanged(double)));
 
     // This assumes that the parent is wtracktableview
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -51,6 +53,8 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     btn->setChecked(index.data().toBool() && playing);
     connect(btn, SIGNAL(clicked()),
             this, SLOT(buttonClicked()));
+    connect(this, SIGNAL(buttonSetChecked(bool)),
+            btn, SLOT(setChecked(bool)));
     return btn;
 }
 
@@ -118,8 +122,8 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
     if (!m_pTableView) {
         return;
     }
-    //this slot is called if the mouse pointer enters ANY cell on
-    //the QTableView but the code should only be executed on a button
+    // this slot is called if the mouse pointer enters ANY cell on
+    // the QTableView but the code should only be executed on a button
     if (index.column() == m_column) {
         if (m_isOneCellInEditMode) {
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
@@ -157,3 +161,21 @@ void PreviewButtonDelegate::buttonClicked() {
         m_pPreviewDeckPlay->slotSet(0.0);
     }
 }
+
+void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
+    m_pTableView->update();
+    if (m_isOneCellInEditMode) {
+        TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+        if (!pTrackModel) {
+            return;
+        }
+        QString group = PlayerManager::groupForPreviewDeck(0);
+        TrackPointer pPreviewTrack = PlayerInfo::Instance().getTrackInfo(group);
+        TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
+        if (pTrack && pTrack == pPreviewTrack) {
+            emit(buttonSetChecked(v > 0.0));
+        }
+    }
+}
+
+

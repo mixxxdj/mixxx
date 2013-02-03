@@ -429,12 +429,11 @@ void SoundManager::checkConfig() {
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
     if (!m_config.checkSampleRate(*this)) {
-        m_config.setSampleRate(SoundManagerConfig::kDefaultSampleRate);
+        m_config.setSampleRate(SoundManagerConfig::kFallbackSampleRate);
         m_config.loadDefaults(this, SoundManagerConfig::OTHER);
     }
     // latency checks itself for validity on SMConfig::setLatency()
 }
-
 
 QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
     QList<AudioOutput> outputs, unsigned long iFramesPerBuffer,

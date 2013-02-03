@@ -30,7 +30,7 @@ void WaveformRenderMarkRange::setup(const QDomNode &node) {
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
-            m_markRanges.back().setup( m_waveformRenderer->getGroup(), child);
+            m_markRanges.back().setup(m_waveformRenderer->getGroup(), child, *m_waveformRenderer->getWaveformSignalColors());
         }
         child = child.nextSibling();
     }

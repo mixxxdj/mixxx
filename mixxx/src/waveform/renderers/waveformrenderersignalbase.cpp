@@ -71,9 +71,8 @@ void WaveformRendererSignalBase::setup(const QDomNode &node) {
         m_alignment = Qt::AlignCenter;
     }
 
-    m_colors.setup(node);
-    m_axesColor = m_colors.getAxesColor();
-
+    m_pColors = m_waveformRenderer->getWaveformSignalColors();
+    m_axesColor = m_pColors->getAxesColor();
 
     onSetup(node);
 }
