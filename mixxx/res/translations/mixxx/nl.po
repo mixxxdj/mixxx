@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-01-18 11:01+0200\n"
-"PO-Revision-Date: 2012-11-21 18:35+0000\n"
-"Last-Translator: Nikita <changesdh@hotmail.com>\n"
+"PO-Revision-Date: 2013-02-04 17:41+0000\n"
+"Last-Translator: Frank van de Pol <fvdpol@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-21 04:35+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-02-05 04:34+0000\n"
+"X-Generator: Launchpad (build 16468)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -229,7 +229,7 @@ msgstr "Vast BPM"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "Voorbeeld"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -551,7 +551,7 @@ msgstr "Met bakken kun je je muziek organizeren zoals jij het wil!"
 
 #: CrateFeature#20
 msgid "Create new crate"
-msgstr ""
+msgstr "Creëer nieuwe krat"
 
 #: CrateFeature#21
 msgid "A crate cannot have a blank name."
@@ -1092,24 +1092,24 @@ msgstr ""
 
 #: DlgControllerLearning#81
 msgid "1/32th"
-msgstr ""
+msgstr "1/32e"
 
 #: DlgControllerLearning#82
 msgid "1/16th"
-msgstr ""
+msgstr "1/16e"
 
 #: DlgControllerLearning#83
 msgid "1/8th"
-msgstr ""
+msgstr "1/8e"
 
 #: DlgControllerLearning#84
 msgid "1/4th"
-msgstr ""
+msgstr "1/4e"
 
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Library"
-msgstr ""
+msgstr "Bibliotheek"
 
 #: DlgControllerLearning#86
 msgid "Expand/collapse the selected view (library, playlist..)"
@@ -1163,7 +1163,7 @@ msgstr "Flange effect: fase vertraging"
 #: DlgControllerLearning#98
 msgctxt "DlgControllerLearning#98"
 msgid "Microphone"
-msgstr ""
+msgstr "Microfoon"
 
 #: DlgControllerLearning#99
 msgid "Microphone on/off"
@@ -1180,7 +1180,7 @@ msgstr "Microfoon kanaal richting (b.v. links, rechts, midden)"
 #: DlgControllerLearning#102
 msgctxt "DlgControllerLearning#102"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Automatische DJ"
 
 #: DlgControllerLearning#103
 msgid "Shuffle the content of the Auto DJ playlist"

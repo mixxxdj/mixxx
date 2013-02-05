@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-01-18 11:01+0200\n"
-"PO-Revision-Date: 2013-01-06 13:09+0000\n"
-"Last-Translator: Jack Billström <jack@codele.se>\n"
+"PO-Revision-Date: 2013-02-05 00:16+0000\n"
+"Last-Translator: Gunnar Eskilsson <gunnareskilsson@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-21 04:37+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-02-05 04:34+0000\n"
+"X-Generator: Launchpad (build 16468)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -229,7 +229,7 @@ msgstr "BPM Lås"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "Förhandsgranska"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -375,7 +375,7 @@ msgstr "Uppdatering av metiadatan misslyckades"
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "USB-styrenhet"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
@@ -438,7 +438,7 @@ msgstr "Ta bort"
 
 #: ControllerMappingDlg#7
 msgid "Learning Wizard"
-msgstr ""
+msgstr "Läroguide"
 
 #: ControllerMappingDlg#8
 msgid "Clear all"
@@ -613,7 +613,7 @@ msgstr "Tona bort nu"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Bestämmer övergångens varaktighet"
 
 #: DlgAutoDJ#11
 msgid "Seconds"
@@ -647,22 +647,26 @@ msgid ""
 "automatically shows a beat-grid for them, and allows you to synchronize "
 "tracks using their beat information."
 msgstr ""
+"När taktigenkänning är aktiverad, så upptäcker Mixxx antalet takter per "
+"minut samt antalet takter på din spår\n"
+"samt automatiskt visar en taktmatris som hjälper dig synkronisera spår "
+"baserat på taktinformationen"
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
-msgstr ""
+msgstr "Aktivera tempo-  och takt- identifiering"
 
 #: DlgBeatsDlg#4
 msgid "Choose Analyser"
-msgstr ""
+msgstr "Välj analysator"
 
 #: DlgBeatsDlg#5
 msgid "Beat Analyser:"
-msgstr ""
+msgstr "Taktanalysator:"
 
 #: DlgBeatsDlg#6
 msgid "Choose between different algorithms to detect beats."
-msgstr ""
+msgstr "Välj mellan olika algorytmer för att identifiera takter."
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
