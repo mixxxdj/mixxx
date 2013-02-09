@@ -7,6 +7,7 @@
 
 #include <QtGui>
 #include <QDebug>
+#include <QFileInfo>
 
 #include "controllers/dlgprefcontroller.h"
 #include "controllers/controller.h"
@@ -50,9 +51,9 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
         m_ui.labelDeviceCategory->hide();
     }
 
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
-            this, SLOT(slotLoadPreset(const QString&)));
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(const QString&)),
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
+            this, SLOT(slotLoadPreset(int)));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
             this, SLOT(slotDirty()));
 
     // Connect if we wish to automatically set current mapping as autoload
@@ -80,7 +81,8 @@ QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset
         } else if (name.length() > 0) {
             presetName = name;
         } else if (pPreset->filePath().length() > 0) {
-            presetName = tr("Custom Preset");
+            QFileInfo file(pPreset->filePath());
+            presetName = file.baseName();
         }
     }
     return presetName;
@@ -126,6 +128,15 @@ void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
+QString nameForPreset(const PresetInfo& preset) {
+    QString name = preset.getName();
+    if (name.length() == 0) {
+        QFileInfo file(preset.getPath());
+        name = file.baseName();
+    }
+    return name;
+}
+
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
@@ -143,8 +154,7 @@ void DlgPrefController::enumeratePresets() {
 
     PresetInfo match;
     foreach (PresetInfo preset, presets) {
-        // QVariant userdata = preset;
-        m_ui.comboBoxPreset->addItem(preset.getName());
+        m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
             break;
@@ -153,7 +163,7 @@ void DlgPrefController::enumeratePresets() {
 
     // Jump to matching device in list if it was found.
     if (match.isValid()) {
-        int index = m_ui.comboBoxPreset->findText(match.getName());
+        int index = m_ui.comboBoxPreset->findText(nameForPreset(match));
         if (index != -1)
             m_ui.comboBoxPreset->setCurrentIndex(index);
     }
@@ -190,21 +200,16 @@ void DlgPrefController::slotApply() {
     m_bDirty = false;
 }
 
-void DlgPrefController::slotLoadPreset(const QString &name) {
-    if (name == "...")
-        return;
-
-    // Lookup the name in preset from actual preset data
-    PresetInfoEnumerator* presetmanager =  m_pControllerManager->getPresetInfoManager();
-    PresetInfo preset = presetmanager->getPresetInfo(m_pController->presetExtension(), name);
-    if (!preset.isValid()) {
-        qDebug() << "ERROR preset matching name not found: " << name;
+void DlgPrefController::slotLoadPreset(int chosenIndex) {
+    if (chosenIndex == 0) {
+        // User picked ...
         return;
     }
-    // qDebug() << "PRESET path" << preset.getPath();
+
+    QString presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
 
     // Applied on prefs close
-    emit(loadPreset(m_pController, preset.getPath(), true));
+    emit(loadPreset(m_pController, presetPath, true));
 }
 
 void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {

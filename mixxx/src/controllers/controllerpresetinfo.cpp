@@ -176,20 +176,6 @@ bool PresetInfoEnumerator::hasPresetInfo(const QString path) {
     return false;
 }
 
-PresetInfo PresetInfoEnumerator::getPresetInfo(const QString extension, const QString name) {
-    QList<PresetInfo> extension_presets;
-    if (!isValidExtension(extension))
-        return PresetInfo();
-
-    foreach (QString extension, presetsByExtension.keys()) {
-        QMap <QString,PresetInfo> presets = presetsByExtension[extension];
-        foreach (PresetInfo preset, presets.values())
-            if (name == preset.getName())
-                return preset;
-    }
-    return PresetInfo();
-}
-
 PresetInfo PresetInfoEnumerator::getPresetInfo(const QString path) {
     // Lookup and return controller script preset info by script path
     // Return NULL if path is not found.
