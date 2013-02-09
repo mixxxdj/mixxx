@@ -20,10 +20,11 @@
 #include <QMessageBox>
 #include <QTranslator>
 #include "defs_version.h"
-
+#include "controllers/defs_controllers.h"
 #include "track/beat_preferences.h"
 #include "configobject.h"
 #include "upgrade.h"
+
 
 Upgrade::Upgrade()
 {
@@ -283,8 +284,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         bool successful = true;
 
         qDebug() << "Copying midi/ to controllers/";
-        QString midiPath = QDir::homePath().append("/").append(SETTINGS_PATH).append("midi");
-        QString controllerPath = QDir::homePath().append("/").append(SETTINGS_PATH).append("controllers");
+        QString midiPath = legacyUserPresetsPath(config);
+        QString controllerPath = userPresetsPath(config);
         QDir oldDir(midiPath);
         QDir newDir(controllerPath);
         newDir.mkpath(controllerPath);  // create the new directory
@@ -295,8 +296,13 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         //Iterate over all the files in the source directory and copy them to the dest dir.
         while (it.hasNext()) {
             cur = it.next();
-            QString src = midiPath + "/" + cur;
-            QString dest = controllerPath + "/" + cur;
+            if (newDir.exists(cur)) {
+                qDebug() << cur << "already exists in"
+                         << controllerPath << "Skipping.";
+                continue;
+            }
+            QString src = oldDir.absoluteFilePath(cur);
+            QString dest = newDir.absoluteFilePath(cur);
             qDebug() << "Copying" << src << "to" << dest;
             if (!QFile::copy(src, dest)) {
                 qDebug() << "Failed to copy file during upgrade.";
@@ -313,9 +319,9 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Upgrade Successful";
             configVersion = "1.11.0";
             m_bUpgraded = true;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(configVersion));
-        }
-        else {
+            config->set(ConfigKey("[Config]","Version"),
+                        ConfigValue(configVersion));
+        } else {
             qDebug() << "Upgrade Failed";
         }
     }
