@@ -607,9 +607,6 @@ class MixxxCore(Feature):
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
-                   "library/promotracksfeature.cpp",
-                   "library/featuredartistswebview.cpp",
-                   "library/bundledsongswebview.cpp",
                    "library/songdownloader.cpp",
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",

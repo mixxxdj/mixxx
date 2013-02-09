@@ -1061,11 +1061,14 @@ class PromoTracks(Feature):
     def add_options(self, build, vars):
         vars.Add('promo', 'Set to 1 to include promo tracks feature (deprecated, unused).', 0)
 
-    def configure(self):
+    def configure(self, build, conf):
         if not self.enabled(build):
             return
         build.env.Append(CPPDEFINES = '__PROMO__')
 
     def sources(self, build):
-        return ['src/library/promotracksfeature.cpp']
+        return ['library/promotracksfeature.cpp',
+                'library/bundledsongswebview.cpp',
+                "library/featuredartistswebview.cpp",
+                ]
 
