@@ -70,7 +70,7 @@ class ControllerManager : public QObject {
     void maybeStartOrStopPolling();
 
     static QString presetFilenameFromName(QString name) {
-        return name.replace(" ", "_");
+        return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
     }
 
   private:
