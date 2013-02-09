@@ -84,7 +84,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual void receive(const QByteArray data);
 
     // Initializes the controller engine
-    virtual void applyPreset(QString resourcePath);
+    virtual void applyPreset(QList<QString> scriptPaths);
 
     void learn(MixxxControl control);
     void cancelLearn();

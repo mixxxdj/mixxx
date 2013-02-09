@@ -74,6 +74,8 @@ class ControllerManager : public QObject {
     }
 
   private:
+    QList<QString> getScriptPaths();
+
     ConfigObject<ConfigValue> *m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;
