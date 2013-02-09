@@ -29,7 +29,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     // used by the ControllerManager to display only relevant preset files for
     // the controller (type.)
     virtual QString presetExtension() = 0;
-    inline QString defaultPreset();
 
     void setPreset(const ControllerPreset& preset) {
         // We don't know the specific type of the preset so we need to ask

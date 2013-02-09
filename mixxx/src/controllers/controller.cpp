@@ -30,12 +30,6 @@ Controller::~Controller() {
     // destructors.
 }
 
-QString Controller::defaultPreset() {
-    return USER_PRESETS_PATH.append("controllers/").append(
-        m_sDeviceName.replace(" ", "_").replace("/", "_").replace("\\", "_") +
-        presetExtension());
-}
-
 void Controller::startEngine()
 {
     if (debugging()) {

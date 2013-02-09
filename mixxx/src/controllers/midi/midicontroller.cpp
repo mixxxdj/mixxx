@@ -21,15 +21,6 @@ MidiController::~MidiController() {
     // destructors.
 }
 
-QString MidiController::defaultPreset() {
-    QString name = getName();
-    return USER_PRESETS_PATH.append(
-        name.right(name.size()-name.indexOf(" ")-1)
-        .replace(" ", "_").replace("/", "_").replace("\\", "_") +
-        presetExtension());
-
-}
-
 QString MidiController::presetExtension() {
     return MIDI_PRESET_EXTENSION;
 }
