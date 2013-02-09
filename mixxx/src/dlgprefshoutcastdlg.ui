@@ -177,7 +177,7 @@
          <string>Dynamically update Ogg Vorbis metadata.</string>
         </property>
         <property name="toolTip">
-         <string>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause glitches and disconnections. Check this box to update the metadata anyway.</string>
+         <string>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</string>
         </property>
        </widget>
       </item>
