@@ -46,7 +46,7 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
     }
 
     m_timer = new QTime();
-    m_analysisDao = new AnalysisDao(m_database);
+    m_analysisDao = new AnalysisDao(m_database, pConfig);
 }
 
 AnalyserWaveform::~AnalyserWaveform() {
