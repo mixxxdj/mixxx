@@ -15,9 +15,13 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QPixmap>
 #include <QtCore>
+#include <QMessageBox>
+#include <QTranslator>
 #include "defs_version.h"
 
+#include "track/beat_preferences.h"
 #include "configobject.h"
 #include "upgrade.h"
 
@@ -54,7 +58,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 
         // Move the files to their new location
         QString newLocation = settingsPath;
-        
+
         if (!QDir(newLocation).exists()) {
             qDebug() << "Creating new settings directory" << newLocation;
             QDir().mkpath(newLocation);
@@ -300,6 +304,11 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             }
         }
 
+        bool reanalyze_choice = askReanalyzeBeats();
+        config->set(ConfigKey(BPM_CONFIG_KEY,
+                              BPM_REANALYZE_WHEN_SETTINGS_CHANGE),
+                    ConfigValue(reanalyze_choice));
+
         if (successful) {
             qDebug() << "Upgrade Successful";
             configVersion = "1.11.0";
@@ -341,4 +350,39 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     }
 
     return config;
+}
+
+bool Upgrade::askReanalyzeBeats() {
+    QString windowTitle =
+            QMessageBox::tr("Upgrading Mixxx from v1.9.x/1.10.x.");
+    QString mainHeading =
+            QMessageBox::tr("Mixxx has a new and improved beat detector.");
+    QString paragraph1 = QMessageBox::tr(
+        "When you load tracks, Mixxx can re-analyze them "
+        "and generate new, more accurate beatgrids. This will make "
+        "automatic beatsync and looping more reliable.");
+    QString paragraph2 = QMessageBox::tr(
+        "This does not affect saved cues, hotcues, playlists, or crates.");
+    QString paragraph3 = QMessageBox::tr(
+        "If you do not want Mixxx to re-analyze your tracks, choose "
+        "\"Keep Current Beatgrids.\" You can change this setting at any time "
+        "from the \"Beat Detection\" section of the Preferences.");
+    QString keepCurrent = QMessageBox::tr("Keep Current Beatgrids");
+    QString generateNew = QMessageBox::tr("Generate New Beatgrids");
+
+    QMessageBox msgBox;
+    msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
+    msgBox.setWindowTitle(windowTitle);
+    msgBox.setText(QString("<html><h2>%1</h2><p>%2</p><p>%3</p><p>%4</p></html>")
+                   .arg(mainHeading, paragraph1, paragraph2, paragraph3));
+    msgBox.addButton(keepCurrent, QMessageBox::NoRole);
+    QPushButton* OverwriteButton = msgBox.addButton(
+        generateNew, QMessageBox::YesRole);
+    msgBox.setDefaultButton(OverwriteButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == (QAbstractButton*)OverwriteButton) {
+        return true;
+    }
+    return false;
 }
