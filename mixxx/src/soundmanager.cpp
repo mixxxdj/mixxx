@@ -436,7 +436,7 @@ void SoundManager::checkConfig() {
 }
 
 QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
-    QList<AudioOutput> outputs, unsigned long iFramesPerBuffer,
+    const QList<AudioOutput>& outputs, unsigned long iFramesPerBuffer,
     SoundDevice* device, double streamTime /* = 0 */) {
     Q_UNUSED(streamTime);
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
@@ -488,7 +488,7 @@ QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
     return m_outputBuffers;
 }
 
-void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
+void SoundManager::pushBuffer(const QList<AudioInput>& inputs, short * inputBuffer,
                               unsigned long iFramesPerBuffer, unsigned int iFrameSize) {
     //This function is called a *lot* and is a big source of CPU usage.
     //It needs to be very fast.
