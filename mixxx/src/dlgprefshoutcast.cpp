@@ -116,7 +116,8 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
                << SHOUTCAST_BITRATE_96KBPS
                << SHOUTCAST_BITRATE_80KBPS
                << SHOUTCAST_BITRATE_64KBPS
-               << SHOUTCAST_BITRATE_48KBPS;
+               << SHOUTCAST_BITRATE_48KBPS
+               << SHOUTCAST_BITRATE_32KBPS;
     foreach (int kbps, valid_kpbs) {
         comboBoxEncodingBitrate->addItem(
             kbps_pattern.arg(QString::number(kbps)), kbps);
