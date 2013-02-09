@@ -18,7 +18,9 @@
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
+#ifdef __PROMO__
 #include "library/promotracksfeature.h"
+#endif
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
@@ -45,6 +47,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
+
+#ifdef __PROMO__
     if (PromoTracksFeature::isSupported(m_pConfig)) {
         m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
                                                        m_pTrackCollection,
@@ -53,6 +57,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     } else {
         m_pPromoTracksFeature = NULL;
     }
+#endif
 
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, pConfig);
@@ -233,10 +238,10 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-QList<TrackPointer> Library::getTracksToAutoLoad()
-{
+QList<TrackPointer> Library::getTracksToAutoLoad() {
+#ifdef __PROMO__
     if (m_pPromoTracksFeature)
         return m_pPromoTracksFeature->getTracksToAutoLoad();
-    else
-        return QList<TrackPointer>();
+#endif
+    return QList<TrackPointer>();
 }

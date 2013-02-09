@@ -25,7 +25,6 @@ class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
 class MixxxLibraryFeature;
-class PromoTracksFeature;
 class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
@@ -88,7 +87,10 @@ public:
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+#ifdef __PROMO__
+    class PromoTracksFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
+#endif
     PrepareFeature* m_pPrepareFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
