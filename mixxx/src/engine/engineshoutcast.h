@@ -110,6 +110,7 @@ class EngineShoutcast : public EngineAbstractRecord {
     bool m_protocol_is_icecast1;
     bool m_protocol_is_icecast2;
     bool m_protocol_is_shoutcast;
+    bool m_ogg_dynamic_update;
 };
 
 #endif
