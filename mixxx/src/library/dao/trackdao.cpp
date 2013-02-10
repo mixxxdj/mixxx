@@ -779,7 +779,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             if (pBeats) {
                 pTrack->setBeats(pBeats);
             } else {
-                pTrack->setBpm(bpm.toFloat());
+                pTrack->setBpm(bpm.toDouble());
             }
             pTrack->setBpmLock(has_bpm_lock);
 

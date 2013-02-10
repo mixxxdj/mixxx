@@ -13,13 +13,19 @@
 #include "library/trackcollection.h"
 #include "treeitem.h"
 #include "soundsourceproxy.h"
+#include "widget/wlibrary.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
-                                         TrackCollection* pTrackCollection)
+                                         TrackCollection* pTrackCollection,
+                                         ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_trackDao(pTrackCollection->getTrackDAO()) {
+          m_pMissingView(NULL),
+          m_pHiddenView(NULL),
+          m_trackDao(pTrackCollection->getTrackDAO()),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -87,8 +93,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
-    m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
-    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
 
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
@@ -103,8 +107,18 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
-    delete m_pMissingTableModel;
-    delete m_pHiddenTableModel;
+}
+
+void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
+                    MixxxKeyboard* pKeyboard) {
+    m_pHiddenView = new DlgHidden(pLibrary,
+                                  m_pConfig, m_pTrackCollection,
+                                  pKeyboard);
+    pLibrary->registerView(kHiddenTitle, m_pHiddenView);
+    m_pMissingView = new DlgMissing(pLibrary,
+                                  m_pConfig, m_pTrackCollection,
+                                  pKeyboard);
+    pLibrary->registerView(kMissingTitle, m_pMissingView);
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -124,11 +138,11 @@ void MixxxLibraryFeature::refreshLibraryModels()
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
     }
-    if (m_pMissingTableModel) {
-        m_pMissingTableModel->select();
+    if (m_pMissingView) {
+        m_pMissingView->onShow();
     }
-    if (m_pHiddenTableModel) {
-        m_pHiddenTableModel->select();
+    if (m_pHiddenView) {
+        m_pHiddenView->onShow();
     }
 }
 
@@ -139,16 +153,7 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
-
-    /*if (itemName == m_childModel.stringList().at(0))
-        emit(showTrackModel(m_pMissingTableModel));
-     */
-    if (itemName == kMissingTitle) {
-        emit(showTrackModel(m_pMissingTableModel));
-    }
-    if (itemName == kHiddenTitle) {
-        emit(showTrackModel(m_pHiddenTableModel));
-    }
+    emit(switchToView(itemName));
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {

@@ -9,6 +9,7 @@
 #include "trackinfoobject.h"
 #include "util.h"
 #include "waveform/renderers/waveformrendererabstract.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -39,8 +40,8 @@ public:
 
     void setZoom(int zoom);
 
-    double getVisualSamplePerPixel() const;
-    double getAudioSamplePerPixel() const;
+    double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
+    double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
 
     //those function replace at its best sample position to an admissible
     //sample position according to the current visual resampling
@@ -63,6 +64,7 @@ public:
     void resize(int width, int height);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
+    const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
 
     template< class T_Renderer>
     inline T_Renderer* addRenderer() {
@@ -79,7 +81,7 @@ protected:
     QVector<WaveformRendererAbstract*> m_rendererStack;
     int m_height;
     int m_width;
-    QColor m_axesColor;
+    WaveformSignalColors m_colors;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;

@@ -15,13 +15,16 @@ class LoadToGroupController : public QObject {
     LoadToGroupController(QObject* pParent, const QString group);
     virtual ~LoadToGroupController();
   signals:
-    void loadToGroup(QString group);
+    void loadToGroup(QString group, bool);
   public slots:
     void slotLoadToGroup(double v);
+    void slotLoadToGroupAndPlay(double v);
   private:
     QString m_group;
     ControlObject* m_pLoadControl;
+    ControlObject* m_pLoadAndPlayControl;
     ControlObjectThreadMain* m_pLoadCOTM;
+    ControlObjectThreadMain* m_pLoadAndPlayCOTM;
 };
 
 class LibraryControl : public QObject {
@@ -35,7 +38,7 @@ class LibraryControl : public QObject {
   private slots:
     void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
-    void slotLoadSelectedTrackToGroup(QString group);
+    void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
     void slotSelectNextSidebarItem(double v);

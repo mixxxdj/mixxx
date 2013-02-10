@@ -21,9 +21,9 @@ QtWaveformRendererFilteredSignal::~QtWaveformRendererFilteredSignal() {
 }
 
 void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
-    QColor low = m_colors.getLowColor();
-    QColor mid = m_colors.getMidColor();
-    QColor high = m_colors.getHighColor();
+    QColor low = m_pColors->getLowColor();
+    QColor mid = m_pColors->getMidColor();
+    QColor high = m_pColors->getHighColor();
 
     QColor lowCenter = low;
     QColor midCenter = mid;

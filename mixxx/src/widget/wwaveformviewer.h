@@ -68,13 +68,8 @@ private:
     ControlObjectThreadMain* m_pZoom;
     ControlObjectThreadMain* m_pScratchEnable;
     ControlObjectThreadMain* m_pScratch;
-    ControlObjectThreadMain* m_pTrackSampleRate;
-    ControlObjectThreadMain* m_pRate;
-    ControlObjectThreadMain* m_pRateRange;
-    ControlObjectThreadMain* m_pRateDir;
     bool m_bScratching;
     bool m_bBending;
-    int m_iMouseStart;
     QPoint m_mouseAnchor;
     QString m_sPrefix;
 

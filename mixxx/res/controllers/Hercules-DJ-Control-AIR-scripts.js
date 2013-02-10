@@ -12,7 +12,7 @@ HerculesAir.scratchEnable_rpm = 33+1/3
 
 HerculesAir.shiftButtonPressed = false
 
-HerculesAir.wheel_multiplier = 0.9
+HerculesAir.wheel_multiplier = 0.3
 
 HerculesAir.init = function(id) {
 	HerculesAir.resetLEDs()
@@ -90,7 +90,7 @@ HerculesAir.beatProgressDeckB = function() {
 }
 
 HerculesAir.headCue = function(midino, control, value, status, group) {
-	if(engine.getValue(group, "headMix") == 1) {
+	if(engine.getValue(group, "headMix") == 0) {
 		engine.setValue(group, "headMix", -1.0);
 		midi.sendShortMsg(0x90, 57, 0x00);
 		midi.sendShortMsg(0x90, 58, 0x7f);
@@ -99,7 +99,7 @@ HerculesAir.headCue = function(midino, control, value, status, group) {
 
 HerculesAir.headMix = function(midino, control, value, status, group) {
 	if(engine.getValue(group, "headMix") != 1) {
-		engine.setValue(group, "headMix", 1.0);
+		engine.setValue(group, "headMix", 0);
 		midi.sendShortMsg(0x90, 57, 0x7f);
 		midi.sendShortMsg(0x90, 58, 0x00);		
 	}

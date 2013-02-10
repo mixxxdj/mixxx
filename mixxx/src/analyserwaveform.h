@@ -35,22 +35,32 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
 }
 
 class WaveformStride {
-    inline void init(int samples) {
-        m_length = samples*2;
+    inline void init(double samples, double averageSamples) {
+        m_length = samples;
+        m_averageLength = averageSamples;
         m_postScaleConversion = (float)std::numeric_limits<unsigned char>::max();
-        m_conversionFactor = 1.0; //because we are taking a max, not an average any more
-
-        // This averages over the window. For now we're taking the max-envelope.
-        //m_conversionFactor = 1.0 / samples;
-        reset();
+        m_position = 0;
+        m_averagePosition = 0;
+        m_averageDivisor = 0;
+        for( int i = 0; i < ChannelCount; i++) {
+            m_overallData[i] = 0.0f;
+            m_averageOverallData[i] = 0.0f;
+            for( int f = 0; f < FilterCount; f++) {
+                m_filteredData[i][f] = 0.0f;
+                m_averageFilteredData[i][f] = 0.0f;
+            }
+        }
     }
 
     inline void reset() {
         m_position = 0;
+        m_averageDivisor = 0;
         for( int i = 0; i < ChannelCount; i++) {
             m_overallData[i] = 0.0f;
+            m_averageOverallData[i] = 0.0f;
             for( int f = 0; f < FilterCount; f++) {
                 m_filteredData[i][f] = 0.0f;
+                m_averageFilteredData[i][f] = 0.0f;
             }
         }
     }
@@ -58,21 +68,76 @@ class WaveformStride {
     inline void store(WaveformData* data) {
         for( int i = 0; i < ChannelCount; i++) {
             WaveformData& datum = *(data + i);
-            datum.filtered.all = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_overallData[i]) + 0.5));
-            datum.filtered.low = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Low], Low) + 0.5));
-            datum.filtered.mid = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][Mid], Mid) + 0.5));
-            datum.filtered.high = static_cast<unsigned char>(math_min(255.0, m_postScaleConversion * scaleSignal(m_conversionFactor * m_filteredData[i][High], High) + 0.5));
+            datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
+                    m_postScaleConversion * scaleSignal(m_overallData[i]) + 0.5));
+            datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
+                    m_postScaleConversion * scaleSignal(m_filteredData[i][Low], Low) + 0.5));
+            datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
+                    m_postScaleConversion * scaleSignal(m_filteredData[i][Mid], Mid) + 0.5));
+            datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
+                    m_postScaleConversion * scaleSignal(m_filteredData[i][High], High) + 0.5));
+        }
+        m_averageDivisor++;
+        for( int i = 0; i < ChannelCount; i++) {
+            m_averageOverallData[i] += m_overallData[i];
+            m_overallData[i] = 0.0f;
+            for( int f = 0; f < FilterCount; f++) {
+                m_averageFilteredData[i][f] += m_filteredData[i][f];
+                m_filteredData[i][f] = 0.0f;
+            }
+        }
+    }
+
+    inline void averageStore(WaveformData* data) {
+        if (m_averageDivisor) {
+            for( int i = 0; i < ChannelCount; i++) {
+                WaveformData& datum = *(data + i);
+                datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_averageOverallData[i] / m_averageDivisor) + 0.5));
+                datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Low] / m_averageDivisor, Low) + 0.5));
+                datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Mid] / m_averageDivisor, Mid) + 0.5));
+                datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_averageFilteredData[i][High] / m_averageDivisor, High) + 0.5));
+            }
+        } else {
+            // This is the case if The Overview Waveform has more samples than the detailed waveform
+            for( int i = 0; i < ChannelCount; i++) {
+                WaveformData& datum = *(data + i);
+                datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_overallData[i]) + 0.5));
+                datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_filteredData[i][Low], Low) + 0.5));
+                datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_filteredData[i][Mid], Mid) + 0.5));
+                datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
+                        m_postScaleConversion * scaleSignal(m_filteredData[i][High], High) + 0.5));
+            }
+        }
+
+        m_averageDivisor = 0;
+        for( int i = 0; i < ChannelCount; i++) {
+            m_averageOverallData[i] = 0.0f;
+            for( int f = 0; f < FilterCount; f++) {
+                m_averageFilteredData[i][f] = 0.0f;
+            }
         }
     }
 
   private:
-    int m_length;
     int m_position;
+    double m_length;
+    double m_averageLength;
+    int m_averagePosition;
+    int m_averageDivisor;
 
     float m_overallData[ChannelCount];
     float m_filteredData[ChannelCount][FilterCount];
 
-    float m_conversionFactor;
+    float m_averageOverallData[ChannelCount];
+    float m_averageFilteredData[ChannelCount][FilterCount];
+
     float m_postScaleConversion;
 
   private:
@@ -96,6 +161,7 @@ class AnalyserWaveform : public Analyser {
 
     void resetFilters(TrackPointer tio, int sampleRate);
     void destroyFilters();
+    void storeIfGreater(float* pDest, float source);
 
   private:
     bool m_skipProcessing;
@@ -108,7 +174,6 @@ class AnalyserWaveform : public Analyser {
     WaveformData* m_waveformSummaryData;
 
     WaveformStride m_stride;
-    WaveformStride m_strideSummary;
 
     int m_currentStride;
     int m_currentSummaryStride;

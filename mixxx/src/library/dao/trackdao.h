@@ -67,7 +67,7 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao,
-             ConfigObject<ConfigValue>* pConfig = NULL);
+             ConfigObject<ConfigValue>* pConfig);
     virtual ~TrackDAO();
 
     void finish();

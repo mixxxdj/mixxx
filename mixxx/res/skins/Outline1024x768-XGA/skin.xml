@@ -28,10 +28,10 @@
 	http://mixxx.org/wiki/doku.php/creating_skins
 
 	List of controls:
-	http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names
+	http://mixxx.org/wiki/doku.php/mixxxcontrols
 
 	Qt Style Sheets documentation:
-	http://doc.qt.nokia.com/latest/stylesheet.html
+	https://qt-project.org/doc/qt-4.8/stylesheet.html
 
 	Debugging:
 	To outline WidgetGroups change all occurrences (exept this one ;-) of
@@ -47,13 +47,21 @@
 	<manifest>
 	<title>Outline1024x768-XGA</title>
 	<author>jus</author>
-	<version>1.11.0.10</version>
+	<version>1.11.0.14</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
 	<attributes>
 		<attribute config_key="[Master],num_decks">2</attribute>
 		<attribute config_key="[Master],num_samplers">4</attribute>
+		<attribute config_key="[Master],num_preview_decks">0</attribute>
+		<!--Optionally, make elements visible on skin load-->
+		<attribute config_key="[Spinny1],show_spinny">1</attribute>
+		<attribute config_key="[Spinny2],show_spinny">1</attribute>
+		<attribute config_key="[Samplers],show_samplers">0</attribute>
+		<attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+		<attribute config_key="[Microphone],show_microphone">0</attribute>
+		<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 	</attributes>
 	</manifest>
 
@@ -393,7 +401,7 @@
 		<SignalMidColor>#0099FF</SignalMidColor>
 		<SignalLowColor>#FF0035</SignalLowColor>
 		<SignalColor>#FF8000</SignalColor>
-		<MarkerColor>#00FF00</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -431,7 +439,7 @@
 		<SignalMidColor>#0099FF</SignalMidColor>
 		<SignalLowColor>#FF0035</SignalLowColor>
 		<SignalColor>#FF8000</SignalColor>
-		<MarkerColor>#00FF00</MarkerColor>
+		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -608,9 +616,8 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#19ABFB</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor>#000000</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#00FF00</CueColor>
+						<BeatHighlightColor></BeatHighlightColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -667,9 +674,8 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#FF0000</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor>#000000</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#00FF00</CueColor>
+						<BeatHighlightColor></BeatHighlightColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -836,7 +842,7 @@
 		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
 		<Size>w,h</Size>
 		-->
-		<Size>810,504</Size>
+		<Size>810,504f</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -845,18 +851,18 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>i,100</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 0px 0px;} </Style>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 0px 0px; } </Style>
 				<Children>
 					<!-- all sub-widgets for the sampler decks -->
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>203,100</Size>
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-						<BackPath>style/style_bg_sampler.png</BackPath>						
+						<Style>QGroupBox { border: 0px solid green; margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<BackPath>style/style_bg_sampler.png</BackPath>
 						<Children>
+							<!--
 							**********************************************
 							Text- Track Title
 							**********************************************
@@ -874,7 +880,7 @@
 								-->
 								<Group>[Sampler1]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -885,7 +891,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -919,9 +925,10 @@
 							**********************************************
 							Button- BPM Tap
 							**********************************************
-							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
-								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
-								 changed tooltip accordingly
+							Little trickery here:
+							BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+							changed tooltip accordingly
+							-->
 							<PushButton>
 								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
@@ -931,13 +938,12 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>116,1</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
-							-->
 
 							<!--
 							**********************************************
@@ -949,13 +955,13 @@
 								<Style></Style>
 								<Group>[Sampler1]</Group>
 								<Pos>1,21</Pos>
-								<Size>113,30</Size>
+								<Size>115,30</Size>
 								<BgColor>#FFFFFF</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1389,10 +1395,9 @@
 						</Children>
 					</WidgetGroup>
 					<WidgetGroup>
-						<Pos>100,0</Pos>
 						<Size>203,100</Size>
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-						<BackPath>style/style_bg_sampler.png</BackPath>		
+						<Style>QGroupBox { border: 0px solid green; margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<BackPath>style/style_bg_sampler.png</BackPath>
 						<Children>
 							<!--
 							**********************************************
@@ -1412,7 +1417,7 @@
 								-->
 								<Group>[Sampler2]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1423,7 +1428,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1457,9 +1462,10 @@
 							**********************************************
 							Button- BPM Tap
 							**********************************************
-							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
-								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
-								 changed tooltip accordingly
+							Little trickery here:
+							BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+							changed tooltip accordingly
+							-->
 							<PushButton>
 								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
@@ -1469,13 +1475,12 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>116,1</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
-							-->
 
 							<!--
 							**********************************************
@@ -1487,13 +1492,13 @@
 								<Style></Style>
 								<Group>[Sampler2]</Group>
 								<Pos>1,21</Pos>
-								<Size>113,30</Size>
+								<Size>115,30</Size>
 								<BgColor>#FFFFFF</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -1927,10 +1932,9 @@
 						</Children>
 					</WidgetGroup>
 					<WidgetGroup>
-						<Pos>100,0</Pos>
 						<Size>203,100</Size>
-						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-						<BackPath>style/style_bg_sampler.png</BackPath>		
+						<Style>QGroupBox { border: 0px solid green; margin: 0px 0px 0px 0px; background: transparent;}</Style>
+						<BackPath>style/style_bg_sampler.png</BackPath>
 						<Children>
 							<!--
 							**********************************************
@@ -1950,7 +1954,7 @@
 								-->
 								<Group>[Sampler3]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1961,7 +1965,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1995,9 +1999,10 @@
 							**********************************************
 							Button- BPM Tap
 							**********************************************
-							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
-								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
-								 changed tooltip accordingly
+							Little trickery here:
+							BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+							changed tooltip accordingly
+							-->
 							<PushButton>
 								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
@@ -2007,13 +2012,12 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>116,1</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
-							-->
 
 							<!--
 							**********************************************
@@ -2025,13 +2029,13 @@
 								<Style></Style>
 								<Group>[Sampler3]</Group>
 								<Pos>1,21</Pos>
-								<Size>113,30</Size>
+								<Size>115,30</Size>
 								<BgColor>#FFFFFF</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -2465,10 +2469,9 @@
 						</Children>
 					</WidgetGroup>
 					<WidgetGroup>
-						<Pos>100,0</Pos>
 						<Size>194,100</Size>
 						<Style>QGroupBox { border: 0px solid green;  margin: 0px 0px 0px 0px; background: transparent;}</Style>
-						<BackPath>style/style_bg_sampler.png</BackPath>		
+						<BackPath>style/style_bg_sampler.png</BackPath>	
 						<Children>
 							<!--
 							**********************************************
@@ -2488,7 +2491,7 @@
 								-->
 								<Group>[Sampler4]</Group>
 								<Pos>1,0</Pos>
-								<Size>110,20</Size>
+								<Size>110f,20</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -2499,7 +2502,7 @@
 								<Property>title</Property>
 								<Group>[Sampler4]</Group>
 								<Pos>1,0</Pos>
-								<Size>113,20</Size>
+								<Size>113f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -2534,11 +2537,11 @@
 							**********************************************
 							Button- BPM Tap
 							**********************************************
-							Little trickery here:(DISABLED IN OUTLINE CAUSE THE COLOR SCHEME SUPPORT DOES NOT SUPPORT IMAGE TRANSPARANCY)
-								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
-								 changed tooltip accordingly
+							Little trickery here:
+							BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+							changed tooltip accordingly
+							-->
 							<PushButton>
-								
 								<TooltipId>bpm_tap_visual_bpm</TooltipId>
 								<Style></Style>
 								<NumberStates>1</NumberStates>
@@ -2547,13 +2550,12 @@
 									<Pressed>btn_tap_sampler_over.png</Pressed>
 									<Unpressed>btn_tap_sampler.png</Unpressed>
 								</State>
-									<Pos>216,3</Pos>
+								<Pos>116,1</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],bpm_tap</ConfigKey>
-										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								</Connection>
 							</PushButton>
-							-->
 
 							<!--
 							**********************************************
@@ -2565,13 +2567,13 @@
 								<Style></Style>
 								<Group>[Sampler4]</Group>
 								<Pos>1,21</Pos>
-								<Size>113,30</Size>
+								<Size>115,30</Size>
 								<BgColor>#FFFFFF</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<DefaultMark>
 									<Align>bottom</Align>
@@ -3098,7 +3100,7 @@
 			<ConfigKey>[Samplers],show_samplers</ConfigKey>
 		</Connection>
 	</PushButton>
-	
+
 	<!--
 	**********************************************
 	Tab- Show/hide Vinyl Control widget group
@@ -3148,7 +3150,7 @@
 		<Property>title</Property>
 		<Channel>1</Channel>
 		<Pos>108,121</Pos>
-		<Size>270,20</Size>
+		<Size>270f,20</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_title</TooltipId>
@@ -3158,7 +3160,7 @@
 		<Property>title</Property>
 		<Channel>2</Channel>
 		<Pos>550,121</Pos>
-		<Size>270,20</Size>
+		<Size>270f,20</Size>
 	</TrackProperty>
 
 	<!--
@@ -3174,7 +3176,7 @@
 		<Property>artist</Property>
 		<Channel>1</Channel>
 		<Pos>108,141</Pos>
-		<Size>240,20</Size>
+		<Size>240f,20</Size>
 	</TrackProperty>
 	<TrackProperty>
 		<TooltipId>track_artist</TooltipId>
@@ -3184,7 +3186,7 @@
 		<Property>artist</Property>
 		<Channel>2</Channel>
 		<Pos>550,141</Pos>
-		<Size>240,20</Size>
+		<Size>240f,20</Size>
 	</TrackProperty>
 
 	<!--
@@ -3198,7 +3200,7 @@
 		background-color: transparent; text-align: left; padding-left: 1px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>390,121</Pos>
+		<Pos>394,121</Pos>
 		<Size>70,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
@@ -3232,7 +3234,7 @@
 		background-color: transparent; text-align: right; padding-left: 1px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>350,141</Pos>
+		<Pos>354,141</Pos>
 		<Size>110,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
@@ -4635,9 +4637,12 @@
 	**********************************************
 	Button- BPM Tap
 	**********************************************
+	Little trickery here:
+	BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+	changed tooltip accordingly
 	-->
 	<PushButton>
-		<TooltipId>bpm_tap</TooltipId>
+		<TooltipId>bpm_tap_visual_bpm</TooltipId>
 		<Style></Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -4645,14 +4650,14 @@
 			<Pressed>btn_tap1_over.png</Pressed>
 			<Unpressed>btn_tap1.png</Unpressed>
 		</State>
-		<Pos>55,190</Pos>
+		<Pos>400,123</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<TooltipId>bpm_tap</TooltipId>
+		<TooltipId>bpm_tap_visual_bpm</TooltipId>
 		<Style></Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -4660,7 +4665,7 @@
 			<Pressed>btn_tap2_over.png</Pressed>
 			<Unpressed>btn_tap2.png</Unpressed>
 		</State>
-		<Pos>963,190</Pos>
+		<Pos>843,123</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>

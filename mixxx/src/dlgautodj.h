@@ -17,21 +17,18 @@ class AnalyserQueue;
 class QSqlTableModel;
 class ControlObjectThreadMain;
 
-class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryView {
+class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
     DlgAutoDJ(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
               TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
     virtual ~DlgAutoDJ();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting();
-    virtual void onSearchCleared();
-    virtual void onSearch(const QString& text);
-    virtual void onShow();
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
-    virtual void moveSelection(int delta);
+    void onShow();
+    void loadSelectedTrack();
+    void onSearch(const QString& text);
+    void loadSelectedTrackToGroup(QString group, bool play);
+    void moveSelection(int delta);
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -110,7 +107,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     ControlPushButton* m_pCOToggleAutoDJ;
 };
 
-#endif //DLGTRIAGE_H
+#endif //DLGAUTODJ_H
 
 
 

@@ -48,12 +48,12 @@ void QtSimpleWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void QtSimpleWaveformWidget::paintEvent( QPaintEvent* event) {
+void QtSimpleWaveformWidget::paintEvent(QPaintEvent* event) {
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
     QPainter painter(this);
-    draw(&painter,event);
+    draw(&painter, event);
 }
 
 void QtSimpleWaveformWidget::postRender() {

@@ -63,9 +63,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const QColor& l = m_colors.getLowColor();
-    const QColor& m = m_colors.getMidColor();
-    const QColor& h = m_colors.getHighColor();
+    const QColor& l = m_pColors->getLowColor();
+    const QColor& m = m_pColors->getMidColor();
+    const QColor& h = m_pColors->getHighColor();
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0);
