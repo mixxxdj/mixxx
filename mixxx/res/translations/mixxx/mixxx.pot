@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 11:01+0200\n"
+"POT-Creation-Date: 2013-02-10 22:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1116,92 +1116,96 @@ msgid "Load selected track"
 msgstr ""
 
 #: DlgControllerLearning#93
-msgid "Effects"
+msgid "Load selected track and play"
 msgstr ""
 
 #: DlgControllerLearning#94
-msgid "Toggle flange effect"
+msgid "Effects"
 msgstr ""
 
 #: DlgControllerLearning#95
-msgid "Flange effect: Wavelength/period"
+msgid "Toggle flange effect"
 msgstr ""
 
 #: DlgControllerLearning#96
-msgid "Flange effect: Intensity"
+msgid "Flange effect: Wavelength/period"
 msgstr ""
 
 #: DlgControllerLearning#97
-msgid "Flange effect: Phase delay"
+msgid "Flange effect: Intensity"
 msgstr ""
 
 #: DlgControllerLearning#98
-msgctxt "DlgControllerLearning#98"
-msgid "Microphone"
+msgid "Flange effect: Phase delay"
 msgstr ""
 
 #: DlgControllerLearning#99
-msgid "Microphone on/off"
+msgctxt "DlgControllerLearning#99"
+msgid "Microphone"
 msgstr ""
 
 #: DlgControllerLearning#100
-msgid "Microphone volume"
+msgid "Microphone on/off"
 msgstr ""
 
 #: DlgControllerLearning#101
-msgid "Microphone channel orientation (e.g. left, right, center)"
+msgid "Microphone volume"
 msgstr ""
 
 #: DlgControllerLearning#102
-msgctxt "DlgControllerLearning#102"
-msgid "Auto DJ"
+msgid "Microphone channel orientation (e.g. left, right, center)"
 msgstr ""
 
 #: DlgControllerLearning#103
-msgid "Shuffle the content of the Auto DJ playlist"
+msgctxt "DlgControllerLearning#103"
+msgid "Auto DJ"
 msgstr ""
 
 #: DlgControllerLearning#104
-msgid "Skip the next track in the Auto DJ playlist"
+msgid "Shuffle the content of the Auto DJ playlist"
 msgstr ""
 
 #: DlgControllerLearning#105
-msgid "Trigger the transition to the next track"
+msgid "Skip the next track in the Auto DJ playlist"
 msgstr ""
 
 #: DlgControllerLearning#106
-msgid "Toggle Auto DJ (ON/OFF)"
+msgid "Trigger the transition to the next track"
 msgstr ""
 
 #: DlgControllerLearning#107
-msgid "User Interface"
+msgid "Toggle Auto DJ (ON/OFF)"
 msgstr ""
 
 #: DlgControllerLearning#108
-msgid "Show/hide the sampler section"
+msgid "User Interface"
 msgstr ""
 
 #: DlgControllerLearning#109
-msgid "Show/hide the microphone section"
+msgid "Show/hide the sampler section"
 msgstr ""
 
 #: DlgControllerLearning#110
-msgid "Show/hide the vinyl control section"
+msgid "Show/hide the microphone section"
 msgstr ""
 
 #: DlgControllerLearning#111
-msgid "Show/hide the preview deck"
+msgid "Show/hide the vinyl control section"
 msgstr ""
 
 #: DlgControllerLearning#112
-msgid "Show/hide spinning vinyl widget"
+msgid "Show/hide the preview deck"
 msgstr ""
 
 #: DlgControllerLearning#113
-msgid "Ready to map: %1. Now move a control on your controller."
+msgid "Show/hide spinning vinyl widget"
 msgstr ""
 
 #: DlgControllerLearning#114
+msgid "Ready to map: %1. Now move a control on your controller."
+msgstr ""
+
+#: DlgControllerLearning#115
 msgid "Successfully mapped to:"
 msgstr ""
 
@@ -1340,14 +1344,10 @@ msgid "%1 by %2"
 msgstr ""
 
 #: DlgPrefController#3
-msgid "Custom Preset"
-msgstr ""
-
-#: DlgPrefController#4
 msgid "No Description"
 msgstr ""
 
-#: DlgPrefController#5
+#: DlgPrefController#4
 msgid "No support available."
 msgstr ""
 
@@ -1550,122 +1550,126 @@ msgid "Auto Recall Cue"
 msgstr ""
 
 #: DlgPrefControlsDlg#11
-msgid "Locale"
+msgid "Re-queue tracks in Auto DJ"
 msgstr ""
 
 #: DlgPrefControlsDlg#12
-msgid "Temporary rate change when left-clicking"
+msgid "Locale"
 msgstr ""
 
 #: DlgPrefControlsDlg#13
-msgid "Temporary rate change when right-clicking"
+msgid "Temporary rate change when left-clicking"
 msgstr ""
 
 #: DlgPrefControlsDlg#14
-msgid "Permanent Pitch/Rate Buttons"
+msgid "Temporary rate change when right-clicking"
 msgstr ""
 
 #: DlgPrefControlsDlg#15
-msgid "Displays which OpenGL version is supported by the current platform."
+msgid "Permanent Pitch/Rate Buttons"
 msgstr ""
 
 #: DlgPrefControlsDlg#16
-msgid "Displays the actual frame rate."
+msgid "Displays which OpenGL version is supported by the current platform."
 msgstr ""
 
 #: DlgPrefControlsDlg#17
-msgid "Normalize Overview"
+msgid "Displays the actual frame rate."
 msgstr ""
 
 #: DlgPrefControlsDlg#18
-msgid "Left click"
+msgid "Normalize Overview"
 msgstr ""
 
 #: DlgPrefControlsDlg#19
-msgid "Right click"
+msgid "Left click"
 msgstr ""
 
 #: DlgPrefControlsDlg#20
-msgid "%"
+msgid "Right click"
 msgstr ""
 
 #: DlgPrefControlsDlg#21
-msgid "Temporary Pitch/Rate Buttons"
+msgid "%"
 msgstr ""
 
 #: DlgPrefControlsDlg#22
-msgid "Ramping Pitchbend"
+msgid "Temporary Pitch/Rate Buttons"
 msgstr ""
 
 #: DlgPrefControlsDlg#23
-msgid "Pitchbend sensitivity"
+msgid "Ramping Pitchbend"
 msgstr ""
 
 #: DlgPrefControlsDlg#24
-msgctxt "DlgPrefControlsDlg#24"
-msgid "Waveform Display"
+msgid "Pitchbend sensitivity"
 msgstr ""
 
 #: DlgPrefControlsDlg#25
-msgid "Synchronize zoom level across all waveform displays."
+msgctxt "DlgPrefControlsDlg#25"
+msgid "Waveform Display"
 msgstr ""
 
 #: DlgPrefControlsDlg#26
-msgid "OpenGl status"
+msgid "Synchronize zoom level across all waveform displays."
 msgstr ""
 
 #: DlgPrefControlsDlg#27
-msgid "Display type"
+msgid "OpenGl status"
 msgstr ""
 
 #: DlgPrefControlsDlg#28
-msgid "Permanent rate change when left-clicking"
+msgid "Display type"
 msgstr ""
 
 #: DlgPrefControlsDlg#29
-msgid "Permanent rate change when right-clicking"
+msgid "Permanent rate change when left-clicking"
 msgstr ""
 
 #: DlgPrefControlsDlg#30
+msgid "Permanent rate change when right-clicking"
+msgstr ""
+
+#: DlgPrefControlsDlg#31
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
 msgstr ""
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#32
 msgid "Value in milliseconds"
 msgstr ""
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#33
 msgid "Visual gain of the high frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the middle frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#35
 msgid "Visual gain of the low frequencies"
 msgstr ""
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#36
 msgid "Global visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#37
 msgid "Frame rate"
 msgstr ""
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#38
 msgid "Default zoom"
 msgstr ""
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#39
 msgid "Visual gain"
 msgstr ""
 
-#: DlgPrefControlsDlg#39
-msgctxt "DlgPrefControlsDlg#39"
+#: DlgPrefControlsDlg#40
+msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
 msgstr ""
 
@@ -2198,26 +2202,37 @@ msgid "Stream settings"
 msgstr ""
 
 #: DlgPrefShoutcastDlg#11
-msgid "Stream name"
+msgid "Dynamically update Ogg Vorbis metadata."
 msgstr ""
 
 #: DlgPrefShoutcastDlg#12
-msgid "Mixxx Icecast Testing"
+msgid ""
+"Due to flaws in some streaming clients, updating Ogg Vorbis metadata "
+"dynamically can cause listener glitches and disconnections. Check this box "
+"to update the metadata anyway."
 msgstr ""
 
 #: DlgPrefShoutcastDlg#13
-msgid "Website"
+msgid "Stream name"
 msgstr ""
 
 #: DlgPrefShoutcastDlg#14
-msgid "http://www.mixxx.org"
+msgid "Mixxx Icecast Testing"
 msgstr ""
 
 #: DlgPrefShoutcastDlg#15
-msgid "Description"
+msgid "Website"
 msgstr ""
 
 #: DlgPrefShoutcastDlg#16
+msgid "http://www.mixxx.org"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#17
+msgid "Description"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#18
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
 "html40/strict.dtd\">\n"
@@ -2231,60 +2246,60 @@ msgid ""
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#17
-msgctxt "DlgPrefShoutcastDlg#17"
+#: DlgPrefShoutcastDlg#19
+msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#18
+#: DlgPrefShoutcastDlg#20
 msgid "Live mix"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#19
+#: DlgPrefShoutcastDlg#21
 msgid "Public stream"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#20
+#: DlgPrefShoutcastDlg#22
 msgid "Use UTF-8 encoding for metadata."
 msgstr ""
 
-#: DlgPrefShoutcastDlg#21
-msgctxt "DlgPrefShoutcastDlg#21"
+#: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Encoding"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#22
-msgctxt "DlgPrefShoutcastDlg#22"
+#: DlgPrefShoutcastDlg#24
+msgctxt "DlgPrefShoutcastDlg#24"
 msgid "Bitrate"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#23
+#: DlgPrefShoutcastDlg#25
 msgid "Format"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#24
+#: DlgPrefShoutcastDlg#26
 msgid "Channels"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#25
+#: DlgPrefShoutcastDlg#27
 msgid "Custom metadata"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#26
+#: DlgPrefShoutcastDlg#28
 msgid "Enable custom metadata"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#27
-msgctxt "DlgPrefShoutcastDlg#27"
+#: DlgPrefShoutcastDlg#29
+msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Artist"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#28
-msgctxt "DlgPrefShoutcastDlg#28"
+#: DlgPrefShoutcastDlg#30
+msgctxt "DlgPrefShoutcastDlg#30"
 msgid "Title"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#29
+#: DlgPrefShoutcastDlg#31
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
@@ -3732,6 +3747,40 @@ msgstr ""
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
+msgstr ""
+
+#: QMessageBox#1
+msgid "Upgrading Mixxx from v1.9.x/1.10.x."
+msgstr ""
+
+#: QMessageBox#2
+msgid "Mixxx has a new and improved beat detector."
+msgstr ""
+
+#: QMessageBox#3
+msgid ""
+"When you load tracks, Mixxx can re-analyze them and generate new, more "
+"accurate beatgrids. This will make automatic beatsync and looping more "
+"reliable."
+msgstr ""
+
+#: QMessageBox#4
+msgid "This does not affect saved cues, hotcues, playlists, or crates."
+msgstr ""
+
+#: QMessageBox#5
+msgid ""
+"If you do not want Mixxx to re-analyze your tracks, choose \"Keep Current "
+"Beatgrids.\" You can change this setting at any time from the \"Beat "
+"Detection\" section of the Preferences."
+msgstr ""
+
+#: QMessageBox#6
+msgid "Keep Current Beatgrids"
+msgstr ""
+
+#: QMessageBox#7
+msgid "Generate New Beatgrids"
 msgstr ""
 
 #: QObject#1
