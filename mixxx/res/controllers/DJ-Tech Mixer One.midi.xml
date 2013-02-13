@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset mixxxVersion="1.10.1+" schemaVersion="1">
+    <info>
+        <name>DJ-Tech Mixer One</name>
+        <author>Rob K</author>
+        <description>DJ-Tech Mixer One preset. Pretty straightforward - all controls do what they're labelled to do on the controller, except (1) the Xfader slope knob controls master balance; and (2) the Inverse button mutes the master output momentarily.</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4693</forums>
+    </info>
+    <controller id="MIXER1">
+        <scriptfiles>
+            <file functionprefix="MIXER1" filename="DJ-Tech-Mixer-One-scripts.js"/>
+        </scriptfiles>
+        <controls>
+<!--MIDDLE STRIP (Everything done twice for channels 5 and 7)-->
+            <control>
+                <group>[Master]</group>
+                <key>volume</key>
+                <status>0xB5</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>volume</key>
+                <status>0xB7</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headVolume</key>
+                <status>0xB5</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headVolume</key>
+                <status>0xB7</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB5</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB7</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB5</status>
+                <midino>0x0F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB7</status>
+                <midino>0x0F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MIXER1.clearVolumeLEDs</key>
+                <status>0x97</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MIXER1.clearVolumeLEDs</key>
+                <status>0x95</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>balance</key>
+                <status>0xB5</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>balance</key>
+                <status>0xB7</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MIXER1.mute</key>
+                <status>0x97</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MIXER1.mute</key>
+                <status>0x95</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+
+
+
+<!--CHANNEL A-->
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <status>0xB5</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterHigh</key>
+                <status>0xB5</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterMid</key>
+                <status>0xB5</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterLow</key>
+                <status>0xB5</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterLowKill</key>
+                <status>0x95</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterMidKill</key>
+                <status>0x95</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>filterHighKill</key>
+                <status>0x95</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x95</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <status>0xB5</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+ <!--CHANNEL C-->
+            <control>
+                <group>[Sampler1]</group>
+                <key>pregain</key>
+                <status>0xB7</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>filterHigh</key>
+                <status>0xB7</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>filterMid</key>
+                <status>0xB7</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>filterLow</key>
+                <status>0xB7</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>filterLowKill</key>
+                <status>0x97</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>filterMidKill</key>
+                <status>0x97</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>filterHighKill</key>
+                <status>0x97</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>pfl</key>
+                <status>0x97</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>volume</key>
+                <status>0xB7</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+<!--CHANNEL B-->
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <status>0xB6</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterHigh</key>
+                <status>0xB6</status>
+                <midino>0x16</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterMid</key>
+                <status>0xB6</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterLow</key>
+                <status>0xB6</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterLowKill</key>
+                <status>0x96</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterMidKill</key>
+                <status>0x96</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>filterHighKill</key>
+                <status>0x96</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x96</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+<!--CHANNEL D-->
+            <control>
+                <group>[Sampler2]</group>
+                <key>pregain</key>
+                <status>0xB8</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>filterHigh</key>
+                <status>0xB8</status>
+                <midino>0x16</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>filterMid</key>
+                <status>0xB8</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>filterLow</key>
+                <status>0xB8</status>
+                <midino>0x18</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>filterLowKill</key>
+                <status>0x98</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>filterMidKill</key>
+                <status>0x98</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>filterHighKill</key>
+                <status>0x98</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>pfl</key>
+                <status>0x98</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>volume</key>
+                <status>0xB8</status>
+                <midino>0x19</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+
+
+
+        </controls>
+        <outputs>
+<!--Channel A-->
+			<output>
+				<group>[Channel1]</group>
+				<key>filterLowKill</key>
+				<status>0x95</status>  <!-- First byte sent to device -->
+				<midino>0x08</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>filterMidKill</key>
+				<status>0x95</status>  <!-- First byte sent to device -->
+				<midino>0x09</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>filterHighKill</key>
+				<status>0x95</status>  <!-- First byte sent to device -->
+				<midino>0x06</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>pfl</key>
+				<status>0x95</status>  <!-- First byte sent to device -->
+				<midino>0x07</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+
+
+
+<!--Channel C-->
+			<output>
+				<group>[Sampler1]</group>
+				<key>filterLowKill</key>
+				<status>0x97</status>  <!-- First byte sent to device -->
+				<midino>0x08</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler1]</group>
+				<key>filterMidKill</key>
+				<status>0x97</status>  <!-- First byte sent to device -->
+				<midino>0x09</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler1]</group>
+				<key>filterHighKill</key>
+				<status>0x97</status>  <!-- First byte sent to device -->
+				<midino>0x06</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler1]</group>
+				<key>pfl</key>
+				<status>0x97</status>  <!-- First byte sent to device -->
+				<midino>0x07</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+
+<!--Channel B-->
+			<output>
+				<group>[Channel2]</group>
+				<key>filterLowKill</key>
+				<status>0x96</status>  <!-- First byte sent to device -->
+				<midino>0x04</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>filterMidKill</key>
+				<status>0x96</status>  <!-- First byte sent to device -->
+				<midino>0x01</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>filterHighKill</key>
+				<status>0x96</status>  <!-- First byte sent to device -->
+				<midino>0x02</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>pfl</key>
+				<status>0x96</status>  <!-- First byte sent to device -->
+				<midino>0x03</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+
+
+
+<!--Channel D-->
+			<output>
+				<group>[Sampler2]</group>
+				<key>filterLowKill</key>
+				<status>0x98</status>  <!-- First byte sent to device -->
+				<midino>0x04</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler2]</group>
+				<key>filterMidKill</key>
+				<status>0x98</status>  <!-- First byte sent to device -->
+				<midino>0x01</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler2]</group>
+				<key>filterHighKill</key>
+				<status>0x98</status>  <!-- First byte sent to device -->
+				<midino>0x02</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+			<output>
+				<group>[Sampler2]</group>
+				<key>pfl</key>
+				<status>0x98</status>  <!-- First byte sent to device -->
+				<midino>0x03</midino>  <!-- Second byte -->
+				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+				<minimum>.5</minimum>
+			</output>
+
+
+
+		</outputs>
+    </controller>
+</MixxxMIDIPreset>
