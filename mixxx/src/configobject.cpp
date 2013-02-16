@@ -338,8 +338,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getResourcePath()
-{
+QString ConfigObject<ValueType>::getResourcePath() {
     //
     // Find the config path, path where midi configuration files, skins etc. are stored.
     // On Unix the search order is whats listed in mixxx.cfg, then UNIX_SHARE_PATH
@@ -420,7 +419,7 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
     }
 }
 
-template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath()
+template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() const
 {
     QFileInfo configFileInfo(m_filename);
     return configFileInfo.absoluteDir().absolutePath();

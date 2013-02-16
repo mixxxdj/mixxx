@@ -31,7 +31,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
                               const QModelIndex &index) const;
 
   signals:
-    void loadTrackToPlayer(TrackPointer Track, QString group);
+    void loadTrackToPlayer(TrackPointer Track, QString group, bool play);
     void buttonSetChecked(bool);
 
   public slots:

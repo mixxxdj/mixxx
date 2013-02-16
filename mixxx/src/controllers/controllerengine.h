@@ -122,7 +122,7 @@ class ControllerEngine : public QObject {
     // Execute a particular function with a data buffer
     //TODO: redo this one
     //bool execute(QString function, const QByteArray data);
-    void loadScriptFiles(QString configPath,
+    void loadScriptFiles(QList<QString> scriptPaths,
                          QList<QString> scriptFileNames);
     void initializeScripts(const QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown();
@@ -181,7 +181,7 @@ class ControllerEngine : public QObject {
     mutable QHash<QString, QScriptValue> m_scriptValueCache;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
-    QString m_lastConfigPath;
+    QList<QString> m_lastScriptPaths;
 };
 
 #endif

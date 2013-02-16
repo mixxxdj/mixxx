@@ -1047,3 +1047,28 @@ class Tuned(Feature):
                     build.env.Append(CCFLAGS = '/favor:' + build.machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
+
+class PromoTracks(Feature):
+    def description(self):
+        return "Promotional tracks feature."
+
+    def enabled(self, build):
+        build.flags['promo'] = util.get_flags(build.env, 'promo', 0)
+        if int(build.flags['promo']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('promo', 'Set to 1 to include promo tracks feature (deprecated, unused).', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES = '__PROMO__')
+
+    def sources(self, build):
+        return ['library/promotracksfeature.cpp',
+                'library/bundledsongswebview.cpp',
+                "library/featuredartistswebview.cpp",
+                ]
+

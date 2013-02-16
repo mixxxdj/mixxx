@@ -29,7 +29,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     // used by the ControllerManager to display only relevant preset files for
     // the controller (type.)
     virtual QString presetExtension() = 0;
-    inline QString defaultPreset();
 
     void setPreset(const ControllerPreset& preset) {
         // We don't know the specific type of the preset so we need to ask
@@ -85,7 +84,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual void receive(const QByteArray data);
 
     // Initializes the controller engine
-    virtual void applyPreset(QString resourcePath);
+    virtual void applyPreset(QList<QString> scriptPaths);
 
     void learn(MixxxControl control);
     void cancelLearn();

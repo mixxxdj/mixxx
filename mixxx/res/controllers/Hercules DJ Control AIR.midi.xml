@@ -321,6 +321,16 @@
                 </options>
             </control>
             <control>
+                <status>0xb0</status>
+                <midino>0x3f</midino>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
+                <description>Flanger Depth</description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <status>0x90</status>
                 <midino>0xf</midino>
                 <group>[Channel1]</group>
@@ -365,9 +375,9 @@
                 <midino>0x13</midino>
                 <group>[Channel1]</group>
                 <key>beatsync</key>
-                <description>Sync Deck A</description>
+                <description>Beat Sync A</description>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>
@@ -585,9 +595,9 @@
                 <midino>0x29</midino>
                 <group>[Channel2]</group>
                 <key>beatsync</key>
-                <description>Sync Deck B</description>
+                <description>Beat Sync B</description>
                 <options>
-                    <normal/>
+                    <button/>
                 </options>
             </control>
             <control>

@@ -21,8 +21,8 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
             this, SLOT(previewDeckPlayChanged(double)));
 
     // This assumes that the parent is wtracktableview
-    connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
@@ -150,12 +150,12 @@ void PreviewButtonDelegate::buttonClicked() {
 
     QString group = PlayerManager::groupForPreviewDeck(0);
     TrackPointer pOldTrack = PlayerInfo::Instance().getTrackInfo(group);
+    bool playing = m_pPreviewDeckPlay->get() > 0.0;
 
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
-        emit(loadTrackToPlayer(pTrack, group));
-        m_pPreviewDeckPlay->slotSet(1.0);
-    } else if (pTrack == pOldTrack && m_pPreviewDeckPlay->get()==0.0) {
+        emit(loadTrackToPlayer(pTrack, group, true));
+    } else if (pTrack == pOldTrack && !playing) {
         m_pPreviewDeckPlay->slotSet(1.0);
     } else {
         m_pPreviewDeckPlay->slotSet(0.0);

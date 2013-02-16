@@ -27,14 +27,14 @@ class BaseTrackPlayer : public BasePlayer {
     TrackPointer getLoadedTrack() const;
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
+    void slotLoadTrack(TrackPointer track, bool bPlay=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
     void slotSetReplayGain(double replayGain);
 
   signals:
-    void loadTrack(TrackPointer pTrack);
+    void loadTrack(TrackPointer pTrack, bool bPlay=false);
     void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);

@@ -45,8 +45,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {

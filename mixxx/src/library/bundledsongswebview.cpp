@@ -165,11 +165,6 @@ void BundledSongsWebView::loadSelectedTrack() {
     // Do nothing for now. The web view doesn't have the concept of a selection right now.
 }
 
-void BundledSongsWebView::loadSelectedTrackToGroup(QString group) {
-    Q_UNUSED(group);
-    // Do nothing for now. The web view doesn't have the concept of a selection right now.
-}
-
 void BundledSongsWebView::moveSelection(int delta) {
     Q_UNUSED(delta);
     // Do nothing for now. The web view doesn't have the concept of a selection right now.

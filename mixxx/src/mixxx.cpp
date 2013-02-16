@@ -424,6 +424,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
         }
     }
+
+#ifdef __PROMO__
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
@@ -433,6 +435,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
         }
     }
+#endif
 
     initActions();
     initMenuBar();
@@ -1443,6 +1446,7 @@ void MixxxApp::slotHelpAbout() {
 "Markus H&auml;rer<br>"
 "Andrey Smelov<br>"
 "Scott Stewart<br>"
+"Nimatek<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"

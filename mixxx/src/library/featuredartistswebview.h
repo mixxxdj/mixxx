@@ -44,7 +44,7 @@ class FeaturedArtistsWebView : public QWebView, public LibraryView
 
     signals:
         void loadTrack(TrackInfoObject* pTrack);
-        void loadTrackToPlayer(TrackInfoObject* pTrack, QString group);
+        void loadTrackToPlayer(TrackInfoObject* pTrack, QString group, bool play);
     protected:
         //virtual QString userAgentForUrl (const QUrl & url) const;
 
