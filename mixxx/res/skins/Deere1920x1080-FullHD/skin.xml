@@ -53,7 +53,7 @@
 	<manifest>
 	<title>Deere1920x1080-FullHD</title>
 	<author>jus</author>
-	<version>1.11.0.14</version>
+	<version>1.11.0.15</version>
 	<description>A 2-deck split-waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -5108,8 +5108,9 @@
 				<Channel>1</Channel>
 				<Pos>0,170</Pos>
 				<Size>657,43</Size>
-				<BgColor>#1C1C1C</BgColor>
-				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+				<BgColor></BgColor>
+				<BgPixmap></BgPixmap>
 				<SignalHighColor></SignalHighColor>
 				<SignalMidColor></SignalMidColor>
 				<SignalLowColor></SignalLowColor>
@@ -6206,8 +6207,9 @@
 				<Channel>2</Channel>
 				<Pos>0,170</Pos>
 				<Size>656,43</Size>
-				<BgColor>#1C1C1C</BgColor>
-				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+				<BgColor></BgColor>
+				<BgPixmap></BgPixmap>
 				<SignalHighColor></SignalHighColor>
 				<SignalMidColor></SignalMidColor>
 				<SignalLowColor></SignalLowColor>
