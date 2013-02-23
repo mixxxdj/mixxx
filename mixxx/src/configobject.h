@@ -123,7 +123,7 @@ template <class ValueType> class ConfigObject {
     void reopen(QString file);
     void Save();
     QString getResourcePath();
-    QString getSettingsPath();
+    QString getSettingsPath() const;
 
   protected:
     QList< ConfigOption<ValueType>* > m_list;

@@ -3,6 +3,7 @@
 
 #include "waveformmarkrange.h"
 
+#include "waveformsignalcolors.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "xmlparse.h"
@@ -40,21 +41,22 @@ double WaveformMarkRange::end() {
     return m_markEndPointControl ? m_markEndPointControl->get() : -1.0;
 }
 
-void WaveformMarkRange::setup(const QString& group, const QDomNode& node) {
+void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
+        const WaveformSignalColors& signalColors) {
     m_activeColor = XmlParse::selectNodeQString(node, "Color");
     if (m_activeColor == "") {
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
-        m_activeColor = XmlParse::selectNodeQString(node.parentNode(), "MarkerColor");
-        qDebug() << "Didn't get mark Color, using parent's MarkerColor:" << m_activeColor;
+        m_activeColor = signalColors.getAxesColor();
+        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" << m_activeColor;
     }
 
     m_disabledColor = XmlParse::selectNodeQString(node, "DisabledColor");
     if (m_disabledColor == "") {
         //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
-        m_disabledColor = XmlParse::selectNodeQString(node.parentNode(), "SignalColor");
-        qDebug() << "Didn't get mark TextColor, using parent's SignalColor:" << m_disabledColor;
+        m_disabledColor = signalColors.getSignalColor();
+        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" << m_disabledColor;
     }
 
     m_markStartPointControl = maybeMakeControl(ControlObject::getControl(

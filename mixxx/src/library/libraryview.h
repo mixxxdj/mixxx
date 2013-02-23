@@ -8,28 +8,27 @@
 #define LIBRARYVIEW_H
 
 #include <QString>
-#include <QDomNode>
 
 class LibraryView {
-public:
-    virtual void setup(QDomNode node) = 0;
-    virtual void onSearchStarting() = 0;
-    virtual void onSearchCleared() = 0;
-    virtual void onSearch(const QString& text) = 0;
+  public:
     virtual void onShow() = 0;
+    // reimplement if LibraryView should be able to search
+    virtual void onSearch(const QString& text) {Q_UNUSED(text);}
 
     // If applicable, requests that the LibraryView load the selected
     // track. Does nothing otherwise.
-    virtual void loadSelectedTrack() = 0;
+    virtual void loadSelectedTrack() {};
 
     // If applicable, requests that the LibraryView load the selected track to
     // the specified group. Does nothing otherwise.
-    virtual void loadSelectedTrackToGroup(QString group) = 0;
+    virtual void loadSelectedTrackToGroup(QString group, bool play) {
+        Q_UNUSED(group); Q_UNUSED(play);
+    }
 
     // If a selection is applicable for this view, request that the selection be
     // increased or decreased by the provided delta. For example, for a value of
     // 1, the view should move to the next selection in the list.
-    virtual void moveSelection(int delta) = 0;
+    virtual void moveSelection(int delta) {Q_UNUSED(delta);}
 };
 
 #endif /* LIBRARYVIEW_H */

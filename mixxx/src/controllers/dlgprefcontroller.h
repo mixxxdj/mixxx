@@ -35,7 +35,7 @@ class DlgPrefController : public QWidget {
     virtual void slotUpdate();
     virtual void slotDeviceState(int state);
     // Loads the specified XML preset.
-    void slotLoadPreset(const QString &name);
+    void slotLoadPreset(int index);
     // Mark that we need to apply the settings.
     void slotDirty ();
     // Reload the mappings in the dropdown dialog

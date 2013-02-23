@@ -91,17 +91,17 @@ bool WaveformWidgetRenderer::init() {
     //qDebug() << "WaveformWidgetRenderer::init";
 
     m_playPosControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"visual_playposition")));
+                ControlObject::getControl( ConfigKey(m_group, "visual_playposition")));
     m_rateControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"rate")));
+                ControlObject::getControl( ConfigKey(m_group, "rate")));
     m_rateRangeControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"rateRange")));
+                ControlObject::getControl( ConfigKey(m_group, "rateRange")));
     m_rateDirControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"rate_dir")));
+                ControlObject::getControl( ConfigKey(m_group, "rate_dir")));
     m_gainControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"total_gain")));
+                ControlObject::getControl( ConfigKey(m_group, "total_gain")));
     m_trackSamplesControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group,"track_samples")));
+                ControlObject::getControl( ConfigKey(m_group, "track_samples")));
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
@@ -194,8 +194,12 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
             m_rendererStack.at(i)->draw(painter, event);
         }
 
-        painter->setPen(m_axesColor);
+        painter->setPen(m_colors.getPlayPosColor());
         painter->drawLine(m_width/2,0,m_width/2,m_height);
+        painter->setOpacity(0.5);
+        painter->setPen(m_colors.getBgColor());
+        painter->drawLine(m_width/2 + 1,0,m_width/2 + 1,m_height);
+        painter->drawLine(m_width/2 - 1,0,m_width/2 - 1,m_height);
     }
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -242,24 +246,16 @@ void WaveformWidgetRenderer::resize( int width, int height) {
 }
 
 void WaveformWidgetRenderer::setup( const QDomNode& node) {
-
-    m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
-
-    if( !m_axesColor.isValid())
-        m_axesColor = QColor(245,245,245,200);
-
-    for( int i = 0; i < m_rendererStack.size(); ++i)
+    m_colors.setup(node);
+    for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->setup(node);
+    }
 }
 
 void WaveformWidgetRenderer::setZoom(int zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = zoom;
     m_zoomFactor = math_max( s_waveformMinZoom, math_min( m_zoomFactor, s_waveformMaxZoom));
-}
-
-double WaveformWidgetRenderer::getVisualSamplePerPixel() const {
-    return m_visualSamplePerPixel;
 }
 
 void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {

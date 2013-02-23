@@ -10,6 +10,15 @@
 #include "controllers/midi/portmidienumerator.h"
 
 #include "controllers/midi/portmidicontroller.h"
+#include "util/cmdlineargs.h"
+
+bool shouldBlacklistDevice(const PmDeviceInfo* device) {
+    QString deviceName = device->name;
+    // In developer mode we show the MIDI Through Port, otherwise blacklist it
+    // since it routinely causes trouble.
+    return !CmdlineArgs::Instance().getDeveloper() &&
+            deviceName.startsWith("Midi Through Port", Qt::CaseInsensitive);
+}
 
 PortMidiEnumerator::PortMidiEnumerator() : MidiEnumerator() {
 }
@@ -39,14 +48,18 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
     m_devices.clear();
 
-    const PmDeviceInfo *deviceInfo, *inputDeviceInfo, *outputDeviceInfo;
-    int inputDevIndex, outputDevIndex;
-    QMap<int,QString> unassignedOutputDevices;
+    const PmDeviceInfo* inputDeviceInfo = NULL;
+    const PmDeviceInfo* outputDeviceInfo = NULL;
+    int inputDevIndex = -1;
+    int outputDevIndex = -1;
+    QMap<int, QString> unassignedOutputDevices;
 
     // Build a complete list of output devices for later pairing
-    for (int i = 0; i < iNumDevices; i++)
-    {
-        deviceInfo = Pm_GetDeviceInfo(i);
+    for (int i = 0; i < iNumDevices; i++) {
+        const PmDeviceInfo* deviceInfo = Pm_GetDeviceInfo(i);
+        if (shouldBlacklistDevice(deviceInfo)) {
+            continue;
+        }
         if (deviceInfo->output) {
             qDebug() << " Found output device" << "#" << i << deviceInfo->name;
             QString deviceName = deviceInfo->name;
@@ -55,13 +68,14 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
     }
 
     // Search for input devices and pair them with output devices if applicable
-    for (int i = 0; i < iNumDevices; i++)
-    {
-        deviceInfo = Pm_GetDeviceInfo(i);
+    for (int i = 0; i < iNumDevices; i++) {
+        const PmDeviceInfo* deviceInfo = Pm_GetDeviceInfo(i);
+        if (shouldBlacklistDevice(deviceInfo)) {
+            continue;
+        }
 
         //If we found an input device
-        if (deviceInfo->input)
-        {
+        if (deviceInfo->input) {
             qDebug() << " Found input device" << "#" << i << deviceInfo->name;
             inputDeviceInfo = deviceInfo;
             inputDevIndex = i;

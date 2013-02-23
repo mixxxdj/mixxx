@@ -19,24 +19,22 @@ class BaseTrackPlayer : public BasePlayer {
                     ConfigObject<ConfigValue>* pConfig,
                     EngineMaster* pMixingEngine,
                     EngineChannel::ChannelOrientation defaultOrientation,
-                    AnalyserQueue* pAnalyserQueue,
                     QString group,
                     bool defaultMaster,
                     bool defaultHeadphones);
     virtual ~BaseTrackPlayer();
 
-    AnalyserQueue* getAnalyserQueue() const;
     TrackPointer getLoadedTrack() const;
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bStartFromEndPos=false);
+    void slotLoadTrack(TrackPointer track, bool bPlay=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
     void slotSetReplayGain(double replayGain);
 
   signals:
-    void loadTrack(TrackPointer pTrack);
+    void loadTrack(TrackPointer pTrack, bool bPlay=false);
     void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
@@ -44,8 +42,6 @@ class BaseTrackPlayer : public BasePlayer {
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
-    // TODO(XXX) remove, unused.
-    AnalyserQueue* m_pAnalyserQueue;
 
     // Waveform display related controls
     ControlPotmeter* m_pWaveformZoom;
@@ -62,4 +58,4 @@ class BaseTrackPlayer : public BasePlayer {
 };
 
 
-#endif /* BASETRACKPLAYER_H */
+#endif // BASETRACKPLAYER_H

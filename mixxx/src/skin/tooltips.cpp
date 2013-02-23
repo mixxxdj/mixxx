@@ -30,6 +30,7 @@ void Tooltips::addStandardTooltips() {
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
+    QString scrollWheel = tr("Scroll-wheel");
 
     add("waveform_overview")
             << tr("Waveform Overview")
@@ -43,6 +44,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Shows the loaded track's waveform near the playback position.")
             << QString("%1: %2").arg(leftClick, scratchMouse)
             << QString("%1: %2").arg(rightClick, tr("Drag with mouse to make temporary pitch adjustments."))
+            << QString("%1: %2").arg(scrollWheel, tr("Scroll to change the waveform zoom level."))
             << dropTracksHere;
 
     add("spinny")

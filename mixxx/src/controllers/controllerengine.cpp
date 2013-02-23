@@ -9,7 +9,6 @@
 #include "controllers/controllerengine.h"
 
 #include "controllers/controller.h"
-#include "controllers/defs_controllers.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
@@ -215,7 +214,7 @@ void ControllerEngine::initializeScriptEngine() {
    Input:   Global ConfigObject, QString list of file names to load
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::loadScriptFiles(QString configPath,
+void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
                                        QList<QString> scriptFileNames) {
     // Set the Debug flag
     if (m_pController)
@@ -223,14 +222,9 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
     qDebug() << "ControllerEngine: Loading & evaluating all script code";
 
-    m_lastConfigPath = configPath;
+    m_lastScriptPaths = scriptPaths;
 
     // scriptPaths holds the paths to search in when we're looking for scripts
-    QList<QString> scriptPaths;
-    scriptPaths.append(USER_PRESETS_PATH);
-    scriptPaths.append(LOCAL_PRESETS_PATH);
-    scriptPaths.append(configPath.append("controllers/"));
-
     foreach (QString curScriptFileName, scriptFileNames) {
         evaluate(curScriptFileName, scriptPaths);
 
@@ -265,7 +259,7 @@ void ControllerEngine::scriptHasChanged(QString scriptFilename) {
     }
 
     initializeScriptEngine();
-    loadScriptFiles(m_lastConfigPath, pPreset->scriptFileNames);
+    loadScriptFiles(m_lastScriptPaths, pPreset->scriptFileNames);
 
     qDebug() << "Re-initializing scripts";
     initializeScripts(pPreset->scriptFunctionPrefixes);
