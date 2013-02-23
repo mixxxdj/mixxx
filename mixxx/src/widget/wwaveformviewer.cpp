@@ -71,7 +71,9 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_bBending = false;
         }
         m_bScratching = true;
-        m_pScratchPosition->slotSet(0.0f);
+        double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
+        double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
+        m_pScratchPosition->slotSet(targetPosition);
         m_pScratchPositionEnable->slotSet(1.0f);
     } else if (event->button() == Qt::RightButton) {
         // If we are scratching then disable and reset because the two shouldn't
@@ -89,16 +91,15 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
-    QPoint diff = event->pos() - m_mouseAnchor;
-
     // Only send signals for mouse moving if the left button is pressed
     if (m_bScratching && m_waveformWidget) {
         // Adjusts for one-to-one movement.
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
-        double targetPosition = -1.0 * diff.x() * audioSamplePerPixel * 2;
+        double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
         //qDebug() << "Target:" << targetPosition;
         m_pScratchPosition->slotSet(targetPosition);
     } else if (m_bBending) {
+        QPoint diff = event->pos() - m_mouseAnchor; 
         // start at the middle of 0-127, and emit values based on
         // how far the mouse has traveled horizontally
         double v = 64.0 + diff.x()/10.0f;
