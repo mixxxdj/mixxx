@@ -267,7 +267,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
         }
     }
 
-    //If channel are not displyed separatly we nne to close the loop properly
+    //If channel are not displayed separately we need to close the loop properly
     if (channelSeparation == 1) {
         setPoint(m_polygon[0][pointIndex], m_waveformRenderer->getWidth(), 0.0);
         setPoint(m_polygon[1][pointIndex], m_waveformRenderer->getWidth(), 0.0);
