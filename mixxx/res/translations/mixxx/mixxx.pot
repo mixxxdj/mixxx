@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-23 11:59+0200\n"
+"POT-Creation-Date: 2013-02-23 13:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,36 +113,33 @@ msgstr ""
 msgid "Playlist name:"
 msgstr ""
 
+# [noun]
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "_copy"
 msgstr ""
 
 #: BasePlaylistFeature#17
-msgid " Playlist creation Failed"
+msgid "Playlist creation Failed"
 msgstr ""
 
 #: BasePlaylistFeature#18
-msgid "Playlist creation Failed"
+msgctxt "BasePlaylistFeature#18"
+msgid "Playlist Creation Failed"
 msgstr ""
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
-msgid "Playlist Creation Failed"
+msgid "An unknown error occurred while creating playlist: "
 msgstr ""
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
-msgid "An unknown error occurred while creating playlist: "
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
 msgstr ""
 
 #: BasePlaylistFeature#21
 msgctxt "BasePlaylistFeature#21"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
-
-#: BasePlaylistFeature#22
-msgctxt "BasePlaylistFeature#22"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
@@ -480,55 +477,56 @@ msgctxt "CrateFeature#4"
 msgid "Lock"
 msgstr ""
 
+# [noun]
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
-msgid "Import Playlist"
+msgid "_copy"
 msgstr ""
 
 #: CrateFeature#6
-msgid "Crates"
+msgctxt "CrateFeature#6"
+msgid "Import Playlist"
 msgstr ""
 
 #: CrateFeature#7
-msgid "Import Crate"
+msgid "Crates"
 msgstr ""
 
 #: CrateFeature#8
-msgid "Export Crate"
+msgid "Import Crate"
 msgstr ""
 
 #: CrateFeature#9
-msgid "Duplicate Crate"
+msgid "Export Crate"
 msgstr ""
 
 #: CrateFeature#10
-msgctxt "CrateFeature#10"
-msgid "Unlock"
+msgid "Duplicate Crate"
 msgstr ""
 
 #: CrateFeature#11
-msgid "Crate name:"
+msgctxt "CrateFeature#11"
+msgid "Unlock"
 msgstr ""
 
 #: CrateFeature#12
-msgid "An unknown error occurred while creating crate: "
+msgid "Crate name:"
 msgstr ""
 
 #: CrateFeature#13
-msgid "Rename Crate"
+msgid "An unknown error occurred while creating crate: "
 msgstr ""
 
 #: CrateFeature#14
-msgid "New crate name:"
+msgid "Rename Crate"
 msgstr ""
 
 #: CrateFeature#15
-msgid "Renaming Crate Failed"
+msgid "New crate name:"
 msgstr ""
 
 #: CrateFeature#16
-msgctxt "CrateFeature#16"
-msgid "_copy"
+msgid "Renaming Crate Failed"
 msgstr ""
 
 #: CrateFeature#17
