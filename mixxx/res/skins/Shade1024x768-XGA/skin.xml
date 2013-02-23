@@ -53,7 +53,7 @@
 	<manifest>
 	<title>Shade1024x768-XGA</title>
 	<author>jus</author>
-	<version>1.11.0.12</version>
+	<version>1.11.0.13</version>
 	<description>A 2-deck split-waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -3588,8 +3588,9 @@
 						<Channel>1</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
-						<BgColor>#8D98A3</BgColor>
-						<!--<BgPixmap>style/style_bg_woverview.png</BgPixmap>-->
+						<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+						<BgColor></BgColor>
+						<BgPixmap></BgPixmap>
 						<SignalHighColor></SignalHighColor>
 						<SignalMidColor></SignalMidColor>
 						<SignalLowColor></SignalLowColor>
@@ -4931,8 +4932,9 @@
 						<Channel>2</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
-						<BgColor>#8D98A3</BgColor>
-						<!--<BgPixmap>style/style_bg_woverview.png</BgPixmap>-->
+						<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+						<BgColor></BgColor>
+						<BgPixmap></BgPixmap>
 						<SignalHighColor></SignalHighColor>
 						<SignalMidColor></SignalMidColor>
 						<SignalLowColor></SignalLowColor>

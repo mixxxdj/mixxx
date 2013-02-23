@@ -104,8 +104,8 @@ void DlgPrepare::loadSelectedTrack() {
     m_pPrepareLibraryTableView->loadSelectedTrack();
 }
 
-void DlgPrepare::loadSelectedTrackToGroup(QString group) {
-    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group);
+void DlgPrepare::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgPrepare::moveSelection(int delta) {

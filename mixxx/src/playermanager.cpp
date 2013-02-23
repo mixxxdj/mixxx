@@ -84,24 +84,21 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
-    Deck* pDeck;
-    foreach(pDeck, m_decks) {
+    foreach(Deck* pDeck, m_decks) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
-    Sampler* pSampler;
-    foreach(pSampler, m_samplers) {
+    foreach(Sampler* pSampler, m_samplers) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
-    PreviewDeck* pPreviewDeck;
-    foreach(pPreviewDeck, m_preview_decks) {
+    foreach(PreviewDeck* pPreviewDeck, m_preview_decks) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
@@ -197,6 +194,10 @@ Deck* PlayerManager::addDeck() {
         orientation = EngineChannel::RIGHT;
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, group);
+    if (m_pAnalyserQueue) {
+        connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
+                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+    }
 
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pDeck;
@@ -224,6 +225,10 @@ Sampler* PlayerManager::addSampler() {
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine, orientation, group);
+    if (m_pAnalyserQueue) {
+        connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
+                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+    }
 
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pSampler;
@@ -240,6 +245,10 @@ PreviewDeck* PlayerManager::addPreviewDeck() {
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine, orientation, group);
+    if (m_pAnalyserQueue) {
+        connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
+                m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
+    }
 
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pPreviewDeck;

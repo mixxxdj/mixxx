@@ -21,7 +21,9 @@ class LibraryView {
 
     // If applicable, requests that the LibraryView load the selected track to
     // the specified group. Does nothing otherwise.
-    virtual void loadSelectedTrackToGroup(QString group) {Q_UNUSED(group);}
+    virtual void loadSelectedTrackToGroup(QString group, bool play) {
+        Q_UNUSED(group); Q_UNUSED(play);
+    }
 
     // If a selection is applicable for this view, request that the selection be
     // increased or decreased by the provided delta. For example, for a value of

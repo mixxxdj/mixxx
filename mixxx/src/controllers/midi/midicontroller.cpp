@@ -21,13 +21,6 @@ MidiController::~MidiController() {
     // destructors.
 }
 
-QString MidiController::defaultPreset() {
-    QString name = getName();
-    return USER_PRESETS_PATH.append(name.right(name.size()
-            -name.indexOf(" ")-1).replace(" ", "_")
-            + presetExtension());
-}
-
 QString MidiController::presetExtension() {
     return MIDI_PRESET_EXTENSION;
 }
@@ -67,9 +60,9 @@ bool MidiController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-void MidiController::applyPreset(QString resourcePath) {
+void MidiController::applyPreset(QList<QString> scriptPaths) {
     // Handles the engine
-    Controller::applyPreset(resourcePath);
+    Controller::applyPreset(scriptPaths);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {

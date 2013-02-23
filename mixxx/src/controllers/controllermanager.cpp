@@ -52,25 +52,26 @@ bool controllerCompare(Controller *a,Controller *b) {
     return a->getName() < b->getName();
 }
 
-ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) :
-        QObject(),
-        m_pConfig(pConfig),
-        // WARNING: Do not parent m_pControllerLearningEventFilter to
-        // ControllerManager because the CM is moved to its own thread and runs
-        // its own event loop.
-        m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
-        m_pollTimer(this) {
-
+ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
+        : QObject(),
+          m_pConfig(pConfig),
+          // WARNING: Do not parent m_pControllerLearningEventFilter to
+          // ControllerManager because the CM is moved to its own thread and runs
+          // its own event loop.
+          m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
+          m_pollTimer(this) {
     qRegisterMetaType<ControllerPresetPointer>("ControllerPresetPointer");
 
     // Create controller mapping paths in the user's home directory.
-    if (!QDir(USER_PRESETS_PATH).exists()) {
-        qDebug() << "Creating user controller presets directory:" << USER_PRESETS_PATH;
-        QDir().mkpath(USER_PRESETS_PATH);
+    QString userPresets = userPresetsPath(m_pConfig);
+    if (!QDir(userPresets).exists()) {
+        qDebug() << "Creating user controller presets directory:" << userPresets;
+        QDir().mkpath(userPresets);
     }
-    if (!QDir(LOCAL_PRESETS_PATH).exists()) {
-        qDebug() << "Creating local controller presets directory:" << LOCAL_PRESETS_PATH;
-        QDir().mkpath(LOCAL_PRESETS_PATH);
+    QString localPresets = localPresetsPath(m_pConfig);
+    if (!QDir(localPresets).exists()) {
+        qDebug() << "Creating local controller presets directory:" << localPresets;
+        QDir().mkpath(localPresets);
     }
 
     // Initialize preset info parsers
@@ -229,7 +230,7 @@ int ControllerManager::slotSetUpDevices() {
             }
             continue;
         }
-        pController->applyPreset(m_pConfig->getResourcePath());
+        pController->applyPreset(getScriptPaths());
     }
 
     maybeStartOrStopPolling();
@@ -295,7 +296,7 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the preset and save the
     // preference setting.
     if (result == 0) {
-        pController->applyPreset(m_pConfig->getResourcePath());
+        pController->applyPreset(getScriptPaths());
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->set(ConfigKey(
@@ -351,25 +352,25 @@ bool ControllerManager::loadPreset(Controller* pController,
         filepath = fileinfo.absoluteFilePath();
     } else {
         filenameWithExt = filename + pController->presetExtension();
-        filepath = USER_PRESETS_PATH + filenameWithExt;
+        filepath = userPresetsPath(m_pConfig).append(filenameWithExt);
     }
 
     // If the file isn't present in the user's directory, check the local
     // presets path.
     if (!QFile::exists(filepath)) {
-        filepath = LOCAL_PRESETS_PATH.append(filenameWithExt);
+        filepath = localPresetsPath(m_pConfig).append(filenameWithExt);
     }
 
     // If the file isn't present in the user's directory, check res/
     if (!QFile::exists(filepath)) {
-        filepath = m_pConfig->getResourcePath()
-                .append("controllers/") + filenameWithExt;
+        filepath = resourcePresetsPath(m_pConfig).append(filenameWithExt);
     }
 
     if (!QFile::exists(filepath)) {
-        qWarning() << "Cannot find" << filenameWithExt << "in either res/"
-                   << "or the user's Mixxx directories (" + LOCAL_PRESETS_PATH
-                   << USER_PRESETS_PATH + ")";
+        qWarning() << "Cannot find" << filenameWithExt << "in either"
+                   << resourcePresetsPath(m_pConfig)
+                   << "or the user's Mixxx directories (" + localPresetsPath(m_pConfig)
+                   << userPresetsPath(m_pConfig) + ")";
         return false;
     }
 
@@ -400,11 +401,19 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         QString name = pController->getName();
         QString filename = firstAvailableFilename(
             filenames, presetFilenameFromName(name));
-        QString presetPath = USER_PRESETS_PATH + filename
+        QString presetPath = userPresetsPath(m_pConfig) + filename
                 + pController->presetExtension();
         if (!pController->savePreset(presetPath)) {
             qWarning() << "Failed to write preset for device"
                        << name << "to" << presetPath;
         }
     }
+}
+
+QList<QString> ControllerManager::getScriptPaths() {
+    QList<QString> scriptPaths;
+    scriptPaths.append(userPresetsPath(m_pConfig));
+    scriptPaths.append(localPresetsPath(m_pConfig));
+    scriptPaths.append(resourcePresetsPath(m_pConfig));
+    return scriptPaths;
 }

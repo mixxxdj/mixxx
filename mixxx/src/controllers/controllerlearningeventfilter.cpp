@@ -27,7 +27,9 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
     WSliderComposed* pSlider = dynamic_cast<WSliderComposed*>(pObject);
     bool has_right_click_reset = pKnob || pSlider;
 
-    if (pEvent->type() == QEvent::MouseButtonPress) {
+    if (pEvent->type() == QEvent::KeyPress) {
+        QKeyEvent* keyEvent = reinterpret_cast<QKeyEvent*>(pEvent);
+    } else if (pEvent->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = reinterpret_cast<QMouseEvent*>(pEvent);
         qDebug() << "MouseButtonPress" << pWidget;
 
@@ -75,17 +77,19 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
             }
         }
     } else if (pEvent->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent* mouseEvent = reinterpret_cast<QMouseEvent*>(pEvent);
         qDebug() << "MouseButtonRelease" << pWidget;
     } else if (pEvent->type() == QEvent::MouseMove) {
+        QMouseEvent* mouseEvent = reinterpret_cast<QMouseEvent*>(pEvent);
         qDebug() << "MouseMoveEvent" << pWidget;
     }
     return false;
 }
 
-void ControllerLearningEventFilter::addWidgetClickInfo(QWidget* pWidget,
-                                                       Qt::MouseButton buttonState,
-                                                       ControlObject* pControl,
-                            ControlObjectThreadWidget::EmitOption emitOption) {
+void ControllerLearningEventFilter::addWidgetClickInfo(
+        QWidget* pWidget, Qt::MouseButton buttonState,
+        ControlObject* pControl,
+        ControlObjectThreadWidget::EmitOption emitOption) {
     ControlInfo& info = m_widgetControlInfo[pWidget];
 
     if (buttonState == Qt::LeftButton) {
