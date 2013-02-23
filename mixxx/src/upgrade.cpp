@@ -371,7 +371,7 @@ bool Upgrade::askReanalyzeBeats() {
         "This does not affect saved cues, hotcues, playlists, or crates.");
     QString paragraph3 = QMessageBox::tr(
         "If you do not want Mixxx to re-analyze your tracks, choose "
-        "\"Keep Current Beatgrids.\" You can change this setting at any time "
+        "\"Keep Current Beatgrids\". You can change this setting at any time "
         "from the \"Beat Detection\" section of the Preferences.");
     QString keepCurrent = QMessageBox::tr("Keep Current Beatgrids");
     QString generateNew = QMessageBox::tr("Generate New Beatgrids");

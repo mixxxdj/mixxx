@@ -174,12 +174,12 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
-                                tr("Playlist creation Failed"),
+                                tr("Playlist Creation Failed"),
                                 tr("A playlist by that name already exists."));
         }
         else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
-                                tr("Playlist creation Failed"),
+                                tr("Playlist Creation Failed"),
                                 tr("A playlist cannot have a blank name."));
         }
         else {
