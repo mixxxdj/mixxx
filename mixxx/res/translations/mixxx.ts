@@ -50,8 +50,8 @@
     <name>BasePlaylistFeature</name>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="25"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="218"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="221"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="219"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="222"/>
         <source>New Playlist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -82,7 +82,7 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="49"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="285"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="286"/>
         <source>Import Playlist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -94,7 +94,7 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="57"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="331"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="332"/>
         <source>Export Playlist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -116,58 +116,56 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="136"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="177"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="232"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="178"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="233"/>
         <source>A playlist by that name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="141"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="236"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="183"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="237"/>
         <source>A playlist cannot have a blank name.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="163"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="219"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="220"/>
         <source>Playlist name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="165"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="166"/>
         <source>_copy</source>
+        <comment>[noun]</comment>
+        <extracomment>Appendix to default name when duplicating a playlist</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="176"/>
-        <source> Playlist creation Failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="181"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="177"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
         <source>Playlist creation Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="231"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="235"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="250"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="232"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="236"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="251"/>
         <source>Playlist Creation Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="251"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="252"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="287"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="288"/>
         <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="333"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="334"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -561,13 +559,20 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="454"/>
+        <location filename="../../src/library/cratefeature.cpp" line="327"/>
+        <source>_copy</source>
+        <comment>[noun]</comment>
+        <extracomment>Appendix to default name when duplicating a crate</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/library/cratefeature.cpp" line="455"/>
         <source>Import Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="85"/>
-        <location filename="../../src/library/cratefeature.cpp" line="561"/>
+        <location filename="../../src/library/cratefeature.cpp" line="562"/>
         <source>Crates</source>
         <translation type="unfinished"></translation>
     </message>
@@ -578,7 +583,7 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="48"/>
-        <location filename="../../src/library/cratefeature.cpp" line="492"/>
+        <location filename="../../src/library/cratefeature.cpp" line="493"/>
         <source>Export Crate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -600,7 +605,7 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="239"/>
-        <location filename="../../src/library/cratefeature.cpp" line="359"/>
+        <location filename="../../src/library/cratefeature.cpp" line="360"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -618,50 +623,45 @@
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="294"/>
         <location filename="../../src/library/cratefeature.cpp" line="299"/>
-        <location filename="../../src/library/cratefeature.cpp" line="337"/>
-        <location filename="../../src/library/cratefeature.cpp" line="342"/>
+        <location filename="../../src/library/cratefeature.cpp" line="338"/>
+        <location filename="../../src/library/cratefeature.cpp" line="343"/>
         <source>Renaming Crate Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="326"/>
-        <source>_copy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/library/cratefeature.cpp" line="456"/>
+        <location filename="../../src/library/cratefeature.cpp" line="457"/>
         <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="494"/>
+        <location filename="../../src/library/cratefeature.cpp" line="495"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="562"/>
+        <location filename="../../src/library/cratefeature.cpp" line="563"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="563"/>
+        <location filename="../../src/library/cratefeature.cpp" line="564"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="564"/>
+        <location filename="../../src/library/cratefeature.cpp" line="565"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="567"/>
+        <location filename="../../src/library/cratefeature.cpp" line="568"/>
         <source>Create new crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="223"/>
         <location filename="../../src/library/cratefeature.cpp" line="300"/>
-        <location filename="../../src/library/cratefeature.cpp" line="343"/>
+        <location filename="../../src/library/cratefeature.cpp" line="344"/>
         <source>A crate cannot have a blank name.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -669,14 +669,14 @@
         <location filename="../../src/library/cratefeature.cpp" line="217"/>
         <location filename="../../src/library/cratefeature.cpp" line="222"/>
         <location filename="../../src/library/cratefeature.cpp" line="238"/>
-        <location filename="../../src/library/cratefeature.cpp" line="358"/>
+        <location filename="../../src/library/cratefeature.cpp" line="359"/>
         <source>Creating Crate Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="218"/>
         <location filename="../../src/library/cratefeature.cpp" line="295"/>
-        <location filename="../../src/library/cratefeature.cpp" line="338"/>
+        <location filename="../../src/library/cratefeature.cpp" line="339"/>
         <source>A crate by that name already exists.</source>
         <translation type="unfinished"></translation>
     </message>
