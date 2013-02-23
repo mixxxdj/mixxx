@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-23 13:22+0200\n"
+"POT-Creation-Date: 2013-02-23 15:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,26 +120,22 @@ msgid "_copy"
 msgstr ""
 
 #: BasePlaylistFeature#17
-msgid "Playlist creation Failed"
+msgctxt "BasePlaylistFeature#17"
+msgid "Playlist Creation Failed"
 msgstr ""
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
-msgid "Playlist Creation Failed"
+msgid "An unknown error occurred while creating playlist: "
 msgstr ""
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
-msgid "An unknown error occurred while creating playlist: "
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
 msgstr ""
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
-
-#: BasePlaylistFeature#21
-msgctxt "BasePlaylistFeature#21"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
@@ -3795,7 +3791,7 @@ msgstr ""
 #: QMessageBox#5
 msgid ""
 "If you do not want Mixxx to re-analyze your tracks, choose \"Keep Current "
-"Beatgrids.\" You can change this setting at any time from the \"Beat "
+"Beatgrids\". You can change this setting at any time from the \"Beat "
 "Detection\" section of the Preferences."
 msgstr ""
 

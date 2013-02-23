@@ -144,10 +144,6 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="177"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
-        <source>Playlist creation Failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="232"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="236"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="251"/>
@@ -4605,7 +4601,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     </message>
     <message>
         <location filename="../../src/upgrade.cpp" line="372"/>
-        <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids.&quot; You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
+        <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
