@@ -162,7 +162,8 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
                                         tr("Duplicate Playlist"),
                                         tr("Playlist name:"),
                                         QLineEdit::Normal,
-                                        oldName + tr("_copy"),
+                                        //: Appendix to default name when duplicating a playlist
+                                        oldName + tr("_copy" , "[noun]"),
                                         &ok).trimmed();
 
         if (!ok || oldName == name) {
@@ -173,7 +174,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
-                                tr(" Playlist creation Failed"),
+                                tr("Playlist creation Failed"),
                                 tr("A playlist by that name already exists."));
         }
         else if (name.isEmpty()) {

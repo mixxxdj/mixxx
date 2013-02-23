@@ -323,7 +323,8 @@ void CrateFeature::slotDuplicateCrate() {
                                         tr("Duplicate Crate"),
                                         tr("New crate name:"),
                                         QLineEdit::Normal,
-                                        oldName + tr("_copy"),
+                                        //: Appendix to default name when duplicating a crate
+                                        oldName + tr("_copy" , "[noun]"),
                                         &ok).trimmed();
 
         if (!ok || name == oldName) {
