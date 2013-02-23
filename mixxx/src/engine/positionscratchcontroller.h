@@ -13,7 +13,8 @@ class PositionScratchController : public QObject {
     PositionScratchController(const char* pGroup);
     virtual ~PositionScratchController();
 
-    void process(double currentSample, bool paused, int iBufferSize);
+    void process(double currentSample, bool paused,
+            int iBufferSize, double baserate);
     bool isEnabled();
     double getRate();
     void notifySeek(double currentSample);
@@ -23,15 +24,12 @@ class PositionScratchController : public QObject {
     ControlObject* m_pScratchEnable;
     ControlObject* m_pScratchPosition;
     ControlObject* m_pMasterSampleRate;
-    ControlObject* m_pScratchControllerP;
-    ControlObject* m_pScratchControllerI;
-    ControlObject* m_pScratchControllerD;
     VelocityController* m_pVelocityController;
     bool m_bScratching;
     bool m_bEnableInertia;
     double m_dLastPlaypos;
     double m_dPositionDeltaSum;
-    double m_dScratchTime;
+    double m_dStartScratchPosition;
     double m_dRate;
 };
 

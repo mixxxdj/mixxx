@@ -65,8 +65,8 @@ private:
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
     ControlObjectThreadMain* m_pZoom;
-    ControlObjectThreadMain* m_pScratchEnable;
-    ControlObjectThreadMain* m_pScratch;
+    ControlObjectThreadMain* m_pScratchPositionEnable;
+    ControlObjectThreadMain* m_pScratchPosition;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;
