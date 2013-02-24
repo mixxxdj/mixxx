@@ -271,40 +271,63 @@ the beat markers soon. Finding the correct BPM, however, is easy in many cases. 
 Recording your Mix
 ==================
 
-You can record Mixxx's master output in WAV, AIFF, OGG or MP3.
-The recordings settings can be changed in Mixxx Preferences->Recording.
+With the integrated recording feature you can record your mix as an audio file
+and listen to it later, distribute it as :term:`Podcast` or burn it to CD.
+Mixxx records the master output - the audio you hear from the speakers including
+ the microphone.
 
-.. figure:: ../_static/Mixxx-1.11-Preferences-Recording.png
+.. figure:: ../_static/Mixxx-111-Library-Recordings.png
    :align: center
-   :width: 100%
-   :figwidth: 100%
-   :alt: Mixxx preferences - Setting up recordings
-   :figclass: pretty-figures
-
-   Mixxx preferences - Setting up recordings
-
-.. note:: MP3 recordings are not supported out of the box in Mixxx since we do not
-          license the MP3 encoding patents. In order to enable MP3 recording you must
-          install the LAME MP3 encoding tool yourself.
-          For information how to do this, see :ref:`MP3 streaming` .
-
-.. figure:: ../_static/Mixxx-1.10-Library-Recordings.png
-   :align: center
-   :width: 100%
+   :width: 85%
    :figwidth: 100%
    :alt: Mixxx library - Recordings view
    :figclass: pretty-figures
 
    Mixxx library - Recordings view
 
-If you click on the recording sidebar item, the right track table view displays the content
-of your recordings directory which can be changed in the preferences. New recordings are automatically 
-saved in this folder as well as CUE files if you choose to create them in the recording preferences.
+Mixxx can record your mix in various audio formats and quality settings. You can 
+split your recordings, generate :term:`cue files <cue sheet>`, choose a custom 
+recording directory and even set you own :term:`metadata`. By default, Mixxx 
+saves your recordings as lossless :term:`wav` files to a ``Mixxx/Recordings`` 
+sub-folder in the Mixxx music directory. Before you start recording, it is 
+recommended to adjust the settings according to your requirements in the 
+recording preferences.
 
-Switch to the ``Recording`` sidebar item, then click the ``Start Recording`` button. Alternatively
-you can click ``Options`` on the menu bar and click ``Record Mix``. Mixxx records the audio you hear
-from the speakers including the microphone. While recording, a text displays how much data
-has been recorded. If your mix is done, click the ``Stop Recording`` button.
+If you click on the *Recordings* icon in the sidebar of the Mixxx library, the 
+track table to the right displays the content of your recordings directory. New 
+recordings are automatically saved to this directory as well as CUE files if you 
+choose to create them in the preferences.
+
+Record your mix to disk
+-----------------------
+
+* Click on the ``Recordings`` icon in the sidebar to switch to the *Recordings* 
+  view
+* Click the ``Start Recording`` button. Alternatively, click 
+  ``Options → Record Mix`` in the menu on top of the Mixxx application window.
+* The display above the track table shows how much data has already been 
+  recorded.
+* Perform your mix
+* Click the ``Stop Recording`` button to stop the recording when the mix has 
+  finished.
+
+.. hint:: You can instantly use your recording as track in Mixxx. Simply 
+          drag'n drop the track to a deck.
+
+Burn you recorded mix to a CD/DVD
+---------------------------------
+
+* Select your recording in the *Recordings* view
+* Right-click and select ``Open in File Browser`` to locate the file on your 
+  disk
+* Now burn the recording to a CD/DVD using a 3rd party program, for example 
+  `CDBurnerXP <http://www.cdburnerxp.se/>`_ for Windows or 
+  `Burn <http://burn-osx.sourceforge.net/>`_ for Mac OS X.
+
+.. note:: Due to licensing restrictions, :term:`MP3` recording is not enabled 
+          per default. In order to enable MP3 streaming you must install the 
+          :term:`LAME` MP3 :term:`codec` yourself. Go to the chapter 
+          :ref:`MP3 Streaming` for more informations.
 
 .. _djing-auto-dj:
 
