@@ -12,28 +12,23 @@
         <name>BaseExternalLibraryFeature</name>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu Auto DJ ilarara (bukaeran)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu Auto DJ ilarara (hasieran)</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inportatu erreprodukzio-zerrenda</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da erreprodukzio-zerrenda sortu</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errore ezezagun bat gertatu da erreprodukzio zerrenda sortzean: </translation>
         </message>
     </context>
     <context>
@@ -44,31 +39,30 @@
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu Auto DJ ilarara (bukaeran)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu Auto DJ ilarara (hasieran)</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kendu</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrizendatu</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Blokeatu</translation>
         </message>
         <message>
             <source>Import Playlist</source>
+            <translation>Inportatu erreprodukzio-zerrenda</translation>
+        </message>
+        <message>
+            <source>Duplicate Playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -86,12 +80,11 @@
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
-            <translation>Ezin izan zaio Erreprodukzi-Zerrendari izena aldatu</translation>
+            <translation>Ezin izan da erreprodukzio-zerrenda berrizendatu</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Badago izen bereko beste erreproduzkio-zerrenda bat</translation>
         </message>
         <message>
             <source>A playlist cannot have a blank name.</source>
@@ -100,6 +93,11 @@
         <message>
             <source>Playlist name:</source>
             <translation>Erreprodukzio-zerrendaren izena:</translation>
+        </message>
+        <message>
+            <source>_copy</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
@@ -146,33 +144,27 @@
         </message>
         <message>
             <source>Composer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Konpositorea</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Urtea</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mota</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kokalekua</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Iruzkina</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Iraupena</translation>
         </message>
         <message>
             <source>Rating</source>
@@ -180,18 +172,15 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bit tasa</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pista-zenbakia</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -203,18 +192,19 @@
         </message>
         <message>
             <source>Timestamp</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Denbora-marka</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tonalitatea</translation>
         </message>
         <message>
             <source>BPM Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPMa blokeatu</translation>
+        </message>
+        <message>
+            <source>Preview</source>
+            <translation>Aurreikusi</translation>
         </message>
     </context>
     <context>
@@ -228,13 +218,11 @@
         <name>BrowseFeature</name>
         <message>
             <source>Add to Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu lotura azkarretara</translation>
         </message>
         <message>
             <source>Remove from Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kendu lotura azkarretatik</translation>
         </message>
         <message>
             <source>Quick Links</source>
@@ -250,8 +238,7 @@
         </message>
         <message>
             <source>Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Arakatuk zure disko gogorreko karpetetatik edo kanpo gailuetatik pistak aukeratu, ikusi eta kargatzea baimentzen dizu.</translation>
         </message>
         <message>
             <source>Browse</source>
@@ -290,53 +277,43 @@
         </message>
         <message>
             <source>Composer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Konpositorea</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Iruzkina</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Iraupena</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tonalitatea</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mota</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bit tasa</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kokalekua</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx liburutegia</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da hurrengo fitxategi hau kargatu Mixxx edo beste aplikazioren bat bera erabiltzen ari delako</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
@@ -348,12 +325,18 @@
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da hurrengo fitxategi hau ezabatu Mixxx edo beste aplikazioren bat bera erabiltzen ari delako</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
             <translation>Ezin izan dira fitxategiaren metadatuak eguneratu.</translation>
+        </message>
+    </context>
+    <context>
+        <name>BulkController</name>
+        <message>
+            <source>USB Controller</source>
+            <translation>USB Kontrolagailua</translation>
         </message>
     </context>
     <context>
@@ -370,36 +353,30 @@
         </message>
         <message>
             <source>Controller script error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrolagailu script errorea</translation>
         </message>
         <message>
             <source>A control you just used is not working properly.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erabili berri duzun kontrolagailuren bat ez dabil behar bezala.</translation>
         </message>
         <message>
             <source>&lt;html&gt;(The script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;(Script kodea konpondu beharra dago.)&lt;br&gt;Oraigoz, hau egin dezakezu:&lt;ul&gt;&lt;li&gt;Errore hau ezikusi saio honetan, baina jokabide erratikoa pairatu dezakezu.&lt;/li&gt;&lt;li&gt;Berreskuratzea saiatu zure kontrolatzailea berrasiaraziz&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</translation>
         </message>
     </context>
     <context>
         <name>ControllerMappingDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Elkarrizketa-koadroa</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sarrera</translation>
         </message>
         <message>
             <source>The below box is under construction and will remain empty in this version of Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beheko kutxa garapenean dago eta Mixxx bertsio honetan hutsik agertuko da.</translation>
         </message>
         <message>
             <source>Controls</source>
@@ -407,13 +384,11 @@
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kendu</translation>
         </message>
         <message>
             <source>Learning Wizard</source>
@@ -422,13 +397,11 @@
         </message>
         <message>
             <source>Clear all</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Garbitu guztia</translation>
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irteera</translation>
         </message>
         <message>
             <source>Outputs</source>
@@ -458,8 +431,14 @@
             <translation>Blokeatu</translation>
         </message>
         <message>
+            <source>_copy</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Import Playlist</source>
-            <translation>Inportatu erreprodukzio-zerrenda</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crates</source>
@@ -474,8 +453,14 @@
             <translation>Esportatu kaxa</translation>
         </message>
         <message>
+            <source>Duplicate Crate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Unlock</source>
-            <translation>Desblokeatu</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -483,8 +468,7 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errore ezezagun bat gertatu da kaxa sortzean: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
@@ -492,11 +476,11 @@
         </message>
         <message>
             <source>New crate name:</source>
-            <translation>Kaxaren Izan Berria:</translation>
+            <translation>Kaxaren izen berria:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation>Akatsa Kaxa Berrizendatzean</translation>
+            <translation>Ezin inan da kaxa berrizendatu</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -510,26 +494,27 @@
         </message>
         <message>
             <source>Crates are a great way to help organize the music you want to DJ with.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxak DJ bezala erabili nahi duzun musika antolatzeko bikainak dira</translation>
         </message>
         <message>
             <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sortu kaxa bat zure hurrengo kotzerturako, nahiago dituzun electrohouse kantuekin, edo gehien eskatzen dizkizutenekin.</translation>
         </message>
         <message>
             <source>Crates let you organize your music however you'd like!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kaxak zure musika nahieran antolatzea baimentzen dizute!</translation>
+        </message>
+        <message>
+            <source>Create new crate</source>
+            <translation>Sortu kaxa berria</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Kaxa batek ezin du izen hutsik izqn</translation>
+            <translation>Kaxa batek ezin du izena hutsik izan</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation>Akatsa Kaxa Sortzerakoan</translation>
+            <translation>Ezin izan da kaxa sortu</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
@@ -551,8 +536,7 @@
         <name>DlgAutoDJ</name>
         <message>
             <source>Auto-DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto-DJ</translation>
         </message>
         <message>
             <source>One deck must be stopped to enable Auto-DJ mode.</source>
@@ -565,53 +549,43 @@
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nahastu Auto DJ erreprodukzio zerrendako edukia</translation>
         </message>
         <message>
             <source>Shuffle</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nahastu</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Saltatu Auto DJ erreprodukzio zerrendako hurrengo pista</translation>
         </message>
         <message>
             <source>Skip Track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Saltatu pista</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Abiarazi transizioa hurrengo pistara</translation>
         </message>
         <message>
             <source>Fade Now</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aldatu orain</translation>
         </message>
         <message>
             <source>Determines the duration of the transition.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Transizioaren iraupena zehazten du</translation>
         </message>
         <message>
             <source>Seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Segundoak</translation>
         </message>
         <message>
             <source>sec.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>s</translation>
         </message>
         <message>
             <source>Turn Auto DJ on or off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ piztu ala itzali</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -619,71 +593,79 @@
         </message>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kudeatu</translation>
         </message>
     </context>
     <context>
         <name>DlgBeatsDlg</name>
         <message>
             <source>Beat Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taupada detekzio ezarpenak</translation>
         </message>
         <message>
-            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
+automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gaitu BPM eta taupada detekzioa</translation>
         </message>
         <message>
             <source>Choose Analyser</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu analizatzailea</translation>
         </message>
         <message>
             <source>Beat Analyser:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taupada analizatzailea:</translation>
         </message>
         <message>
             <source>Choose between different algorithms to detect beats.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu taupadak detektatzeko algoritmoren bat.</translation>
         </message>
         <message>
             <source>Analyser Settings</source>
+            <translation>Analizatzaile ezarpenak</translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. 
+If activated Mixxx only analyzes the first minute of a track for beat information. 
+This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
+by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
+(Not checked: Analyse only, if no beats exist.)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beat detection data is outdated</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gaitu analisi azkarra (Ordenagailu motelentzat, zehaztasun gutxiagokoa)</translation>
         </message>
         <message>
             <source>Assume constant tempo (Recommended)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erritmo konstantea aurresuposatu (Aholkatua)</translation>
         </message>
         <message>
             <source>Enable Offset Correction (Recommended)</source>
@@ -691,35 +673,20 @@
             </translation>
         </message>
         <message>
-            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Re-analyse beats when settings change or beats already present
-(e.g. from 3rd-party programs or older Mixxx versions)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM bitartea</translation>
         </message>
         <message>
             <source>Min:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gutxienez:</translation>
         </message>
         <message>
             <source>Max:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehienez:</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lehenetsietara berrezarri</translation>
         </message>
     </context>
     <context>
@@ -734,8 +701,7 @@
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM bitartea</translation>
         </message>
         <message>
             <source>Max</source>
@@ -747,8 +713,7 @@
         </message>
         <message>
             <source>Analyze Entire Track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aztertu pista osoa</translation>
         </message>
     </context>
     <context>
@@ -760,23 +725,19 @@
         </message>
         <message>
             <source>Click any control in the Mixxx interface or choose one from the list. Then move a control on your controller to map it. Repeat this as many times as you wish. When you are finished mapping controls, click Done.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Klik egin Mixxx interfazeko edozein kontroletan eta aukeratu bat zerrendatik. Gero mugitu zure kontrolatzaileko kontrol bat berau mapeatzeko. Errepikatu nahi beste aldiz. Kontrolak mapeatzen bukatzerakoan, klikatu Eginda botoia.</translation>
         </message>
         <message>
             <source>Done</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Egina</translation>
         </message>
         <message>
             <source>To map another control click a button or choose from the list.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beste kontrol bat mapeatzeko egin klik botoi batean edo zerrendatik aukeratu.</translation>
         </message>
         <message>
             <source>Choose Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu kontrola</translation>
         </message>
         <message>
             <source>Deck %1</source>
@@ -790,18 +751,15 @@
         </message>
         <message>
             <source>Reset to default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berrezarri lehenetsira</translation>
         </message>
         <message>
             <source>Mixer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nahastailea</translation>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader-a</translation>
         </message>
         <message>
             <source>Master volume</source>
@@ -823,8 +781,7 @@
         </message>
         <message>
             <source>Transport</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Garraioa</translation>
         </message>
         <message>
             <source>Strip-search through track</source>
@@ -868,8 +825,7 @@
         </message>
         <message>
             <source>Gain knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irabazi kisketa</translation>
         </message>
         <message>
             <source>Headphone listen button</source>
@@ -903,8 +859,7 @@
         </message>
         <message>
             <source>Adjust beatgrid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soitu taupada sarea</translation>
         </message>
         <message>
             <source>Toggle quantize mode</source>
@@ -913,18 +868,15 @@
         </message>
         <message>
             <source>Beat sync (tempo and phase)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taupada sinkronizazioa (erritmo eta fasea)</translation>
         </message>
         <message>
             <source>Beat sync (tempo only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taupada sinkronizazioa (erritmoa soilik)</translation>
         </message>
         <message>
             <source>Beat sync (phase only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taupada sinkronizazioa (fasea soilik)</translation>
         </message>
         <message>
             <source>Pitch and Rate</source>
@@ -988,18 +940,15 @@
         </message>
         <message>
             <source>High EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ altua kisketa</translation>
         </message>
         <message>
             <source>Mid EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ ertaina kisketa</translation>
         </message>
         <message>
             <source>Low EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ baxua kisketa</translation>
         </message>
         <message>
             <source>High EQ kill</source>
@@ -1018,8 +967,7 @@
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Binilo kontrola</translation>
         </message>
         <message>
             <source>Toggle vinyl-control (ON/OFF)</source>
@@ -1033,11 +981,6 @@
         </message>
         <message>
             <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Cues / Hotcues</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1107,17 +1050,79 @@
             </translation>
         </message>
         <message>
-            <source>Beat-Looping</source>
+            <source>Toggle slip mode</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
+            <source>Preview Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Single deck mode - Toggle vinyl control to next deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beat-Looping</source>
+            <translation>Taupada-begizta</translation>
+        </message>
+        <message>
             <source>Create %1-beat loop</source>
+            <translation>Sortu %1-taupada begizta</translation>
+        </message>
+        <message>
+            <source>Create temporary %1-beat loop roll</source>
+            <translation>Sortu behin behineko %1-taupada begizta erroilua</translation>
+        </message>
+        <message>
+            <source>1/32th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/16th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/8th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/4th</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Expand/collapse the selected view (library, playlist..)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1131,13 +1136,11 @@
         </message>
         <message>
             <source>Scroll to next track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Korritu hurrengo pistara liburutegi edo zerrendan</translation>
         </message>
         <message>
             <source>Scroll to previous track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Korritu aurreko pistara liburutegi edo zerrendan</translation>
         </message>
         <message>
             <source>Load selected track into first stopped deck</source>
@@ -1150,9 +1153,13 @@
             </translation>
         </message>
         <message>
-            <source>Effects</source>
+            <source>Load selected track and play</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Effects</source>
+            <translation>Efektuak</translation>
         </message>
         <message>
             <source>Toggle flange effect</source>
@@ -1193,9 +1200,32 @@
             </translation>
         </message>
         <message>
-            <source>User Interface</source>
+            <source>Auto DJ</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist</source>
+            <translation>Nahastu Auto DJ erreprodukzio zerrendako edukia</translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle Auto DJ (ON/OFF)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>User Interface</source>
+            <translation>Erabiltzaile interfazea</translation>
         </message>
         <message>
             <source>Show/hide the sampler section</source>
@@ -1213,6 +1243,11 @@
             </translation>
         </message>
         <message>
+            <source>Show/hide the preview deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Show/hide spinning vinyl widget</source>
             <translation type="unfinished">
             </translation>
@@ -1224,6 +1259,77 @@
         </message>
         <message>
             <source>Successfully mapped to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgHidden</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+S</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgMissing</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1315,7 +1421,12 @@
             </translation>
         </message>
         <message>
-            <source>Custom Preset</source>
+            <source>No Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>No support available.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1342,11 +1453,26 @@
             </translation>
         </message>
         <message>
+            <source>TextLabel</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Description:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Load Preset:</source>
             <translation>Kargatu Preset-a:</translation>
         </message>
         <message>
             <source>Loaded Preset:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support:</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1397,20 +1523,6 @@
             </translation>
         </message>
         <message>
-            <source>Mixxx Detected a WVGA Screen</source>
-            <translation>Mixxx-ek WVGA Pantaila Aurkitu du</translation>
-        </message>
-        <message>
-            <source>Mixxx has detected that your screen has a resolution of </source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>This skin does not support schemes</source>
             <translation type="unfinished">
             </translation>
@@ -1438,6 +1550,15 @@
             <source>Load tracks into a playing deck</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>The selected skin is bigger than your screen resolution.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>On (only in Library)</source>
+            <translation>Gaituta (Liburutegian soilik)</translation>
         </message>
         <message>
             <source>20%</source>
@@ -1514,16 +1635,6 @@
             <translation>Tresnen gomendioak</translation>
         </message>
         <message>
-            <source>On</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Off</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Pitch/Rate slider range</source>
             <translation type="unfinished">
             </translation>
@@ -1545,6 +1656,11 @@
         </message>
         <message>
             <source>Auto Recall Cue</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-queue tracks in Auto DJ</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1575,6 +1691,11 @@
         </message>
         <message>
             <source>Displays the actual frame rate.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Normalize Overview</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1697,12 +1818,9 @@
             <translation>Crossfader-aren kurba</translation>
         </message>
         <message>
-            <source>Slow fade</source>
-            <translation>Fade motela</translation>
-        </message>
-        <message>
-            <source>Fast cut</source>
-            <translation>Mozketa azkarra</translation>
+            <source>Slow fade/Fast cut (additive)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Constant power</source>
@@ -1724,6 +1842,11 @@
         <message>
             <source>Logarithmic</source>
             <translation>Logaritmikoa</translation>
+        </message>
+        <message>
+            <source>Reverse crossfader (hamster style)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
@@ -1975,17 +2098,24 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>Show Rhythmbox Library</source>
+            <source>Other Libraries</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Show Rhythmbox Library</source>
+            <translation>Bistaratu Rhythmbox liburutegia</translation>
         </message>
         <message>
             <source>Show iTunes Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bistaratu iTunes liburutegia</translation>
         </message>
         <message>
             <source>Show Traktor Library</source>
+            <translation>Bistaratu Traktor liburutegia</translation>
+        </message>
+        <message>
+            <source>    You will need to restart Mixxx for this to take effect</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1996,8 +2126,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegia</translation>
         </message>
         <message>
             <source>Music Directory:</source>
@@ -2134,17 +2263,17 @@ playback and outbound link statistics</source>
             </translation>
         </message>
         <message>
+            <source>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Apply volume normalization to loaded tracks.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>On older computers, it may take a few seconds before volume normalization is applied to a new track. You may wish to wait before adjusting the pregain and volume.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2242,6 +2371,16 @@ playback and outbound link statistics</source>
             </translation>
         </message>
         <message>
+            <source>Dynamically update Ogg Vorbis metadata.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Stream name</source>
             <translation>Stream-aren izena</translation>
         </message>
@@ -2287,6 +2426,11 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Public stream</source>
             <translation>Stream publikoa</translation>
+        </message>
+        <message>
+            <source>Use UTF-8 encoding for metadata.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Encoding</source>
@@ -2385,12 +2529,22 @@ p, li { white-space: pre-wrap; }
             <translation>Lagintze-maiztasuna</translation>
         </message>
         <message>
+            <source>Buffer Underflow Count</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>0</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Latency Tips</source>
             <translation>Latentzia gomendioak</translation>
         </message>
         <message>
             <source>&lt;ul&gt;
-&lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
             <translation type="unfinished">
@@ -2398,8 +2552,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irteera</translation>
         </message>
         <message>
             <source>Input</source>
@@ -2417,7 +2570,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation>Ezarri</translation>
+            <translation>Aplikatu</translation>
         </message>
         <message>
             <source>Latency</source>
@@ -2552,8 +2705,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPreferences</name>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hobespenak</translation>
         </message>
         <message>
             <source>Sound Hardware</source>
@@ -2566,8 +2718,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liburutegia</translation>
         </message>
         <message>
             <source>Interface</source>
@@ -2575,8 +2726,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Equalizers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ekualizadoreak</translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -2585,18 +2735,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Grabaketa</translation>
         </message>
         <message>
             <source>Beat Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taupada Detekzioa</translation>
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM detekzioa</translation>
         </message>
         <message>
             <source>Normalization</source>
@@ -2604,8 +2751,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Binilo kontrola</translation>
         </message>
         <message>
             <source>Live Broadcasting</source>
@@ -2632,8 +2778,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Shows tracks added to the library within the last 7 days.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Azken 7 egunetan liburutegira gehitutako pistak bistaratzen ditu.</translation>
         </message>
         <message>
             <source>New</source>
@@ -2641,8 +2786,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Shows all tracks in the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bistaratu liburutegiko pista guztiak.</translation>
         </message>
         <message>
             <source>All</source>
@@ -2659,26 +2803,27 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Select All</source>
-            <translation>Hautatu Denak</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Runs the BPM and beatgrid detection on the selected tracks.
 Waveforms will be generated as part of a analysis as well.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM eta taupada-sare detekzioa aukeratutako pistetan abiarazten du.
+Uhin formak sortuko dira ere analisiaren parte gisa.</translation>
         </message>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analizatu</translation>
         </message>
         <message>
             <source>Stop Analysis</source>
             <translation>Analisia gelditu</translation>
         </message>
         <message>
-            <source>Analyzing %1%</source>
-            <translation>Aztertzen %1%</translation>
+            <source>Analyzing %1/%2 %3%</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2722,8 +2867,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Summary</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Laburpena</translation>
         </message>
         <message>
             <source>Title:</source>
@@ -2747,18 +2891,15 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Composer:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Konpositorea:</translation>
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Urtea</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tonalitatea</translation>
         </message>
         <message>
             <source>Filetype:</source>
@@ -2767,13 +2908,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>BPM:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM:</translation>
         </message>
         <message>
             <source>Location:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kokapena:</translation>
         </message>
         <message>
             <source>Filename:</source>
@@ -2781,23 +2920,19 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Bitrate:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bit-tasa:</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Double BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bikoiztu BPMa</translation>
         </message>
         <message>
             <source>Halve BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erdibitu BPMa</translation>
         </message>
         <message>
             <source>Cuepoints</source>
@@ -2806,13 +2941,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>&amp;Previous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Aurrekoa</translation>
         </message>
         <message>
             <source>&amp;Next</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Hurrengoa</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -2833,13 +2966,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Tap to Beat</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erritmora klikatu</translation>
         </message>
         <message>
             <source>Hint: Use the Library Analyze view to run BPM detection.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aholkua: Liburutegiko Analizatu ikuspegia erabili BPM detekzioa abiarazteko.</translation>
         </message>
         <message>
             <source>Cue Id</source>
@@ -2847,8 +2978,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Posizioa</translation>
         </message>
         <message>
             <source>Hotcue</source>
@@ -2885,8 +3015,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         <name>EmptyWaveformWidget</name>
         <message>
             <source>Empty</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hutsik</translation>
         </message>
     </context>
     <context>
@@ -3078,7 +3207,11 @@ Waveforms will be generated as part of a analysis as well.</source>
     <context>
         <name>GLSLWaveformWidget</name>
         <message>
-            <source>Filtered (experimental)</source>
+            <source>Filtered</source>
+            <translation>Iragazia</translation>
+        </message>
+        <message>
+            <source>experimental</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3087,14 +3220,73 @@ Waveforms will be generated as part of a analysis as well.</source>
         <name>GLSimpleWaveformWidget</name>
         <message>
             <source>Simple</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sinplea</translation>
         </message>
     </context>
     <context>
         <name>GLWaveformWidget</name>
         <message>
             <source>Filtered</source>
+            <translation>Iragazia</translation>
+        </message>
+    </context>
+    <context>
+        <name>HSVWaveformWidget</name>
+        <message>
+            <source>HSV</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>HidController</name>
+        <message>
+            <source>Generic HID Mouse</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Joystick</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Gamepad</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Keyboard</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Multiaxis Controller</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown HID Desktop Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Infrared Control</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown Apple HID Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Unknown Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Interface Number</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3123,12 +3315,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Error Loading iTunes Library</source>
-            <translation>Akatsa iTunes Liburutegia kargatzerakoan</translation>
+            <translation>Errorea iTunes Liburutegia kargatzerakoan</translation>
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errore bat suertatu da zure iTunes liburutegia kargatzean. Zure iTunes pista batzuk agian ez dira kargatu.</translation>
         </message>
     </context>
     <context>
@@ -3140,19 +3331,75 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
     </context>
     <context>
-        <name>LibraryScannerDlg</name>
+        <name>LegacySkinParser</name>
         <message>
-            <source>Library Scanner</source>
-            <translation>Liburutegi Scanner-a</translation>
+            <source>activate</source>
+            <translation>aktibatu</translation>
         </message>
         <message>
-            <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
+            <source>toggle</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
+            <source>right</source>
+            <translation>eskuina</translation>
+        </message>
+        <message>
+            <source>left</source>
+            <translation>ezkerra</translation>
+        </message>
+        <message>
+            <source>right small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>left small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>up</source>
+            <translation>gora</translation>
+        </message>
+        <message>
+            <source>down</source>
+            <translation>behera</translation>
+        </message>
+        <message>
+            <source>up small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>down small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shortcut</source>
+            <translation>Lasterbidea</translation>
+        </message>
+    </context>
+    <context>
+        <name>LibraryScannerDlg</name>
+        <message>
+            <source>Library Scanner</source>
+            <translation>Liburutegi eskaneatzailea</translation>
+        </message>
+        <message>
+            <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
+            <translation>Mixxx-ek une bat behar du zure musika liburutegia eskaneatzeko, mesedez itxaron...</translation>
+        </message>
+        <message>
             <source>Cancel</source>
             <translation>Ezeztatu</translation>
+        </message>
+        <message>
+            <source>Scanning: </source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3197,8 +3444,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aukeratu musika liburutegiaren direktorioa</translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
@@ -3264,6 +3510,90 @@ Waveforms will be generated as part of a analysis as well.</source>
             <translation>Jarraitu</translation>
         </message>
         <message>
+            <source>Load Track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add &amp;New Playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add New &amp;Crate</source>
+            <translation>Gehitu &amp;Kaxa berria</translation>
+        </message>
+        <message>
+            <source>Enable &amp;Keyboard Shortcuts</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Samplers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Vinyl Control Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+3</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Microphone Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+2</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the preview deck in the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+4</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Reload Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload the skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+Shift+R</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Developer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Load track to Deck %1</source>
             <translation type="unfinished">
             </translation>
@@ -3275,8 +3605,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Open</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ireki</translation>
         </message>
         <message>
             <source>Ctrl+O</source>
@@ -3305,20 +3634,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Rescans library folders for changes to tracks.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Add &amp;new playlist</source>
-            <translation>Gehitu &amp;Erreprodukzio-Zerrenda berria</translation>
+            <translation>Liburutegiko karpetak berreskaneatzen ditu pista aldaketen bila.</translation>
         </message>
         <message>
             <source>Ctrl+N</source>
             <translation>Ctrl+N</translation>
-        </message>
-        <message>
-            <source>Add new &amp;crate</source>
-            <translation>Gehitu &amp;Kaxa berria</translation>
         </message>
         <message>
             <source>Deck %1 is currently playing a track.</source>
@@ -3374,11 +3694,6 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
@@ -3404,7 +3719,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Create a new crate</source>
-            <translation>Kaxa berria sortu</translation>
+            <translation>Sortu kaxa berria</translation>
         </message>
         <message>
             <source>Ctrl+Shift+F</source>
@@ -3418,11 +3733,6 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Enable Vinyl Control &amp;2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Enable live &amp;broadcasting</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3476,17 +3786,41 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>Enable &amp;keyboard shortcuts</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Toggles keyboard shortcuts on or off</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Ctrl+`</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate This Application</source>
+            <translation>Aplikazio Hau &amp;Itzuli</translation>
+        </message>
+        <message>
+            <source>Enable Live &amp;Broadcasting</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>May not be supported on all skins.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the sample deck section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the vinyl control section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the microphone section of the Mixxx interface.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3565,6 +3899,16 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>The preferences window is still open.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Discard any changes and exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MixxxLibraryFeature</name>
@@ -3574,27 +3918,28 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
-            <source>Library</source>
+            <source>Hidden Tracks</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Library</source>
+            <translation>Liburutegia</translation>
         </message>
     </context>
     <context>
         <name>ParserCsv</name>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kokalekua</translation>
         </message>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da Erreprodukzio-Zerrenda Esportatu</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezin izan da fitxategia sortu</translation>
         </message>
         <message>
             <source>Readable text Export Failed</source>
@@ -3640,8 +3985,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>PlaylistFeature</name>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Blokeatu</translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -3649,8 +3993,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desblokeatu</translation>
         </message>
         <message>
             <source>Playlists are ordered lists of songs that allow you to plan your DJ sets.</source>
@@ -3672,12 +4015,55 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Create new playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>PrepareFeature</name>
         <message>
             <source>Analyze</source>
             <translation>Analizatu</translation>
+        </message>
+    </context>
+    <context>
+        <name>QMessageBox</name>
+        <message>
+            <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx has a new and improved beat detector.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keep Current Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generate New Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3705,8 +4091,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofonoa</translation>
         </message>
         <message>
             <source>Passthrough</source>
@@ -3717,6 +4102,20 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <source>Unknown path type %1</source>
             <translation type="unfinished">
             </translation>
+        </message>
+    </context>
+    <context>
+        <name>QtSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation>Sinplea</translation>
+        </message>
+    </context>
+    <context>
+        <name>QtWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation>Iragazia</translation>
         </message>
     </context>
     <context>
@@ -3774,18 +4173,15 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>History</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Historia</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desblokeatu</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Blokeatu</translation>
         </message>
         <message>
             <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
@@ -3812,16 +4208,18 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>SoftwareWaveformWidget</name>
         <message>
             <source>Filtered</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Iragazia</translation>
+        </message>
+        <message>
+            <source>Software</source>
+            <translation>Softwarea</translation>
         </message>
     </context>
     <context>
         <name>Tooltips</name>
         <message>
             <source>Drop tracks from library or external file manager here.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bota pistak hona liburutegitik edo kanpo fitxategi kudeatzailetik.</translation>
         </message>
         <message>
             <source>Reset to default value.</source>
@@ -3830,11 +4228,14 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Left-click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ezkerreko botoian klik egin</translation>
         </message>
         <message>
             <source>Right-click</source>
+            <translation>Eskuineko botoian klik egin</translation>
+        </message>
+        <message>
+            <source>Scroll-wheel</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3874,6 +4275,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
+            <source>Scroll to change the waveform zoom level.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Spinning Vinyl</source>
             <translation type="unfinished">
             </translation>
@@ -3885,8 +4291,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Gain</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Irabazia</translation>
         </message>
         <message>
             <source>Adjusts the pre-fader gain of the track (to avoid clipping).</source>
@@ -3950,8 +4355,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Volume Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bolumen kontrola</translation>
         </message>
         <message>
             <source>Adjusts the volume of the selected channel.</source>
@@ -3960,8 +4364,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Master Volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bolumen nagusia</translation>
         </message>
         <message>
             <source>Adjusts the master output volume.</source>
@@ -4054,9 +4457,18 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
-            <source>Microphone Volume</source>
+            <source>Preview Deck</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Show/hide the Preview deck.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone Volume</source>
+            <translation>Mikrofonoaren bolumena</translation>
         </message>
         <message>
             <source>Adjusts the microphone volume.</source>
@@ -4205,8 +4617,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Displays the tempo of the loaded track in BPM (beats per minute).</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kargatutako pisten erritmoa bistaratzen du BPM-tan (Taupadak minutuko)</translation>
         </message>
         <message>
             <source>Tempo</source>
@@ -4235,13 +4646,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Adjust Beatgrid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Doitu taupada sarea</translation>
         </message>
         <message>
             <source>Adjust beatgrid so the closest beat is aligned with the current play position.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Doitu taupada sarea taupada hurbilena oraingo erreprodukzio posizioarekin lerrokatu dadin.</translation>
         </message>
         <message>
             <source>Key-Lock</source>
@@ -4319,6 +4728,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
+            <source>(while stopped)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Cue</source>
             <translation type="unfinished">
             </translation>
@@ -4340,6 +4754,68 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Sends the selected channel's audio to the headphone output.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Decks can't sync to samplers and samplers can only sync to decks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Setup a loop over the set number of beats.</source>
+            <translation>Begizta bat ezarritako taupada kopuruan sortu.</translation>
+        </message>
+        <message>
+            <source>Temporarily setup a rolling loop over the set number of beats.</source>
+            <translation>Behin behineko begizta erroilu bat ezarritako taupada kopuruan sortu</translation>
+        </message>
+        <message>
+            <source>Playback will resume where the track would have been if it had not entered the loop.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turns the current loop off.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Slip Mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Once disabled, the audible playback will resume where the track would have been.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clock</source>
+            <translation>Erlojua</translation>
+        </message>
+        <message>
+            <source>Displays the current time.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4390,8 +4866,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Fast Forward</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aurreratze azkarra</translation>
         </message>
         <message>
             <source>Fast forward through the track.</source>
@@ -4445,8 +4920,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Repeat</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errepikatu</translation>
         </message>
         <message>
             <source>When active the track will repeat if you go past the end or reverse before the start.</source>
@@ -4455,8 +4929,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Eject</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Egotzi</translation>
         </message>
         <message>
             <source>Ejects track from the player.</source>
@@ -4545,58 +5018,43 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Sets the deck loop-out position to the current play position.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreproduzigailuaren begizta irteera posizioa uneko jo posizioan ezartzen du.</translation>
         </message>
         <message>
             <source>Loop Halve</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Begizta erdibitu</translation>
         </message>
         <message>
             <source>Halves the current loop's length by moving the end marker.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uneko begiztaren luzera erdibitzen du bukaera marka mugituz.</translation>
         </message>
         <message>
             <source>Deck immediately loops if past the new endpoint.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erreproduzigailua berehala begiztatzen du bukaera puntua igarotakoan.</translation>
         </message>
         <message>
             <source>Loop Double</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Begizta bikoiztu</translation>
         </message>
         <message>
             <source>Doubles the current loop's length by moving the end marker.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uneko begiztaren luzera bikoizten du bukaera marka mugituz.</translation>
         </message>
         <message>
             <source>Beatloop</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Setup a loop over X beats.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taupada begizta</translation>
         </message>
         <message>
             <source>Reloop/Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Berbegizta / Irteera</translation>
         </message>
         <message>
             <source>Toggles the current loop on or off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uneko begizta gaitu ala desgaitzen du</translation>
         </message>
         <message>
             <source>Works only if Loop-In and Loop-Out marker are set.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Begizta sarrera eta begizta irteera markak ezarrita badaude dabil soilik.</translation>
         </message>
         <message>
             <source>Vinyl Cueing Mode</source>
@@ -4655,8 +5113,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Track Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pistaren artista</translation>
         </message>
         <message>
             <source>Displays the artist of the loaded track.</source>
@@ -4665,8 +5122,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Track Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pistaren izenburua</translation>
         </message>
         <message>
             <source>Displays the title of the loaded track.</source>
@@ -4748,15 +5204,37 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
+            <source>Click OK to exit.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Cannot upgrade database schema</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Unable to upgrade your database schema to version %1.
-Your mixxx.db file may be corrupt.
-Try renaming it and restarting Mixxx.
-Click OK to exit.</source>
+            <source>Unable to upgrade your database schema to version %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be outdated.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your mixxxdb.sqlite file may be corrupt.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Try renaming it and restarting Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be missing or invalid.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4777,6 +5255,18 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
+            <translation>Errore bat suertatu da zure Traktor liburutegia kargatzean. Zure iTunes pista batzuk agian ez dira kargatu.</translation>
+        </message>
+    </context>
+    <context>
+        <name>WOverview</name>
+        <message>
+            <source>Ready to play, analyzing ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loading track ..</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4805,7 +5295,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Add to Crate</source>
-            <translation>Gehitu Kaxara</translation>
+            <translation>Gehitu kaxara</translation>
         </message>
         <message>
             <source>Load to Sampler</source>
@@ -4816,26 +5306,40 @@ Click OK to exit.</source>
             <translation>Ezabatu</translation>
         </message>
         <message>
-            <source>Properties...</source>
-            <translation>Propietateak...</translation>
+            <source>Hide from Library</source>
+            <translation>Liburutegitik ezkutatu</translation>
         </message>
         <message>
-            <source>Open in file browser</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Unhide from Library</source>
+            <translation>Liburutegitik ezkutatzeari utzi</translation>
+        </message>
+        <message>
+            <source>Purge from Library</source>
+            <translation>Kendu liburutegitik</translation>
+        </message>
+        <message>
+            <source>Properties</source>
+            <translation>Propietateak</translation>
+        </message>
+        <message>
+            <source>Open in File Browser</source>
+            <translation>Ireki fitxategi kudeatzailean</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gehitu Auto DJ ilarara (bukaeran)</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue (top)</source>
+            <translation>Gehitu Auto DJ ilarara (hasieran)</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Reload Track Metadata</source>
+            <source>Load to Preview Deck</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4856,8 +5360,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Clear BPM and Beatgrid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Garbitu BPM eta taupada sarea</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
@@ -4866,11 +5369,6 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
             <translation type="unfinished">
             </translation>
         </message>
