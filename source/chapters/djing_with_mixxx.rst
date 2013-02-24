@@ -53,7 +53,8 @@ query. It enables you to look for several terms at once.
 Mixxx supports the following filters:
 
 * Text filtering for artist, album, genre, title, composer, comment
-* Numeric (exact number or range) filtering for year, track, bpm, duration, played, rating
+* Numeric (exact number or range) filtering for year, track, bpm, duration, 
+  played, rating, bitrate
 
 +------------------------------------------+---------------------------------------+
 | Examples for text filtering              | Examples for numeric filtering        |
@@ -78,8 +79,9 @@ Mixxx supports the following filters:
 |                                          | number.                               |
 |                                          |                                       |
 +------------------------------------------+---------------------------------------+
-| Of course you can combine these operators. The following example list all Danger |
-| tracks that are rated 4 or 5. There's no way to do an OR right now.              |
+| Of course you can combine these operators.                                       |
+| The following example list all Danger tracks that are rated 4 or 5.              |
+| There's no way to do an OR right now.                                            |
 +------------------------------------------+---------------------------------------+
 | artist:Danger rating:>=4                                                         |
 +------------------------------------------+---------------------------------------+
