@@ -15,8 +15,8 @@ class ControlObjectThread;
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEA "Serato CV02 Vinyl, Side A"
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEB "Serato CV02 Vinyl, Side B"
 #define MIXXX_VINYL_SERATOCD "Serato CD"
-#define MIXXX_VINYL_TRAKTORSCRATCHSIDEA "Traktor Scratch, side A"
-#define MIXXX_VINYL_TRAKTORSCRATCHSIDEB "Traktor Scratch, side B"
+#define MIXXX_VINYL_TRAKTORSCRATCHSIDEA "Traktor Scratch MK1 Vinyl, Side A"
+#define MIXXX_VINYL_TRAKTORSCRATCHSIDEB "Traktor Scratch MK1 Vinyl, Side B"
 
 #define MIXXX_VINYL_SPEED_33 "33.3 RPM"
 #define MIXXX_VINYL_SPEED_45 "45 RPM"
