@@ -1,3 +1,5 @@
+.. _contributing:
+
 Contributing to the Project
 ***************************
 
@@ -12,13 +14,14 @@ contribute**.
 As a non-developer
 ==================
 
-* `Donate <http://mixxx.org/download.php>`_ to Mixxx using Paypal to help support and enhance development.
+* `Donate <http://mixxx.org/download.php>`_ to Mixxx using Paypal to help 
+  support and enhance development.
 * `Make skins <http://mixxx.org/wiki/doku.php/creating_skins>`_
 * `Make MIDI mappings
   <http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format>`_ for
   your controller
 * `Report bugs <https://bugs.launchpad.net/mixxx>`_
-* Update our `Ẁiki <http://mixxx.org/wiki>`_ to make sure the information on it
+* Update our `Wiki <http://mixxx.org/wiki>`_ to make sure the information on it
   is up to date.
 * Translate Mixxx using `Launchpad Translations
   <https://translations.launchpad.net/mixxx/trunk>`_
@@ -51,9 +54,9 @@ As a software developer
 
 **Contributing to Mixxx in 3 Easy Steps:**
 
-* Pick a bug off of the `Easy Bug List
-  <https://bugs.launchpad.net/mixxx/+bugs?field.tag=easy>`_
-* Talk to us on IRC for help on how to fix it.
-* Fix it! *Done!* Your name will now be on the `Mixxx contributor list
-  <http://mixxx.org/contact.php>`_.
+#. Pick a bug off of the `Easy Bug List
+   <https://bugs.launchpad.net/mixxx/+bugs?field.tag=easy>`_
+#. Talk to us on IRC for help on how to fix it.
+#. Fix it! *Done!* Your name will now be on the `Mixxx contributor list
+   <http://mixxx.org/contact.php>`_.
 
