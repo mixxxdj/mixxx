@@ -50,21 +50,41 @@ Mixxx allows you to customize the keyboard control. For more informations, go to
 
 .. _control-midi:
 
-Using a MIDI Controller
-=======================
+Using MIDI/HID Controllers
+==========================
 
-:term:`MIDI controllers <MIDI Controller>` are external hardware devices used
-that can be used to control audio applications.  Many DJs prefer the hands-on
-feel of a MIDI controller with Mixxx because it can feel similar to using a real
-mixer and turntables.
+Mixxx supports :term:`MIDI <MIDI Controller>` and :term:`HID <HID controller>` 
+controller which are external hardware devices used to control audio 
+applications. Many DJs prefer the hands-on feel of a controller with Mixxx 
+because it can feel similar to using a real mixer and turntables or :term:`CDJ`.
 
-Here are the steps for using one:
+Loading a controller preset
+---------------------------
+.. figure:: ../_static/Mixxx-111-Preferences-Controllers.png
+   :align: center
+   :width: 85%
+   :figwidth: 100%
+   :alt: Mixxx Preferences - Loading a controller preset
+   :figclass: pretty-figures
+
+   Mixxx Preferences - Loading a controller preset
+
+Without loading the correct preset, your controller does not work with Mixxx.
 
 #. Connect your controller(s) to your computer
-#. Open Preferences and click *MIDI Controllers*
-#. Select your controller on the left and the right pane will change
-#. Click *Enable* and choose the appropriate mapping from the *presets* combobox
-#. Click OK and Mixxx can now be controlled by your controller(s).
+#. Start Mixxx
+#. Select ``Options → Preferences`` from the menu on top of the application 
+   window.
+#. Select the ``Controllers`` preference item
+#. Select your device from the list of available devices on the left and the 
+   right pane will change
+#. Click the ``Enable`` checkbox
+#. Select the mapping for your controller from the ``Presets`` drop-down-menu
+#. Click ``OK`` and Mixxx can now be controlled by your controller(s).
+#. Repeat step 5-8 for any of the controllers you want to use
+
+.. hint:: If you do not find a connected device in the list, make sure to 
+          install any necessary drivers for that device.
 
 Supported controllers
 ---------------------
