@@ -145,72 +145,35 @@ Here are the steps for using one:
 #. Click *Enable* and choose the appropriate mapping from the *presets* combobox
 #. Click OK and Mixxx can now be controlled by your controller(s).
 
-Mixxx can use any MIDI controller that is recognized by your :term:`OS <operating system>` (some may
-require drivers), as long as there is a MIDI mapping file to tell Mixxx how to
-understand it.  Mixxx comes bundled with a number of mappings for the devices
-listed below.
+Supported controllers
+---------------------
 
-Often times these mappings are contributed by users and the Mixxx team has no
-way of judging the quality of the mappings because we do not own the devices
-ourselves. There are two different levels of support for controllers in Mixxx:
-Mixxx Certified Support and Community Support. Mixxx Certified mappings are
-verified by the Mixxx Team. Community Supported mappings are mappings provided
-by the Mixxx Community, but the Mixxx team is unable the verify their quality.
+Mixxx can use any :term:`MIDI`/:term:`HID` controller that is recognized by your 
+:term:`OS <operating system>` (some may require drivers), as long as there is a 
+MIDI/HID mapping file to tell Mixxx how to understand it. Mixxx comes bundled 
+with a number of mappings for various devices. There are two levels of 
+controller mappings:
 
-Mixxx Certified Mappings
-------------------------
+* **Mixxx Certified Mappings** - These mappings are verified by the Mixxx 
+  Development Team.
+* **Community Supported Mappings** - These mappings are provided and have been 
+  verified as working by the Mixxx community, but the Mixxx Team is unable to 
+  verify their quality because we don't have the devices ourselves. They might 
+  have bugs or rough edges.
 
-* American Audio VMS4
-* DJ TechTools MIDIFighter
-* Hercules DJ Console RMX
-* Hercules DJ Console MK2
-* Hercules DJ Control MP3 e2
-* M-Audio X-Session Pro
-* Reloop Digital Jockey 2 (Interface/Controller)
-* Stanton SCS.3d
-* Stanton SCS.3m
-* Stanton SCS.1m
-* Stanton SCS.1d
+If you run into issues with any of these mappings, please file a bug on our 
+`bug tracker`_ or tell us about it on our mailing list, forums, or :term:`IRC` 
+channel. Device support varies for each supported :term:`OS <operating system>`, 
+so make sure to consult the documentation of the device.
 
-Community Supported Mappings
-----------------------------
-
-These mappings have been verified as working by the Mixxx community. However,
-they might have bugs or rough edges. If you run into issues with these mappings,
-please file a bug on our `bug tracker`_ or tell us about it on our mailing list,
-forums, or :term:`IRC` channel.
-
-* Akai MPD24
-* Behringer BCD3000
-* Ecler NUO4
-* Evolution X-Session
-* FaderFox DJ2
-* Hercules DJ Console Mac Edition
-* Hercules DJ Console Mk4
-* Hercules DJ Console MP3
-* Hercules DJ Control Steel
-* Ion Discover
-* M-Audio Xponent
-* Mixman DM2
-* Numark MixTrack
-* Numark NS7
-* Numark Total Control
-* Pioneer CDJ-350
-* Pioneer CDJ-850
-* Pioneer CDJ-2000
-* Tascam US-428
-* Vestax Spin
-* Vestax Typhoon
-* Vestax VCI-100
-* Wireless DJ App (iOS)
-
-Before purchasing a controller to use with Mixxx, please consult our `Hardware
-Compatibility wiki page`_. It contains the most up-to-date information about
-which controllers work with Mixxx and the details of each.  Device support
-varies for each supported :term:`OS <operating system>`, so please make sure to consult the documentation.
+.. seealso:: Before purchasing a controller to use with Mixxx, consult our 
+             `Hardware Compatibility wiki page`_. It contains the most 
+             up-to-date information about which controllers work with Mixxx and 
+             the details of each.
 
 .. _Hardware Compatibility wiki page: http://www.mixxx.org/wiki/doku.php/hardware_compatibility
-.. _bug tracker: http://bugs.launchpad.net/mixxx
+.. _Bug tracker: http://bugs.launchpad.net/mixxx
+.. _Controller presets forum: http://mixxx.org/forums/viewforum.php?f=7
 
 .. _control-timecode:
 
