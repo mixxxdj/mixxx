@@ -43,7 +43,7 @@ Table of Contents
    chapters/djing_with_mixxx
    chapters/advanced_topics
    chapters/getting_involved
-
+   chapters/appendix
    glossary
 
 .. [#f1] Yes, free with a capital F free. Free as in beer and free as in speech. For more information about what this means, see `Wikipedia <http://en.wikipedia.org/wiki/Open-source_software>`_.

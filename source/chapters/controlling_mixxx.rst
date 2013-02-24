@@ -3,129 +3,50 @@
 Controlling Mixxx
 *****************
 
-Mixxx can be controlled with a keyboard, a mouse, MIDI controllers, time-code
-records/CDs, or a combination of these. The choice usually depends on your
-budget or style of DJing.
+Mixxx can be controlled with a keyboard, a mouse, MIDI/HID controllers, 
+time-code records/CDs, or a combination of these. The choice usually depends on 
+your budget or style of DJing.
+
 
 .. _control-keyboard:
 
 Using a Keyboard
 ================
 
-If you cannot afford a MIDI controller, controlling Mixxx with a keyboard
-is handy. Unlike mouse control, the keyboard allows you to manage things
-simultaneously. For example, you can start playing a track on deck 1 whilst
-stopping deck 2 at the same time.
-
-The default mapping for English keyboards is depicted in the figure below. It's
-divided into a left-hand side for deck 1 and right-hand side for deck 2. Please
-note that you can also access the functions through Mixxx's interface.
-
-.. figure:: ../_static/Mixxx-1.10-Keyboard-Mapping.png
+.. figure:: ../_static/Mixxx-111-Keyboard-Mapping.png
    :align: center
    :width: 100%
    :figwidth: 100%
    :alt: Keyboard shortcuts
    :figclass: pretty-figures
 
-   Keyboard shortcuts (for en-us keyboard layout) 
+   Mixxx Keyboard shortcuts (for en-us keyboard layout) 
 
-+----------------------------------------+---------------------+---------------------+--------------+
-| Function                               | Deck 1              | Deck 2              | Master       |
-+========================================+=====================+=====================+==============+
-| Microphone Talkover                    |                     |                     | \`           |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Crossfade Left                         |                     |                     | G            |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Crossfade Right                        |                     |                     | H            |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Small Crossfade Left                   |                     |                     | Shift + G    |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Small Crossfade Right                  |                     |                     | Shift + H    |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Playback                               | D                   | L                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Set Cuepoint                           | Shift + D           | Shift + L           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Cue                                    | F                   | ;                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Cue Go-to-and-stop                     | Shift + F           | Shift + :           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Seek Backwards                         | A                   | J                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Reverse Playback                       | Shift + A           | Shift + J           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Seek Forwards                          | S                   | K                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Bass Kill                              | B                   | N                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Activate 4 Beat Loop                   | Q                   | U                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Halve Beat Loop Size                   | W                   | I                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Double Beat Loop Size                  | E                   | O                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Set Loop In Point                      | 2                   | 7                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Set Loop Out Point (Activates Loop)    | 3                   | 8                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Toggle Loop On/Off                     | 4                   | 9                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Activate/Disable Effects Unit          | 5                   | 0                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Headphone Cue (Pre-fader listen)       | T                   | Y                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Tempo Adjust Down                      | F1                  | F5                  |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Tempo Adjust Up                        | F2                  | F6                  |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Small Tempo Adjust Down                | Shift + F1          | Shift + F5          |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Small Tempo Adjust Up                  | Shift + F2          | Shift + F6          |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Temporary Tempo Adjust Down            | F3                  | F7                  |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Temporary Tempo Adjust Up              | F4                  | F8                  |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Small Temporary Tempo Adjust Down      | Shift + F3          | Shift + F7          |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Small Temporary Tempo Adjust Up        | Shift + F4          | Shift + F8          |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Tempo (BPM) Sync                       | 1                   | 6                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| BPM Tap Tempo Adjust                   | Shift + !           | Shift + ^           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Set Hot cue 1                          | Z                   | M                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Set Hot cue 2                          | X                   | ,                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Set Hot cue 3                          | C                   | .                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Set Hot cue 4                          | V                   | /                   |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hot cue 1                        | Shift + Z           | Shift + M           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hot cue 2                        | Shift + X           | Shift + <           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hot cue 3                        | Shift + C           | Shift + >           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hot cue 4                        | Shift + V           | Shift + ?           |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Load selected track to deck            | Shift + left arrow  | Shift + right arrow |              |
-+----------------------------------------+---------------------+---------------------+--------------+
-| Unload track from deck                 | Alt + Shift + left  | Alt + Shift + right |              |
-+----------------------------------------+---------------------+---------------------+--------------+
+Controlling Mixxx with a keyboard is handy. Unlike mouse control, the keyboard 
+allows you to manage things simultaneously. For example, you can start playing 
+a track on deck 1 whilst stopping deck 2 at the same time.
 
-.. note:: For some user groups, i.e. those using midi controllers or vinyl control 
-		  it might be useful to enable/disable the keyboard mapping at runtime. 
-		  You can do so by clicking ``Options`` -> ``Enable keyboard shortcuts`` 
-		  in the menu. 
+The default mapping for English keyboards is depicted in the figure above. It's
+divided into a left-hand side for deck 1 and right-hand side for deck 2. Please
+note that you can also access the functions through Mixxx's interface.
 
-Customizing
------------
+.. note:: For some user groups, i.e. those using midi controllers or vinyl 
+          control it might be useful to enable/disable the keyboard mapping at 
+          runtime. You can do so by clicking 
+          ``Options`` -> ``Enable keyboard shortcuts`` in the menu. 
 
-You can also customize the keyboard mapping. For more information, please refer to 
-the chapter :ref:`advanced-keyboard` .
+.. hint::  If you hover with the mouse over a control (e.g the crossfader) in 
+           the Mixxx user interface the tooltip lists the keyboard shortcuts of 
+           the control. 
+
+.. seealso:: For a list of default shortcuts, go to: :ref:`appendix-keyboard`
+
+Customizing the keyboard mapping
+--------------------------------
+
+Mixxx allows you to customize the keyboard control. For more informations, go to: 
+
+* :ref:`advanced-keyboard`
 
 .. _control-midi:
 
