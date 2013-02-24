@@ -7,6 +7,35 @@ Mixxx can be controlled with a keyboard, a mouse, MIDI/HID controllers,
 time-code records/CDs, or a combination of these. The choice usually depends on 
 your budget or style of DJing.
 
+.. _control-mouse:
+
+Using Mouse and Trackpad
+========================
+
+Use your mouse to interact with the controls in the 
+:ref:`Mixxx User Interface <interface-overview>` on your computer screen. You 
+can perform actions by pointing and clicking with your mouse.
+
+* **Single Left Click** - Performing a left mouse click on buttons triggers the 
+  default action for that control. Moreover if you click on a value in the track 
+  list of the Mixxx :ref:`library <interface-library>`, you can change the 
+  value. For example the year of a track. 
+* **Single Right Click** - On most buttons, performing a right click triggers a 
+  different action than a left click. You can return any knob or fader to its 
+  default value by right-clicking that control.
+* **Mouse Drag** - Click on a knob or fader, hold the left mouse button and move 
+  your cursor to change the value of the control. Use mouse drag to drop tracks 
+  from the file list to the decks, crates, playlists etc.
+* **Mouse Wheel** - Just like Mouse Drag, you can change knob and fader 
+  values by placing the curser over the control and moving the mouse wheel.  
+
+.. hint::  If you hover with the mouse over a control (e.g the crossfader) in 
+           the Mixxx user interface, the tooltip lists the left- and right-click 
+           action respectively.
+
+.. seealso:: Using the Mouse drag/wheel on the waveforms you can adjust zoom and 
+             playback rate of the tracks. For more informations, go to 
+             :ref:`interface-waveform`.
 
 .. _control-keyboard:
 
