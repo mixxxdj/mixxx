@@ -311,7 +311,7 @@ has been recorded. If your mix is done, click the ``Stop Recording`` button.
 Using automatic mixing (Auto DJ)
 ================================
 
-Auto DJ allows you to automatically load the next track from the Auto DJ playlist 
+Auto DJ allows you to automatically load the next track from the Auto DJ playlist
 when the current track is nearly finished, and crossfade into it.
 
 .. figure:: ../_static/Mixxx-1.11-Library-Auto-DJ.png
@@ -359,16 +359,19 @@ There are several ways to load tracks into the Auto DJ:
 * Select a regular playlist or crate, right-click with the mouse and select 
   ``Add to Auto DJ`` from the mouse menu. This adds all tracks to Auto DJ.
 * While being in Auto DJ view, drag tracks from external file managers to the 
-  Auto DJ.
+  Auto DJ icon in the sidebar.
 
 Playing tracks in Auto DJ
 -------------------------
 
-Now that you have loaded tracks into the Auto DJ playlist, you can activate Auto 
-DJ by clicking the ``Enable Auto DJ`` button. The first tracks from your list are 
-loaded into the decks and the playback starts. Mixxx will continue to automatically 
-mix until the Auto DJ playlist is empty.
+Now that you have loaded tracks into the Auto DJ playlist, you can activate 
+Auto DJ as follows:
 
-If you are done with Auto DJ, click the ``Disable Auto DJ`` button. You can then 
-seamlessly continue with the live playing of your tracks.
+* Click on the ``Auto DJ`` icon in the sidebar to switch to the *Auto DJ* view
+* Click the ``Enable Auto DJ`` button
+* The first tracks from your list are loaded into the decks and the playback 
+  starts.
+* Mixxx will continue to automatically  mix until the Auto DJ playlist 
+  is empty.
+* Click the ``Disable Auto DJ`` button to stop the automatic mixing.
 
