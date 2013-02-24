@@ -33,7 +33,7 @@ There is absolutely no need to buy an additional, expensive sound card **if you
 do not require headphone cueing**. The built-in soundcard on most computers and
 laptops comes with a single line-out and microphone input.
 
-.. figure:: ../_static/Mixxx-1.10-Preferences-Soundhardware.png
+.. figure:: ../_static/Mixxx-110-Preferences-Soundhardware.png
    :align: center
    :width: 90%
    :figwidth: 100%
@@ -76,10 +76,10 @@ mouse and keyboard. For more information see :ref:`controlling mixxx`.
 Laptop, MIDI Controller, and External USB Soundcard
 ---------------------------------------------------
 
-Mixxx can work with any MIDI controller that has drivers for your :term:`OS <operating system>`, as long as
-there is a MIDI mapping file to tell Mixxx how to understand it. Mixxx comes
-bundled with a number of MIDI mapping presets. To see the full list, see
-:ref:`control-midi`.
+Mixxx can work with any MIDI controller that has drivers for your 
+:term:`OS <operating system>`, as long as there is a MIDI mapping file to tell
+Mixxx how to understand it. Mixxx comes bundled with a number of MIDI mapping 
+presets. To see the full list, see :ref:`control-midi`.
 
 .. figure:: ../_static/mixxx_setup_midi_with_ext_sound.png
    :align: center
@@ -106,6 +106,8 @@ alternative sound setup may look like the figure below:
 .. note:: You can connect as many MIDI controllers as you have ports on your
           computer. Just follow the steps in :ref:`control-midi` for each
           controller you want to use.
+
+.. _setup-vinyl-control:
 
 Laptop, External Hardware Mixer and Vinyl Control
 -------------------------------------------------
