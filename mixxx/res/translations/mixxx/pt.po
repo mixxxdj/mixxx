@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-01-18 11:01+0200\n"
+"POT-Creation-Date: 2013-02-23 15:00+0200\n"
 "PO-Revision-Date: 2012-12-30 20:03+0000\n"
 "Last-Translator: vinicios <vinicios-sheik@hotmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-01-21 04:37+0000\n"
-"X-Generator: Launchpad (build 16430)\n"
+"X-Launchpad-Export-Date: 2013-02-24 04:37+0000\n"
+"X-Generator: Launchpad (build 16506)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -82,56 +82,63 @@ msgid "Import Playlist"
 msgstr "Importar Playlist"
 
 #: BasePlaylistFeature#8
+msgid "Duplicate Playlist"
+msgstr ""
+
+#: BasePlaylistFeature#9
 msgid "Export Playlist"
 msgstr "Exportar Playlist"
 
-#: BasePlaylistFeature#9
+#: BasePlaylistFeature#10
 msgid "Rename Playlist"
 msgstr "Renomear Playlist"
 
-#: BasePlaylistFeature#10
+#: BasePlaylistFeature#11
 msgid "New playlist name:"
 msgstr "Novo nome da Playlist"
 
-#: BasePlaylistFeature#11
+#: BasePlaylistFeature#12
 msgid "Renaming Playlist Failed"
 msgstr "A mudança de nome da Playlist falhou"
 
-#: BasePlaylistFeature#12
+#: BasePlaylistFeature#13
 msgid "A playlist by that name already exists."
 msgstr "Já existe uma Playlist com este nome"
 
-#: BasePlaylistFeature#13
+#: BasePlaylistFeature#14
 msgid "A playlist cannot have a blank name."
 msgstr "A Playlist não pode ter um nome vazio"
 
-#: BasePlaylistFeature#14
+#: BasePlaylistFeature#15
 msgid "Playlist name:"
 msgstr "Nome da Playlist"
 
-#: BasePlaylistFeature#15
-msgctxt "BasePlaylistFeature#15"
-msgid "Playlist Creation Failed"
-msgstr "A criação da Playlist falhou"
-
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
-msgid "An unknown error occurred while creating playlist: "
-msgstr "Ocorreu um erro desconhecido ao criar a Playlist : "
+msgid "_copy"
+msgstr ""
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Ficheiros de Playlist (*.m3u *.m3u8 *.pls *.csv)"
+msgid "Playlist Creation Failed"
+msgstr ""
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
+msgid "An unknown error occurred while creating playlist: "
+msgstr ""
+
+#: BasePlaylistFeature#19
+msgctxt "BasePlaylistFeature#19"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgstr ""
+
+#: BasePlaylistFeature#20
+msgctxt "BasePlaylistFeature#20"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Texto "
-"CSV (*.csv);;Texto legível (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -479,68 +486,75 @@ msgstr "Bloquear"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
-msgid "Import Playlist"
-msgstr "Importar Playlist"
+msgid "_copy"
+msgstr ""
 
 #: CrateFeature#6
+msgctxt "CrateFeature#6"
+msgid "Import Playlist"
+msgstr ""
+
+#: CrateFeature#7
 msgid "Crates"
 msgstr "Caixas"
 
-#: CrateFeature#7
+#: CrateFeature#8
 msgid "Import Crate"
 msgstr "Importar caixa"
 
-#: CrateFeature#8
+#: CrateFeature#9
 msgid "Export Crate"
 msgstr "Exportar caixa"
 
-#: CrateFeature#9
-msgctxt "CrateFeature#9"
-msgid "Unlock"
-msgstr "Desbloquear"
-
 #: CrateFeature#10
+msgid "Duplicate Crate"
+msgstr ""
+
+#: CrateFeature#11
+msgctxt "CrateFeature#11"
+msgid "Unlock"
+msgstr ""
+
+#: CrateFeature#12
 msgid "Crate name:"
 msgstr "Nome da caixa:"
 
-#: CrateFeature#11
+#: CrateFeature#13
 msgid "An unknown error occurred while creating crate: "
 msgstr "Ocorreu um erro desconhecido durante a criação da caixa: "
 
-#: CrateFeature#12
+#: CrateFeature#14
 msgid "Rename Crate"
 msgstr "Renomear Caixa"
 
-#: CrateFeature#13
+#: CrateFeature#15
 msgid "New crate name:"
 msgstr "Novo nome da caixa:"
 
-#: CrateFeature#14
+#: CrateFeature#16
 msgid "Renaming Crate Failed"
 msgstr "Falha AO renomear a Caixa"
 
-#: CrateFeature#15
-msgctxt "CrateFeature#15"
+#: CrateFeature#17
+msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Ficheiros da Playlist (*. M3u *. M3U8 *. Pls *. CSV)"
+msgstr ""
 
-#: CrateFeature#16
-msgctxt "CrateFeature#16"
+#: CrateFeature#18
+msgctxt "CrateFeature#18"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
-"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Texto "
-"CSV (*.csv);;Texto legível (*.txt)"
 
-#: CrateFeature#17
+#: CrateFeature#19
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
 "Grades são uma ótima maneira para ajudar a organizar a música que você quer "
 "DJ com."
 
-#: CrateFeature#18
+#: CrateFeature#20
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
@@ -548,23 +562,23 @@ msgstr ""
 "Faça uma caixa para o seu próximo show, por suas faixas favoritas "
 "electrohouse, ou para suas músicas mais pedidas."
 
-#: CrateFeature#19
+#: CrateFeature#21
 msgid "Crates let you organize your music however you'd like!"
 msgstr "Caixas deixam você organizar a sua música, como você prefira!"
 
-#: CrateFeature#20
+#: CrateFeature#22
 msgid "Create new crate"
 msgstr "Criar caixa nova"
 
-#: CrateFeature#21
+#: CrateFeature#23
 msgid "A crate cannot have a blank name."
 msgstr "Uma caixa não pode ter um nome vazio"
 
-#: CrateFeature#22
+#: CrateFeature#24
 msgid "Creating Crate Failed"
 msgstr "Falha ao criar a caixa."
 
-#: CrateFeature#23
+#: CrateFeature#25
 msgid "A crate by that name already exists."
 msgstr "Já existe uma caixa com este nome."
 
@@ -1145,92 +1159,96 @@ msgid "Load selected track"
 msgstr "Carregar a faixa seleccionada"
 
 #: DlgControllerLearning#93
+msgid "Load selected track and play"
+msgstr ""
+
+#: DlgControllerLearning#94
 msgid "Effects"
 msgstr "Efeitos"
 
-#: DlgControllerLearning#94
+#: DlgControllerLearning#95
 msgid "Toggle flange effect"
 msgstr "Activar/desactivar o efeito flange"
 
-#: DlgControllerLearning#95
+#: DlgControllerLearning#96
 msgid "Flange effect: Wavelength/period"
 msgstr "Efeito flange: Comprimento de onda/Período"
 
-#: DlgControllerLearning#96
+#: DlgControllerLearning#97
 msgid "Flange effect: Intensity"
 msgstr "Efeito flange: Intensidade"
 
-#: DlgControllerLearning#97
+#: DlgControllerLearning#98
 msgid "Flange effect: Phase delay"
 msgstr "Efeito flange: Desfasagem"
 
-#: DlgControllerLearning#98
-msgctxt "DlgControllerLearning#98"
+#: DlgControllerLearning#99
+msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
 msgstr ""
 
-#: DlgControllerLearning#99
+#: DlgControllerLearning#100
 msgid "Microphone on/off"
 msgstr "Microfone ligar/desligar"
 
-#: DlgControllerLearning#100
+#: DlgControllerLearning#101
 msgid "Microphone volume"
 msgstr "Volume do microfone"
 
-#: DlgControllerLearning#101
+#: DlgControllerLearning#102
 msgid "Microphone channel orientation (e.g. left, right, center)"
 msgstr "Orientação dos canais do microfone (ex. esquerda, direita, centro)"
 
-#: DlgControllerLearning#102
-msgctxt "DlgControllerLearning#102"
+#: DlgControllerLearning#103
+msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
 msgstr ""
 
-#: DlgControllerLearning#103
+#: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
 msgstr "Misturar o conteúdo da lista Auto DJ"
 
-#: DlgControllerLearning#104
+#: DlgControllerLearning#105
 msgid "Skip the next track in the Auto DJ playlist"
 msgstr "Saltar a próxima pista da lista do Auto DJ"
 
-#: DlgControllerLearning#105
+#: DlgControllerLearning#106
 msgid "Trigger the transition to the next track"
 msgstr "Desencadear a transição para a próxima faixa"
 
-#: DlgControllerLearning#106
+#: DlgControllerLearning#107
 msgid "Toggle Auto DJ (ON/OFF)"
 msgstr "Alternar Auto DJ (ON/OFF)"
 
-#: DlgControllerLearning#107
+#: DlgControllerLearning#108
 msgid "User Interface"
 msgstr "Interface do Utilizador"
 
-#: DlgControllerLearning#108
+#: DlgControllerLearning#109
 msgid "Show/hide the sampler section"
 msgstr "Mostrar/ocultar a secção sampler"
 
-#: DlgControllerLearning#109
+#: DlgControllerLearning#110
 msgid "Show/hide the microphone section"
 msgstr "Mostrar/ocultar a secção microfone"
 
-#: DlgControllerLearning#110
+#: DlgControllerLearning#111
 msgid "Show/hide the vinyl control section"
 msgstr "Mostrar/ocultar a secção controlo vinilo"
 
-#: DlgControllerLearning#111
+#: DlgControllerLearning#112
 msgid "Show/hide the preview deck"
 msgstr ""
 
-#: DlgControllerLearning#112
+#: DlgControllerLearning#113
 msgid "Show/hide spinning vinyl widget"
 msgstr "Mostrar/ocultar o \"widget\" vinilo em rotação"
 
-#: DlgControllerLearning#113
+#: DlgControllerLearning#114
 msgid "Ready to map: %1. Now move a control on your controller."
 msgstr "Pronto a associar: %1. Accione agora um controlo no seu controlador"
 
-#: DlgControllerLearning#114
+#: DlgControllerLearning#115
 msgid "Successfully mapped to:"
 msgstr "Associação conseguida com:"
 
@@ -1369,14 +1387,10 @@ msgid "%1 by %2"
 msgstr "%1 por %2"
 
 #: DlgPrefController#3
-msgid "Custom Preset"
-msgstr "Prédefinições personalizadas"
-
-#: DlgPrefController#4
 msgid "No Description"
 msgstr "Sem descrição"
 
-#: DlgPrefController#5
+#: DlgPrefController#4
 msgid "No support available."
 msgstr "Sem suporte disponível"
 
@@ -1581,83 +1595,87 @@ msgid "Auto Recall Cue"
 msgstr "Invocar faixas CUE"
 
 #: DlgPrefControlsDlg#11
+msgid "Re-queue tracks in Auto DJ"
+msgstr ""
+
+#: DlgPrefControlsDlg#12
 msgid "Locale"
 msgstr "Localização"
 
-#: DlgPrefControlsDlg#12
+#: DlgPrefControlsDlg#13
 msgid "Temporary rate change when left-clicking"
 msgstr "Alteração de velocidade temporária quando clique-esquerdo"
 
-#: DlgPrefControlsDlg#13
+#: DlgPrefControlsDlg#14
 msgid "Temporary rate change when right-clicking"
 msgstr "Alteração de velocidade temporária quando clique-direito"
 
-#: DlgPrefControlsDlg#14
+#: DlgPrefControlsDlg#15
 msgid "Permanent Pitch/Rate Buttons"
 msgstr "Botões permanente de pitch"
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#16
 msgid "Displays which OpenGL version is supported by the current platform."
 msgstr "Mostra qual a versão OpenGL que é suportada pela plataforma actual."
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#17
 msgid "Displays the actual frame rate."
 msgstr "Mostra a velocidade de refrescamento corrente"
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#18
 msgid "Normalize Overview"
 msgstr "Normalizar - Resumo"
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#19
 msgid "Left click"
 msgstr "Clique esquerdo"
 
-#: DlgPrefControlsDlg#19
+#: DlgPrefControlsDlg#20
 msgid "Right click"
 msgstr "Clique direito"
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#21
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#22
 msgid "Temporary Pitch/Rate Buttons"
 msgstr "Teclas de alteração da velocidade (temporário)"
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
 msgstr "Inclinação da variação de velocidade"
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
 msgstr "Sensibilidade"
 
-#: DlgPrefControlsDlg#24
-msgctxt "DlgPrefControlsDlg#24"
-msgid "Waveform Display"
-msgstr "Exibição da Forma de Onda"
-
 #: DlgPrefControlsDlg#25
+msgctxt "DlgPrefControlsDlg#25"
+msgid "Waveform Display"
+msgstr ""
+
+#: DlgPrefControlsDlg#26
 msgid "Synchronize zoom level across all waveform displays."
 msgstr "Sincroniza o nível de zoom para todas as exibições da Forma de Onda"
 
-#: DlgPrefControlsDlg#26
+#: DlgPrefControlsDlg#27
 msgid "OpenGl status"
 msgstr "Estado OpenGL"
 
-#: DlgPrefControlsDlg#27
+#: DlgPrefControlsDlg#28
 msgid "Display type"
 msgstr "Tipo de exibição"
 
-#: DlgPrefControlsDlg#28
+#: DlgPrefControlsDlg#29
 msgid "Permanent rate change when left-clicking"
 msgstr "Alteração de velocidade permanente quando clique-esquerdo"
 
-#: DlgPrefControlsDlg#29
+#: DlgPrefControlsDlg#30
 msgid "Permanent rate change when right-clicking"
 msgstr "Alteração de velocidade quando clique-direito"
 
-#: DlgPrefControlsDlg#30
+#: DlgPrefControlsDlg#31
 msgid ""
 "Makes temporary pitch/rate buttons change the pitch gradually, instead of "
 "all at once."
@@ -1665,42 +1683,42 @@ msgstr ""
 "Faz as teclas de alteração da velocidade temporária alterar a velocidade "
 "progressivamente, em vez de uma só vez."
 
-#: DlgPrefControlsDlg#31
+#: DlgPrefControlsDlg#32
 msgid "Value in milliseconds"
 msgstr "Valor em milisegundos"
 
-#: DlgPrefControlsDlg#32
+#: DlgPrefControlsDlg#33
 msgid "Visual gain of the high frequencies"
 msgstr "Ganho visual das frequências agudas"
 
-#: DlgPrefControlsDlg#33
+#: DlgPrefControlsDlg#34
 msgid "Visual gain of the middle frequencies"
 msgstr "Ganho visual das frequências médias"
 
-#: DlgPrefControlsDlg#34
+#: DlgPrefControlsDlg#35
 msgid "Visual gain of the low frequencies"
 msgstr "Ganho visual das frequências baixas"
 
-#: DlgPrefControlsDlg#35
+#: DlgPrefControlsDlg#36
 msgid "Global visual gain"
 msgstr "Ganho visual geral"
 
-#: DlgPrefControlsDlg#36
+#: DlgPrefControlsDlg#37
 msgid "Frame rate"
 msgstr "Número de imagens por segundo"
 
-#: DlgPrefControlsDlg#37
+#: DlgPrefControlsDlg#38
 msgid "Default zoom"
 msgstr "Nível de Zoom predefinido"
 
-#: DlgPrefControlsDlg#38
+#: DlgPrefControlsDlg#39
 msgid "Visual gain"
 msgstr "Ganho visual"
 
-#: DlgPrefControlsDlg#39
-msgctxt "DlgPrefControlsDlg#39"
+#: DlgPrefControlsDlg#40
+msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr "Sincronizar"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -2256,26 +2274,37 @@ msgid "Stream settings"
 msgstr "Definições de transmissão"
 
 #: DlgPrefShoutcastDlg#11
+msgid "Dynamically update Ogg Vorbis metadata."
+msgstr ""
+
+#: DlgPrefShoutcastDlg#12
+msgid ""
+"Due to flaws in some streaming clients, updating Ogg Vorbis metadata "
+"dynamically can cause listener glitches and disconnections. Check this box "
+"to update the metadata anyway."
+msgstr ""
+
+#: DlgPrefShoutcastDlg#13
 msgid "Stream name"
 msgstr "Nome da transmissão"
 
-#: DlgPrefShoutcastDlg#12
+#: DlgPrefShoutcastDlg#14
 msgid "Mixxx Icecast Testing"
 msgstr "Teste de ligação do Mixxx ao IceCast"
 
-#: DlgPrefShoutcastDlg#13
+#: DlgPrefShoutcastDlg#15
 msgid "Website"
 msgstr "Página Web"
 
-#: DlgPrefShoutcastDlg#14
+#: DlgPrefShoutcastDlg#16
 msgid "http://www.mixxx.org"
 msgstr "http://www.mixxx.org"
 
-#: DlgPrefShoutcastDlg#15
+#: DlgPrefShoutcastDlg#17
 msgid "Description"
 msgstr "Descrição"
 
-#: DlgPrefShoutcastDlg#16
+#: DlgPrefShoutcastDlg#18
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -2290,60 +2319,60 @@ msgid ""
 "line for testing purposes!</span></p></body></html>"
 msgstr "A transmissão está online para efeitos de teste!"
 
-#: DlgPrefShoutcastDlg#17
-msgctxt "DlgPrefShoutcastDlg#17"
+#: DlgPrefShoutcastDlg#19
+msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
-msgstr "Género"
+msgstr ""
 
-#: DlgPrefShoutcastDlg#18
+#: DlgPrefShoutcastDlg#20
 msgid "Live mix"
 msgstr "Mistura ao vivo"
 
-#: DlgPrefShoutcastDlg#19
+#: DlgPrefShoutcastDlg#21
 msgid "Public stream"
 msgstr "Transmissão pública"
 
-#: DlgPrefShoutcastDlg#20
+#: DlgPrefShoutcastDlg#22
 msgid "Use UTF-8 encoding for metadata."
 msgstr "Use codificação UTF-8 para metadados"
 
-#: DlgPrefShoutcastDlg#21
-msgctxt "DlgPrefShoutcastDlg#21"
-msgid "Encoding"
-msgstr "A codificar..."
-
-#: DlgPrefShoutcastDlg#22
-msgctxt "DlgPrefShoutcastDlg#22"
-msgid "Bitrate"
-msgstr "Taxa de bits"
-
 #: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
+msgid "Encoding"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#24
+msgctxt "DlgPrefShoutcastDlg#24"
+msgid "Bitrate"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#25
 msgid "Format"
 msgstr "Formato"
 
-#: DlgPrefShoutcastDlg#24
+#: DlgPrefShoutcastDlg#26
 msgid "Channels"
 msgstr "Canais"
 
-#: DlgPrefShoutcastDlg#25
+#: DlgPrefShoutcastDlg#27
 msgid "Custom metadata"
 msgstr "Metadados personalizados"
 
-#: DlgPrefShoutcastDlg#26
+#: DlgPrefShoutcastDlg#28
 msgid "Enable custom metadata"
 msgstr "Activar metadados personalizados"
 
-#: DlgPrefShoutcastDlg#27
-msgctxt "DlgPrefShoutcastDlg#27"
-msgid "Artist"
-msgstr "Artista"
-
-#: DlgPrefShoutcastDlg#28
-msgctxt "DlgPrefShoutcastDlg#28"
-msgid "Title"
-msgstr "Título"
-
 #: DlgPrefShoutcastDlg#29
+msgctxt "DlgPrefShoutcastDlg#29"
+msgid "Artist"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#30
+msgctxt "DlgPrefShoutcastDlg#30"
+msgid "Title"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#31
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
@@ -3882,6 +3911,40 @@ msgctxt "PrepareFeature#1"
 msgid "Analyze"
 msgstr "Analisar"
 
+#: QMessageBox#1
+msgid "Upgrading Mixxx from v1.9.x/1.10.x."
+msgstr ""
+
+#: QMessageBox#2
+msgid "Mixxx has a new and improved beat detector."
+msgstr ""
+
+#: QMessageBox#3
+msgid ""
+"When you load tracks, Mixxx can re-analyze them and generate new, more "
+"accurate beatgrids. This will make automatic beatsync and looping more "
+"reliable."
+msgstr ""
+
+#: QMessageBox#4
+msgid "This does not affect saved cues, hotcues, playlists, or crates."
+msgstr ""
+
+#: QMessageBox#5
+msgid ""
+"If you do not want Mixxx to re-analyze your tracks, choose \"Keep Current "
+"Beatgrids\". You can change this setting at any time from the \"Beat "
+"Detection\" section of the Preferences."
+msgstr ""
+
+#: QMessageBox#6
+msgid "Keep Current Beatgrids"
+msgstr ""
+
+#: QMessageBox#7
+msgid "Generate New Beatgrids"
+msgstr ""
+
 #: QObject#1
 msgid "Invalid"
 msgstr "Inválido(a)"
@@ -5155,6 +5218,10 @@ msgstr "(GL)"
 #~ msgctxt "BrowseTableModel#14"
 #~ msgid "Location"
 #~ msgstr "Localização"
+
+#~ msgctxt "CrateFeature#9"
+#~ msgid "Unlock"
+#~ msgstr "Desbloquear"
 
 #~ msgid "1.x.x"
 #~ msgstr "1.x.x"
@@ -6533,6 +6600,10 @@ msgstr "(GL)"
 
 #~ msgid "Adjusts the phase delay of the flange effect"
 #~ msgstr "Ajusta o atraso da fase do efeito flanger"
+
+#~ msgctxt "CrateFeature#5"
+#~ msgid "Import Playlist"
+#~ msgstr "Importar Playlist"
 
 #~ msgid "Mixxx Detected a WVGA Screen"
 #~ msgstr "Mixxx detectou um ecrã WVGA"
