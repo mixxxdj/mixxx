@@ -107,7 +107,7 @@ see features in a track (like a breakdown) before you hear them.
 Depending on the skin Mixxx displays either separate waveforms (default) or 
 parallel waveforms.
 
-.. figure:: ../_static/Mixxx-1.11-Deere-separate-waveform.png
+.. figure:: ../_static/Mixxx-111-Deere-separate-waveform.png
    :align: center
    :width: 100%
    :figwidth: 100%
@@ -120,7 +120,7 @@ With some skins the waveform displays are aligned parallel to each other in orde
 beat matching easier, as it is possible to beatmatch visually by aligning the beats that
 appear in each waveform.
 
-.. figure:: ../_static/Mixxx-1.11-Latenight-parallel-waveform.png
+.. figure:: ../_static/Mixxx-111-Latenight-parallel-waveform.png
    :align: center
    :width: 100%
    :figwidth: 100%
@@ -210,7 +210,7 @@ If enabled, the BPM is computed by analyzing the first minute of the track. In m
 cases this does not affect the BPM detection negatively because most of today's dance music is written
 in a 4/4 signature, i.e., the distances between the beats are constant. 
  
-.. figure:: ../_static/Mixxx-1.11-Preferences-Beatdetection.png
+.. figure:: ../_static/Mixxx-111-Preferences-Beatdetection.png
    :align: center
    :width: 100%
    :figwidth: 100%
@@ -337,7 +337,7 @@ Using automatic mixing (Auto DJ)
 Auto DJ allows you to automatically load the next track from the Auto DJ playlist
 when the current track is nearly finished, and crossfade into it.
 
-.. figure:: ../_static/Mixxx-1.11-Library-Auto-DJ.png
+.. figure:: ../_static/Mixxx-111-Library-Auto-DJ.png
    :align: center
    :width: 100%
    :figwidth: 100%
@@ -366,7 +366,7 @@ Loading tracks into Auto DJ
 To be able to play tracks automatically, they must first be loaded into the Auto 
 DJ playlist. The Auto DJ playlist is empty per default.
 
-.. figure:: ../_static/Mixxx-1.11-Library-Add-to-Auto-DJ.png
+.. figure:: ../_static/Mixxx-111-Library-Add-to-Auto-DJ.png
    :align: center
    :width: 60%
    :figwidth: 100%

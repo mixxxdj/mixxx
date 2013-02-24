@@ -9,7 +9,7 @@ preferences dialogue, you can simply supply Mixxx with all information needed to
 establish a server connection. To enable live broadcasting you can either use
 the options menu or the checkbox within the preference dialogue.
 
-.. figure:: ../_static/Mixxx-1.10-Preferences-Livebroadcasting.png
+.. figure:: ../_static/Mixxx-110-Preferences-Livebroadcasting.png
    :align: center
    :width: 100%
    :figwidth: 90%
