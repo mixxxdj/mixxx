@@ -95,6 +95,8 @@ special preview deck that will only output sound in the headphones channel.
 clicking the button again will stop the playback. Some skins support the
 preview deck (show/hide with CTRL+P) to manual search in the track.
 
+.. _waveform-displays:
+
 Waveform displays
 =================
 
@@ -139,6 +141,8 @@ These smaller displays show the waveform envelope of the entire track, and are u
 because they allow DJs to see breakdowns far in advance.  Vinyl DJs will find this 
 familiar because quiet sections of tracks can be visually distinguished when looking 
 at a vinyl record, and this is a useful tool when planning your mixes on-the-fly.
+
+.. _beatmatching-and-mixing:
 
 Beatmatching and Mixing
 =======================
