@@ -1,12 +1,12 @@
 <MixxxMIDIPreset mixxxVersion="1.10.1+" schemaVersion="1">
+    <info>
+      <name>Hercules DJ Control Instinct</name>
+      <author>Mich Wyser</author>
+      <description></description>
+      <wiki>https://github.com/ratte/mixxxcontrollermapping</wiki>
+      <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3907</forums>
+    </info>
     <controller id="Hercules DJControl Instinct MID" port="">
-	<info>
-		<name>Hercules DJ Control Instinct</name>
-		<author>Mich Wyser</author>
-		<description></description>
-		<wiki>https://github.com/ratte/mixxxcontrollermapping</wiki>
-		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3907</forums>
-	</info>
 	<scriptfiles>
             <file functionprefix="HCInstinct" filename="Hercules-DJ-Control-Instinct-scripts.js"/>
         </scriptfiles>
