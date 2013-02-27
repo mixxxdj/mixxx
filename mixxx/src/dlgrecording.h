@@ -42,7 +42,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group);
+    void loadTrackToPlayer(TrackPointer tio, QString group, bool play);
     void restoreSearch(QString search);
 
   private:
