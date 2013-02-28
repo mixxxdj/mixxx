@@ -158,7 +158,15 @@ void WOverview::slotAnalyserProgress(int progress) {
     if (!m_pCurrentTrack) {
         return;
     }
-    const int analyserProgress = width() * progress / 1000;
+
+    int analyserProgress;
+    if (progress == 999) {
+        // Finalize
+        analyserProgress = width() - 1;
+    } else {
+        analyserProgress = width() * progress / 1000;
+    }
+
     bool updateNeeded = drawNextPixmapPart();
     // progress 0 .. 1000
     if (updateNeeded || (m_analyserProgress != analyserProgress)) {
@@ -399,35 +407,6 @@ void WOverview::paintEvent(QPaintEvent *) {
         painter.setPen(QPen(m_signalColors.getAxesColor(), 1));
         painter.drawLine(0, height()/2, width(), height()/2);
 
-        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable (10 pixel)
-            // We have a valid m_waveform, so here we have a track in analysis queue
-            QColor lowColor = m_signalColors.getLowColor();
-            lowColor.setAlphaF(0.5);
-            QPen lowColorPen(QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
-            painter.setPen(lowColorPen);
-            QString text;
-            if (m_trackLoaded) {
-                //: Text on waveform overview when file is cached from source                
-                text = tr("Ready to play, analyzing ..");
-            } else {
-                //: Text on waveform overview when file is playable but no waveform is visible
-                text = tr("Loading track ..");
-            }
-            QFont font = painter.font();
-            QFontMetrics fm(font);
-            int textWidth = fm.width(text);
-            if (textWidth > width()) {
-                qreal pointSize = font.pointSizeF();
-                pointSize = pointSize * (width() - 5) / textWidth;
-                if (pointSize < 6) {
-                    pointSize = 6;
-                }
-                font.setPointSizeF(pointSize);
-                painter.setFont(font);
-            }
-            painter.drawText(1, 12, text);
-        }
-
         if (m_pWaveformSourceImage) {
             int diffGain;
             bool normalize = widgetFactory->isOverviewNormalized();
@@ -448,8 +427,19 @@ void WOverview::paintEvent(QPaintEvent *) {
 
             painter.drawImage(rect(), m_waveformImageScaled);
 
-            // Paint analyzer Progress
-            if (m_analyserProgress < width()) {
+            if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable
+                if (m_trackLoaded) {
+                    //: Text on waveform overview when file is cached from source
+                    paintText(tr("Ready to play, analyzing .."), &painter);
+                } else {
+                    //: Text on waveform overview when file is playable but no waveform is visible
+                    paintText(tr("Loading track .."), &painter);
+                }
+            } else if (m_analyserProgress == width() - 1) {
+                //: Text on waveform overview during finalizing of waveform analysis
+                paintText(tr("Finalizing .."), &painter);
+            } else if (m_analyserProgress + 1 < width()) {
+                // Paint analyzer Progress
                 painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
                 painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
             }
@@ -564,6 +554,26 @@ void WOverview::paintEvent(QPaintEvent *) {
         painter.drawLine(m_iPos - 2, height() - 1, m_iPos + 2, height() - 1);
     }
     painter.end();
+}
+
+void WOverview::paintText(const QString &text, QPainter *painter) {
+    QColor lowColor = m_signalColors.getLowColor();
+    lowColor.setAlphaF(0.5);
+    QPen lowColorPen(QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
+    painter->setPen(lowColorPen);
+    QFont font = painter->font();
+    QFontMetrics fm(font);
+    int textWidth = fm.width(text);
+    if (textWidth > width()) {
+        qreal pointSize = font.pointSizeF();
+        pointSize = pointSize * (width() - 5) / textWidth;
+        if (pointSize < 6) {
+            pointSize = 6;
+        }
+        font.setPointSizeF(pointSize);
+        painter->setFont(font);
+    }
+    painter->drawText(10, 12, text);
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {

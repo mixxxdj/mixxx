@@ -73,6 +73,7 @@ class WOverview : public WWidget
   private:
     /** append the waveform overview pixmap according to available data in waveform */
     bool drawNextPixmapPart();
+    void paintText(const QString &text, QPainter *painter);
     inline int valueToPosition(float value) const {
         return (int)(m_a * value - m_b + 0.5);
     }
