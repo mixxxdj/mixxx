@@ -248,7 +248,7 @@ The table below summarizes the beat detection settings:
 |                                        | re-analyze the BPM if your beat     |
 |                                        | detection preference change         |
 +----------------------------------------+-------------------------------------+
-appropriate
+
 Correcting Beat Grids
 ---------------------
 
@@ -288,7 +288,7 @@ Recording your Mix
 With the integrated recording feature you can record your mix as an audio file
 and listen to it later, distribute it as :term:`Podcast` or burn it to CD.
 Mixxx records the master output - the audio you hear from the speakers including
- the microphone.
+the microphone.
 
 .. figure:: ../_static/Mixxx-111-Library-Recordings.png
    :align: center
