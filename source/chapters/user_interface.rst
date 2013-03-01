@@ -3,8 +3,8 @@ An Overview of the Mixxx Interface
 
 Welcome to the Mixxx interface. This is where the magic happens.
 You are going to want to get very familiar with this interface because it is
-the main way to use Mixxx. In this chapter, we present the default interface of Mixxx
-and describe its elements, knobs and faders.
+the main way to use Mixxx. In this chapter, we present the default interface of
+Mixxx and describe its elements, knobs and faders.
 
 .. figure:: ../_static/deere_large.png
    :align: center
@@ -99,7 +99,8 @@ Loop Controls and Hotcues
    :align: center
    :width: 70%
    :figwidth: 100%
-   :alt: The looping, beatloop, hotcue, and fast-forward/rewind controls of the deck.
+   :alt: The looping, beatloop, hotcue, and fast-forward/rewind controls of the
+         deck.
    :figclass: pretty-figures
 
    The looping, beatloop, hotcue, and fast-forward/rewind controls of the deck.
@@ -192,9 +193,10 @@ adjusted (:term:`quantized`) so that they begin on a beat.
 
 Toggle Keylock
 ^^^^^^^^^^^^^^
-:term:`Keylock <key lock>` locks the track's pitch so that adjustments to its tempo
-via the rate slider do not affect its pitch. This is useful if you would like to
-speed up or slow down a track and avoid the "chipmunk" affect that speeding up vocals has.
+:term:`Keylock <key lock>` locks the track's pitch so that adjustments to its
+tempo via the rate slider do not affect its pitch. This is useful if you would
+like to speed up or slow down a track and avoid the "chipmunk" affect that
+speeding up vocals has.
 
 .. _interface-mixer:
 
@@ -216,11 +218,11 @@ mixed together.
 VU Meters and Channel Faders
 ----------------------------
 
-In the center above the Mixxx logo are 4 :term:`VU meters <vu meter>`. The two outer-most
-VU meters are for each deck, while the 2 inner-most VU meters are the left and
-right VU meters for the master output. The two large faders on either side of
-the VU meters are the deck volume faders. Adjusting these controls the volume of
-each deck.
+In the center above the Mixxx logo are 4 :term:`VU meters <vu meter>`. The two
+outer-most VU meters are for each deck, while the 2 inner-most VU meters are the
+left and right VU meters for the master output. The two large faders on either
+side of the VU meters are the deck volume faders. Adjusting these controls the
+volume of each deck.
 
 Above the VU meters are the optional section expansion buttons. If you click on
 either "MIC", "SAMPLER", or "VINYL" then you will enable control sections for
