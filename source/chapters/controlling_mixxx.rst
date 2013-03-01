@@ -3,8 +3,8 @@
 Controlling Mixxx
 *****************
 
-Mixxx can be controlled with a keyboard, a mouse, MIDI/HID controllers, 
-time-code records/CDs, or a combination of these. The choice usually depends on 
+Mixxx can be controlled with a keyboard, a mouse, MIDI/HID controllers,
+time-code records/CDs, or a combination of these. The choice usually depends on
 your budget or style of DJing.
 
 .. _control-mouse:
@@ -12,29 +12,29 @@ your budget or style of DJing.
 Using Mouse and Trackpad
 ========================
 
-Use your mouse to interact with the controls in the 
-:ref:`Mixxx User Interface <interface-overview>` on your computer screen. You 
+Use your mouse to interact with the controls in the
+:ref:`Mixxx User Interface <interface-overview>` on your computer screen. You
 can perform actions by pointing and clicking with your mouse.
 
-* **Single Left Click** - Performing a left mouse click on buttons triggers the 
-  default action for that control. Moreover if you click on a value in the track 
-  list of the Mixxx :ref:`library <interface-library>`, you can change the 
-  value. For example the year of a track. 
-* **Single Right Click** - On most buttons, performing a right click triggers a 
-  different action than a left click. You can return any knob or fader to its 
+* **Single Left Click** - Performing a left mouse click on buttons triggers the
+  default action for that control. Moreover if you click on a value in the track
+  list of the Mixxx :ref:`library <interface-library>`, you can change the
+  value. For example the year of a track.
+* **Single Right Click** - On most buttons, performing a right click triggers a
+  different action than a left click. You can return any knob or fader to its
   default value by right-clicking that control.
-* **Mouse Drag** - Click on a knob or fader, hold the left mouse button and move 
-  your cursor to change the value of the control. Use mouse drag to drop tracks 
+* **Mouse Drag** - Click on a knob or fader, hold the left mouse button and move
+  your cursor to change the value of the control. Use mouse drag to drop tracks
   from the file list to the decks, crates, playlists etc.
-* **Mouse Wheel** - Just like Mouse Drag, you can change knob and fader 
-  values by placing the curser over the control and moving the mouse wheel.  
+* **Mouse Wheel** - Just like Mouse Drag, you can change knob and fader
+  values by placing the curser over the control and moving the mouse wheel.
 
-.. hint::  If you hover with the mouse over a control (e.g the crossfader) in 
-           the Mixxx user interface, the tooltip lists the left- and right-click 
+.. hint::  If you hover with the mouse over a control (e.g the crossfader) in
+           the Mixxx user interface, the tooltip lists the left- and right-click
            action respectively.
 
-.. seealso:: Using the Mouse drag/wheel on the waveforms you can adjust zoom and 
-             playback rate of the tracks. For more informations, go to 
+.. seealso:: Using the Mouse drag/wheel on the waveforms you can adjust zoom and
+             playback rate of the tracks. For more informations, go to
              :ref:`interface-waveform`.
 
 .. _control-keyboard:
@@ -49,31 +49,31 @@ Using a Keyboard
    :alt: Keyboard shortcuts
    :figclass: pretty-figures
 
-   Mixxx Keyboard shortcuts (for en-us keyboard layout) 
+   Mixxx Keyboard shortcuts (for en-us keyboard layout)
 
-Controlling Mixxx with a keyboard is handy. Unlike mouse control, the keyboard 
-allows you to manage things simultaneously. For example, you can start playing 
+Controlling Mixxx with a keyboard is handy. Unlike mouse control, the keyboard
+allows you to manage things simultaneously. For example, you can start playing
 a track on deck 1 whilst stopping deck 2 at the same time.
 
 The default mapping for English keyboards is depicted in the figure above. It's
 divided into a left-hand side for deck 1 and right-hand side for deck 2. Please
 note that you can also access the functions through Mixxx's interface.
 
-.. note:: For some user groups, i.e. those using midi controllers or vinyl 
-          control it might be useful to enable/disable the keyboard mapping at 
-          runtime. You can do so by clicking 
-          ``Options`` -> ``Enable keyboard shortcuts`` in the menu. 
+.. note:: For some user groups, i.e. those using midi controllers or vinyl
+          control it might be useful to enable/disable the keyboard mapping at
+          runtime. You can do so by clicking
+          ``Options`` -> ``Enable keyboard shortcuts`` in the menu.
 
-.. hint::  If you hover with the mouse over a control (e.g the crossfader) in 
-           the Mixxx user interface the tooltip lists the keyboard shortcuts of 
-           the control. 
+.. hint::  If you hover with the mouse over a control (e.g the crossfader) in
+           the Mixxx user interface the tooltip lists the keyboard shortcuts of
+           the control.
 
 .. seealso:: For a list of default shortcuts, go to: :ref:`appendix-keyboard`
 
 Customizing the keyboard mapping
 --------------------------------
 
-Mixxx allows you to customize the keyboard control. For more informations, go to: 
+Mixxx allows you to customize the keyboard control. For more informations, go to:
 
 * :ref:`advanced-keyboard`
 
@@ -82,9 +82,9 @@ Mixxx allows you to customize the keyboard control. For more informations, go to
 Using MIDI/HID Controllers
 ==========================
 
-Mixxx supports :term:`MIDI <MIDI Controller>` and :term:`HID <HID controller>` 
-controller which are external hardware devices used to control audio 
-applications. Many DJs prefer the hands-on feel of a controller with Mixxx 
+Mixxx supports :term:`MIDI <MIDI Controller>` and :term:`HID <HID controller>`
+controller which are external hardware devices used to control audio
+applications. Many DJs prefer the hands-on feel of a controller with Mixxx
 because it can feel similar to using a real mixer and turntables or :term:`CDJ`.
 
 Loading a controller preset
@@ -102,43 +102,43 @@ Without loading the correct preset, your controller does not work with Mixxx.
 
 #. Connect your controller(s) to your computer
 #. Start Mixxx
-#. Select ``Options → Preferences`` from the menu on top of the application 
+#. Select ``Options → Preferences`` from the menu on top of the application
    window.
 #. Select the ``Controllers`` preference item
-#. Select your device from the list of available devices on the left and the 
+#. Select your device from the list of available devices on the left and the
    right pane will change
 #. Click the ``Enable`` checkbox
 #. Select the mapping for your controller from the ``Presets`` drop-down-menu
 #. Click ``OK`` and Mixxx can now be controlled by your controller(s).
 #. Repeat step 5-8 for any of the controllers you want to use
 
-.. hint:: If you do not find a connected device in the list, make sure to 
+.. hint:: If you do not find a connected device in the list, make sure to
           install any necessary drivers for that device.
 
 Supported controllers
 ---------------------
 
-Mixxx can use any :term:`MIDI`/:term:`HID` controller that is recognized by your 
-:term:`OS <operating system>` (some may require drivers), as long as there is a 
-MIDI/HID mapping file to tell Mixxx how to understand it. Mixxx comes bundled 
-with a number of mappings for various devices. There are two levels of 
+Mixxx can use any :term:`MIDI`/:term:`HID` controller that is recognized by your
+:term:`OS <operating system>` (some may require drivers), as long as there is a
+MIDI/HID mapping file to tell Mixxx how to understand it. Mixxx comes bundled
+with a number of mappings for various devices. There are two levels of
 controller mappings:
 
-* **Mixxx Certified Mappings** - These mappings are verified by the Mixxx 
+* **Mixxx Certified Mappings** - These mappings are verified by the Mixxx
   Development Team.
-* **Community Supported Mappings** - These mappings are provided and have been 
-  verified as working by the Mixxx community, but the Mixxx Team is unable to 
-  verify their quality because we don't have the devices ourselves. They might 
+* **Community Supported Mappings** - These mappings are provided and have been
+  verified as working by the Mixxx community, but the Mixxx Team is unable to
+  verify their quality because we don't have the devices ourselves. They might
   have bugs or rough edges.
 
-If you run into issues with any of these mappings, please file a bug on our 
-`bug tracker`_ or tell us about it on our mailing list, forums, or :term:`IRC` 
-channel. Device support varies for each supported :term:`OS <operating system>`, 
+If you run into issues with any of these mappings, please file a bug on our
+`bug tracker`_ or tell us about it on our mailing list, forums, or :term:`IRC`
+channel. Device support varies for each supported :term:`OS <operating system>`,
 so make sure to consult the documentation of the device.
 
-.. seealso:: Before purchasing a controller to use with Mixxx, consult our 
-             `Hardware Compatibility wiki page`_. It contains the most 
-             up-to-date information about which controllers work with Mixxx and 
+.. seealso:: Before purchasing a controller to use with Mixxx, consult our
+             `Hardware Compatibility wiki page`_. It contains the most
+             up-to-date information about which controllers work with Mixxx and
              the details of each.
 
 .. _Hardware Compatibility wiki page: http://www.mixxx.org/wiki/doku.php/hardware_compatibility
@@ -177,8 +177,9 @@ preferred and recommended.*
 
 **Setup 2: CDJ** Two timecode CDs, two CD decks, and two sound inputs.
 
-For the sound inputs, you have two options: You can either use a proper DJ sound card that has multiple
-stereo line inputs on it, or can use two sound cards (each with a single stereo line in).
+For the sound inputs, you have two options: You can either use a proper DJ sound
+card that has multiple stereo line inputs on it, or can use two sound cards
+(each with a single stereo line in).
 A single multi-channel sound card is recommended.
 
 .. note:: For best scratch performance with vinyl control, we recommend using a
@@ -203,13 +204,11 @@ Timecode Support
 +----------------------------------------+---------------------+
 | FinalScratch (Scratch)                 | Not supported       |
 +----------------------------------------+---------------------+
-| MixVibes DVS CD                        | Not supported       |
-+----------------------------------------+---------------------+
-| MixVibes DVS Vinyl                     | Not supported       |
+| MixVibes DVS                           | Very high           |
 +----------------------------------------+---------------------+
 
-At the present time, Serato records are recommended if you are looking to buy vinyl. If you want
-to use CDs, you can download a free copy from `Serato`_.
+At the present time, Serato records are recommended if you are looking to buy
+vinyl. If you want to use CDs, you can download a free copy from `Serato`_.
 
 .. _Serato: http://serato.com/downloads/scratchlive-controlcd/
 
