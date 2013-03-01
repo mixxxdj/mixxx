@@ -10,8 +10,7 @@ Windows
 
 Windows users can install Mixxx by double-clicking on the Mixxx installer
 executable. Follow the step-by-step instructions in the installer. Mixxx is
-supported on Windows XP, Vista, and Windows 7, with native 32 and 64-bit
-versions. (It may also run on Windows 2000.)
+supported on Windows XP, Vista, 7 & 8 with native 32 and 64-bit versions.
 
 .. note:: If you aren't sure about 32-bit versus 64-bit, pick the 32-bit version.
 
@@ -19,11 +18,14 @@ Mac OS X
 ========
 
 Mac OS X users on Snow Leopard or greater can install Mixxx from the `Mac App
-Store <http://itunes.apple.com/us/app/mixxx/id413756578?mt=12>`_. Alternatively, users can install Mixxx by downloading and
+Store <http://itunes.apple.com/us/app/mixxx/id413756578?mt=12>`_.
+Alternatively, users can install Mixxx by downloading and
 double-clicking the Mixxx DMG archive, and then dragging-and-dropping the Mixxx
-bundle into their Applications folder. Mixxx requires an Intel Mac running Mac OS X 10.5 or newer.
+bundle into their Applications folder. Mixxx requires an Intel Mac running Mac
+OS X 10.5 or newer.
 
-.. note:: The Mac App Store version of Mixxx does not have :term:`vinyl control` support enabled due to licensing restrictions.
+.. note:: The Mac App Store version of Mixxx does not have :term:`vinyl control`
+          support enabled due to licensing restrictions.
 
 GNU/Linux
 =========
