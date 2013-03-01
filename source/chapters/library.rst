@@ -12,7 +12,7 @@ The Library
 
 The library manages all your music files. This is where you can find the tracks
 you want to play and load them into a channel. Alternatively, you can also use
-your external filemanager and drop files onto the waveform display. The sidebar
+your external file-manager and drop files onto the waveform display. The sidebar
 on the left contains different collections of music. The view on the right
 displays the tracks in those collections.
 
@@ -31,19 +31,19 @@ crates. Also see the chapter :ref:`djing-loading-tracks`.
 Search
 ======
 
-The Search box in the top-left filters the current library view for tracks that match
-your search query. The library search include some nice search features, see 
-the chapter :ref:`djing-finding-tracks` for details.
+The Search box in the top-left filters the current library view for tracks that
+match your search query. The library search include some nice search features,
+see the chapter :ref:`djing-finding-tracks` for details.
 
 Missing Tracks
 ==============
 
 The Missing Tracks view is accessible by expanding Library tree item in the
-sidebar. Any tracks that were previously loaded into your library, but were later
-detected to be missing from your hard disk by Mixxx will appear here. Mixxx does
-not automatically delete records of missing tracks so that extra metadata Mixxx
-might have (such as hot cues and the BPM) will not be lost if the file is
-replaced.
+sidebar. Any tracks that were previously loaded into your library, but were
+later detected to be missing from your hard disk by Mixxx will appear here.
+Mixxx does not automatically delete records of missing tracks so that extra
+metadata Mixxx might have (such as hot cues and the BPM) will not be lost if the
+file is replaced.
 
 Hidden Tracks
 =============
@@ -64,7 +64,7 @@ Auto DJ
 =======
 
 The Auto DJ queue is a special playlist that contains extra controls for
-enabling automatic mixing. This is useful for taking a break from live mixing 
+enabling automatic mixing. This is useful for taking a break from live mixing
 or for using Mixxx as media player. Also see the chapter :ref:`djing-auto-dj`.
 
 Playlists
@@ -96,26 +96,28 @@ Recordings
 ==========
 
 In this section of the library you can start and stop recordings well as view
-previous recordings and the dates they were made. Also see the chapter 
+previous recordings and the dates they were made. Also see the chapter
 :ref:`djing-recording-your-mix`.
 
 History
 =======
 
-New in Mixx 1.11: The history section automatically keeps a list of tracks you 
-play in your DJ sets.This is handy for remembering what worked in your DJ sets, 
-posting set-lists, or reporting your plays to licensing organizations. Every time 
-you start Mixxx, a new history section is created. You can export it as a playlist 
-in various formats or play it again with Auto DJ. You can join the current history 
-session with a previous one by right-clicking and selecting "Join with previous".
+New in Mixxx 1.11: The history section automatically keeps a list of tracks you
+play in your DJ sets.This is handy for remembering what worked in your DJ sets,
+posting set-lists, or reporting your plays to licensing organizations. Every
+time you start Mixxx, a new history section is created. You can export it as a
+playlist in various formats or play it again with Auto DJ. You can join the
+current history session with a previous one by right-clicking and selecting
+"Join with previous".
 
 Analyze
 =======
 
-The Analyze view allows you to see a list of either all tracks in the library or 
-tracks added to the library within the last 7 days. You can select certain tracks 
-and run BPM and beatgrid detection on them in advance. Waveforms will be generated 
-as part of a analysis as well. Also see the chapter :ref:`djing-bpm-detection`.
+The Analyze view allows you to see a list of either all tracks in the library or
+tracks added to the library within the last 7 days. You can select certain
+tracks and run BPM and beatgrid detection on them in advance. Waveforms will be
+generated as part of a analysis as well. Also see the chapter
+:ref:`djing-bpm-detection`.
 
 iTunes, Traktor, and Rhythmbox Libraries
 ========================================
