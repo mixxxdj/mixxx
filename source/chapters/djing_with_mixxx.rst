@@ -49,6 +49,9 @@ a playlist, a crate or even the whole library).
 
 Using search operators
 ----------------------
+
+.. versionadded:: 1.11
+
 A search operator is an instruction that joins terms to form a new, more complex
 query. It enables you to look for several terms at once.
 
@@ -89,6 +92,8 @@ Mixxx supports the following filters:
 
 Previewing Tracks
 =================
+
+.. versionadded:: 1.11
 
 To prelisten to a track activate the 'Preview' column in a library view
 and then click on the play Icon. The track will then start playing in a
@@ -199,8 +204,10 @@ determine where the beats are. Consequently, the beat grids often looked
 unaligned. The DJ had to adjust the beat grid unless he or she did not make use
 of auto-beatmatching via ``SYNC`` button .
 
-Starting with version 1.11, Mixxx comes with a new ultra-precise BPM and beat
-detector. The beat grid gets adjusted after track analysis has finished. Manual
+.. versionchanged:: 1.11
+   Mixxx comes with a new ultra-precise BPM and beat detector.
+
+The beat grid gets adjusted after track analysis has finished. Manual
 adjustments are redundant in many cases because Mixxx knows where the beats are.
 
 Analyser Settings
@@ -226,28 +233,28 @@ between the beats are constant.
 
 The table below summarizes the beat detection settings:
 
-+----------------------------------------+-------------------------------------+
-| Option                                 | Description                         |
-+========================================+=====================================+
-| Enable Fast Analysis                   | If enabled, BPM detection results   |
-|                                        | from the first minute of audio.     |
-+----------------------------------------+-------------------------------------+
-| Assume constant tempo                  | If enabled, Mixxx assumes that the  |
-|                                        | distances between the beats are     |
-|                                        | constant. If disabled, the raw beat |
-|                                        | grid obtained by the analyzer is    |
-|                                        | presented. The latter is appropriate |
-|                                        | for tracks with variable BPMs       |
-+----------------------------------------+-------------------------------------+
-| Enable Offset Correction               | Prevents beat markers from being    |
-|                                        | placed incorrectly.                 |
-+----------------------------------------+-------------------------------------+
-| Re-analyse beats when settings         | If enabled, Mixxx over-write old    |
-| change or beats already present        | beat grids from Mixxx 1.10.0 and    |
-|                                        | earlier. Moreover, it will          |
-|                                        | re-analyze the BPM if your beat     |
-|                                        | detection preference change         |
-+----------------------------------------+-------------------------------------+
++---------------------------------------+--------------------------------------+
+| Option                                | Description                          |
++=======================================+======================================+
+| Enable Fast Analysis                  | If enabled, BPM detection results    |
+|                                       | from the first minute of audio.      |
++---------------------------------------+--------------------------------------+
+| Assume constant tempo                 | If enabled, Mixxx assumes that the   |
+|                                       | distances between the beats are      |
+|                                       | constant. If disabled, the raw beat  |
+|                                       | grid obtained by the analyzer is     |
+|                                       | presented. The latter is appropriate |
+|                                       | for tracks with variable BPMs        |
++---------------------------------------+--------------------------------------+
+| Enable Offset Correction              | Prevents beat markers from being     |
+|                                       | placed incorrectly.                  |
++---------------------------------------+--------------------------------------+
+| Re-analyse beats when settings        | If enabled, Mixxx over-write old     |
+| change or beats already present       | beat grids from Mixxx 1.10.0 and     |
+|                                       | earlier. Moreover, it will           |
+|                                       | re-analyze the BPM if your beat      |
+|                                       | detection preference change          |
++---------------------------------------+--------------------------------------+
 
 Correcting Beat Grids
 ---------------------
@@ -298,6 +305,9 @@ the microphone.
    :figclass: pretty-figures
 
    Mixxx library - Recordings view
+
+.. versionchanged:: 1.11
+   Allows to save file in a custom recording directory.
 
 Mixxx can record your mix in various audio formats and quality settings. You can
 split your recordings, generate :term:`cue files <cue sheet>`, choose a custom
@@ -359,6 +369,9 @@ playlist when the current track is nearly finished, and crossfade into it.
    :figclass: pretty-figures
 
    Mixxx library - Auto DJ view
+
+.. versionchanged:: 1.11
+   New Shuffle, Skip track, Fade now and Transition time features
 
 The Auto DJ features in detail:
 

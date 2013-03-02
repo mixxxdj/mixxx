@@ -38,6 +38,9 @@ see the chapter :ref:`djing-finding-tracks` for details.
 Missing Tracks
 ==============
 
+.. versionchanged :: 1.11
+   The feature was defunct in previous versions.
+
 The Missing Tracks view is accessible by expanding Library tree item in the
 sidebar. Any tracks that were previously loaded into your library, but were
 later detected to be missing from your hard disk by Mixxx will appear here.
@@ -48,6 +51,8 @@ file is replaced.
 Hidden Tracks
 =============
 
+.. versionadded:: 1.11
+
 The Hidden Tracks view is accessible by expanding Library tree item in the
 sidebar. Tracks can be hidden from the complete Library including playlists
 and crates by the context menu in any view. Once they are hidden they will
@@ -56,9 +61,12 @@ appear in the Hidden Tracks view and con be deleted or restored from there.
 Deleting Tracks
 ===============
 
+.. versionadded:: 1.11
+
 Tracks that appear in the Missing Tracks or Hidden Tracks view can be
-deleted from the context menu there. 'Warning' This will delete all
-metadata Mixxx has for a track.
+deleted from the context menu there.
+
+.. warning:: This will delete all metadata Mixxx has for a track.
 
 Auto DJ
 =======
@@ -102,13 +110,15 @@ previous recordings and the dates they were made. Also see the chapter
 History
 =======
 
-New in Mixxx 1.11: The history section automatically keeps a list of tracks you
-play in your DJ sets.This is handy for remembering what worked in your DJ sets,
-posting set-lists, or reporting your plays to licensing organizations. Every
-time you start Mixxx, a new history section is created. You can export it as a
-playlist in various formats or play it again with Auto DJ. You can join the
-current history session with a previous one by right-clicking and selecting
-"Join with previous".
+.. versionadded:: 1.11
+
+The history section automatically keeps a list of tracks you play in your DJ
+sets.This is handy for remembering what worked in your DJ sets, posting
+set-lists, or reporting your plays to licensing organizations. Every time you
+start Mixxx, a new history section is created. You can export it as a playlist
+in various formats or play it again with Auto DJ. You can join the current
+history session with a previous one by right-clicking and selecting "Join with
+previous".
 
 Analyze
 =======
