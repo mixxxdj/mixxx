@@ -24,8 +24,11 @@ Mixxx grow to become the most popular free DJ software in the world, receiving
 over 1,000,000 downloads annually. Our committed team has worked hard to create
 great DJ software, and this growth is a sign of our success.
 
-As our user community grows, so does our development team - As of Mixxx 1.10.0
-over 100 Developers and artists have helped create Mixxx!
+In 2011, RJ Ryan took over as Lead Developer to successfully continue the teams
+endeavor to make Mixxx a world-class DJ software.
+
+As our user community grows, so does our development team - Until that day, over
+150 Developers, artists and translators have helped create Mixxx!
 
 What? Why?
 ==========
