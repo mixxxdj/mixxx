@@ -191,6 +191,9 @@ For timecode records or CDs, you can use any of the records supported by Mixxx:
 Timecode Support
 ----------------
 
+.. versionchanged:: 1.11
+   Added MixVibes DVS V2 Vinyl support
+
 +----------------------------------------+---------------------+
 | Type                                   | Responsiveness      |
 +========================================+=====================+
@@ -198,13 +201,11 @@ Timecode Support
 +----------------------------------------+---------------------+
 | Serato CV02 CD                         | Very high           |
 +----------------------------------------+---------------------+
-| Traktor Scratch Vinyl MK1              | Very high           |
+| Traktor Scratch MK1 Vinyl              | Very high           |
 +----------------------------------------+---------------------+
-| FinalScratch (Standard)                | Not supported       |
+| Traktor Scratch MK2 Vinyl              | Not supported       |
 +----------------------------------------+---------------------+
-| FinalScratch (Scratch)                 | Not supported       |
-+----------------------------------------+---------------------+
-| MixVibes DVS                           | Very high           |
+| MixVibes DVS V2 Vinyl                  | Very high           |
 +----------------------------------------+---------------------+
 
 At the present time, Serato records are recommended if you are looking to buy
