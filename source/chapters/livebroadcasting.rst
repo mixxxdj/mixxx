@@ -3,11 +3,13 @@
 Live Broadcasting
 *****************
 
-Starting with version 1.9.0, Mixxx directly supports live broadcasting. This
-allows you to connect directly to Shoutcast and Icecast servers. Using the
-preferences dialogue, you can simply supply Mixxx with all information needed to
-establish a server connection. To enable live broadcasting you can either use
-the options menu or the checkbox within the preference dialogue.
+.. versionadded:: 1.9
+
+Mixxx directly supports live broadcasting. This allows you to connect directly
+to Shoutcast and Icecast servers. Using the preferences dialogue, you can simply
+supply Mixxx with all information needed to establish a server connection. To
+enable live broadcasting you can either use the options menu or the checkbox
+within the preference dialogue.
 
 .. figure:: ../_static/Mixxx-110-Preferences-Livebroadcasting.png
    :align: center
@@ -23,7 +25,6 @@ can disable this behavior by selecting “enable custom metadata”.
 
 .. note:: For technical reasons, broadcasting artist and title information is
           not supported for OGG streams.
-
 
 Icecast
 =======
