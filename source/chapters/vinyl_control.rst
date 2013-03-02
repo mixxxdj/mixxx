@@ -1,3 +1,5 @@
+.. _vinyl-control:
+
 Vinyl Control
 *************
 
@@ -20,6 +22,68 @@ You can configure vinyl control through the Vinyl Control pane in the
 preferences. More information about Mixxx's vinyl control and supported hardware
 configurations is available on the `vinyl control wiki page
 <http://mixxx.org/wiki/doku.php/vinyl_control>`_.
+
+How does it work?
+=================
+
+Vinyl control uses special timecode records or CD`s which are placed on real
+turntables or :term:`CDJ`. The audio output of the turntables is plugged into a
+computer on which Mixxx is running. When a record is played on one of the
+attached turntables, Mixxx reads the timecode from the record and uses the
+information to manipulate whatever track is loaded.
+
+What do I need to use it?
+=========================
+
+It is possible to use Mixxx's vinyl control with several hardware setups, but
+the basic ones are:
+
+**Setup 1: Vinyl DJ** Two timecode vinyls, two turntables with phono
+pre-amplifiers (or line-out), and two sound inputs.  You can try skipping the
+phono pre-amps if you use the software pre-amp in Mixxx on the Vinyl Control
+preferences pane.  *This may not work for everyone - line-level signals are
+preferred and recommended.*
+
+**Setup 2: CDJ** Two timecode CDs, two CD decks, and two sound inputs.
+
+For the sound inputs, you have two options: You can either use a proper DJ sound
+card that has multiple stereo line inputs on it, or can use two sound cards
+(each with a single stereo line in).
+A single multi-channel sound card is recommended.
+
+.. note:: For best scratch performance with vinyl control, we recommend using a
+          system capable of :term:`latencies <latency>` of 10ms. With higher
+          latencies the scratch sound will start to become distorted.
+
+.. seealso:: To learn how to connect your turntables or :term:`CDJ`, go to the
+             chapter :ref:`setup-vinyl-control`.
+
+Supported Timecode media
+========================
+
+.. versionchanged:: 1.11
+   Added MixVibes DVS V2 Vinyl support
+
+You can use any of the timecode media supported by Mixxx:
+
++----------------------------------------+---------------------+
+| Type                                   | Responsiveness      |
++========================================+=====================+
+| Serato CV02 Vinyl                      | Very high           |
++----------------------------------------+---------------------+
+| Serato CV02 CD                         | Very high           |
++----------------------------------------+---------------------+
+| Traktor Scratch MK1 Vinyl              | Very high           |
++----------------------------------------+---------------------+
+| Traktor Scratch MK2 Vinyl              | Not supported       |
++----------------------------------------+---------------------+
+| MixVibes DVS V2 Vinyl                  | Very high           |
++----------------------------------------+---------------------+
+
+At the present time, Serato records are recommended if you are looking to buy
+vinyl. If you want to use CDs, you can download a free copy from `Serato`_.
+
+.. _Serato: http://serato.com/downloads/scratchlive-controlcd/
 
 Input Device Selection
 ======================

@@ -76,9 +76,9 @@ mouse and keyboard. For more information see :ref:`controlling mixxx`.
 Laptop, MIDI Controller, and External USB Soundcard
 ---------------------------------------------------
 
-Mixxx can work with any MIDI controller that has drivers for your 
+Mixxx can work with any MIDI controller that has drivers for your
 :term:`OS <operating system>`, as long as there is a MIDI mapping file to tell
-Mixxx how to understand it. Mixxx comes bundled with a number of MIDI mapping 
+Mixxx how to understand it. Mixxx comes bundled with a number of MIDI mapping
 presets. To see the full list, see :ref:`control-midi`.
 
 .. figure:: ../_static/mixxx_setup_midi_with_ext_sound.png
@@ -124,6 +124,8 @@ information about latency and how to improve it, see :ref:`configuration-latency
 .. note:: It is strongly recommended to use a soundcard that comes with native
           low latency drivers such as ASIO (Windows) or CoreAudio (Mac). Linux
           users depend on the quality of the corresponding open source driver.
+
+.. seealso:: Go to the chapter :ref:`vinyl-control` for more informations.
 
 Turntables
 ^^^^^^^^^^
