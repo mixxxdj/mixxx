@@ -85,7 +85,13 @@ To activate MP3 streaming on Windows, follow these steps:
      installed Mixxx
   #. Restart Mixxx
 
-.. hint:: Select ``Help → About`` from the menu on top of Mixxx application
+.. hint:: A common mistake when going through the process is not copying only
+          *libmp3lame.dll* from the LAME zip file and then renaming that file to
+          *lame_enc.dll*. It's deceiving but there is a file named lame_enc.dll
+          in the LAME zip file. You don't want that file! Also, make sure the
+          version of LAME you use (x86=32-bit vs. x64=64-bit) matches the
+          version of Mixxx you use.
+          Select ``Help → About`` from the menu on top of Mixxx application
           window to find out what version of Mixxx you have installed, 32-bit or
           64-bit.
 
