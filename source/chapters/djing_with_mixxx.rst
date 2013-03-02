@@ -96,10 +96,11 @@ Previewing Tracks
 .. versionadded:: 1.11
 
 To prelisten to a track activate the 'Preview' column in a library view
-and then click on the play Icon. The track will then start playing in a
+and then click on the Play icon. The track will then start playing in a
 special preview deck that will only output sound in the headphones channel.
-clicking the button again will stop the playback. Some skins support the
-preview deck (show/hide with CTRL+P) to manual search in the track.
+Clicking the button again will stop the playback. Some skins support the
+preview deck to manually search in the track. If supported, ``CTRL+4``
+(Windows/Linux) or ``CMD+4`` (Mac) displays the preview deck.
 
 .. _waveform-displays:
 
