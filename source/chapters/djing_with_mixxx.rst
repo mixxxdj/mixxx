@@ -337,7 +337,7 @@ Record your mix to disk
   finished.
 
 .. hint:: You can instantly use your recording as track in Mixxx. Simply
-          drag'n drop the track to a deck.
+          drag-and-drop the track to a deck.
 
 Burn you recorded mix to a CD/DVD
 ---------------------------------
