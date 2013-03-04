@@ -112,7 +112,8 @@ waveform of the tracks you are mixing. These are useful because they allow you
 to see features in a track (like a breakdown) before you hear them.
 
 Depending on the skin Mixxx displays either separate waveforms (default) or
-parallel waveforms.
+parallel waveforms. Select your preferred appearance in
+:menuselection:`Preferences --> Interface --> Skin`.
 
 .. figure:: ../_static/Mixxx-111-Deere-separate-waveform.png
    :align: center
@@ -307,8 +308,8 @@ the microphone.
 
    Mixxx library - Recordings view
 
-.. versionchanged:: 1.11
-   Allows to save file in a custom recording directory.
+.. versionadded:: 1.11
+   Allows to specify a custom recordings directory
 
 Mixxx can record your mix in various audio formats and quality settings. You can
 split your recordings, generate :term:`cue files <cue sheet>`, choose a custom
