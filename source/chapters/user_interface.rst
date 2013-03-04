@@ -213,7 +213,7 @@ mixed together.
 
 .. figure:: ../_static/deere_mixer.png
    :align: center
-   :width: 60%
+   :width: 50%
    :figwidth: 100%
    :alt: The mixer section
    :figclass: pretty-figures
@@ -288,20 +288,29 @@ decks and samplers oriented towards the right.
 The Sampler Section
 ===================
 
-.. figure:: ../_static/deere_sampler.png
+.. figure:: ../_static/Mixxx-111-Deere-Samplerdeck.png
    :align: center
-   :width: 70%
+   :width: 60%
    :figwidth: 100%
    :alt: A sample deck
    :figclass: pretty-figures
 
    A sample deck
 
+.. versionchanged:: 1.11
+   Samplers can sync to decks
+
 Samplers are miniature decks. They allow you to play short samples and jingles
 in your mix. They come with a small overview waveform and a limited number of
 controls. The title of the track and its BPM are displayed along the top row.
 
 .. hint:: Tap the BPM to set the BPM to the speed you are tapping.
+
+Clicking the Play button starts and pauses playback. Right-clicking on the
+button will seek the play position to the beginning of the track.
+
+The Sync button syncs the Sampler deck to a regular deck, as described in
+:ref:`interface-rate`.
 
 The numbered buttons are hotcues and work just like deck hotcues as described in
 :ref:`interface-hotcues`. The headphone button is a :term:`PFL` button and the
