@@ -197,6 +197,8 @@ Clicking this button adjusts the track beat-grid so that the current position is
 marked as a beat. This is useful if Mixxx was able to accurately detect the
 track's :term:`BPM` but failed to align the beat markers on the beats.
 
+.. seealso:: For more informations, go to the chapter :ref:`djing-bpm-detection`.
+
 Toggle Quantize Mode
 ^^^^^^^^^^^^^^^^^^^^
 

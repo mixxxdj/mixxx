@@ -372,7 +372,7 @@ playlist when the current track is nearly finished, and crossfade into it.
 
    Mixxx library - Auto DJ view
 
-.. versionchanged:: 1.11
+.. versionadded:: 1.11
    New Shuffle, Skip track, Fade now and Transition time features
 
 The Auto DJ features in detail:
