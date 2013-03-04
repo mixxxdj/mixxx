@@ -110,6 +110,9 @@ Loop Controls and Hotcues
 
    The looping, beatloop, hotcue, and fast-forward/rewind controls of the deck.
 
+.. versionadded:: 1.11
+   Loop roll feature
+
 In this section, you can control loops, beatloops, hotcues and the playback
 speed.  On the far left, you can :term:`fast-rewind`, :term:`fast-forward`, or
 :term:`reverse` the deck, respectively.
@@ -117,7 +120,11 @@ speed.  On the far left, you can :term:`fast-rewind`, :term:`fast-forward`, or
 The eight numbered buttons to the right of these buttons are the beatlooping
 controls. Clicking on any numbered button in this section will set a loop of
 that number of beats from the beat immediately following the current playback
-position. Clicking on the minus or plus button will either halve or double the
+position. Right-click to temporarily setup a rolling loop over the defined
+number of beats. Playback will resume where the track would have been if it had
+not entered the loop.
+
+Clicking on the minus or plus button will either halve or double the
 length of the loop. Tapping the :term:`loop <reloop>` button toggles whether the
 loop is active or not.
 
@@ -297,7 +304,7 @@ The Sampler Section
 
    A sample deck
 
-.. versionchanged:: 1.11
+.. versionadded:: 1.11
    Samplers can sync to decks
 
 Samplers are miniature decks. They allow you to play short samples and jingles
