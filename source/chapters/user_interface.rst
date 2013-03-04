@@ -80,6 +80,11 @@ Preferences Interface section.
 The :term:`Sync` button changes the :term:`rate` of the track so that the
 :term:`BPM` of the track matches that of the other deck. It also adjusts the
 :term:`phase` of the track so that the two tracks' beats are aligned.
+To sync only the tempo (BPM) to that of the other track, right-click on the
+Sync button. The Sync button let you sync to the first deck (in numerical order)
+that is playing a track and has a BPM detected. If no deck is playing, it syncs
+to the first deck that has a BPM detected. Decks can't sync to samplers and
+samplers can only sync to decks.
 
 The plus and minus buttons increase and decrease the rate, respectively. If
 right-clicked, they adjust the pitch in smaller steps. Similarly, the left and
