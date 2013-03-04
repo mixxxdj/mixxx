@@ -284,6 +284,9 @@ Crossfader and Channel Volume
 
    The crossfader section of the mixer
 
+.. versionadded:: 1.11
+   Reverse crossfader (Hamster style)
+
 This section allows you control the playback of each deck and the fraction of
 each deck that is mixed into the master output. The play/pause buttons play or
 pause each deck. The :term:`cue` button sets or jumps to a cue point. The large
@@ -293,6 +296,11 @@ left side and the decks and samplers on the right side. With the crossfader all
 the way to the left, you will only hear decks and samplers oriented towards the
 left. Similarly, with the crossfader all the way to the right you will only hear
 decks and samplers oriented towards the right.
+
+You can reverse the configuration of the crossfader in
+:menuselection:`Preferences --> Crossfader --> Reverse Crossfader`, so that the
+right deck is on the left end of the crossfader and vice versa. This is also
+known as *Hamster Style*.
 
 The Sampler Section
 ===================
