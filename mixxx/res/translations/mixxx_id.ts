@@ -12,99 +12,90 @@
         <name>BaseExternalLibraryFeature</name>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahkan ke Auto DJ (bawah)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahkan ke Auto DJ (atas)</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Impor Playlist</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pembuatan Playlist Tidak Berhasil</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kesalahan yang tidak diketahui terjadi saat membuat playlist: </translation>
         </message>
     </context>
     <context>
         <name>BasePlaylistFeature</name>
         <message>
             <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Playlist Baru</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahkan ke Auto DJ (bawah)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahkan ke Auto DJ (atas)</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ganti Nama</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kunci</translation>
         </message>
         <message>
             <source>Import Playlist</source>
+            <translation>Impor Playlist</translation>
+        </message>
+        <message>
+            <source>Duplicate Playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ekspor Playlist</translation>
         </message>
         <message>
             <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ganti Nama Playlist</translation>
         </message>
         <message>
             <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nama Playlist Baru</translation>
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ganti Nama Playlist Gagal</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nama playlist tersebut sudah digunakan</translation>
         </message>
         <message>
             <source>A playlist cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Playlist tidak bisa memiliki nama kosong</translation>
         </message>
         <message>
             <source>Playlist name:</source>
+            <translation>Nama Playlist</translation>
+        </message>
+        <message>
+            <source>_copy</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -158,28 +149,23 @@
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tahun</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jenis</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tempat</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Komentar</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Durasi</translation>
         </message>
         <message>
             <source>Rating</source>
@@ -187,18 +173,15 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitrasi</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>DPM</translation>
         </message>
         <message>
             <source>Track #</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lagu #</translation>
         </message>
         <message>
             <source>Date Added</source>
@@ -210,18 +193,19 @@
         </message>
         <message>
             <source>Timestamp</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Penanda waktu</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kunci</translation>
         </message>
         <message>
             <source>BPM Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kunci BPM</translation>
+        </message>
+        <message>
+            <source>Preview</source>
+            <translation>Pratinjau</translation>
         </message>
     </context>
     <context>
@@ -235,17 +219,15 @@
         <name>BrowseFeature</name>
         <message>
             <source>Add to Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahkan ke Link Cepat</translation>
         </message>
         <message>
             <source>Remove from Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus dari Link Cepat</translation>
         </message>
         <message>
             <source>Quick Links</source>
-            <translation>Link cepat</translation>
+            <translation>Link Cepat</translation>
         </message>
         <message>
             <source>Devices</source>
@@ -257,8 +239,7 @@
         </message>
         <message>
             <source>Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Telusur memungkinkan Anda untuk menavigasi, dan memuat lagu dari folder-folder di hard disk dan perangkat eksternal.</translation>
         </message>
         <message>
             <source>Browse</source>
@@ -293,52 +274,43 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation>Aliran</translation>
+            <translation>Jenis Musik</translation>
         </message>
         <message>
             <source>Composer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Penyusun</translation>
         </message>
         <message>
             <source>Comment</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Komentar</translation>
         </message>
         <message>
             <source>Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Waktu</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>DPM</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kunci</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jenis</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitrasi</translation>
         </message>
         <message>
             <source>Location</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tempat</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Library Mixxx</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -346,11 +318,11 @@
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation>Peringatan: Ini akan menghapus permanen file-file tersebut</translation>
+            <translation>Peringatan: Ini akan menghapus tetap file-file tersebut</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation>Apakah Anda yakin ingin menghapus file-file dari komputer Anda?</translation>
+            <translation>Apakah Anda yakin ingin menghapus file-file tersebut dari komputer Anda?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
@@ -362,64 +334,61 @@
         </message>
     </context>
     <context>
+        <name>BulkController</name>
+        <message>
+            <source>USB Controller</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>ControllerEngine</name>
         <message>
             <source>Uncaught exception at line %1 in file %2: %3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengecualian tidak tertangkap di jalur %1 dalam file %2: %3</translation>
         </message>
         <message>
             <source>Uncaught exception at line %1 in passed code: %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengecualian tidak tertangkap di jalur %1 dalam kode lewat %2</translation>
         </message>
         <message>
             <source>Controller script error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controller script salah</translation>
         </message>
         <message>
             <source>A control you just used is not working properly.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol yang Anda gunakan tidak bekerja dengan baik.</translation>
         </message>
         <message>
             <source>&lt;html&gt;(The script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;(Script code harus dibenahi.)&lt;br&gt;Untuk sekarang, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</translation>
         </message>
     </context>
     <context>
         <name>ControllerMappingDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Dialog</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Input</translation>
         </message>
         <message>
             <source>The below box is under construction and will remain empty in this version of Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Box dibawah sedang dalam pekerjaan dan tetap kosong di versi Mixxx saat ini.</translation>
         </message>
         <message>
             <source>Controls</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol-kontrol</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambah</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus</translation>
         </message>
         <message>
             <source>Learning Wizard</source>
@@ -428,30 +397,26 @@
         </message>
         <message>
             <source>Clear all</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus semua</translation>
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Output</translation>
         </message>
         <message>
             <source>Outputs</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Output-output</translation>
         </message>
         <message>
             <source>Clear All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus Semua</translation>
         </message>
     </context>
     <context>
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation>Peti Baru</translation>
+            <translation>Kotak Baru</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -459,15 +424,21 @@
         </message>
         <message>
             <source>Rename</source>
-            <translation>Ubah Nama</translation>
+            <translation>Ganti Nama</translation>
         </message>
         <message>
             <source>Lock</source>
             <translation>Kunci</translation>
         </message>
         <message>
+            <source>_copy</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Import Playlist</source>
-            <translation>Impor Playlist</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crates</source>
@@ -482,16 +453,22 @@
             <translation>Ekspor Peti</translation>
         </message>
         <message>
+            <source>Duplicate Crate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Unlock</source>
-            <translation>Buka Kunci</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crate name:</source>
-            <translation>Nama peti:</translation>
+            <translation>Nama Peti:</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Sebuah kesalahan yang tidak diketahui terjadi saat membuat peti: * </translation>
+            <translation>Kesalahan tidak diketahui terjadi saat membuat peti: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
@@ -503,7 +480,8 @@
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation>Pengubahan nama peti tidak berhasil</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -522,11 +500,14 @@
         </message>
         <message>
             <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Buat peti untuk gig sleanjutnya, untuk lagu favorit anda, atau untuk lagu yang paling banyak diminta.</translation>
         </message>
         <message>
             <source>Crates let you organize your music however you'd like!</source>
+            <translation>Peti memberi kebebasan Anda mengatur musik seperti yang diinginkan!</translation>
+        </message>
+        <message>
+            <source>Create new crate</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -540,7 +521,7 @@
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Sebuah peti dengan nama yang sama sudah ada</translation>
+            <translation>Sebuah peti dengan nama tersebut sudah ada</translation>
         </message>
     </context>
     <context>
@@ -551,21 +532,18 @@
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Situs Resmi&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
         <name>DlgAutoDJ</name>
         <message>
             <source>Auto-DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto-DJ</translation>
         </message>
         <message>
             <source>One deck must be stopped to enable Auto-DJ mode.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Salah satu deck harus distop untuk mengaktifkan Auto-DJ.</translation>
         </message>
         <message>
             <source>Disable Auto DJ</source>
@@ -573,53 +551,43 @@
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Acak isi playlist Auto DJ</translation>
         </message>
         <message>
             <source>Shuffle</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Acak</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lewati lagu selanjutnya di playlist Auto DJ</translation>
         </message>
         <message>
             <source>Skip Track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lewati lagu</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Picu transisi ke lagu selanjutnya</translation>
         </message>
         <message>
             <source>Fade Now</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pudar Sekarang</translation>
         </message>
         <message>
             <source>Determines the duration of the transition.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Menentukan durasi transisi</translation>
         </message>
         <message>
             <source>Seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Detik</translation>
         </message>
         <message>
             <source>sec.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>det.</translation>
         </message>
         <message>
             <source>Turn Auto DJ on or off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ubah Auto DJ on atau off</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -627,107 +595,99 @@
         </message>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Atur</translation>
         </message>
     </context>
     <context>
         <name>DlgBeatsDlg</name>
         <message>
             <source>Beat Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengaturan deteksi ketukan</translation>
         </message>
         <message>
-            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
+automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktifkan Deteksi DPM dan Ketukan</translation>
         </message>
         <message>
             <source>Choose Analyser</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pilih Analyzer</translation>
         </message>
         <message>
             <source>Beat Analyser:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyzer Ketukan:</translation>
         </message>
         <message>
             <source>Choose between different algorithms to detect beats.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pilih anatara algoritma beda untuk mendeteksi ketukan.</translation>
         </message>
         <message>
             <source>Analyser Settings</source>
+            <translation>Pengaturan Analyzer</translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. 
+If activated Mixxx only analyzes the first minute of a track for beat information. 
+This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
+by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
+(Not checked: Analyse only, if no beats exist.)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beat detection data is outdated</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktifkan analisa cepat (Untuk komputer lambat, mungkin kurang akurat)</translation>
         </message>
         <message>
             <source>Assume constant tempo (Recommended)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Asumsikan tempo konstan (Direkomendasikan)</translation>
         </message>
         <message>
             <source>Enable Offset Correction (Recommended)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Re-analyse beats when settings change or beats already present
-(e.g. from 3rd-party programs or older Mixxx versions)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktifkan Koreksi Offset (Direkomendasikan)</translation>
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kisaran BPM</translation>
         </message>
         <message>
             <source>Min:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Min:</translation>
         </message>
         <message>
             <source>Max:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Maks:</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kembalikan ke Setelan Awal</translation>
         </message>
     </context>
     <context>
@@ -742,69 +702,58 @@
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kisaran BPM</translation>
         </message>
         <message>
             <source>Max</source>
-            <translation>Maks</translation>
+            <translation>Maks.</translation>
         </message>
         <message>
             <source>Min</source>
-            <translation>Min</translation>
+            <translation>Min.</translation>
         </message>
         <message>
             <source>Analyze Entire Track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analisis Seluruh Lagu</translation>
         </message>
     </context>
     <context>
         <name>DlgControllerLearning</name>
         <message>
             <source>Controller Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controller Learning Wizard</translation>
         </message>
         <message>
             <source>Click any control in the Mixxx interface or choose one from the list. Then move a control on your controller to map it. Repeat this as many times as you wish. When you are finished mapping controls, click Done.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Klik salah kontrol pada antarmuka Mixxx atau pilih satu dari daftar. Kemudian pindahkan kontrol pada controller untuk memetakan. Ulangi sebanyak yang Anda inginkan. Setelah selesai kontrol pemetaan, klik Selesai.</translation>
         </message>
         <message>
             <source>Done</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Selesai</translation>
         </message>
         <message>
             <source>To map another control click a button or choose from the list.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Untuk memetakan kontrol lainnya klik salah satu tombol atau pilih dari daftar.</translation>
         </message>
         <message>
             <source>Choose Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pilih Kontrol</translation>
         </message>
         <message>
             <source>Deck %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deck %1</translation>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sampler %1</translation>
         </message>
         <message>
             <source>Reset to default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kembalikan ke setelan awal</translation>
         </message>
         <message>
             <source>Mixer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixer</translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -813,133 +762,107 @@
         </message>
         <message>
             <source>Master volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Volume Utama</translation>
         </message>
         <message>
             <source>Master balance</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Penyimbang Utama</translation>
         </message>
         <message>
             <source>Headphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Volume Headphone</translation>
         </message>
         <message>
             <source>Headphone mix (pre/main)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mix Headphone (pre/main)</translation>
         </message>
         <message>
             <source>Transport</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Angkut</translation>
         </message>
         <message>
             <source>Strip-search through track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Strip-search seluruh lagu</translation>
         </message>
         <message>
             <source>Play button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol play</translation>
         </message>
         <message>
             <source>Volume fader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pemudar Volume</translation>
         </message>
         <message>
             <source>Fast rewind button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol putar-balik cepat</translation>
         </message>
         <message>
             <source>Fast forward button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol maju cepat</translation>
         </message>
         <message>
             <source>Jump to start of track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loncat ke awal lagu</translation>
         </message>
         <message>
             <source>Jump to end of track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loncat ke akhir lagu</translation>
         </message>
         <message>
             <source>Play reverse button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol putar balik</translation>
         </message>
         <message>
             <source>Gain knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol tambah</translation>
         </message>
         <message>
             <source>Headphone listen button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol dengar headphone</translation>
         </message>
         <message>
             <source>Toggle repeat mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mode pengalihan ulang</translation>
         </message>
         <message>
             <source>Eject track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Keluarkan lagu</translation>
         </message>
         <message>
             <source>Mix orientation (e.g. left, right, center)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Orientasi mix (misalnya kiri, tengah, kanan)</translation>
         </message>
         <message>
             <source>BPM and Sync</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>DPM dan Sync</translation>
         </message>
         <message>
             <source>BPM tap button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol sadap BPM</translation>
         </message>
         <message>
             <source>Adjust beatgrid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sesuaikan beatgrid</translation>
         </message>
         <message>
             <source>Toggle quantize mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mode pengalihan quantisasi</translation>
         </message>
         <message>
             <source>Beat sync (tempo and phase)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sinkron ketukan (tempo dan fase)</translation>
         </message>
         <message>
             <source>Beat sync (tempo only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sinkron ketukan (hanya tempo)</translation>
         </message>
         <message>
             <source>Beat sync (phase only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sinkron ketukan (hanya fase)</translation>
         </message>
         <message>
             <source>Pitch and Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nada dan Tingkat</translation>
         </message>
         <message>
             <source>Toggle keylock mode</source>
@@ -948,181 +871,201 @@
         </message>
         <message>
             <source>Pitch control slider</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Slider kontrol nada</translation>
         </message>
         <message>
             <source>Adjust rate up (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sesuaikan tingkat keatas (halus)</translation>
         </message>
         <message>
             <source>Adjust rate down (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sesuaikan tingkat kebawah (halus)</translation>
         </message>
         <message>
             <source>Pitch-bend rate up (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat tikungan nada keatas (halus)</translation>
         </message>
         <message>
             <source>Adjust rate up (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sesuaikan tingkat keatas (kasar)</translation>
         </message>
         <message>
             <source>Adjust rate down (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sesuaikan tingkat kebawah (kasar)</translation>
         </message>
         <message>
             <source>Pitch-bend rate up (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat tikungan nada keatas (kasar)</translation>
         </message>
         <message>
             <source>Pitch-bend rate down (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat tikungan nada keatas (kasar)</translation>
         </message>
         <message>
             <source>Pitch-bend rate down (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat tikungan nada keatas (halus)</translation>
         </message>
         <message>
             <source>Equalizers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Equalizer</translation>
         </message>
         <message>
             <source>High EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol EQ Tinggi</translation>
         </message>
         <message>
             <source>Mid EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol EQ Tengah</translation>
         </message>
         <message>
             <source>Low EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol EQ Rendah</translation>
         </message>
         <message>
             <source>High EQ kill</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ Tinggi Mati</translation>
         </message>
         <message>
             <source>Mid EQ kill</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ Tengah Mati</translation>
         </message>
         <message>
             <source>Low EQ kill</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ Rendah Mati</translation>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrol Vinil</translation>
         </message>
         <message>
             <source>Toggle vinyl-control (ON/OFF)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengalihan kontrol-vinil (ON/OFF)</translation>
         </message>
         <message>
             <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengalihan mode penanda kontrol-vinil (OFF/ONE/HOT)</translation>
         </message>
         <message>
             <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Cues / Hotcues</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengalihan mode kontrol-vinil (ABS/REL/CONST)</translation>
         </message>
         <message>
             <source>Cue button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol penanda</translation>
         </message>
         <message>
             <source>Set cue point</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Atur lokasi penanda</translation>
         </message>
         <message>
             <source>Go to cue point and stop</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ke lokasi penanda dan stop</translation>
         </message>
         <message>
             <source>Set or jump to hotcue %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Set atau loncat ke penanda tepat %1</translation>
         </message>
         <message>
             <source>Clear hotcue %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus penanda tepat %1</translation>
         </message>
         <message>
             <source>Jump to hotcue %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loncat ke penanda tepat %1</translation>
         </message>
         <message>
             <source>Jump to hotcue %1 and stop</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loncat ke penanda tepat %1 dan stop</translation>
         </message>
         <message>
             <source>Looping</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Putaran</translation>
         </message>
         <message>
             <source>Loop In button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol Masuk Putaran</translation>
         </message>
         <message>
             <source>Loop Out button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol Keluar Putaran</translation>
         </message>
         <message>
             <source>Reloop / Exit button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol Pengulang Putaran / Keluar</translation>
         </message>
         <message>
             <source>Halve the current loop's length</source>
+            <translation>Belah panjang putaran saat ini</translation>
+        </message>
+        <message>
+            <source>Double the current loop's length</source>
+            <translation>Dua kali panjang putaran saat ini</translation>
+        </message>
+        <message>
+            <source>Toggle slip mode</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Double the current loop's length</source>
+            <source>Preview Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Single deck mode - Toggle vinyl control to next deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit button</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Beat-Looping</source>
+            <translation>Putaran ketukan</translation>
+        </message>
+        <message>
+            <source>Create %1-beat loop</source>
+            <translation>Buat %1-putaran ketukan</translation>
+        </message>
+        <message>
+            <source>Create temporary %1-beat loop roll</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Create %1-beat loop</source>
+            <source>1/32th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/16th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/8th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/4th</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1132,59 +1075,58 @@
             </translation>
         </message>
         <message>
-            <source>Switch to the next view (library, playlist..)</source>
+            <source>Expand/collapse the selected view (library, playlist..)</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Switch to the next view (library, playlist..)</source>
+            <translation>Beralih ke tampilan berikutnya (pustaka, playlist ..)</translation>
         </message>
         <message>
             <source>Switch to the previous view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Beralih ke tampilan sebelumnya (pustaka, playlist ..)</translation>
         </message>
         <message>
             <source>Scroll to next track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gulir ke trek berikutnya di perpustakaan / playlist</translation>
         </message>
         <message>
             <source>Scroll to previous track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gulir ke lagu sebelumnya di perpustakaan / playlist</translation>
         </message>
         <message>
             <source>Load selected track into first stopped deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Muat lagu yang dipilih ke dalam dek yang berhenti pertama</translation>
         </message>
         <message>
             <source>Load selected track</source>
+            <translation>Muat lagu yang dipilih</translation>
+        </message>
+        <message>
+            <source>Load selected track and play</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Effects</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Efek</translation>
         </message>
         <message>
             <source>Toggle flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengalihan efek flange</translation>
         </message>
         <message>
             <source>Flange effect: Wavelength/period</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Efek flange: Panjang gelombang/masa</translation>
         </message>
         <message>
             <source>Flange effect: Intensity</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Efek flange: Intensitas</translation>
         </message>
         <message>
             <source>Flange effect: Phase delay</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Efek flange: Tunda fase</translation>
         </message>
         <message>
             <source>Microphone</source>
@@ -1193,23 +1135,44 @@
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofon on/off</translation>
         </message>
         <message>
             <source>Microphone volume</source>
+            <translation>Volume mikrofon</translation>
+        </message>
+        <message>
+            <source>Microphone channel orientation (e.g. left, right, center)</source>
+            <translation>Orientasi channel mikrofon (misal kiri, kanan, tengah)</translation>
+        </message>
+        <message>
+            <source>Auto DJ</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Microphone channel orientation (e.g. left, right, center)</source>
+            <source>Shuffle the content of the Auto DJ playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle Auto DJ (ON/OFF)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>User Interface</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Antarmuka Pengguna</translation>
         </message>
         <message>
             <source>Show/hide the sampler section</source>
@@ -1218,18 +1181,20 @@
         </message>
         <message>
             <source>Show/hide the microphone section</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tampil/sembunyikan bagian mikrofon</translation>
         </message>
         <message>
             <source>Show/hide the vinyl control section</source>
+            <translation>Tampil/sembunyikan bagian kontrol vinil</translation>
+        </message>
+        <message>
+            <source>Show/hide the preview deck</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Show/hide spinning vinyl widget</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tampil/sembunyikan bagian widget vinil</translation>
         </message>
         <message>
             <source>Ready to map: %1. Now move a control on your controller.</source>
@@ -1238,6 +1203,77 @@
         </message>
         <message>
             <source>Successfully mapped to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgHidden</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+S</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgMissing</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1339,7 +1375,12 @@
             </translation>
         </message>
         <message>
-            <source>Custom Preset</source>
+            <source>No Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>No support available.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1367,12 +1408,27 @@
             </translation>
         </message>
         <message>
+            <source>TextLabel</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Description:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Load Preset:</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Loaded Preset:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support:</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1411,33 +1467,15 @@
         </message>
         <message>
             <source>Simple</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sederhana</translation>
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktif</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx Detected a WVGA Screen</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx has detected that your screen has a resolution of </source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mati</translation>
         </message>
         <message>
             <source>This skin does not support schemes</source>
@@ -1446,8 +1484,7 @@
         </message>
         <message>
             <source>6%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>6%</translation>
         </message>
         <message>
             <source>8% (Technics SL-1210)</source>
@@ -1461,8 +1498,7 @@
         </message>
         <message>
             <source>10%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>10%</translation>
         </message>
         <message>
             <source>Load tracks into a playing deck</source>
@@ -1470,44 +1506,46 @@
             </translation>
         </message>
         <message>
-            <source>20%</source>
+            <source>The selected skin is bigger than your screen resolution.</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>On (only in Library)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>20%</source>
+            <translation>20%</translation>
         </message>
         <message>
             <source>30%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>30%</translation>
         </message>
         <message>
             <source>40%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>40%</translation>
         </message>
         <message>
             <source>50%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>50%</translation>
         </message>
         <message>
             <source>60%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>60%</translation>
         </message>
         <message>
             <source>70%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>70%</translation>
         </message>
         <message>
             <source>80%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80%</translation>
         </message>
         <message>
             <source>90%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>90%</translation>
         </message>
         <message>
             <source>Up increases speed</source>
@@ -1544,8 +1582,7 @@
         </message>
         <message>
             <source>Scheme</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skema</translation>
         </message>
         <message>
             <source>Position display</source>
@@ -1558,99 +1595,83 @@
             </translation>
         </message>
         <message>
-            <source>On</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Off</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Pitch/Rate slider range</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Pitch/Rate slider direction</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Arah Slider Nada/Tingkat</translation>
         </message>
         <message>
             <source>Track load behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Perilaku muat lagu</translation>
         </message>
         <message>
             <source>Cue behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Perilaku penanda</translation>
         </message>
         <message>
             <source>Auto Recall Cue</source>
+            <translation>Recall Pendanda Otomatis</translation>
+        </message>
+        <message>
+            <source>Re-queue tracks in Auto DJ</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Locale</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Locale</translation>
         </message>
         <message>
             <source>Temporary rate change when left-clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat sementara berubah saat mengklik kiri</translation>
         </message>
         <message>
             <source>Temporary rate change when right-clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat sementara berubah saat mengklik kanan</translation>
         </message>
         <message>
             <source>Permanent Pitch/Rate Buttons</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol Nada/Tingkat Permanen</translation>
         </message>
         <message>
             <source>Displays which OpenGL version is supported by the current platform.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Menampilkan  versi OpenGL yang didukung oleh platform saat ini.</translation>
         </message>
         <message>
             <source>Displays the actual frame rate.</source>
+            <translation>Menampilkan frame rate yang sebenarnya.</translation>
+        </message>
+        <message>
+            <source>Normalize Overview</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Left click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Klik kiri</translation>
         </message>
         <message>
             <source>Right click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Klik kanan</translation>
         </message>
         <message>
             <source>%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%</translation>
         </message>
         <message>
             <source>Temporary Pitch/Rate Buttons</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tombol Nada/Tingkat Sementara</translation>
         </message>
         <message>
             <source>Ramping Pitchbend</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Meningkatkan Lengkungan Nada</translation>
         </message>
         <message>
             <source>Pitchbend sensitivity</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kepekaan Lengkungan Nada</translation>
         </message>
         <message>
             <source>Waveform Display</source>
@@ -1659,73 +1680,59 @@
         </message>
         <message>
             <source>Synchronize zoom level across all waveform displays.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sinkronkan tingkat tanjak di semua tampilan bentuk gelombang.</translation>
         </message>
         <message>
             <source>OpenGl status</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kondisi OpenGl</translation>
         </message>
         <message>
             <source>Display type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jenis tampilan</translation>
         </message>
         <message>
             <source>Permanent rate change when left-clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat permanen berubah saat mengklik kiri</translation>
         </message>
         <message>
             <source>Permanent rate change when right-clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat permanen berubah saat mengklik kanan</translation>
         </message>
         <message>
             <source>Makes temporary pitch/rate buttons change the pitch gradually, instead of all at once.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Membuat tombol nada/tingkat sementara mengubah nada secara bertahap, bukan sekaligus.</translation>
         </message>
         <message>
             <source>Value in milliseconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nilai dalam milidetik</translation>
         </message>
         <message>
             <source>Visual gain of the high frequencies</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahan visual suntuk frekuensi tinggi</translation>
         </message>
         <message>
             <source>Visual gain of the middle frequencies</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahan visual suntuk frekuensi tengah</translation>
         </message>
         <message>
             <source>Visual gain of the low frequencies</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahan visual suntuk frekuensi rendah</translation>
         </message>
         <message>
             <source>Global visual gain</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambahan visual global</translation>
         </message>
         <message>
             <source>Frame rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tingkat bingkai</translation>
         </message>
         <message>
             <source>Default zoom</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tanjak default</translation>
         </message>
         <message>
             <source>Visual gain</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambah visual</translation>
         </message>
         <message>
             <source>Synchronize</source>
@@ -1737,46 +1744,39 @@
         <name>DlgPrefCrossfaderDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Crossfader Curve</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lengkungan Crossfader</translation>
         </message>
         <message>
-            <source>Slow fade</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Fast cut</source>
+            <source>Slow fade/Fast cut (additive)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Constant power</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Daya konstan</translation>
         </message>
         <message>
             <source>Mixing</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixing</translation>
         </message>
         <message>
             <source>Scratching</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Scratching</translation>
         </message>
         <message>
             <source>Linear</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Linier</translation>
         </message>
         <message>
             <source>Logarithmic</source>
+            <translation>Logaritmis</translation>
+        </message>
+        <message>
+            <source>Reverse crossfader (hamster style)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1790,61 +1790,50 @@
         <name>DlgPrefEQDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Static EQs (for slower CPUs)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQ Statik (Untuk CPU lambat)</translation>
         </message>
         <message>
             <source>High Shelf EQ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rak EQ Tinggi</translation>
         </message>
         <message>
             <source>textLabel1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>textLabel1</translation>
         </message>
         <message>
             <source>16 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>16 Hz</translation>
         </message>
         <message>
             <source>1.014 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>20.05 kHz</translation>
         </message>
         <message>
             <source>Low Shelf EQ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rak EQ Rendah</translation>
         </message>
         <message>
             <source>textLabel2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>textLabel2</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kembalikan ke Defaults</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefMappableController</name>
         <message>
             <source>Apply device settings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Terapkan pengaturan perangkat?</translation>
         </message>
         <message>
             <source>Your settings must be applied before starting the learning wizard.
@@ -1854,49 +1843,41 @@ Apply settings and continue?</source>
         </message>
         <message>
             <source>Clear Input Bindings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus Binding Input</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all bindings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Anda yakin ingin menghapus semua binding?</translation>
         </message>
         <message>
             <source>Clear Output Bindings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus Binding Output</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all output bindings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Anda yakin ingin menghapus semua binding output?</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefNoControllersDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>No controllers available.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tidak ada kontroler yang tersedia.</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefNoVinylDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Input</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1904,73 +1885,63 @@ Apply settings and continue?</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</translation>
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Turntable Preamp</translation>
         </message>
         <message>
             <source>1 (Off)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1 (Off)</translation>
         </message>
         <message>
             <source>150</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>150</translation>
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Konfigurasi Vinil</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tipe Vinil Deck 1</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Jenis Vinil Deck 2</translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Waktu Salur-masuk</translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>detik</translation>
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tampilkan Kualitas Sinyal di Lapisan</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Modus Kontrol</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Modus Mutlak</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Modus Relatif</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
@@ -1979,226 +1950,195 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kualitas Sinyal</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Didukung oleh xwax</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt; Versi Mixxx saat ini tidak mendukung kontrol vinil.&lt;/b&gt; &lt;br&gt; Silahkan kunjungi &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; untuk informasi lebih lanjut.</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pilih petunjuk pustaka musik.</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefPlaylistDlg</name>
         <message>
             <source>Audio File Formats</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Format Berkas Audio</translation>
         </message>
         <message>
             <source>Additional Format Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Plugin Format Tambahan:</translation>
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</translation>
         </message>
         <message>
             <source>Loaded Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Plugin yang Dimuat:</translation>
         </message>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tidak ada</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lainnya</translation>
         </message>
         <message>
             <source>Synchronize ID3 tags on track modifications</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sinkronkan tag ID3 dalam modifikasi lagu</translation>
         </message>
         <message>
             <source>Rescan library on start-up</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Telusur ulang pustaka di start-up</translation>
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
+            <translation>Gunakan jalur relatif untuk ekspor playlist jika bisa</translation>
+        </message>
+        <message>
+            <source>Other Libraries</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Show Rhythmbox Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tampilkan Pustaka Rhythmbox</translation>
         </message>
         <message>
             <source>Show iTunes Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tampilkan Pustaka iTunes</translation>
         </message>
         <message>
             <source>Show Traktor Library</source>
+            <translation>Tampilkan Pustaka Traktor</translation>
+        </message>
+        <message>
+            <source>    You will need to restart Mixxx for this to take effect</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Telusur...</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pustaka</translation>
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Petunjuk Musik:</translation>
         </message>
         <message>
             <source>Built-in</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bawaan</translation>
         </message>
         <message>
             <source>Available Online...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tersedia di Web...</translation>
         </message>
         <message>
             <source>Bundled Songs</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bundel Lagu</translation>
         </message>
         <message>
             <source>Support Mixxx by counting and sharing bundled songs
 playback and outbound link statistics</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Dukung Mixxx dengan menghitung and membagi playback bundel
+lagu dan statistik link keluar</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>kbpd</translation>
         </message>
         <message>
             <source>Choose recordings directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pilih petunjuk rekaman</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefRecordDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>Recordings Directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Petunjuk Rekaman:</translation>
         </message>
         <message>
             <source>Recordings Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Petunjuk Rekaman:</translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Telusur...</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pengkodean</translation>
         </message>
         <message>
             <source>Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kualitas</translation>
         </message>
         <message>
             <source>High</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tinggi</translation>
         </message>
         <message>
             <source>Low</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rendah</translation>
         </message>
         <message>
             <source>Tags</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Label</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Judul</translation>
         </message>
         <message>
             <source>Author</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pencipta</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Album</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lainnya</translation>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Buat berkas CUE</translation>
         </message>
         <message>
             <source>File Splitting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pemisahan berkas</translation>
         </message>
         <message>
             <source>Split recordings at</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pisah berkas di</translation>
         </message>
     </context>
     <context>
@@ -2224,17 +2164,17 @@ playback and outbound link statistics</source>
             </translation>
         </message>
         <message>
+            <source>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Apply volume normalization to loaded tracks.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>On older computers, it may take a few seconds before volume normalization is applied to a new track. You may wish to wait before adjusting the pregain and volume.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2250,8 +2190,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>dB</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>dB</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
@@ -2278,18 +2217,15 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>MP3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3</translation>
         </message>
         <message>
             <source>Ogg Vorbis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ogg Vorbis</translation>
         </message>
         <message>
             <source>Stereo</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stereo</translation>
         </message>
     </context>
     <context>
@@ -2345,6 +2281,16 @@ playback and outbound link statistics</source>
             </translation>
         </message>
         <message>
+            <source>Dynamically update Ogg Vorbis metadata.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Stream name</source>
             <translation type="unfinished">
             </translation>
@@ -2390,6 +2336,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Public stream</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Use UTF-8 encoding for metadata.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2501,13 +2452,23 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Buffer Underflow Count</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>0</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Latency Tips</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>&lt;ul&gt;
-&lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
             <translation type="unfinished">
@@ -2824,7 +2785,7 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>Analyzing %1%</source>
+            <source>Analyzing %1/%2 %3%</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3258,7 +3219,12 @@ Waveforms will be generated as part of a analysis as well.</source>
     <context>
         <name>GLSLWaveformWidget</name>
         <message>
-            <source>Filtered (experimental)</source>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>experimental</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3275,6 +3241,67 @@ Waveforms will be generated as part of a analysis as well.</source>
         <name>GLWaveformWidget</name>
         <message>
             <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>HSVWaveformWidget</name>
+        <message>
+            <source>HSV</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>HidController</name>
+        <message>
+            <source>Generic HID Mouse</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Joystick</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Gamepad</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Keyboard</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Multiaxis Controller</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown HID Desktop Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Infrared Control</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown Apple HID Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Unknown Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Interface Number</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3326,6 +3353,64 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
     </context>
     <context>
+        <name>LegacySkinParser</name>
+        <message>
+            <source>activate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>toggle</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>right</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>left</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>right small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>left small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>up</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>down</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>up small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>down small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shortcut</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
@@ -3339,6 +3424,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Cancel</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Scanning: </source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3461,6 +3551,91 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
+            <source>Load Track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add &amp;New Playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add New &amp;Crate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable &amp;Keyboard Shortcuts</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Samplers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Vinyl Control Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+3</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Microphone Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+2</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the preview deck in the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+4</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Reload Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload the skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+Shift+R</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Developer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Load track to Deck %1</source>
             <translation type="unfinished">
             </translation>
@@ -3511,17 +3686,7 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>Add &amp;new playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+N</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Add new &amp;crate</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3586,11 +3751,6 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation type="unfinished">
             </translation>
@@ -3637,11 +3797,6 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Enable Vinyl Control &amp;2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Enable live &amp;broadcasting</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3701,17 +3856,42 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>Enable &amp;keyboard shortcuts</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Toggles keyboard shortcuts on or off</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Ctrl+`</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate This Application</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Live &amp;Broadcasting</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>May not be supported on all skins.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the sample deck section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the vinyl control section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the microphone section of the Mixxx interface.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3801,11 +3981,26 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>The preferences window is still open.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Discard any changes and exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
             <source>Missing Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hidden Tracks</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3913,11 +4108,54 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Create new playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>PrepareFeature</name>
         <message>
             <source>Analyze</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>QMessageBox</name>
+        <message>
+            <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx has a new and improved beat detector.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keep Current Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generate New Beatgrids</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3961,6 +4199,22 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Unknown path type %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>QtSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>QtWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4069,6 +4323,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Software</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>Tooltips</name>
@@ -4089,6 +4348,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Right-click</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Scroll-wheel</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4124,6 +4388,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Drag with mouse to make temporary pitch adjustments.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Scroll to change the waveform zoom level.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4304,6 +4573,16 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Show/hide the Vinyl Control section.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the Preview deck.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4573,6 +4852,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
+            <source>(while stopped)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Cue</source>
             <translation type="unfinished">
             </translation>
@@ -4594,6 +4878,71 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Sends the selected channel's audio to the headphone output.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Decks can't sync to samplers and samplers can only sync to decks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Setup a loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Temporarily setup a rolling loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Playback will resume where the track would have been if it had not entered the loop.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turns the current loop off.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Slip Mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Once disabled, the audible playback will resume where the track would have been.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clock</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the current time.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4833,11 +5182,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
-            <source>Setup a loop over X beats.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Reloop/Exit</source>
             <translation type="unfinished">
             </translation>
@@ -5003,15 +5347,37 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
+            <source>Click OK to exit.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Cannot upgrade database schema</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Unable to upgrade your database schema to version %1.
-Your mixxx.db file may be corrupt.
-Try renaming it and restarting Mixxx.
-Click OK to exit.</source>
+            <source>Unable to upgrade your database schema to version %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be outdated.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your mixxxdb.sqlite file may be corrupt.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Try renaming it and restarting Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be missing or invalid.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -5040,29 +5406,38 @@ Click OK to exit.</source>
         </message>
     </context>
     <context>
+        <name>WOverview</name>
+        <message>
+            <source>Ready to play, analyzing ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>WSearchLineEdit</name>
         <message>
             <source>Ctrl+F</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>Esc</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esc</translation>
         </message>
         <message>
             <source>Search...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pencarian...</translation>
         </message>
     </context>
     <context>
         <name>WTrackTableView</name>
         <message>
             <source>Add to Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambah ke Daftar Putar</translation>
         </message>
         <message>
             <source>Add to Crate</source>
@@ -5071,71 +5446,74 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Load to Sampler</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Muat ke Sampler</translation>
         </message>
         <message>
             <source>Remove</source>
+            <translation>Hapus</translation>
+        </message>
+        <message>
+            <source>Hide from Library</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Properties...</source>
+            <source>Unhide from Library</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Open in file browser</source>
+            <source>Purge from Library</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Properties</source>
+            <translation>Pengaturan</translation>
+        </message>
+        <message>
+            <source>Open in File Browser</source>
+            <translation>Buka di Browser Berkas</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambah ke Daftar Auto-DJ (bawah)</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tambah ke Daftar Auto-DJ (atas)</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
+            <translation>Muat Ulang Metadata Lagu</translation>
+        </message>
+        <message>
+            <source>Load to Preview Deck</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Reset Play Count</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Atur Ulang Hitungan Putaran</translation>
         </message>
         <message>
             <source>Lock BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kunci DPM</translation>
         </message>
         <message>
             <source>Unlock BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Buka Kunci BPM</translation>
         </message>
         <message>
             <source>Clear BPM and Beatgrid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hapus DPM dan Beatgrid</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Muat ke Deck %1</translation>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -5144,21 +5522,18 @@ Click OK to exit.</source>
         <name>WTrackTableViewHeader</name>
         <message>
             <source>Show or hide columns.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tampilkan atau sembunyikan kolom.</translation>
         </message>
     </context>
     <context>
         <name>WaveformWidgetFactory</name>
         <message>
             <source>(GLSL)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(GLSL)</translation>
         </message>
         <message>
             <source>(GL)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(GL)</translation>
         </message>
     </context>
 </TS>
