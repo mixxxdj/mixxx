@@ -63,8 +63,7 @@
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Создать дубликат списка воспроизведения</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -101,13 +100,11 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ошибка создания списка воспроизведения</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Обнаружена неизвестная ошибка при создании списка воспроизведения: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -116,8 +113,7 @@
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</translation>
         </message>
     </context>
     <context>
@@ -434,8 +430,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Импортировать список воспроизведения</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -456,8 +451,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Разблокировать</translation>
         </message>
         <message>
             <source>Crate name:</source>
