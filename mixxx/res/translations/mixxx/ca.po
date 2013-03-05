@@ -8,82 +8,82 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2012-11-06 06:53+0000\n"
+"PO-Revision-Date: 2013-03-02 17:13+0000\n"
 "Last-Translator: David Planella <david.planella@ubuntu.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:35+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-03 04:36+0000\n"
+"X-Generator: Launchpad (build 16514)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "DJ automàtic"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Afegeix a la cua del DJ automàtic (al final)"
 
 #: BaseExternalLibraryFeature#2
 msgctxt "BaseExternalLibraryFeature#2"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Afegeix a la cua del DJ automàtic (al principi)"
 
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importa una llista de reproducció"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Ha fallat la creació de la llista de reproducció"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "S'ha produït un error desconegut en crear la llista de reproducció: "
 
 #: BasePlaylistFeature#1
 msgid "New Playlist"
-msgstr "Nova Llista de Reproducció"
+msgstr "Llista de reproducció nova"
 
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr ""
+msgstr "Afegeix a la cua del DJ automàtic (al final)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr ""
+msgstr "Afegeix a la cua del DJ automàtic (al principi)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
 msgid "Remove"
-msgstr "Esborra"
+msgstr "Suprimeix-la"
 
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "Canviar el nom"
+msgstr "Canvia-li el nom"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr "Bloqueja"
+msgstr "Bloca"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "Importar llista de reproducció"
+msgstr "Importa la llista de reproducció"
 
 #: BasePlaylistFeature#8
 msgid "Duplicate Playlist"
-msgstr ""
+msgstr "Duplica la llista de reproducció"
 
 #: BasePlaylistFeature#9
 msgid "Export Playlist"
@@ -103,11 +103,11 @@ msgstr "Ha fallat en canvi de nom de la llista de reproducció"
 
 #: BasePlaylistFeature#13
 msgid "A playlist by that name already exists."
-msgstr "Ja existeix una llista de reproducció amb eixe nom."
+msgstr "Ja existeix una llista de reproducció amb aquest nom."
 
 #: BasePlaylistFeature#14
 msgid "A playlist cannot have a blank name."
-msgstr "Una llista de reproducció no pot tindre el nom en blanc"
+msgstr "Una llista de reproducció no pot tenir el nom en blanc"
 
 #: BasePlaylistFeature#15
 msgid "Playlist name:"
@@ -126,12 +126,12 @@ msgstr ""
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "S'ha produït un error desconegut en crear la llista de reproducció: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Fitxers de llista de reproducció (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
@@ -139,6 +139,9 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Llista de reproducció M3U (*.m3u);;Llista de reproducció M3U8 "
+"(*.m3u8);;Llista de reproducció (*.pls);;Text CSV (*.csv);;Text llegible "
+"(*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
