@@ -5,7 +5,7 @@
  * Sphinx stylesheet -- mixxx theme. Adapted from nature.
  *
  * :copyright: Copyright 2007-2011 by the Sphinx team, see AUTHORS.
- * :copyright: Copyright 2011 RJ Ryan
+ * :copyright: Copyright 2011-2013 RJ Ryan, S.Brandt
  * :license: BSD, see LICENSE for details.
  *
  */
@@ -219,10 +219,10 @@ div.body h6 {
 
 div.body h1 { border-top: 20px solid white; margin-top: 0; font-size: 200%; }
 div.body h2 { font-size: 150%; background-color: #C8D5E3; }
-div.body h3 { font-size: 120%; background-color: #D8DEE3; }
-div.body h4 { font-size: 110%; background-color: #D8DEE3; }
-div.body h5 { font-size: 100%; background-color: #D8DEE3; }
-div.body h6 { font-size: 100%; background-color: #D8DEE3; }
+div.body h3 { font-size: 125%; background-color: #D8DEE3; }
+div.body h4 { font-size: 110%; background-color: #E7EBEE; }
+div.body h5 { font-size: 100%; background-color: #F6F8F9; }
+div.body h6 { font-size: 100%; background-color: #F6F8F9; }
 
 a.headerlink {
     color: #c60f0f;
@@ -246,6 +246,16 @@ div.admonition p.admonition-title + p {
 
 div.highlight{
     background-color: black;
+}
+
+div.admonition-todo {
+    background-color: #FFB380;
+    border: 1px solid #FF6600;
+}
+
+div.hint {
+    background-color: #E5FFEB;
+    border: 1px solid #cccF;
 }
 
 div.note {
@@ -290,9 +300,17 @@ pre {
 tt {
     background-color: #ecf0f3;
     color: #222;
-    /* padding: 1px 2px; */
-    font-size: 1.1em;
+    padding: 1px;
+    font-size: 1.2em;
     font-family: monospace;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: #666 1px 1px 3px;
+    -moz-box-shadow: #666 1px 1px 3px;
+    box-shadow: #666 1px 1px 3px;
+    background: #EEF3EC;
+
 }
 
 .viewcode-back {
