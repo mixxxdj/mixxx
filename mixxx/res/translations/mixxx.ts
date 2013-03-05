@@ -3791,57 +3791,57 @@ Waveforms will be generated as part of a analysis as well.</source>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1389"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1385"/>
         <source>activate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1394"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1390"/>
         <source>toggle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1404"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1400"/>
         <source>right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1409"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1405"/>
         <source>left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1414"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1410"/>
         <source>right small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1419"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1415"/>
         <source>left small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1424"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1420"/>
         <source>up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1429"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1425"/>
         <source>down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1434"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1430"/>
         <source>up small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1439"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1435"/>
         <source>down small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1464"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1460"/>
         <source>Shortcut</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5877,15 +5877,21 @@ Click OK to exit.</source>
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="411"/>
+        <location filename="../../src/widget/woverview.cpp" line="433"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="414"/>
+        <location filename="../../src/widget/woverview.cpp" line="436"/>
         <source>Loading track ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/woverview.cpp" line="440"/>
+        <source>Finalizing ..</source>
+        <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
