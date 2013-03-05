@@ -5,74 +5,65 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>DJ automàtic</translation>
         </message>
     </context>
     <context>
         <name>BaseExternalLibraryFeature</name>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Afegeix a la cua del DJ automàtic (al final)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Afegeix a la cua del DJ automàtic (al principi)</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importa una llista de reproducció</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ha fallat la creació de la llista de reproducció</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>S'ha produït un error desconegut en crear la llista de reproducció: </translation>
         </message>
     </context>
     <context>
         <name>BasePlaylistFeature</name>
         <message>
             <source>New Playlist</source>
-            <translation>Nova Llista de Reproducció</translation>
+            <translation>Llista de reproducció nova</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Afegeix a la cua del DJ automàtic (al final)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Afegeix a la cua del DJ automàtic (al principi)</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation>Esborra</translation>
+            <translation>Suprimeix-la</translation>
         </message>
         <message>
             <source>Rename</source>
-            <translation>Canviar el nom</translation>
+            <translation>Canvia-li el nom</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation>Bloqueja</translation>
+            <translation>Bloca</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation>Importar llista de reproducció</translation>
+            <translation>Importa la llista de reproducció</translation>
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duplica la llista de reproducció</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -92,11 +83,11 @@
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
-            <translation>Ja existeix una llista de reproducció amb eixe nom.</translation>
+            <translation>Ja existeix una llista de reproducció amb aquest nom.</translation>
         </message>
         <message>
             <source>A playlist cannot have a blank name.</source>
-            <translation>Una llista de reproducció no pot tindre el nom en blanc</translation>
+            <translation>Una llista de reproducció no pot tenir el nom en blanc</translation>
         </message>
         <message>
             <source>Playlist name:</source>
@@ -114,18 +105,15 @@
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>S'ha produït un error desconegut en crear la llista de reproducció: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fitxers de llista de reproducció (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Llista de reproducció M3U (*.m3u);;Llista de reproducció M3U8 (*.m3u8);;Llista de reproducció (*.pls);;Text CSV (*.csv);;Text llegible (*.txt)</translation>
         </message>
     </context>
     <context>

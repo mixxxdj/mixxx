@@ -51,7 +51,7 @@
         </message>
         <message>
             <source>Rename</source>
-            <translation>Scaled</translation>
+            <translation>Rename</translation>
         </message>
         <message>
             <source>Lock</source>
