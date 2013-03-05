@@ -169,48 +169,58 @@ MIDI controller.
 
    The waveform overview and waveform summary of the deck
 
-The six buttons at the bottom right allow you to configure the deck. Starting
-from the top-left and moving counterclockwise the buttons are as follows:
+.. _interface-button-grid:
 
-* Show/Hide Vinyl Widget
-* Toggle Repeat Mode
-* Eject Track
-* Beat-grid Adjust
-* Toggle Quantize Mode
-* Toggle Keylock
+Deck Options Button Grid
+------------------------
 
-Repeat Mode
-^^^^^^^^^^^
+.. figure:: ../_static/deere_deck_options_grid.png
+   :align: center
+   :width: 90px
+   :figwidth: 100%
+   :alt: The Options Button Grid of the deck
+   :figclass: pretty-figures
 
-If enabled, repeat mode will jump back to the beginning and continue playing
-when the track finishes.
+   The Options Button Grid of the deck
 
-Eject Track
-^^^^^^^^^^^
+The six buttons at the bottom right below the waveform allow you to configure
+the deck. Starting from the top-left and moving counterclockwise the buttons
+are as follows:
 
-Clicking this button ejects the track from the deck.
+**Show/Hide Vinyl Widget**
+  The line on the vinyl widget rotates if the track moves. It is similar to the
+  position marker found on scratch records. Use the mouse on the vinyl widget to
+  pause, scratch, spin-back or throw tracks - just like a real record. The Vinyl
+  Widget is hidden by default.
 
-Beat-grid Adjust
-^^^^^^^^^^^^^^^^
+  If :term:`Vinyl control` is enabled, it can optionally display the time-coded
+  vinyl signal quality. Activate the option in :menuselection:`Preferences -->
+  Vinyl Control --> Show Signal Quality in Skin`.
 
-Clicking this button adjusts the track beat-grid so that the current position is
-marked as a beat. This is useful if Mixxx was able to accurately detect the
-track's :term:`BPM` but failed to align the beat markers on the beats.
+**Repeat Mode Toggle**
+  If enabled, the repeat mode will jump back to the beginning and continue
+  playing when the track finishes.
 
-.. seealso:: For more informations, go to the chapter :ref:`djing-bpm-detection`.
+**Eject Track Button**
+  Clicking this button ejects the track from the deck. Alternatively you can use
+  a keyboard shortcut, go to the chapter :ref:`control-keyboard` for more
+  informations.
 
-Toggle Quantize Mode
-^^^^^^^^^^^^^^^^^^^^
+**Beat-grid Adjust Button**
+  Clicking this button adjusts the track beat-grid so that the current position
+  is marked as a beat. This is useful if Mixxx was able to accurately detect the
+  track's :term:`BPM` but failed to align the beat markers on the beats. For
+  more informations, go to the chapter :ref:`djing-bpm-detection`..
 
-In this mode, all cues, hotcues, loops, and beatloops will be automatically
-adjusted (:term:`quantized`) so that they begin on a beat.
+**Quantize Mode Toggle**
+  If enabled, all cues, hotcues, loops, and beatloops will be automatically
+  :term:`quantized <quantization>` so that they begin on a beat.
 
-Toggle Keylock
-^^^^^^^^^^^^^^
-:term:`Keylock <key lock>` locks the track's pitch so that adjustments to its
-tempo via the rate slider do not affect its pitch. This is useful if you would
-like to speed up or slow down a track and avoid the "chipmunk" affect that
-speeding up vocals has.
+**Keylock Toggle**
+  :term:`Keylock <key lock>` locks the track's pitch so that adjustments to its
+  tempo via the rate slider do not affect its pitch. This is useful if you would
+  like to speed up or slow down a track and avoid the "chipmunk" affect that
+  speeding up vocals has.
 
 .. _interface-mixer:
 
