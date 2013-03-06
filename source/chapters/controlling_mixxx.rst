@@ -16,18 +16,18 @@ Use your mouse to interact with the controls in the
 :ref:`Mixxx User Interface <interface-overview>` on your computer screen. You
 can perform actions by pointing and clicking with your mouse.
 
-* **Single Left Click** - Performing a left mouse click on buttons triggers the
+* **Single Left Click**: Performing a left mouse click on buttons triggers the
   default action for that control. Moreover if you click on a value in the track
   list of the Mixxx :ref:`library <interface-library>`, you can change the
   value. For example the year of a track.
-* **Single Right Click** - On most buttons, performing a right click triggers a
+* **Single Right Click**: On most buttons, performing a right click triggers a
   different action than a left click. You can return any knob or fader to its
   default value by right-clicking that control.
-* **Mouse Drag** - Click on a knob or fader, hold the left mouse button and move
+* **Mouse Drag**: Click on a knob or fader, hold the left mouse button and move
   your cursor to change the value of the control. Use mouse drag to drop tracks
   from the file list to the decks, crates, playlists etc.
-* **Mouse Wheel** - Just like Mouse Drag, you can change knob and fader
-  values by placing the curser over the control and moving the mouse wheel.
+* **Mouse Wheel**: Just like Mouse Drag, you can change knob and fader values
+  by placing the cursor over the control and moving the mouse wheel.
 
 .. hint::  If you hover with the mouse over a control (e.g the crossfader) in
            the Mixxx user interface, the tooltip lists the left- and right-click
@@ -102,14 +102,14 @@ Without loading the correct preset, your controller does not work with Mixxx.
 
 #. Connect your controller(s) to your computer
 #. Start Mixxx
-#. Select ``Options → Preferences`` from the menu on top of the application
-   window.
-#. Select the ``Controllers`` preference item
+#. Open the :menuselection:`Preferences`
+#. Select the :guilabel:`Controllers` preference item
 #. Select your device from the list of available devices on the left and the
    right pane will change
-#. Click the ``Enable`` checkbox
-#. Select the mapping for your controller from the ``Presets`` drop-down-menu
-#. Click ``OK`` and Mixxx can now be controlled by your controller(s).
+#. Click the :guilabel:`Enable` checkbox
+#. Select the mapping for your controller from the :guilabel:`Presets`
+   drop-down-menu
+#. Click :guilabel:`OK` and Mixxx can now be controlled by your controller(s).
 #. Repeat step 5-8 for any of the controllers you want to use
 
 .. hint:: If you do not find a connected device in the list, make sure to
@@ -124,9 +124,9 @@ MIDI/HID mapping file to tell Mixxx how to understand it. Mixxx comes bundled
 with a number of mappings for various devices. There are two levels of
 controller mappings:
 
-* **Mixxx Certified Mappings** - These mappings are verified by the Mixxx
+* **Mixxx Certified Mappings**: These mappings are verified by the Mixxx
   Development Team.
-* **Community Supported Mappings** - These mappings are provided and have been
+* **Community Supported Mappings**: These mappings are provided and have been
   verified as working by the Mixxx community, but the Mixxx Team is unable to
   verify their quality because we don't have the devices ourselves. They might
   have bugs or rough edges.
@@ -154,5 +154,5 @@ Using Timecode Vinyl Records and CDs
 Mixxx using a turntable or DJ CD player as an interface.  In effect, it
 simulates the sound and feel of having your music collection on vinyl.
 
-.. seealso:: Go to the chapter :ref:`vinyl-control` for more informations.
+.. seealso:: Go to the chapter :ref:`vinyl-control` for detailed informations.
 
