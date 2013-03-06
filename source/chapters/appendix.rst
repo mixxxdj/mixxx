@@ -149,6 +149,6 @@ Enable Keyboard Shortcuts         Ctrl + \`
 Exit Mixxx                        Ctrl + Q
 ================================  ================================
 
-.. hint:: The ``Ctrl`` key on Windows & Linux is equivalent to the
-          ``Command`` key on Mac OS X. The ``Alt`` key on Windows & Linux
-          is equivalent to the ``Option`` key on Mac OS X.
+.. hint:: The :kbd:`Ctrl` key on Windows & Linux is equivalent to the
+          :kbd:`Command` key on Mac OS X. The :kbd:`Alt` key on Windows & Linux
+          is equivalent to the :kbd:`Option` key on Mac OS X.
