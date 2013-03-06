@@ -1,3 +1,5 @@
+.. _interface-overview:
+
 An Overview of the Mixxx Interface
 **********************************
 
@@ -19,11 +21,10 @@ This is the Deere skin. It is the default skin supplied with Mixxx. There are a
 variety of others skins included with Mixxx. You should explore them all to
 figure out which one you prefer. This section will focus on Deere only.
 
+.. _interface-decks:
+
 The Deck Sections
 =================
-
-The :term:`deck` section allows you to control everything relating to a virtual
-turntable deck. We are going to break this down into sections.
 
 .. figure:: ../_static/deere_deck_section.png
    :align: center
@@ -32,29 +33,51 @@ turntable deck. We are going to break this down into sections.
    :alt: A deck
    :figclass: pretty-figures
 
-   A deck
+   A deck with a track loaded
 
-Track Information
------------------
+The deck section allows you to control everything relating to a virtual
+turntable :term:`deck`. We are going to break this down into sections.
 
-The name of the loaded track is shown on top of each deck and the artist is
-listed below. The number at the top right is the effective :term:`BPM` of the
-track. This is the detected :term:`BPM` of the track, adjusted for the playback
-rate of the track. For example, if the track is normally 100 BPM, and it is
-playing at +5%, then the effective BPM will read 105 BPM. The number in the
-bottom right is the total elapsed time in the track or the total remaining time
-in the track. You can customize this in the Mixxx Preferences Interface section.
+.. _interface-track-info:
+
+Track Information Display
+-------------------------
 
 .. figure:: ../_static/deere_deck_track_info.png
    :align: center
-   :width: 70%
+   :width: 60%
    :figwidth: 100%
    :alt: The track information section of the deck
    :figclass: pretty-figures
 
    The track information section of the deck
 
-.. hint:: Tap the BPM to set the BPM to the speed you are tapping.
+**Track Title**
+  The title of the track that was loaded into a deck is displayed on top. This
+  is the same as the title listed under the :guilabel:`Title` column heading in
+  the Mixxx library. This information is initially loaded from the tracks
+  :term:`metadata`.
+
+**Track Artist**
+  The title of the track is listed below. It is the same as listed under the
+  :guilabel:`Artist` column heading in the Mixxx library.
+
+**BPM (Tempo)**
+  The number at the top right is the effective :term:`BPM` of the track. This is
+  the detected :term:`BPM` of the track, adjusted for the playback rate of the
+  track. For example, if the track is normally 100 BPM, and it is playing at
+  +5%, then the effective BPM will read 105 BPM.
+
+  .. hint:: Click directly on the BPM display and tap with the beat to set the
+            BPM to the speed you are tapping. You can also use a keyboard
+            shortcut, go to :ref:`control-keyboard` for more informations.
+
+**Time Elapsed/Remaining**
+  By default it displays the total elapsed time in the track up to the
+  millisecond. Clicking on the display switches to the *Time Remaining* view,
+  which indicates how much time is left before the track reaches the end.
+  You can change the default in :menuselection:`Preferences --> Interface -->
+  Position Display`.
 
 .. _interface-rate:
 
