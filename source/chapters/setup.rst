@@ -45,7 +45,7 @@ laptops comes with a single line-out and microphone input.
 The figure above depicts how the sound configuration might look. The stereo
 output of your soundcard (channels 1-2) will be connected to the **master
 out**. Depending on your soundcard you can specify a microphone under the
-"Input" tab.
+:guilabel:`Input` tab.
 
 This minimal configuration may be suitable for **radio DJs** that do not need
 headphone cueing.

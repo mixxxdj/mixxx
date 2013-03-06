@@ -26,7 +26,7 @@ configurations is available on the `vinyl control wiki page
 How does it work?
 =================
 
-Vinyl control uses special timecode records or CD`s which are placed on real
+Vinyl control uses special timecode records or CD's which are placed on real
 turntables or :term:`CDJ`. The audio output of the turntables is plugged into a
 computer on which Mixxx is running. When a record is played on one of the
 attached turntables, Mixxx reads the timecode from the record and uses the

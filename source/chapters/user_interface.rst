@@ -249,8 +249,9 @@ side of the VU meters are the deck volume faders. Adjusting these controls the
 volume of each deck.
 
 Above the VU meters are the optional section expansion buttons. If you click on
-either "MIC", "SAMPLER", or "VINYL" then you will enable control sections for
-interacting with the microphone, samplers, and vinyl control respectively.
+either :guilabel:`MIC`, :guilabel:`SAMPLER`, or :guilabel:`VINYL` then you will
+enable control sections for interacting with the microphone, samplers, and vinyl
+control respectively.
 
 Headphone and Master Mix Controls
 ---------------------------------
