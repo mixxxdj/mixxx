@@ -14,8 +14,9 @@ Loading Tracks
 Tracks can be loaded into a deck in several ways:
 
 * Right-click the library track table: Right-clicking on a track in the table
-  will present the options ``Load in Deck 1`` and ``Load in Deck 2``, among
-  others. Making either selection will load a track into a deck.
+  will present the options :guilabel:`Load in Deck 1` and
+  :guilabel:`Load in Deck 2`, among others. Making either selection will load a
+  track into a deck.
 * By :ref:`control-keyboard` to load the selected track from library track table.
 * Drag-and-drop from library track table: Dragging-and-dropping a track from the
   track table onto a waveform display will load a track into a deck.
@@ -30,21 +31,22 @@ Tracks can be loaded into a deck in several ways:
 Finding Tracks (Search)
 =======================
 
-The search function searches for a match only in the current selected list ( e.g
+The search function searches for a match only in the current selected list (e.g.
 a playlist, a crate or even the whole library).
 
-* Hit ``CTRL+F`` (Windows/Linux) or ``CMD+F`` (Mac) to activate the search input
-  field.
+* Activate the search input field by pressing :kbd:`CTRL+F`
+  (Windows/Linux) or :kbd:`CMD+F` (Mac). Alternatively click into the
+  search box.
 * Type in your search term, as soon as you type Mixxx filters the tracks and
   retains only the ones that match with the search term. Search terms can
   include an artist’s name, a song title, BPM, etc.
-* To clear the search string hit ``ESC`` or click the clear button right next to
-  the input field.
-* Hit ``TAB`` to circle between the search and the list of results in the
-  library. Use the ``ARROW UP`` and ``ARROW DOWN`` keys to scroll in the list of
-  results.
+* To clear the search string hit :kbd:`ESC` or click the clear button right next
+  to the input field.
+* Hit :kbd:`TAB` to circle between the search and the list of results in the
+  library. Use the :kbd:`ARROW UP` and :kbd:`ARROW DOWN` keys to scroll in the
+  list of results.
 
-.. note:: If the search input field has focus the Mixxx keyboard shortcuts do
+.. note:: If the search input field has focus, the Mixxx keyboard shortcuts do
           not work, see :ref:`control-keyboard`.
 
 Using search operators
@@ -95,12 +97,12 @@ Previewing Tracks
 
 .. versionadded:: 1.11
 
-To prelisten to a track activate the 'Preview' column in a library view
-and then click on the Play icon. The track will then start playing in a
+To prelisten to a track activate the :guilabel:`Preview` column in a library
+view and then click on the Play icon. The track will then start playing in a
 special preview deck that will only output sound in the headphones channel.
 Clicking the button again will stop the playback. Some skins support the
-preview deck to manually search in the track. If supported, ``CTRL+4``
-(Windows/Linux) or ``CMD+4`` (Mac) displays the preview deck.
+preview deck to manually search in the track. If supported, :kbd:`CTRL+4`
+(Windows/Linux) or :kbd:`CMD+4` (Mac) displays the preview deck.
 
 .. _waveform-displays:
 
@@ -165,8 +167,8 @@ must do to beatmatch.
 
 Mixxx can match the tempo and align the beats for you. This, however, requires
 an accurately detected BPM value and a proper beat grid for both tracks. In this
-case all you need to do is hit the ``SYNC`` button.
-To beatmatch manually the tempo of the two tracks  must be synchronized by
+case all you need to do is hit the :guilabel:`SYNC` button.
+To beatmatch manually, the tempo of the two tracks must be synchronized by
 adjusting the playback rate sliders. You can adjust the phase of the beats by
 right-clicking and dragging on either waveform display to temporarily speed up
 or slow down one of the tracks until the beats are aligned.
@@ -193,8 +195,8 @@ cueing is useful because it allows a DJ to beatmatch the next track in their
 headphones before bringing it into their mix by sliding the crossfader.
 
 Mixxx allows a DJ to route audio from either deck to their headphones by
-toggling either of the ``HEADPHONE`` buttons in the mixer section of Mixxx's
-interface. See the chapter :ref:`interface-mixer`.
+toggling either of the :guilabel:`Headphone` buttons in the mixer section of
+Mixxx's interface. See the chapter :ref:`interface-mixer`.
 
 .. _djing-bpm-detection:
 
@@ -204,7 +206,7 @@ BPM and Beat Detection
 Previous versions of Mixxx were able to detect BPM values but unable to
 determine where the beats are. Consequently, the beat grids often looked
 unaligned. The DJ had to adjust the beat grid unless he or she did not make use
-of auto-beatmatching via ``SYNC`` button .
+of auto-beatmatching via :guilabel:`SYNC` button .
 
 .. versionchanged:: 1.11
    Mixxx comes with a new ultra-precise BPM and beat detector.
@@ -251,7 +253,7 @@ The table below summarizes the beat detection settings:
 | Enable Offset Correction              | Prevents beat markers from being     |
 |                                       | placed incorrectly.                  |
 +---------------------------------------+--------------------------------------+
-| Re-analyse beats when settings        | If enabled, Mixxx over-write old     |
+| Re-analyze beats when settings        | If enabled, Mixxx over-write old     |
 | change or beats already present       | beat grids from Mixxx 1.10.0 and     |
 |                                       | earlier. Moreover, it will           |
 |                                       | re-analyze the BPM if your beat      |
@@ -327,15 +329,16 @@ choose to create them in the preferences.
 Record your mix to disk
 -----------------------
 
-* Click on the ``Recordings`` icon in the sidebar to switch to the *Recordings*
-  view
-* Click the ``Start Recording`` button. Alternatively, click
-  ``Options → Record Mix`` in the menu on top of the Mixxx application window.
+* Click on the *Recordings* icon in the sidebar to switch to the
+  :guilabel:`Recordings` view
+* Click the :guilabel:`Start Recording` button or click
+  :menuselection:`Options --> Record Mix` in the menu on top of the Mixxx
+  application window.
 * The display above the track table shows how much data has already been
   recorded.
 * Perform your mix
-* Click the ``Stop Recording`` button to stop the recording when the mix has
-  finished.
+* Click the :guilabel:`Stop Recording` button to stop the recording when the mix
+  has finished.
 
 .. hint:: You can instantly use your recording as track in Mixxx. Simply
           drag-and-drop the track to a deck.
@@ -343,9 +346,9 @@ Record your mix to disk
 Burn you recorded mix to a CD/DVD
 ---------------------------------
 
-* Select your recording in the *Recordings* view
-* Right-click and select ``Open in File Browser`` to locate the file on your
-  disk
+* Select your recording in the :guilabel:`Recordings` view
+* Right-click and select :guilabel:`Open in File Browser` to locate the file on
+  your disk
 * Now burn the recording to a CD/DVD using a 3rd party program, for example
   `CDBurnerXP <http://www.cdburnerxp.se/>`_ for Windows or
   `Burn <http://burn-osx.sourceforge.net/>`_ for Mac OS X.
@@ -377,17 +380,18 @@ playlist when the current track is nearly finished, and crossfade into it.
 
 The Auto DJ features in detail:
 
-* Shuffle button - Shuffles the content of the Auto DJ playlist.
-* Skip track button - Skips the next track in the Auto DJ playlist.
-* Fade now button - Triggers the transition to the next track.
-* Transition time spin-box - Determines the duration of the transition.
-* Enable Auto DJ button - Toggles the Auto DJ mode on or off.
+* **Shuffle button**: Shuffles the content of the Auto DJ playlist.
+* **Skip track button**: Skips the next track in the Auto DJ playlist.
+* **Fade now button**: Triggers the transition to the next track.
+* **Transition time spin-box**: Determines the duration of the transition.
+* **Enable Auto DJ button**: Toggles the Auto DJ mode on or off.
 
-The ``Skip track`` and ``Fade now`` buttons are only accessible if the Auto DJ
-mode is enabled. The Search field in the upper left corner is disable in Auto DJ.
+The :guilabel:`Skip track` and :guilabel:`Fade now` buttons are only accessible
+if the Auto DJ mode is enabled. The Search field in the upper left corner is
+disable in Auto DJ.
 
 .. hint:: You can put a pause between two tracks that are automatically mixed by
-          using a negative value in the ``Transition time`` spin-box.
+          using a negative value in the :guilabel:`Transition time` spin-box.
 
 Loading tracks into Auto DJ
 ---------------------------
@@ -409,7 +413,7 @@ There are several ways to load tracks into the Auto DJ:
 * Select single or multiple tracks from the library, a regular playlist or crate
   and drag them to the Auto DJ icon on the left.
 * Select a regular playlist or crate, right-click with the mouse and select
-  ``Add to Auto DJ`` from the mouse menu. This adds all tracks to Auto DJ.
+  :guilabel:`Add to Auto DJ` from the mouse menu. This adds all tracks to Auto DJ.
 * While being in Auto DJ view, drag tracks from external file managers to the
   Auto DJ icon in the sidebar.
 
@@ -419,11 +423,12 @@ Playing tracks in Auto DJ
 Now that you have loaded tracks into the Auto DJ playlist, you can activate
 Auto DJ as follows:
 
-* Click on the ``Auto DJ`` icon in the sidebar to switch to the *Auto DJ* view
-* Click the ``Enable Auto DJ`` button
+* Click on the *Auto DJ* icon in the sidebar to switch to the :guilabel:`Auto DJ`
+  view
+* Click the :guilabel:`Enable Auto DJ` button
 * The first tracks from your list are loaded into the decks and the playback
   starts.
 * Mixxx will continue to automatically  mix until the Auto DJ playlist
   is empty.
-* Click the ``Disable Auto DJ`` button to stop the automatic mixing.
+* Click the :guilabel:`Disable Auto DJ` button to stop the automatic mixing
 
