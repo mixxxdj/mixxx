@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
 "PO-Revision-Date: 2012-04-24 14:04+0000\n"
 "Last-Translator: Suresh Shinde <sureshinde@inbox.com>\n"
 "Language-Team: Marathi <mr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:37+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-06 05:11+0000\n"
+"X-Generator: Launchpad (build 16514)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -4830,6 +4830,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 #: WSearchLineEdit#1
