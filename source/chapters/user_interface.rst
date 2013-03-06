@@ -79,6 +79,126 @@ Track Information Display
   You can change the default in :menuselection:`Preferences --> Interface -->
   Position Display`.
 
+
+.. _interface-waveform:
+
+Waveform Displays
+=================
+
+.. figure:: ../_static/deere_deck_waveform.png
+   :align: center
+   :width: 60%
+   :figwidth: 100%
+   :alt: The deck waveform summary and waveform overview
+   :figclass: pretty-figures
+
+   The waveform summary and waveform overview of the deck
+
+The waveform section of a deck allows you to visualize the audio changes that
+occur throughout the track, you can basically "see" your music.
+
+**Waveform summary**
+  The big waveform summary shows the waveform envelope of the track near the
+  current playback position and is updated in realtime. The mouse can be used on
+  the waveform to pause, scratch, spin-back or throw the tracks. Right-clicking
+  on the waveforms allows you to drag with the mouse to make temporary pitch
+  adjustments.
+
+  .. hint :: You can select from different types of displays for the waveform,
+             which differ primarily in the level of detail shown in the
+             waveform, in :menuselection:`Preferences --> Interface -->
+             Waveform Display --> Display type`.
+
+**Waveform overview**
+  The smaller, zoomed-out version of the waveform shows the various markers
+  within the track as well as the waveform envelope of the entire track. This is
+  useful because they allow DJs to see breakdowns far in advance. Clicking
+  somewhere on the waveform allows you to jump to an arbitrary position in the
+  track.
+
+**Waveform Zoom**
+  Using the mouse-wheel everywhere in the waveform summary will zoom the
+  waveform in or out. You can choose whether or not to synchronize the zoom
+  level between the decks in :menuselection:`Preferences --> Interface -->
+  Waveform Display --> Synchronize`.
+
+**Waveform Marker**
+  While mixing, various additional markers can appear on the waveforms:
+
+* **Position marker**: The static vertical line in the center of the waveform
+  summary indicates the playback point of the deck.
+* **Beat marker**: The regular white lines on the waveform summary indicate the
+  locations of beats in the audio, also called the :term:`beatgrid`.
+* **Cue marker**: Indicates the position of the :term:`cue point <cue>`.
+* **Hotcue marker**: Indicate the position and number of a :term:`hotcue`
+  point if set.
+* **Loop-in/Out marker**: Indicate the beginning and the end of a loop.
+* **Loop overlay**: Is drawn between the Loop-in/Out markers and changes color
+  depending on whether a loop is activated or not.
+* **Track ending notification**: If the waveform overview flashes red, only 30
+  seconds are left before the track reaches the end.
+
+.. seealso:: To learn how to get most out of the waveforms while mixing, go to
+             the chapter :ref:`waveform-displays`.
+
+.. warning :: If you have a slower computer and notice performance issues with
+              Mixxx, try to lower the frame rate or change the level of detail
+              shown in the waveform in in :menuselection:`Preferences -->
+              Interface --> Waveform Display`.
+
+.. _interface-button-grid:
+
+Deck Options Button Grid
+------------------------
+
+.. figure:: ../_static/deere_deck_options_grid.png
+   :align: center
+   :width: 90px
+   :figwidth: 100%
+   :alt: The Options Button Grid of the deck
+   :figclass: pretty-figures
+
+   The Options Button Grid of the deck
+
+The six buttons at the bottom right below the waveform allow you to configure
+the deck. Starting from the top-left and moving counterclockwise the buttons
+are as follows:
+
+**Show/Hide Vinyl Widget**
+  The line on the vinyl widget rotates if the track moves. It is similar to the
+  position marker found on scratch records. Use the mouse on the vinyl widget to
+  pause, scratch, spin-back or throw tracks - just like a real record. The Vinyl
+  Widget is hidden by default.
+
+  If :term:`Vinyl control` is enabled, it can optionally display the time-coded
+  vinyl signal quality. Activate the option in :menuselection:`Preferences -->
+  Vinyl Control --> Show Signal Quality in Skin`.
+
+**Repeat Mode Toggle**
+  If enabled, the repeat mode will jump back to the beginning and continue
+  playing when the track finishes.
+
+**Eject Track Button**
+  Clicking this button ejects the track from the deck. Alternatively you can use
+  a keyboard shortcut, go to the chapter :ref:`control-keyboard` for more
+  informations.
+
+**Beat-grid Adjust Button**
+  Clicking this button adjusts the track beat-grid so that the current position
+  is marked as a beat. This is useful if Mixxx was able to accurately detect the
+  track's :term:`BPM` but failed to align the beat markers on the beats. For
+  more informations, go to the chapter :ref:`djing-bpm-detection`.
+
+**Quantize Mode Toggle**
+  If enabled, all cues, hotcues, loops, and beatloops will be automatically
+  :term:`quantized <quantization>` so that they begin on a beat.
+
+**Keylock Toggle**
+  :term:`Keylock <key lock>` locks the track's pitch so that adjustments to its
+  tempo via the rate slider do not affect its pitch. This is useful if you would
+  like to speed up or slow down a track and avoid the "chipmunk" affect that
+  speeding up vocals has.
+
 .. _interface-rate:
 
 Rate Controls
@@ -167,83 +287,6 @@ numbered button. If the :term:`quantize <quantization>` mode is enabled (see
 :ref:`interface-waveform` section), then the hotcues will automatically snap to
 the nearest beat.
 
-
-.. _interface-waveform:
-
-The Waveform
-------------
-
-The waveform section of a deck allows you to visualize the audio changes that
-occur throughout the track. The larger, zoomed-in waveform is called the
-:term:`waveform overview`, while the smaller, zoomed-out version of the waveform
-is called the :term:`waveform summary`. The white lines on the waveform overview
-are called :term:`beatgrid`, and they indicate the locations of beats in the
-audio. The vertical line in the center of the waveform overview indicates the
-playback point of the deck. Clicking on either the waveform or the spinning
-vinyl widget allows you to scratch the track as if you were using vinyl or a
-MIDI controller.
-
-.. figure:: ../_static/deere_deck_waveform.png
-   :align: center
-   :width: 70%
-   :figwidth: 100%
-   :alt: The deck waveform overview and waveform summary
-   :figclass: pretty-figures
-
-   The waveform overview and waveform summary of the deck
-
-.. _interface-button-grid:
-
-Deck Options Button Grid
-------------------------
-
-.. figure:: ../_static/deere_deck_options_grid.png
-   :align: center
-   :width: 90px
-   :figwidth: 100%
-   :alt: The Options Button Grid of the deck
-   :figclass: pretty-figures
-
-   The Options Button Grid of the deck
-
-The six buttons at the bottom right below the waveform allow you to configure
-the deck. Starting from the top-left and moving counterclockwise the buttons
-are as follows:
-
-**Show/Hide Vinyl Widget**
-  The line on the vinyl widget rotates if the track moves. It is similar to the
-  position marker found on scratch records. Use the mouse on the vinyl widget to
-  pause, scratch, spin-back or throw tracks - just like a real record. The Vinyl
-  Widget is hidden by default.
-
-  If :term:`Vinyl control` is enabled, it can optionally display the time-coded
-  vinyl signal quality. Activate the option in :menuselection:`Preferences -->
-  Vinyl Control --> Show Signal Quality in Skin`.
-
-**Repeat Mode Toggle**
-  If enabled, the repeat mode will jump back to the beginning and continue
-  playing when the track finishes.
-
-**Eject Track Button**
-  Clicking this button ejects the track from the deck. Alternatively you can use
-  a keyboard shortcut, go to the chapter :ref:`control-keyboard` for more
-  informations.
-
-**Beat-grid Adjust Button**
-  Clicking this button adjusts the track beat-grid so that the current position
-  is marked as a beat. This is useful if Mixxx was able to accurately detect the
-  track's :term:`BPM` but failed to align the beat markers on the beats. For
-  more informations, go to the chapter :ref:`djing-bpm-detection`.
-
-**Quantize Mode Toggle**
-  If enabled, all cues, hotcues, loops, and beatloops will be automatically
-  :term:`quantized <quantization>` so that they begin on a beat.
-
-**Keylock Toggle**
-  :term:`Keylock <key lock>` locks the track's pitch so that adjustments to its
-  tempo via the rate slider do not affect its pitch. This is useful if you would
-  like to speed up or slow down a track and avoid the "chipmunk" affect that
-  speeding up vocals has.
 
 .. _interface-mixer:
 
