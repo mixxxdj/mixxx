@@ -182,7 +182,7 @@ htmlhelp_basename = 'Mixxxdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Mixxx.tex', u'Mixxx User Guide', u'The Mixxx Team', 'manual', True),
+  ('index', 'Mixxx.tex', u'Mixxx User Manual', u'The Mixxx Team', 'manual', True),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -213,7 +213,7 @@ latex_domain_indices = False
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'mixxx', u'Mixxx Documentation',
+    ('index', 'mixxx', u'Mixxx User Manual',
      [u'The Mixxx Team'], 1)
 ]
 
@@ -226,7 +226,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Mixxx', u'Mixxx Documentation', u'The Mixxx Team',
+  ('index', 'Mixxx', u'Mixxx User Manual', u'The Mixxx Team',
    'Mixxx', 'One line description of project.', 'Miscellaneous'),
 ]
 
@@ -236,10 +236,10 @@ texinfo_appendices = []
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'Mixxx'
+epub_title = u'Mixxx User Manual'
 epub_author = u'The Mixxx Team'
 epub_publisher = u'The Mixxx Team'
-epub_copyright = u'2011, The Mixxx Team'
+epub_copyright = u'2011-2013, The Mixxx Team'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
