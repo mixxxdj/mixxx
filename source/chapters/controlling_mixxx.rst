@@ -59,14 +59,14 @@ The default mapping for English keyboards is depicted in the figure above. It's
 divided into a left-hand side for deck 1 and right-hand side for deck 2. Please
 note that you can also access the functions through Mixxx's interface.
 
-.. note:: For some user groups, i.e. those using midi controllers or vinyl
-          control it might be useful to enable/disable the keyboard mapping at
+.. note:: For some user groups, like those using midi controllers or vinyl
+          control, it might be useful to enable/disable the keyboard mapping at
           runtime. You can do so by clicking
-          ``Options`` -> ``Enable keyboard shortcuts`` in the menu.
+          :menuselection:`Options --> Enable Keyboard Shortcuts`.
 
-.. hint::  If you hover with the mouse over a control (e.g the crossfader) in
-           the Mixxx user interface the tooltip lists the keyboard shortcuts of
-           the control.
+.. hint::  If you hover with the mouse over a control (e.g. the crossfader) in
+           the Mixxx user interface, the tooltip lists the keyboard shortcuts of
+           the control among a description of the control.
 
 .. seealso:: For a list of default shortcuts, go to: :ref:`appendix-keyboard`
 

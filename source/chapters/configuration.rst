@@ -15,9 +15,10 @@ Mixxx's mixing engine can be used two ways:
   separate soundcard output. This allows you to route the deck outputs through a
   hardware mixer.
 
-To enable external mixer mode, simply select a valid audio output for the "deck"
-outputs in the Sound Hardware section of the Mixxx preferences. Similarly, to
-enable internal mixer mode assign a valid audio output to the "Master" output.
+To enable external mixer mode, simply select a valid audio output for the
+:guilabel:`Deck` outputs in :menuselection:`Preferences --> Sound Hardware -->
+Output`. Similarly, to enable internal mixer mode assign a valid audio output to
+the :guilabel:`Master` output.
 
 Headphone Output
 ----------------
@@ -109,12 +110,12 @@ best choice is for your operating system.
           system, you can try installing `ASIO4ALL <http://asio4all.com>`_, a
           low-latency audio driver for WDM audio devices.
 
-.. warning:: On GNU/Linux do *not* use the 'pulse' device with the ALSA Audio
+.. note:: On GNU/Linux using JACK, make sure to start your JACK daemon *before*
+          running Mixxx. Otherwise JACK will not appear as a Sound API in the
+          preferences.
+
+.. warning:: On GNU/Linux do *not* use the ``pulse`` device with the ALSA Audio
              API. This is an emulation layer for ALSA provided by PulseAudio and
              results in very poor performance. Make sure to run Mixxx using the
              ``pasuspender`` tool on GNU/Linux distributions that use
              PulseAudio.
-
-.. note:: On GNU/Linux using JACK, make sure to start your JACK daemon *before*
-          running Mixxx. Otherwise JACK will not appear as a Sound API in the
-          preferences.
