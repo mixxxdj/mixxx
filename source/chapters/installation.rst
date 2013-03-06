@@ -47,12 +47,11 @@ Package Archive (ppa). Open a terminal and type the following commands::
 Installation on Other Distributions
 -----------------------------------
 
-Your distribution
-may maintain a non-official build that you may use. Alternatively, you can build
-Mixxx from source. This should not be a terrible process, and it's certainly
-easiest on GNU/Linux. For more information, see the `Compiling on Linux
-<http://mixxx.org/wiki/doku.php/compiling_on_linux>`_ section of the `Mixxx Wiki
-<http://mixxx.org/wiki>`_.
+Your distribution may maintain a non-official build that you may use.
+Alternatively, you can build Mixxx from source. This should not be a terrible
+process, and it's certainly easiest on GNU/Linux. For more information, see the
+`Compiling on Linux<http://mixxx.org/wiki/doku.php/compiling_on_linux>`_ section
+of the `Mixxx Wiki<http://mixxx.org/wiki>`_.
 
 Building Mixxx from Source
 ==========================
