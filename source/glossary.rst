@@ -318,3 +318,14 @@ Glossary of Terms
      to subscribe to the feed and automatically download content to their
      portable audio players as it becomes available.
 
+   url
+     (Uniform Resource Locator) The address that defines the route to a file on
+     an Internet server. URLs are typed into a Web browser to access Web pages
+     and files, and URLs are embedded within the pages themselves as hypertext
+     links. One example of URLs is http://www.mixxx.org
+
+   quantization
+     Quantization is the process of aligning notes and other events like loop-
+     or cuepoints points so that they start or finish exact on beats or exact
+     fractions of beats.
+

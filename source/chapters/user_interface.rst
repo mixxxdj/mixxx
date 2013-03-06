@@ -130,7 +130,7 @@ loop is active or not.
 
 Above the :term:`loop <reloop>` button are the :term:`in <loop in>` and
 :term:`out <loop out>` buttons, which allow you to manually set the loop-in and
-loop-out point. If the :term:`quantize` mode is enabled (see
+loop-out point. If the :term:`quantize <quantization>` mode is enabled (see
 :ref:`interface-waveform` section), then the loop points will automatically
 snap to the nearest beat.
 
@@ -140,7 +140,7 @@ corresponding number will appear in the waveform with the same number as the
 button and the button will turn red to indicate that the hotcue is set. If the
 deck is playing, you can simply tap a hotcue to cause the deck to instantly jump
 back to the location of the hotcue. To clear a hotcue, right-click on the
-numbered button. If the :term:`quantize` mode is enabled (see
+numbered button. If the :term:`quantize <quantization>` mode is enabled (see
 :ref:`interface-waveform` section), then the hotcues will automatically snap to
 the nearest beat.
 
