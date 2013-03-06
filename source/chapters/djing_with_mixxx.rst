@@ -97,7 +97,7 @@ Previewing Tracks
 
 .. versionadded:: 1.11
 
-To prelisten to a track activate the :guilabel:`Preview` column in a library
+To prelisten to a track, activate the :guilabel:`Preview` column in a library
 view and then click on the Play icon. The track will then start playing in a
 special preview deck that will only output sound in the headphones channel.
 Clicking the button again will stop the playback. Some skins support the
@@ -206,7 +206,7 @@ BPM and Beat Detection
 Previous versions of Mixxx were able to detect BPM values but unable to
 determine where the beats are. Consequently, the beat grids often looked
 unaligned. The DJ had to adjust the beat grid unless he or she did not make use
-of auto-beatmatching via :guilabel:`SYNC` button .
+of auto-beatmatching via :guilabel:`SYNC` button.
 
 .. versionchanged:: 1.11
    Mixxx comes with a new ultra-precise BPM and beat detector.
