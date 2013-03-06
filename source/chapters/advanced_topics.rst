@@ -18,32 +18,37 @@ Mixxx Wiki.
 Making a Custom Keyboard Mapping
 ================================
 
-The default shortcuts are defined in a text file which can be found at the
-following location:
+The :ref:`default keyboard mappings<appendix-keyboard>` are defined in a text
+file which can be found at the following location:
 
-* Linux: ``/usr/share/mixxx/keyboard/en_US.kbd.cfg``
+* Linux: ``/usr/local/share/mixxx/keyboard/en_US.kbd.cfg``
 * Mac OS X: ``/Applications/Mixxx.app/Contents/Resources/keyboard/en_US.kbd.cfg``
-* Windows: ``<Mixxx dir>\keyboard\en_US.kbd.cfg``
+* Windows: ``<Mixxx installation directory>\keyboard\en_US.kbd.cfg``
 
 Depending on your systems language settings, Mixxx might use a different
-file as default, e.g ``de_DE.kbd.cfg`` or ``es_ES.kbd.cfg`` .
+file as default, e.g. ``de_DE.kbd.cfg`` for German or ``es_ES.kbd.cfg`` for
+Spanish.
 
-If you want to customize the keyboard mapping, add a new text file or copy the
-default shortcut file to the following location:
+There are two ways to customize the default Mixxx keyboard mapping:
+
+1. Edit your systems default mapping file directly, e.g. ``en_US.kbd.cfg``.
+2. Copy the default mapping file to the following location:
 
 * Linux: ``~/.mixxx/Custom.kbd.cfg``
-* MacOSX: ``/Library/Application\ Support/Mixxx/Custom.kbd.cfg``
+* Mac OS X: ``/Library/Application\ Support/Mixxx/Custom.kbd.cfg``
 * Windows: ``%USERPROFILE%\Local Settings\Application Data\Mixxx\Custom.kbd.cfg``
 
-Make sure the custom keyboard mapping file is renamed to **Custom.kbd.cfg** .
-On the next startup, Mixxx will check if ``Custom.kbd.cfg`` is present and load
-that file instead of the standard mapping file.
+Then edit this file and save the changes. On the next startup, Mixxx will check
+if ``Custom.kbd.cfg`` is present and load that file instead of the default
+mapping file. This has the advantage, that you can always revert back to the
+default mapping, just by deleting ``Custom.kbd.cfg``.
 
-For a list of controls that can be used in the keyboard mapping, see the
+For a list of controls that can be used in a keyboard mapping, see the
 `MixxxControls <http://www.mixxx.org/wiki/doku.php/mixxxcontrols>`_ topic on the
 Mixxx Wiki.
 
-You can share custom keyboard mappings in the `Mixxx User customizations forum`_.
+You can download and share custom keyboard mappings in the
+`Mixxx User customizations forum`_.
 
 .. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
 
