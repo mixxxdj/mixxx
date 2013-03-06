@@ -21,7 +21,8 @@ within the preference dialogue.
    Mixxx preferences - Setting up live broadcasting
 
 By default, Mixxx broadcasts artist and title information to your listeners. You
-can disable this behavior by selecting “enable custom metadata”.
+can disable this behavior by selecting
+:menuselection:`Preferences --> Live Broadcasting --> Enable custom metadata”.
 
 .. note:: For technical reasons, broadcasting artist and title information is
           not supported for OGG streams.
@@ -31,13 +32,13 @@ Icecast
 
 For an Icecast server, you'll need to provide the mount point (of the form
 ”/mount”).  You can enter the host as either a host name or an IP address. In
-the “login” field, the default is to enter “source” – without this, you will not
-connect successfully to the server. The password will be provided by your
-streaming server provider, unless you run your own radio server.
+the :guilabel:`Login` field, the default is to enter “source” – without this,
+you will not connect successfully to the server. The password will be provided
+by your streaming server provider, unless you run your own radio server.
 
-.. note:: Do not enter a URL as the host! "http://example.com:8000" does not
-          work. Use "example.com" in the host field and "8000" in the port field
-          instead.
+.. note:: Do not enter a :term:`URL` as the host! "http://example.com:8000" does
+          not work. Use "example.com" in the :guilabel:`Host` field and "8000"
+          in the :guilabel:`Port` field instead.
 
 An Icecast server can stream either MP3 or Ogg. However, although Ogg is more
 efficient and effective - you get a better sound than mp3 at a lower data rate -
@@ -49,9 +50,9 @@ may need the LAME libraries to stream in MP3. Go to the chapter
 Shoutcast
 =========
 
-If you connect to an Shoutcast server the default login name is “admin”. It is
-not necessary to specify a mount point. The password will be provided by your
-streaming server provider.
+If you connect to an Shoutcast server the default :guilabel:`Login` name is
+“admin”. It is not necessary to specify a mount point. The password will be
+provided by your streaming server provider.
 
 .. _MP3 Streaming:
 
