@@ -154,7 +154,7 @@ The waveform section of a deck allows you to visualize the audio changes that
 occur throughout the track. The larger, zoomed-in waveform is called the
 :term:`waveform overview`, while the smaller, zoomed-out version of the waveform
 is called the :term:`waveform summary`. The white lines on the waveform overview
-are called :term:`beat markers`, and they indicate the locations of beats in the
+are called :term:`beatgrid`, and they indicate the locations of beats in the
 audio. The vertical line in the center of the waveform overview indicates the
 playback point of the deck. Clicking on either the waveform or the spinning
 vinyl widget allows you to scratch the track as if you were using vinyl or a
@@ -210,7 +210,7 @@ are as follows:
   Clicking this button adjusts the track beat-grid so that the current position
   is marked as a beat. This is useful if Mixxx was able to accurately detect the
   track's :term:`BPM` but failed to align the beat markers on the beats. For
-  more informations, go to the chapter :ref:`djing-bpm-detection`..
+  more informations, go to the chapter :ref:`djing-bpm-detection`.
 
 **Quantize Mode Toggle**
   If enabled, all cues, hotcues, loops, and beatloops will be automatically

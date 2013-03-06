@@ -81,6 +81,12 @@ Glossary of Terms
      A mixing technique used to establish a similar tempo with two or more tracks,
      making them sound like just one track.
 
+   beatgrid
+     A series of markers that point to the location of beats within the track.
+     Beatgrids are used for advanced mixing functions such as track sync,
+     precise effects synchronization, looping and accurate :term:`BPM`
+     representation.
+
    MIDI
      Short for for Musical Instrument Digital Interface. A digital
      communications language and hardware specification enabling compatible
