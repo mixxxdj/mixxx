@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-10 22:58+0200\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -82,50 +82,60 @@ msgid "Import Playlist"
 msgstr ""
 
 #: BasePlaylistFeature#8
-msgid "Export Playlist"
+msgid "Duplicate Playlist"
 msgstr ""
 
 #: BasePlaylistFeature#9
-msgid "Rename Playlist"
+msgid "Export Playlist"
 msgstr ""
 
 #: BasePlaylistFeature#10
-msgid "New playlist name:"
+msgid "Rename Playlist"
 msgstr ""
 
 #: BasePlaylistFeature#11
-msgid "Renaming Playlist Failed"
+msgid "New playlist name:"
 msgstr ""
 
 #: BasePlaylistFeature#12
-msgid "A playlist by that name already exists."
+msgid "Renaming Playlist Failed"
 msgstr ""
 
 #: BasePlaylistFeature#13
-msgid "A playlist cannot have a blank name."
+msgid "A playlist by that name already exists."
 msgstr ""
 
 #: BasePlaylistFeature#14
-msgid "Playlist name:"
+msgid "A playlist cannot have a blank name."
 msgstr ""
 
 #: BasePlaylistFeature#15
-msgctxt "BasePlaylistFeature#15"
-msgid "Playlist Creation Failed"
+msgid "Playlist name:"
 msgstr ""
 
+# [noun]
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
-msgid "An unknown error occurred while creating playlist: "
+msgid "_copy"
 msgstr ""
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgid "Playlist Creation Failed"
 msgstr ""
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
+msgid "An unknown error occurred while creating playlist: "
+msgstr ""
+
+#: BasePlaylistFeature#19
+msgctxt "BasePlaylistFeature#19"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgstr ""
+
+#: BasePlaylistFeature#20
+msgctxt "BasePlaylistFeature#20"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
@@ -463,87 +473,97 @@ msgctxt "CrateFeature#4"
 msgid "Lock"
 msgstr ""
 
+# [noun]
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
-msgid "Import Playlist"
+msgid "_copy"
 msgstr ""
 
 #: CrateFeature#6
-msgid "Crates"
+msgctxt "CrateFeature#6"
+msgid "Import Playlist"
 msgstr ""
 
 #: CrateFeature#7
-msgid "Import Crate"
+msgid "Crates"
 msgstr ""
 
 #: CrateFeature#8
-msgid "Export Crate"
+msgid "Import Crate"
 msgstr ""
 
 #: CrateFeature#9
-msgctxt "CrateFeature#9"
-msgid "Unlock"
+msgid "Export Crate"
 msgstr ""
 
 #: CrateFeature#10
-msgid "Crate name:"
+msgid "Duplicate Crate"
 msgstr ""
 
 #: CrateFeature#11
-msgid "An unknown error occurred while creating crate: "
+msgctxt "CrateFeature#11"
+msgid "Unlock"
 msgstr ""
 
 #: CrateFeature#12
-msgid "Rename Crate"
+msgid "Crate name:"
 msgstr ""
 
 #: CrateFeature#13
-msgid "New crate name:"
+msgid "An unknown error occurred while creating crate: "
 msgstr ""
 
 #: CrateFeature#14
-msgid "Renaming Crate Failed"
+msgid "Rename Crate"
 msgstr ""
 
 #: CrateFeature#15
-msgctxt "CrateFeature#15"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgid "New crate name:"
 msgstr ""
 
 #: CrateFeature#16
-msgctxt "CrateFeature#16"
+msgid "Renaming Crate Failed"
+msgstr ""
+
+#: CrateFeature#17
+msgctxt "CrateFeature#17"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgstr ""
+
+#: CrateFeature#18
+msgctxt "CrateFeature#18"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
 
-#: CrateFeature#17
+#: CrateFeature#19
 msgid "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
 
-#: CrateFeature#18
+#: CrateFeature#20
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
 msgstr ""
 
-#: CrateFeature#19
+#: CrateFeature#21
 msgid "Crates let you organize your music however you'd like!"
 msgstr ""
 
-#: CrateFeature#20
+#: CrateFeature#22
 msgid "Create new crate"
 msgstr ""
 
-#: CrateFeature#21
+#: CrateFeature#23
 msgid "A crate cannot have a blank name."
 msgstr ""
 
-#: CrateFeature#22
+#: CrateFeature#24
 msgid "Creating Crate Failed"
 msgstr ""
 
-#: CrateFeature#23
+#: CrateFeature#25
 msgid "A crate by that name already exists."
 msgstr ""
 
@@ -3771,7 +3791,7 @@ msgstr ""
 #: QMessageBox#5
 msgid ""
 "If you do not want Mixxx to re-analyze your tracks, choose \"Keep Current "
-"Beatgrids.\" You can change this setting at any time from the \"Beat "
+"Beatgrids\". You can change this setting at any time from the \"Beat "
 "Detection\" section of the Preferences."
 msgstr ""
 
@@ -4809,6 +4829,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 # Search|Focus

@@ -53,7 +53,7 @@
 	<manifest>
 	<title>LateNightBlues1280x800-WXGA</title>
 	<author>jus</author>
-	<version>1.11.0.15</version>
+	<version>1.11.0.16</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -4174,10 +4174,9 @@
 				<Channel>1</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
-				<!-- transparent background if no <BgColor> & <BgPixmap> is present
-				<BgColor>#1C1C1C</BgColor>
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+				<BgColor></BgColor>
 				<BgPixmap></BgPixmap>
-				-->
 				<SignalColor>#FBC400</SignalColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -5157,10 +5156,9 @@
 				<Channel>2</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
-				<!-- transparent background if no <BgColor> & <BgPixmap> is present
-				<BgColor>#1C1C1C</BgColor>
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+				<BgColor></BgColor>
 				<BgPixmap></BgPixmap>
-				-->
 				<SignalColor>#FB9A00</SignalColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>

@@ -7,17 +7,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2012-05-14 15:35-0400\n"
-"PO-Revision-Date: 2012-05-16 15:30+0000\n"
+"POT-Creation-Date: 2013-02-23 15:00+0200\n"
+"PO-Revision-Date: 2013-02-25 16:53+0000\n"
 "Last-Translator: Sid Roberts <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-05-17 04:35+0000\n"
-"X-Generator: Launchpad (build 15259)\n"
+"X-Launchpad-Export-Date: 2013-02-26 04:34+0000\n"
+"X-Generator: Launchpad (build 16506)\n"
 
 #: AutoDJFeature#1
+msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
 msgstr "Auto DJ"
 
@@ -81,50 +82,59 @@ msgid "Import Playlist"
 msgstr "Import Playlist"
 
 #: BasePlaylistFeature#8
+msgid "Duplicate Playlist"
+msgstr "Duplicate Playlist"
+
+#: BasePlaylistFeature#9
 msgid "Export Playlist"
 msgstr "Export Playlist"
 
-#: BasePlaylistFeature#9
+#: BasePlaylistFeature#10
 msgid "Rename Playlist"
 msgstr "Rename Playlist"
 
-#: BasePlaylistFeature#10
+#: BasePlaylistFeature#11
 msgid "New playlist name:"
 msgstr "New playlist name:"
 
-#: BasePlaylistFeature#11
+#: BasePlaylistFeature#12
 msgid "Renaming Playlist Failed"
 msgstr "Renaming Playlist Failed"
 
-#: BasePlaylistFeature#12
+#: BasePlaylistFeature#13
 msgid "A playlist by that name already exists."
 msgstr "A playlist by that name already exists."
 
-#: BasePlaylistFeature#13
+#: BasePlaylistFeature#14
 msgid "A playlist cannot have a blank name."
 msgstr "A playlist cannot have a blank name."
 
-#: BasePlaylistFeature#14
+#: BasePlaylistFeature#15
 msgid "Playlist name:"
 msgstr "Playlist name:"
 
-#: BasePlaylistFeature#15
-msgctxt "BasePlaylistFeature#15"
-msgid "Playlist Creation Failed"
-msgstr "Playlist Creation Failed"
-
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
-msgid "An unknown error occurred while creating playlist: "
-msgstr "An unknown error occurred while creating playlist: "
+msgid "_copy"
+msgstr "_copy"
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
-msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgid "Playlist Creation Failed"
+msgstr "Playlist Creation Failed"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
+msgid "An unknown error occurred while creating playlist: "
+msgstr "An unknown error occurred while creating playlist: "
+
+#: BasePlaylistFeature#19
+msgctxt "BasePlaylistFeature#19"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+msgstr "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
+
+#: BasePlaylistFeature#20
+msgctxt "BasePlaylistFeature#20"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
@@ -134,12 +144,12 @@ msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Played"
+msgstr "Αναπαρήχθει"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Artist"
+msgstr "Καλλιτέχνης"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
@@ -226,6 +236,10 @@ msgstr "Key"
 msgid "BPM Lock"
 msgstr "BPM Lock"
 
+#: BaseSqlTableModel#21
+msgid "Preview"
+msgstr "Preview"
+
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
 msgstr "Couldn't load track."
@@ -255,6 +269,8 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Browse lets you navigate, view, and load tracks from folders on your hard "
+"disk and external devices."
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -366,6 +382,10 @@ msgstr ""
 msgid "Could not update file metadata."
 msgstr "Could not update file metadata."
 
+#: BulkController#1
+msgid "USB Controller"
+msgstr "USB Controller"
+
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
 msgstr "Uncaught exception at line %1 in file %2: %3"
@@ -468,53 +488,62 @@ msgstr "Lock"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
+msgid "_copy"
+msgstr ""
+
+#: CrateFeature#6
+msgctxt "CrateFeature#6"
 msgid "Import Playlist"
 msgstr "Import Playlist"
 
-#: CrateFeature#6
+#: CrateFeature#7
 msgid "Crates"
 msgstr "Crates"
 
-#: CrateFeature#7
+#: CrateFeature#8
 msgid "Import Crate"
 msgstr "Import Crate"
 
-#: CrateFeature#8
+#: CrateFeature#9
 msgid "Export Crate"
 msgstr "Export Crate"
 
-#: CrateFeature#9
-msgctxt "CrateFeature#9"
+#: CrateFeature#10
+msgid "Duplicate Crate"
+msgstr "Duplicate Crate"
+
+#: CrateFeature#11
+msgctxt "CrateFeature#11"
 msgid "Unlock"
 msgstr "Unlock"
 
-#: CrateFeature#10
+#: CrateFeature#12
 msgid "Crate name:"
 msgstr "Crate name:"
 
-#: CrateFeature#11
+#: CrateFeature#13
 msgid "An unknown error occurred while creating crate: "
 msgstr "An unknown error occurred while creating crate: "
 
-#: CrateFeature#12
+#: CrateFeature#14
 msgid "Rename Crate"
 msgstr "Rename Crate"
 
-#: CrateFeature#13
+#: CrateFeature#15
 msgid "New crate name:"
 msgstr "New crate name:"
 
-#: CrateFeature#14
+#: CrateFeature#16
 msgid "Renaming Crate Failed"
 msgstr "Renaming Crate Failed"
 
-#: CrateFeature#15
-msgctxt "CrateFeature#15"
+#: CrateFeature#17
+msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
 msgstr "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
 
-#: CrateFeature#16
-msgctxt "CrateFeature#16"
+#: CrateFeature#18
+msgctxt "CrateFeature#18"
 msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
@@ -522,13 +551,13 @@ msgstr ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 
-#: CrateFeature#17
+#: CrateFeature#19
 msgid ""
 "Crates are a great way to help organize the music you want to DJ with."
 msgstr ""
 "Crates are a great way to help organise the music you want to DJ with."
 
-#: CrateFeature#18
+#: CrateFeature#20
 msgid ""
 "Make a crate for your next gig, for your favorite electrohouse tracks, or "
 "for your most requested songs."
@@ -536,19 +565,23 @@ msgstr ""
 "Make a crate for your next gig, for your favorite electro house tracks, or "
 "for your most requested songs."
 
-#: CrateFeature#19
+#: CrateFeature#21
 msgid "Crates let you organize your music however you'd like!"
 msgstr "Crates let you organise your music however you'd like!"
 
-#: CrateFeature#20
+#: CrateFeature#22
+msgid "Create new crate"
+msgstr "Create new crate"
+
+#: CrateFeature#23
 msgid "A crate cannot have a blank name."
 msgstr "A crate cannot have a blank name."
 
-#: CrateFeature#21
+#: CrateFeature#24
 msgid "Creating Crate Failed"
 msgstr "Creating Crate Failed"
 
-#: CrateFeature#22
+#: CrateFeature#25
 msgid "A crate by that name already exists."
 msgstr "A crate by that name already exists."
 
@@ -628,12 +661,14 @@ msgstr "Beat Detection Settings"
 #: DlgBeatsDlg#2
 msgid ""
 "When beat detection is enabled, Mixxx detects the beats per minute and beats "
-"of your tracks, automatically shows a beat-grid for them, and allows you to "
-"synchronize tracks using their beat information."
+"of your tracks, \n"
+"automatically shows a beat-grid for them, and allows you to synchronize "
+"tracks using their beat information."
 msgstr ""
 "When beat detection is enabled, Mixxx detects the beats per minute and beats "
-"of your tracks, automatically shows a beatgrid for them, and allows you to "
-"synchronise tracks using their beat information."
+"of your tracks, \n"
+"automatically shows a beat-grid for them, and allows you to synchronise "
+"tracks using their beat information."
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
@@ -657,63 +692,60 @@ msgstr "Analyser Settings"
 
 #: DlgBeatsDlg#8
 msgid ""
-"Enable fast beat detection. If activated Mixxx only analyzes the first "
-"minute of a track for beat information. This can speed up beat detection on "
-"slower computers but may result in lower quality beatgrids."
+"Enable fast beat detection. \n"
+"If activated Mixxx only analyzes the first minute of a track for beat "
+"information. \n"
+"This can speed up beat detection on slower computers but may result in lower "
+"quality beatgrids."
 msgstr ""
-"Enable fast beat detection. If activated Mixxx only analyses the first "
-"minute of a track for beat information. This can speed up beat detection on "
-"slower computers but may result in lower quality beatgrids."
+"Enable fast beat detection. \n"
+"If activated Mixxx only analyzes the first minute of a track for beat "
+"information. \n"
+"This can speed up beat detection on slower computers but may result in lower "
+"quality beatgrids."
 
 #: DlgBeatsDlg#9
-msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
-msgstr "Enable Fast Analysis (For slow computers, may be less accurate)"
+msgid ""
+"Converts beats detected by the analyser into a fixed-tempo beatgrid. \n"
+"Use this setting if your tracks have a constant tempo (e.g. most electronic "
+"music). \n"
+"Often results in higher quality beatgrids, but will not do well on tracks "
+"that have tempo shifts."
+msgstr ""
 
 #: DlgBeatsDlg#10
 msgid ""
-"Converts beats detected by the analyser into a fixed-tempo beatgrid. Use "
-"this setting if your tracks have a constant tempo (e.g. most electronic "
-"music). Often results in higher quality beatgrids, but will not do well on "
-"tracks that have tempo shifts."
+"Attempts to correct the phase (first beat) of fixed-tempo beatgrids \n"
+"by analyzing the beats to discard outliers."
 msgstr ""
-"Converts beats detected by the analyser into a fixed-tempo beatgrid. Use "
-"this setting if your tracks have a constant tempo (e.g. most electronic "
-"music). Often results in higher quality beatgrids, but will not do well on "
-"tracks that have tempo shifts."
+"Attempts to correct the phase (first beat) of fixed-tempo beatgrids \n"
+"by analysing the beats to discard outliers."
 
 #: DlgBeatsDlg#11
-msgid "Assume constant tempo (Recommended)"
-msgstr "Assume constant tempo (Recommended)"
+msgid ""
+"e.g. from 3rd-party programs or Mixxx versions before 1.11.\n"
+"(Not checked: Analyse only, if no beats exist.)"
+msgstr ""
+"e.g. from 3rd-party programs or Mixxx versions before 1.11.\n"
+"(Not checked: Analyse only, if no beats exist.)"
 
 #: DlgBeatsDlg#12
 msgid ""
-"Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
-"analyzing the beats to discard outliers."
+"Re-analyse beats when settings change or beat detection data is outdated"
 msgstr ""
-"Attempts to correct the phase (first beat) of fixed-tempo beatgrids by "
-"analysing the beats to discard outliers."
+"Re-analyse beats when settings change or beat detection data is outdated"
 
 #: DlgBeatsDlg#13
-msgid "Enable Offset Correction (Recommended)"
-msgstr "Enable Offset Correction (Recommended)"
+msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
+msgstr "Enable Fast Analysis (For slow computers, may be less accurate)"
 
 #: DlgBeatsDlg#14
-msgid ""
-"If enabled, re-analyses beatgrids when you change preferences on this page. "
-"If set, this setting will also re-analyse beatgrids generated by 3rd-party "
-"programs or previous versions of Mixxx."
-msgstr ""
-"If enabled, reanalyses beatgrids when you change preferences on this page. "
-"If set, this setting will also reanalyse beatgrids generated by third-party "
-"programs or previous versions of Mixxx."
+msgid "Assume constant tempo (Recommended)"
+msgstr "Assume constant tempo (Recommended)"
 
 #: DlgBeatsDlg#15
-msgid ""
-"Re-analyse beats when settings change or beats already present\n"
-"(e.g. from 3rd-party programs or older Mixxx versions)"
-msgstr ""
-"Reanalyse beats when settings change or beats already present\n"
-"(e.g. from 3rd-party programs or older Mixxx versions)"
+msgid "Enable Offset Correction (Recommended)"
+msgstr "Enable Offset Correction (Recommended)"
 
 #: DlgBeatsDlg#16
 msgctxt "DlgBeatsDlg#16"
@@ -932,19 +964,19 @@ msgstr "Pitch-bend rate up (fine)"
 
 #: DlgControllerLearning#42
 msgid "Adjust rate up (coarse)"
-msgstr ""
+msgstr "Adjust rate up (coarse)"
 
 #: DlgControllerLearning#43
 msgid "Adjust rate down (coarse)"
-msgstr ""
+msgstr "Adjust rate down (coarse)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (coarse)"
-msgstr ""
+msgstr "Pitch-bend rate up (coarse)"
 
 #: DlgControllerLearning#45
 msgid "Pitch-bend rate down (coarse)"
-msgstr ""
+msgstr "Pitch-bend rate down (coarse)"
 
 #: DlgControllerLearning#46
 msgid "Pitch-bend rate down (fine)"
@@ -986,7 +1018,7 @@ msgstr "Vinyl Control"
 
 #: DlgControllerLearning#55
 msgid "Toggle vinyl-control (ON/OFF)"
-msgstr ""
+msgstr "Toggle vinyl-control (ON/OFF)"
 
 #: DlgControllerLearning#56
 msgid "Toggle vinyl-control cueing mode (OFF/ONE/HOT)"
@@ -997,162 +1029,301 @@ msgid "Toggle vinyl-control mode (ABS/REL/CONST)"
 msgstr "Toggle vinyl-control mode (ABS/REL/CONST)"
 
 #: DlgControllerLearning#58
-msgid "Cues / Hotcues"
-msgstr "Cues / Hotcues"
-
-#: DlgControllerLearning#59
 msgid "Cue button"
 msgstr "Cue button"
 
-#: DlgControllerLearning#60
+#: DlgControllerLearning#59
 msgid "Set cue point"
 msgstr "Set cue point"
 
-#: DlgControllerLearning#61
+#: DlgControllerLearning#60
 msgid "Go to cue point and stop"
 msgstr "Go to cue point and stop"
 
-#: DlgControllerLearning#62
+#: DlgControllerLearning#61
 msgid "Set or jump to hotcue %1"
 msgstr "Set or jump to hotcue %1"
 
-#: DlgControllerLearning#63
+#: DlgControllerLearning#62
 msgid "Clear hotcue %1"
 msgstr "Clear hotcue %1"
 
-#: DlgControllerLearning#64
+#: DlgControllerLearning#63
 msgid "Jump to hotcue %1"
 msgstr "Jump to hotcue %1"
 
-#: DlgControllerLearning#65
+#: DlgControllerLearning#64
 msgid "Jump to hotcue %1 and stop"
 msgstr "Jump to hotcue %1 and stop"
 
-#: DlgControllerLearning#66
+#: DlgControllerLearning#65
 msgid "Looping"
 msgstr "Looping"
 
-#: DlgControllerLearning#67
+#: DlgControllerLearning#66
 msgid "Loop In button"
 msgstr "Loop In button"
 
-#: DlgControllerLearning#68
+#: DlgControllerLearning#67
 msgid "Loop Out button"
 msgstr "Loop Out button"
 
-#: DlgControllerLearning#69
+#: DlgControllerLearning#68
 msgid "Reloop / Exit button"
 msgstr "Reloop / Exit button"
 
-#: DlgControllerLearning#70
+#: DlgControllerLearning#69
 msgid "Halve the current loop's length"
 msgstr "Halve the current loop's length"
 
-#: DlgControllerLearning#71
+#: DlgControllerLearning#70
 msgid "Double the current loop's length"
 msgstr "Double the current loop's length"
 
+#: DlgControllerLearning#71
+msgid "Toggle slip mode"
+msgstr ""
+
 #: DlgControllerLearning#72
+msgid "Preview Deck %1"
+msgstr "Preview Deck %1"
+
+#: DlgControllerLearning#73
+msgid "Single deck mode - Toggle vinyl control to next deck"
+msgstr "Single deck mode - Toggle vinyl control to next deck"
+
+#: DlgControllerLearning#74
+msgid "Cues"
+msgstr ""
+
+#: DlgControllerLearning#75
+msgid "Hotcues"
+msgstr "Hotcues"
+
+#: DlgControllerLearning#76
+msgid "Hotcue %1"
+msgstr "Hotcue %1"
+
+#: DlgControllerLearning#77
+msgid "Loop Exit button"
+msgstr "Loop Exit button"
+
+#: DlgControllerLearning#78
 msgid "Beat-Looping"
 msgstr "Beat-Looping"
 
-#: DlgControllerLearning#73
+#: DlgControllerLearning#79
 msgid "Create %1-beat loop"
 msgstr "Create %1-beat loop"
 
-#: DlgControllerLearning#74
-msgctxt "DlgControllerLearning#74"
+#: DlgControllerLearning#80
+msgid "Create temporary %1-beat loop roll"
+msgstr ""
+
+#: DlgControllerLearning#81
+msgid "1/32th"
+msgstr "1/32th"
+
+#: DlgControllerLearning#82
+msgid "1/16th"
+msgstr "1/16th"
+
+#: DlgControllerLearning#83
+msgid "1/8th"
+msgstr "1/8th"
+
+#: DlgControllerLearning#84
+msgid "1/4th"
+msgstr "1/4th"
+
+#: DlgControllerLearning#85
+msgctxt "DlgControllerLearning#85"
 msgid "Library"
 msgstr "Library"
 
-#: DlgControllerLearning#75
+#: DlgControllerLearning#86
+msgid "Expand/collapse the selected view (library, playlist..)"
+msgstr "Expand/collapse the selected view (library, playlist..)"
+
+#: DlgControllerLearning#87
 msgid "Switch to the next view (library, playlist..)"
 msgstr "Switch to the next view (library, playlist..)"
 
-#: DlgControllerLearning#76
+#: DlgControllerLearning#88
 msgid "Switch to the previous view (library, playlist..)"
 msgstr "Switch to the previous view (library, playlist..)"
 
-#: DlgControllerLearning#77
+#: DlgControllerLearning#89
 msgid "Scroll to next track in library/playlist"
 msgstr "Scroll to next track in library/playlist"
 
-#: DlgControllerLearning#78
+#: DlgControllerLearning#90
 msgid "Scroll to previous track in library/playlist"
 msgstr "Scroll to previous track in library/playlist"
 
-#: DlgControllerLearning#79
+#: DlgControllerLearning#91
 msgid "Load selected track into first stopped deck"
 msgstr "Load selected track into first stopped deck"
 
-#: DlgControllerLearning#80
+#: DlgControllerLearning#92
 msgid "Load selected track"
 msgstr "Load selected track"
 
-#: DlgControllerLearning#81
+#: DlgControllerLearning#93
+msgid "Load selected track and play"
+msgstr "Load selected track and play"
+
+#: DlgControllerLearning#94
 msgid "Effects"
 msgstr "Effects"
 
-#: DlgControllerLearning#82
+#: DlgControllerLearning#95
 msgid "Toggle flange effect"
 msgstr "Toggle flange effect"
 
-#: DlgControllerLearning#83
+#: DlgControllerLearning#96
 msgid "Flange effect: Wavelength/period"
 msgstr "Flange effect: Wavelength/period"
 
-#: DlgControllerLearning#84
+#: DlgControllerLearning#97
 msgid "Flange effect: Intensity"
 msgstr "Flange effect: Intensity"
 
-#: DlgControllerLearning#85
+#: DlgControllerLearning#98
 msgid "Flange effect: Phase delay"
 msgstr "Flange effect: Phase delay"
 
-#: DlgControllerLearning#86
-msgctxt "DlgControllerLearning#86"
+#: DlgControllerLearning#99
+msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr "Microphone"
+msgstr ""
 
-#: DlgControllerLearning#87
+#: DlgControllerLearning#100
 msgid "Microphone on/off"
 msgstr "Microphone on/off"
 
-#: DlgControllerLearning#88
+#: DlgControllerLearning#101
 msgid "Microphone volume"
 msgstr "Microphone volume"
 
-#: DlgControllerLearning#89
+#: DlgControllerLearning#102
 msgid "Microphone channel orientation (e.g. left, right, center)"
 msgstr "Microphone channel pan (e.g. left, right, center)"
 
-#: DlgControllerLearning#90
+#: DlgControllerLearning#103
+msgctxt "DlgControllerLearning#103"
+msgid "Auto DJ"
+msgstr ""
+
+#: DlgControllerLearning#104
+msgid "Shuffle the content of the Auto DJ playlist"
+msgstr ""
+
+#: DlgControllerLearning#105
+msgid "Skip the next track in the Auto DJ playlist"
+msgstr ""
+
+#: DlgControllerLearning#106
+msgid "Trigger the transition to the next track"
+msgstr ""
+
+#: DlgControllerLearning#107
+msgid "Toggle Auto DJ (ON/OFF)"
+msgstr ""
+
+#: DlgControllerLearning#108
 msgid "User Interface"
 msgstr "User Interface"
 
-#: DlgControllerLearning#91
+#: DlgControllerLearning#109
 msgid "Show/hide the sampler section"
 msgstr "Show/hide the sampler section"
 
-#: DlgControllerLearning#92
+#: DlgControllerLearning#110
 msgid "Show/hide the microphone section"
 msgstr "Show/hide the microphone section"
 
-#: DlgControllerLearning#93
+#: DlgControllerLearning#111
 msgid "Show/hide the vinyl control section"
 msgstr "Show/hide the vinyl control section"
 
-#: DlgControllerLearning#94
+#: DlgControllerLearning#112
+msgid "Show/hide the preview deck"
+msgstr ""
+
+#: DlgControllerLearning#113
 msgid "Show/hide spinning vinyl widget"
 msgstr "Show/hide spinning vinyl widget"
 
-#: DlgControllerLearning#95
+#: DlgControllerLearning#114
 msgid "Ready to map: %1. Now move a control on your controller."
 msgstr "Ready to map: %1. Now move a control on your controller."
 
-#: DlgControllerLearning#96
+#: DlgControllerLearning#115
 msgid "Successfully mapped to:"
 msgstr "Successfully mapped to:"
+
+#: DlgHidden#1
+msgctxt "DlgHidden#1"
+msgid "Manage"
+msgstr ""
+
+#: DlgHidden#2
+msgctxt "DlgHidden#2"
+msgid "Selects all tracks in the table below."
+msgstr ""
+
+#: DlgHidden#3
+msgctxt "DlgHidden#3"
+msgid "Select All"
+msgstr ""
+
+#: DlgHidden#4
+msgctxt "DlgHidden#4"
+msgid "Purge selected tracks from the library."
+msgstr ""
+
+#: DlgHidden#5
+msgctxt "DlgHidden#5"
+msgid "Purge"
+msgstr ""
+
+#: DlgHidden#6
+msgid "Unhide selected tracks from the library."
+msgstr ""
+
+#: DlgHidden#7
+msgid "Unhide"
+msgstr ""
+
+#: DlgHidden#8
+msgid "Ctrl+S"
+msgstr ""
+
+#: DlgMissing#1
+msgctxt "DlgMissing#1"
+msgid "Manage"
+msgstr ""
+
+#: DlgMissing#2
+msgctxt "DlgMissing#2"
+msgid "Selects all tracks in the table below."
+msgstr ""
+
+#: DlgMissing#3
+msgctxt "DlgMissing#3"
+msgid "Select All"
+msgstr ""
+
+#: DlgMissing#4
+msgctxt "DlgMissing#4"
+msgid "Purge selected tracks from the library."
+msgstr ""
+
+#: DlgMissing#5
+msgctxt "DlgMissing#5"
+msgid "Purge"
+msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -1227,8 +1398,12 @@ msgid "%1 by %2"
 msgstr "%1 by %2"
 
 #: DlgPrefController#3
-msgid "Custom Preset"
-msgstr "Custom Preset"
+msgid "No Description"
+msgstr "No Description"
+
+#: DlgPrefController#4
+msgid "No support available."
+msgstr "No support available."
 
 #: DlgPrefControllerDlg#1
 msgctxt "DlgPrefControllerDlg#1"
@@ -1250,18 +1425,30 @@ msgstr ""
 "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">Troubleshooting</a>"
 
 #: DlgPrefControllerDlg#5
+msgid "TextLabel"
+msgstr ""
+
+#: DlgPrefControllerDlg#6
+msgid "Description:"
+msgstr "Description:"
+
+#: DlgPrefControllerDlg#7
 msgid "Load Preset:"
 msgstr "Load Preset:"
 
-#: DlgPrefControllerDlg#6
+#: DlgPrefControllerDlg#8
 msgid "Loaded Preset:"
 msgstr "Loaded Preset:"
 
-#: DlgPrefControllerDlg#7
+#: DlgPrefControllerDlg#9
+msgid "Support:"
+msgstr "Support:"
+
+#: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
 msgstr "Click to start the Controller Learning wizard."
 
-#: DlgPrefControllerDlg#8
+#: DlgPrefControllerDlg#11
 msgid "Learning Wizard (MIDI Only)"
 msgstr "Learning Wizard (MIDI Only)"
 
@@ -1288,101 +1475,91 @@ msgid "Simple"
 msgstr "Simple"
 
 #: DlgPrefControls#6
-msgctxt "DlgPrefControls#6"
 msgid "On"
 msgstr "On"
 
 #: DlgPrefControls#7
-msgctxt "DlgPrefControls#7"
 msgid "Off"
 msgstr "Off"
 
 #: DlgPrefControls#8
-msgid "Mixxx Detected a WVGA Screen"
-msgstr "Mixxx Detected a WVGA Screen"
-
-#: DlgPrefControls#9
-msgid "Mixxx has detected that your screen has a resolution of "
-msgstr "Mixxx has detected that your screen has a resolution of "
-
-#: DlgPrefControls#10
-msgid ""
-"The only skin compatiable with this size display is Outline800x480-WVGA.  "
-"Would you like to use that skin?"
-msgstr ""
-"The only skin compatiable with this size display is Outline800x480-WVGA.  "
-"Would you like to use that skin?"
-
-#: DlgPrefControls#11
 msgid "This skin does not support schemes"
 msgstr "This skin does not support schemes"
 
-#: DlgPrefControls#12
+#: DlgPrefControls#9
 msgid "6%"
 msgstr "6%"
 
-#: DlgPrefControls#13
+#: DlgPrefControls#10
 msgid "8% (Technics SL-1210)"
 msgstr "8% (Technics SL-1210)"
 
-#: DlgPrefControls#14
+#: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
 msgstr "Down increases speed (Technics SL-1210)"
 
-#: DlgPrefControls#15
+#: DlgPrefControls#12
 msgid "10%"
 msgstr "10%"
 
-#: DlgPrefControls#16
+#: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
+msgstr "Load tracks into a playing deck"
+
+#: DlgPrefControls#14
+msgid "The selected skin is bigger than your screen resolution."
 msgstr ""
 
-#: DlgPrefControls#17
+#: DlgPrefControls#15
+msgid "On (only in Library)"
+msgstr ""
+
+#: DlgPrefControls#16
 msgid "20%"
 msgstr "20%"
 
-#: DlgPrefControls#18
+#: DlgPrefControls#17
 msgid "30%"
 msgstr "30%"
 
-#: DlgPrefControls#19
+#: DlgPrefControls#18
 msgid "40%"
 msgstr "40%"
 
-#: DlgPrefControls#20
+#: DlgPrefControls#19
 msgid "50%"
 msgstr "50%"
 
-#: DlgPrefControls#21
+#: DlgPrefControls#20
 msgid "60%"
 msgstr "60%"
 
-#: DlgPrefControls#22
+#: DlgPrefControls#21
 msgid "70%"
 msgstr "70%"
 
-#: DlgPrefControls#23
+#: DlgPrefControls#22
 msgid "80%"
 msgstr "80%"
 
-#: DlgPrefControls#24
+#: DlgPrefControls#23
 msgid "90%"
 msgstr "90%"
 
-#: DlgPrefControls#25
+#: DlgPrefControls#24
 msgid "Up increases speed"
 msgstr "Up increases speed"
 
-#: DlgPrefControls#26
-msgctxt "DlgPrefControls#26"
+#: DlgPrefControls#25
+msgctxt "DlgPrefControls#25"
 msgid "Information"
 msgstr "Information"
 
-#: DlgPrefControls#27
+#: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr "Mixxx must be restarted before the changes will take effect."
 
-#: DlgPrefControls#28
+#: DlgPrefControls#27
 msgid "OpenGL not available"
 msgstr "OpenGL not available"
 
@@ -1408,58 +1585,56 @@ msgid "Tool tips"
 msgstr "Tool tips"
 
 #: DlgPrefControlsDlg#6
-msgctxt "DlgPrefControlsDlg#6"
-msgid "On"
-msgstr "On"
-
-#: DlgPrefControlsDlg#7
-msgctxt "DlgPrefControlsDlg#7"
-msgid "Off"
-msgstr "Off"
-
-#: DlgPrefControlsDlg#8
 msgid "Pitch/Rate slider range"
 msgstr "Pitch/Rate slider range"
 
-#: DlgPrefControlsDlg#9
+#: DlgPrefControlsDlg#7
 msgid "Pitch/Rate slider direction"
 msgstr "Pitch/Rate slider direction"
 
-#: DlgPrefControlsDlg#10
+#: DlgPrefControlsDlg#8
 msgid "Track load behaviour"
 msgstr "Track load behaviour"
 
-#: DlgPrefControlsDlg#11
+#: DlgPrefControlsDlg#9
 msgid "Cue behaviour"
 msgstr "Cue behaviour"
 
-#: DlgPrefControlsDlg#12
+#: DlgPrefControlsDlg#10
 msgid "Auto Recall Cue"
 msgstr "Auto Recall Cue"
 
-#: DlgPrefControlsDlg#13
-msgid "Locale"
+#: DlgPrefControlsDlg#11
+msgid "Re-queue tracks in Auto DJ"
 msgstr ""
 
-#: DlgPrefControlsDlg#14
+#: DlgPrefControlsDlg#12
+msgid "Locale"
+msgstr "Locale"
+
+#: DlgPrefControlsDlg#13
 msgid "Temporary rate change when left-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#14
 msgid "Temporary rate change when right-clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#15
 msgid "Permanent Pitch/Rate Buttons"
 msgstr "Permanent Pitch/Rate Buttons"
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#16
 msgid "Displays which OpenGL version is supported by the current platform."
 msgstr "Displays which OpenGL version is supported by the current platform."
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#17
 msgid "Displays the actual frame rate."
 msgstr "Displays the actual frame rate."
+
+#: DlgPrefControlsDlg#18
+msgid "Normalize Overview"
+msgstr ""
 
 #: DlgPrefControlsDlg#19
 msgid "Left click"
@@ -1488,7 +1663,7 @@ msgstr "Pitchbend sensitivity"
 #: DlgPrefControlsDlg#25
 msgctxt "DlgPrefControlsDlg#25"
 msgid "Waveform Display"
-msgstr "Waveform Display"
+msgstr ""
 
 #: DlgPrefControlsDlg#26
 msgid "Synchronize zoom level across all waveform displays."
@@ -1553,7 +1728,7 @@ msgstr "Visual gain"
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr "Synchronise"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1565,37 +1740,37 @@ msgid "Crossfader Curve"
 msgstr "Crossfader Curve"
 
 #: DlgPrefCrossfaderDlg#3
-msgid "Slow fade"
-msgstr "Slow fade"
+msgid "Slow fade/Fast cut (additive)"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#4
-msgid "Fast cut"
-msgstr "Fast cut"
-
-#: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
 msgstr "Constant power"
 
-#: DlgPrefCrossfaderDlg#6
+#: DlgPrefCrossfaderDlg#5
 msgid "Mixing"
 msgstr "Mixing"
 
-#: DlgPrefCrossfaderDlg#7
+#: DlgPrefCrossfaderDlg#6
 msgid "Scratching"
 msgstr "Scratching"
 
-#: DlgPrefCrossfaderDlg#8
+#: DlgPrefCrossfaderDlg#7
 msgid "Linear"
 msgstr "Linear"
 
-#: DlgPrefCrossfaderDlg#9
+#: DlgPrefCrossfaderDlg#8
 msgid "Logarithmic"
 msgstr "Logarithmic"
+
+#: DlgPrefCrossfaderDlg#9
+msgid "Reverse crossfader (hamster style)"
+msgstr ""
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset to Defaults"
-msgstr "Reset to Defaults"
+msgstr ""
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -1856,44 +2031,52 @@ msgid "Use relative paths for playlist export if possible"
 msgstr "Use relative paths for playlist export if possible"
 
 #: DlgPrefPlaylistDlg#10
+msgid "Other Libraries"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
 msgstr "Show Rhythmbox Library"
 
-#: DlgPrefPlaylistDlg#11
+#: DlgPrefPlaylistDlg#12
 msgid "Show iTunes Library"
 msgstr "Show iTunes Library"
 
-#: DlgPrefPlaylistDlg#12
+#: DlgPrefPlaylistDlg#13
 msgid "Show Traktor Library"
 msgstr "Show Traktor Library"
 
-#: DlgPrefPlaylistDlg#13
-msgctxt "DlgPrefPlaylistDlg#13"
-msgid "Browse..."
-msgstr "Browse..."
-
 #: DlgPrefPlaylistDlg#14
-msgctxt "DlgPrefPlaylistDlg#14"
-msgid "Library"
-msgstr "Library"
+msgid "    You will need to restart Mixxx for this to take effect"
+msgstr ""
 
 #: DlgPrefPlaylistDlg#15
+msgctxt "DlgPrefPlaylistDlg#15"
+msgid "Browse..."
+msgstr ""
+
+#: DlgPrefPlaylistDlg#16
+msgctxt "DlgPrefPlaylistDlg#16"
+msgid "Library"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#17
 msgid "Music Directory:"
 msgstr "Music Directory:"
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#18
 msgid "Built-in"
 msgstr "Built-in"
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#19
 msgid "Available Online..."
 msgstr "Available Online..."
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#20
 msgid "Bundled Songs"
 msgstr "Bundled Songs"
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#21
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
@@ -1998,26 +2181,23 @@ msgid "Enable Replay Gain Analysis"
 msgstr "Enable Replay Gain Analysis"
 
 #: DlgPrefReplayGainDlg#5
+msgid ""
+"It may take a few seconds after track analysis is finished for a newly "
+"calculated replaygain to be applied. To avoid abrupt volume changes Mixxx "
+"does not change the replaygain of playing tracks."
+msgstr ""
+
+#: DlgPrefReplayGainDlg#6
 msgid "Apply volume normalization to loaded tracks."
 msgstr "Apply volume normalisation to loaded tracks."
 
-#: DlgPrefReplayGainDlg#6
+#: DlgPrefReplayGainDlg#7
 msgid ""
 "Calculate ReplayGain normalization for tracks which are missing ReplayGain "
 "metadata."
 msgstr ""
 "Calculate ReplayGain normalisation for tracks which are missing ReplayGain "
 "metadata."
-
-#: DlgPrefReplayGainDlg#7
-msgid ""
-"On older computers, it may take a few seconds before volume normalization is "
-"applied to a new track. You may wish to wait before adjusting the pregain "
-"and volume."
-msgstr ""
-"On older computers, it may take a few seconds before volume normalisation is "
-"applied to a new track. You may wish to wait before adjusting the pregain "
-"and volume."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
@@ -2103,26 +2283,37 @@ msgid "Stream settings"
 msgstr "Stream settings"
 
 #: DlgPrefShoutcastDlg#11
+msgid "Dynamically update Ogg Vorbis metadata."
+msgstr ""
+
+#: DlgPrefShoutcastDlg#12
+msgid ""
+"Due to flaws in some streaming clients, updating Ogg Vorbis metadata "
+"dynamically can cause listener glitches and disconnections. Check this box "
+"to update the metadata anyway."
+msgstr ""
+
+#: DlgPrefShoutcastDlg#13
 msgid "Stream name"
 msgstr "Stream name"
 
-#: DlgPrefShoutcastDlg#12
+#: DlgPrefShoutcastDlg#14
 msgid "Mixxx Icecast Testing"
 msgstr "Mixxx Icecast Testing"
 
-#: DlgPrefShoutcastDlg#13
+#: DlgPrefShoutcastDlg#15
 msgid "Website"
 msgstr "Website"
 
-#: DlgPrefShoutcastDlg#14
+#: DlgPrefShoutcastDlg#16
 msgid "http://www.mixxx.org"
 msgstr "http://www.mixxx.org"
 
-#: DlgPrefShoutcastDlg#15
+#: DlgPrefShoutcastDlg#17
 msgid "Description"
 msgstr "Description"
 
-#: DlgPrefShoutcastDlg#16
+#: DlgPrefShoutcastDlg#18
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -2148,56 +2339,60 @@ msgstr ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 
-#: DlgPrefShoutcastDlg#17
-msgctxt "DlgPrefShoutcastDlg#17"
+#: DlgPrefShoutcastDlg#19
+msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
-msgstr "Genre"
+msgstr ""
 
-#: DlgPrefShoutcastDlg#18
+#: DlgPrefShoutcastDlg#20
 msgid "Live mix"
 msgstr "Live mix"
 
-#: DlgPrefShoutcastDlg#19
+#: DlgPrefShoutcastDlg#21
 msgid "Public stream"
 msgstr "Public stream"
 
-#: DlgPrefShoutcastDlg#20
-msgctxt "DlgPrefShoutcastDlg#20"
-msgid "Encoding"
-msgstr "Encoding"
+#: DlgPrefShoutcastDlg#22
+msgid "Use UTF-8 encoding for metadata."
+msgstr ""
 
-#: DlgPrefShoutcastDlg#21
-msgctxt "DlgPrefShoutcastDlg#21"
+#: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
+msgid "Encoding"
+msgstr ""
+
+#: DlgPrefShoutcastDlg#24
+msgctxt "DlgPrefShoutcastDlg#24"
 msgid "Bitrate"
 msgstr ""
 
-#: DlgPrefShoutcastDlg#22
+#: DlgPrefShoutcastDlg#25
 msgid "Format"
 msgstr "Format"
 
-#: DlgPrefShoutcastDlg#23
+#: DlgPrefShoutcastDlg#26
 msgid "Channels"
 msgstr "Channels"
 
-#: DlgPrefShoutcastDlg#24
+#: DlgPrefShoutcastDlg#27
 msgid "Custom metadata"
 msgstr "Custom metadata"
 
-#: DlgPrefShoutcastDlg#25
+#: DlgPrefShoutcastDlg#28
 msgid "Enable custom metadata"
 msgstr "Enable custom metadata"
 
-#: DlgPrefShoutcastDlg#26
-msgctxt "DlgPrefShoutcastDlg#26"
+#: DlgPrefShoutcastDlg#29
+msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Artist"
-msgstr "Artist"
+msgstr ""
 
-#: DlgPrefShoutcastDlg#27
-msgctxt "DlgPrefShoutcastDlg#27"
+#: DlgPrefShoutcastDlg#30
+msgctxt "DlgPrefShoutcastDlg#30"
 msgid "Title"
-msgstr "Title"
+msgstr ""
 
-#: DlgPrefShoutcastDlg#28
+#: DlgPrefShoutcastDlg#31
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
@@ -2255,46 +2450,51 @@ msgid "Sample Rate"
 msgstr "Sample Rate"
 
 #: DlgPrefSoundDlg#3
+msgid "Buffer Underflow Count"
+msgstr ""
+
+#: DlgPrefSoundDlg#4
+msgid "0"
+msgstr ""
+
+#: DlgPrefSoundDlg#5
 msgid "Latency Tips"
 msgstr "Latency Tips"
 
-#: DlgPrefSoundDlg#4
+#: DlgPrefSoundDlg#6
 msgid ""
 "<ul>\n"
-"<li>Increase your latency if you hear pops during playback</li>\n"
+"<li>Increase your latency if the underflow counter is increasing or you hear "
+"pops during playback</li>\n"
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
-"<ul>\n"
-"<li>Increase your latency if you hear pops during playback</li>\n"
-"<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
-"</ul>"
-
-#: DlgPrefSoundDlg#5
-msgctxt "DlgPrefSoundDlg#5"
-msgid "Output"
-msgstr "Output"
-
-#: DlgPrefSoundDlg#6
-msgctxt "DlgPrefSoundDlg#6"
-msgid "Input"
-msgstr "Input"
 
 #: DlgPrefSoundDlg#7
-msgid "Query Devices"
-msgstr "Query Devices"
+msgctxt "DlgPrefSoundDlg#7"
+msgid "Output"
+msgstr ""
 
 #: DlgPrefSoundDlg#8
 msgctxt "DlgPrefSoundDlg#8"
-msgid "Reset to Defaults"
-msgstr "Reset to Defaults"
+msgid "Input"
+msgstr ""
 
 #: DlgPrefSoundDlg#9
-msgctxt "DlgPrefSoundDlg#9"
-msgid "Apply"
-msgstr "Apply"
+msgid "Query Devices"
+msgstr "Query Devices"
 
 #: DlgPrefSoundDlg#10
+msgctxt "DlgPrefSoundDlg#10"
+msgid "Reset to Defaults"
+msgstr ""
+
+#: DlgPrefSoundDlg#11
+msgctxt "DlgPrefSoundDlg#11"
+msgid "Apply"
+msgstr ""
+
+#: DlgPrefSoundDlg#12
 msgid "Latency"
 msgstr "Latency"
 
@@ -2545,12 +2745,14 @@ msgid "Progress"
 msgstr "Progress"
 
 #: DlgPrepare#7
+msgctxt "DlgPrepare#7"
 msgid "Selects all tracks in the table below."
-msgstr "Selects all tracks in the table below."
+msgstr ""
 
 #: DlgPrepare#8
+msgctxt "DlgPrepare#8"
 msgid "Select All"
-msgstr "Select All"
+msgstr ""
 
 #: DlgPrepare#9
 msgid ""
@@ -2570,8 +2772,8 @@ msgid "Stop Analysis"
 msgstr "Stop Analysis"
 
 #: DlgPrepare#12
-msgid "Analyzing %1%"
-msgstr "Analyzing %1%"
+msgid "Analyzing %1/%2 %3%"
+msgstr ""
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -2963,8 +3165,13 @@ msgid "Question"
 msgstr "Question"
 
 #: GLSLWaveformWidget#1
-msgid "Filtered (experimental)"
-msgstr "Filtered (experimental)"
+msgctxt "GLSLWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
+
+#: GLSLWaveformWidget#2
+msgid "experimental"
+msgstr ""
 
 #: GLSimpleWaveformWidget#1
 msgctxt "GLSimpleWaveformWidget#1"
@@ -2975,6 +3182,50 @@ msgstr "Simple"
 msgctxt "GLWaveformWidget#1"
 msgid "Filtered"
 msgstr "Filtered"
+
+#: HSVWaveformWidget#1
+msgid "HSV"
+msgstr ""
+
+#: HidController#1
+msgid "Generic HID Mouse"
+msgstr ""
+
+#: HidController#2
+msgid "Generic HID Joystick"
+msgstr ""
+
+#: HidController#3
+msgid "Generic HID Gamepad"
+msgstr ""
+
+#: HidController#4
+msgid "Generic HID Keyboard"
+msgstr ""
+
+#: HidController#5
+msgid "Generic HID Multiaxis Controller"
+msgstr ""
+
+#: HidController#6
+msgid "Unknown HID Desktop Device"
+msgstr ""
+
+#: HidController#7
+msgid "HID Infrared Control"
+msgstr ""
+
+#: HidController#8
+msgid "Unknown Apple HID Device"
+msgstr ""
+
+#: HidController#9
+msgid "HID Unknown Device"
+msgstr ""
+
+#: HidController#10
+msgid "HID Interface Number"
+msgstr ""
 
 #: ITunesFeature#1
 msgid "iTunes"
@@ -3012,6 +3263,50 @@ msgstr ""
 msgid "Drag a preset from the list & drop it here"
 msgstr "Drag a preset from the list & drop it here"
 
+#: LegacySkinParser#1
+msgid "activate"
+msgstr ""
+
+#: LegacySkinParser#2
+msgid "toggle"
+msgstr ""
+
+#: LegacySkinParser#3
+msgid "right"
+msgstr ""
+
+#: LegacySkinParser#4
+msgid "left"
+msgstr ""
+
+#: LegacySkinParser#5
+msgid "right small"
+msgstr ""
+
+#: LegacySkinParser#6
+msgid "left small"
+msgstr ""
+
+#: LegacySkinParser#7
+msgid "up"
+msgstr ""
+
+#: LegacySkinParser#8
+msgid "down"
+msgstr ""
+
+#: LegacySkinParser#9
+msgid "up small"
+msgstr ""
+
+#: LegacySkinParser#10
+msgid "down small"
+msgstr ""
+
+#: LegacySkinParser#11
+msgid "Shortcut"
+msgstr ""
+
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
 msgstr "Library Scanner"
@@ -3024,6 +3319,10 @@ msgstr ""
 #: LibraryScannerDlg#3
 msgid "Cancel"
 msgstr "Cancel"
+
+#: LibraryScannerDlg#4
+msgid "Scanning: "
+msgstr ""
 
 #: MidiController#1
 msgid "MixxxControl not found"
@@ -3142,230 +3441,302 @@ msgid "Continue"
 msgstr "Continue"
 
 #: MixxxApp#18
+msgid "Load Track to Deck %1"
+msgstr ""
+
+#: MixxxApp#19
+msgid "Add &New Playlist"
+msgstr ""
+
+#: MixxxApp#20
+msgid "Add New &Crate"
+msgstr ""
+
+#: MixxxApp#21
+msgid "Enable &Keyboard Shortcuts"
+msgstr ""
+
+#: MixxxApp#22
+msgid "Show Samplers"
+msgstr ""
+
+#: MixxxApp#23
+msgid "Ctrl+1"
+msgstr ""
+
+#: MixxxApp#24
+msgid "Show Vinyl Control Section"
+msgstr ""
+
+#: MixxxApp#25
+msgid "Ctrl+3"
+msgstr ""
+
+#: MixxxApp#26
+msgid "Show Microphone Section"
+msgstr ""
+
+#: MixxxApp#27
+msgid "Ctrl+2"
+msgstr ""
+
+#: MixxxApp#28
+msgid "Show Preview Deck"
+msgstr ""
+
+#: MixxxApp#29
+msgid "Show the preview deck in the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#30
+msgid "Ctrl+4"
+msgstr ""
+
+#: MixxxApp#31
+msgid "&Reload Skin"
+msgstr ""
+
+#: MixxxApp#32
+msgid "Reload the skin"
+msgstr ""
+
+#: MixxxApp#33
+msgid "Ctrl+Shift+R"
+msgstr ""
+
+#: MixxxApp#34
+msgid "Developer"
+msgstr ""
+
+#: MixxxApp#35
 msgid "Load track to Deck %1"
 msgstr "Load track to Deck %1"
 
-#: MixxxApp#19
+#: MixxxApp#36
 msgid "Loads a track in deck %1"
 msgstr "Loads a track in deck %1"
 
-#: MixxxApp#20
+#: MixxxApp#37
 msgid "Open"
 msgstr "Open"
 
-#: MixxxApp#21
+#: MixxxApp#38
 msgid "Ctrl+O"
 msgstr "Ctrl+O"
 
-#: MixxxApp#22
+#: MixxxApp#39
 msgid "Ctrl+Shift+O"
 msgstr "Ctrl+Shift+O"
 
-#: MixxxApp#23
+#: MixxxApp#40
 msgid "&Exit"
 msgstr "&Exit"
 
-#: MixxxApp#24
+#: MixxxApp#41
 msgid "Quits Mixxx"
 msgstr "Quits Mixxx"
 
-#: MixxxApp#25
+#: MixxxApp#42
 msgid "Ctrl+Q"
 msgstr "Ctrl+Q"
 
-#: MixxxApp#26
+#: MixxxApp#43
 msgid "&Rescan Library"
 msgstr "&Rescan Library"
 
-#: MixxxApp#27
+#: MixxxApp#44
 msgid "Rescans library folders for changes to tracks."
 msgstr "Rescans library folders for changes to tracks."
 
-#: MixxxApp#28
-msgid "Add &new playlist"
-msgstr "Add &new playlist"
-
-#: MixxxApp#29
+#: MixxxApp#45
 msgid "Ctrl+N"
 msgstr "Ctrl+N"
 
-#: MixxxApp#30
-msgid "Add new &crate"
-msgstr "Add new &crate"
-
-#: MixxxApp#31
+#: MixxxApp#46
 msgid "Deck %1 is currently playing a track."
 msgstr "Deck %1 is currently playing a track."
 
-#: MixxxApp#32
+#: MixxxApp#47
 msgid "Are you sure you want to load a new track?"
 msgstr "Are you sure you want to load a new track?"
 
-#: MixxxApp#33
+#: MixxxApp#48
 msgid "&Full Screen"
 msgstr "&Full Screen"
 
-#: MixxxApp#34
+#: MixxxApp#49
 msgid "F11"
 msgstr "F11"
 
-#: MixxxApp#35
+#: MixxxApp#50
 msgid "&Preferences"
 msgstr "&Preferences"
 
-#: MixxxApp#36
+#: MixxxApp#51
 msgid "Change Mixxx settings (e.g. playback, MIDI, controls)"
 msgstr "Change Mixxx settings (e.g. playback, MIDI, controls)"
 
-#: MixxxApp#37
+#: MixxxApp#52
 msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
-#: MixxxApp#38
+#: MixxxApp#53
 msgid "&About"
 msgstr "&About"
 
-#: MixxxApp#39
+#: MixxxApp#54
 msgid "&Community Support"
 msgstr "&Community Support"
 
-#: MixxxApp#40
+#: MixxxApp#55
 msgid "Get help with Mixxx"
 msgstr "Get help with Mixxx"
 
-#: MixxxApp#41
+#: MixxxApp#56
 msgid "&User Manual"
 msgstr "&User Manual"
 
-#: MixxxApp#42
+#: MixxxApp#57
 msgid "Send Us &Feedback"
 msgstr "Send Us &Feedback"
 
-#: MixxxApp#43
-msgid "&Translate this application"
-msgstr "&Translate this application"
-
-#: MixxxApp#44
+#: MixxxApp#58
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#45
+#: MixxxApp#59
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#46
+#: MixxxApp#60
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#47
+#: MixxxApp#61
 msgid "&Record Mix"
 msgstr "&Record Mix"
 
-#: MixxxApp#48
+#: MixxxApp#62
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#49
+#: MixxxApp#63
 msgid "Create a new playlist"
 msgstr "Create a new playlist"
 
-#: MixxxApp#50
+#: MixxxApp#64
 msgid "Create a new crate"
 msgstr "Create a new crate"
 
-#: MixxxApp#51
+#: MixxxApp#65
 msgid "Ctrl+Shift+F"
 msgstr "Ctrl+Shift+F"
 
-#: MixxxApp#52
+#: MixxxApp#66
 msgid "Enable Vinyl Control &1"
 msgstr "Enable Vinyl Control &1"
 
-#: MixxxApp#53
+#: MixxxApp#67
 msgid "Enable Vinyl Control &2"
 msgstr "Enable Vinyl Control &2"
 
-#: MixxxApp#54
-msgid "Enable live &broadcasting"
-msgstr "Enable live &broadcasting"
-
-#: MixxxApp#55
+#: MixxxApp#68
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr "Use timecoded vinyls on external turntables to control Mixxx"
 
-#: MixxxApp#56
+#: MixxxApp#69
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr "Stream your mixes to a shoutcast or icecast server"
 
-#: MixxxApp#57
+#: MixxxApp#70
 msgid "Record your mix to a file"
 msgstr "Record your mix to a file"
 
-#: MixxxApp#58
+#: MixxxApp#71
 msgid "Display Mixxx using the full screen"
 msgstr "Display Mixxx using the full screen"
 
-#: MixxxApp#59
+#: MixxxApp#72
 msgid "Read the Mixxx user manual."
 msgstr "Read the Mixxx user manual."
 
-#: MixxxApp#60
+#: MixxxApp#73
 msgid "Send feedback to the Mixxx team."
 msgstr "Send feedback to the Mixxx team."
 
-#: MixxxApp#61
+#: MixxxApp#74
 msgid "Help translate this application into your language."
 msgstr "Help translate this application into your language."
 
-#: MixxxApp#62
+#: MixxxApp#75
 msgid "About the application"
 msgstr "About the application"
 
-#: MixxxApp#63
+#: MixxxApp#76
 msgid "A sampler is currently playing. Exit Mixxx?"
 msgstr "A sampler is currently playing. Exit Mixxx?"
 
-#: MixxxApp#64
+#: MixxxApp#77
 msgid "&File"
 msgstr "&File"
 
-#: MixxxApp#65
+#: MixxxApp#78
 msgid "Ctrl+Shift+N"
 msgstr "Ctrl+Shift+N"
 
-#: MixxxApp#66
-msgid "Enable &keyboard shortcuts"
-msgstr "Enable &keyboard shortcuts"
-
-#: MixxxApp#67
+#: MixxxApp#79
 msgid "Toggles keyboard shortcuts on or off"
 msgstr "Toggles keyboard shortcuts on or off"
 
-#: MixxxApp#68
+#: MixxxApp#80
 msgid "Ctrl+`"
 msgstr "Ctrl+`"
 
-#: MixxxApp#69
+#: MixxxApp#81
+msgid "&Translate This Application"
+msgstr ""
+
+#: MixxxApp#82
+msgid "Enable Live &Broadcasting"
+msgstr ""
+
+#: MixxxApp#83
+msgid "May not be supported on all skins."
+msgstr ""
+
+#: MixxxApp#84
+msgid "Show the sample deck section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#85
+msgid "Show the vinyl control section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#86
+msgid "Show the microphone section of the Mixxx interface."
+msgstr ""
+
+#: MixxxApp#87
 msgid "&Options"
 msgstr "&Options"
 
-#: MixxxApp#70
+#: MixxxApp#88
 msgid "&Library"
 msgstr "&Library"
 
-#: MixxxApp#71
+#: MixxxApp#89
 msgid "&View"
 msgstr "&View"
 
-#: MixxxApp#72
+#: MixxxApp#90
 msgid "&Help"
 msgstr "&Help"
 
-#: MixxxApp#73
+#: MixxxApp#91
 msgid "&Vinyl Control"
 msgstr "&Vinyl Control"
 
-#: MixxxApp#74
+#: MixxxApp#92
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3373,39 +3744,39 @@ msgstr ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 
-#: MixxxApp#75
+#: MixxxApp#93
 msgid "Mixxx %1 Development Team"
 msgstr "Mixxx %1 Development Team"
 
-#: MixxxApp#76
+#: MixxxApp#94
 msgid "With contributions from:"
 msgstr "With contributions from:"
 
-#: MixxxApp#77
+#: MixxxApp#95
 msgid "And special thanks to:"
 msgstr "And special thanks to:"
 
-#: MixxxApp#78
+#: MixxxApp#96
 msgid "Past Developers"
 msgstr "Past Developers"
 
-#: MixxxApp#79
+#: MixxxApp#97
 msgid "Past Contributors"
 msgstr "Past Contributors"
 
-#: MixxxApp#80
+#: MixxxApp#98
 msgid "Error in skin file"
 msgstr "Error in skin file"
 
-#: MixxxApp#81
+#: MixxxApp#99
 msgid "The selected skin cannot be loaded."
 msgstr "The selected skin cannot be loaded."
 
-#: MixxxApp#82
+#: MixxxApp#100
 msgid "OpenGL Direct Rendering"
 msgstr "OpenGL Direct Rendering"
 
-#: MixxxApp#83
+#: MixxxApp#101
 msgid ""
 "Direct rendering is not enabled on your machine.<br><br>This means that the "
 "waveform displays will be very<br><b>slow and may tax your CPU heavily</b>. "
@@ -3423,22 +3794,34 @@ msgstr ""
 "section.<br><br>NOTE: If you use NVIDIA hardware,<br>direct rendering may "
 "not be present, but you should<br>not experience degraded performance."
 
-#: MixxxApp#84
+#: MixxxApp#102
 msgid "Confirm Exit"
 msgstr "Confirm Exit"
 
-#: MixxxApp#85
+#: MixxxApp#103
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "A deck is currently playing. Exit Mixxx?"
+
+#: MixxxApp#104
+msgid "The preferences window is still open."
+msgstr ""
+
+#: MixxxApp#105
+msgid "Discard any changes and exit Mixxx?"
+msgstr ""
 
 #: MixxxLibraryFeature#1
 msgid "Missing Tracks"
 msgstr "Missing Tracks"
 
 #: MixxxLibraryFeature#2
-msgctxt "MixxxLibraryFeature#2"
+msgid "Hidden Tracks"
+msgstr ""
+
+#: MixxxLibraryFeature#3
+msgctxt "MixxxLibraryFeature#3"
 msgid "Library"
-msgstr "Library"
+msgstr ""
 
 #: ParserCsv#1
 msgctxt "ParserCsv#1"
@@ -3531,10 +3914,48 @@ msgstr ""
 "It may be necessary to skip some songs in your prepared playlist or add some "
 "different songs in order to maintain the energy of your audience."
 
+#: PlaylistFeature#8
+msgid "Create new playlist"
+msgstr ""
+
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
 msgstr "Analyze"
+
+#: QMessageBox#1
+msgid "Upgrading Mixxx from v1.9.x/1.10.x."
+msgstr ""
+
+#: QMessageBox#2
+msgid "Mixxx has a new and improved beat detector."
+msgstr ""
+
+#: QMessageBox#3
+msgid ""
+"When you load tracks, Mixxx can re-analyze them and generate new, more "
+"accurate beatgrids. This will make automatic beatsync and looping more "
+"reliable."
+msgstr ""
+
+#: QMessageBox#4
+msgid "This does not affect saved cues, hotcues, playlists, or crates."
+msgstr ""
+
+#: QMessageBox#5
+msgid ""
+"If you do not want Mixxx to re-analyze your tracks, choose \"Keep Current "
+"Beatgrids\". You can change this setting at any time from the \"Beat "
+"Detection\" section of the Preferences."
+msgstr ""
+
+#: QMessageBox#6
+msgid "Keep Current Beatgrids"
+msgstr ""
+
+#: QMessageBox#7
+msgid "Generate New Beatgrids"
+msgstr ""
 
 #: QObject#1
 msgid "Invalid"
@@ -3569,6 +3990,16 @@ msgstr "Passthrough"
 #: QObject#8
 msgid "Unknown path type %1"
 msgstr "Unknown path type %1"
+
+#: QtSimpleWaveformWidget#1
+msgctxt "QtSimpleWaveformWidget#1"
+msgid "Simple"
+msgstr ""
+
+#: QtWaveformWidget#1
+msgctxt "QtWaveformWidget#1"
+msgid "Filtered"
+msgstr ""
 
 #: RecordingFeature#1
 msgid "Recordings"
@@ -3661,6 +4092,10 @@ msgctxt "SoftwareWaveformWidget#1"
 msgid "Filtered"
 msgstr "Filtered"
 
+#: SoftwareWaveformWidget#2
+msgid "Software"
+msgstr ""
+
 #: Tooltips#1
 msgid "Drop tracks from library or external file manager here."
 msgstr "Drop tracks from library or external file manager here."
@@ -3678,154 +4113,162 @@ msgid "Right-click"
 msgstr "Right-click"
 
 #: Tooltips#5
+msgid "Scroll-wheel"
+msgstr ""
+
+#: Tooltips#6
 msgid "Waveform Overview"
 msgstr "Waveform Overview"
 
-#: Tooltips#6
+#: Tooltips#7
 msgid "Shows information about the track currently loaded in this channel."
 msgstr "Shows information about the track currently loaded in this channel."
 
-#: Tooltips#7
+#: Tooltips#8
 msgid "Jump around in the track by clicking somewhere on the waveform."
 msgstr "Jump around in the track by clicking somewhere on the waveform."
 
-#: Tooltips#8
+#: Tooltips#9
 msgid "Use the mouse to scratch, spin-back or throw tracks."
 msgstr "Use the mouse to scratch, spin-back or throw tracks."
 
-#: Tooltips#9
-msgctxt "Tooltips#9"
-msgid "Waveform Display"
-msgstr "Waveform Display"
-
 #: Tooltips#10
+msgctxt "Tooltips#10"
+msgid "Waveform Display"
+msgstr ""
+
+#: Tooltips#11
 msgid "Shows the loaded track's waveform near the playback position."
 msgstr "Shows the loaded track's waveform near the playback position."
 
-#: Tooltips#11
+#: Tooltips#12
 msgid "Drag with mouse to make temporary pitch adjustments."
 msgstr "Drag with mouse to make temporary pitch adjustments."
 
-#: Tooltips#12
+#: Tooltips#13
+msgid "Scroll to change the waveform zoom level."
+msgstr ""
+
+#: Tooltips#14
 msgid "Spinning Vinyl"
 msgstr "Spinning Vinyl"
 
-#: Tooltips#13
+#: Tooltips#15
 msgid "Rotates during playback and shows the position of a track."
 msgstr "Rotates during playback and shows the position of a track."
 
-#: Tooltips#14
+#: Tooltips#16
 msgid "Gain"
 msgstr "Gain"
 
-#: Tooltips#15
+#: Tooltips#17
 msgid "Adjusts the pre-fader gain of the track (to avoid clipping)."
 msgstr "Adjusts the pre-fader gain of the track (to avoid clipping)."
 
-#: Tooltips#16
+#: Tooltips#18
 msgid "(too loud for the hardware and is being distorted)."
 msgstr "(too loud for the hardware and is being distorted)."
 
-#: Tooltips#17
+#: Tooltips#19
 msgid "Peak Indicator"
 msgstr "Peak Indicator"
 
-#: Tooltips#18
+#: Tooltips#20
 msgid "Indicates when the signal on the channel is clipping,"
 msgstr "Indicates when the signal on the channel is clipping,"
 
-#: Tooltips#19
+#: Tooltips#21
 msgid "Master Peak Indicator"
 msgstr "Master Peak Indicator"
 
-#: Tooltips#20
+#: Tooltips#22
 msgid "Indicates when the signal on the master output is clipping,"
 msgstr "Indicates when the signal on the master output is clipping,"
 
-#: Tooltips#21
+#: Tooltips#23
 msgid "Channel Volume Meter"
 msgstr "Channel Volume Meter"
 
-#: Tooltips#22
+#: Tooltips#24
 msgid "Shows the current channel volume."
 msgstr "Shows the current channel volume."
 
-#: Tooltips#23
+#: Tooltips#25
 msgid "Microphone Volume Meter"
 msgstr "Microphone Volume Meter"
 
-#: Tooltips#24
+#: Tooltips#26
 msgid "Shows the current microphone volume."
 msgstr "Shows the current microphone volume."
 
-#: Tooltips#25
+#: Tooltips#27
 msgid "Master Channel Volume Meter"
 msgstr "Master Channel Volume Meter"
 
-#: Tooltips#26
+#: Tooltips#28
 msgid "Shows the current master volume for the left channel."
 msgstr "Shows the current master volume for the left channel."
 
-#: Tooltips#27
+#: Tooltips#29
 msgid "Volume Control"
 msgstr "Volume Control"
 
-#: Tooltips#28
+#: Tooltips#30
 msgid "Adjusts the volume of the selected channel."
 msgstr "Adjusts the volume of the selected channel."
 
-#: Tooltips#29
+#: Tooltips#31
 msgid "Master Volume"
 msgstr "Master Volume"
 
-#: Tooltips#30
+#: Tooltips#32
 msgid "Adjusts the master output volume."
 msgstr "Adjusts the master output volume."
 
-#: Tooltips#31
-msgctxt "Tooltips#31"
+#: Tooltips#33
+msgctxt "Tooltips#33"
 msgid "Crossfader"
-msgstr "Crossfader"
+msgstr ""
 
-#: Tooltips#32
+#: Tooltips#34
 msgid ""
 "Determines the master output by fading between the left and right channels."
 msgstr ""
 "Determines the master output by fading between the left and right channels."
 
-#: Tooltips#33
+#: Tooltips#35
 msgid "Balance"
 msgstr "Balance"
 
-#: Tooltips#34
+#: Tooltips#36
 msgid "Adjusts the left/right channel balance on the master output."
 msgstr "Adjusts the left/right channel balance on the master output."
 
-#: Tooltips#35
+#: Tooltips#37
 msgid "Headphone Volume"
 msgstr "Headphone Volume"
 
-#: Tooltips#36
+#: Tooltips#38
 msgid "Adjusts the headphone output volume."
 msgstr "Adjusts the headphone output volume."
 
-#: Tooltips#37
+#: Tooltips#39
 msgid "Headphone Mix"
 msgstr "Headphone Mix"
 
-#: Tooltips#38
+#: Tooltips#40
 msgid "Controls what you hear on the headphone output."
 msgstr "Controls what you hear on the headphone output."
 
-#: Tooltips#39
+#: Tooltips#41
 msgid "Mix Orientation"
 msgstr ""
 
-#: Tooltips#40
+#: Tooltips#42
 msgid "Set the channel's mix orientation."
 msgstr ""
 
-#: Tooltips#41
+#: Tooltips#43
 msgid ""
 "Either to the left side of crossfader, to the right side or to the center "
 "(default)."
@@ -3833,181 +4276,189 @@ msgstr ""
 "Either to the left side of the crossfader, to the right side or to the "
 "centre (default)."
 
-#: Tooltips#42
-msgctxt "Tooltips#42"
+#: Tooltips#44
+msgctxt "Tooltips#44"
 msgid "Microphone"
-msgstr "Microphone"
+msgstr ""
 
-#: Tooltips#43
+#: Tooltips#45
 msgid "Show/hide the Microphone section."
 msgstr "Show/hide the Microphone section."
 
-#: Tooltips#44
+#: Tooltips#46
 msgid "Sampler"
 msgstr "Sampler"
 
-#: Tooltips#45
+#: Tooltips#47
 msgid "Show/hide the Sampler section."
 msgstr "Show/hide the Sampler section."
 
-#: Tooltips#46
-msgctxt "Tooltips#46"
+#: Tooltips#48
+msgctxt "Tooltips#48"
 msgid "Vinyl Control"
-msgstr "Vinyl Control"
+msgstr ""
 
-#: Tooltips#47
+#: Tooltips#49
 msgid "Show/hide the Vinyl Control section."
 msgstr "Show/hide the Vinyl Control section."
 
-#: Tooltips#48
-msgid "Microphone Volume"
-msgstr "Microphone Volume"
-
-#: Tooltips#49
-msgid "Adjusts the microphone volume."
-msgstr "Adjusts the microphone volume."
-
 #: Tooltips#50
-msgid "Microphone Talk-Over"
-msgstr "Microphone Talk-Over"
+msgid "Preview Deck"
+msgstr ""
 
 #: Tooltips#51
-msgid "Hold-to-talk or short click for latching to"
+msgid "Show/hide the Preview deck."
 msgstr ""
 
 #: Tooltips#52
+msgid "Microphone Volume"
+msgstr "Microphone Volume"
+
+#: Tooltips#53
+msgid "Adjusts the microphone volume."
+msgstr "Adjusts the microphone volume."
+
+#: Tooltips#54
+msgid "Microphone Talk-Over"
+msgstr "Microphone Talk-Over"
+
+#: Tooltips#55
+msgid "Hold-to-talk or short click for latching to"
+msgstr ""
+
+#: Tooltips#56
 msgid "mix microphone input into the master output."
 msgstr "mix microphone input into the master output."
 
-#: Tooltips#53
+#: Tooltips#57
 msgid "Raise Pitch"
 msgstr "Raise Pitch"
 
-#: Tooltips#54
+#: Tooltips#58
 msgid "Sets the pitch higher."
 msgstr "Increases the pitch."
 
-#: Tooltips#55
+#: Tooltips#59
 msgid "Sets the pitch higher in small steps."
 msgstr "Increases the pitch in small steps."
 
-#: Tooltips#56
+#: Tooltips#60
 msgid "Lower Pitch"
 msgstr "Decrease Pitch"
 
-#: Tooltips#57
+#: Tooltips#61
 msgid "Sets the pitch lower."
 msgstr "Decreases the pitch."
 
-#: Tooltips#58
+#: Tooltips#62
 msgid "Sets the pitch lower in small steps."
 msgstr "Decreases the pitch in small steps."
 
-#: Tooltips#59
+#: Tooltips#63
 msgid "Raise Pitch Temporary (Nudge)"
 msgstr "Raise Pitch Temporarily (Nudge)"
 
-#: Tooltips#60
+#: Tooltips#64
 msgid "Holds the pitch higher while active."
 msgstr ""
 
-#: Tooltips#61
+#: Tooltips#65
 msgid "Holds the pitch higher (small amount) while active."
 msgstr ""
 
-#: Tooltips#62
+#: Tooltips#66
 msgid "Lower Pitch Temporary (Nudge)"
 msgstr "Lower Pitch Temporarily (Nudge)"
 
-#: Tooltips#63
+#: Tooltips#67
 msgid "Holds the pitch lower while active."
 msgstr ""
 
-#: Tooltips#64
+#: Tooltips#68
 msgid "Holds the pitch lower (small amount) while active."
 msgstr ""
 
-#: Tooltips#65
+#: Tooltips#69
 msgid "Low EQ"
 msgstr "Low EQ"
 
-#: Tooltips#66
+#: Tooltips#70
 msgid "Adjusts the gain of the low EQ filter."
 msgstr "Adjusts the gain of the low EQ filter."
 
-#: Tooltips#67
+#: Tooltips#71
 msgid "Mid EQ"
 msgstr "Mid EQ"
 
-#: Tooltips#68
+#: Tooltips#72
 msgid "Adjusts the gain of the mid EQ filter."
 msgstr "Adjusts the gain of the mid EQ filter."
 
-#: Tooltips#69
+#: Tooltips#73
 msgid "High EQ"
 msgstr "High EQ"
 
-#: Tooltips#70
+#: Tooltips#74
 msgid "Adjusts the gain of the high EQ filter."
 msgstr "Adjusts the gain of the high EQ filter."
 
-#: Tooltips#71
+#: Tooltips#75
 msgid "Hold-to-kill or short click for latching."
 msgstr ""
 
-#: Tooltips#72
+#: Tooltips#76
 msgid "High EQ Kill"
 msgstr "High EQ Kill"
 
-#: Tooltips#73
+#: Tooltips#77
 msgid "Holds the gain of the high EQ to zero while active."
 msgstr ""
 
-#: Tooltips#74
+#: Tooltips#78
 msgid "Mid EQ Kill"
 msgstr "Mid EQ Kill"
 
-#: Tooltips#75
+#: Tooltips#79
 msgid "Holds the gain of the mid EQ to zero while active."
 msgstr ""
 
-#: Tooltips#76
+#: Tooltips#80
 msgid "Low EQ Kill"
 msgstr "Low EQ Kill"
 
-#: Tooltips#77
+#: Tooltips#81
 msgid "Holds the gain of the low EQ to zero while active."
 msgstr ""
 
-#: Tooltips#78
+#: Tooltips#82
 msgid "Displays the tempo of the loaded track in BPM (beats per minute)."
 msgstr "Displays the tempo of the loaded track in BPM (beats per minute)."
 
-#: Tooltips#79
+#: Tooltips#83
 msgid "Tempo"
 msgstr "Tempo"
 
-#: Tooltips#80
+#: Tooltips#84
 msgid "BPM Tap"
 msgstr "BPM Tap"
 
-#: Tooltips#81
+#: Tooltips#85
 msgid "When tapped repeatedly, adjusts the BPM to match the tapped BPM."
 msgstr "When tapped repeatedly, adjusts the BPM to match the tapped BPM."
 
-#: Tooltips#82
+#: Tooltips#86
 msgid "Tempo and BPM Tap"
 msgstr "Tempo and BPM Tap"
 
-#: Tooltips#83
+#: Tooltips#87
 msgid "Show/hide the spinning vinyl section."
 msgstr "Show/hide the spinning vinyl section."
 
-#: Tooltips#84
+#: Tooltips#88
 msgid "Adjust Beatgrid"
 msgstr "Adjust Beatgrid"
 
-#: Tooltips#85
+#: Tooltips#89
 msgid ""
 "Adjust beatgrid so the closest beat is aligned with the current play "
 "position."
@@ -4015,90 +4466,154 @@ msgstr ""
 "Adjust beatgrid so the closest beat is aligned with the current play "
 "position."
 
-#: Tooltips#86
+#: Tooltips#90
 msgid "Key-Lock"
 msgstr "Key Lock"
 
-#: Tooltips#87
+#: Tooltips#91
 msgid "Prevents the pitch from from changing when the rate changes."
 msgstr "Prevents the pitch from changing when the rate changes."
 
-#: Tooltips#88
+#: Tooltips#92
 msgid ""
 "Toggling key-lock during playback may result in a momentary audio glitch."
 msgstr ""
 "Toggling key lock during playback may result in a momentary audio glitch."
 
-#: Tooltips#89
+#: Tooltips#93
 msgid "If quantize is enabled, snaps to the nearest beat."
 msgstr "If quantise is enabled, snaps to the nearest beat."
 
-#: Tooltips#90
+#: Tooltips#94
 msgid "Quantize"
 msgstr "Quantise"
 
-#: Tooltips#91
+#: Tooltips#95
 msgid "Toggles quantization."
 msgstr "Toggles quantisation."
 
-#: Tooltips#92
+#: Tooltips#96
 msgid "Loops and cues snap to the nearest beat when quantization is enabled."
 msgstr ""
 "Loops and cues snap to the nearest beat when quantisation is enabled."
 
-#: Tooltips#93
+#: Tooltips#97
 msgid "Reverse"
 msgstr "Reverse"
 
-#: Tooltips#94
+#: Tooltips#98
 msgid "Reverses track playback during regular playback."
 msgstr "Reverses track playback during regular playback."
 
-#: Tooltips#95
+#: Tooltips#99
 msgid "Play/Pause"
 msgstr "Play/Pause"
 
-#: Tooltips#96
+#: Tooltips#100
 msgid "Toggles playing or pausing the track."
 msgstr ""
 
-#: Tooltips#97
+#: Tooltips#101
 msgid "Jumps to the beginning of the track."
 msgstr "Jumps to the beginning of the track."
 
-#: Tooltips#98
+#: Tooltips#102
 msgid "Places a cue-point at the current position on the waveform."
 msgstr "Places a cue point at the current position on the waveform."
 
-#: Tooltips#99
+#: Tooltips#103
 msgid "Plays or pauses the track."
 msgstr "Plays or pauses the track."
 
-#: Tooltips#100
+#: Tooltips#104
 msgid "(while playing)"
 msgstr "(while playing)"
 
-#: Tooltips#101
+#: Tooltips#105
+msgid "(while stopped)"
+msgstr ""
+
+#: Tooltips#106
 msgid "Cue"
 msgstr "Cue"
 
-#: Tooltips#102
+#: Tooltips#107
 msgid "Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple)."
 msgstr "Seeks the track to the cue point and stops (CDJ) OR plays (simple)."
 
-#: Tooltips#103
+#: Tooltips#108
 msgid "Seeks the track to the cue-point and stops."
 msgstr "Seeks the track to the cue point and stops."
 
-#: Tooltips#104
+#: Tooltips#109
 msgid "Headphone"
 msgstr "Headphone"
 
-#: Tooltips#105
+#: Tooltips#110
 msgid "Sends the selected channel's audio to the headphone output."
 msgstr "Sends the selected channel's audio to the headphone output."
 
-#: Tooltips#106
+#: Tooltips#111
+msgid ""
+"Syncs to the first deck (in numerical order) that is playing a track and has "
+"a BPM."
+msgstr ""
+
+#: Tooltips#112
+msgid "If no deck is playing, syncs to the first deck that has a BPM."
+msgstr ""
+
+#: Tooltips#113
+msgid "Decks can't sync to samplers and samplers can only sync to decks."
+msgstr ""
+
+#: Tooltips#114
+msgid "Setup a loop over the set number of beats."
+msgstr ""
+
+#: Tooltips#115
+msgid "Temporarily setup a rolling loop over the set number of beats."
+msgstr ""
+
+#: Tooltips#116
+msgid ""
+"Playback will resume where the track would have been if it had not entered "
+"the loop."
+msgstr ""
+
+#: Tooltips#117
+msgid "Loop Exit"
+msgstr ""
+
+#: Tooltips#118
+msgid "Turns the current loop off."
+msgstr ""
+
+#: Tooltips#119
+msgid "Slip Mode"
+msgstr ""
+
+#: Tooltips#120
+msgid ""
+"When active, the playback continues muted in the background during a loop, "
+"reverse, scratch etc."
+msgstr ""
+
+#: Tooltips#121
+msgid ""
+"Once disabled, the audible playback will resume where the track would have "
+"been."
+msgstr ""
+
+#: Tooltips#122
+msgid "Clock"
+msgstr ""
+
+#: Tooltips#123
+msgid "Displays the current time."
+msgstr ""
+
+#: Tooltips#124
 msgid ""
 "If Vinyl control is enabled, displays time-coded vinyl signal quality (see "
 "Preferences -> Vinyl Control)."
@@ -4106,127 +4621,127 @@ msgstr ""
 "If Vinyl Control is enabled, displays timecoded vinyl signal quality (see "
 "Preferences -> Vinyl Control)."
 
-#: Tooltips#107
+#: Tooltips#125
 msgid "Shows the current master volume for the right channel."
 msgstr "Shows the current master volume for the right channel."
 
-#: Tooltips#108
+#: Tooltips#126
 msgid "Change the crossfader curve in Preferences -> Crossfader"
 msgstr "Change the crossfader curve in Preferences -> Crossfader."
 
-#: Tooltips#109
+#: Tooltips#127
 msgid "Activate Vinyl Control from the Menu -> Options."
 msgstr ""
 
-#: Tooltips#110
+#: Tooltips#128
 msgid "Change the step-size in the Preferences -> Interface menu."
 msgstr ""
 
-#: Tooltips#111
+#: Tooltips#129
 msgid "Change the default cue behavior in Preferences -> Interface."
 msgstr "Change the default cue behavior in Preferences -> Interface."
 
-#: Tooltips#112
+#: Tooltips#130
 msgid "selected in Preferences -> Sound Hardware."
 msgstr "selected in Preferences -> Sound Hardware."
 
-#: Tooltips#113
+#: Tooltips#131
 msgid "Fast Rewind"
 msgstr "Fast Rewind"
 
-#: Tooltips#114
+#: Tooltips#132
 msgid "Fast rewind through the track."
 msgstr "Fast rewind through the track."
 
-#: Tooltips#115
+#: Tooltips#133
 msgid "Fast Forward"
 msgstr "Fast Forward"
 
-#: Tooltips#116
+#: Tooltips#134
 msgid "Fast forward through the track."
 msgstr "Fast forward through the track."
 
-#: Tooltips#117
+#: Tooltips#135
 msgid "Jumps to the end of the track."
 msgstr "Jumps to the end of the track."
 
-#: Tooltips#118
-msgctxt "Tooltips#118"
+#: Tooltips#136
+msgctxt "Tooltips#136"
 msgid "Synchronize"
-msgstr "Synchronise"
+msgstr ""
 
-#: Tooltips#119
+#: Tooltips#137
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
 msgstr "Syncs the tempo (BPM) and phase to that of the other track, "
 
-#: Tooltips#120
+#: Tooltips#138
 msgid "if BPM is detected on both."
 msgstr "if BPM is detected on both."
 
-#: Tooltips#121
+#: Tooltips#139
 msgid "Syncs the tempo (BPM) to that of the other track,"
 msgstr "Syncs the tempo (BPM) to that of the other track,"
 
-#: Tooltips#122
+#: Tooltips#140
 msgid "Pitch Control"
 msgstr "Pitch Control"
 
-#: Tooltips#123
+#: Tooltips#141
 msgid "Changes the track playback rate."
 msgstr ""
 
-#: Tooltips#124
+#: Tooltips#142
 msgid "Pitch Rate"
 msgstr ""
 
-#: Tooltips#125
+#: Tooltips#143
 msgid "Displays the current playback rate of the track."
 msgstr ""
 
-#: Tooltips#126
+#: Tooltips#144
 msgid "Repeat"
 msgstr "Repeat"
 
-#: Tooltips#127
+#: Tooltips#145
 msgid ""
 "When active the track will repeat if you go past the end or reverse before "
 "the start."
 msgstr ""
 
-#: Tooltips#128
+#: Tooltips#146
 msgid "Eject"
 msgstr "Eject"
 
-#: Tooltips#129
+#: Tooltips#147
 msgid "Ejects track from the player."
 msgstr "Ejects track from the player."
 
-#: Tooltips#130
-msgctxt "Tooltips#130"
+#: Tooltips#148
+msgctxt "Tooltips#148"
 msgid "Hotcue"
-msgstr "Hotcue"
+msgstr ""
 
-#: Tooltips#131
+#: Tooltips#149
 msgid "If hotcue is set, jumps to the hotcue."
 msgstr "If hotcue is set, jumps to the hotcue."
 
-#: Tooltips#132
+#: Tooltips#150
 msgid "If hotcue is not set, sets the hotcue to the current play position."
 msgstr "If hotcue is not set, sets the hotcue to the current play position."
 
-#: Tooltips#133
+#: Tooltips#151
 msgid "If hotcue is set, clears the hotcue."
 msgstr "If hotcue is set, clears the hotcue."
 
-#: Tooltips#134
+#: Tooltips#152
 msgid "Vinyl Control Mode"
 msgstr "Vinyl Control Mode"
 
-#: Tooltips#135
+#: Tooltips#153
 msgid "Absolute mode - track position equals needle position and speed."
 msgstr "Absolute mode - track position equals needle position and speed."
 
-#: Tooltips#136
+#: Tooltips#154
 msgid ""
 "Relative mode - track speed equals needle speed regardless of needle "
 "position."
@@ -4234,7 +4749,7 @@ msgstr ""
 "Relative mode - track speed equals needle speed regardless of needle "
 "position."
 
-#: Tooltips#137
+#: Tooltips#155
 msgid ""
 "Constant mode - track speed equals last known-steady speed regardless of "
 "needle input."
@@ -4242,95 +4757,91 @@ msgstr ""
 "Constant mode - track speed equals last known-steady speed regardless of "
 "needle input."
 
-#: Tooltips#138
+#: Tooltips#156
 msgid "Vinyl Status"
 msgstr "Vinyl Status"
 
-#: Tooltips#139
+#: Tooltips#157
 msgid "Provides visual feedback for vinyl control status:"
 msgstr "Provides visual feedback for vinyl control status:"
 
-#: Tooltips#140
+#: Tooltips#158
 msgid "Green for control enabled."
 msgstr "Green for control enabled."
 
-#: Tooltips#141
+#: Tooltips#159
 msgid "Blinking yellow for when the needle reaches the end of the record."
 msgstr "Blinking yellow for when the needle reaches the end of the record."
 
-#: Tooltips#142
+#: Tooltips#160
 msgid "Red for needle skip detected."
 msgstr "Red for needle skip detected."
 
-#: Tooltips#143
+#: Tooltips#161
 msgid "Loop-In Marker"
 msgstr "Loop-In Marker"
 
-#: Tooltips#144
+#: Tooltips#162
 msgid "Sets the deck loop-in position to the current play position."
 msgstr "Sets the deck Loop-In position to the current play position."
 
-#: Tooltips#145
+#: Tooltips#163
 msgid "Loop-Out Marker"
 msgstr "Loop-Out Marker"
 
-#: Tooltips#146
+#: Tooltips#164
 msgid "Sets the deck loop-out position to the current play position."
 msgstr "Sets the deck Loop-Out position to the current play position."
 
-#: Tooltips#147
+#: Tooltips#165
 msgid "Loop Halve"
 msgstr ""
 
-#: Tooltips#148
+#: Tooltips#166
 msgid "Halves the current loop's length by moving the end marker."
 msgstr "Halves the current loop's length by moving the end marker."
 
-#: Tooltips#149
+#: Tooltips#167
 msgid "Deck immediately loops if past the new endpoint."
 msgstr ""
 
-#: Tooltips#150
+#: Tooltips#168
 msgid "Loop Double"
 msgstr ""
 
-#: Tooltips#151
+#: Tooltips#169
 msgid "Doubles the current loop's length by moving the end marker."
 msgstr "Doubles the current loop's length by moving the end marker."
 
-#: Tooltips#152
+#: Tooltips#170
 msgid "Beatloop"
 msgstr ""
 
-#: Tooltips#153
-msgid "Setup a loop over X beats."
-msgstr ""
-
-#: Tooltips#154
+#: Tooltips#171
 msgid "Reloop/Exit"
 msgstr "Reloop/Exit"
 
-#: Tooltips#155
+#: Tooltips#172
 msgid "Toggles the current loop on or off."
 msgstr "Toggles the current loop on or off."
 
-#: Tooltips#156
+#: Tooltips#173
 msgid "Works only if Loop-In and Loop-Out marker are set."
 msgstr "Works only if the Loop-In and Loop-Out markers are set."
 
-#: Tooltips#157
+#: Tooltips#174
 msgid "Vinyl Cueing Mode"
 msgstr "Vinyl Cueing Mode"
 
-#: Tooltips#158
+#: Tooltips#175
 msgid "Determines how cue points are treated in vinyl control Relative mode:"
 msgstr ""
 
-#: Tooltips#159
+#: Tooltips#176
 msgid "Off - Cue points ignored."
 msgstr "Off - Cue points ignored."
 
-#: Tooltips#160
+#: Tooltips#177
 msgid ""
 "One Cue - If needle is dropped after the cue point, track will seek to that "
 "cue point."
@@ -4338,95 +4849,95 @@ msgstr ""
 "One Cue - If needle is dropped after the cue point, track will seek to that "
 "cue point."
 
-#: Tooltips#161
+#: Tooltips#178
 msgid "Hot Cue - Track will seek to nearest previous hot cue point."
 msgstr "Hot Cue - Track will seek to nearest previous hot cue point."
 
-#: Tooltips#162
+#: Tooltips#179
 msgid "Track Time"
 msgstr "Track Time"
 
-#: Tooltips#163
+#: Tooltips#180
 msgid "Displays the elapsed or remaining time of the track loaded."
 msgstr "Displays the elapsed or remaining time of the loaded track."
 
-#: Tooltips#164
+#: Tooltips#181
 msgid "Click to toggle between time elapsed/remaining time."
 msgstr "Click to toggle between time elapsed and time remaining."
 
-#: Tooltips#165
+#: Tooltips#182
 msgid "Track Duration"
 msgstr "Track Duration"
 
-#: Tooltips#166
+#: Tooltips#183
 msgid "Displays the duration of the loaded track."
 msgstr "Displays the duration of the loaded track."
 
-#: Tooltips#167
+#: Tooltips#184
 msgid "Information is loaded from the track's metadata tags."
 msgstr "Information is loaded from the track's metadata tags."
 
-#: Tooltips#168
+#: Tooltips#185
 msgid "Track Artist"
 msgstr "Track Artist"
 
-#: Tooltips#169
+#: Tooltips#186
 msgid "Displays the artist of the loaded track."
 msgstr "Displays the artist of the loaded track."
 
-#: Tooltips#170
+#: Tooltips#187
 msgid "Track Title"
 msgstr "Track Title"
 
-#: Tooltips#171
+#: Tooltips#188
 msgid "Displays the title of the loaded track."
 msgstr "Displays the title of the loaded track."
 
-#: Tooltips#172
+#: Tooltips#189
 msgid "Track Album"
 msgstr "Track Album"
 
-#: Tooltips#173
+#: Tooltips#190
 msgid "Displays the album name of the loaded track."
 msgstr "Displays the album name of the loaded track."
 
-#: Tooltips#174
+#: Tooltips#191
 msgid "Track Artist/Title"
 msgstr "Track Artist/Title"
 
-#: Tooltips#175
+#: Tooltips#192
 msgid "Displays the artist and title of the loaded track."
 msgstr "Displays the artist and title of the loaded track."
 
-#: Tooltips#176
+#: Tooltips#193
 msgid "Flanger"
 msgstr "Flanger"
 
-#: Tooltips#177
+#: Tooltips#194
 msgid "Toggles the flange effect. Use the depth/delay/lfo knobs to adjust."
 msgstr "Toggles the flange effect. Use the depth/delay/LFO knobs to adjust."
 
-#: Tooltips#178
+#: Tooltips#195
 msgid "Flanger Delay"
 msgstr "Flanger Delay"
 
-#: Tooltips#179
+#: Tooltips#196
 msgid "Adjusts the phase delay of the flange effect (when active)."
 msgstr "Adjusts the phase delay of the flange effect (when active)."
 
-#: Tooltips#180
+#: Tooltips#197
 msgid "Flanger Depth"
 msgstr "Flanger Depth"
 
-#: Tooltips#181
+#: Tooltips#198
 msgid "Adjusts the intensity of the flange effect (when active)."
 msgstr "Adjusts the intensity of the flange effect (when active)."
 
-#: Tooltips#182
+#: Tooltips#199
 msgid "Flanger LFO Period"
 msgstr "Flanger LFO Period"
 
-#: Tooltips#183
+#: Tooltips#200
 msgid "Adjusts the wavelength of the flange effect (when active)."
 msgstr "Adjusts the wavelength of the flange effect (when active)."
 
@@ -4449,22 +4960,32 @@ msgstr ""
 "Click OK to exit."
 
 #: TrackCollection#3
+msgid "Click OK to exit."
+msgstr "Click OK to exit."
+
+#: TrackCollection#4
 msgid "Cannot upgrade database schema"
 msgstr "Cannot upgrade database schema"
 
-#: TrackCollection#4
-msgid ""
-"Unable to upgrade your database schema to version %1.\n"
-"Your mixxx.db file may be corrupt.\n"
-"Try renaming it and restarting Mixxx.\n"
-"\n"
-"Click OK to exit."
-msgstr ""
-"Unable to upgrade your database schema to version %1.\n"
-"Your mixxx.db file may be corrupt.\n"
-"Try renaming it and restarting Mixxx.\n"
-"\n"
-"Click OK to exit."
+#: TrackCollection#5
+msgid "Unable to upgrade your database schema to version %1"
+msgstr "Unable to upgrade your database schema to version %1"
+
+#: TrackCollection#6
+msgid "Your %1 file may be outdated."
+msgstr "Your %1 file may be outdated."
+
+#: TrackCollection#7
+msgid "Your mixxxdb.sqlite file may be corrupt."
+msgstr "Your mixxxdb.sqlite file may be corrupt."
+
+#: TrackCollection#8
+msgid "Try renaming it and restarting Mixxx."
+msgstr "Try renaming it and restarting Mixxx."
+
+#: TrackCollection#9
+msgid "Your %1 file may be missing or invalid."
+msgstr "Your %1 file may be missing or invalid."
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -4485,6 +5006,14 @@ msgid ""
 msgstr ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
+
+#: WOverview#1
+msgid "Ready to play, analyzing .."
+msgstr ""
+
+#: WOverview#2
+msgid "Loading track .."
+msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
@@ -4516,57 +5045,65 @@ msgid "Remove"
 msgstr "Remove"
 
 #: WTrackTableView#5
-msgid "Properties..."
-msgstr "Properties..."
+msgid "Hide from Library"
+msgstr "Hide from Library"
 
 #: WTrackTableView#6
-msgid "Open in file browser"
-msgstr "Open in file browser"
+msgid "Unhide from Library"
+msgstr "Unhide from Library"
 
 #: WTrackTableView#7
+msgid "Purge from Library"
+msgstr "Purge from Library"
+
+#: WTrackTableView#8
+msgid "Properties"
+msgstr "Properties"
+
+#: WTrackTableView#9
+msgid "Open in File Browser"
+msgstr "Open in File Browser"
+
+#: WTrackTableView#10
 msgid "Add to Auto-DJ Queue (bottom)"
 msgstr "Add to Auto DJ Queue (bottom)"
 
-#: WTrackTableView#8
+#: WTrackTableView#11
 msgid "Add to Auto-DJ Queue (top)"
 msgstr "Add to Auto DJ Queue (top)"
 
-#: WTrackTableView#9
+#: WTrackTableView#12
 msgid "Reload Track Metadata"
 msgstr "Reload Track Metadata"
 
-#: WTrackTableView#10
+#: WTrackTableView#13
+msgid "Load to Preview Deck"
+msgstr ""
+
+#: WTrackTableView#14
 msgid "Reset Play Count"
 msgstr "Reset Play Count"
 
-#: WTrackTableView#11
+#: WTrackTableView#15
 msgid "Lock BPM"
 msgstr "Lock BPM"
 
-#: WTrackTableView#12
+#: WTrackTableView#16
 msgid "Unlock BPM"
 msgstr "Unlock BPM"
 
-#: WTrackTableView#13
+#: WTrackTableView#17
 msgid "Clear BPM and Beatgrid"
 msgstr "Clear BPM and Beatgrid"
 
-#: WTrackTableView#14
+#: WTrackTableView#18
 msgid "Load to Deck %1"
 msgstr "Load to Deck %1"
 
-#: WTrackTableView#15
-msgctxt "WTrackTableView#15"
+#: WTrackTableView#19
+msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
-msgstr "Sampler %1"
-
-#: WTrackTableView#16
-msgid ""
-"Reloading track metadata on a loaded track may cause abrupt volume changes. "
-"Are you sure?"
 msgstr ""
-"Reloading track metadata on a loaded track may cause abrupt volume changes. "
-"Are you sure?"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
@@ -4579,6 +5116,9 @@ msgstr "(GLSL)"
 #: WaveformWidgetFactory#2
 msgid "(GL)"
 msgstr "(GL)"
+
+#~ msgid "Auto DJ"
+#~ msgstr "Auto DJ"
 
 #~ msgctxt "BaseSqlTableModel#9"
 #~ msgid "Comment"
@@ -4672,6 +5212,14 @@ msgstr "(GL)"
 
 #~ msgid "Crate Creation Failed"
 #~ msgstr "Crate Creation Failed"
+
+#~ msgctxt "CrateFeature#5"
+#~ msgid "Import Playlist"
+#~ msgstr "Import Playlist"
+
+#~ msgctxt "CrateFeature#9"
+#~ msgid "Unlock"
+#~ msgstr "Unlock"
 
 #~ msgid "1.x.x"
 #~ msgstr "1.x.x"
@@ -4923,9 +5471,15 @@ msgstr "(GL)"
 #~ msgid "Temporary rate change (between 1 and 8000) when right clicking"
 #~ msgstr "Temporary rate change (between 1 and 8000) when right clicking"
 
+#~ msgid "Slow fade"
+#~ msgstr "Slow fade"
+
 #~ msgctxt "DlgPrefCrossfaderDlg#10"
 #~ msgid "Reset"
 #~ msgstr "Reset"
+
+#~ msgid "Fast cut"
+#~ msgstr "Fast cut"
 
 #~ msgctxt "DlgPrefMidiBindings#1"
 #~ msgid "None"
@@ -5188,8 +5742,27 @@ msgstr "(GL)"
 #~ msgid "Title"
 #~ msgstr "Title"
 
+#~ msgctxt "DlgPrefSoundDlg#6"
+#~ msgid "Input"
+#~ msgstr "Input"
+
 #~ msgid "Output"
 #~ msgstr "Output"
+
+#~ msgid ""
+#~ "<ul>\n"
+#~ "<li>Increase your latency if you hear pops during playback</li>\n"
+#~ "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
+#~ "</ul>"
+#~ msgstr ""
+#~ "<ul>\n"
+#~ "<li>Increase your latency if you hear pops during playback</li>\n"
+#~ "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
+#~ "</ul>"
+
+#~ msgctxt "DlgPrefSoundDlg#9"
+#~ msgid "Apply"
+#~ msgstr "Apply"
 
 #~ msgid "Reset to Defaults"
 #~ msgstr "Reset to Defaults"
@@ -5223,6 +5796,12 @@ msgstr "(GL)"
 #~ msgctxt "DlgPrepare#6"
 #~ msgid "Analyze"
 #~ msgstr "Analyze"
+
+#~ msgid "Select All"
+#~ msgstr "Select All"
+
+#~ msgid "Analyzing %1%"
+#~ msgstr "Analyzing %1%"
 
 #~ msgid "Recently Added"
 #~ msgstr "Recently Added"
@@ -5497,6 +6076,12 @@ msgstr "(GL)"
 #~ msgid "Ctrl+C"
 #~ msgstr "Ctrl+C"
 
+#~ msgid "Add new &crate"
+#~ msgstr "Add new &crate"
+
+#~ msgid "Add &new playlist"
+#~ msgstr "Add &new playlist"
+
 #~ msgid "&Import playlist"
 #~ msgstr "&Import playlist"
 
@@ -5508,6 +6093,9 @@ msgstr "(GL)"
 
 #~ msgid "&Audio Beat Marks"
 #~ msgstr "&Audio Beat Marks"
+
+#~ msgid "&Translate this application"
+#~ msgstr "&Translate this application"
 
 #~ msgid "Privacy Policy"
 #~ msgstr "Privacy Policy"
@@ -5784,6 +6372,19 @@ msgstr "(GL)"
 #~ msgid "Import..."
 #~ msgstr "Import..."
 
+#~ msgid ""
+#~ "Unable to upgrade your database schema to version %1.\n"
+#~ "Your mixxx.db file may be corrupt.\n"
+#~ "Try renaming it and restarting Mixxx.\n"
+#~ "\n"
+#~ "Click OK to exit."
+#~ msgstr ""
+#~ "Unable to upgrade your database schema to version %1.\n"
+#~ "Your mixxx.db file may be corrupt.\n"
+#~ "Try renaming it and restarting Mixxx.\n"
+#~ "\n"
+#~ "Click OK to exit."
+
 #~ msgctxt "Ui#3"
 #~ msgid "On"
 #~ msgstr "On"
@@ -5796,9 +6397,22 @@ msgstr "(GL)"
 #~ msgid "Position"
 #~ msgstr "Position"
 
+#~ msgid ""
+#~ "The only skin compatiable with this size display is Outline800x480-WVGA.  "
+#~ "Would you like to use that skin?"
+#~ msgstr ""
+#~ "The only skin compatiable with this size display is Outline800x480-WVGA.  "
+#~ "Would you like to use that skin?"
+
 #~ msgctxt "Ui#13"
 #~ msgid "Crossfader"
 #~ msgstr "Crossfader"
+
+#~ msgid "Mixxx Detected a WVGA Screen"
+#~ msgstr "Mixxx Detected a WVGA Screen"
+
+#~ msgid "Mixxx has detected that your screen has a resolution of "
+#~ msgstr "Mixxx has detected that your screen has a resolution of "
 
 #~ msgid "Simple"
 #~ msgstr "Simple"
@@ -5966,5 +6580,26 @@ msgstr "(GL)"
 #~ msgid "Add to Auto DJ Queue"
 #~ msgstr "Add to Auto DJ Queue"
 
+#~ msgid "Properties..."
+#~ msgstr "Properties..."
+
+#~ msgid ""
+#~ "Reloading track metadata on a loaded track may cause abrupt volume changes. "
+#~ "Are you sure?"
+#~ msgstr ""
+#~ "Reloading track metadata on a loaded track may cause abrupt volume changes. "
+#~ "Are you sure?"
+
 #~ msgid "Sampler %1"
 #~ msgstr "Sampler %1"
+
+#~ msgctxt "MixxxLibraryFeature#2"
+#~ msgid "Library"
+#~ msgstr "Library"
+
+#~ msgid "Enable live &broadcasting"
+#~ msgstr "Enable live &broadcasting"
+
+#~ msgctxt "DlgPrefPlaylistDlg#14"
+#~ msgid "Library"
+#~ msgstr "Library"

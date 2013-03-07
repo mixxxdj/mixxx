@@ -45,6 +45,7 @@
         <file>translations/mixxx_br.qm</file>
         <file>translations/mixxx_bs.qm</file>
         <file>translations/mixxx_ca.qm</file>
+        <file>translations/mixxx_ceb.qm</file>
         <file>translations/mixxx_cs.qm</file>
         <file>translations/mixxx_da.qm</file>
         <file>translations/mixxx_de.qm</file>
@@ -58,6 +59,7 @@
         <file>translations/mixxx_fr.qm</file>
         <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
+        <file>translations/mixxx_hr.qm</file>
         <file>translations/mixxx_he.qm</file>
         <file>translations/mixxx_hu.qm</file>
         <file>translations/mixxx_hy.qm</file>
@@ -66,11 +68,16 @@
         <file>translations/mixxx_is.qm</file>
         <file>translations/mixxx_it.qm</file>
         <file>translations/mixxx_ja.qm</file>
+        <file>translations/mixxx_ky.qm</file>
         <file>translations/mixxx_lb.qm</file>
+        <file>translations/mixxx_lt.qm</file>
+        <file>translations/mixxx_lv.qm</file>
+        <file>translations/mixxx_mk.qm</file>
         <file>translations/mixxx_ml.qm</file>
         <file>translations/mixxx_mn.qm</file>
         <file>translations/mixxx_mr.qm</file>
         <file>translations/mixxx_ms.qm</file>
+        <file>translations/mixxx_my.qm</file>
         <file>translations/mixxx_nb.qm</file>
         <file>translations/mixxx_nl.qm</file>
         <file>translations/mixxx_nn.qm</file>

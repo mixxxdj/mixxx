@@ -32,18 +32,18 @@ enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATE
 double RateControl::m_dWheelSensitivity = 1.0;
 
 RateControl::RateControl(const char* _group,
-                         ConfigObject<ConfigValue>* _config) :
-    EngineControl(_group, _config),
-    m_bVinylControlEnabled(false),
-    m_bVinylControlScratching(false),
-    m_ePbCurrent(0),
-    m_ePbPressed(0),
-    m_bTempStarted(false),
-    m_dTempRateChange(0.0),
-    m_dRateTemp(0.0),
-    m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
-    m_dRateTempRampbackChange(0.0),
-    m_dOldRate(0.0f) {
+                         ConfigObject<ConfigValue>* _config)
+    : EngineControl(_group, _config),
+      m_bVinylControlEnabled(false),
+      m_bVinylControlScratching(false),
+      m_ePbCurrent(0),
+      m_ePbPressed(0),
+      m_bTempStarted(false),
+      m_dTempRateChange(0.0),
+      m_dRateTemp(0.0),
+      m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
+      m_dRateTempRampbackChange(0.0),
+      m_dOldRate(0.0f) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -418,7 +418,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     }
 
     double currentSample = getCurrentSample();
-    m_pScratchController->process(currentSample, paused, iSamplesPerBuffer);
+    m_pScratchController->process(currentSample, paused, iSamplesPerBuffer, baserate);
 
     // If position control is enabled, override scratchFactor
     if (m_pScratchController->isEnabled()) {
@@ -438,8 +438,11 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     } else if (paused) {
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
         // New scratch behavior overrides old
-        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor*40.0;
-        else rate = oldScratchFactor + jogFactor*18 + wheelFactor; // Just remove oldScratchFactor in future
+        if (scratchEnable) {
+            rate = scratchFactor + jogFactor + wheelFactor*40.0;
+        } else {
+            rate = oldScratchFactor + jogFactor*18 + wheelFactor; // Just remove oldScratchFactor in future
+        }
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
@@ -453,8 +456,9 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         rate += wheelFactor;
 
         // New scratch behavior - overrides playback speed (and old behavior)
-        if (scratchEnable) rate = scratchFactor;
-        else {
+        if (scratchEnable) {
+            rate = scratchFactor;
+        } else {
             // Deprecated old scratch behavior
             if (oldScratchFactor < 0.) {
                 rate *= (oldScratchFactor-1.);

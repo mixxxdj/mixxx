@@ -5,35 +5,31 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation>Auto-DJ</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
         <name>BaseExternalLibraryFeature</name>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lisää Auto DJ -jonon loppuun</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lisää Auto DJ -jonon alkuun</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tuo soittolista</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soittolistan luonti epäonnistui</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soittolistan luonnissa tapahtui tuntematon virhe: </translation>
         </message>
     </context>
     <context>
@@ -44,13 +40,11 @@
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lisää Auto DJ -jonon loppuun</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lisää Auto DJ -jonon alkuun</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -67,6 +61,11 @@
         <message>
             <source>Import Playlist</source>
             <translation>Tuo soittolista</translation>
+        </message>
+        <message>
+            <source>Duplicate Playlist</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -97,6 +96,11 @@
             <translation>Soittolistan nimi:</translation>
         </message>
         <message>
+            <source>_copy</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Playlist Creation Failed</source>
             <translation type="unfinished">
             </translation>
@@ -108,11 +112,13 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation>Soittolistatiedostot (*.m3u *.m3u8 *.pls *.csv)</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation>m3u-soittolista (*.m3u);;m3u8-soittolista (*.m3u8);;pls-soittolista (*.pls);;CSV-tekstitiedosto (*.csv);;Luettava tekstitiedosto (*.txt)</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -197,6 +203,11 @@
             <source>BPM Lock</source>
             <translation>BPM-lukitus</translation>
         </message>
+        <message>
+            <source>Preview</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>BaseTrackPlayer</name>
@@ -209,13 +220,11 @@
         <name>BrowseFeature</name>
         <message>
             <source>Add to Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lisää pikalinkkejä</translation>
         </message>
         <message>
             <source>Remove from Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Poista pikalinkeistä</translation>
         </message>
         <message>
             <source>Quick Links</source>
@@ -303,8 +312,7 @@
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx-kirjasto</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -325,6 +333,13 @@
         <message>
             <source>Could not update file metadata.</source>
             <translation>Tiedoston metadataa ei voitu päivittää.</translation>
+        </message>
+    </context>
+    <context>
+        <name>BulkController</name>
+        <message>
+            <source>USB Controller</source>
+            <translation>USB-kontrolleri</translation>
         </message>
     </context>
     <context>
@@ -378,7 +393,7 @@
         </message>
         <message>
             <source>Learning Wizard</source>
-            <translation>Ohjattu ohjainten määrittely</translation>
+            <translation>Ohjattu määrittely</translation>
         </message>
         <message>
             <source>Clear all</source>
@@ -416,8 +431,14 @@
             <translation>Lukitse</translation>
         </message>
         <message>
+            <source>_copy</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Import Playlist</source>
-            <translation>Tuo soittolista</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crates</source>
@@ -432,8 +453,14 @@
             <translation>Vie levylaukku</translation>
         </message>
         <message>
+            <source>Duplicate Crate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Unlock</source>
-            <translation>Poista lukitus</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -441,7 +468,7 @@
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Tapahtui tuntematon virhe luotaessa levylaukkua: </translation>
+            <translation>Levylaukkua tuotaessa tapahtui tuntematon virhe: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
@@ -457,11 +484,13 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation>Soittolistatiedostot (*.m3u *.m3u8 *.pls *.csv)</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation>m3u-soittolista (*.m3u);;m3u8-soittolista (*.m3u8);;pls-soittolista (*.pls);;CSV-tekstitiedosto (*.csv);;Luettava tekstitiedosto (*.txt)</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crates are a great way to help organize the music you want to DJ with.</source>
@@ -476,8 +505,12 @@
             <translation>Levylaukkujen avulla voit järjestellä musiikkisi kuten haluat!</translation>
         </message>
         <message>
+            <source>Create new crate</source>
+            <translation>Luo uusi Crate</translation>
+        </message>
+        <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Levylaukun nimi ei voi olla tyhjä.</translation>
+            <translation>Levylaukun nimi ei voi olla tyhjä</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
@@ -507,7 +540,7 @@
         </message>
         <message>
             <source>One deck must be stopped to enable Auto-DJ mode.</source>
-            <translation>Yhden dekin täytyy olla pysäytetty, jotta auto-DJ -toiminto voidaan käynnistää.</translation>
+            <translation>Yhden tason täytyy olla pysäytetty, jotta auto-DJ -toiminto voidaan käynnistää.</translation>
         </message>
         <message>
             <source>Disable Auto DJ</source>
@@ -523,7 +556,7 @@
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist.</source>
-            <translation>Ohita seuraava auto-DJ -listan kappale.</translation>
+            <translation>Ohita seuraava kappale auto-DJ -listalla.</translation>
         </message>
         <message>
             <source>Skip Track</source>
@@ -569,8 +602,10 @@
             <translation>Iskuntunnistuksen asetukset</translation>
         </message>
         <message>
-            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-            <translation>Kun iskuntunnistus on käytössä, mixxx tunnistaa kappaleen nopeuden ja kappaleen iskut, näyttää automaatisesti lasketun iskuverkon ja sallii kappaleiden synkronoinnin tunnettujen iskujen perusteella.</translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
+automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
@@ -593,38 +628,47 @@
             <translation>Analysaattorin asetukset</translation>
         </message>
         <message>
-            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-            <translation>Käytä nopeaa iskujen tunnistusta. Kun tämä on käytössä, mixxx analysoi vain ensimmäisen minuutin kappaleesta tahtien ja iskujen löytämiseksi. Tämä voi nopeuttaa iskujen analysointia, mutta voi huonontaa iskuverkkojen tarkkuutta.</translation>
+            <source>Enable fast beat detection. 
+If activated Mixxx only analyzes the first minute of a track for beat information. 
+This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
+by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
+(Not checked: Analyse only, if no beats exist.)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beat detection data is outdated</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
             <translation>Käytä nopeaa analysointia (hitaammille tietokoneille, saattaa aiheuttaa epätarkkuutta)</translation>
         </message>
         <message>
-            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-            <translation>Muunna analyysin havaitseman iskut tasatahtiseksi iskuverkoksi. Käytä tätä valintaa, jos analysoitavien kappaleiden nopeus on tasainen, kuten yleisesti elektronisessa musiikissa. Tämä luo parempilaatuisia iskuverkkoja, mutta ei sovi kappaleille, joiden nopeus vaihtelee.</translation>
-        </message>
-        <message>
             <source>Assume constant tempo (Recommended)</source>
             <translation>Oleta tasainen tempo (suositus)</translation>
         </message>
         <message>
-            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
-            <translation>Pyri korjaamaan tasatahtisten kappaleiden vaihe (ensimmäinen isku) analysoimalla tahdit ja hylkäämällä tahtien ulkopuoliset iskut.</translation>
-        </message>
-        <message>
             <source>Enable Offset Correction (Recommended)</source>
             <translation>Käytä poikkeamakorjausta (suositeltu asetus)</translation>
-        </message>
-        <message>
-            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
-            <translation>Jos valinta on päällä, iskuverkot analysoidaan uudestaan kun muutat tämän sivun asetuksia. Valinnan ollessa päällä analysoidaan uudestaan myös kolmansien osapuolien tai aikaisempien mixxx-versioiden tekemät iskuverkot.</translation>
-        </message>
-        <message>
-            <source>Re-analyse beats when settings change or beats already present
-(e.g. from 3rd-party programs or older Mixxx versions)</source>
-            <translation>Analysoi iskuverkot uudestaan asetuksia muutettaessa tai havaittaessa aikaisempia tietoja
-(esimerkiksi kolmannen osapuolen ohjelmilta tai vanhemmista mixxx-versioista)</translation>
         </message>
         <message>
             <source>BPM Range</source>
@@ -702,8 +746,7 @@
         </message>
         <message>
             <source>Reset to default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Palauta oletukset</translation>
         </message>
         <message>
             <source>Mixer</source>
@@ -727,15 +770,15 @@
         </message>
         <message>
             <source>Headphone mix (pre/main)</source>
-            <translation>Kuulokemiksaus (esikuuntelu/yleinen)</translation>
+            <translation>Kuulokemiksaus (esikuuntelu/pääulostulo)</translation>
         </message>
         <message>
             <source>Transport</source>
-            <translation>Esitysohjaus</translation>
+            <translation>Liikenne</translation>
         </message>
         <message>
             <source>Strip-search through track</source>
-            <translation>Siirry kappaleen sisällä</translation>
+            <translation>Etsi nopeasti kappaleesta</translation>
         </message>
         <message>
             <source>Play button</source>
@@ -771,7 +814,7 @@
         </message>
         <message>
             <source>Headphone listen button</source>
-            <translation>Esikuuntelu -nappi</translation>
+            <translation>Kuulokekuuntelun nappi</translation>
         </message>
         <message>
             <source>Toggle repeat mode</source>
@@ -799,15 +842,15 @@
         </message>
         <message>
             <source>Toggle quantize mode</source>
-            <translation>Valitse kvantisointitila</translation>
+            <translation>Kvantisoinnin valintanappi</translation>
         </message>
         <message>
             <source>Beat sync (tempo and phase)</source>
-            <translation>Iskujen tahdistus (tempo ja vaihe)</translation>
+            <translation>Iskuntahdistus (tempo ja vaihe)</translation>
         </message>
         <message>
             <source>Beat sync (tempo only)</source>
-            <translation>Iskujen tahdistus (vain tempo)</translation>
+            <translation>Iskuntahdistus (tempo)</translation>
         </message>
         <message>
             <source>Beat sync (phase only)</source>
@@ -906,10 +949,6 @@
             <translation>Ohjainlevyn ohjaustila (abs./suht./vakio)</translation>
         </message>
         <message>
-            <source>Cues / Hotcues</source>
-            <translation>Cue / hotcue -pisteet</translation>
-        </message>
-        <message>
             <source>Cue button</source>
             <translation>Cue-nappi</translation>
         </message>
@@ -951,27 +990,89 @@
         </message>
         <message>
             <source>Reloop / Exit button</source>
-            <translation>Looppaa uudestaan / poistu loopista -nappi</translation>
+            <translation>Looppaa uudestaan / poistu - nappi</translation>
         </message>
         <message>
             <source>Halve the current loop's length</source>
-            <translation>Puolita loopin koko</translation>
+            <translation>Puolita loopin pituus</translation>
         </message>
         <message>
             <source>Double the current loop's length</source>
-            <translation>Tuplaa loopin koko</translation>
+            <translation>Tuplaa loopin pituus</translation>
+        </message>
+        <message>
+            <source>Toggle slip mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Preview Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Single deck mode - Toggle vinyl control to next deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit button</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Beat-Looping</source>
-            <translation>Iskujen looppaus</translation>
+            <translation>Tahtiloopit</translation>
         </message>
         <message>
             <source>Create %1-beat loop</source>
-            <translation>Luo %1-iskun looppi</translation>
+            <translation>Luo %1-tahdin looppi</translation>
+        </message>
+        <message>
+            <source>Create temporary %1-beat loop roll</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/32th</source>
+            <translation>1/32</translation>
+        </message>
+        <message>
+            <source>1/16th</source>
+            <translation>1/16</translation>
+        </message>
+        <message>
+            <source>1/8th</source>
+            <translation>1/8</translation>
+        </message>
+        <message>
+            <source>1/4th</source>
+            <translation>1/4</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation>Kokoelma</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Expand/collapse the selected view (library, playlist..)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -998,28 +1099,34 @@
             <translation>Lataa valittu kappale</translation>
         </message>
         <message>
+            <source>Load selected track and play</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Effects</source>
             <translation>Efektit</translation>
         </message>
         <message>
             <source>Toggle flange effect</source>
-            <translation>Flange-efekti päällä/pois</translation>
+            <translation>Flange-efektin valinta</translation>
         </message>
         <message>
             <source>Flange effect: Wavelength/period</source>
-            <translation>Flange-efektin aallonpituus/nopeus</translation>
+            <translation>Flange-efekti: aallonpituus</translation>
         </message>
         <message>
             <source>Flange effect: Intensity</source>
-            <translation>Flange-efektin intensiteetti</translation>
+            <translation>Flange-efekti: voimakkuus</translation>
         </message>
         <message>
             <source>Flange effect: Phase delay</source>
-            <translation>Flange-efektin vaiheen viive</translation>
+            <translation>Flange-efekti: vaiheviive</translation>
         </message>
         <message>
             <source>Microphone</source>
-            <translation>Mikrofoni</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1031,7 +1138,32 @@
         </message>
         <message>
             <source>Microphone channel orientation (e.g. left, right, center)</source>
-            <translation>Mikrofonin kanavabalanssi (vasen,oikea,keskellä)</translation>
+            <translation>Mikrofonikanavan sijainti (vasen, oikea, keskitetty)</translation>
+        </message>
+        <message>
+            <source>Auto DJ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle Auto DJ (ON/OFF)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>User Interface</source>
@@ -1050,17 +1182,91 @@
             <translation>Näytä tai piilota ohjainlevyjen valinnat</translation>
         </message>
         <message>
+            <source>Show/hide the preview deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Show/hide spinning vinyl widget</source>
             <translation>Näytä tai piilota pyörivä ohjainlevy</translation>
         </message>
         <message>
             <source>Ready to map: %1. Now move a control on your controller.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Valmis sitomaan ohjain %1. Liikuta seuraavaksi jotain ohjainta.</translation>
         </message>
         <message>
             <source>Successfully mapped to:</source>
             <translation>Liitettiin onnistuneesti kohteeseen:</translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgHidden</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+S</source>
+            <translation>Ctrl+S</translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgMissing</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1143,8 +1349,12 @@
             <translation>%1 (tehnyt %2)</translation>
         </message>
         <message>
-            <source>Custom Preset</source>
-            <translation>Oma asetus</translation>
+            <source>No Description</source>
+            <translation>Ei kuvausta</translation>
+        </message>
+        <message>
+            <source>No support available.</source>
+            <translation>Tuki ei ole käytettävissä.</translation>
         </message>
     </context>
     <context>
@@ -1166,6 +1376,14 @@
             <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Vianetsintä&lt;/a&gt;</translation>
         </message>
         <message>
+            <source>TextLabel</source>
+            <translation>Tekstiselite</translation>
+        </message>
+        <message>
+            <source>Description:</source>
+            <translation>Kuvaus:</translation>
+        </message>
+        <message>
             <source>Load Preset:</source>
             <translation>Lataa asetukset:</translation>
         </message>
@@ -1174,12 +1392,16 @@
             <translation>Ladattu asetus:</translation>
         </message>
         <message>
+            <source>Support:</source>
+            <translation>Tuki:</translation>
+        </message>
+        <message>
             <source>Click to start the Controller Learning wizard.</source>
-            <translation>Aloita ohjattu ohjainten määrittely napsauttamalla.</translation>
+            <translation>Käynnistä ohjeinten ohjattu määrittely napsauttamalla.</translation>
         </message>
         <message>
             <source>Learning Wizard (MIDI Only)</source>
-            <translation>Ohjattu ohjainten määrittely (vain MIDI-laitteet)</translation>
+            <translation>Ohjattu määrittely (vain MIDI)</translation>
         </message>
     </context>
     <context>
@@ -1202,30 +1424,15 @@
         </message>
         <message>
             <source>Simple</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Yksinkertainen</translation>
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Käytössä</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx Detected a WVGA Screen</source>
-            <translation>Mixxx tunnisti WVGA-näytön</translation>
-        </message>
-        <message>
-            <source>Mixxx has detected that your screen has a resolution of </source>
-            <translation>Mixxx havaitsi näytön tarkkuudeksi </translation>
-        </message>
-        <message>
-            <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-            <translation>Ainoa näytön koon kanssa yhteensopiva teema on Outline800x480-WVGA. Haluatko käyttää tätä ulkoasua?</translation>
+            <translation>Ei käytössä</translation>
         </message>
         <message>
             <source>This skin does not support schemes</source>
@@ -1249,8 +1456,15 @@
         </message>
         <message>
             <source>Load tracks into a playing deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lataa kappale aktiiviselle levylle</translation>
+        </message>
+        <message>
+            <source>The selected skin is bigger than your screen resolution.</source>
+            <translation>Valittu kalvo on suurempi kuin näyttösi resoluutio.</translation>
+        </message>
+        <message>
+            <source>On (only in Library)</source>
+            <translation>Käytössä (vain kirjastossa)</translation>
         </message>
         <message>
             <source>20%</source>
@@ -1290,7 +1504,7 @@
         </message>
         <message>
             <source>Information</source>
-            <translation>Tietoja</translation>
+            <translation>Tiedot</translation>
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
@@ -1298,8 +1512,7 @@
         </message>
         <message>
             <source>OpenGL not available</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>OpenGL ei ole käytettävissä</translation>
         </message>
     </context>
     <context>
@@ -1325,14 +1538,6 @@
             <translation>Vihjetekstit</translation>
         </message>
         <message>
-            <source>On</source>
-            <translation>Päällä</translation>
-        </message>
-        <message>
-            <source>Off</source>
-            <translation>Pois päältä</translation>
-        </message>
-        <message>
             <source>Pitch/Rate slider range</source>
             <translation>Pitch-säätimien skaala</translation>
         </message>
@@ -1353,9 +1558,13 @@
             <translation>Palaa Cue-merkin kohdalle automaattisesti</translation>
         </message>
         <message>
-            <source>Locale</source>
+            <source>Re-queue tracks in Auto DJ</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Locale</source>
+            <translation>Alue ja kieli</translation>
         </message>
         <message>
             <source>Temporary rate change when left-clicking</source>
@@ -1378,6 +1587,11 @@
         </message>
         <message>
             <source>Displays the actual frame rate.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Normalize Overview</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1440,41 +1654,35 @@
         </message>
         <message>
             <source>Value in milliseconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Arvo millisekunneissa</translation>
         </message>
         <message>
             <source>Visual gain of the high frequencies</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Visuaalinen säädin korkeille taajuuksille</translation>
         </message>
         <message>
             <source>Visual gain of the middle frequencies</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Visuaalinen säädin keskialueen taajuuksille</translation>
         </message>
         <message>
             <source>Visual gain of the low frequencies</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Visuaalinen säädin matalille taajuksille</translation>
         </message>
         <message>
             <source>Global visual gain</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Yleinen visuaalinen säädin</translation>
         </message>
         <message>
             <source>Frame rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kehysnopeus</translation>
         </message>
         <message>
             <source>Default zoom</source>
-            <translation>Oletus-suurennos</translation>
+            <translation>Oletuskoko</translation>
         </message>
         <message>
             <source>Visual gain</source>
-            <translation>Näkyvä herkkyys</translation>
+            <translation>Näytettävä herkkyys</translation>
         </message>
         <message>
             <source>Synchronize</source>
@@ -1493,12 +1701,9 @@
             <translation>Ristiinhäivytyksen säätökäyrä</translation>
         </message>
         <message>
-            <source>Slow fade</source>
-            <translation>Hidas häivytys</translation>
-        </message>
-        <message>
-            <source>Fast cut</source>
-            <translation>Nopea leikkaus</translation>
+            <source>Slow fade/Fast cut (additive)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Constant power</source>
@@ -1521,9 +1726,13 @@
             <translation>Logaritminen</translation>
         </message>
         <message>
-            <source>Reset to Defaults</source>
+            <source>Reverse crossfader (hamster style)</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation>Palauta oletukset</translation>
         </message>
     </context>
     <context>
@@ -1566,8 +1775,7 @@
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Palauta oletukset</translation>
         </message>
     </context>
     <context>
@@ -1720,7 +1928,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Additional Format Plugins:</source>
-            <translation>Lisäosat muille äänimuodoille:</translation>
+            <translation>Muiden tiedostomuotojen lisäosat:</translation>
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
@@ -1751,29 +1959,33 @@ p, li { white-space: pre-wrap; }
             <translation>Yritä käyttää suhteellisia polkuja soittolistojen viennissä</translation>
         </message>
         <message>
-            <source>Show Rhythmbox Library</source>
+            <source>Other Libraries</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Show Rhythmbox Library</source>
+            <translation>Näytä Rhythmbox-kirjasto</translation>
         </message>
         <message>
             <source>Show iTunes Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä iTunus-kirjasto</translation>
         </message>
         <message>
             <source>Show Traktor Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä Traktor-kirjasto</translation>
+        </message>
+        <message>
+            <source>    You will need to restart Mixxx for this to take effect</source>
+            <translation>    Sinun täytyy käynnistää Mixxx uudelleen valitaksesi tämän efektin</translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Selaa...</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kirjasto</translation>
         </message>
         <message>
             <source>Music Directory:</source>
@@ -1802,13 +2014,11 @@ tulevien ohjelmien soitto- ja kuuntelukerrat</translation>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>kb/s</translation>
         </message>
         <message>
             <source>Choose recordings directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Valitse tallennus tiedosto</translation>
         </message>
     </context>
     <context>
@@ -1886,27 +2096,28 @@ tulevien ohjelmien soitto- ja kuuntelukerrat</translation>
         </message>
         <message>
             <source>ReplayGain Normalization</source>
-            <translation>ReplayGain -normalisointi</translation>
+            <translation>Toistotason tasaus (replaygain)</translation>
         </message>
         <message>
             <source>Enable Replay Gain</source>
-            <translation>Käytä ReplayGain -tasausta</translation>
+            <translation>Käytä toistotaston tasausta (replaygain)</translation>
         </message>
         <message>
             <source>Enable Replay Gain Analysis</source>
-            <translation>Salli ReplayGain -analysointi</translation>
+            <translation>Salli toistotason analysointi (replaygain)</translation>
+        </message>
+        <message>
+            <source>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Apply volume normalization to loaded tracks.</source>
-            <translation>Tasaa ladattujen kappaleiden äänenvoimakkuus.</translation>
+            <translation>Käytä äänenvoimakkuuden tasausta ladatuille kappaleille.</translation>
         </message>
         <message>
             <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
-            <translation>Laske ReplayGain -voimakkuustasot kappaleille, joista ReplayGain-tagit puuttuvat.</translation>
-        </message>
-        <message>
-            <source>On older computers, it may take a few seconds before volume normalization is applied to a new track. You may wish to wait before adjusting the pregain and volume.</source>
-            <translation>Vanhemmilla tietokoneilla saattaa kestää muutaman sekunnin enne kuin äänenvoimakkuuden tasaus on laskettu uudelle kappaleelle. Odota hetki ennen kuin alat säätämään herkkyyttä tai äänenvoimakkuutta.</translation>
+            <translation>Laske tason normalisointi (replaygain) kappaleille, joista replaygain-tagit puuttuvat.</translation>
         </message>
         <message>
             <source>Initial Boost</source>
@@ -1922,8 +2133,7 @@ tulevien ohjelmien soitto- ja kuuntelukerrat</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Palauta oletukset</translation>
         </message>
     </context>
     <context>
@@ -1961,7 +2171,7 @@ tulevien ohjelmien soitto- ja kuuntelukerrat</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Käynnistä verkkojulkaisu</translation>
+            <translation>Ota verkkojulkaisu käyttöön</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1994,6 +2204,16 @@ tulevien ohjelmien soitto- ja kuuntelukerrat</translation>
         <message>
             <source>Stream settings</source>
             <translation>Lähetysvirran asetukset</translation>
+        </message>
+        <message>
+            <source>Dynamically update Ogg Vorbis metadata.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Stream name</source>
@@ -2039,6 +2259,11 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Public stream</source>
             <translation>Julkinen virta</translation>
+        </message>
+        <message>
+            <source>Use UTF-8 encoding for metadata.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Encoding</source>
@@ -2133,22 +2358,29 @@ p, li { white-space: pre-wrap; }
             <translation>Näytteenottotaajuus</translation>
         </message>
         <message>
+            <source>Buffer Underflow Count</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>0</source>
+            <translation>0</translation>
+        </message>
+        <message>
             <source>Latency Tips</source>
-            <translation>Vihjeitä viiveen säätämiseksi</translation>
+            <translation>Vinkkejä latenssin hallintaan</translation>
         </message>
         <message>
             <source>&lt;ul&gt;
-&lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
-            <translation>&lt;ul&gt;
-&lt;li&gt;Lisää latenssia, jos ääni napsuu toistossa&lt;/li&gt;
-&lt;li&gt;Vähennä latenssia, jos haluat lisätä parantaa ohjelman käyttötuntumaa&lt;/li&gt;
-&lt;/ul&gt;</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Output</source>
-            <translation>Lähtö</translation>
+            <translation>Ulostulo</translation>
         </message>
         <message>
             <source>Input</source>
@@ -2160,7 +2392,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation>Palauta oletusarvot</translation>
+            <translation>Palauta oletukset</translation>
         </message>
         <message>
             <source>Apply</source>
@@ -2363,8 +2595,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Shows tracks added to the library within the last 7 days.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä kappaleet, jotka on lisätty viimeisen 7 päivän sisällä.</translation>
         </message>
         <message>
             <source>New</source>
@@ -2372,8 +2603,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Shows all tracks in the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä kaikki kappaleet kirjastossa.</translation>
         </message>
         <message>
             <source>All</source>
@@ -2390,7 +2620,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Select All</source>
-            <translation>Valitse kaikki</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Runs the BPM and beatgrid detection on the selected tracks.
@@ -2400,16 +2631,16 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analysoi</translation>
         </message>
         <message>
             <source>Stop Analysis</source>
             <translation>Keskeytä analysointi</translation>
         </message>
         <message>
-            <source>Analyzing %1%</source>
-            <translation>Analysoidaan %1%</translation>
+            <source>Analyzing %1/%2 %3%</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2451,8 +2682,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Summary</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Yhteenveto</translation>
         </message>
         <message>
             <source>Title:</source>
@@ -2480,18 +2710,15 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Year</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vuosi</translation>
         </message>
         <message>
             <source>Key</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sävellaji</translation>
         </message>
         <message>
             <source>Filetype:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tiedostotyyppi:</translation>
         </message>
         <message>
             <source>BPM:</source>
@@ -2499,8 +2726,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Location:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sijainti:</translation>
         </message>
         <message>
             <source>Filename:</source>
@@ -2508,23 +2734,19 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Bitrate:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bittinopeus:</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM</translation>
         </message>
         <message>
             <source>Double BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tuplaa BPM</translation>
         </message>
         <message>
             <source>Halve BPM</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Puolita BPM</translation>
         </message>
         <message>
             <source>Cuepoints</source>
@@ -2533,13 +2755,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>&amp;Previous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Edellinen</translation>
         </message>
         <message>
             <source>&amp;Next</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Seuraava</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -2571,8 +2791,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sijainti</translation>
         </message>
         <message>
             <source>Hotcue</source>
@@ -2601,8 +2820,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>kbps</translation>
         </message>
     </context>
     <context>
@@ -2624,11 +2842,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx ei voi nauhoittaa tai julkaista MP3- muodossa ilman &amp;quot;lame&amp;quot; -mp3-pakkausohjelmaa. Lisensointiongelmista johtuen, emme voi sisällyttää tätä ohjelman mukaan. Jos haluat toistaa tai nauhoittaa mp3-muodossa, lataa &lt;b&gt;libmp3lame&lt;/b&gt;-kirjasto ja asenna se tietokoneellesi. &lt;p&gt;Katso lisätietoja &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; -sivulta.&lt;/html&gt;</translation>
+            <translation>&lt;html&gt;Mixxx ei voi nauhoittaa tai lähettää verkkoon MP3- muodossa ilman MP3 enkooderia &amp;quot;lame&amp;quot;. Lisensointiongelmista johtuen, emme voi sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- muodossa, sinun täytyy ladata &lt;b&gt;libmp3lame&lt;/b&gt; ja asentaa se tietokoneellesi. &lt;p&gt;Katso &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; saadaksesi lisätietoa asiasta. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 enkooderia &amp;quot;lame&amp;quot;. Lisensointiongelmista johtuen, emme voi sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- muodossa, sinun täytyy ladata &lt;b&gt;libmp3lame&lt;/b&gt; ja asentaa se tietokoneellesi. &lt;p&gt;Katso &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; saadaksesi lisätietoa asiasta. &lt;/html&gt;</translation>
+            <translation>&lt;html&gt;Mixxx ei voi nauhoittaa tai lähettää verkkoon MP3- muodossa ilman MP3 enkooderia &amp;quot;lame&amp;quot;. Lisensointiongelmista johtuen, emme voi sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- muodossa, sinun täytyy ladata &lt;b&gt;libmp3lame&lt;/b&gt; ja asentaa se tietokoneellesi. &lt;p&gt;Katso &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; saadaksesi lisätietoa asiasta. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2706,11 +2924,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
-            <translation>Julkaisu 96kHz ogg vorbis-virtojen avulla ei ole vielä tuettu. Valitse joku muu näytenopeus tai vaihda pakkaustapaa.</translation>
+            <translation>Verkossa julkaisu 96kHz ogg vorbis-virtojen avulla ei ole vielä tuettu. Valitse joku muu näytenopeus tai vaihda pakkaustapaa.</translation>
         </message>
         <message>
             <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
-            <translation>Katso lisätietoja bugiraportista https://bugs.launchpad.net/mixxx/+bug/686212 .</translation>
+            <translation>Katso lisätietoja sivulla https://bugs.launchpad.net/mixxx/+bug/686212 olevasta vikailmoituksesta.</translation>
         </message>
         <message>
             <source>Error setting bitrate</source>
@@ -2775,8 +2993,12 @@ Waveforms will be generated as part of a analysis as well.</source>
     <context>
         <name>GLSLWaveformWidget</name>
         <message>
-            <source>Filtered (experimental)</source>
-            <translation>Suodatettu (kokeellinen)</translation>
+            <source>Filtered</source>
+            <translation>Suodatettu</translation>
+        </message>
+        <message>
+            <source>experimental</source>
+            <translation>kokeellinen</translation>
         </message>
     </context>
     <context>
@@ -2791,6 +3013,57 @@ Waveforms will be generated as part of a analysis as well.</source>
         <message>
             <source>Filtered</source>
             <translation>Suodatettu</translation>
+        </message>
+    </context>
+    <context>
+        <name>HSVWaveformWidget</name>
+        <message>
+            <source>HSV</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>HidController</name>
+        <message>
+            <source>Generic HID Mouse</source>
+            <translation>Yleinen HID hiiri</translation>
+        </message>
+        <message>
+            <source>Generic HID Joystick</source>
+            <translation>Yleinen HID ohjaussauva</translation>
+        </message>
+        <message>
+            <source>Generic HID Gamepad</source>
+            <translation>Yleinen HID peliohjain</translation>
+        </message>
+        <message>
+            <source>Generic HID Keyboard</source>
+            <translation>Yleinen HID näppäimistö</translation>
+        </message>
+        <message>
+            <source>Generic HID Multiaxis Controller</source>
+            <translation>Yleinen HID moniakselinen-ohjain</translation>
+        </message>
+        <message>
+            <source>Unknown HID Desktop Device</source>
+            <translation>Tuntematon HID laite</translation>
+        </message>
+        <message>
+            <source>HID Infrared Control</source>
+            <translation>HID Infrapunaohjain</translation>
+        </message>
+        <message>
+            <source>Unknown Apple HID Device</source>
+            <translation>Tuntematon Apple HID laite</translation>
+        </message>
+        <message>
+            <source>HID Unknown Device</source>
+            <translation>HID Tuntematon laite</translation>
+        </message>
+        <message>
+            <source>HID Interface Number</source>
+            <translation>HID Interface Number</translation>
         </message>
     </context>
     <context>
@@ -2832,6 +3105,57 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
     </context>
     <context>
+        <name>LegacySkinParser</name>
+        <message>
+            <source>activate</source>
+            <translation>aktivoi</translation>
+        </message>
+        <message>
+            <source>toggle</source>
+            <translation>näkyvyys</translation>
+        </message>
+        <message>
+            <source>right</source>
+            <translation>oikea</translation>
+        </message>
+        <message>
+            <source>left</source>
+            <translation>vasen</translation>
+        </message>
+        <message>
+            <source>right small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>left small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>up</source>
+            <translation>ylös</translation>
+        </message>
+        <message>
+            <source>down</source>
+            <translation>alas</translation>
+        </message>
+        <message>
+            <source>up small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>down small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shortcut</source>
+            <translation>Pikakuvake</translation>
+        </message>
+    </context>
+    <context>
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
@@ -2844,6 +3168,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         <message>
             <source>Cancel</source>
             <translation>Keskeytä</translation>
+        </message>
+        <message>
+            <source>Scanning: </source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2944,6 +3273,87 @@ Waveforms will be generated as part of a analysis as well.</source>
             <translation>Jatka</translation>
         </message>
         <message>
+            <source>Load Track to Deck %1</source>
+            <translation>Lataa kappale dekkiin %1</translation>
+        </message>
+        <message>
+            <source>Add &amp;New Playlist</source>
+            <translation>Luo &amp;Uusi soittolista</translation>
+        </message>
+        <message>
+            <source>Add New &amp;Crate</source>
+            <translation>Luo uusi &amp;Crate</translation>
+        </message>
+        <message>
+            <source>Enable &amp;Keyboard Shortcuts</source>
+            <translation>Ota &amp;Näppäimistö pikakuvakkeet käyttöön</translation>
+        </message>
+        <message>
+            <source>Show Samplers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Vinyl Control Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+3</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Microphone Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+2</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the preview deck in the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+4</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Reload Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload the skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+Shift+R</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Developer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Load track to Deck %1</source>
             <translation>Lataa kappale dekkiin %1</translation>
         </message>
@@ -2984,16 +3394,8 @@ Waveforms will be generated as part of a analysis as well.</source>
             <translation>Etsii muutoksia kappaleisiin musiikkikirjaston kansioissa.</translation>
         </message>
         <message>
-            <source>Add &amp;new playlist</source>
-            <translation>Lisää &amp;uusi soittolista</translation>
-        </message>
-        <message>
             <source>Ctrl+N</source>
             <translation>Ctrl+N</translation>
-        </message>
-        <message>
-            <source>Add new &amp;crate</source>
-            <translation>Lisää uusi &amp;levylaukku</translation>
         </message>
         <message>
             <source>Deck %1 is currently playing a track.</source>
@@ -3044,10 +3446,6 @@ Waveforms will be generated as part of a analysis as well.</source>
             <translation>Lähetä meille &amp;palautetta</translation>
         </message>
         <message>
-            <source>&amp;Translate this application</source>
-            <translation>&amp;Käännä tätä ohjelmaa kielellesi</translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
@@ -3086,10 +3484,6 @@ Waveforms will be generated as part of a analysis as well.</source>
         <message>
             <source>Enable Vinyl Control &amp;2</source>
             <translation>Ota ohjainlevy &amp;2 käyttöön</translation>
-        </message>
-        <message>
-            <source>Enable live &amp;broadcasting</source>
-            <translation>Käynnistä &amp;verkkojulkaisu</translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
@@ -3133,12 +3527,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Ctrl+Shift+N</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Enable &amp;keyboard shortcuts</source>
-            <translation>Ota &amp;pikanäppäimet käyttöön</translation>
+            <translation>Ctrl+Shift+N</translation>
         </message>
         <message>
             <source>Toggles keyboard shortcuts on or off</source>
@@ -3146,6 +3535,32 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Ctrl+`</source>
+            <translation>Ctrl+`</translation>
+        </message>
+        <message>
+            <source>&amp;Translate This Application</source>
+            <translation>&amp;Käännä tätä ohjelmaa</translation>
+        </message>
+        <message>
+            <source>Enable Live &amp;Broadcasting</source>
+            <translation>Ota suora nettijulkaisu käyttöön</translation>
+        </message>
+        <message>
+            <source>May not be supported on all skins.</source>
+            <translation>Ei välttämättä tue kaikkia kalvoja.</translation>
+        </message>
+        <message>
+            <source>Show the sample deck section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the vinyl control section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the microphone section of the Mixxx interface.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3205,12 +3620,11 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>OpenGL Direct Rendering</source>
-            <translation>OpenGL-suorapiirto</translation>
+            <translation>OpenGL -suorapiirto</translation>
         </message>
         <message>
             <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the 'Interface' section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Suorapiirto ei ole käytössä tietokoneellasi.&lt;br&gt;&lt;br&gt;Tämän takia aaltomuotojen näyttö on &lt;b&gt;erittäin hidasta&lt;br&gt; ja kuormittaa prosessoria paljon&lt;/b&gt;. Päivitä joko asetuksesi&lt;br&gt;, jotta saat suorapiirron käyttöön, tai poista &lt;br&gt;aaltomuotojen näyttö käytöstä valitsemalla &lt;br&gt;asetuksien käyttöliittymä-osoista &quot;Ei mitään&quot; aaltomuotojen näyttötavaksi.&lt;br&gt;&lt;br&gt;Huomautus: jos käytät Nvidia -näytönohjainta,&lt;br&gt;suorapiirto ei välttämättä ole saatavilla, mutta tämä ongelma&lt;br&gt;ei silti ole nähtävissä.</translation>
         </message>
         <message>
             <source>Confirm Exit</source>
@@ -3220,6 +3634,14 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             <source>A deck is currently playing. Exit Mixxx?</source>
             <translation>Dekki soittaa kappaletta. Suljetaanko Mixxx?</translation>
         </message>
+        <message>
+            <source>The preferences window is still open.</source>
+            <translation>Määritys-ikkuna on vielä auki.</translation>
+        </message>
+        <message>
+            <source>Discard any changes and exit Mixxx?</source>
+            <translation>Hylkää kaikki muutokset ja sulje Mixxx</translation>
+        </message>
     </context>
     <context>
         <name>MixxxLibraryFeature</name>
@@ -3228,8 +3650,12 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             <translation>Puuttuvat kappaleet</translation>
         </message>
         <message>
+            <source>Hidden Tracks</source>
+            <translation>Piilotetut kappaleet</translation>
+        </message>
+        <message>
             <source>Library</source>
-            <translation>Kokoelma</translation>
+            <translation>Kirjasto</translation>
         </message>
     </context>
     <context>
@@ -3305,7 +3731,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
-            <translation>Jotkut DJ:t luovat soittolistoja ennen esintymistä, toiset rakentavat soittolistan esityksen aikana.</translation>
+            <translation>Jotkut DJ:t luovat soittolistoja ennen esiintymistä, toiset rakentavat soittolistan esityksen aikana.</translation>
         </message>
         <message>
             <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.</source>
@@ -3315,12 +3741,54 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             <source>It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.</source>
             <translation>Voit joutua ohittamaan tai vaihtamaan valmistellulla listalla olevia kappaleita, jotta yleisön mielenkiinto säilyy.</translation>
         </message>
+        <message>
+            <source>Create new playlist</source>
+            <translation>Luo uusi soittolista</translation>
+        </message>
     </context>
     <context>
         <name>PrepareFeature</name>
         <message>
             <source>Analyze</source>
             <translation>Analysoi</translation>
+        </message>
+    </context>
+    <context>
+        <name>QMessageBox</name>
+        <message>
+            <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx has a new and improved beat detector.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keep Current Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generate New Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3359,6 +3827,20 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
     </context>
     <context>
+        <name>QtSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation>Yksinkertainen</translation>
+        </message>
+    </context>
+    <context>
+        <name>QtWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation>Suodatettu</translation>
+        </message>
+    </context>
+    <context>
         <name>RecordingFeature</name>
         <message>
             <source>Recordings</source>
@@ -3392,15 +3874,15 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Error Reading Sampler Bank</source>
-            <translation>Virhe luettaessa näytepankkia</translation>
+            <translation>Virhe luettaessa samplepankkia</translation>
         </message>
         <message>
             <source>Could not open the sampler bank file '%1'.</source>
-            <translation>Näytepankkitiedostoa '%1' ei voitu avata.</translation>
+            <translation>Samplepankkitiedostoa '%1' ei voitu avata.</translation>
         </message>
         <message>
             <source>Could not read the sampler bank file '%1'.</source>
-            <translation>Näytepankkitiedostoa '%1' ei voitu lukea.</translation>
+            <translation>Samplepankkitiedostoa '%1' ei voitu lukea.</translation>
         </message>
     </context>
     <context>
@@ -3431,8 +3913,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Joka kerta kun käynnistät Mixxx:n, uusi historia luodaan. Voit käyttää sitä soittolistana useissa formaateissa tai soittaa sen uudelleen Auto DJ:n avulla.</translation>
         </message>
         <message>
             <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
@@ -3445,6 +3926,10 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             <source>Filtered</source>
             <translation>Suodatettu</translation>
         </message>
+        <message>
+            <source>Software</source>
+            <translation>Ohjelma</translation>
+        </message>
     </context>
     <context>
         <name>Tooltips</name>
@@ -3454,23 +3939,24 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Reset to default value.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Palauta oletusasetukset</translation>
         </message>
         <message>
             <source>Left-click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vasemman painikkeen napsautus</translation>
         </message>
         <message>
             <source>Right-click</source>
+            <translation>Oikean painikkeen napsautus</translation>
+        </message>
+        <message>
+            <source>Scroll-wheel</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Waveform Overview</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aaltomuodon esikatselu</translation>
         </message>
         <message>
             <source>Shows information about the track currently loaded in this channel.</source>
@@ -3482,8 +3968,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Use the mouse to scratch, spin-back or throw tracks.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Käytä hiirtä scatschiin, backspinniin tai kappaleiden siirtelyyn.</translation>
         </message>
         <message>
             <source>Waveform Display</source>
@@ -3492,8 +3977,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Shows the loaded track's waveform near the playback position.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näyttää ladatujen kappaleiden aaltomuodon soittokohdan läheltä.</translation>
         </message>
         <message>
             <source>Drag with mouse to make temporary pitch adjustments.</source>
@@ -3501,9 +3985,13 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             </translation>
         </message>
         <message>
-            <source>Spinning Vinyl</source>
+            <source>Scroll to change the waveform zoom level.</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Spinning Vinyl</source>
+            <translation>Pyörivä Vinyyli</translation>
         </message>
         <message>
             <source>Rotates during playback and shows the position of a track.</source>
@@ -3541,28 +4029,23 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Channel Volume Meter</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanavan äänenvoimakkuusmittari.</translation>
         </message>
         <message>
             <source>Shows the current channel volume.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esittää nykyisen kanavan äänenvoimakkuuden.</translation>
         </message>
         <message>
             <source>Microphone Volume Meter</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofonin äänenvoimakkuusmittari</translation>
         </message>
         <message>
             <source>Shows the current microphone volume.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esittää nykyisen mikrofonikanavan äänenvoimakkuuden</translation>
         </message>
         <message>
             <source>Master Channel Volume Meter</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pää-kanavan äänenvoimakkuusmittari.</translation>
         </message>
         <message>
             <source>Shows the current master volume for the left channel.</source>
@@ -3571,8 +4054,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Volume Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Äänenvoimakkuuden säätö</translation>
         </message>
         <message>
             <source>Adjusts the volume of the selected channel.</source>
@@ -3581,8 +4063,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Master Volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pää-äänenvoimakkuus</translation>
         </message>
         <message>
             <source>Adjusts the master output volume.</source>
@@ -3610,8 +4091,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Headphone Volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kuulokkeiden äänenvoimakkuus</translation>
         </message>
         <message>
             <source>Adjusts the headphone output volume.</source>
@@ -3672,9 +4152,18 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             </translation>
         </message>
         <message>
-            <source>Microphone Volume</source>
+            <source>Preview Deck</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Show/hide the Preview deck.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone Volume</source>
+            <translation>Mikrofonin äänenvoimakkuus</translation>
         </message>
         <message>
             <source>Adjusts the microphone volume.</source>
@@ -3697,38 +4186,31 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Raise Pitch</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nosta sävelkorkeutta</translation>
         </message>
         <message>
             <source>Sets the pitch higher.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aseta sävelkorkeus suuremmaksi.</translation>
         </message>
         <message>
             <source>Sets the pitch higher in small steps.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aseta sävelkorkeus suuremmaksi pienin muutoksin.</translation>
         </message>
         <message>
             <source>Lower Pitch</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Matalampi sävelkorkeus</translation>
         </message>
         <message>
             <source>Sets the pitch lower.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aseta sävelkorkeus matalammaksi.</translation>
         </message>
         <message>
             <source>Sets the pitch lower in small steps.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aseta sävelkorkeus malammaksi pienin muutoksin.</translation>
         </message>
         <message>
             <source>Raise Pitch Temporary (Nudge)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nosta sävelkorkeutta hetkellisesti (Töytäisy)</translation>
         </message>
         <message>
             <source>Holds the pitch higher while active.</source>
@@ -3742,8 +4224,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Lower Pitch Temporary (Nudge)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pudota sävelkorkeutta hetkellisesti (Töytäisy)</translation>
         </message>
         <message>
             <source>Holds the pitch lower while active.</source>
@@ -3815,8 +4296,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Displays the tempo of the loaded track in BPM (beats per minute).</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä ladatun kappaleen tempo BPM-muodossa. (Beats Per Minute, iskua minuutissa)</translation>
         </message>
         <message>
             <source>Tempo</source>
@@ -3824,8 +4304,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>BPM Tap</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM naputus</translation>
         </message>
         <message>
             <source>When tapped repeatedly, adjusts the BPM to match the tapped BPM.</source>
@@ -3834,18 +4313,15 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Tempo and BPM Tap</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tempon ja BPM:n naputus</translation>
         </message>
         <message>
             <source>Show/hide the spinning vinyl section.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä/Piilota pyörivä vinyylialue</translation>
         </message>
         <message>
             <source>Adjust Beatgrid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Säädä Beatgrid</translation>
         </message>
         <message>
             <source>Adjust beatgrid so the closest beat is aligned with the current play position.</source>
@@ -3854,8 +4330,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Key-Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sävel-lukitus</translation>
         </message>
         <message>
             <source>Prevents the pitch from from changing when the rate changes.</source>
@@ -3906,8 +4381,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Jumps to the beginning of the track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hyppää kappaleen alkuun.</translation>
         </message>
         <message>
             <source>Places a cue-point at the current position on the waveform.</source>
@@ -3916,11 +4390,15 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Plays or pauses the track.</source>
+            <translation>Soita tai pysäytä kappale.</translation>
+        </message>
+        <message>
+            <source>(while playing)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>(while playing)</source>
+            <source>(while stopped)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3946,6 +4424,69 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             <source>Sends the selected channel's audio to the headphone output.</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Decks can't sync to samplers and samplers can only sync to decks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Setup a loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Temporarily setup a rolling loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Playback will resume where the track would have been if it had not entered the loop.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turns the current loop off.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Slip Mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Once disabled, the audible playback will resume where the track would have been.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clock</source>
+            <translation>Kello</translation>
+        </message>
+        <message>
+            <source>Displays the current time.</source>
+            <translation>Näyttää nykyisen ajan.</translation>
         </message>
         <message>
             <source>If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -&gt; Vinyl Control).</source>
@@ -3988,8 +4529,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Fast rewind through the track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nopea kappaleen takaperin kelaus.</translation>
         </message>
         <message>
             <source>Fast Forward</source>
@@ -3997,13 +4537,11 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Fast forward through the track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nopea kappaleen etuperin kelaus.</translation>
         </message>
         <message>
             <source>Jumps to the end of the track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hyppää kappaleen loppuun.</translation>
         </message>
         <message>
             <source>Synchronize</source>
@@ -4017,8 +4555,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>if BPM is detected on both.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>jos kummankin BPM on tunnistettu.</translation>
         </message>
         <message>
             <source>Syncs the tempo (BPM) to that of the other track,</source>
@@ -4027,8 +4564,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Pitch Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sävelkorkeuden säätö</translation>
         </message>
         <message>
             <source>Changes the track playback rate.</source>
@@ -4037,8 +4573,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Pitch Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sävelkorkeuden suhde</translation>
         </message>
         <message>
             <source>Displays the current playback rate of the track.</source>
@@ -4065,7 +4600,8 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Hotcue</source>
-            <translation>Hotcue</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>If hotcue is set, jumps to the hotcue.</source>
@@ -4089,23 +4625,19 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Absolute mode - track position equals needle position and speed.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absoluuttinen tila - Kappaleen asento vastaa neulan sijaintia ja nopeutta.</translation>
         </message>
         <message>
             <source>Relative mode - track speed equals needle speed regardless of needle position.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Suhteellinen tila -  Neula seuraa kappaleen noupeutta riippumatta neulan sijainnista.</translation>
         </message>
         <message>
             <source>Constant mode - track speed equals last known-steady speed regardless of needle input.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vakio tila - Kappaleen nopeus vastaa vakionopeutta riippumatta neulan sisääntulosta.</translation>
         </message>
         <message>
             <source>Vinyl Status</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyylin tila</translation>
         </message>
         <message>
             <source>Provides visual feedback for vinyl control status:</source>
@@ -4174,11 +4706,6 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
             <translation>Iskulooppi</translation>
         </message>
         <message>
-            <source>Setup a loop over X beats.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Reloop/Exit</source>
             <translation>Looppaa uudestaan / poistu loopista</translation>
         </message>
@@ -4231,8 +4758,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Track Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kappaleen kesto</translation>
         </message>
         <message>
             <source>Displays the duration of the loaded track.</source>
@@ -4254,23 +4780,19 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Track Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kappaleen nimi</translation>
         </message>
         <message>
             <source>Displays the title of the loaded track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytää ladatun kappaleen nimi.</translation>
         </message>
         <message>
             <source>Track Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kappaleen albumi</translation>
         </message>
         <message>
             <source>Displays the album name of the loaded track.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näyttää ladatun kappaleen albumin.</translation>
         </message>
         <message>
             <source>Track Artist/Title</source>
@@ -4292,8 +4814,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Flanger Delay</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Flangerin viive</translation>
         </message>
         <message>
             <source>Adjusts the phase delay of the flange effect (when active).</source>
@@ -4301,8 +4822,7 @@ Valitse äänikorttisi äänilaitteiden asetuksista.</translation>
         </message>
         <message>
             <source>Flanger Depth</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Flangerin syvyys</translation>
         </message>
         <message>
             <source>Adjusts the intensity of the flange effect (when active).</source>
@@ -4334,18 +4854,36 @@ Mixxx vaatii QT:n SQLite tuella. Lue Qt SQL ohjain dokumentaatio sen kääntämi
 Valitse OK poistuaksesi.</translation>
         </message>
         <message>
+            <source>Click OK to exit.</source>
+            <translation>Paina OK poistuaksesi.</translation>
+        </message>
+        <message>
             <source>Cannot upgrade database schema</source>
             <translation>Tietokantamallia ei voida päivittää</translation>
         </message>
         <message>
-            <source>Unable to upgrade your database schema to version %1.
-Your mixxx.db file may be corrupt.
-Try renaming it and restarting Mixxx.
-Click OK to exit.</source>
-            <translation>Ei voitu päivittää tietokanta mallia versioon %1
-Sinun mixxx.db tiedosto voi olla viallinen
-Kokeile sen uudelleennimeämistä ja käynnistä Mixxx uudelleen.
-Valitse OK lopettaaksesi.</translation>
+            <source>Unable to upgrade your database schema to version %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be outdated.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your mixxxdb.sqlite file may be corrupt.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Try renaming it and restarting Mixxx.</source>
+            <translation>Yritä nimetä se uudelleen ja käynnistä Mixxx uudelleen.</translation>
+        </message>
+        <message>
+            <source>Your %1 file may be missing or invalid.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -4365,6 +4903,19 @@ Valitse OK lopettaaksesi.</translation>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
             <translation>Tapahtui virhe ladattaessa Traktor-kirjastoa. Jotkin Traktor kappaleista tai soittolistoista saattavat puuttua.</translation>
+        </message>
+    </context>
+    <context>
+        <name>WOverview</name>
+        <message>
+            <source>Ready to play, analyzing ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -4401,13 +4952,25 @@ Valitse OK lopettaaksesi.</translation>
             <translation>Poista</translation>
         </message>
         <message>
-            <source>Properties...</source>
-            <translation>Ominaisuudet...</translation>
+            <source>Hide from Library</source>
+            <translation>Piilota kirjastosta.</translation>
         </message>
         <message>
-            <source>Open in file browser</source>
+            <source>Unhide from Library</source>
+            <translation>Näytä kirjastossa.</translation>
+        </message>
+        <message>
+            <source>Purge from Library</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Properties</source>
+            <translation>Ominaisuudet</translation>
+        </message>
+        <message>
+            <source>Open in File Browser</source>
+            <translation>Avaa tiedostoselain</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue (bottom)</source>
@@ -4420,6 +4983,11 @@ Valitse OK lopettaaksesi.</translation>
         <message>
             <source>Reload Track Metadata</source>
             <translation>Lataa kappaleen metadata uudelleen</translation>
+        </message>
+        <message>
+            <source>Load to Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reset Play Count</source>
@@ -4445,10 +5013,6 @@ Valitse OK lopettaaksesi.</translation>
             <source>Sampler %1</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation>Kappaleen metatietojen uudelleenlataus soimassa olevalle kappaleelle saattaa aiheuttaa äänenvoimakkuden nopean hyppäyksen. Haluatko varmasti jatkaa?</translation>
         </message>
     </context>
     <context>

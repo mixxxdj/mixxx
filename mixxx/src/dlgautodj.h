@@ -47,7 +47,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group);
+    void loadTrackToPlayer(TrackPointer tio, QString group, bool);
 
   private:
     enum ADJstates {
