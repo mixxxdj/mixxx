@@ -33,7 +33,7 @@ There is absolutely no need to buy an additional, expensive sound card **if you
 do not require headphone cueing**. The built-in soundcard on most computers and
 laptops comes with a single line-out and microphone input.
 
-.. figure:: ../_static/Mixxx-110-Preferences-Soundhardware.png
+.. figure:: ../_static/Mixxx-111-Preferences-Soundhardware.png
    :align: center
    :width: 90%
    :figwidth: 100%

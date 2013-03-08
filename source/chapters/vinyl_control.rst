@@ -9,7 +9,7 @@ having your digital music collection on vinyl. Many DJs prefer the tactile feel
 of vinyl, and vinyl control allows that feel to be preserved while retaining the
 benefits of using digital audio.
 
-.. figure:: ../_static/Mixxx-110-Preferences-Vinylcontrol.png
+.. figure:: ../_static/Mixxx-111-Preferences-Vinylcontrol.png
    :align: center
    :width: 100%
    :figwidth: 90%
