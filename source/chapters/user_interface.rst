@@ -199,6 +199,46 @@ are as follows:
   like to speed up or slow down a track and avoid the "chipmunk" affect that
   speeding up vocals has.
 
+.. _interface-vc-mode:
+
+Vinyl Control Mode and Cueing controls
+======================================
+
+.. figure:: ../_static/deere_deck_vinyl_mode.png
+   :align: center
+   :width: 60%
+   :figwidth: 100%
+   :alt: The Vinyl Control Mode and Cueing controls of a deck
+   :figclass: pretty-figures
+
+   The Vinyl Control Mode and Cueing controls of a deck
+
+The control above the waveforms relay to the :term:`vinyl control` feature in
+Mixxx and is **hidden** by default in the Mixxx interface. Click the
+:ref:`VINYL section expansion button <interface-expansion-buttons>` in the mixer
+section, or use the specific :ref:`appendix-shortcuts`, to unhide the controls.
+
+**Abs/Rel/Const button**
+
+* **Absolute mode**: The track position equals needle position and speed.
+* **Relative mode**: The track speed equals needle speed regardless of needle
+  position.
+* **Constant mode**: The track speed equals last known-steady speed regardless
+  of needle input.
+
+**Off/One/Hot button**
+
+This button determines how :term:`cue points <cue>` are treated in vinyl
+control relative mode:
+
+* **Off**: Cue points are ignored.
+* **One Cue**: If the needle is dropped after the cue point, the track will seek
+  to that cue point.
+* **Hot Cue**: The track will seek to nearest previous :term:`hotcue` point.
+
+.. seealso :: For more information on how to use Vinyl control in your setup, go
+              to the chapter :ref:`vinyl-control`.
+
 .. _interface-rate:
 
 Rate Controls
