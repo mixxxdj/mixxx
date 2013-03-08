@@ -124,18 +124,35 @@ In this section of the library you can start and stop recordings well as view
 previous recordings and the dates they were made. Also see the chapter
 :ref:`djing-recording-your-mix`.
 
-History
-=======
+History - Keep track of your last sessions
+==========================================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
 
 .. versionadded:: 1.11
 
 The history section automatically keeps a list of tracks you play in your DJ
-sets.This is handy for remembering what worked in your DJ sets, posting
+sets. This is handy for remembering what worked in your DJ sets, posting
 set-lists, or reporting your plays to licensing organizations. Every time you
-start Mixxx, a new history section is created. You can export it as a playlist
-in various formats or play it again with Auto DJ. You can join the current
-history session with a previous one by right-clicking and selecting
-:guilabel:`Join with previous`.
+start Mixxx, a new history section is created. If you don't play a track during
+the current session, it will be discarded.
+
+The "arrow" icon indicates the current session.
+
+Click on the *History* icon in the sidebar to switch to the :guilabel:`History`
+view, then right-click on a sessions name to access the different features:
+
+* **Add to Auto DJ**: Adds the content of the session to the
+  :ref:`Auto DJ <djing-auto-dj>` queue for automatic mixing.
+* **Rename**: Rename a session, default is the calendar date (YYYY-MM-DD).
+* **Remove**: Remove a previous session, but not the locked sessions or even the
+  current session.
+* **Lock**: Protect a previous session against accidental merge and deletion.
+  An icon indicates a locked session.
+* **Join with previous**: Join the current history session with a previous one.
+* **Export playlist**: Export a session in various file formats, ideal for
+  processing the data in other applications.
 
 Analyze
 =======
